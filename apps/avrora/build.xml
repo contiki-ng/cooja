@@ -5,11 +5,11 @@
   <property name="build" location="build"/>
   <property name="lib" location="lib"/>
   <property name="javadoc" location="javadoc"/>
-	<property name="cooja" location="../.."/>
+  <property name="cooja" location="../.."/>
 
-	<property name="cooja_jar" value="${cooja}/dist/cooja.jar"/>
+  <property name="cooja_jar" value="${cooja}/dist/cooja.jar"/>
   <property name="avrora_jar" value="${lib}/avrora-small.jar"/>
-  <property name="cooja_avrora_jar" value="${lib}/cooja_avrora.jar"/>
+  <property name="cooja_avrora_jar" value="cooja-avrora.jar"/>
 
   <target name="init">
     <tstamp/>

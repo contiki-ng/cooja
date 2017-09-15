@@ -1,0 +1,3 @@
+[submodule "mspsim"]
+	path = mspsim
+	url = https://github.com/mspsim/mspsim.git

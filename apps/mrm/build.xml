@@ -3,8 +3,8 @@
 <project name="COOJA Multi-path Ray-tracer Medium" default="compile" basedir=".">
   <property name="java" location="java"/>
   <property name="build" location="build"/>
-  <property name="lib" location="lib"/>
   <property name="cooja_jar" value="../../dist/cooja.jar"/>
+  <property name="mrm_jar" value="mrm.jar"/>
 
   <target name="init">
     <tstamp/>
@@ -23,12 +23,11 @@
 
   <target name="clean" depends="init">
     <delete dir="${build}"/>
-    <delete dir="${lib}"/>
+    <delete file="${jarfile}"/>
   </target>
 
   <target name="jar" depends="init, compile">
-    <mkdir dir="${lib}"/>
-    <jar destfile="${lib}/mrm.jar" basedir="${build}">
+    <jar destfile="${mrm_jar}" basedir="${build}">
       <fileset dir="images"/>
       <manifest>
         <attribute name="Class-Path" value="."/>

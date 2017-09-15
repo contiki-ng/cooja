@@ -2,7 +2,8 @@
 
 <project name="COOJA: Serial socket" default="jar" basedir=".">
   <property name="cooja" location="../.."/>
-  <property name="cooja_jar" value="../../dist/cooja.jar"/>
+  <property name="cooja_jar" value="${cooja}/dist/cooja.jar"/>
+  <property name="jarfile" value="serial-socket.jar"/>
 
   <target name="init">
     <tstamp/>
@@ -19,12 +20,13 @@
   </target>
 
   <target name="clean" depends="init">
-	<delete dir="build"/>
+    <delete dir="build"/>
+    <delete file="${jarfile}"/>
   </target>
 
   <target name="jar" depends="clean, init, compile">
     <mkdir dir="lib"/>
-    <jar destfile="lib/serial_socket.jar" basedir="build">
+    <jar destfile="${jarfile}" basedir="build">
       <manifest>
         <attribute name="Class-Path" value="."/>
       </manifest>
@@ -32,7 +34,7 @@
   </target>
 
   <target name="jar_and_cooja_run" depends="jar">
-	<ant antfile="build.xml" dir="${cooja}" target="run" inheritAll="false"/>
+    <ant antfile="build.xml" dir="${cooja}" target="run" inheritAll="false"/>
   </target>
 
 </project>

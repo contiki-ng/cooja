@@ -39,7 +39,7 @@ The COOJA Simulator
   <target name="init">
     <tstamp/>
   </target>
-  
+
   <target name="export-jar" depends="init, jar">
     <java fork="yes" dir="${build}" classname="org.contikios.cooja.util.ExecuteJAR" maxmemory="512m">
         <sysproperty key="user.language" value="en"/>
@@ -55,7 +55,7 @@ The COOJA Simulator
         </classpath>
     </java>
   </target>
-  
+
   <target name="javadoc" depends="init">
     <delete dir="${javadoc}" quiet="true"/>
     <mkdir dir="${javadoc}/"/>
@@ -100,7 +100,7 @@ The COOJA Simulator
     <ant antfile="build.xml" dir="apps/avrora" target="clean" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/serial_socket" target="clean" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/collect-view" target="clean" inheritAll="false"/>
-	<ant antfile="build.xml" dir="apps/powertracker" target="clean" inheritAll="false"/>
+    <ant antfile="build.xml" dir="apps/powertracker" target="clean" inheritAll="false"/>
   </target>
 
   <target name="run" depends="init, compile, jar, copy configs">
@@ -174,8 +174,8 @@ The COOJA Simulator
         <pathelement location="lib/log4j.jar"/>
         <pathelement location="lib/jsyntaxpane.jar"/>
         <pathelement location="lib/swingx-all-1.6.4.jar"/>
-        <pathelement location="../mspsim/lib/jfreechart-1.0.11.jar"/>
-        <pathelement location="../mspsim/lib/jcommon-1.0.14.jar"/>
+        <pathelement location="mspsim/lib/jfreechart-1.0.11.jar"/>
+        <pathelement location="mspsim/lib/jcommon-1.0.14.jar"/>
       </classpath>
     </java>
   </target>

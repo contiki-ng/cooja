@@ -4,12 +4,10 @@
   <property name="cooja" location="../.."/>
   <property name="cooja_jar" value="${cooja}/dist/cooja.jar"/>
 
-
-
   <target name="init">
     <tstamp/>
   </target>
-	
+
   <target name="compile" depends="init">
     <available file="${cooja_jar}" type="file" property="cooja_jar_exists"/>
     <fail message="COOJA jar not found at '${cooja_jar}'. Please compile COOJA first." unless="cooja_jar_exists"/>
@@ -24,11 +22,11 @@
 
   <target name="clean" depends="init">
     <delete dir="build"/>
+    <delete file="powertracker.jar"/>
   </target>
 
   <target name="jar" depends="clean, init, compile">
-    <mkdir dir="lib"/>
-    <jar destfile="lib/powertracker.jar" basedir="build">
+    <jar destfile="powertracker.jar" basedir="build">
       <manifest>
         <attribute name="Class-Path" value="."/>
       </manifest>
