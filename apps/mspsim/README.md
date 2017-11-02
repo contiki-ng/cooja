@@ -1,7 +1,13 @@
 MSPSim support for the COOJA Simulator
 --------------------------------------
 
-MSPSim source code access: Standalone MSPSim is available from
-[http://sourceforge.net/projects/mspsim](http://sourceforge.net/projects/mspsim).
+MSPSim is a Java-based instruction level emulator of the MSP430 series
+microprocessor and emulation of some sensor networking platforms. It is used
+by Cooja to emulate MSP430 based platforms and is included as a git sumbodule.
 
--- Fredrik Österlind, 18/3 2008
+To initiate and update the MSPSim submodule:
+
+$ git submodule update --init --recursive
+
+The MSPSim source code is available at Github:
+https://github.com/contiki-ng/mspsim
