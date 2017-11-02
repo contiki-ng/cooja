@@ -28,7 +28,7 @@
   <target name="mspsim" depends="init">
   	<fail>-
 ----------------
-Could not find the MSPSim build file. Did you run &quot;git submodule update --init&quot;?
+Could not find the MSPSim build file. Did you run &quot;git submodule update --init --recursive&quot;?
 ----------------
   		<condition><not>
   	      <available file="${mspsim}/build.xml" />
