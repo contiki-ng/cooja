@@ -378,11 +378,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     pack();
     setLocationRelativeTo(parent);
     
-    new Thread() {
-      public void run() {
-        tryRestoreMoteType();
-      };
-    }.start();
+    tryRestoreMoteType();
   }
 
   private void tryRestoreMoteType() { 
