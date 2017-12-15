@@ -218,7 +218,6 @@ public abstract class CoreComm {
       int b;
       String[] cmd = new String[] {
           Cooja.getExternalToolsSetting("PATH_JAVAC"),
-          "-version",
           "-cp",
           "." + File.pathSeparator +
           Cooja.getExternalToolsSetting("PATH_CONTIKI")
