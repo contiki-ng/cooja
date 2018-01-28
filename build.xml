@@ -99,7 +99,6 @@ The COOJA Simulator
     <ant antfile="build.xml" dir="apps/mspsim" target="clean" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/avrora" target="clean" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/serial_socket" target="clean" inheritAll="false"/>
-    <ant antfile="build.xml" dir="apps/collect-view" target="clean" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/powertracker" target="clean" inheritAll="false"/>
   </target>
 
@@ -199,7 +198,6 @@ The COOJA Simulator
     <ant antfile="build.xml" dir="apps/mspsim" target="jar" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/avrora" target="jar" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/serial_socket" target="jar" inheritAll="false"/>
-    <ant antfile="build.xml" dir="apps/collect-view" target="jar" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/powertracker" target="jar" inheritAll="false"/>
   </target>
 
