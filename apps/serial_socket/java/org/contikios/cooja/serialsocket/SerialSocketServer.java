@@ -467,7 +467,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
     @Override
     public void run() {
       int numRead = 0;
-      byte[] data = new byte[1024];
+      byte[] data = new byte[16*1024];
       try {
         in = new DataInputStream(clientSocket.getInputStream());
       } catch (IOException ex) {
