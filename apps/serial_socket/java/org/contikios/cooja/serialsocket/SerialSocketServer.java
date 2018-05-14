@@ -52,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 
 import javax.swing.BorderFactory;
@@ -111,6 +112,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
 
   private ServerSocket serverSocket;
   private Socket clientSocket;
+  private Thread incomingDataHandler;
 
   private Mote mote;
   private Simulation simulation;
@@ -395,7 +397,6 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
     }
 
     new Thread() {
-      private Thread incomingDataHandler;
       @Override
       public void run() {
         while (!serverSocket.isClosed()) {
@@ -462,6 +463,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
   /* Forward data: virtual port -> mote */
   private class IncomingDataHandler implements Runnable {
 
+    private final Semaphore blocker = new Semaphore(20);
     DataInputStream in;
 
     @Override
@@ -476,27 +478,38 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       }
 
       logger.info("Forwarder: socket -> serial port");
-      while (numRead >= 0) {
-        final int finalNumRead = numRead;
-        final byte[] finalData = data;
-        /* We are not on the simulation thread */
-        simulation.invokeSimulationThread(new Runnable() {
-
-          @Override
-          public void run() {
-            for (int i = 0; i < finalNumRead; i++) {
-              serialPort.writeByte(finalData[i]);
-            }
-            inBytes += finalNumRead;
-          }
-        });
-
-        try {
+      try {
+        do {
           numRead = in.read(data);
-        } catch (IOException e) {
-          logger.info(e.getMessage());
-          numRead = -1;
-        }
+          if (numRead > 0) {
+            final int finalNumRead = numRead;
+            final byte[] finalData = data;
+
+            /* Block if there are too many pending data writes */
+            blocker.acquire();
+
+            /* Allocate new block for next read */
+            data = new byte[finalData.length];
+
+            /* We are not on the simulation thread */
+            simulation.invokeSimulationThread(new Runnable() {
+
+              @Override
+              public void run() {
+                try {
+                  for (int i = 0; i < finalNumRead; i++) {
+                    serialPort.writeByte(finalData[i]);
+                  }
+                  inBytes += finalNumRead;
+                } finally {
+                  blocker.release();
+                }
+              }
+            });
+          }
+        } while (numRead >= 0);
+      } catch (IOException | InterruptedException e) {
+        logger.info(e.getMessage());
       }
       logger.info("End of Stream");
       cleanupClient();
@@ -504,7 +517,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
   }
 
   private class SerialDataObserver implements Observer {
-    
+
     DataOutputStream out;
 
     public SerialDataObserver() {
@@ -606,6 +619,12 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
   }
 
   private void cleanupClient() {
+    serialPort.deleteSerialDataObserver(serialDataObserver);
+
+    if(incomingDataHandler != null) {
+      incomingDataHandler.interrupt();
+      incomingDataHandler = null;
+    }
     try {
       if (clientSocket != null) {
         clientSocket.close();
@@ -614,8 +633,6 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
     } catch (IOException e1) {
       logger.error(e1.getMessage());
     }
-
-    serialPort.deleteSerialDataObserver(serialDataObserver);
 
     notifyClientDisconnected();
   }
@@ -656,4 +673,3 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
 	  }
   });
 }
-
