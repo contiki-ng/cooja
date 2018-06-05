@@ -60,7 +60,7 @@ import org.contikios.cooja.interfaces.SerialPort;
 public abstract class SerialUI extends Log implements SerialPort {
   private static Logger logger = Logger.getLogger(SerialUI.class);
 
-  private final static int MAX_LENGTH = 1024;
+  private final static int MAX_LENGTH = 16*1024;
 
   private byte lastSerialData = 0; /* SerialPort */
   private String lastLogMessage = ""; /* Log */

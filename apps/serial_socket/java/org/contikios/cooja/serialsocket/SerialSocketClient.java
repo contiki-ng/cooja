@@ -401,7 +401,7 @@ public class SerialSocketClient extends VisPlugin implements MotePlugin {
       @Override
       public void run() {
         int numRead = 0;
-        byte[] data = new byte[1024];
+        byte[] data = new byte[16*1024];
         logger.info("Start forwarding: socket -> serial port");
         while (numRead >= 0) {
           try {

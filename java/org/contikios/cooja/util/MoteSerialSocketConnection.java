@@ -100,7 +100,7 @@ public class MoteSerialSocketConnection {
     Thread socketThread = new Thread(new Runnable() {
       public void run() {
         int numRead = 0;
-        byte[] data = new byte[1024];
+        byte[] data = new byte[16*1024];
         while (true) {
           numRead = -1;
           try {
