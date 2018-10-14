@@ -621,11 +621,13 @@ public class ConfigurationWizard extends JDialog {
     testOutput.addMessage("### Compiling C library source: " + cLibrarySourceFile.getName());
     try {
       String contikiPath = Cooja.getExternalToolsSetting("PATH_CONTIKI").replaceAll("\\\\", "/");
+      String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "");
+
       CompileContiki.compile(
           "make " +
           "-f " + contikiPath + "/Makefile.include " +
           "CONTIKI=" + contikiPath + " " +
-          "obj_cooja/" + cLibraryName + ".cooja " +
+          output_dir + "/" + cLibraryName + ".cooja " +
           "TARGET=cooja CONTIKI_APP_OBJ=",
           envOneDimension,
           null,

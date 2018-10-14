@@ -455,6 +455,7 @@ public class CompileContiki {
     boolean includeSymbols = false; /* TODO */
 
     /* Fetch configuration from external tools */
+    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "");
     String link1 = Cooja.getExternalToolsSetting("LINK_COMMAND_1", "");
     String link2 = Cooja.getExternalToolsSetting("LINK_COMMAND_2", "");
     String ar1 = Cooja.getExternalToolsSetting("AR_COMMAND_1", "");
@@ -462,25 +463,25 @@ public class CompileContiki {
     String ccFlags = Cooja.getExternalToolsSetting("COMPILER_ARGS", "");
 
     /* Replace MAPFILE variable */
-    link1 = link1.replace("$(MAPFILE)", "obj_cooja/" + mapFile.getName());
-    link2 = link2.replace("$(MAPFILE)", "obj_cooja/" + mapFile.getName());
-    ar1 = ar1.replace("$(MAPFILE)", "obj_cooja/" + mapFile.getName());
-    ar2 = ar2.replace("$(MAPFILE)", "obj_cooja/" + mapFile.getName());
-    ccFlags = ccFlags.replace("$(MAPFILE)", "obj_cooja/" + mapFile.getName());
+    link1 = link1.replace("$(MAPFILE)", output_dir + "/" + mapFile.getName());
+    link2 = link2.replace("$(MAPFILE)", output_dir + "/" + mapFile.getName());
+    ar1 = ar1.replace("$(MAPFILE)", output_dir + "/" + mapFile.getName());
+    ar2 = ar2.replace("$(MAPFILE)", output_dir + "/" + mapFile.getName());
+    ccFlags = ccFlags.replace("$(MAPFILE)", output_dir + "/" + mapFile.getName());
 
     /* Replace LIBFILE variable */
-    link1 = link1.replace("$(LIBFILE)", "obj_cooja/" + libFile.getName());
-    link2 = link2.replace("$(LIBFILE)", "obj_cooja/" + libFile.getName());
-    ar1 = ar1.replace("$(LIBFILE)", "obj_cooja/" + libFile.getName());
-    ar2 = ar2.replace("$(LIBFILE)", "obj_cooja/" + libFile.getName());
-    ccFlags = ccFlags.replace("$(LIBFILE)", "obj_cooja/" + libFile.getName());
+    link1 = link1.replace("$(LIBFILE)", output_dir + "/" + libFile.getName());
+    link2 = link2.replace("$(LIBFILE)", output_dir + "/" + libFile.getName());
+    ar1 = ar1.replace("$(LIBFILE)", output_dir + "/" + libFile.getName());
+    ar2 = ar2.replace("$(LIBFILE)", output_dir + "/" + libFile.getName());
+    ccFlags = ccFlags.replace("$(LIBFILE)", output_dir + "/" + libFile.getName());
 
     /* Replace ARFILE variable */
-    link1 = link1.replace("$(ARFILE)", "obj_cooja/" + archiveFile.getName());
-    link2 = link2.replace("$(ARFILE)", "obj_cooja/" + archiveFile.getName());
-    ar1 = ar1.replace("$(ARFILE)", "obj_cooja/" + archiveFile.getName());
-    ar2 = ar2.replace("$(ARFILE)", "obj_cooja/" + archiveFile.getName());
-    ccFlags = ccFlags.replace("$(ARFILE)", "obj_cooja/" + archiveFile.getName());
+    link1 = link1.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
+    link2 = link2.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
+    ar1 = ar1.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
+    ar2 = ar2.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
+    ccFlags = ccFlags.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
 
     /* Replace JAVA_HOME variable */
     String javaHome = System.getenv().get("JAVA_HOME");
