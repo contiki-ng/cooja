@@ -455,7 +455,7 @@ public class CompileContiki {
     boolean includeSymbols = false; /* TODO */
 
     /* Fetch configuration from external tools */
-    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "");
+    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
     String link1 = Cooja.getExternalToolsSetting("LINK_COMMAND_1", "");
     String link2 = Cooja.getExternalToolsSetting("LINK_COMMAND_2", "");
     String ar1 = Cooja.getExternalToolsSetting("AR_COMMAND_1", "");

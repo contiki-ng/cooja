@@ -231,7 +231,7 @@ public class ContikiMoteType implements MoteType {
   public boolean configureAndInit(Container parentContainer, Simulation simulation,
                                   boolean visAvailable) throws MoteTypeCreationException {
     myConfig = simulation.getCooja().getProjectConfig().clone();
-    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "");
+    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
     
     if (visAvailable) {
 
@@ -1237,7 +1237,7 @@ public class ContikiMoteType implements MoteType {
           throws MoteTypeCreationException {
     boolean warnedOldVersion = false;
     File oldVersionSource = null;
-    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "");
+    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
 
     moteInterfacesClasses = new ArrayList<Class<? extends MoteInterface>>();
 
