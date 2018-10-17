@@ -247,6 +247,7 @@ public class Cooja extends Observable {
   private static final String externalToolsSettingNames[] = new String[] {
     "PATH_CONTIKI", "PATH_COOJA_CORE_RELATIVE","PATH_COOJA","PATH_APPS",
     "PATH_APPSEARCH",
+    "PATH_CONTIKI_NG_BUILD_DIR",
 
     "PATH_MAKE",
     "PATH_SHELL",

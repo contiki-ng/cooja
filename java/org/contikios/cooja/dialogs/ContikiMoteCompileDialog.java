@@ -110,24 +110,26 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       moteType.setIdentifier(
           ContikiMoteType.generateUniqueMoteTypeID(simulation.getMoteTypes(), null));
     }
-
+    
+    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
+    
     /* Create variables used for compiling Contiki */
     ((ContikiMoteType)moteType).setContikiSourceFile(source);
     ((ContikiMoteType)moteType).libSource = new File(
         source.getParentFile(),
-        "obj_cooja/" + moteType.getIdentifier() + ".c"
+        output_dir + "/" + moteType.getIdentifier() + ".c"
     );
     ((ContikiMoteType)moteType).libFile = new File(
         source.getParentFile(),
-        "obj_cooja/" + moteType.getIdentifier() + ContikiMoteType.librarySuffix
+        output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.librarySuffix
     );
     ((ContikiMoteType)moteType).archiveFile = new File(
         source.getParentFile(),
-        "obj_cooja/" + moteType.getIdentifier() + ContikiMoteType.dependSuffix
+        output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.dependSuffix
     );
     ((ContikiMoteType)moteType).mapFile = new File(
         source.getParentFile(),
-        "obj_cooja/" + moteType.getIdentifier() + ContikiMoteType.mapSuffix);
+        output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.mapSuffix);
     ((ContikiMoteType)moteType).javaClassName = CoreComm.getAvailableClassName();
 
     if (((ContikiMoteType)moteType).javaClassName == null) {
@@ -352,10 +354,11 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   public void writeSettingsToMoteType() {
     /* XXX Do not load the generated firmware.
-     * Instead, load the copy in obj_cooja/ */
+     * Instead, load the copy in output_dir */
+    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja"); 
     File contikiFirmware = new File(
         moteType.getContikiSourceFile().getParentFile(),
-        "obj_cooja/" + moteType.getIdentifier() + ContikiMoteType.librarySuffix
+        output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.librarySuffix
     );
     moteType.setContikiFirmwareFile(contikiFirmware);
 
