@@ -1009,7 +1009,8 @@ public class ChannelModel {
    * @param lookThrough Line to look through (or null)
    * @return All visible sides
    */
-  private Vector<Line2D> getAllVisibleSides(double sourceX, double sourceY, AngleInterval angleInterval, Line2D lookThrough) {
+  synchronized private Vector<Line2D> getAllVisibleSides(double sourceX, double sourceY, AngleInterval angleInterval, Line2D lookThrough) {
+    // synchronized because a race condition happens in this method when MRMVisualizerSkin accesses this module from another thread
     Point2D source = new Point2D.Double(sourceX, sourceY);
 
     // Check if results were already calculated earlier
