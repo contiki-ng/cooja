@@ -245,7 +245,8 @@ public class Cooja extends Observable {
   public static Properties currentExternalToolsSettings;
 
   private static final String externalToolsSettingNames[] = new String[] {
-    "PATH_CONTIKI", "PATH_COOJA_CORE_RELATIVE","PATH_COOJA","PATH_APPS",
+    "PATH_COOJA",
+    "PATH_CONTIKI", "PATH_COOJA_CORE_RELATIVE","PATH_APPS",
     "PATH_APPSEARCH",
     "PATH_CONTIKI_NG_BUILD_DIR",
 
@@ -4175,8 +4176,8 @@ public class Cooja extends Observable {
 
   private final static String[][] PATH_IDENTIFIER = {
 	  {"[CONTIKI_DIR]","PATH_CONTIKI",""},
-	  {"[COOJA_DIR]","PATH_COOJA","/tools/cooja"},
-	  {"[APPS_DIR]","PATH_APPS","/tools/cooja/apps"}
+	  {"[COOJA_DIR]","PATH_COOJA",""},
+	  {"[APPS_DIR]","PATH_APPS","apps"}
   };
   
   private File createContikiRelativePath(File file) {
@@ -4189,7 +4190,7 @@ public class Cooja extends Observable {
     	String fileCanonical = file.getCanonicalPath();
       
     	//No so nice, but goes along with GUI.getExternalToolsSetting
-    	String defp = Cooja.getExternalToolsSetting("PATH_CONTIKI", null);
+			String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
     	
     	
 		for(int i = 0; i < elem; i++){
@@ -4247,16 +4248,16 @@ public class Cooja extends Observable {
     	
     	
     	if(i == elem) return null;
-    	//logger.info("Found: " + PATH_IDENTIFIER[i][0]);
+       //logger.info("Found: " + PATH_IDENTIFIER[i][0]);
     	
     	//No so nice, but goes along with GUI.getExternalToolsSetting
-    	String defp = Cooja.getExternalToolsSetting("PATH_CONTIKI", null);
+			String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
     	path = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));
     	
     	//logger.info("Config: " + PATH_IDENTIFIER[i][1] + ", " + defp + PATH_IDENTIFIER[i][2] + " = " + path.toString());
 		canonical = path.getCanonicalPath();
     	
-		
+    
     	File absolute = new File(portablePath.replace(PATH_IDENTIFIER[i][0], canonical));
 		if(!absolute.exists()){
 			logger.warn("Replaced " + portable  + " with " + absolute.toString() + " (default: "+ defp + PATH_IDENTIFIER[i][2] +"), but could not find it. This does not have to be an error, as the file might be created later.");
