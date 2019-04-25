@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, University of Bristol
+ * Copyright (c) 2018-2019, University of Bristol
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,8 @@ import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
+import java.util.Hashtable;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
@@ -74,12 +76,13 @@ import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
  * 
  * To model the path loss PL_{dBm}(d) this plugin uses the log-distance path loss model:
  *
- *  PL_{dBm}(d) = PL_0 + 10 * \alpha * \log_10 (d / d_0) + NormalDistribution(0, \sigma),
+ *  PL_{dBm}(d) = PL_0 + PL_t + 10 * \alpha * \log_10 (d / d_0) + NormalDistribution(0, \sigma),
  *
  * where:
  * - `d_0` is the transmission range in meters;
  * - `PL_0` is the loss at `d_0` (i.e. the Rx sensitivity, by default equal
  *    to `-100` dBm as on the TI CC2650 System-on-Chip for IEEE 802.15.4 packets)
+ * - `PL_t` is the time-varying component of the path loss (by default, zero)
  * - `\alpha` is the path loss exponent;
  * - `\sigma` is the standard deviation of the Additive White Gaussian Noise.
  * 
@@ -87,12 +90,23 @@ import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
  * value of `\sigma` is 3.0 as well, both of which approximately correspond to
  * "indoors, 2.4 GHz frequency" according to RF propagation theory.
  *
+ * If the time-varying behavior is enabled, the value of `PL_t` is changing over time.
+ * The change is within bounds `[TVPL_{min}, TVPL_{max}]`. The evolution is done in discrete steps.
+ * At the time `t`, the `PL_t` is updated as:
+ *
+ *  PL_t = bound(PL_{t-1} + r),
+ *
+ * where `r` is a small random value, and `bound(pl) = min(MAX_PL, max(MIN_PL, pl))`,
+ * and `MIN_PL` and `MAX_PL` are time minimum and maximum values of the time-varying path loss.
+ *
  * @see UDGM
  * @author Atis Elsts
  */
 @ClassDescription("LogisticLoss Medium")
 public class LogisticLoss extends AbstractRadioMedium {
     private static Logger logger = Logger.getLogger(LogisticLoss.class);
+
+    private Simulation sim = null;
 
     /* Success ratio of TX. If this fails, no radios receive the packet */
     public double SUCCESS_RATIO_TX = 1.0;
@@ -128,21 +142,38 @@ public class LogisticLoss extends AbstractRadioMedium {
      */
     public final double DEFAULT_TX_POWER_DBM = 0.0;
 
+    /* Enable the time-varying component? */
+    public boolean ENABLE_TIME_VARIATION = false;
+
+    /* Bounds for the time-varying component */
+    public double TIME_VARIATION_MIN_PL_DB = -10;
+    public double TIME_VARIATION_MAX_PL_DB = +10;
+
+    /* How often to update the time-varying path loss value (in simulation time)? */
+    private final double TIME_VARIATION_STEP_SEC = 10.0;
+
+    private long lastTimeVariationUpdatePeriod = 0;
 
     private DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
 
     private Random random = null;
 
+    private Hashtable<Index, TimeVaryingEdge> edgesTable = new Hashtable<Index, TimeVaryingEdge>();
+
     public LogisticLoss(Simulation simulation) {
         super(simulation);
         random = simulation.getRandomGenerator();
+        sim = simulation;
         dgrm = new DirectedGraphMedium() {
                 protected void analyzeEdges() {
                     /* Create edges according to distances.
                      * XXX May be slow for mobile networks */
                     clearEdges();
+                    /* XXX: do not remove the time-varying edges to preserve their evolution */
+
                     for (Radio source: LogisticLoss.this.getRegisteredRadios()) {
                         Position sourcePos = source.getPosition();
+                        int sourceID = source.getMote().getID();
                         for (Radio dest: LogisticLoss.this.getRegisteredRadios()) {
                             Position destPos = dest.getPosition();
                             /* Ignore ourselves */
@@ -155,6 +186,16 @@ public class LogisticLoss extends AbstractRadioMedium {
                                 addEdge(
                                         new DirectedGraphMedium.Edge(source, 
                                                 new DGRMDestinationRadio(dest)));
+
+                                if (ENABLE_TIME_VARIATION) {
+                                    int destID = dest.getMote().getID();
+                                    if (sourceID < destID) {
+                                        Index key = new Index(sourceID, destID);
+                                        if (!edgesTable.containsKey(key)) {
+                                            edgesTable.put(key, new TimeVaryingEdge());
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -247,7 +288,7 @@ public class LogisticLoss extends AbstractRadioMedium {
                     if (recv.isReceiving()) {
                         /*
                          * Compare new and old and decide whether to interfere.
-                         * XXX: this is a simplifiedcheck. Rather than looking at all N potential senders,
+                         * XXX: this is a simplified check. Rather than looking at all N potential senders,
                          * it looks at just this and the strongest one of the previous transmissions
                          * (since updateSignalStrengths() updates the signal strength iff the previous one is weaker)
                         */
@@ -333,11 +374,42 @@ public class LogisticLoss extends AbstractRadioMedium {
         /* Using the log-distance formula */
         double path_loss_dbm = -RX_SENSITIVITY_DBM + 10 * PATH_LOSS_EXPONENT * Math.log10(d / TRANSMITTING_RANGE);
 
+        /* Add the time-varying component if enabled */
+        if (ENABLE_TIME_VARIATION) {
+            Index key = new Index(source.getMote().getID(), dst.getMote().getID());
+            TimeVaryingEdge e = edgesTable.get(key);
+            if (e != null) {
+                path_loss_dbm += e.getPL();
+            } else {
+                logger.warn("No edge between " + source.getMote().getID() + " and " + dst.getMote().getID());
+            }
+        }
+
         return DEFAULT_TX_POWER_DBM - path_loss_dbm + getAWGN();
+    }
+
+    private void updateTimeVariationComponent() {
+        long period = (long)(sim.getSimulationTimeMillis() / (1000.0 * TIME_VARIATION_STEP_SEC));
+
+        if (dgrm.needsEdgeAnalysis()) {
+            dgrm.analyzeEdges();
+        }
+
+        while (period > lastTimeVariationUpdatePeriod) {
+            for (Map.Entry<Index, TimeVaryingEdge> entry : edgesTable.entrySet()) {
+                entry.getValue().evolve();
+            }
+            /* update the time state */
+            lastTimeVariationUpdatePeriod += 1;
+        }
     }
 
     public void updateSignalStrengths() {
         /* Override: uses distance as signal strength factor */
+
+        if(ENABLE_TIME_VARIATION) {
+            updateTimeVariationComponent();
+        }
     
         /* Reset signal strengths */
         for (Radio radio : getRegisteredRadios()) {
@@ -429,6 +501,21 @@ public class LogisticLoss extends AbstractRadioMedium {
         element.setText("" + AWGN_SIGMA);
         config.add(element);
 
+        /* Time variation enabled? */
+        element = new Element("enable_time_variation");
+        element.setText("" + ENABLE_TIME_VARIATION);
+        config.add(element);
+
+        if(ENABLE_TIME_VARIATION) {
+            /* Time-variable path loss bounds */
+            element = new Element("time_variation_min_pl_db");
+            element.setText("" + TIME_VARIATION_MIN_PL_DB);
+            config.add(element);
+            element = new Element("time_variation_max_pl_db");
+            element.setText("" + TIME_VARIATION_MAX_PL_DB);
+            config.add(element);
+        }
+
         return config;
     }
 
@@ -459,7 +546,80 @@ public class LogisticLoss extends AbstractRadioMedium {
             if (element.getName().equals("awgn_sigma")) {
                  AWGN_SIGMA = Double.parseDouble(element.getText());
             }
+
+            if (element.getName().equals("enable_time_variation")) {
+                 ENABLE_TIME_VARIATION = Boolean.parseBoolean(element.getText());
+            }
+
+            if (element.getName().equals("time_variation_min_pl_db")) {
+                 TIME_VARIATION_MIN_PL_DB = Double.parseDouble(element.getText());
+            }
+
+            if (element.getName().equals("time_variation_max_pl_db")) {
+                 TIME_VARIATION_MAX_PL_DB = Double.parseDouble(element.getText());
+            }
         }
         return true;
+    }
+
+    // Invariant: x <= y
+    private class Index {
+        private int x;
+        private int y;
+
+        public Index(int a, int b) {
+            if(a <= b) {
+                this.x = a;
+                this.y = b;
+            } else {
+                this.x = b;
+                this.y = a;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return this.x ^ this.y;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            Index other = (Index) obj;
+            if (x != other.x)
+                return false;
+            if (y != other.y)
+                return false;
+            return true;
+        }
+    }
+
+    private class TimeVaryingEdge {
+        /* The current value of the time-varying */
+        private double timeVariationPlDb;
+
+        public TimeVaryingEdge() {
+            timeVariationPlDb = 0.0;
+        }
+
+        public void evolve() {
+            /* evolve the value */
+            timeVariationPlDb += random.nextDouble() - 0.5;
+            /* bound the value */
+            if (timeVariationPlDb < TIME_VARIATION_MIN_PL_DB) {
+                timeVariationPlDb = TIME_VARIATION_MIN_PL_DB;
+            } else if (timeVariationPlDb > TIME_VARIATION_MAX_PL_DB) {
+                timeVariationPlDb = TIME_VARIATION_MAX_PL_DB;
+            }
+        }
+
+        public double getPL() {
+            return timeVariationPlDb;
+        }
     }
 }
