@@ -484,8 +484,8 @@ public class ContikiMoteType implements MoteType {
       SectionMoteMemory tmp = new SectionMoteMemory(variables);
       VarMemory varMem = new VarMemory(tmp);
       tmp.addMemorySection("tmp.data", dataSecParser.parse(0));
-
       tmp.addMemorySection("tmp.bss", bssSecParser.parse(0));
+      tmp.addMemorySection("tmp.common", commonSecParser.parse(0));
 
       try {
         int referenceVar = (int) varMem.getVariable("referenceVar").addr;
@@ -637,6 +637,7 @@ public class ContikiMoteType implements MoteType {
       Map<String, Symbol> varNames = new HashMap<>();
 
       Pattern pattern = Pattern.compile(Cooja.getExternalToolsSetting("MAPFILE_VAR_NAME"));
+
       for (String line : getData()) {
         Matcher matcher = pattern.matcher(line);
         if (matcher.find()) {
@@ -758,24 +759,25 @@ public class ContikiMoteType implements MoteType {
       /* Replace "<SECTION>" in regexp by section specific regex */
       Pattern pattern = Pattern.compile(
               Cooja.getExternalToolsSetting("COMMAND_VAR_NAME_ADDRESS_SIZE")
-                      .replace("<SECTION>", sectionRegExp));
-
+                      .replace("<SECTION>", Pattern.quote(sectionRegExp)));
       for (String line : getData()) {
         Matcher matcher = pattern.matcher(line);
 
         if (matcher.find()) {
           /* Line matched variable address */
-          String symbol = matcher.group(1);
-          long varAddr = Integer.parseInt(matcher.group(2), 16) + offset;
+          String symbol = matcher.group(3);
+          long varAddr = Integer.parseInt(matcher.group(1), 16) + offset;
           int varSize;
-          if (matcher.group(3) != null) {
-           varSize = Integer.parseInt(matcher.group(3), 16);
+
+          if (matcher.group(2) != null) {
+           varSize = Integer.parseInt(matcher.group(2), 16);
           } else {
             varSize = -1;
           }
 
           /* XXX needs to be checked */
           if (!addresses.containsKey(symbol)) {
+	    logger.info("Put symbol " + symbol + " with address " + varAddr + " and size " + varSize);
             addresses.put(symbol, new Symbol(Symbol.Type.VARIABLE, symbol, varAddr, varSize));
           } else {
             int oldAddress = (int) addresses.get(symbol).addr;
