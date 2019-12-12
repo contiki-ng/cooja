@@ -453,6 +453,8 @@ public class Cooja extends Observable {
         tryStartPlugin(pluginClass, this, null, null);
       }
     }
+
+    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(this));
   }
 
 
@@ -4737,5 +4739,22 @@ public class Cooja extends Observable {
     }
   };
 
-}
+  private static final class ShutdownHandler extends Thread {
+    private final Cooja cooja;
 
+    public ShutdownHandler(Cooja cooja) {
+      super("Cooja-Shutdown");
+      this.cooja = cooja;
+    }
+
+    @Override
+    public void run() {
+      // Stop the simulation if it is running.
+      Simulation simulation = cooja.getSimulation();
+      if (simulation != null) {
+        simulation.stopSimulation(true);
+      }
+    }
+  }
+
+}
