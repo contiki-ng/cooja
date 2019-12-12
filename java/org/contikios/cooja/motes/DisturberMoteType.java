@@ -116,7 +116,7 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
     }
     public void sentPacket(RadioPacket p) {
       /* Send another packet after a small pause */
-      getSimulation().scheduleEvent(new MoteTimeEvent(this, 0) {
+      getSimulation().scheduleEvent(new MoteTimeEvent(this) {
         public void execute(long t) {
           /*logger.info("Sending another radio packet on channel: " + radio.getChannel());*/
           radio.startTransmittingPacket(radioPacket, DURATION);

@@ -51,10 +51,10 @@ import se.sics.mspsim.core.USARTSource;
 public class MspSerial extends SerialUI implements SerialPort {
   private static final long DELAY_INCOMING_DATA = 69; /* 115200 bit/s */
   
-  private static Logger logger = Logger.getLogger(MspSerial.class);
+  private static final Logger logger = Logger.getLogger(MspSerial.class);
 
   private Simulation simulation;
-  private MspMote mote;
+  private final MspMote mote;
   private USARTSource usart;
   
   private Vector<Byte> incomingData = new Vector<Byte>();
@@ -77,7 +77,7 @@ public class MspSerial extends SerialUI implements SerialPort {
       });
     }
 
-    writeDataEvent = new MspMoteTimeEvent((MspMote) mote, 0) {
+    writeDataEvent = new MspMoteTimeEvent(this.mote) {
       public void execute(long t) {
         super.execute(t);
         

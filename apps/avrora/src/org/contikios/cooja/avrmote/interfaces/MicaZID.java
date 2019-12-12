@@ -59,27 +59,29 @@ public class MicaZID extends MoteID {
     private VarMemory moteMem;
     boolean tosID = false;
     boolean contikiID = false;
-    private MicaZMote mote;
+    private final MicaZMote mote;
     private int persistentSetIDCounter = 1000;
 
-    TimeEvent persistentSetIDEvent = new MoteTimeEvent(mote, 0) {
-        public void execute(long t) {
-            if (persistentSetIDCounter-- > 0) {
-                setMoteID(moteID);
-                if (t + mote.getInterfaces().getClock().getDrift() < 0) {
-                    /* Wait until node is booting */
-                    mote.getSimulation().scheduleEvent(this, -mote.getInterfaces().getClock().getDrift());
-                } else {
-                    mote.getSimulation().scheduleEvent(this, t + Simulation.MILLISECOND / 16);
-                }
-            }
-        }
-    };
+    private final TimeEvent persistentSetIDEvent;
 
 
     public MicaZID(Mote mote) {
         this.mote = (MicaZMote) mote;
         this.moteMem = new VarMemory(mote.getMemory());
+
+        persistentSetIDEvent = new MoteTimeEvent(mote) {
+            public void execute(long t) {
+                if (persistentSetIDCounter-- > 0) {
+                    setMoteID(moteID);
+                    if (t + mote.getInterfaces().getClock().getDrift() < 0) {
+                        /* Wait until node is booting */
+                        mote.getSimulation().scheduleEvent(this, -mote.getInterfaces().getClock().getDrift());
+                    } else {
+                        mote.getSimulation().scheduleEvent(this, t + Simulation.MILLISECOND / 16);
+                    }
+                }
+            }
+        };
 
         if (moteMem.variableExists("node_id")) {
             contikiID = true;

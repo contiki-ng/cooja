@@ -59,13 +59,13 @@ public abstract class Button extends MoteInterface {
   public Button(Mote mote) {
     sim = mote.getSimulation();
 
-    pressButtonEvent = new MoteTimeEvent(mote, 0) {
+    pressButtonEvent = new MoteTimeEvent(mote) {
       @Override
       public void execute(long t) {
         doPressButton();
       }
     };
-    releaseButtonEvent = new MoteTimeEvent(mote, 0) {
+    releaseButtonEvent = new MoteTimeEvent(mote) {
       @Override
       public void execute(long t) {
         doReleaseButton();

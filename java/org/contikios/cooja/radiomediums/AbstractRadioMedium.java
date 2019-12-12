@@ -273,7 +273,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 						} else {
 							/* EXPERIMENTAL: Simulating propagation delay */
 							final Radio delayedRadio = r;
-							TimeEvent delayedEvent = new TimeEvent(0) {
+							TimeEvent delayedEvent = new TimeEvent() {
 								public void execute(long t) {
 									delayedRadio.signalReceptionStart();
 								}
@@ -309,7 +309,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 							
 							/* EXPERIMENTAL: Simulating propagation delay */
 							final Radio delayedRadio = dstRadio;
-							TimeEvent delayedEvent = new TimeEvent(0) {
+							TimeEvent delayedEvent = new TimeEvent() {
 								public void execute(long t) {
 									delayedRadio.signalReceptionEnd();
 								}
@@ -364,7 +364,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 							/* EXPERIMENTAL: Simulating propagation delay */
 							final CustomDataRadio delayedRadio = (CustomDataRadio) dstRadio;
 							final Object delayedData = data;
-							TimeEvent delayedEvent = new TimeEvent(0) {
+							TimeEvent delayedEvent = new TimeEvent() {
 								public void execute(long t) {
 									delayedRadio.receiveCustomData(delayedData);
 								}
@@ -410,7 +410,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 							/* EXPERIMENTAL: Simulating propagation delay */
 							final Radio delayedRadio = dstRadio;
 							final RadioPacket delayedPacket = packet;
-							TimeEvent delayedEvent = new TimeEvent(0) {
+							TimeEvent delayedEvent = new TimeEvent() {
 								public void execute(long t) {
 									delayedRadio.setReceivedPacket(delayedPacket);
 								}

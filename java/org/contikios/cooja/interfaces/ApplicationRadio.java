@@ -236,7 +236,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
         /*logger.info("Transmission started");*/
 
         /* Finish transmission */
-        simulation.scheduleEvent(new MoteTimeEvent(mote, 0) {
+        simulation.scheduleEvent(new MoteTimeEvent(mote) {
           public void execute(long t) {
             isTransmitting = false;
             lastEvent = RadioEvent.TRANSMISSION_FINISHED;

@@ -177,6 +177,14 @@ public class Simulation extends Observable implements Runnable {
   }
 
   /**
+   * @return True iff current thread is the simulation thread,
+   * or the simulation threat has not yet been created.
+   */
+  public boolean isSimulationThreadOrNull() {
+    return simulationThread == Thread.currentThread() || simulationThread == null;
+  }
+
+  /**
    * Schedule simulation event for given time.
    * Already scheduled events must be removed before they are rescheduled.
    *
@@ -195,7 +203,7 @@ public class Simulation extends Observable implements Runnable {
     eventQueue.addEvent(e, time);
   }
 
-  private TimeEvent delayEvent = new TimeEvent(0) {
+  private final TimeEvent delayEvent = new TimeEvent() {
     public void execute(long t) {
       if (speedLimitNone) {
         /* As fast as possible: no need to reschedule delay event */
@@ -229,7 +237,7 @@ public class Simulation extends Observable implements Runnable {
     }
   };
 
-  private TimeEvent millisecondEvent = new TimeEvent(0) {
+  private final TimeEvent millisecondEvent = new TimeEvent() {
     public void execute(long t) {
       if (!hasMillisecondObservers) {
         return;
@@ -244,7 +252,7 @@ public class Simulation extends Observable implements Runnable {
   };
 
   public void clearEvents() {
-    eventQueue.removeAll();
+    eventQueue.clear();
     pollRequests.clear();
   }
 
@@ -259,7 +267,7 @@ public class Simulation extends Observable implements Runnable {
     this.setChanged();
     this.notifyObservers(this);
 
-    TimeEvent nextEvent = null;
+    EventQueue.Pair nextEvent = null;
     try {
       while (isRunning) {
 
@@ -278,7 +286,7 @@ public class Simulation extends Observable implements Runnable {
         }
         currentSimulationTime = nextEvent.time;
         /*logger.info("Executing event #" + EVENT_COUNTER++ + " @ " + currentSimulationTime + ": " + nextEvent);*/
-        nextEvent.execute(currentSimulationTime);
+        nextEvent.event.execute(currentSimulationTime);
 
         if (stopSimulation) {
           isRunning = false;
@@ -296,8 +304,8 @@ public class Simulation extends Observable implements Runnable {
     			System.exit(1);
     		} else {
     		  String title = "Simulation error";
-    		  if (nextEvent instanceof MoteTimeEvent) {
-    		    title += ": " + ((MoteTimeEvent)nextEvent).getMote();
+    		  if (nextEvent.event instanceof MoteTimeEvent) {
+    		    title += ": " + ((MoteTimeEvent)nextEvent.event).getMote();
     		  }
     		  Cooja.showErrorDialog(Cooja.getTopParentContainer(), title, e, false);
     		}
@@ -385,7 +393,7 @@ public class Simulation extends Observable implements Runnable {
     if (isRunning()) {
       return;
     }
-    TimeEvent stopEvent = new TimeEvent(0) {
+    TimeEvent stopEvent = new TimeEvent() {
       public void execute(long t) {
         /* Stop simulation */
         stopSimulation();
@@ -783,17 +791,10 @@ public class Simulation extends Observable implements Runnable {
         setChanged();
         notifyObservers(mote);
 
-        /* Loop through all scheduled events.
-         * Delete all events associated with deleted mote. */
-        TimeEvent ev = eventQueue.peekFirst();
-        while (ev != null) {
-          if (ev instanceof MoteTimeEvent) {
-            if (((MoteTimeEvent)ev).getMote() == mote) {
-              ev.remove();
-            }
-          }
-          ev = ev.nextEvent;
-        }
+        // Delete all events associated with deleted mote.
+        eventQueue.removeIf(
+          (TimeEvent ev) ->
+            ev instanceof MoteTimeEvent && ((MoteTimeEvent)ev).getMote() == mote);
       }
     };
 
@@ -1149,7 +1150,7 @@ public class Simulation extends Observable implements Runnable {
    * @return True if simulation is runnable
    */
   public boolean isRunnable() {
-    return isRunning || hasPollRequests || eventQueue.peekFirst() != null;
+    return isRunning || hasPollRequests || !eventQueue.isEmpty();
   }
 
   /**
