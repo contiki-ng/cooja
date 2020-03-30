@@ -48,13 +48,15 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * <li>char simSerialReceivingFlag (1=mote has incoming serial data)
  * <li>int simSerialReceivingLength
  * <li>byte[] simSerialReceivingData
+ * <li>char simSerialSendFlag (1=mote has outgoing serial data)
+ * <li>int simSerialSendLength
+ * <li>byte[] simSerialSendData
  * </ul>
  * <p>
  *
  * Core interface:
  * <ul>
  * <li>rs232_interface
- * <li>simlog_interface
  * </ul>
  * <p>
  *
@@ -87,24 +89,26 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
   }
 
   public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"rs232_interface", "simlog_interface" };
+    return new String[]{"rs232_interface"};
   }
 
   public void doActionsAfterTick() {
-    if (moteMem.getByteValueOf("simLoggedFlag") == 1) {
-      int len = moteMem.getIntValueOf("simLoggedLength");
-      byte[] bytes = moteMem.getByteArray("simLoggedData", len);
+    if (moteMem.getByteValueOf("simSerialSendFlag") == 1) {
+      int len = moteMem.getIntValueOf("simSerialSendLength");
+      byte[] bytes = moteMem.getByteArray("simSerialSendData", len);
 
-      moteMem.setByteValueOf("simLoggedFlag", (byte) 0);
-      moteMem.setIntValueOf("simLoggedLength", 0);
+      moteMem.setByteValueOf("simSerialSendFlag", (byte) 0);
+      moteMem.setIntValueOf("simSerialSendLength", 0);
 
-      for (byte b: bytes) {
-        dataReceived(b);
-      }
+  	  logger.info("RS232:received:" + bytes.length);
+  	  bufReceived(bytes);
     }
   }
 
+  @Override
   public void writeString(String message) {
+	super.writeString(message);
+
     final byte[] dataToAppend = message.getBytes();
 
     mote.getSimulation().invokeSimulationThread(new Runnable() {
@@ -139,7 +143,11 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
 
   private TimeEvent pendingBytesEvent = null;
   private Vector<Byte> pendingBytes = new Vector<Byte>();
+  @Override
   public void writeArray(byte[] s) {
+	logger.info("RS232:writeArray:" + s.length);
+	super.writeArray(s);
+
     for (byte b: s) {
       pendingBytes.add(b);
     }
@@ -187,6 +195,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
         /* Reschedule us if more bytes are available */
         mote.getSimulation().scheduleEvent(this, t);
         mote.requestImmediateWakeup();
+        logger.info("RS232:> recv " + newSize);
       }
     };
     mote.getSimulation().invokeSimulationThread(new Runnable() {
@@ -199,7 +208,10 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
     });
   }
 
+  @Override
   public void writeByte(final byte b) {
+	super.writeByte(b);
+
     pendingBytes.add(b);
 
     if (pendingBytesEvent != null) {

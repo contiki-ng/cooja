@@ -33,6 +33,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -42,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -49,22 +52,39 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTabbedPane;
+import javax.swing.ListSelectionModel;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.interfaces.Log;
+import org.contikios.cooja.interfaces.SerialIO;
 import org.contikios.cooja.interfaces.SerialPort;
+import org.contikios.cooja.dialogs.MessageListUI;
 
-public abstract class SerialUI extends Log implements SerialPort {
+import org.contikios.cooja.util.StringUtils;
+
+
+
+public abstract class SerialUI extends SerialIO 
+	implements SerialPort 
+{
   private static Logger logger = Logger.getLogger(SerialUI.class);
 
   private final static int MAX_LENGTH = 16*1024;
+  private static final int LOG     = 0;
+  private static final int SENDING = 1;
+  private static final int RECEIVING = 2;
 
+  private boolean is_recv = false; //flag that last activity is receiving
+  private byte[] recvBuf = new byte[MAX_LENGTH];
+  private int    recvLen = 0;
   private byte lastSerialData = 0; /* SerialPort */
   private String lastLogMessage = ""; /* Log */
   private StringBuilder newMessage = new StringBuilder(); /* Log */
+
+  private byte[] lastSendingData = null;
 
   /* Command history */
   private final static int HISTORY_SIZE = 15;
@@ -98,38 +118,140 @@ public abstract class SerialUI extends Log implements SerialPort {
   public byte getLastSerialData() {
     return lastSerialData;
   }
-  public void dataReceived(int data) {
-    if (data == '\n') {
+
+  protected void receiveFlush() {
+	  if (recvLen <= 0)
+		  return;
       /* Notify observers of new log */
       lastLogMessage = newMessage.toString();
       lastLogMessage = lastLogMessage.replaceAll("[^\\p{Print}\\p{Blank}]", "");
       newMessage.setLength(0);
+      is_recv = true;
       this.setChanged();
       this.notifyObservers(getMote());
-    } else {
-      newMessage.append((char) data);
-      if (newMessage.length() > MAX_LENGTH) {
-        /*logger.warn("Dropping too large log message (>" + MAX_LENGTH + " bytes).");*/
-        lastLogMessage = "# [1024 bytes, no line ending]: " + newMessage.substring(0, 20) + "...";
-        lastLogMessage = lastLogMessage.replaceAll("[^\\p{Print}\\p{Blank}]", "");
-        newMessage.setLength(0);
-        this.setChanged();
-        this.notifyObservers(getMote());
-      }
-    }
+      recvLen = 0;
+  }
 
+  // on incoming 1 byte
+  // @return - true if recvBufer is flushed 
+  public boolean on_recv_byte_flushed(byte x) {
+	    lastSerialData  = x;
+		recvBuf[recvLen] = x;
+		++recvLen;
+
+		if (x == '\n') {
+			this.receiveFlush();
+			return true;
+	    } else {
+	      newMessage.append((char) x);
+	      if (newMessage.length() > MAX_LENGTH) {
+	        /*logger.warn("Dropping too large log message (>" + MAX_LENGTH + " bytes).");*/
+	        lastLogMessage = "# [1024 bytes, no line ending]: " + newMessage.substring(0, 20) + "...";
+			this.receiveFlush();
+			return true;
+	      }
+	    }
+		return false;
+  }
+
+  public void dataReceived(int data) {
+    lastSendingData = null;
+	on_recv_byte_flushed((byte)data);
     /* Notify observers of new serial character */
-    lastSerialData = (byte) data;
+    is_recv = true;
     serialDataObservable.notifyNewData();
   }
 
+  public void bufReceived(byte[] data) {
+    lastSendingData = null;
+
+    for (byte x : data)
+	if (on_recv_byte_flushed(x)) {
+	    /* Notify observers of new serial character */
+	    is_recv = true;
+	    serialDataObservable.notifyNewData();
+	}
+
+	this.receiveFlush();
+    is_recv = true;
+    serialDataObservable.notifyNewData();
+  }
+
+  protected void sendFlush() {
+	  is_recv = false;
+      this.setChanged();
+      this.notifyObservers(getMote());
+	  serialDataObservable.notifyNewData();
+  };
+  
+  public void writeString(String message) {
+	  if (is_recv)
+		  this.receiveFlush();
+	  lastSendingData = message.getBytes();
+	  this.sendFlush();
+  }
+
+  public void writeArray(byte[] s) {
+	  if (is_recv)
+		  this.receiveFlush();
+	  lastSendingData = s;
+	  this.sendFlush();
+  }
+
+  public void writeByte(final byte b) {
+	  if (is_recv)
+		  this.receiveFlush();
+	  lastSendingData = new byte[1];
+	  lastSendingData[0] = b;
+	  this.sendFlush();
+  }
+
+  private JScrollPane fanoutMessageList(MessageListUI x) {
+	  x.setFont(new Font("monospace", Font.PLAIN, 12));
+      //x.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
+      //x.setFont(new Font("Lucida Sans Typewriter", Font.PLAIN, 10));
+      //x.setFont(new Font("Consolas", Font.PLAIN, 10));
+      //x.setFont(new Font("Curier New", Font.PLAIN, 10));
+      x.setCellRenderer( x.newWrapedMessageRenderer() );
+
+      x.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+      x.addPopupMenuItem(null, true);
+
+      x.setForeground(LOG,       Color.black);
+      x.setForeground(RECEIVING, Color.blue);
+      x.setForeground(SENDING,   Color.magenta);
+
+      JScrollPane scrollPane = new JScrollPane(x);
+      scrollPane.setPreferredSize(new Dimension(100, 100));
+      return scrollPane;
+  }
 
   /* Mote interface visualizer */
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel(new BorderLayout());
-    JPanel commandPane = new JPanel(new BorderLayout());
+
+    JTabbedPane tabbedView = new JTabbedPane();
+    tabbedView.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
+    tabbedView.setTabPlacement(JTabbedPane.TOP); //BOTTOM
+
+    //final JTextArea logHexPane = new JTextArea();
+    final MessageListUI logHexPane = new MessageListUI();
+    logHexPane.setFont(new Font("Curier New", Font.PLAIN, 10));
+    tabbedView.addTab("hex", fanoutMessageList(logHexPane));
 
     final JTextArea logTextPane = new JTextArea();
+    logTextPane.setLineWrap(true);
+    logTextPane.setWrapStyleWord(true);
+    JScrollPane scrollTextPane = new JScrollPane(logTextPane);
+    scrollTextPane.setPreferredSize(new Dimension(100, 100));
+    tabbedView.addTab("text", scrollTextPane);
+
+    //final JTextArea logHexPane = new JTextArea();
+    final MessageListUI logDumpPane = new MessageListUI();
+    logDumpPane.setFont(new Font("Consolas", Font.PLAIN, 10));
+    tabbedView.addTab("dump", fanoutMessageList(logDumpPane));
+
+    JPanel commandPane = new JPanel(new BorderLayout());
     final JTextField commandField = new JTextField(15);
     JButton sendButton = new JButton("Send data");
 
@@ -230,19 +352,30 @@ public abstract class SerialUI extends Log implements SerialPort {
     Observer observer;
     this.addObserver(observer = new Observer() {
       public void update(Observable obs, Object obj) {
-        final String logMessage = getLastLogMessage();
+        final byte[] sendData = lastSendingData;
+        final byte[] recvData = Arrays.copyOf(recvBuf, recvLen);
         EventQueue.invokeLater(new Runnable() {
           public void run() {
-            appendToTextArea(logTextPane, logMessage);
+            if (recvLen > 0){
+        		logger.info("SUI: logMessage "+recvLen );
+                appendToTextArea(logTextPane, recvData );
+              	appendToHexArea(logHexPane, recvData, RECEIVING);
+              	appendToDumpArea(logDumpPane, recvData, RECEIVING);
+            }
+            if ( sendData != null) {
+        		logger.info("SUI: lastSendingData "+sendData.length);
+            	appendToHexArea(logHexPane, sendData, SENDING);
+            	appendToDumpArea(logDumpPane, sendData, SENDING);
+                appendToTextArea(logTextPane, sendData );
+            }
+
           }
         });
       }
     });
     panel.putClientProperty("intf_obs", observer);
 
-    JScrollPane scrollPane = new JScrollPane(logTextPane);
-    scrollPane.setPreferredSize(new Dimension(100, 100));
-    panel.add(BorderLayout.CENTER, scrollPane);
+    panel.add(BorderLayout.CENTER, tabbedView);
     panel.add(BorderLayout.SOUTH, commandPane);
     return panel;
   }
@@ -299,6 +432,23 @@ public abstract class SerialUI extends Log implements SerialPort {
   public abstract Mote getMote();
 
 
+
+  protected static void appendToTextArea(JTextArea textArea, final byte[] data) {
+	StringBuilder recvStr = new StringBuilder();
+	final Font font = textArea.getFont();
+	
+	for( byte x: data) {
+		char c = (char)x;
+		if (isPrintableChar(c) 
+				&& font.canDisplay(c)
+			)
+			recvStr.append(c);
+		else
+			recvStr.append('_');
+	}
+	appendToTextArea(textArea, recvStr.toString() );
+  }
+
   protected static void appendToTextArea(JTextArea textArea, String text) {
     String current = textArea.getText();
     int len = current.length();
@@ -314,6 +464,34 @@ public abstract class SerialUI extends Log implements SerialPort {
       visRect.x = 0;
       textArea.scrollRectToVisible(visRect);
     }
+  }
+
+  public static 
+  boolean isPrintableChar( char c ) {
+	if (Character.isISOControl(c))
+		return false;
+	if (c == KeyEvent.CHAR_UNDEFINED)
+		return false;
+	Character.UnicodeBlock block = Character.UnicodeBlock.of( c );
+	if (block != null)
+	if (block == Character.UnicodeBlock.SPECIALS)
+		return false;
+	return true;
+  }
+
+  protected static void appendToHexArea(MessageListUI textArea, final byte[] data, int type) {
+	  if(data.length > 0) {
+		  final String line = StringUtils.toHex(data, 1);
+		  // TODO whitout \n JTextArea does not wraps text in JList
+		  textArea.addMessage( line+'\n' , type);
+	  }
+  }
+
+  protected static void appendToDumpArea(MessageListUI textArea, final byte[] data, int type) {
+	  if(data.length > 0) {
+		  final String line = StringUtils.hexDump(data, 1, 16);
+		  textArea.addMessage( line , type);
+	  }
   }
 
   private static String trim(String text) {

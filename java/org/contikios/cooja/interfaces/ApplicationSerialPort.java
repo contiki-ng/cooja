@@ -11,17 +11,6 @@ public class ApplicationSerialPort extends SerialUI {
     this.mote = mote;
   }
 
-  /**
-   * @param log Trigger log event from application
-   */
-  public void triggerLog(String log) {
-    byte[] bytes = log.getBytes();
-    for (byte b: bytes) {
-      dataReceived(b);
-    }
-    dataReceived('\n');
-  }
-
   public Mote getMote() {
     return mote;
   }

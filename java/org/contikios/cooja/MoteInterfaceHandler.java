@@ -60,6 +60,7 @@ public class MoteInterfaceHandler {
   private RimeAddress myRimeAddress;
   private LED myLED;
   private Log myLog;
+  private SerialIO mySerial;
   private MoteID myMoteID;
   private PIR myPIR;
   private Position myPosition;
@@ -221,6 +222,18 @@ public class MoteInterfaceHandler {
       myLog = getInterfaceOfType(Log.class);
     }
     return myLog;
+  }
+
+  /**
+   * Returns the log interface (if any).
+   *
+   * @return Log interface
+   */
+  public SerialIO getSerial() {
+    if (mySerial == null) {
+      mySerial = getInterfaceOfType(SerialIO.class);
+    }
+    return mySerial;
   }
 
   /**

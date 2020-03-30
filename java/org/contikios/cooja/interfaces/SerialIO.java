@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, Swedish Institute of Computer Science.
+ * Copyright (c) 2006, Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,24 +30,38 @@
 
 package org.contikios.cooja.interfaces;
 
-import java.util.Observer;
-
 import org.contikios.cooja.*;
 
-@ClassDescription("Serial port")
-public interface SerialPort {
+import java.util.Observer;
+import org.contikios.cooja.interfaces.SerialPort;
 
-  public void writeByte(byte b);
-  public void writeArray(byte[] s);
-  public void writeString(String s);
+/**
+ * A Log represents a mote logging output. An implementation should notify all
+ * observers whenever new logging output is available.
+ *
+ * @author Fredrik Osterlind
+ */
+@ClassDescription("Serial IO")
+public abstract class SerialIO extends MoteInterface //Log //maybe better extends Log?  
+	implements SerialPort 
+{
+	  public abstract void writeByte(byte b);
+	  public abstract void writeArray(byte[] s);
+	  public abstract void writeString(String s);
 
-  public void addSerialDataObserver(Observer o);
-  public void deleteSerialDataObserver(Observer o);
+	  public abstract void addSerialDataObserver(Observer o);
+	  public abstract void deleteSerialDataObserver(Observer o);
 
-  public byte getLastSerialData();
-  public byte[] getLastSerialBuf( int limit);
+	  public abstract byte getLastSerialData();
 
-  public void flushInput();
+	  // dummy omplementation
+	  public byte[] getLastSerialBuf( int limit) {
+		  byte[] b = new byte[1];
+		  b[0] = getLastSerialData();
+		  return b; 
+	  }
 
-  public void close();
+	  public abstract void flushInput();
+
+	  public abstract void close();
 }

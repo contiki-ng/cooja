@@ -31,6 +31,7 @@
 package org.contikios.cooja.interfaces;
 
 import org.contikios.cooja.contikimote.interfaces.ContikiRS232;
+import org.contikios.cooja.contikimote.interfaces.ContikiLog;
 
 /**
  * A mote interface polled after a mote tick ONLY IF the mote is awake.

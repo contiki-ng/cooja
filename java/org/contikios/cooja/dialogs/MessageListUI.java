@@ -35,6 +35,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
+import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -53,6 +55,11 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.BorderFactory; 
+import javax.swing.ListCellRenderer;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -165,6 +172,22 @@ public class MessageListUI extends JList implements MessageList {
     return messages.toArray(new MessageContainer[0]);
   }
 
+  public MessageContainer[] getSelectedMessages() 
+  {
+    MessageContainer[] messages = null;
+    if(getSelectedIndex() < 0){
+        messages = getMessages();
+    }
+    else {
+        int[] selectedIx = getSelectedIndices();
+    	messages = new MessageContainer[selectedIx.length];
+        for (int i = 0; i < selectedIx.length; i++) {
+        	messages[i] = (MessageContainer)(getModel().getElementAt(selectedIx[i]));
+        }
+    }
+    return messages;
+  }
+
   private void updateModel() {
     boolean scroll = getLastVisibleIndex() >= getModel().getSize() - 2;
 
@@ -250,9 +273,10 @@ public class MessageListUI extends JList implements MessageList {
         JMenuItem consoleOutputMenuItem = new JMenuItem("Output to console");
         consoleOutputMenuItem.setEnabled(true);
         consoleOutputMenuItem.addActionListener(new ActionListener() {
+          
           @Override
           public void actionPerformed(ActionEvent e) {
-            MessageContainer[] messages = getMessages();
+        	MessageContainer[] messages = getSelectedMessages();
             logger.info("\nCOMPILATION OUTPUT:\n");
             for (MessageContainer msg: messages) {
               if (hideNormal && msg.type == NORMAL) {
@@ -273,7 +297,7 @@ public class MessageListUI extends JList implements MessageList {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
             StringBuilder sb = new StringBuilder();
-            MessageContainer[] messages = getMessages();
+            MessageContainer[] messages = getSelectedMessages();
             for (MessageContainer msg: messages) {
               if (hideNormal && msg.type == NORMAL) {
                 continue;
@@ -308,8 +332,9 @@ public class MessageListUI extends JList implements MessageList {
     }
   }
 
+
   private class MessageRenderer extends DefaultListCellRenderer {
-    private Dimension nullDimension = new Dimension(0,0);
+    private final Dimension nullDimension = new Dimension(0,0);
     @Override
     public Component getListCellRendererComponent(
         JList list,
@@ -332,7 +357,66 @@ public class MessageListUI extends JList implements MessageList {
       setBackground(((MessageListUI) list).getBackground(msg.type));
       return this;
     }
+  }
 
-  } // end of inner class MessageRenderer
+  public class WrapedMessageRenderer //extends JTextArea 
+    	implements ListCellRenderer  
+    {
+        private final Dimension nullDimension = new Dimension(0,0);
+
+        @Override
+        public Component getListCellRendererComponent(
+            JList list, Object value,
+            int index,
+            boolean isSelected,
+            boolean cellHasFocus)
+        {
+          MessageContainer msg = (MessageContainer) value;
+
+          if (hideNormal && msg.type == NORMAL && index != MessageListUI.this.getModel().getSize()-1) {
+              JPanel container = new JPanel(new BorderLayout());
+        	  container.setPreferredSize(nullDimension);
+            return container;
+          }
+
+          MessageListUI self = ((MessageListUI) list);
+          JTextArea renderer = new JTextArea();
+
+  	      Color border_color = self.getForeground(msg.type);
+  	      if (cellHasFocus) {
+  	    	  border_color = Color.yellow;
+  	      }
+  	      else if(isSelected)
+  	    	  border_color = Color.gray;
+
+          if (msg.type == 1) {
+      	      renderer.setBorder( BorderFactory.createMatteBorder(1, 5, 1, 1, border_color) );
+          }
+          else if (msg.type == 2) {
+      	      renderer.setBorder( BorderFactory.createMatteBorder(1, 1, 1, 5, border_color) );
+          }
+          else
+      	      renderer.setBorder( BorderFactory.createMatteBorder(1, 1, 1, 1, border_color) );
+
+          renderer.setOpaque(false);
+          renderer.setEditable(false);
+          renderer.setLineWrap(true);
+          renderer.setWrapStyleWord(true);
+          renderer.setForeground(self.getForeground(msg.type));
+          renderer.setBackground(self.getBackground(msg.type));
+          renderer.setText(value.toString());
+          renderer.setPreferredSize(null);
+
+          // request the focus on this component to be able to edit it
+          if (cellHasFocus)
+	    	  renderer.requestFocus();
+          return renderer;
+        }
+     } // end of inner class MessageRenderer
+  
+  public 
+    WrapedMessageRenderer newWrapedMessageRenderer() {
+       return new WrapedMessageRenderer();
+    }
 
 } // end of MessagList

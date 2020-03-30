@@ -47,6 +47,7 @@ import java.net.Socket;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -251,7 +252,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
     }
 
     /* Mote serial port */
-    serialPort = (SerialPort) mote.getInterfaces().getLog();
+    serialPort = (SerialPort) mote.getInterfaces().getSerial();
     if (serialPort == null) {
       throw new RuntimeException("No mote serial port");
     }
@@ -478,15 +479,13 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       logger.info("Forwarder: socket -> serial port");
       while (numRead >= 0) {
         final int finalNumRead = numRead;
-        final byte[] finalData = data;
+        final byte[] finalData = Arrays.copyOf(data, finalNumRead);
         /* We are not on the simulation thread */
         simulation.invokeSimulationThread(new Runnable() {
 
           @Override
           public void run() {
-            for (int i = 0; i < finalNumRead; i++) {
-              serialPort.writeByte(finalData[i]);
-            }
+            serialPort.writeArray(finalData);
             inBytes += finalNumRead;
           }
         });
