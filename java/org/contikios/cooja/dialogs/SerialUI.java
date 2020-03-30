@@ -234,17 +234,17 @@ public abstract class SerialUI extends SerialIO
     tabbedView.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
     tabbedView.setTabPlacement(JTabbedPane.TOP); //BOTTOM
 
-    //final JTextArea logHexPane = new JTextArea();
-    final MessageListUI logHexPane = new MessageListUI();
-    logHexPane.setFont(new Font("Curier New", Font.PLAIN, 10));
-    tabbedView.addTab("hex", fanoutMessageList(logHexPane));
-
     final JTextArea logTextPane = new JTextArea();
     logTextPane.setLineWrap(true);
     logTextPane.setWrapStyleWord(true);
     JScrollPane scrollTextPane = new JScrollPane(logTextPane);
     scrollTextPane.setPreferredSize(new Dimension(100, 100));
     tabbedView.addTab("text", scrollTextPane);
+
+    //final JTextArea logHexPane = new JTextArea();
+    final MessageListUI logHexPane = new MessageListUI();
+    logHexPane.setFont(new Font("Curier New", Font.PLAIN, 10));
+    tabbedView.addTab("hex", fanoutMessageList(logHexPane));
 
     //final JTextArea logHexPane = new JTextArea();
     final MessageListUI logDumpPane = new MessageListUI();

@@ -45,7 +45,7 @@ public interface SerialPort {
   public void deleteSerialDataObserver(Observer o);
 
   public byte getLastSerialData();
-  public byte[] getLastSerialBuf( int limit);
+  //public byte[] getLastSerialBuf( int limit);
 
   public void flushInput();
 
