@@ -57,12 +57,11 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.interfaces.SerialPort;
 
-public abstract class LogUI extends Log implements SerialPort {
+public abstract class LogUI extends Log {
   private static Logger logger = Logger.getLogger(LogUI.class);
 
   private final static int MAX_LENGTH = 16*1024;
 
-  private byte lastSerialData = 0; /* SerialPort */
   private String lastLogMessage = ""; /* Log */
   private StringBuilder newMessage = new StringBuilder(); /* Log */
 
@@ -71,28 +70,6 @@ public abstract class LogUI extends Log implements SerialPort {
     return lastLogMessage;
   }
 
-  /* SerialPort */
-  private abstract class SerialDataObservable extends Observable {
-    public abstract void notifyNewData();
-  }
-  private SerialDataObservable serialDataObservable = new SerialDataObservable() {
-    public void notifyNewData() {
-      if (this.countObservers() == 0) {
-        return;
-      }
-      setChanged();
-      notifyObservers(LogUI.this);
-    }
-  };
-  public void addSerialDataObserver(Observer o) {
-    serialDataObservable.addObserver(o);
-  }
-  public void deleteSerialDataObserver(Observer o) {
-    serialDataObservable.deleteObserver(o);
-  }
-  public byte getLastSerialData() {
-    return lastSerialData;
-  }
   public void dataReceived(int data) {
     if (data == '\n') {
       /* Notify observers of new log */
@@ -112,10 +89,6 @@ public abstract class LogUI extends Log implements SerialPort {
         this.notifyObservers(getMote());
       }
     }
-
-    /* Notify observers of new serial character */
-    lastSerialData = (byte) data;
-    serialDataObservable.notifyNewData();
   }
 
 
