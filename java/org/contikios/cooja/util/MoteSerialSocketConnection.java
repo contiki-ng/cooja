@@ -68,7 +68,7 @@ public class MoteSerialSocketConnection {
     isConnected = true;
 
     /* Simulated -> socket */
-    motePort = (SerialPort) mote.getInterfaces().getLog();
+    motePort = (SerialPort) mote.getInterfaces().getSerial();
     motePort.addSerialDataObserver(moteObserver = new Observer() {
       public void update(Observable obs, Object obj) {
         try {

@@ -135,23 +135,28 @@ public abstract class SerialUI extends SerialIO
   // on incoming 1 byte
   // @return - true if recvBufer is flushed 
   public boolean on_recv_byte_flushed(byte x) {
-	    lastSerialData  = x;
 		recvBuf[recvLen] = x;
 		++recvLen;
 
+		lastSerialData  = x;
+	    serialDataObservable.notifyNewData();
+
+		boolean flushed = false;
 		if (x == '\n') {
 			this.receiveFlush();
-			return true;
+			flushed = true;
 	    } else {
 	      newMessage.append((char) x);
 	      if (newMessage.length() > MAX_LENGTH) {
 	        /*logger.warn("Dropping too large log message (>" + MAX_LENGTH + " bytes).");*/
 	        lastLogMessage = "# [1024 bytes, no line ending]: " + newMessage.substring(0, 20) + "...";
 			this.receiveFlush();
-			return true;
+			flushed = true;
 	      }
 	    }
-		return false;
+	    /* Notify observers of new serial character */
+	    is_recv = true;
+		return flushed;
   }
 
   public void dataReceived(int data) {
@@ -159,29 +164,24 @@ public abstract class SerialUI extends SerialIO
 	on_recv_byte_flushed((byte)data);
     /* Notify observers of new serial character */
     is_recv = true;
-    serialDataObservable.notifyNewData();
   }
 
   public void bufReceived(byte[] data) {
     lastSendingData = null;
 
+    boolean flushed = false;
     for (byte x : data)
-	if (on_recv_byte_flushed(x)) {
-	    /* Notify observers of new serial character */
-	    is_recv = true;
-	    serialDataObservable.notifyNewData();
-	}
+    	flushed = on_recv_byte_flushed(x);
 
-	this.receiveFlush();
+    if (!flushed)
+    	this.receiveFlush();
     is_recv = true;
-    serialDataObservable.notifyNewData();
 }
 
   protected void sendFlush() {
 	  is_recv = false;
       this.setChanged();
       this.notifyObservers(getMote());
-	  serialDataObservable.notifyNewData();
   };
   
   public void writeString(String message) {
