@@ -175,7 +175,7 @@ public abstract class SerialUI extends SerialIO
 	this.receiveFlush();
     is_recv = true;
     serialDataObservable.notifyNewData();
-  }
+}
 
   protected void sendFlush() {
 	  is_recv = false;
@@ -352,18 +352,21 @@ public abstract class SerialUI extends SerialIO
     Observer observer;
     this.addObserver(observer = new Observer() {
       public void update(Observable obs, Object obj) {
-        final byte[] sendData = lastSendingData;
+        final byte[] sendData = (lastSendingData != null) 
+        				? Arrays.copyOf(lastSendingData, lastSendingData.length)
+        				: null;
         final byte[] recvData = Arrays.copyOf(recvBuf, recvLen);
         EventQueue.invokeLater(new Runnable() {
           public void run() {
+        	final int recvLen = recvData.length;
             if (recvLen > 0){
-        		logger.info("SUI: logMessage "+recvLen );
+        		//logger.info("SUI: logMessage "+recvLen );
                 appendToTextArea(logTextPane, recvData );
               	appendToHexArea(logHexPane, recvData, RECEIVING);
               	appendToDumpArea(logDumpPane, recvData, RECEIVING);
             }
             if ( sendData != null) {
-        		logger.info("SUI: lastSendingData "+sendData.length);
+        		//logger.info("SUI: lastSendingData "+sendData.length);
             	appendToHexArea(logHexPane, sendData, SENDING);
             	appendToDumpArea(logDumpPane, sendData, SENDING);
                 appendToTextArea(logTextPane, sendData );
