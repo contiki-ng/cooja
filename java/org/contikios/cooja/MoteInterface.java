@@ -35,6 +35,7 @@ import java.util.Observable;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.jdom.Element;
+import java.lang.Double;
 
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
@@ -139,7 +140,67 @@ public abstract class MoteInterface extends Observable {
    */
   public abstract void setConfigXML(Collection<Element> configXML,
       boolean visAvailable);
-  
+
+  public static
+  String getXMLText(final Collection<Element> configXML, final String name) {
+	    for (Element element : configXML) {
+            if (element.getName().equals(name)) {
+                return element.getText();
+            }
+	    }
+        return null;
+  }
+
+  public static
+  boolean assignXMLValue(Collection<Element> configXML
+		  			, final String name, final String value) 
+  {
+	    for (Element element : configXML) {
+            if (element.getName().equals(name)) {
+                element.setText(value);
+                return true;
+            }
+	    }
+        return false;
+  }
+
+  public static
+  double getXMLDouble(final Collection<Element> configXML, final String name) {
+	    for (Element element : configXML) {
+            if (element.getName().equals(name)) {
+                return Double.parseDouble(element.getText());
+            }
+	    }
+        return Double.NaN;
+  }
+
+  public static
+  boolean assignXMLValue(Collection<Element> configXML
+		  			, final String name, final double value) 
+  {
+	    for (Element element : configXML) {
+            if (element.getName().equals(name)) {
+                element.setText("" + value);
+                return true;
+            }
+	    }
+        return false;
+  }
+
+
+  public static
+  void setXMLValue(Collection<Element> configXML
+		  			, final String name, final double value) 
+  {
+	    if ( assignXMLValue(configXML, name, value) )
+	    	return;
+
+	    Element element;
+        element = new Element(name);
+        element.setText("" + value);
+        configXML.add(element);
+  }
+
   /**
    * Called to free resources used by the mote interface.
    * This method is called when the mote is removed from the simulation.

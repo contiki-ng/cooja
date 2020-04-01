@@ -39,6 +39,22 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import java.awt.Component;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+import java.lang.Double;
+import java.lang.Math;
+
+import javax.swing.BoxLayout;
+import javax.swing.JTextField;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import org.jdom.Element;
+
 import org.apache.log4j.Logger;
 
 import org.contikios.cooja.ClassDescription;
@@ -267,14 +283,40 @@ public abstract class Radio extends MoteInterface {
         } else {
           channelLabel.setText("Current channel: " + getChannel());
         }
+
+        
       }
     };
-    this.addObserver(observer);
 
+    this.addObserver(observer);
     observer.update(null, null);
 
+    final String bitrate_ID = "bitrate";
+    final String powerup_time_ID = "powerup_time_us";
+    final String powerdn_time_ID = "powerdn_time_us";
+    Collection<Element> cfg = getConfigXML();
+    final boolean have_bitrate = (( getXMLText(cfg, bitrate_ID) != null ));
+    final boolean have_poweron = (( getXMLText(cfg, powerup_time_ID) != null ));
+
+    JPanel enter_panel = new JPanel();
+    enter_panel.setLayout( new BoxLayout(enter_panel, BoxLayout.PAGE_AXIS) );
+
+    if ( have_bitrate ) {
+    	enter_panel.add(new DoubleParamField( "bitrate [kBps]:", bitrate_ID));
+    }
+    if ( have_poweron ) {
+    	enter_panel.add(new DoubleParamField( "powerOn time[us]:", powerup_time_ID));
+    	enter_panel.add(new DoubleParamField( "powerDn time[us]:", powerdn_time_ID));
+    }
+
     panel.add(BorderLayout.NORTH, box);
+    panel.add(BorderLayout.CENTER, enter_panel);
     panel.putClientProperty("intf_obs", observer);
+
+    //this could need for shure DoubleParamField refresh
+	//this.setChanged();
+    //this.notifyObservers();
+
     return panel;
   }
 
@@ -287,4 +329,121 @@ public abstract class Radio extends MoteInterface {
 
     this.deleteObserver(observer);
   }
+
+  protected
+  class DoubleParamField extends JPanel {
+	
+	DoubleParamField(final String label_text, final String ID){
+	    //super( new BorderLayout() );
+		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS) );
+	    setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        final Collection<Element> config = getConfigXML();
+        String value = getXMLText(config, ID);
+		//logger.info("radio:motes"+getMote().getID() + ": " + ID + " = " + value);
+
+	    final JTextField field = new JTextField(value, 10);
+	    field.addKeyListener( new DoubleConfigKeyAdapter(field, ID) ); //bitrate_field.addKeyListener
+	    final JLabel label = new JLabel(label_text);
+	    setMaximumSize( new Dimension( 
+	    		  //Integer.MAX_VALUE
+	    		  field.getPreferredSize().width + label.getPreferredSize().width
+	    		, field.getPreferredSize().height ));	
+	    add(label);
+	    add(field);
+
+	    final Observer observer = new Observer() {
+	        public void update(Observable obs, Object obj) {
+      		    //logger.info("radio: observed motes"+getMote().getID() + " on " + ID);
+		        Collection<Element> config = getConfigXML();
+		        String value = getXMLText(config, ID);
+		        if (value != null)
+		        	field.setText(value);
+		    }
+	      };
+	    addObserver(observer);
+		//logger.info("radio: edit motes"+getMote().getID() + " on " + ID);
+	}
+	
+  }
+
+  public
+  double as_double(String text) {
+      if (text == null) {
+        return Double.NaN;
+      }
+      text = text.trim();
+      if (text == null) {
+          return Double.NaN;
+      }
+
+      return Double.parseDouble(text.replace(",","."));
+  }
+  
+  public 
+  boolean is_positive(double value) {
+      if ( Double.isNaN(value) ){
+		return false;
+	  }
+      if ( Double.isInfinite(value) ){
+  		return false;
+	  }
+      return value > 0.0;
+  }
+  
+  public 
+  class DoubleConfigKeyAdapter extends KeyAdapter {
+	  private JTextField field;
+	  private String     ID;
+
+	  DoubleConfigKeyAdapter(final JTextField afield, final String aID) {
+		field = afield;
+		ID    = aID;
+		//super.KeyAdapter();
+	  }
+	  
+	  @Override
+      public void keyPressed(KeyEvent e) {
+        switch (e.getKeyCode()) {
+
+        case KeyEvent.VK_ENTER: {
+      	    double value = as_double( field.getText() );
+      	    if (!is_positive(value) ) {
+      		    //logger.info("radio: key enter motes"+getMote().getID() + " on " + ID);
+      	    	setChanged();
+      		    notifyObservers();
+        		return;
+            }
+      	    setConfigAllMotes( ID, value );
+        }//case KeyEvent.VK_ENTER
+
+        }//switch (e.getKeyCode())
+      }
+  }
+
+  // assign config parameter for all Radio Interface on all Motes
+  public void setConfigAllMotes(final String ID, double value) {
+	  //logger.info("radio: set motes "+ID + " -> "+ value);
+      ArrayList<Element> config = new ArrayList<Element>();
+      setXMLValue(config, ID, value);
+
+      Mote[] motes = getMote().getSimulation().getMotes();
+	  for (Mote m: motes) {
+		Radio radio = m.getInterfaces().getRadio();
+		if (radio != null) {
+			radio.setConfigXML(config, true);
+		}
+	  }
+  }
+
+  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) 
+  {
+	if (visAvailable) {
+		//logger.info("radio: set XML:"+getMote().getID());
+		this.setChanged();
+	    this.notifyObservers();
+	}
+  }
+
+
 }
