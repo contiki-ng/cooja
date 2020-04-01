@@ -355,8 +355,12 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
 
       /* Calculate transmission duration (us) */
       /* XXX Currently floored due to millisecond scheduling! */
+      if (RADIO_TRANSMISSION_RATE_kbps > 0.0) {
       long duration = (int) (Simulation.MILLISECOND*((8 * size /*bits*/) / RADIO_TRANSMISSION_RATE_kbps));
       transmissionEndTime = now + Math.max(1, duration);
+      }
+      else
+    	  transmissionEndTime = now+1;
 
       lastEventTime = now;
       lastEvent = RadioEvent.TRANSMISSION_STARTED;
@@ -386,17 +390,21 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
            element.setText("" + RADIO_TRANSMISSION_RATE_kbps);
            config.add(element);
 
+   		   //logger.info("contikiRadio: take XML:"+getMote().getID());
            return config;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML,
-                 boolean visAvailable) {
+                 boolean visAvailable) 
+  {
          for (Element element : configXML) {
                  if (element.getName().equals("bitrate")) {
                          RADIO_TRANSMISSION_RATE_kbps = Double.parseDouble(element.getText());
                          logger.info("Radio bitrate reconfigured to (kbps): " + RADIO_TRANSMISSION_RATE_kbps);
                  }
          }
+         super.setConfigXML(configXML, visAvailable);
   }
 
   public Mote getMote() {
@@ -406,4 +414,5 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
   public String toString() {
     return "Radio at " + mote;
   }
+
 }
