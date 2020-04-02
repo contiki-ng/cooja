@@ -120,6 +120,19 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
 
   private int oldRadioChannel = -1;
 
+  public
+  void signalRadio( RadioEvent x, long now) {
+	lastEvent = x;
+    lastEventTime = now;
+	setChanged();
+	notifyObservers();
+  }
+
+  public
+  void signalRadio( RadioEvent x) {
+	  signalRadio(x, mote.getSimulation().getSimulationTime());
+  }
+
   /**
    * Creates an interface to the radio at mote.
    *
@@ -281,21 +294,12 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
 
     /* Check if radio hardware status changed */
     if (radioOn != (myMoteMemory.getByteValueOf("simRadioHWOn") == 1)) {
-      radioOn = !radioOn;
-
-      if (!radioOn) {
-        myMoteMemory.setByteValueOf("simReceiving", (byte) 0);
-        myMoteMemory.setIntValueOf("simInSize", 0);
-        myMoteMemory.setIntValueOf("simOutSize", 0);
-        isTransmitting = false;
-        lastEvent = RadioEvent.HW_OFF;
+      if (radioOn) {
+        on_radioOff();
       } else {
-        lastEvent = RadioEvent.HW_ON;
+        radioOn = true;
+        signalRadio(RadioEvent.HW_ON, now);
       }
-
-      lastEventTime = now;
-      this.setChanged();
-      this.notifyObservers();
     }
     if (!radioOn) {
       return;
@@ -376,6 +380,48 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
     }
   }
 
+	private 
+	void on_radioOff() {
+	    long now = mote.getSimulation().getSimulationTime();
+
+        if (isReceiving()) 
+        {
+            logger.warn("Turning off radio while receiving on mote" + getMote().getID());
+            // TODO HW_OFF while reception can be tracket bye listner,
+            //      so may be it is not good to show broken reception here?
+            // maybe it better modify TimeLine?
+
+            if (!isInterfered())
+                interfereAnyReception();
+            else
+                signalRadio(RadioEvent.RECEPTION_INTERFERED, now);
+
+            myMoteMemory.setByteValueOf("simReceiving", (byte) 0);
+            myMoteMemory.setIntValueOf("simInSize", 0);
+            myMoteMemory.setIntValueOf("simOutSize", 0);
+            signalReceptionEnd();
+        }
+
+        /* Radio was turned off during transmission.
+		 * May for example happen if watchdog triggers */
+		if (isTransmitting()) {
+			logger.warn("Turning off radio while transmitting on mote" + getMote().getID());
+
+    		/* Simulate end of packet */
+    		packetFromMote = new COOJARadioPacket( new byte[0] );
+    		signalRadio(RadioEvent.PACKET_TRANSMITTED, now);
+
+    		signalRadio(RadioEvent.TRANSMISSION_BROKEN, now);
+
+			/* Register that transmission ended in radio medium */
+			isTransmitting = false;
+			signalRadio(RadioEvent.TRANSMISSION_FINISHED, now);
+		}
+
+        radioOn = false;
+		signalRadio(RadioEvent.HW_OFF, now);
+	}
+
   public Collection<Element> getConfigXML() {
            ArrayList<Element> config = new ArrayList<Element>();
 
@@ -402,6 +448,7 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
   public Mote getMote() {
     return mote;
   }
+
 
   public String toString() {
     return "Radio at " + mote;
