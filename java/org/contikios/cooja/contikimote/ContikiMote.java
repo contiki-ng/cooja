@@ -202,8 +202,11 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
             simulation.getCooja().tryLoadClass(this, MoteInterface.class, intfClass);
 
         if (moteInterfaceClass == null) {
-          logger.fatal("Could not load mote interface class: " + intfClass);
-          return false;
+          logger.fatal("Could not load mote"+ getID() +" interface class: " + intfClass);
+          continue;
+          //TODO new CCOJA revisions may have not investigated interfaces
+          //     ignore this miss, to allow load later projects
+          //return false;
         }
 
         MoteInterface moteInterface = myInterfaceHandler.getInterfaceOfType(moteInterfaceClass);
