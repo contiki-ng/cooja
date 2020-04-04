@@ -35,6 +35,10 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -180,14 +184,16 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   }
 
   public String getDefaultCompileCommands(final File source) {
+      String save_command = getCompileCommands();
+
     if (moteType == null) {
       /* Not ready to compile yet */
-      return "";
+      return save_command;
     }
 
     if (source == null || !source.exists()) {
       /* Not ready to compile yet */
-      return "";
+      return save_command;
     }
 
     if (SwingUtilities.isEventDispatchThread()) {
@@ -206,14 +212,40 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       }
     }
 
-    String defines = "";
-    if (((ContikiMoteType) moteType).getNetworkStack().getHeaderFile() != null) {
-      defines = " DEFINES=NETSTACK_CONF_H=" + ((ContikiMoteType) moteType).getNetworkStack().getHeaderFile();
+    /*"make clean TARGET=cooja\n" + */
+    String command = Cooja.getExternalToolsSetting("PATH_MAKE") + " " 
+            + getExpectedFirmwareFile(source).getName() 
+            ;
+    final String target_cmd = " TARGET=cooja";
+    final String netstack_cmd = " DEFINES=NETSTACK_CONF_H=" 
+                + ((ContikiMoteType) moteType).getNetworkStack().getHeaderFile();
+    if (save_command.trim().length() <= 2) {
+        //build new command
+        String defines = "";
+        if (((ContikiMoteType) moteType).getNetworkStack().getHeaderFile() != null) {
+          command += target_cmd + netstack_cmd;
+        }
+    }
+    else {
+        // update old command with new source, and netstack
+        int cmd_finish = save_command.indexOf(" TARGET");
+        if (cmd_finish > 0)
+            command +=  save_command.substring(cmd_finish);
+        else {
+            logger.warn("was strange compile commmand: "+save_command);
+            command += target_cmd;
+        }
+
+        // update netstack header
+        final String netstack_patern = "\\sDEFINES=NETSTACK_CONF_H=(\\S*)";
+        if ( command.indexOf("NETSTACK_CONF_H=") > 0) {
+            command = command.replaceAll(netstack_patern, netstack_cmd);
+        }
+        else
+            command += netstack_cmd;
     }
 
-    return
-    /*"make clean TARGET=cooja\n" + */
-    Cooja.getExternalToolsSetting("PATH_MAKE") + " " + getExpectedFirmwareFile(source).getName() + " TARGET=cooja" + defines;
+    return command;
   }
 
   public File getExpectedFirmwareFile(File source) {
@@ -243,6 +275,15 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 	  return getAllMoteInterfaces();
   }
 
+
+
+  final JTextField netstack_headerTextField = new JTextField();
+  private void updateForNetstack() {
+      final String content = netstack_headerTextField.getText();
+      ((ContikiMoteType)moteType).getNetworkStack().manualHeader = content;
+      setDialogState(DialogState.SELECTED_SOURCE);
+  };
+
   private void addAdvancedTab(JTabbedPane parent) {
 
     /* TODO System symbols */
@@ -254,22 +295,23 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     /* Communication stack */
     JLabel label = new JLabel("Default network stack header");
     label.setPreferredSize(LABEL_DIMENSION);
-    final JTextField headerTextField = new JTextField();
+    final JTextField headerTextField = netstack_headerTextField;
+
     headerTextField.setText(((ContikiMoteType)moteType).getNetworkStack().manualHeader);
-    headerTextField.getDocument().addDocumentListener(new DocumentListener() {
-      public void insertUpdate(DocumentEvent e) {
-        updateHeader();
-      }
-      public void removeUpdate(DocumentEvent e) {
-        updateHeader();
-      }
-      public void changedUpdate(DocumentEvent e) {
-        updateHeader();
-      }
-      private void updateHeader() {
-        ((ContikiMoteType)moteType).getNetworkStack().manualHeader = headerTextField.getText();
-      }
+    headerTextField.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent e){
+            updateForNetstack();
+        }
     });
+    headerTextField.addFocusListener(new FocusListener() {
+        public void focusLost(FocusEvent e) {
+          if (!e.isTemporary()) {
+              updateForNetstack();
+          }
+        }
+        public void focusGained(FocusEvent e) { };
+      });
+
     final Box netStackHeaderBox = Box.createHorizontalBox();
     netStackHeaderBox.setAlignmentX(Component.LEFT_ALIGNMENT);
     netStackHeaderBox.add(label);
