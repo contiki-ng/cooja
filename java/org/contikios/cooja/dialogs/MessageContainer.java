@@ -3,14 +3,14 @@ import java.awt.GraphicsEnvironment;
 
 import org.contikios.cooja.Cooja;
 
-public class MessageContainer {
+public class MessageContainer extends MessageRanged 
+{
 
-    public final int type;
     public final String message;
 
     public MessageContainer(String message, int type) {
+        super(type);
         this.message = message;
-        this.type = type;
     }
 
     @Override

@@ -239,15 +239,15 @@ public class MessageListUI extends JList implements MessageList {
     addMessage(message, NORMAL);
   }
 
-  private ArrayList<MessageContainer> messages = new ArrayList<MessageContainer>();
+  private ArrayList<MessageRanged> messages = new ArrayList<MessageRanged>();
 
-  public MessageContainer[] getMessages() {
-    return messages.toArray(new MessageContainer[0]);
+  public MessageRanged[] getMessages() {
+    return messages.toArray(new MessageRanged[0]);
   }
 
-  public MessageContainer[] getSelectedMessages() 
+  public MessageRanged[] getSelectedMessages() 
   {
-    MessageContainer[] messages = null;
+    MessageRanged[] messages = null;
     if(getSelectedIndex() < 0){
         messages = getMessages();
     }
@@ -255,7 +255,7 @@ public class MessageListUI extends JList implements MessageList {
         int[] selectedIx = getSelectedIndices();
     	messages = new MessageContainer[selectedIx.length];
         for (int i = 0; i < selectedIx.length; i++) {
-        	messages[i] = (MessageContainer)(getModel().getElementAt(selectedIx[i]));
+        	messages[i] = (MessageRanged)(getModel().getElementAt(selectedIx[i]));
         }
     }
     return messages;
@@ -265,7 +265,7 @@ public class MessageListUI extends JList implements MessageList {
     boolean scroll = getLastVisibleIndex() >= getModel().getSize() - 2;
 
     while (messages.size() > getModel().getSize()) {
-      ((DefaultListModel<MessageContainer>) getModel()).addElement(messages.get(getModel().getSize()));
+      ((DefaultListModel<MessageRanged>) getModel()).addElement(messages.get(getModel().getSize()));
     }
     while (max > 0 && getModel().getSize() > max) {
       ((DefaultListModel) getModel()).removeElementAt(0);
@@ -278,9 +278,14 @@ public class MessageListUI extends JList implements MessageList {
   }
 
   public void addMessage(final String message, final int type) {
-    Cooja.setProgressMessage(message, type);
+      // this is for text messages log/warn/error
+      Cooja.setProgressMessage(message, type);
+      MessageContainer msg = new MessageContainer(message, type);
+      addMessage(msg);
+  } 
 
-    MessageContainer msg = new MessageContainer(message, type);
+  public void addMessage(final MessageRanged msg)
+  {
     messages.add(msg);
 
     java.awt.EventQueue.invokeLater(new Runnable() {
@@ -349,9 +354,9 @@ public class MessageListUI extends JList implements MessageList {
           
           @Override
           public void actionPerformed(ActionEvent e) {
-        	MessageContainer[] messages = getSelectedMessages();
+        	MessageRanged[] messages = getSelectedMessages();
             logger.info("\nCOMPILATION OUTPUT:\n");
-            for (MessageContainer msg: messages) {
+            for (MessageRanged msg: messages) {
               if (hideNormal && msg.type == NORMAL) {
                 continue;
               }
@@ -370,8 +375,8 @@ public class MessageListUI extends JList implements MessageList {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
             StringBuilder sb = new StringBuilder();
-            MessageContainer[] messages = getSelectedMessages();
-            for (MessageContainer msg: messages) {
+            MessageRanged[] messages = getSelectedMessages();
+            for (MessageRanged msg: messages) {
               if (hideNormal && msg.type == NORMAL) {
                 continue;
               }
@@ -418,7 +423,7 @@ public class MessageListUI extends JList implements MessageList {
     {
       super.getListCellRendererComponent(list, value, index, isSelected,
 					 cellHasFocus);
-      MessageContainer msg = (MessageContainer) value;
+      MessageRanged msg = (MessageRanged) value;
 
       if (hideNormal && msg.type == NORMAL && index != MessageListUI.this.getModel().getSize()-1) {
         setPreferredSize(nullDimension);
@@ -467,7 +472,7 @@ public class MessageListUI extends JList implements MessageList {
             boolean isSelected,
             boolean cellHasFocus)
         {
-          MessageContainer msg = (MessageContainer) value;
+          MessageRanged msg = (MessageRanged) value;
 
           Component container = (Component)this; //new JPanel(new BorderLayout());
           if (hideNormal && msg.type == NORMAL && index != MessageListUI.this.getModel().getSize()-1) {

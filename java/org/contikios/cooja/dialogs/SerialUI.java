@@ -63,6 +63,7 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.SerialIO;
 import org.contikios.cooja.interfaces.SerialPort;
 import org.contikios.cooja.dialogs.MessageListUI;
+import org.contikios.cooja.dialogs.MessageContainer;
 
 import org.contikios.cooja.util.StringUtils;
 
@@ -490,17 +491,54 @@ public abstract class SerialUI extends SerialIO
 
   protected static void appendToHexArea(MessageListUI textArea, final byte[] data, int type) {
 	  if(data.length > 0) {
-		  final String line = StringUtils.toHex(data, 1);
-		  // TODO whitout \n JTextArea does not wraps text in JList
-		  textArea.addMessage( line+'\n' , type);
+		  textArea.addMessage( new HexMessage (data , type) );
 	  }
   }
 
   protected static void appendToDumpArea(MessageListUI textArea, final byte[] data, int type) {
 	  if(data.length > 0) {
-		  final String line = StringUtils.hexDump(data, 1, 16);
-		  textArea.addMessage( line , type);
+	      MessageRanged msg = new DumpMessage(data , type);
+          textArea.addMessage( msg );
 	  }
+  }
+
+  public  static 
+  class BinMessage extends MessageRanged {
+      public final byte[] data;
+
+      public BinMessage(final byte[] x, int type ){
+          super(type);
+          this.data = x;
+      }
+  } 
+
+  public  static 
+  class HexMessage extends BinMessage {
+
+      public HexMessage(final byte[] x, int type ){
+          super(x, type);
+      }
+
+      @Override
+      public String toString() {
+          return StringUtils.toHex(data, 1);
+      }
+  }
+
+  public  static 
+  class DumpMessage extends BinMessage {
+
+      public DumpMessage(final byte[] x, int type ){
+          super(x, type);
+      }
+
+      @Override
+      public String toString() {
+          final String line = StringUtils.hexDump(data, 1, 16);
+          if (line.charAt(line.length()-1)=='\n')
+              return line.substring(0, line.length()-1);
+          return line;
+      }
   }
 
   private static String trim(String text) {
