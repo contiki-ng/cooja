@@ -43,6 +43,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -50,13 +53,18 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.border.*;
 import javax.swing.BorderFactory; 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ListCellRenderer;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
@@ -82,9 +90,11 @@ public class MessageListUI extends JList implements MessageList {
 
   private Color[] foregrounds = new Color[] { null, Color.red };
   private Color[] backgrounds = new Color[] { null, null };
+  private Border[] borders = new Border[] { null, null };
 
   private JPopupMenu popup = null;
   private boolean hideNormal = false;
+  private boolean isVerticalScrollable = false;
 
   private int max = -1;
   
@@ -105,6 +115,45 @@ public class MessageListUI extends JList implements MessageList {
     this.max = max;
   }
 
+  public void setScrolableVertical() {
+      // https://stackoverflow.com/questions/7306295/swing-jlist-with-multiline-text-and-dynamic-height
+      isVerticalScrollable = true;
+
+      ComponentListener l = new ComponentAdapter() {
+
+          @Override
+          public void componentResized(ComponentEvent e) {
+              // next line possible if list is of type JXList
+              // list.invalidateCellSizeCache();
+              // for core: force cache invalidation by temporarily setting fixed height
+              setFixedCellHeight(10);
+              setFixedCellHeight(-1);
+          }
+
+      };
+      addComponentListener(l);
+  }
+  
+  @Override
+  public boolean getScrollableTracksViewportWidth() {
+      if (isVerticalScrollable)
+          return true;
+      else
+          return super.getScrollableTracksViewportWidth();
+  }
+
+  // specify topmost type, that style is managed by get/set Color/Border
+  public void setManagedTypes(int types_num) {
+      // first type assigns to a JList
+      if (foregrounds.length+1 == types_num)
+          return;
+      if (types_num <= 1)
+          types_num = 1;
+      foregrounds   = Arrays.copyOf(foregrounds, types_num);
+      backgrounds   = Arrays.copyOf(backgrounds, types_num);
+      borders       = Arrays.copyOf(borders, types_num);
+  }
+
   public Color getForeground(int type) {
     Color c = type > 0 && type <= foregrounds.length
       ? foregrounds[type - 1] : null;
@@ -116,6 +165,9 @@ public class MessageListUI extends JList implements MessageList {
       foregrounds[type - 1] = color;
     } else if (type == NORMAL) {
       setForeground(color);
+    } else {
+        setManagedTypes(type);
+        foregrounds[type - 1] = color;
     }
   }
 
@@ -130,6 +182,27 @@ public class MessageListUI extends JList implements MessageList {
       backgrounds[type - 1] = color;
     } else if (type == NORMAL) {
       setBackground(color);
+    }else {
+        setManagedTypes(type);
+        backgrounds[type - 1] = color;
+    }
+  }
+
+
+  public Border getBorder(int type) {
+    Border c = type > 0 && type <= borders.length
+      ? borders[type - 1] : null;
+    return c == null ? getBorder() : c;
+  }
+
+  public void setBorder(int type, Border x) {
+    if (type > 0 && type <= borders.length) {
+        borders[type - 1] = x;
+    } else if (type == NORMAL) {
+      setBorder(x);
+    }else {
+        setManagedTypes(type);
+        borders[type - 1] = x;
     }
   }
 
@@ -359,10 +432,33 @@ public class MessageListUI extends JList implements MessageList {
     }
   }
 
-  public class WrapedMessageRenderer //extends JTextArea 
-    	implements ListCellRenderer  
+  public class WrapedMessageRenderer extends JPanel// JTextArea // 
+                                    implements ListCellRenderer  
     {
         private final Dimension nullDimension = new Dimension(0,0);
+        private final Dimension lessDimension = new Dimension(50, 32);
+        public JTextArea renderer = null;
+
+        public WrapedMessageRenderer(){
+            setLayout( new BoxLayout(this, BoxLayout.PAGE_AXIS) );
+            setMinimumSize( lessDimension );
+
+            renderer = new JTextArea(1,3);
+            renderer.setMinimumSize( lessDimension );
+            renderer.setOpaque(false);
+            renderer.setEditable(false);
+            renderer.setLineWrap(true);
+            renderer.setWrapStyleWord(true);
+
+            add(renderer);
+        }
+
+        @Override
+        public Dimension getMaximumSize() {
+            Dimension d = super.getMaximumSize();
+            d.height = getPreferredSize().height;
+            return d;
+        }
 
         @Override
         public Component getListCellRendererComponent(
@@ -373,44 +469,55 @@ public class MessageListUI extends JList implements MessageList {
         {
           MessageContainer msg = (MessageContainer) value;
 
+          Component container = (Component)this; //new JPanel(new BorderLayout());
           if (hideNormal && msg.type == NORMAL && index != MessageListUI.this.getModel().getSize()-1) {
-              JPanel container = new JPanel(new BorderLayout());
-        	  container.setPreferredSize(nullDimension);
+              container.setMaximumSize(nullDimension);
             return container;
           }
+          //after hide, need to show me
+          container.setMaximumSize(null);
+          renderer.setPreferredSize(null);
 
           MessageListUI self = ((MessageListUI) list);
-          JTextArea renderer = new JTextArea();
+          
+          //JTextArea renderer = this; //new JTextArea();
 
-  	      Color border_color = self.getForeground(msg.type);
-  	      if (cellHasFocus) {
-  	    	  border_color = Color.yellow;
-  	      }
-  	      else if(isSelected)
-  	    	  border_color = Color.gray;
-
-          if (msg.type == 1) {
-      	      renderer.setBorder( BorderFactory.createMatteBorder(1, 5, 1, 1, border_color) );
-          }
-          else if (msg.type == 2) {
-      	      renderer.setBorder( BorderFactory.createMatteBorder(1, 1, 1, 5, border_color) );
-          }
+          if (cellHasFocus)
+              renderer.setForeground(Color.yellow);
           else
-      	      renderer.setBorder( BorderFactory.createMatteBorder(1, 1, 1, 1, border_color) );
+              renderer.setForeground(self.getForeground(msg.type));
 
-          renderer.setOpaque(false);
-          renderer.setEditable(false);
-          renderer.setLineWrap(true);
-          renderer.setWrapStyleWord(true);
-          renderer.setForeground(self.getForeground(msg.type));
-          renderer.setBackground(self.getBackground(msg.type));
+          if(isSelected)
+              renderer.setBackground(Color.gray);
+          else
+              renderer.setBackground(self.getBackground(msg.type));
+
+  	      renderer.setBorder( self.getBorder(msg.type) );
+
+
           renderer.setText(value.toString());
-          renderer.setPreferredSize(null);
+          int width = list.getWidth();
+          // this is just to lure the ta's internal sizing mechanism into action
+          if (width > 0)
+              renderer.setSize(width, Short.MAX_VALUE);
+          container.revalidate();
+
+          /*
+          Dimension tmp = renderer.getPreferredSize();
+          Dimension min = super.getPreferredSize();
+          Dimension max = super.getMaximumSize();
+          renderer.setText(value.toString() 
+                          +"#"+ tmp.getWidth() + ":" + tmp.getHeight()
+                          +" @"+ min.getWidth() + ":" + min.getHeight()
+                          +" #"+ (int)max.getWidth() + ":" + (int)max.getHeight()
+                          );
+          */
 
           // request the focus on this component to be able to edit it
           if (cellHasFocus)
 	    	  renderer.requestFocus();
-          return renderer;
+
+          return container;
         }
      } // end of inner class MessageRenderer
   

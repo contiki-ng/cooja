@@ -54,6 +54,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.BorderFactory; 
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
@@ -213,6 +214,7 @@ public abstract class SerialUI extends SerialIO
       //x.setFont(new Font("Consolas", Font.PLAIN, 10));
       //x.setFont(new Font("Curier New", Font.PLAIN, 10));
       x.setCellRenderer( x.newWrapedMessageRenderer() );
+      x.setScrolableVertical();
 
       x.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
       x.addPopupMenuItem(null, true);
@@ -220,9 +222,13 @@ public abstract class SerialUI extends SerialIO
       x.setForeground(LOG,       Color.black);
       x.setForeground(RECEIVING, Color.blue);
       x.setForeground(SENDING,   Color.magenta);
+      x.setBorder(RECEIVING,BorderFactory.createMatteBorder(1, 5, 1, 1, Color.blue) );
+      x.setBorder(SENDING,  BorderFactory.createMatteBorder(1, 1, 1, 5, Color.magenta) );
+      x.setBorder(LOG,      BorderFactory.createMatteBorder(1, 1, 1, 1, Color.black) );
 
       JScrollPane scrollPane = new JScrollPane(x);
-      scrollPane.setPreferredSize(new Dimension(100, 100));
+      //scrollPane.setViewportView(x);
+      scrollPane.setPreferredSize(new Dimension(80, 100));
       return scrollPane;
   }
 
@@ -238,7 +244,7 @@ public abstract class SerialUI extends SerialIO
     logTextPane.setLineWrap(true);
     logTextPane.setWrapStyleWord(true);
     JScrollPane scrollTextPane = new JScrollPane(logTextPane);
-    scrollTextPane.setPreferredSize(new Dimension(100, 100));
+    scrollTextPane.setPreferredSize(new Dimension(80, 100));
     tabbedView.addTab("text", scrollTextPane);
 
     //final JTextArea logHexPane = new JTextArea();
@@ -252,7 +258,7 @@ public abstract class SerialUI extends SerialIO
     tabbedView.addTab("dump", fanoutMessageList(logDumpPane));
 
     JPanel commandPane = new JPanel(new BorderLayout());
-    final JTextField commandField = new JTextField(15);
+    final JTextField commandField = new JTextField(5);//15
     JButton sendButton = new JButton("Send data");
 
     ActionListener sendCommandAction = new ActionListener() {
@@ -500,4 +506,5 @@ public abstract class SerialUI extends SerialIO
   private static String trim(String text) {
     return (text != null) && ((text = text.trim()).length() > 0) ? text : null;
   }
+  
 }
