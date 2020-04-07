@@ -98,9 +98,7 @@ public class ContikiLog extends LogUI implements ContikiMoteInterface, PolledAft
       moteMem.setByteValueOf("simLoggedFlag", (byte) 0);
       moteMem.setIntValueOf("simLoggedLength", 0);
 
-      for (byte b: bytes) {
-        dataReceived(b);
-      }
+      dataReceivedBuf(bytes);
     }
   }
 

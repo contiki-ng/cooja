@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
+import java.lang.String;
 
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -70,7 +71,47 @@ public abstract class LogUI extends Log {
     return lastLogMessage;
   }
 
-  public void dataReceived(int data) {
+  public void dataReceivedBuf(final byte[] data) {
+      int len = data.length;
+      if ( newMessage.length() > 0) {
+          for (byte b: data)
+              dataReceived(b);
+          return;
+      }
+
+      //we can try to build string directly from data
+      //scan received for \n
+      int start = 0;
+      for (int i = 0; i < len; ++i) {
+          if (data[i] == '\n') {
+              int slen = (i-start);
+              if ( slen > 1) {
+              if ( slen < MAX_LENGTH) {
+                  lastLogMessage = new String(data, start, slen-1);
+              }
+              else {
+                  /*logger.warn("Dropping too large log message (>" + MAX_LENGTH + " bytes).");*/
+                  lastLogMessage = "# [1024 bytes, no line ending]: " + new String(data, 0, 20) + "...";
+              }
+              lastLogMessage = lastLogMessage.replaceAll("[^\\p{Print}\\p{Blank}]", "");
+              }
+              else {
+                  lastLogMessage = "";
+              }
+              this.setChanged();
+              this.notifyObservers(getMote());
+              start = i+1;
+          }
+      }
+      // collect rest of received
+      if (start < len) {
+          for (int k = start; k < len; ++k) {
+              newMessage.append((char) data[k]);
+          }
+      }
+  }
+
+  public void dataReceived(byte data) {
     if (data == '\n') {
       /* Notify observers of new log */
       lastLogMessage = newMessage.toString();
