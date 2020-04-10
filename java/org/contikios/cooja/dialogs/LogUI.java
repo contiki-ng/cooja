@@ -111,7 +111,7 @@ public abstract class LogUI extends Log {
       }
   }
 
-  public void dataReceived(byte data) {
+  public void dataReceived(int data) {
     if (data == '\n') {
       /* Notify observers of new log */
       lastLogMessage = newMessage.toString();
