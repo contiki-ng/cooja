@@ -87,7 +87,7 @@ public abstract class LogUI extends Log {
               int slen = (i-start);
               if ( slen > 1) {
               if ( slen < MAX_LENGTH) {
-                  lastLogMessage = new String(data, start, slen-1);
+                  lastLogMessage = new String(data, start, slen);
               }
               else {
                   /*logger.warn("Dropping too large log message (>" + MAX_LENGTH + " bytes).");*/
