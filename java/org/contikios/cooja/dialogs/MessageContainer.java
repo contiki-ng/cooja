@@ -3,21 +3,15 @@ import java.awt.GraphicsEnvironment;
 
 import org.contikios.cooja.Cooja;
 
-public class MessageContainer extends MessageRanged 
+public class MessageContainer 
 {
 
-    public final String message;
+    public final int type;
 
-    public MessageContainer(String message, int type) {
-        super(type);
-        this.message = message;
+    public MessageContainer(int t) {
+        type = t;
     }
 
-    @Override
-    public String toString() {
-        return message;
-    }
-    
     /* This will select UI based or not UI based depending on withUI in combination with
      * headless info.
      */

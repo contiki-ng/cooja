@@ -497,13 +497,13 @@ public abstract class SerialUI extends SerialIO
 
   protected static void appendToDumpArea(MessageListUI textArea, final byte[] data, int type) {
 	  if(data.length > 0) {
-	      MessageRanged msg = new DumpMessage(data , type);
+	      MessageContainer msg = new DumpMessage(data , type);
           textArea.addMessage( msg );
 	  }
   }
 
   public  static 
-  class BinMessage extends MessageRanged {
+  class BinMessage extends MessageContainer {
       public final byte[] data;
 
       public BinMessage(final byte[] x, int type ){

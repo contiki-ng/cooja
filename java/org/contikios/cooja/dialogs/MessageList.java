@@ -10,7 +10,7 @@ public interface MessageList {
     
     public void addMessage(String string, int normal);
 
-    public MessageRanged[] getMessages();
+    public MessageContainer[] getMessages();
 
     public void clearMessages();
 
