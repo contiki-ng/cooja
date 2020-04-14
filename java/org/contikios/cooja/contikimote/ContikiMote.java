@@ -43,6 +43,12 @@ import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.motes.AbstractWakeupMote;
+import org.contikios.cooja.util.StringUtils;
+import java.lang.Throwable;
+import java.lang.Exception;
+import java.lang.Error;
+import java.lang.RuntimeException;
+
 
 /**
  * A Contiki mote executes an actual Contiki system via
@@ -65,6 +71,8 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
   private ContikiMoteType myType = null;
   private SectionMoteMemory myMemory = null;
   private MoteInterfaceHandler myInterfaceHandler = null;
+  public enum MoteState{ STATE_OK, STATE_HANG};
+  public MoteState execute_state = MoteState.STATE_OK;
 
   /**
    * Creates a new mote of given type.
@@ -113,6 +121,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
 
   public void setType(MoteType type) {
     myType = (ContikiMoteType) type;
+    execute_state = MoteState.STATE_OK;
   }
 
   /**
@@ -127,6 +136,8 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
    */
   @Override
   public void execute(long simTime) {
+    if (execute_state != MoteState.STATE_OK)
+        return;
 
     /* Poll mote interfaces */
     myInterfaceHandler.doActiveActionsBeforeTick();
@@ -142,7 +153,36 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     myType.setCoreMemory(myMemory);
 
     /* Handle a single Contiki events */
+    try {
     myType.tick();
+    } 
+    catch (RuntimeException e) {
+        execute_state = MoteState.STATE_HANG;
+        //coffeecatch_throw_exception rises Error
+        String dump = StringUtils.dumpStackTrace(e);
+        logger.fatal( "mote" + getID() 
+                      + "crashed with:" + e.toString()
+                      + dump 
+                    );
+    }
+    catch (Exception e) {
+        execute_state = MoteState.STATE_HANG;
+        //coffeecatch_throw_exception rises Error
+        String dump = StringUtils.dumpStackTrace(e);
+        logger.fatal( "mote" + getID() 
+                      + "crashed with:" + e.toString()
+                      + dump 
+                    );
+    }
+    catch (Error e) {
+        execute_state = MoteState.STATE_HANG;
+        //coffeecatch_throw_exception rises Error
+        String dump = StringUtils.dumpStackTrace(e);
+        logger.fatal( "mote" + getID() 
+                      + "crashed with:" + e.toString()
+                      + dump 
+                    );
+    }
 
     /* Copy mote memory from Contiki */
     myType.getCoreMemory(myMemory);
@@ -151,6 +191,13 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     myMemory.pollForMemoryChanges();
     myInterfaceHandler.doActiveActionsAfterTick();
     myInterfaceHandler.doPassiveActionsAfterTick();
+
+    if (execute_state != MoteState.STATE_OK) {
+        simulation.stopSimulation();
+        logger.warn( "stop simulation by hang of mote"+getID() );
+        // do not remove mote, just make it hung 
+        //simulation.removeMote(this);
+    }
   }
 
   /**
@@ -202,8 +249,11 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
             simulation.getCooja().tryLoadClass(this, MoteInterface.class, intfClass);
 
         if (moteInterfaceClass == null) {
-          logger.fatal("Could not load mote interface class: " + intfClass);
-          return false;
+          logger.fatal("Could not load mote"+ getID() +" interface class: " + intfClass);
+          continue;
+          //TODO new CCOJA revisions may have not investigated interfaces
+          //     ignore this miss, to allow load later projects
+          //return false;
         }
 
         MoteInterface moteInterface = myInterfaceHandler.getInterfaceOfType(moteInterfaceClass);
