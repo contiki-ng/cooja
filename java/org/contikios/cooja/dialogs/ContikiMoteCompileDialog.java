@@ -40,6 +40,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
+import java.nio.file.Path;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
@@ -264,6 +265,38 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
                   ;
           return command + "\n"+new_command;
       }
+  }
+
+  private final static String[][] PATH_IDENTIFIER = {
+          {"[CONTIKI_DIR]","PATH_CONTIKI",""},
+          //{"[COOJA_DIR]","PATH_COOJA",""},
+          //{"[APPS_DIR]","PATH_APPS","apps"}
+      };
+
+  @Override
+  public
+  String updateCommandPath(String command, final File source) {
+      Path src = source.toPath().getParent().toAbsolutePath();
+      logger.info("fixup refs for "+ source + " path:"+src);
+      for(final String[] elem : PATH_IDENTIFIER ){
+          if (command.indexOf(elem[0]) <= 0 )
+              continue;
+
+          File elem_path = new File( Cooja.getExternalToolsSetting(elem[1]) );
+          String canonical = elem_path.getAbsolutePath();
+          String relative  = src.relativize(elem_path.getAbsoluteFile().toPath()).normalize().toString();
+          if (canonical.length() < relative.length()) {
+              command = command.replace( elem[0] , canonical);
+              logger.info("fixup reference "+ elem[0] +" -> "+ canonical);
+          }
+          else {
+              command = command.replace( elem[0] , relative);
+              logger.info("fixup reference "+ elem[0] 
+                          +" -> "+ relative 
+                          +" :" + canonical);
+          }
+      }
+      return command;
   }
 
   public File getExpectedFirmwareFile(File source) {

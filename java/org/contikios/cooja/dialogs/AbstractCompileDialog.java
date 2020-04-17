@@ -462,6 +462,8 @@ public abstract class AbstractCompileDialog extends JDialog {
 
   public abstract boolean canLoadFirmware(File file);
 
+  public abstract String  updateCommandPath(String command, final File source);
+
   protected String[] compilationEnvironment = null; /* Default environment: inherit from current process */
   public void compileContiki() throws Exception {
     final MessageListUI taskOutput = new MessageListUI();
@@ -478,6 +480,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         continue;
       }
 
+      cmd = updateCommandPath(cmd, contikiSource);
       commands.add(cmd);
     }
     if (commands.isEmpty()) {
