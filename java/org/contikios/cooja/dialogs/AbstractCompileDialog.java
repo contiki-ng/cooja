@@ -462,7 +462,9 @@ public abstract class AbstractCompileDialog extends JDialog {
 
   public abstract boolean canLoadFirmware(File file);
 
-  public abstract String  updateCommandPath(String command, final File source);
+  public String  updateCommandPath(String command, final File source) {
+      return command;
+  }
 
   protected String[] compilationEnvironment = null; /* Default environment: inherit from current process */
   public void compileContiki() throws Exception {
