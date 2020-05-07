@@ -80,6 +80,10 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
   private long moteTime; /* Microseconds */
   private long timeDrift; /* Microseconds */
 
+  public final long etimerClockDefault = Simulation.MILLISECOND;
+  public long   etimerClockSecond = etimerClockDefault;
+  public long   etimerPeriod      = (long)(Simulation.MILLISECOND*1000/etimerClockSecond);
+
   /**
    * @param mote Mote
    *
@@ -101,13 +105,14 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
   public void setTime(long newTime) {
     moteTime = newTime;
     if (moteTime > 0) {
-      moteMem.setIntValueOf("simCurrentTime", (int)(newTime/1000));
+      moteMem.setIntValueOf("simCurrentTime", (int)(newTime/etimerPeriod));
     }
   }
 
   public void setDrift(long drift) {
-    this.timeDrift = drift - (drift % 1000); /* Round to ms */
-    setTime(timeDrift);
+    this.timeDrift = drift;// - (drift % etimerPeriod);
+    long currentSimulationTime = simulation.getSimulationTime();
+    setTime(currentSimulationTime + timeDrift);
   }
 
   public long getDrift() {
@@ -156,7 +161,7 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
     }
 
     /* Request tick next wakeup time for Etimer */
-    long etimerNextExpirationTime = (long)moteMem.getInt32ValueOf("simEtimerNextExpirationTime") * Simulation.MILLISECOND;
+    long etimerNextExpirationTime = (long)moteMem.getInt32ValueOf("simEtimerNextExpirationTime") * etimerPeriod;
     long etimerTimeToNextExpiration = etimerNextExpirationTime - moteTime;
     if (etimerTimeToNextExpiration <= 0) {
       /* logger.warn(mote.getID() + ": Event timer already expired, but has been delayed: " + etimerTimeToNextExpiration); */
@@ -165,7 +170,7 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
        * radio_send(). Scheduling it in a shorter time than one
        * millisecond, e.g., one microsecond, seems to be worthless and
        * it would cause unnecessary CPU usage. */
-      mote.scheduleNextWakeup(currentSimulationTime + Simulation.MILLISECOND);
+      mote.scheduleNextWakeup(currentSimulationTime + etimerPeriod);
     } else {
       mote.scheduleNextWakeup(currentSimulationTime + etimerTimeToNextExpiration);
     }
