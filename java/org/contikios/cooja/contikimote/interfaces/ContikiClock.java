@@ -29,6 +29,9 @@
 
 package org.contikios.cooja.contikimote.interfaces;
 
+import java.lang.Double;
+
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.JPanel;
@@ -45,6 +48,7 @@ import org.contikios.cooja.interfaces.Clock;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
+import org.contikios.cooja.mote.memory.UnknownVariableException;
 
 /**
  * Clock mote interface. Controls Contiki time.
@@ -80,6 +84,15 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
   private long moteTime; /* Microseconds */
   private long timeDrift; /* Microseconds */
 
+  public final long etimerClockDefault = Simulation.MILLISECOND;
+  public long   etimerClockSecond = etimerClockDefault;
+  public long   etimerPeriod      = (long)(Simulation.MILLISECOND*1000/etimerClockSecond);
+
+  //this resolution used for busywait cycling
+  public final double rtimerResolutionDefault_khz = 1; //Simulation.MILLISECOND
+  public double rtimerResolution_khz  = rtimerResolutionDefault_khz;
+  public long   rtimerResolution      = (long)(Simulation.MILLISECOND/rtimerResolution_khz);
+
   /**
    * @param mote Mote
    *
@@ -101,13 +114,14 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
   public void setTime(long newTime) {
     moteTime = newTime;
     if (moteTime > 0) {
-      moteMem.setIntValueOf("simCurrentTime", (int)(newTime/1000));
+      moteMem.setIntValueOf("simCurrentTime", (int)(newTime/etimerPeriod));
     }
   }
 
   public void setDrift(long drift) {
-    this.timeDrift = drift - (drift % 1000); /* Round to ms */
-    setTime(timeDrift);
+    this.timeDrift = drift;// - (drift % etimerPeriod);
+    long currentSimulationTime = simulation.getSimulationTime();
+    setTime(currentSimulationTime + timeDrift);
   }
 
   public long getDrift() {
@@ -141,11 +155,48 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
       mote.scheduleNextWakeup(moteMem.getInt64ValueOf("simRtimerNextExpirationTime"));
     }
 
+    long   rtimerWaitTime = currentSimulationTime;
+    int    resolution_hz = 0;
+
+    try {
+        resolution_hz = (moteMem.getIntValueOf("simRtimerResolution_hz"));
+        if (resolution_hz > 0) {
+            double resolution_khz = (double)(resolution_hz)/1000.0;
+            //if (!resolution_khz.isNan() && !resolution_khz.isInfinite() )
+            setRtimerResolution_khz(resolution_khz);
+        }
+
+        int etimerClock = moteMem.getIntValueOf("simCLOCK_SECOND");
+        setEtimerClock(etimerClock);
+
+        rtimerWaitTime = moteMem.getInt64ValueOf("simRtimerWaitTime");
+    }
+    catch (UnknownVariableException e) {
+        // there is no new timers API, ignore it and use default timers setup
+    }
+
     /* Request next tick for remaining events / timers */
     int processRunValue = moteMem.getIntValueOf("simProcessRunValue");
     if (processRunValue != 0) {
-      /* Handle next Contiki event in one millisecond */
-      mote.scheduleNextWakeup(currentSimulationTime + Simulation.MILLISECOND);
+
+        if ( (rtimerWaitTime - currentSimulationTime) <= 0 ) {
+            /* Handle next Contiki event in one millisecond */
+            rtimerWaitTime = currentSimulationTime + rtimerResolution;
+        }
+        // requested rtimer BusyWait, schedule requested time if one is closer then
+        //   ordinary poll
+        else if ( ( rtimerWaitTime - currentSimulationTime) > rtimerResolution)
+            rtimerWaitTime = currentSimulationTime + rtimerResolution;
+
+
+      // if resolution specified, set rtimer next point of grid by resolution step 
+      if (resolution_hz > 0) {
+          rtimerWaitTime += timeDrift; //%rtimerResolution
+          rtimerWaitTime = ((rtimerWaitTime + rtimerResolution-1)/rtimerResolution) * rtimerResolution;
+          rtimerWaitTime -= timeDrift;
+      }
+
+      mote.scheduleNextWakeup( rtimerWaitTime );
       return;
     }
 
@@ -156,7 +207,7 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
     }
 
     /* Request tick next wakeup time for Etimer */
-    long etimerNextExpirationTime = (long)moteMem.getInt32ValueOf("simEtimerNextExpirationTime") * Simulation.MILLISECOND;
+    long etimerNextExpirationTime = (long)moteMem.getInt32ValueOf("simEtimerNextExpirationTime") * etimerPeriod;
     long etimerTimeToNextExpiration = etimerNextExpirationTime - moteTime;
     if (etimerTimeToNextExpiration <= 0) {
       /* logger.warn(mote.getID() + ": Event timer already expired, but has been delayed: " + etimerTimeToNextExpiration); */
@@ -165,12 +216,27 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
        * radio_send(). Scheduling it in a shorter time than one
        * millisecond, e.g., one microsecond, seems to be worthless and
        * it would cause unnecessary CPU usage. */
-      mote.scheduleNextWakeup(currentSimulationTime + Simulation.MILLISECOND);
+      mote.scheduleNextWakeup(currentSimulationTime + etimerPeriod);
     } else {
       mote.scheduleNextWakeup(currentSimulationTime + etimerTimeToNextExpiration);
     }
   }
 
+  public void setRtimerResolution_khz( double resolution_khz ) {
+      if (resolution_khz != rtimerResolution_khz ) {
+          rtimerResolution_khz = resolution_khz;
+          rtimerResolution = (long)(Simulation.MILLISECOND/rtimerResolution_khz);
+          logger.info("Mote"+mote.getID() + " rTimer resolution "+rtimerResolution_khz + " khz\n");
+      }
+  }
+  
+  public void setEtimerClock( int etimerClock ) {
+      if ((etimerClock != etimerClockSecond)) {
+          etimerClockSecond = etimerClock;
+          etimerPeriod      = Simulation.MILLISECOND*1000/etimerClockSecond;
+          logger.info("Mote"+mote.getID() + " eTimer clock "+etimerClockSecond + "\n");
+      }
+  }
 
   public JPanel getInterfaceVisualizer() {
     return null;
@@ -180,9 +246,35 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
   }
 
   public Collection<Element> getConfigXML() {
+      ArrayList<Element> config = new ArrayList<Element>();
+      Element element;
+
+      if (rtimerResolution_khz != rtimerResolutionDefault_khz) {
+          /* RTimer clock */
+          element = new Element("rtimerResolution_khz");
+          element.setText("" + rtimerResolution_khz);
+          config.add(element);
+      }
+
+      if (etimerClockSecond != etimerClockDefault) {
+          element = new Element("CLOCK_SECOND");
+          element.setText("" + etimerClockSecond);
+          config.add(element);
+      }
+    
+    if (!config.isEmpty())
+      return config;
     return null;
   }
 
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+      for (Element element : configXML) {
+          if (element.getName().equals("rtimerResolution_khz")) {
+              setRtimerResolution_khz( Double.parseDouble(element.getText()) );
+          }
+          if (element.getName().equals("CLOCK_SECOND")) {
+              setEtimerClock( Integer.parseInt(element.getText()) );
+          }
+      }
   }
 }
