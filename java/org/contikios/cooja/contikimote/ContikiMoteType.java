@@ -76,6 +76,9 @@ import org.contikios.cooja.mote.memory.UnknownVariableException;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.contikios.cooja.util.StringUtils;
 
+import org.contikios.cooja.contikimote.interfaces.ContikiLog;
+import org.contikios.cooja.contikimote.interfaces.ContikiRS232;
+
 /**
  * The Cooja mote type holds the native library used to communicate with an
  * underlying Contiki system. All communication with that system should always
@@ -1320,6 +1323,8 @@ public class ContikiMoteType implements MoteType {
     moteInterfacesClasses.toArray(arr);
     setCoreInterfaces(ContikiMoteType.getRequiredCoreInterfaces(arr));
 
+    fixInterfacesContents(simulation);
+
     /* Backwards compatibility: old cooja mote type is being loaded */
     if (getContikiSourceFile() == null
             && warnedOldVersion
@@ -1342,6 +1347,60 @@ public class ContikiMoteType implements MoteType {
     return createdOK;
   }
 
+  protected void fixInterfacesContents(Simulation simulation) {
+      if ( haveInterfaceOfType(ContikiRS232.class, moteInterfacesClasses) != null ) 
+      if ( haveInterfaceOfType(ContikiLog.class, moteInterfacesClasses) == null )
+      {
+          //looks tis is old project, that use ContikiRS232 combined SerialPort with Log
+          //So load ContikiLog for this project, since now it deployed from ContikiRS232
+          Class<? extends MoteInterface> moteInterfaceClass =
+                  simulation.getCooja().tryLoadClass(this, MoteInterface.class
+                              , "org.contikios.cooja.contikimote.interfaces.ContikiLog");
+
+          if (moteInterfaceClass == null) {
+            logger.fatal("Could not append interface ContikiLog" + 
+                        "for old project mote type " + getIdentifier() );
+            return ;
+          }
+          else {
+              logger.info("Append interface ContikiLog, " + 
+                          "for old project mote type " + getIdentifier() );
+              moteInterfacesClasses.add(moteInterfaceClass);
+              setCoreInterfaces(getRequiredCoreInterfaces(getMoteInterfaceClasses()));
+          }
+      }
+  }
+
+  public <N extends MoteInterface> 
+  Class<? extends MoteInterface> haveInterfaceOfType(Class<N> interfaceType
+          , ArrayList<Class<? extends MoteInterface>> list) 
+  {
+      for (Class<? extends MoteInterface> intf : list) {
+        if (isSubclassOf( interfaceType, intf) ) {
+          return intf;
+        }
+      }
+      return null;
+  }
+
+  protected boolean isSubclassOf(Class<?> clazz, Class<?> superClass) {
+      if (superClass.equals(Object.class)) {
+          // Every class is an Object.
+          return true;
+      }
+      if (clazz.equals(superClass)) {
+          return true;
+      } else {
+          clazz = clazz.getSuperclass();
+          // every class is Object, but superClass is below Object
+          if (clazz.equals(Object.class)) {
+              // we've reached the top of the hierarchy, but superClass couldn't be found.
+              return false;
+          }
+          // try the next level up the hierarchy.
+          return isSubclassOf(clazz, superClass);
+      }
+  }
   public static String[] getRequiredCoreInterfaces(
           Class<? extends MoteInterface>[] moteInterfaces) {
     /* Extract Contiki dependencies from currently selected mote interfaces */

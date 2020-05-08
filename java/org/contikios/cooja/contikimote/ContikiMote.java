@@ -44,6 +44,9 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.motes.AbstractWakeupMote;
 
+import org.contikios.cooja.contikimote.interfaces.ContikiLog;
+import org.contikios.cooja.contikimote.interfaces.ContikiRS232;
+
 /**
  * A Contiki mote executes an actual Contiki system via
  * a loaded shared library and JNI.
@@ -213,6 +216,26 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
           logger.warn("Can't restore configuration for non-existing interface: " + moteInterfaceClass.getName());
         }
       }
+    }
+
+    if ( getInterfaces().getInterfaceOfType(ContikiRS232.class) != null ) 
+    if ( getInterfaces().getInterfaceOfType(ContikiLog.class) == null )
+    {
+        //looks tis is old project, that use ContikiRS232 combined SerialPort with Log
+        //So load ContikiLog for this project, since now it deployed from ContikiRS232
+        Class<? extends MoteInterface> moteInterfaceClass =
+                simulation.getCooja().tryLoadClass(this, MoteInterface.class
+                            , "org.contikios.cooja.contikimote.interfaces.ContikiLog");
+
+        if (moteInterfaceClass == null) {
+          logger.fatal("Could not append mote interface class: ContikiLog");
+          return false;
+        }
+        else {
+            logger.info("Append mote interface class: ContikiLog, for old project");
+            MoteInterface intf = MoteInterface.generateInterface(moteInterfaceClass, this);
+            myInterfaceHandler.addInterface(intf);
+        }
     }
 
     requestImmediateWakeup();
