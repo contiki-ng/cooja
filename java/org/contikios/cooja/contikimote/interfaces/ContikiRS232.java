@@ -107,7 +107,16 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
 
   @Override
   public void writeString(String message) {
-	super.writeString(message);
+      // TODO: old code and tests, relye that coja-serial finishes every message
+      //     passes to mote autocompletes with \n
+      // for compatibility with old test, keep this feature for writen strings
+      //  BUT this is not exactly old style - it addsEOL to every message.
+      //    
+      // to write exact data, use writeArray
+      if ((message.length() == 0) || (message.charAt(message.length()-1)!='\n') )
+          message += '\n';
+
+    super.writeString(message);
 
     final byte[] dataToAppend = message.getBytes();
 

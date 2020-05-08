@@ -267,7 +267,7 @@ public class ScriptParser {
     "};\n" +
     "\n" +
     "function write(mote,msg) { " +
-    " mote.getInterfaces().getLog().writeString(msg); " +
+    " mote.getInterfaces().getSerial().writeString(msg); " +
     "};\n";
   }
 

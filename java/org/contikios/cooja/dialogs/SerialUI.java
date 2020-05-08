@@ -287,11 +287,11 @@ public abstract class SerialUI extends SerialIO
           if (getMote().getSimulation().isRunning()) {
             getMote().getSimulation().invokeSimulationThread(new Runnable() {
               public void run() {
-                writeString(command+'\n');
+                writeString(command);
               }
             });
           } else {
-            writeString(command+'\n');
+            writeString(command);
           }
         } catch (Exception ex) {
           logger.error("could not send '" + command + "':", ex);
