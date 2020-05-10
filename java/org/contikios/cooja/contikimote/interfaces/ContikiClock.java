@@ -246,6 +246,12 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
   }
 
   public Collection<Element> getConfigXML() {
+      /* TODO: autosave resolution will prevent later loads project with default
+       *      parameters. So, to provide ability to simulate project with default 
+       *      old behaviour, just not save it into project - it always takes from mote.
+       */
+    if (false) {
+
       ArrayList<Element> config = new ArrayList<Element>();
       Element element;
 
@@ -264,10 +270,14 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
     
     if (!config.isEmpty())
       return config;
+    }// if(0)
+
     return null;
   }
 
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+      /* TODO: need provide Visual editinig this parameters */
+
       for (Element element : configXML) {
           if (element.getName().equals("rtimerResolution_khz")) {
               setRtimerResolution_khz( Double.parseDouble(element.getText()) );
