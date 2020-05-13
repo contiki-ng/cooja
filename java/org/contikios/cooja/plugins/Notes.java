@@ -119,10 +119,14 @@ public class Notes extends VisPlugin {
     }
     BasicInternalFrameUI ui = (BasicInternalFrameUI) Notes.this.getUI();
 
+    try {
     if (visible) {
       ui.getNorthPane().setPreferredSize(null);
     } else {
       ui.getNorthPane().setPreferredSize(new Dimension(0,0));
+    }
+    } catch (NullPointerException e) {
+      // This catches an error where the defined look and feel makes north pane null.
     }
 
     Notes.this.revalidate();

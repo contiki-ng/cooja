@@ -1250,7 +1250,7 @@ public class Cooja extends Observable {
           UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         }
       } else {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
       }
       return;
     } catch (Exception e) {
