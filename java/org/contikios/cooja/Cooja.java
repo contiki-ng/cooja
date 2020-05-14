@@ -2752,6 +2752,21 @@ public class Cooja extends Observable {
     System.exit(exitCode);
   }
 
+    public static String resolvePathIdentifiers(String path) {
+        for(int i = 0; i < PATH_IDENTIFIER.length; i++) {
+            if(path.contains(PATH_IDENTIFIER[i][0])) {
+                String p = Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1]);
+                if (p != null) {
+                    path = path.replace(PATH_IDENTIFIER[i][0], p);
+                } else {
+                    logger.warn("could not resolve path identifier " +
+                                PATH_IDENTIFIER[i][0]);
+                }
+            }
+        }
+        return path;
+    }
+
   // // EXTERNAL TOOLS SETTINGS METHODS ////
 
   /**
@@ -4773,4 +4788,3 @@ public class Cooja extends Observable {
   };
 
 }
-

@@ -957,6 +957,11 @@ public class ContikiMoteType implements MoteType {
         return null;
       }
 
+      command = Cooja.resolvePathIdentifiers(command);
+      if (command == null) {
+        return null;
+      }
+
       /* Prepare command */
       command = command.replace("$(LIBFILE)",
                                 libraryFile.getName().replace(File.separatorChar, '/'));
