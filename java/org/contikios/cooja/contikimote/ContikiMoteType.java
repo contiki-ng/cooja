@@ -233,7 +233,7 @@ public class ContikiMoteType implements MoteType {
     myConfig = simulation.getCooja().getProjectConfig().clone();
     String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
     
-    if (visAvailable) {
+    if (visAvailable && !simulation.isQuickSetup()) {
 
       if (getDescription() == null) {
         setDescription("Cooja Mote Type #" + (simulation.getMoteTypes().length + 1));
