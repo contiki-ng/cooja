@@ -403,7 +403,7 @@ public class ContikiMoteType implements MoteType {
     }
 
     // Allocate core communicator class
-    logger.info("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + getContikiFirmwareFile().getPath() + "'");
+    logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + getContikiFirmwareFile().getPath() + "'");
     myCoreComm = CoreComm.createCoreComm(this.javaClassName, getContikiFirmwareFile());
 
     /* Parse addresses using map file
@@ -499,7 +499,7 @@ public class ContikiMoteType implements MoteType {
       getCoreMemory(tmp);
 
       offset = varMem.getIntValueOf("referenceVar") & 0xFFFFFFFFL;
-      logger.info(getContikiFirmwareFile().getName()
+      logger.debug(getContikiFirmwareFile().getName()
               + ": offsetting Cooja mote address space: 0x" + Long.toHexString(offset));
     }
 
@@ -577,10 +577,10 @@ public class ContikiMoteType implements MoteType {
 
       variables = parseSymbols(offset);
 
-      logger.info(String.format("Parsed section at 0x%x ( %d == 0x%x bytes)",
-                                getStartAddr() + offset,
-                                getSize(),
-                                getSize()));
+      logger.debug(String.format("Parsed section at 0x%x ( %d == 0x%x bytes)",
+                                 getStartAddr() + offset,
+                                 getSize(),
+                                 getSize()));
 
       if (logger.isDebugEnabled()) {
         for (String var : variables.keySet()) {
@@ -777,7 +777,7 @@ public class ContikiMoteType implements MoteType {
 
           /* XXX needs to be checked */
           if (!addresses.containsKey(symbol)) {
-	    logger.info("Put symbol " + symbol + " with address " + varAddr + " and size " + varSize);
+	    logger.debug("Put symbol " + symbol + " with address " + varAddr + " and size " + varSize);
             addresses.put(symbol, new Symbol(Symbol.Type.VARIABLE, symbol, varAddr, varSize));
           } else {
             int oldAddress = (int) addresses.get(symbol).addr;
