@@ -2056,6 +2056,65 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     Color.decode("0x00FF00"), Color.decode("0x0000FF"), Color.decode("0xFFFF00"),
     Color.decode("0xFF00FF"), Color.decode("0x808000"), Color.decode("0x800080"),
   };
+
+  private final static Color[] GOOD_COLORS = new Color[] {
+      Color.decode("0x808080"), Color.decode("0x008000"),
+      Color.decode("0x00FF00"), Color.decode("0x0000FF"), Color.decode("0xFFFF00"),
+      Color.decode("0xFF00FF"), Color.decode("0x808000"), Color.decode("0x008080"), 
+      Color.decode("0xFF0000"), Color.decode("0x00FFFF"), Color.decode("0x000080"),
+      Color.decode("0x800000"),
+  };
+
+  private static Color[] show_colors = new Color[32];
+
+  public Color chanel_color( int channel ) {
+      Color c = show_colors[channel % show_colors.length];
+      if (c != null)
+          return c;
+      c = chanel_new_color(channel);
+      logger.info("alloc color " + c + " for radio ch" + channel);
+      show_colors[channel % show_colors.length] = c;
+      return c;
+  }
+
+  private Color chanel_new_color( int channel ) {
+      for (int tryes = 1; tryes < 10; ++tryes) {
+          Color c = GOOD_COLORS[(channel*tryes) % GOOD_COLORS.length];
+          if ( !chanel_is_colored(c) )
+              return c;
+      }
+      logger.info("miss mutch good color for radio ch" + channel);
+      // cant select new color by hoping, try find new color by scan
+      Color c = chanel_color_nextto(channel, GOOD_COLORS);
+      if (c != null)
+          return c;
+      // all good colors are taken, so take nay nogood
+      logger.info("no good color for radio ch" + channel);
+      c = chanel_color_nextto(channel, CHANNEL_COLORS);
+      if (c != null)
+          return c;
+      return CHANNEL_COLORS[channel % CHANNEL_COLORS.length];
+  }
+
+  private Color chanel_color_nextto(int channel, final Color[] colors_set) {
+      for (int i = (channel % colors_set.length); i < colors_set.length; ++i) 
+      {
+          Color c = colors_set[i];
+          if ( !chanel_is_colored(c) )
+              return c;
+      }
+      return null;
+  }
+
+  private boolean chanel_is_colored( Color x) {
+      for (final Color c: show_colors) {
+          if (c == null)continue;
+          if (c == x)
+              return true;
+      }
+      return false;
+  }
+
   class RadioChannelEvent extends MoteEvent {
     int channel;
     boolean radioOn;
@@ -2069,7 +2128,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         if (!radioOn) {
           return null;
         }
-        Color c = CHANNEL_COLORS[channel % CHANNEL_COLORS.length];
+        Color c = chanel_color(channel);
         return c;
       }
       return null;
