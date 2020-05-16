@@ -48,6 +48,7 @@ int arr1[10];
 int arr2[10];
 int uvar1;
 int uvar2;
+int uvar3;
 
 JNIEXPORT void JNICALL
 Java_org_contikios_cooja_corecomm_[CLASS_NAME]_init(JNIEnv *env, jobject obj)
@@ -83,6 +84,11 @@ Java_org_contikios_cooja_corecomm_[CLASS_NAME]_tick(JNIEnv *env, jobject obj)
 {
   ++var1;
   ++uvar1;
+}
+JNIEXPORT void JNICALL
+Java_org_contikios_cooja_corecomm_[CLASS_NAME]_kill(JNIEnv *env, jobject obj)
+{
+  ++uvar3;
 }
 /*---------------------------------------------------------------------------*/
 JNIEXPORT void JNICALL

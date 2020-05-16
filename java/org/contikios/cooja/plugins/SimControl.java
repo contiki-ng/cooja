@@ -161,6 +161,7 @@ public class SimControl extends VisPlugin implements HasQuickHelp {
     smallPanel.add(startButton = new JButton(startAction));
     smallPanel.add(stopButton = new JButton(stopAction));
     smallPanel.add(new JButton(stepAction));
+    smallPanel.add(new JButton(breakAction));
     smallPanel.add(new JButton(reloadAction));
 
     smallPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -321,6 +322,12 @@ public class SimControl extends VisPlugin implements HasQuickHelp {
       simulation.stepMillisecondSimulation();
     }
   };
+  private Action breakAction = new AbstractAction("Break") {
+      public void actionPerformed(ActionEvent e) {
+        simulation.breakSimulation();
+        stopButton.requestFocus();
+      }
+    };
   private Action reloadAction = new AbstractAction("Reload") {
     public void actionPerformed(ActionEvent e) {
       simulation.getCooja().reloadCurrentSimulation(simulation.isRunning());
@@ -334,6 +341,7 @@ public class SimControl extends VisPlugin implements HasQuickHelp {
         "<p><i>Pause</i> stops the simulation. " +
         "<p>The keyboard shortcut for starting and pausing the simulation is <i>Ctrl+S</i>. " +
         "<p><i>Step</i> runs the simulation for one millisecond. " +
+        "<p><i>Break</i> signal kill to simulaton thread of current mote. " +
         "<p><i>Reload</i> reloads and restarts the simulation. " +
         "<p>Simulation speed is controlled via the Speed limit menu.";
   }
