@@ -35,6 +35,8 @@ import java.awt.EventQueue;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -50,15 +52,21 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.BoxLayout;
+import javax.swing.JToggleButton;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.Log;
+import org.contikios.cooja.interfaces.SerialIO;
 import org.contikios.cooja.interfaces.SerialPort;
+import org.contikios.cooja.dialogs.SerialUI;
 
-public abstract class LogUI extends Log {
+public abstract class LogUI extends Log 
+    //implements SerialPort 
+{
   private static Logger logger = Logger.getLogger(LogUI.class);
 
   private final static int MAX_LENGTH = 16*1024;
@@ -70,6 +78,82 @@ public abstract class LogUI extends Log {
   public String getLastLogMessage() {
     return lastLogMessage;
   }
+
+  // informer about controls changes
+  private class controlsInformer extends Observable {
+      public void refresh( Object x ) {
+          if (this.countObservers() == 0) {
+            return;
+          }
+          setChanged();
+          notifyObservers(x);
+      }
+  }
+
+  private controlsInformer controlsInform = new controlsInformer();
+
+  /* controls */
+  private boolean is_serial_listen=false;//sends to mote.Log all received data
+  private SerialUI mote_sio = null;
+
+  public boolean isSerialListen() {
+      return is_serial_listen;
+  }
+
+  public void listenSerial( boolean onoff) {
+      if (is_serial_listen == onoff)
+          return;
+
+      if (mote_sio == null) {
+          is_serial_listen = false;
+          SerialUI ui = moteSerial();
+          if(ui == null)
+              return;
+          mote_sio = ui;
+      }
+
+      is_serial_listen = onoff;
+      logger.info("mote"+getMote().getID()+ " log serial listen " + onoff);
+      controlsInform.refresh(mote_sio);
+
+      mote_sio.setLogged(onoff);
+      
+      if (is_serial_listen) {
+          mote_sio.addObserver(serial_observer);
+      }
+      else {
+          mote_sio.deleteObserver(serial_observer);
+      }
+          
+  }
+
+  private SerialUI moteSerial() {
+      SerialIO moteio = getMote().getInterfaces().getSerial();
+      if (moteio == null)
+          return null;
+      if ( SerialUI.class.isInstance(moteio) ) {
+          return SerialUI.class.cast(moteio);
+      }
+      else
+          return null;
+  }
+
+  // observes moteSerial
+  private Observer serial_observer = new Observer() {
+      @Override
+      public void update(Observable obs, Object obj) {
+          if (obj == mote_sio)
+          if ( mote_sio != null) {
+              String msg = mote_sio.getLastLogMessage();
+              if (msg != null)
+              if (msg.length() > 0) {
+                  lastLogMessage = msg;
+                  LogUI.this.setChanged();
+                  LogUI.this.notifyObservers(getMote());
+              }
+          }
+      }
+  }; //serial_observer
 
   public void dataReceivedBuf(final byte[] data) {
       int len = data.length;
@@ -142,10 +226,34 @@ public abstract class LogUI extends Log {
     logTextPane.setOpaque(false);
     logTextPane.setEditable(false);
 
+    // controls panel
+    JPanel controlsPane = new JPanel();
+    controlsPane.setLayout(new BoxLayout(controlsPane, BoxLayout.X_AXIS));
+    
+    JToggleButton listenSerialButton = new JToggleButton("Serial");
+    controlsPane.add(listenSerialButton);
+    listenSerialButton.setSelected(isSerialListen());
+
+    listenSerialButton.addItemListener( new ItemListener () {
+        @Override
+        public void itemStateChanged(ItemEvent e) {
+            listenSerial(listenSerialButton.isSelected());
+        }  
+    }); 
+
     /* Mote interface observer */
     Observer observer;
     this.addObserver(observer = new Observer() {
       public void update(Observable obs, Object obj) {
+          if (obs == controlsInform ) {
+              EventQueue.invokeLater(new Runnable() {
+                  public void run() {
+                      listenSerialButton.setSelected(isSerialListen());
+                  }
+              });
+              return;
+          }
+
         final String logMessage = getLastLogMessage();
         EventQueue.invokeLater(new Runnable() {
           public void run() {
@@ -154,10 +262,12 @@ public abstract class LogUI extends Log {
         });
       }
     });
+    controlsInform.addObserver(observer);
     panel.putClientProperty("intf_obs", observer);
 
     JScrollPane scrollPane = new JScrollPane(logTextPane);
     scrollPane.setPreferredSize(new Dimension(100, 100));
+    panel.add(BorderLayout.NORTH, controlsPane);
     panel.add(BorderLayout.CENTER, scrollPane);
     return panel;
   }
@@ -170,14 +280,33 @@ public abstract class LogUI extends Log {
     }
 
     this.deleteObserver(observer);
+    controlsInform.deleteObserver(observer);
   }
 
   private static final String HISTORY_SEPARATOR = "~;";
   public Collection<Element> getConfigXML() {
-    return new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<Element>();
+
+    setXMLValue(config, "listen_serial", isSerialListen());
+
+    return config;
   }
 
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+      boolean log_serial_ok = false;
+      for (Element element : configXML) {
+          if (element.getName().equals("listen_serial")) {
+              listenSerial( Boolean.parseBoolean(element.getText()) );
+              log_serial_ok = true;
+          }
+      }
+      //for legacy ContikiRSR232 compatibily, listen serial by default
+      if (!log_serial_ok)
+      if (!isSerialListen())
+      {
+          logger.info("mote"+getMote().getID()+ " log listen serial, for legacy project");
+          listenSerial(true);
+      }
   }
 
   public void close() {
@@ -188,7 +317,9 @@ public abstract class LogUI extends Log {
 
   public void writeByte(byte b) {}
   public void writeArray(byte[] s) {};
-  public void writeString(String s) {};
+  public void writeString(String s) {
+      logger.info("write log mote"+ getMote().getID() + ":" + s);
+  };
 
   public abstract Mote getMote();
 
