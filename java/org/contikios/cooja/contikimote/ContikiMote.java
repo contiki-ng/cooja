@@ -215,6 +215,14 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
       }
     }
 
+    // wanna to traverce all interfaces, incase if them rely on setConfigXML for  
+    //      complete init after create
+    ArrayList<Element> emptyXML = new ArrayList<Element>();
+    for (MoteInterface intf: myInterfaceHandler.getInterfaces() ) {
+        if (!initlist.contains(intf))
+            intf.setConfigXML( emptyXML, false);
+    }
+
     requestImmediateWakeup();
     return true;
   }
