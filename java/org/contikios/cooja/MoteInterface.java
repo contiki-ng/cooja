@@ -128,6 +128,33 @@ public abstract class MoteInterface extends Observable {
    */
   public abstract Collection<Element> getConfigXML();
 
+
+  public static
+  boolean assignXMLValue(Collection<Element> configXML
+                    , final String name, final boolean value) 
+  {
+        for (Element element : configXML) {
+            if (element.getName().equals(name)) {
+                element.setText("" + value);
+                return true;
+            }
+        }
+        return false;
+  }
+
+  public static
+  void setXMLValue(Collection<Element> configXML
+                    , final String name, final boolean value) 
+  {
+        if ( assignXMLValue(configXML, name, value) )
+            return;
+
+        Element element;
+        element = new Element(name);
+        element.setText("" + value);
+        configXML.add(element);
+  }
+
   /**
    * Sets the current mote interface config depending on the given XML elements.
    *
