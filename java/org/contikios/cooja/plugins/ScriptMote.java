@@ -54,7 +54,7 @@ public class ScriptMote {
 
   public void write(String data) {
     if (mote == null) return;
-    SerialPort serialPort = (SerialPort) mote.getInterfaces().getInterfaceOfType(Log.class);
+    SerialPort serialPort = (SerialPort) mote.getInterfaces().getSerial();
     serialPort.writeString(data);
   }
 }
