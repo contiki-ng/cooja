@@ -219,7 +219,6 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     //      complete init after create
     ArrayList<Element> emptyXML = new ArrayList<Element>();
     for (MoteInterface intf: myInterfaceHandler.getInterfaces() ) {
-        if (!initlist.contains(intf))
             intf.setConfigXML( emptyXML, false);
     }
 
