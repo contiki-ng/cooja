@@ -292,16 +292,21 @@ public abstract class LogUI extends Log
     return config;
   }
 
+  private boolean cfg_serial_ok = false;
+
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-      boolean log_serial_ok = false;
       for (Element element : configXML) {
           if (element.getName().equals("listen_serial")) {
               listenSerial( Boolean.parseBoolean(element.getText()) );
-              log_serial_ok = true;
+              cfg_serial_ok = true;
           }
       }
+  }
+
+  @Override
+  public void added() {
       //for legacy ContikiRSR232 compatibily, listen serial by default
-      if (!log_serial_ok)
+      if (!cfg_serial_ok)
       if (!isSerialListen())
       {
           logger.info("mote"+getMote().getID()+ " log listen serial, for legacy project");

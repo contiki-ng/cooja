@@ -496,8 +496,8 @@ public abstract class SerialUI extends SerialIO
     return config;
   }
 
+  private boolean cfg_serial_ok = false;
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-    boolean log_serial_ok = false;
     for (Element element : configXML) {
       if (element.getName().equals("history")) {
         String[] history = element.getText().split(HISTORY_SEPARATOR);
@@ -508,16 +508,20 @@ public abstract class SerialUI extends SerialIO
       }
       if (element.getName().equals("log_received")) {
           setLogged( Boolean.parseBoolean(element.getText()) );
-          log_serial_ok = true;
+          cfg_serial_ok = true;
       }
     }
-    //for legacy ContikiRSR232 compatibily, log serial by default
-    if (!log_serial_ok)
-    if (!isLogged())
-    {
-        logger.info("mote"+getMote().getID()+ " serial received log, for legacy project");
-        setLogged(true);
-    }
+  }
+
+  @Override
+  public void added() {
+      //for legacy ContikiRSR232 compatibily, log serial by default
+      if (!cfg_serial_ok)
+      if (!isLogged())
+      {
+          logger.info("mote"+getMote().getID()+ " serial received log, for legacy project");
+          setLogged(true);
+      }
   }
 
   public void close() {
