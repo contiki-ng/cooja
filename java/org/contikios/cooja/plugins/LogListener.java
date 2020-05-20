@@ -95,6 +95,7 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.TableColumnAdjuster;
 import org.contikios.cooja.dialogs.UpdateAggregator;
 import org.contikios.cooja.util.ArrayQueue;
+import org.contikios.cooja.interfaces.TimeSelect;
 
 /**
  * A simple mote log listener.
@@ -104,7 +105,8 @@ import org.contikios.cooja.util.ArrayQueue;
  */
 @ClassDescription("Mote output")
 @PluginType(PluginType.SIM_STANDARD_PLUGIN)
-public class LogListener extends VisPlugin implements HasQuickHelp {
+public class LogListener extends VisPlugin implements HasQuickHelp, TimeSelect 
+{
   private static final long serialVersionUID = 3294595371354857261L;
   private static Logger logger = Logger.getLogger(LogListener.class);
 
@@ -375,12 +377,11 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     	}
 		});
     logTable.addMouseListener(new MouseAdapter() {
+        long lastClick = -1;
+        
     	public void mouseClicked(MouseEvent e) {
         int colIndex = logTable.columnAtPoint(e.getPoint());
         int columnIndex = logTable.convertColumnIndexToModel(colIndex);
-        if (columnIndex != COLUMN_FROM) {
-        	return;
-        }
 
         int rowIndex = logTable.rowAtPoint(e.getPoint());
         if (rowIndex == -1) {
@@ -390,7 +391,17 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         if (d == null) {
         	return;
         }
-        simulation.getCooja().signalMoteHighlight(d.ev.getMote());
+
+        /* Focus on double-click */
+        if (System.currentTimeMillis() - lastClick < 250) {
+          showInAllAction.actionPerformed(null);
+        }
+        lastClick = System.currentTimeMillis();
+
+        if (columnIndex == COLUMN_FROM) {
+            simulation.getCooja().signalMoteHighlight(d.ev.getMote());
+        }
+
     	}
 		});
 
@@ -872,48 +883,27 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   private Action timeLineAction = new AbstractAction("Timeline") {
     private static final long serialVersionUID = -6358463434933029699L;
     public void actionPerformed(ActionEvent e) {
-      int view = logTable.getSelectedRow();
-      if (view < 0) {
-        return;
-      }
-      int model = logTable.convertRowIndexToModel(view);
-      long time = logs.get(model).ev.getTime();
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-      	if (!(p instanceof TimeLine)) {
-      		continue;
-      	}
-
-        /* Select simulation time */
-      	TimeLine plugin = (TimeLine) p;
-        plugin.trySelectTime(time);
-      }
+      focusTimePlugins(TimeLine.class);
     }
   };
 
   private Action radioLoggerAction = new AbstractAction("Radio Logger") {
     private static final long serialVersionUID = -3041714249257346688L;
     public void actionPerformed(ActionEvent e) {
+      focusTimePlugins(RadioLogger.class);
+    }
+  };
+
+  private <N extends Plugin & TimeSelect>
+  void focusTimePlugins(Class<N> pluginClass) {
       int view = logTable.getSelectedRow();
       if (view < 0) {
         return;
       }
       int model = logTable.convertRowIndexToModel(view);
       long time = logs.get(model).ev.getTime();
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-      	if (!(p instanceof RadioLogger)) {
-      		continue;
-      	}
-
-        /* Select simulation time */
-      	RadioLogger plugin = (RadioLogger) p;
-        plugin.trySelectTime(time);
-      }
-    }
-  };
+      performTimePlugins(simulation, time, pluginClass);
+  }
 
   private Action showInAllAction = new AbstractAction("All") {
     private static final long serialVersionUID = -8433490108577001803L;
@@ -922,8 +912,13 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
 
     public void actionPerformed(ActionEvent e) {
-      timeLineAction.actionPerformed(null);
-      radioLoggerAction.actionPerformed(null);
+        int view = logTable.getSelectedRow();
+        if (view < 0) {
+          return;
+        }
+        int model = logTable.convertRowIndexToModel(view);
+        long time = logs.get(model).ev.getTime();
+        performTimePlugins(simulation, time);
     }
   };
 
