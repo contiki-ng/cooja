@@ -56,6 +56,7 @@ import org.jdom.Element;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.interfaces.SerialPort;
+import org.contikios.cooja.dialogs.HistoryUI;
 
 public abstract class SerialUI extends Log implements SerialPort {
   private static Logger logger = Logger.getLogger(SerialUI.class);
@@ -67,9 +68,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   private StringBuilder newMessage = new StringBuilder(); /* Log */
 
   /* Command history */
-  private final static int HISTORY_SIZE = 15;
-  private ArrayList<String> history = new ArrayList<String>();
-  private int historyPos = -1;
+  private HistoryUI                 history = new HistoryUI();;
 
   /* Log */
   public String getLastLogMessage() {
@@ -142,16 +141,7 @@ public abstract class SerialUI extends Log implements SerialPort {
         }
 
         try {
-          /* Add to history */
-          if (history.size() > 0 && command.equals(history.get(0))) {
-            /* Ignored */
-          } else {
-            history.add(0, command);
-            while (history.size() > HISTORY_SIZE) {
-              history.remove(HISTORY_SIZE-1);
-            }
-          }
-          historyPos = -1;
+            history.add(command);
 
           appendToTextArea(logTextPane, "> " + command);
           commandField.setText("");
@@ -176,41 +166,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     commandField.addActionListener(sendCommandAction);
     sendButton.addActionListener(sendCommandAction);
 
-    /* History */
-    commandField.addKeyListener(new KeyAdapter() {
-      public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-        case KeyEvent.VK_UP: {
-          historyPos++;
-          if (historyPos >= history.size()) {
-            historyPos = history.size() - 1;
-            commandField.getToolkit().beep();
-          }
-          if (historyPos >= 0 && historyPos < history.size()) {
-            commandField.setText(history.get(historyPos));
-          } else {
-            commandField.setText("");
-          }
-          break;
-        }
-        case KeyEvent.VK_DOWN: {
-          historyPos--;
-          if (historyPos < 0) {
-            historyPos = -1;
-            commandField.setText("");
-            commandField.getToolkit().beep();
-            break;
-          }
-          if (historyPos >= 0 && historyPos < history.size()) {
-            commandField.setText(history.get(historyPos));
-          } else {
-            commandField.setText("");
-          }
-          break;
-        }
-        }
-      }
-    });
+    history.assignOnUI(commandField);
 
     commandPane.add(BorderLayout.CENTER, commandField);
     commandPane.add(BorderLayout.EAST, sendButton);
@@ -257,23 +213,13 @@ public abstract class SerialUI extends Log implements SerialPort {
     this.deleteObserver(observer);
   }
 
-  private static final String HISTORY_SEPARATOR = "~;";
   public Collection<Element> getConfigXML() {
-    StringBuilder sb = new StringBuilder();
-    for (String s: history) {
-      if (s == null) {
-        continue;
-      }
-      sb.append(s + HISTORY_SEPARATOR);
-    }
-    if (sb.length() == 0) {
-      return null;
+    ArrayList<Element> config = new ArrayList<Element>();
+    Element element = history.getConfigXML("history");
+    if (element != null) {
+        config.add(element);
     }
 
-    ArrayList<Element> config = new ArrayList<Element>();
-    Element element = new Element("history");
-    element.setText(sb.toString());
-    config.add(element);
 
     return config;
   }
@@ -281,11 +227,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("history")) {
-        String[] history = element.getText().split(HISTORY_SEPARATOR);
-        for (String h: history) {
-          this.history.add(h);
-        }
-        historyPos = -1;
+          history.setConfigXML(element);
       }
     }
   }
