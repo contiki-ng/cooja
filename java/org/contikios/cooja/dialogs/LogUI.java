@@ -142,7 +142,7 @@ public abstract class LogUI extends Log
   private Observer serial_observer = new Observer() {
       @Override
       public void update(Observable obs, Object obj) {
-          if (obj == mote_sio)
+          if (obs == mote_sio)
           if ( mote_sio != null) {
               String msg = mote_sio.getLastLogMessage();
               if (msg != null)
