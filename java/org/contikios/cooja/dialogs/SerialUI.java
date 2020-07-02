@@ -64,9 +64,13 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
+import org.contikios.cooja.MoteType;
+import org.contikios.cooja.Simulation;
+import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.interfaces.SerialIO;
 import org.contikios.cooja.interfaces.SerialPort;
+import org.contikios.cooja.interfaces.ApplicationLogPort;
 import org.contikios.cooja.dialogs.LogUI;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.MessageContainer;
@@ -520,8 +524,44 @@ public abstract class SerialUI extends SerialIO
       if (!isLogged())
       {
           logger.info("mote"+getMote().getID()+ " serial received log, for legacy project");
+          if ( getMote().getInterfaces().getInterfaceOfType(LogUI.class) == null ) {
+              logger.info("mote"+getMote().getID()+ " serial type provide default log");
+              installDefaultLog();
+          }
           setLogged(true);
       }
+  }
+
+  //synchronized 
+  protected void installDefaultLog( ) {
+      final MoteType type = getMote().getType();
+      Class<? extends MoteInterface> logType = MoteType.haveInterfaceOfType(LogUI.class, type.getMoteInterfaceClasses() );
+      if ( logType == null ) {
+          /*
+          Simulation simulation = getMote().getSimulation();
+          //looks tis is old project, that use SerialUI combined SerialPort with Log
+          //So load LogUI for this project, since now it deployed from SerialUI
+          Class<? extends MoteInterface> moteInterfaceClass =
+                  simulation.getCooja().tryLoadClass(this, MoteInterface.class
+                              , "org.contikios.cooja.interfaces.ApplicationLogPort");
+    
+          if (moteInterfaceClass == null) {
+            logger.fatal("Could not append interface default LogUI" + 
+                        "for old project mote type " + getMote().getID() );
+            return ;
+          }
+          else {
+              logger.info("Append interface LogUI, " + 
+                          "for old project mote type " + getMote().getID() );
+              type.addMoteInterfaceClass(moteInterfaceClass);
+              //setCoreInterfaces(getRequiredCoreInterfaces(getMoteInterfaceClasses()));
+          }
+          */
+          logType = ApplicationLogPort.class;
+      }
+      getMote().getInterfaces().setLog( 
+                  (Log)MoteInterface.generateInterface(logType, getMote()) 
+                  );
   }
 
   public void close() {

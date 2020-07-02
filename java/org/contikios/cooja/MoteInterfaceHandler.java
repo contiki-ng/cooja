@@ -224,6 +224,12 @@ public class MoteInterfaceHandler {
     return myLog;
   }
 
+  public void setLog( Log x) {
+      myLog = x;
+      if ( !moteInterfaces.contains(x) )
+          moteInterfaces.add( x );
+} 
+
   /**
    * Returns the log interface (if any).
    *
@@ -365,6 +371,10 @@ public class MoteInterfaceHandler {
    */
   public Collection<MoteInterface> getInterfaces() {
     return moteInterfaces;
+  }
+
+  public ArrayList<MoteInterface> getInterfacesList() {
+      return moteInterfaces;
   }
 
   /**

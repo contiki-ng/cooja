@@ -1348,8 +1348,8 @@ public class ContikiMoteType implements MoteType {
   }
 
   protected void fixInterfacesContents(Simulation simulation) {
-      if ( haveInterfaceOfType(ContikiRS232.class, moteInterfacesClasses) != null ) 
-      if ( haveInterfaceOfType(ContikiLog.class, moteInterfacesClasses) == null )
+      if ( MoteType.haveInterfaceOfType(ContikiRS232.class, moteInterfacesClasses) != null ) 
+      if ( MoteType.haveInterfaceOfType(ContikiLog.class, moteInterfacesClasses) == null )
       {
           //looks tis is old project, that use ContikiRS232 combined SerialPort with Log
           //So load ContikiLog for this project, since now it deployed from ContikiRS232
@@ -1371,36 +1371,6 @@ public class ContikiMoteType implements MoteType {
       }
   }
 
-  public <N extends MoteInterface> 
-  Class<? extends MoteInterface> haveInterfaceOfType(Class<N> interfaceType
-          , ArrayList<Class<? extends MoteInterface>> list) 
-  {
-      for (Class<? extends MoteInterface> intf : list) {
-        if (isSubclassOf( interfaceType, intf) ) {
-          return intf;
-        }
-      }
-      return null;
-  }
-
-  protected boolean isSubclassOf(Class<?> clazz, Class<?> superClass) {
-      if (superClass.equals(Object.class)) {
-          // Every class is an Object.
-          return true;
-      }
-      if (clazz.equals(superClass)) {
-          return true;
-      } else {
-          clazz = clazz.getSuperclass();
-          // every class is Object, but superClass is below Object
-          if (clazz.equals(Object.class)) {
-              // we've reached the top of the hierarchy, but superClass couldn't be found.
-              return false;
-          }
-          // try the next level up the hierarchy.
-          return isSubclassOf(clazz, superClass);
-      }
-  }
   public static String[] getRequiredCoreInterfaces(
           Class<? extends MoteInterface>[] moteInterfaces) {
     /* Extract Contiki dependencies from currently selected mote interfaces */
