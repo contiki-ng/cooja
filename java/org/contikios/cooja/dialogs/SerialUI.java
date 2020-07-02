@@ -537,7 +537,15 @@ public abstract class SerialUI extends SerialIO
       final MoteType type = getMote().getType();
       Class<? extends MoteInterface> logType = MoteType.haveInterfaceOfType(LogUI.class, type.getMoteInterfaceClasses() );
       if ( logType == null ) {
-          /*
+
+          /*  MspMote crash if got an configuration of interface, that is not 
+           *       in enumerated in project. To keep consistent such projects, when save
+                   project bootsraped upgraded LogUI, 
+                   append LogUI interface to MoteType interfaces. 
+           * TODO: maybe it is more careful - do not save into csc interfaces, 
+                   that not in MoteType?
+          */
+
           Simulation simulation = getMote().getSimulation();
           //looks tis is old project, that use SerialUI combined SerialPort with Log
           //So load LogUI for this project, since now it deployed from SerialUI
@@ -556,7 +564,7 @@ public abstract class SerialUI extends SerialIO
               type.addMoteInterfaceClass(moteInterfaceClass);
               //setCoreInterfaces(getRequiredCoreInterfaces(getMoteInterfaceClasses()));
           }
-          */
+
           logType = ApplicationLogPort.class;
       }
       getMote().getInterfaces().setLog( 
