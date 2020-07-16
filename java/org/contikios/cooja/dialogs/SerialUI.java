@@ -500,8 +500,11 @@ public abstract class SerialUI extends SerialIO
     return config;
   }
 
-  private boolean cfg_serial_ok = false;
+  private enum SerialCfg{ NONE, On, Off};
+  private SerialCfg cfg_serial_ok = SerialCfg.NONE;
+
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+    cfg_serial_ok = SerialCfg.NONE;
     for (Element element : configXML) {
       if (element.getName().equals("history")) {
         String[] history = element.getText().split(HISTORY_SEPARATOR);
@@ -511,8 +514,8 @@ public abstract class SerialUI extends SerialIO
         historyPos = -1;
       }
       if (element.getName().equals("log_received")) {
-          setLogged( Boolean.parseBoolean(element.getText()) );
-          cfg_serial_ok = true;
+          cfg_serial_ok = Boolean.parseBoolean(element.getText()) 
+                         ? SerialCfg.On : SerialCfg.Off;
       }
     }
   }
@@ -520,16 +523,23 @@ public abstract class SerialUI extends SerialIO
   @Override
   public void added() {
       //for legacy ContikiRSR232 compatibily, log serial by default
-      if (!cfg_serial_ok)
-      if (!isLogged())
+      if (cfg_serial_ok == SerialCfg.NONE)
+      //if (!isLogged())
+      if (moteLog() == null)
       {
           logger.info("mote"+getMote().getID()+ " serial received log, for legacy project");
           if ( getMote().getInterfaces().getInterfaceOfType(LogUI.class) == null ) {
-              logger.info("mote"+getMote().getID()+ " serial type provide default log");
+              logger.debug("mote"+getMote().getID()+ " serial type provide default log");
               installDefaultLog();
           }
-          setLogged(true);
+          if (moteLog() == null) {
+              logger.info("mote"+getMote().getID()+ " serial use default logUI");
+              LogUI logui = getMote().getInterfaces().getInterfaceOfType(LogUI.class);
+              getMote().getInterfaces().setLog( (Log) logui );
+          }
+          cfg_serial_ok = SerialCfg.On;
       }
+      setLogged( cfg_serial_ok == SerialCfg.On );
   }
 
   //synchronized 
