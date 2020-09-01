@@ -765,12 +765,12 @@ public class ContikiMoteType implements MoteType {
 
         if (matcher.find()) {
           /* Line matched variable address */
-          String symbol = matcher.group(3);
-          long varAddr = Integer.parseInt(matcher.group(1), 16) + offset;
+          String symbol = matcher.group("symbol");
+          long varAddr = Integer.parseInt(matcher.group("address"), 16) + offset;
           int varSize;
 
           if (matcher.group(2) != null) {
-           varSize = Integer.parseInt(matcher.group(2), 16);
+           varSize = Integer.parseInt(matcher.group("size"), 16);
           } else {
             varSize = -1;
           }
