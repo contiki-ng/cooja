@@ -62,8 +62,10 @@ import java.io.PrintStream;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.net.URI;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.AccessControlException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -3217,7 +3219,8 @@ public class Cooja extends Observable {
     if (Cooja.specifiedCoojaPath == null) {
       try {
         /* Find path to Cooja installation directory from code base */
-        Path path = Path.of(Cooja.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath();
+        URI domain_uri = Cooja.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        Path path = Paths.get(domain_uri).toAbsolutePath();
         File fp = path.toFile();
         if (fp.isFile()) {
           // Get the directory where the JAR file is placed
