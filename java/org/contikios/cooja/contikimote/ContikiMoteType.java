@@ -233,7 +233,7 @@ public class ContikiMoteType implements MoteType {
     myConfig = simulation.getCooja().getProjectConfig().clone();
     String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
     
-    if (visAvailable) {
+    if (visAvailable && !simulation.isQuickSetup()) {
 
       if (getDescription() == null) {
         setDescription("Cooja Mote Type #" + (simulation.getMoteTypes().length + 1));
@@ -403,7 +403,7 @@ public class ContikiMoteType implements MoteType {
     }
 
     // Allocate core communicator class
-    logger.info("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + getContikiFirmwareFile().getPath() + "'");
+    logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + getContikiFirmwareFile().getPath() + "'");
     myCoreComm = CoreComm.createCoreComm(this.javaClassName, getContikiFirmwareFile());
 
     /* Parse addresses using map file
@@ -484,8 +484,8 @@ public class ContikiMoteType implements MoteType {
       SectionMoteMemory tmp = new SectionMoteMemory(variables);
       VarMemory varMem = new VarMemory(tmp);
       tmp.addMemorySection("tmp.data", dataSecParser.parse(0));
-
       tmp.addMemorySection("tmp.bss", bssSecParser.parse(0));
+      tmp.addMemorySection("tmp.common", commonSecParser.parse(0));
 
       try {
         int referenceVar = (int) varMem.getVariable("referenceVar").addr;
@@ -499,7 +499,7 @@ public class ContikiMoteType implements MoteType {
       getCoreMemory(tmp);
 
       offset = varMem.getIntValueOf("referenceVar") & 0xFFFFFFFFL;
-      logger.info(getContikiFirmwareFile().getName()
+      logger.debug(getContikiFirmwareFile().getName()
               + ": offsetting Cooja mote address space: 0x" + Long.toHexString(offset));
     }
 
@@ -577,10 +577,10 @@ public class ContikiMoteType implements MoteType {
 
       variables = parseSymbols(offset);
 
-      logger.info(String.format("Parsed section at 0x%x ( %d == 0x%x bytes)",
-                                getStartAddr() + offset,
-                                getSize(),
-                                getSize()));
+      logger.debug(String.format("Parsed section at 0x%x ( %d == 0x%x bytes)",
+                                 getStartAddr() + offset,
+                                 getSize(),
+                                 getSize()));
 
       if (logger.isDebugEnabled()) {
         for (String var : variables.keySet()) {
@@ -637,6 +637,7 @@ public class ContikiMoteType implements MoteType {
       Map<String, Symbol> varNames = new HashMap<>();
 
       Pattern pattern = Pattern.compile(Cooja.getExternalToolsSetting("MAPFILE_VAR_NAME"));
+
       for (String line : getData()) {
         Matcher matcher = pattern.matcher(line);
         if (matcher.find()) {
@@ -758,24 +759,25 @@ public class ContikiMoteType implements MoteType {
       /* Replace "<SECTION>" in regexp by section specific regex */
       Pattern pattern = Pattern.compile(
               Cooja.getExternalToolsSetting("COMMAND_VAR_NAME_ADDRESS_SIZE")
-                      .replace("<SECTION>", sectionRegExp));
-
+                      .replace("<SECTION>", Pattern.quote(sectionRegExp)));
       for (String line : getData()) {
         Matcher matcher = pattern.matcher(line);
 
         if (matcher.find()) {
           /* Line matched variable address */
-          String symbol = matcher.group(1);
-          long varAddr = Integer.parseInt(matcher.group(2), 16) + offset;
+          String symbol = matcher.group("symbol");
+          long varAddr = Integer.parseInt(matcher.group("address"), 16) + offset;
           int varSize;
-          if (matcher.group(3) != null) {
-           varSize = Integer.parseInt(matcher.group(3), 16);
+
+          if (matcher.group(2) != null) {
+           varSize = Integer.parseInt(matcher.group("size"), 16);
           } else {
             varSize = -1;
           }
 
           /* XXX needs to be checked */
           if (!addresses.containsKey(symbol)) {
+	    logger.debug("Put symbol " + symbol + " with address " + varAddr + " and size " + varSize);
             addresses.put(symbol, new Symbol(Symbol.Type.VARIABLE, symbol, varAddr, varSize));
           } else {
             int oldAddress = (int) addresses.get(symbol).addr;
@@ -951,6 +953,11 @@ public class ContikiMoteType implements MoteType {
 
     try {
       String command = Cooja.getExternalToolsSetting("PARSE_COMMAND");
+      if (command == null) {
+        return null;
+      }
+
+      command = Cooja.resolvePathIdentifiers(command);
       if (command == null) {
         return null;
       }
