@@ -36,8 +36,7 @@ import java.io.File;
 import javax.swing.Action;
 import javax.swing.JMenuItem;
 
-import jsyntaxpane.actions.DefaultSyntaxAction;
-
+import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
 import org.apache.log4j.Logger;
 
 import org.contikios.cooja.Watchpoint;
