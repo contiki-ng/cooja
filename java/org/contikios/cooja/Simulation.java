@@ -551,10 +551,6 @@ public class Simulation extends Observable implements Runnable {
       return quick;
   }
   
-  public void setQuickSetup(boolean q) {
-      quick = q;
-  }
-  
   /**
    * Sets the current simulation config depending on the given configuration.
    *
@@ -566,8 +562,8 @@ public class Simulation extends Observable implements Runnable {
    */
   public boolean setConfigXML(Collection<Element> configXML,
       boolean visAvailable, boolean quick, Long manualRandomSeed) throws Exception {
+    this.quick = quick;
 
-      setQuickSetup(quick);
     // Parse elements
     for (Element element : configXML) {
 
@@ -747,6 +743,9 @@ public class Simulation extends Observable implements Runnable {
     if (currentRadioMedium != null) {
       currentRadioMedium.simulationFinishedLoading();
     }
+
+    // Quick load mode only during loading
+    this.quick = false;
 
     setChanged();
     notifyObservers(this);
