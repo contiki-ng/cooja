@@ -301,7 +301,7 @@ public class ExecuteJAR {
     /* Unpacking COOJA core JARs */
     String[] coreJARs = new String[] {
         "tools/cooja/lib/jdom.jar", "tools/cooja/lib/log4j.jar",
-            "tools/cooja/dist/cooja.jar", "tools/cooja/lib/jsyntaxpane.jar"
+            "tools/cooja/dist/cooja.jar", "tools/cooja/lib/syntaxpane-1.2.0.jar"
     };
     for (String jar: coreJARs) {
       File jarFile = new File(Cooja.getExternalToolsSetting("PATH_CONTIKI"), jar);
