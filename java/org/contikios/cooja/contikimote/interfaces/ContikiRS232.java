@@ -233,6 +233,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface
         int newSize = oldSize + dataToAppend.length;
         if (newSize > serial_buf_limit) {
         	logger.fatal("ContikiRS232: dropping rs232 data #2, buffer full: " + oldSize + " -> " + newSize);
+            moteMem.setByteValueOf("simSerialReceivingFlag", (byte) 1);
         	mote.requestImmediateWakeup();
         	return;
         }
@@ -300,6 +301,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface
         int newSize = oldSize + dataToAppend.length;
         if (newSize > serial_buf_limit) {
         	logger.fatal("ContikiRS232: dropping rs232 data #3, buffer full: " + oldSize + " -> " + newSize);
+            moteMem.setByteValueOf("simSerialReceivingFlag", (byte) 1);
         	mote.requestImmediateWakeup();
         	return;
         }
