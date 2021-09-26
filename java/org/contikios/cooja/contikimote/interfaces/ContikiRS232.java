@@ -80,6 +80,14 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface
   static final int SERIAL_BUF_STOP = 0x10000;
   private int      serial_buf_limit = SERIAL_BUF_SIZE;
 
+  // legacy serial prints to simlog
+  static final int SERIAL_LEGACY        = 0;
+  // mote serial can prints to serial
+  static final int SERIAL_SENDING       = 1;
+  private int      serial_ver = SERIAL_LEGACY;
+
+  static final String simSendFlag = "simSerialSendFlag"; 
+
   /**
    * Creates an interface to the RS232 at mote.
    *
@@ -91,6 +99,8 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface
   public ContikiRS232(Mote mote) {
     this.mote = (ContikiMote) mote;
     this.moteMem = new VarMemory(mote.getMemory());
+    if ( this.moteMem.variableExists(simSendFlag) )
+        serial_ver = SERIAL_SENDING;
   }
 
   public static String[] getCoreInterfaceDependencies() {
@@ -106,13 +116,26 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface
       }
   }
 
+  private boolean isSendigFrame() {
+      if (serial_ver >= SERIAL_SENDING) {
+          return (moteMem.getByteValueOf("simSerialSendFlag") != 0);
+      }
+      return false;
+  }
+
+  private void haveSentFrame() {
+      if (serial_ver >= SERIAL_SENDING)
+          moteMem.setIntValueOf("simSerialSendFlag", 0);
+      
+      moteMem.setIntValueOf("simSerialSendLength", 0);
+  }
+  
   public void doActionsAfterTick() {
-    if (moteMem.getByteValueOf("simSerialSendFlag") == 1) {
+    if ( isSendigFrame() ) {
       int len = moteMem.getIntValueOf("simSerialSendLength");
       byte[] bytes = moteMem.getByteArray("simSerialSendData", len);
 
-      moteMem.setByteValueOf("simSerialSendFlag", (byte) 0);
-      moteMem.setIntValueOf("simSerialSendLength", 0);
+      haveSentFrame();
 
   	  //logger.info("RS232:received:" + bytes.length);
   	  bufReceived(bytes);
