@@ -113,6 +113,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface
           //this huge value treat as declaration with receiver buffer size in LSB
           serial_buf_limit = recv_size & (SERIAL_BUF_STOP-1);
           logger.debug("mote"+ getMote().getID() +".ContikiRS232 establish receive buffer size " + serial_buf_limit);
+          moteMem.setIntValueOf("simSerialReceivingLength", serial_buf_limit);
       }
   }
 
