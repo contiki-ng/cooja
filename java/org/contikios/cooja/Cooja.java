@@ -62,7 +62,10 @@ import java.io.PrintStream;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.net.URI;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.AccessControlException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -197,6 +200,7 @@ public class Cooja extends Observable {
   public static File externalToolsUserSettingsFile;
   private static boolean externalToolsUserSettingsFileReadOnly = false;
 
+  private static String specifiedCoojaPath = null;
   private static String specifiedContikiPath = null;
 
   /**
@@ -453,6 +457,8 @@ public class Cooja extends Observable {
         tryStartPlugin(pluginClass, this, null, null);
       }
     }
+
+    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(this));
   }
 
 
@@ -1248,7 +1254,7 @@ public class Cooja extends Observable {
           UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         }
       } else {
-        UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
       }
       return;
     } catch (Exception e) {
@@ -2748,6 +2754,21 @@ public class Cooja extends Observable {
     System.exit(exitCode);
   }
 
+    public static String resolvePathIdentifiers(String path) {
+        for(int i = 0; i < PATH_IDENTIFIER.length; i++) {
+            if(path.contains(PATH_IDENTIFIER[i][0])) {
+                String p = Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1]);
+                if (p != null) {
+                    path = path.replace(PATH_IDENTIFIER[i][0], p);
+                } else {
+                    logger.warn("could not resolve path identifier " +
+                                PATH_IDENTIFIER[i][0]);
+                }
+            }
+        }
+        return path;
+    }
+
   // // EXTERNAL TOOLS SETTINGS METHODS ////
 
   /**
@@ -2787,6 +2808,9 @@ public class Cooja extends Observable {
   public static String getExternalToolsSetting(String name, String defaultValue) {
     if (specifiedContikiPath != null && "PATH_CONTIKI".equals(name)) {
       return specifiedContikiPath;
+    }
+    if (Cooja.specifiedCoojaPath != null && "PATH_COOJA".equals(name)) {
+      return Cooja.specifiedCoojaPath;
     }
     return currentExternalToolsSettings.getProperty(name, defaultValue);
   }
@@ -3181,6 +3205,11 @@ public class Cooja extends Observable {
         Cooja.specifiedContikiPath = arg;
       }
 
+      if (element.startsWith("-cooja=")) {
+        String arg = element.substring("-cooja=".length());
+        Cooja.specifiedCoojaPath = arg;
+      }
+
       if (element.startsWith("-external_tools_config=")) {
         String arg = element.substring("-external_tools_config=".length());
         File specifiedExternalToolsConfigFile = new File(arg);
@@ -3201,6 +3230,29 @@ public class Cooja extends Observable {
         } catch (Exception e) {
           logger.error("Failed to convert \"" + arg +"\" to an integer.");
         }
+      }
+    }
+
+    if (Cooja.specifiedCoojaPath == null) {
+      try {
+        /* Find path to Cooja installation directory from code base */
+        URI domain_uri = Cooja.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        Path path = Paths.get(domain_uri).toAbsolutePath();
+        File fp = path.toFile();
+        if (fp.isFile()) {
+          // Get the directory where the JAR file is placed
+          path = path.getParent();
+        }
+        // Cooja JAR/classes are either in the dist or build directories and we want the installation directory
+        path = path.getParent();
+
+        String coojaInstallationDir = path.normalize().toString();
+        if (!coojaInstallationDir.endsWith("/")) {
+          coojaInstallationDir += '/';
+        }
+        Cooja.specifiedCoojaPath = coojaInstallationDir;
+      } catch (Exception e) {
+        logger.warn("Failed to resolve Cooja path - reverting to default", e);
       }
     }
 
@@ -4737,5 +4789,22 @@ public class Cooja extends Observable {
     }
   };
 
-}
+  private static final class ShutdownHandler extends Thread {
+    private final Cooja cooja;
 
+    public ShutdownHandler(Cooja cooja) {
+      super("Cooja-Shutdown");
+      this.cooja = cooja;
+    }
+
+    @Override
+    public void run() {
+      // Stop the simulation if it is running.
+      Simulation simulation = cooja.getSimulation();
+      if (simulation != null) {
+        simulation.stopSimulation(true);
+      }
+    }
+  }
+
+}
