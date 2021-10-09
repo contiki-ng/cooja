@@ -68,7 +68,7 @@ public class SectionMoteMemory implements MemoryInterface {
    * Adds a section to this memory.
    * 
    * A new section will be checked for address overlap with existing sections.
-   *
+   * 
    * @param name
    * @param section
    * @return true if adding succeeded, false otherwise
@@ -288,11 +288,38 @@ public class SectionMoteMemory implements MemoryInterface {
     for (String secname : sections.keySet()) {
       // Copy section memory to new ArrayMemory
       MemoryInterface section = sections.get(secname);
-      MemoryInterface cpmem = new ArrayMemory(section.getStartAddr(), section.getLayout(), section.getMemory().clone(), section.getSymbolMap());
+      MemoryInterface cpmem = cloneSection(section);
       clone.addMemorySection(secname, cpmem);
     }
 
     return clone;
+  }
+  
+  protected MemoryInterface cloneSection( MemoryInterface section ) {
+    byte[] mem = null;
+    
+    try {
+      mem = section.getMemory().clone();
+    }
+    catch (Exception e) {
+        mem = null;
+    }
+    
+    if (mem != null) {
+        return new ArrayMemory(section.getStartAddr(), section.getLayout()
+                              , mem, section.getSymbolMap()
+                              );
+    }
+    else {
+          long start = section.getStartAddr();
+          int  size  = section.getTotalSize();
+          MemoryInterface y = new ArrayMemory(start, size
+                                             , section.getLayout(), section.getSymbolMap()
+                                             );
+          if (section.getTotalSize() > 0) 
+              y.setMemorySegment(start, section.getMemorySegment(start, size) );
+          return y;
+    }
   }
 
   private ArrayList<PolledMemorySegments> polledMemories = new ArrayList<PolledMemorySegments>();
