@@ -927,6 +927,16 @@ public class Simulation extends Observable implements Runnable {
     return motes.size();
   }
 
+  public int getMotesCount(MoteType x) {
+    int cnt = 0;
+    for (Mote m: getMotes()) {
+        if (m.getType() == x) {
+          ++cnt;
+        }
+      }
+    return cnt;
+  }
+
   /**
    * Returns all motes in this simulation.
    *
