@@ -227,6 +227,16 @@ public class ContikiMoteType implements MoteType {
 
   @Override
   public Mote generateMote(Simulation simulation) {
+    Mote[] motes = simulation.getMotes(this);
+    if ( motes != null )
+    if ( motes.length == 1 ) {
+        // if alredy have such types, need unlink from direct inteface and 
+        //    share corelib memory with array interface 
+        for ( Mote m: motes)
+        if (m.getMemory() == directMemory) {
+            ((ContikiMote)m).setMemory( directMemory.clone() );
+        }
+    }
     return new ContikiMote(this, simulation);
   }
 

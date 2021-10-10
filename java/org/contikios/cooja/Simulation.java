@@ -949,6 +949,27 @@ public class Simulation extends Observable implements Runnable {
   }
 
   /**
+   * Returns all motes of type in this simulation.
+   *
+   * @return Motes
+   */
+  public Mote[] getMotes(MoteType type) {
+    
+    int cnt = getMotesCount(type);
+    //if(cnt <= 0)  return null;
+
+    Mote[] arr = new Mote[cnt];
+
+    int i = 0;
+    for (Mote m: getMotes()) {
+        if (m.getType() == type) {
+          arr[i++] = m;
+        }
+    }
+    return arr;
+  }
+
+  /**
    * Returns uninitialised motes
    *
    * @return Motes
