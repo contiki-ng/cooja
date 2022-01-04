@@ -334,6 +334,8 @@ public abstract class CoreComm {
    */
   public abstract void tick();
 
+  public abstract void kill();
+
   /**
    * Initializes a mote by running a startup script in the core. (Should only be
    * run once, at the same time as the library is loaded)

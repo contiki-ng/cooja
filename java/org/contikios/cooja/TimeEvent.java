@@ -68,6 +68,9 @@ public abstract class TimeEvent {
 
   public abstract void execute(long t);
 
+  //kills event execution - signal to execution thread  
+  public void kill() {};
+
   public String getShort() {
     return "" + time + (name != null ? ": " + name : "");
   }

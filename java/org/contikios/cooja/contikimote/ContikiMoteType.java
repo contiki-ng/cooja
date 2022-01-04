@@ -802,6 +802,13 @@ public class ContikiMoteType implements MoteType {
   }
 
   /**
+   * try abort mote executing thread
+   * */
+  public void kill() {
+      myCoreComm.kill();
+  }
+
+  /**
    * Creates and returns a copy of this mote type's initial memory (just after
    * the init function has been run). When a new mote is created it should get
    * it's memory from here.

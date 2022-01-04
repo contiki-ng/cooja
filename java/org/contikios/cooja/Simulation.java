@@ -70,9 +70,10 @@ public class Simulation extends Observable implements Runnable {
   /* Used to restrict simulation speed */
   private long speedLimitLastSimtime;
   private long speedLimitLastRealtime;
-
+  
   private long lastStartTime;
   private long currentSimulationTime = 0;
+  private TimeEvent currentSimulationEvent = null;
 
   private String title = null;
 
@@ -276,9 +277,11 @@ public class Simulation extends Observable implements Runnable {
         if (nextEvent.time < currentSimulationTime) {
           throw new RuntimeException("Next event is in the past: " + nextEvent.time + " < " + currentSimulationTime + ": " + nextEvent);
         }
+        currentSimulationEvent= nextEvent;
         currentSimulationTime = nextEvent.time;
         /*logger.info("Executing event #" + EVENT_COUNTER++ + " @ " + currentSimulationTime + ": " + nextEvent);*/
         nextEvent.execute(currentSimulationTime);
+        currentSimulationEvent       = null;
 
         if (stopSimulation) {
           isRunning = false;
@@ -375,6 +378,12 @@ public class Simulation extends Observable implements Runnable {
    */
   public void stopSimulation() {
     stopSimulation(true);
+  }
+
+  public void breakSimulation() {
+      stopSimulation(true);
+      if (currentSimulationEvent != null)
+          currentSimulationEvent.kill();
   }
 
   /**
