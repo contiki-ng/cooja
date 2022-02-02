@@ -38,6 +38,7 @@ import org.contikios.cooja.contikimote.ContikiMote;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.dialogs.SerialUI;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
+import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
 
 /**
@@ -48,13 +49,15 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * <li>char simSerialReceivingFlag (1=mote has incoming serial data)
  * <li>int simSerialReceivingLength
  * <li>byte[] simSerialReceivingData
+ * <li>char simSerialSendFlag (1=mote has outgoing serial data)
+ * <li>int simSerialSendLength
+ * <li>byte[] simSerialSendData
  * </ul>
  * <p>
  *
  * Core interface:
  * <ul>
  * <li>rs232_interface
- * <li>simlog_interface
  * </ul>
  * <p>
  *
@@ -65,13 +68,25 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Serial port")
-public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, PolledAfterActiveTicks {
+public class ContikiRS232 extends SerialUI implements ContikiMoteInterface
+    , PolledAfterActiveTicks, PolledBeforeActiveTicks 
+{
   private static Logger logger = Logger.getLogger(ContikiRS232.class);
 
   private ContikiMote mote = null;
   private VarMemory moteMem = null;
 
   static final int SERIAL_BUF_SIZE = 16 * 1024; /* rs232.c:40 */
+  static final int SERIAL_BUF_STOP = 0x10000;
+  private int      serial_buf_limit = SERIAL_BUF_SIZE;
+
+  // legacy serial prints to simlog
+  static final int SERIAL_LEGACY        = 0;
+  // mote serial can prints to serial
+  static final int SERIAL_SENDING       = 1;
+  private int      serial_ver = SERIAL_LEGACY;
+
+  static final String simSendFlag = "simSerialSendFlag"; 
 
   /**
    * Creates an interface to the RS232 at mote.
@@ -84,35 +99,75 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
   public ContikiRS232(Mote mote) {
     this.mote = (ContikiMote) mote;
     this.moteMem = new VarMemory(mote.getMemory());
+    if ( this.moteMem.variableExists(simSendFlag) )
+        serial_ver = SERIAL_SENDING;
   }
 
   public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"rs232_interface", "simlog_interface" };
+    return new String[]{"rs232_interface"};
   }
 
-  public void doActionsAfterTick() {
-    if (moteMem.getByteValueOf("simLoggedFlag") == 1) {
-      int len = moteMem.getIntValueOf("simLoggedLength");
-      byte[] bytes = moteMem.getByteArray("simLoggedData", len);
-
-      moteMem.setByteValueOf("simLoggedFlag", (byte) 0);
-      moteMem.setIntValueOf("simLoggedLength", 0);
-
-      for (byte b: bytes) {
-        dataReceived(b);
+  public void doActionsBeforeTick() {
+      int recv_size = moteMem.getIntValueOf("simSerialReceivingLength");
+      if (recv_size > SERIAL_BUF_STOP) {
+          //this huge value treat as declaration with receiver buffer size in LSB
+          serial_buf_limit = recv_size & (SERIAL_BUF_STOP-1);
+          logger.debug("mote"+ getMote().getID() +".ContikiRS232 establish receive buffer size " + serial_buf_limit);
+          moteMem.setIntValueOf("simSerialReceivingLength", serial_buf_limit);
       }
+  }
+
+  private boolean isSendigFrame() {
+      if (serial_ver >= SERIAL_SENDING) {
+          return (moteMem.getByteValueOf("simSerialSendFlag") != 0);
+      }
+      return false;
+  }
+
+  private void haveSentFrame() {
+      if (serial_ver >= SERIAL_SENDING)
+          moteMem.setIntValueOf("simSerialSendFlag", 0);
+      
+      moteMem.setIntValueOf("simSerialSendLength", 0);
+  }
+  
+  public void doActionsAfterTick() {
+    if ( isSendigFrame() ) {
+      int len = moteMem.getIntValueOf("simSerialSendLength");
+      byte[] bytes = moteMem.getByteArray("simSerialSendData", len);
+
+      haveSentFrame();
+
+  	  //logger.info("RS232:received:" + bytes.length);
+  	  bufReceived(bytes);
     }
   }
 
+  @Override
   public void writeString(String message) {
+      // TODO: old code and tests, relye that coja-serial finishes every message
+      //     passes to mote autocompletes with \n
+      // for compatibility with old test, keep this feature for writen strings
+      //  BUT this is not exactly old style - it addsEOL to every message.
+      //    
+      // to write exact data, use writeArray
+      if ((message.length() == 0) || (message.charAt(message.length()-1)!='\n') )
+          message += '\n';
+
+    super.writeString(message);
+
     final byte[] dataToAppend = message.getBytes();
 
     mote.getSimulation().invokeSimulationThread(new Runnable() {
       public void run() {
         /* Append to existing buffer */
         int oldSize = moteMem.getIntValueOf("simSerialReceivingLength");
+        if (oldSize < 0) {
+            // drop send, since receiver id down, not allow receive
+            return;
+        }
         int newSize = oldSize + dataToAppend.length;
-        if (newSize > SERIAL_BUF_SIZE) {
+        if (newSize > serial_buf_limit) {
         	logger.fatal("ContikiRS232: dropping rs232 data #1, buffer full: " + oldSize + " -> " + newSize);
         	mote.requestImmediateWakeup();
         	return;
@@ -139,7 +194,11 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
 
   private TimeEvent pendingBytesEvent = null;
   private Vector<Byte> pendingBytes = new Vector<Byte>();
+  @Override
   public void writeArray(byte[] s) {
+	//logger.info("RS232:writeArray:" + s.length);
+	super.writeArray(s);
+
     for (byte b: s) {
       pendingBytes.add(b);
     }
@@ -156,6 +215,13 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
           return;
         }
 
+        int oldSize = moteMem.getIntValueOf("simSerialReceivingLength");
+        if (oldSize < 0) {
+            // drop send, since receiver id down, not allow receive
+            pendingBytes.clear();
+            return;
+        }
+        
         /* Move bytes from synchronized vector to Contiki buffer */
         int nrBytes = pendingBytes.size();
         byte[] dataToAppend = new byte[nrBytes];
@@ -165,10 +231,10 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
         }
 
         /* Append to existing buffer */
-        int oldSize = moteMem.getIntValueOf("simSerialReceivingLength");
         int newSize = oldSize + dataToAppend.length;
-        if (newSize > SERIAL_BUF_SIZE) {
+        if (newSize > serial_buf_limit) {
         	logger.fatal("ContikiRS232: dropping rs232 data #2, buffer full: " + oldSize + " -> " + newSize);
+            moteMem.setByteValueOf("simSerialReceivingFlag", (byte) 1);
         	mote.requestImmediateWakeup();
         	return;
         }
@@ -199,7 +265,10 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
     });
   }
 
+  @Override
   public void writeByte(final byte b) {
+	super.writeByte(b);
+
     pendingBytes.add(b);
 
     if (pendingBytesEvent != null) {
@@ -214,6 +283,13 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
           return;
         }
 
+        int oldSize = moteMem.getIntValueOf("simSerialReceivingLength");
+        if (oldSize < 0) {
+            // drop send, since receiver id down, not allow receive
+            pendingBytes.clear();
+            return;
+        }
+
         /* Move bytes from synchronized vector to Contiki buffer */
         int nrBytes = pendingBytes.size();
         byte[] dataToAppend = new byte[nrBytes];
@@ -223,10 +299,10 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
         }
 
         /* Append to existing buffer */
-        int oldSize = moteMem.getIntValueOf("simSerialReceivingLength");
         int newSize = oldSize + dataToAppend.length;
-        if (newSize > SERIAL_BUF_SIZE) {
+        if (newSize > serial_buf_limit) {
         	logger.fatal("ContikiRS232: dropping rs232 data #3, buffer full: " + oldSize + " -> " + newSize);
+            moteMem.setByteValueOf("simSerialReceivingFlag", (byte) 1);
         	mote.requestImmediateWakeup();
         	return;
         }

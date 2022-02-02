@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, Swedish Institute of Computer Science.
+ * Copyright (c) 2006, Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,33 +28,40 @@
  *
  */
 
-package org.contikios.cooja.plugins;
+package org.contikios.cooja.interfaces;
+
 import org.contikios.cooja.*;
-import org.contikios.cooja.interfaces.*;
+
+import java.util.Observer;
+import org.contikios.cooja.interfaces.SerialPort;
+
 /**
- * 
+ * A Log represents a mote logging output. An implementation should notify all
+ * observers whenever new logging output is available.
  *
- * @author Joakim Eriksson
+ * @author Fredrik Osterlind
  */
-public class ScriptMote {
+@ClassDescription("Serial IO")
+public abstract class SerialIO extends MoteInterface //Log //maybe better extends Log?  
+	implements SerialPort 
+{
+	  public abstract void writeByte(byte b);
+	  public abstract void writeArray(byte[] s);
+	  public abstract void writeString(String s);
 
-  public Mote mote;
-  public int id;
-  public String lastMsg;  
+	  public abstract void addSerialDataObserver(Observer o);
+	  public abstract void deleteSerialDataObserver(Observer o);
 
-  public void setMoteMsg(Mote mote, String msg) {
-    this.mote = mote;
-    if (mote != null) {
-      id = mote.getID();
-    } else {
-      id = -1;
-    }
-    lastMsg = msg;
-  }
+	  public abstract byte getLastSerialData();
 
-  public void write(String data) {
-    if (mote == null) return;
-    SerialPort serialPort = (SerialPort) mote.getInterfaces().getSerial();
-    serialPort.writeString(data);
-  }
+	  // dummy omplementation
+	  public byte[] getLastSerialBuf( int limit) {
+		  byte[] b = new byte[1];
+		  b[0] = getLastSerialData();
+		  return b; 
+	  }
+
+	  public abstract void flushInput();
+
+	  public abstract void close();
 }

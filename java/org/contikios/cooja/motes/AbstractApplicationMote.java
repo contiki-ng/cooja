@@ -45,6 +45,7 @@ import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.ApplicationRadio;
 import org.contikios.cooja.interfaces.ApplicationSerialPort;
+import org.contikios.cooja.interfaces.ApplicationLogPort;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
@@ -100,7 +101,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
   }
 
   public void log(String msg) {
-    ((ApplicationSerialPort)moteInterfaces.getLog()).triggerLog(msg);
+    ((ApplicationLogPort)moteInterfaces.getLog()).triggerLog(msg);
   }
   
   @Override

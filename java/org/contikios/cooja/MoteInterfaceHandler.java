@@ -60,6 +60,7 @@ public class MoteInterfaceHandler {
   private RimeAddress myRimeAddress;
   private LED myLED;
   private Log myLog;
+  private SerialIO mySerial;
   private MoteID myMoteID;
   private PIR myPIR;
   private Position myPosition;
@@ -223,6 +224,24 @@ public class MoteInterfaceHandler {
     return myLog;
   }
 
+  public void setLog( Log x) {
+      myLog = x;
+      if ( !moteInterfaces.contains(x) )
+          moteInterfaces.add( x );
+} 
+
+  /**
+   * Returns the log interface (if any).
+   *
+   * @return Log interface
+   */
+  public SerialIO getSerial() {
+    if (mySerial == null) {
+      mySerial = getInterfaceOfType(SerialIO.class);
+    }
+    return mySerial;
+  }
+
   /**
    * Returns the mote ID interface (if any).
    *
@@ -352,6 +371,10 @@ public class MoteInterfaceHandler {
    */
   public Collection<MoteInterface> getInterfaces() {
     return moteInterfaces;
+  }
+
+  public ArrayList<MoteInterface> getInterfacesList() {
+      return moteInterfaces;
   }
 
   /**

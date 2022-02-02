@@ -76,6 +76,9 @@ import org.contikios.cooja.mote.memory.UnknownVariableException;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.contikios.cooja.util.StringUtils;
 
+import org.contikios.cooja.contikimote.interfaces.ContikiLog;
+import org.contikios.cooja.contikimote.interfaces.ContikiRS232;
+
 /**
  * The Cooja mote type holds the native library used to communicate with an
  * underlying Contiki system. All communication with that system should always
@@ -1327,6 +1330,8 @@ public class ContikiMoteType implements MoteType {
     moteInterfacesClasses.toArray(arr);
     setCoreInterfaces(ContikiMoteType.getRequiredCoreInterfaces(arr));
 
+    fixInterfacesContents(simulation);
+
     /* Backwards compatibility: old cooja mote type is being loaded */
     if (getContikiSourceFile() == null
             && warnedOldVersion
@@ -1347,6 +1352,30 @@ public class ContikiMoteType implements MoteType {
 
     boolean createdOK = configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
     return createdOK;
+  }
+
+  protected void fixInterfacesContents(Simulation simulation) {
+      if ( MoteType.haveInterfaceOfType(ContikiRS232.class, moteInterfacesClasses) != null ) 
+      if ( MoteType.haveInterfaceOfType(ContikiLog.class, moteInterfacesClasses) == null )
+      {
+          //looks tis is old project, that use ContikiRS232 combined SerialPort with Log
+          //So load ContikiLog for this project, since now it deployed from ContikiRS232
+          Class<? extends MoteInterface> moteInterfaceClass =
+                  simulation.getCooja().tryLoadClass(this, MoteInterface.class
+                              , "org.contikios.cooja.contikimote.interfaces.ContikiLog");
+
+          if (moteInterfaceClass == null) {
+            logger.fatal("Could not append interface ContikiLog" + 
+                        "for old project mote type " + getIdentifier() );
+            return ;
+          }
+          else {
+              logger.info("Append interface ContikiLog, " + 
+                          "for old project mote type " + getIdentifier() );
+              moteInterfacesClasses.add(moteInterfaceClass);
+              setCoreInterfaces(getRequiredCoreInterfaces(getMoteInterfaceClasses()));
+          }
+      }
   }
 
   public static String[] getRequiredCoreInterfaces(

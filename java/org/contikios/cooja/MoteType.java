@@ -30,6 +30,7 @@ package org.contikios.cooja;
 import java.awt.Container;
 import java.io.File;
 import java.util.Collection;
+import java.util.ArrayList;
 
 import javax.swing.JComponent;
 
@@ -38,6 +39,7 @@ import org.jdom.Element;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
+import org.contikios.cooja.util.ArrayUtils;
 
 /**
  * The mote type defines properties common for several motes. These properties
@@ -142,6 +144,77 @@ public interface MoteType {
    * @param classes Mote interface classes
    */
   public void setMoteInterfaceClasses(Class<? extends MoteInterface>[] classes);
+
+  /**
+   * Append interface to current interface. Dumb method via ArrayList 
+   * 
+   *
+   * @param classes Mote interface classes
+   */
+  default 
+  public <N extends MoteInterface> 
+  void addMoteInterfaceClass( Class<N> interfaceType ) {
+      Class<? extends MoteInterface>[] intfs = getMoteInterfaceClasses();
+      if ( haveInterfaceOfType(interfaceType, intfs ) != null )
+          return;
+
+      setMoteInterfaceClasses( ArrayUtils.add(intfs, interfaceType) );
+  }
+
+  /**
+   * Returns interface of given type. Returns the first interface found that
+   * is either of the given class or of a subclass.
+   *
+   * Usage: getInterfaceOfType(Radio.class)
+   *
+   * @param interfaceType Class of interface to return
+   * @return Mote interface, or null if no interface exists of given type
+   */
+  static
+  public <N extends MoteInterface> 
+  Class<? extends MoteInterface> haveInterfaceOfType(Class<N> interfaceType
+          , ArrayList< Class<? extends MoteInterface> > list) 
+  {
+      for (Class<? extends MoteInterface> intf : list) {
+        if (isSubclassOf( interfaceType, intf) ) {
+          return intf;
+        }
+      }
+      return null;
+  }
+
+  static
+  public <N extends MoteInterface> 
+  Class<? extends MoteInterface> haveInterfaceOfType(Class<N> interfaceType
+          , Class<? extends MoteInterface>[] list) 
+  {
+      for (Class<? extends MoteInterface> intf : list) {
+        if (isSubclassOf( interfaceType, intf) ) {
+          return intf;
+        }
+      }
+      return null;
+  }
+
+  static
+  public boolean isSubclassOf(Class<?> clazz, Class<?> superClass) {
+      if (superClass.equals(Object.class)) {
+          // Every class is an Object.
+          return true;
+      }
+      if (clazz.equals(superClass)) {
+          return true;
+      } else {
+          clazz = clazz.getSuperclass();
+          // every class is Object, but superClass is below Object
+          if (clazz.equals(Object.class)) {
+              // we've reached the top of the hierarchy, but superClass couldn't be found.
+              return false;
+          }
+          // try the next level up the hierarchy.
+          return isSubclassOf(clazz, superClass);
+      }
+  }
 
   /**
    * Returns a panel with mote type specific data.
