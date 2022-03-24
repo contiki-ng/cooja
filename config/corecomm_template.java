@@ -52,7 +52,7 @@ public class [CLASSNAME] extends CoreComm {
 
   public native void tick();
   public native void init();
-  public native void setReferenceAddress(int addr);
-  public native void getMemory(int rel_addr, int length, byte[] mem);
-  public native void setMemory(int rel_addr, int length, byte[] mem);
+  public native void setReferenceAddress(long addr);
+  public native void getMemory(long rel_addr, int length, byte[] mem);
+  public native void setMemory(long rel_addr, int length, byte[] mem);
 }

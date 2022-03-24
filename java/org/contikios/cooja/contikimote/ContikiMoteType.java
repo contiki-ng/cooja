@@ -488,7 +488,7 @@ public class ContikiMoteType implements MoteType {
       tmp.addMemorySection("tmp.common", commonSecParser.parse(0));
 
       try {
-        int referenceVar = (int) varMem.getVariable("referenceVar").addr;
+        long referenceVar = varMem.getVariable("referenceVar").addr;
         myCoreComm.setReferenceAddress(referenceVar);
       } catch (UnknownVariableException e) {
         throw new MoteTypeCreationException("Error setting reference variable: " + e.getMessage(), e);
@@ -525,7 +525,7 @@ public class ContikiMoteType implements MoteType {
   public static abstract class SectionParser {
 
     private final String[] mapFileData;
-    protected int startAddr;
+    protected long startAddr;
     protected int size;
     protected Map<String, Symbol> variables;
 
@@ -537,7 +537,7 @@ public class ContikiMoteType implements MoteType {
       return mapFileData;
     }
 
-    public int getStartAddr() {
+    public long getStartAddr() {
       return startAddr;
     }
 
@@ -555,14 +555,14 @@ public class ContikiMoteType implements MoteType {
 
     abstract Map<String, Symbol> parseSymbols(long offset);
 
-    protected int parseFirstHexInt(String regexp, String[] data) {
+    protected long parseFirstHexLong(String regexp, String[] data) {
       String retString = getFirstMatchGroup(data, regexp, 1);
 
       if (retString == null || retString.equals("")) {
         return -1;
       }
 
-      return Integer.parseInt(retString.trim(), 16);
+      return Long.parseLong(retString.trim(), 16);
     }
 
     public MemoryInterface parse(long offset) {
@@ -620,7 +620,7 @@ public class ContikiMoteType implements MoteType {
         startAddr = -1;
         return;
       }
-      startAddr = parseFirstHexInt(startRegExp, getData());
+      startAddr = parseFirstHexLong(startRegExp, getData());
     }
 
     @Override
@@ -629,7 +629,7 @@ public class ContikiMoteType implements MoteType {
         size = -1;
         return;
       }
-      size = parseFirstHexInt(sizeRegExp, getData());
+      size = (int) parseFirstHexLong(sizeRegExp, getData());
     }
 
     @Override
@@ -641,8 +641,8 @@ public class ContikiMoteType implements MoteType {
       for (String line : getData()) {
         Matcher matcher = pattern.matcher(line);
         if (matcher.find()) {
-          if (Integer.decode(matcher.group(1)).intValue() >= getStartAddr()
-                  && Integer.decode(matcher.group(1)).intValue() <= getStartAddr() + getSize()) {
+          if (Long.decode(matcher.group(1)).longValue() >= getStartAddr() &&
+              Long.decode(matcher.group(1)).longValue() <= getStartAddr() + getSize()) {
             String varName = matcher.group(2);
             varNames.put(varName, new Symbol(
                     Symbol.Type.VARIABLE,
@@ -661,7 +661,7 @@ public class ContikiMoteType implements MoteType {
      * @param varName Name of variable
      * @return Relative memory address of variable or -1 if not found
      */
-    private int getMapFileVarAddress(String[] mapFileData, String varName) {
+    private long getMapFileVarAddress(String[] mapFileData, String varName) {
 
       String regExp = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_1")
               + varName
@@ -669,7 +669,7 @@ public class ContikiMoteType implements MoteType {
       String retString = getFirstMatchGroup(mapFileData, regExp, 1);
 
       if (retString != null) {
-        return Integer.parseInt(retString.trim(), 16);
+        return Long.parseLong(retString.trim(), 16);
       } else {
         return -1;
       }
@@ -730,7 +730,7 @@ public class ContikiMoteType implements MoteType {
         startAddr = -1;
         return;
       }
-      startAddr = parseFirstHexInt(startRegExp, getData());
+      startAddr = parseFirstHexLong(startRegExp, getData());
     }
 
     @Override
@@ -745,12 +745,12 @@ public class ContikiMoteType implements MoteType {
         return;
       }
 
-      int end = parseFirstHexInt(endRegExp, getData());
+      long end = parseFirstHexLong(endRegExp, getData());
       if (end < 0) {
         size = -1;
         return;
       }
-      size = end - getStartAddr();
+      size = (int) (end - getStartAddr());
     }
 
     @Override
@@ -780,7 +780,7 @@ public class ContikiMoteType implements MoteType {
 	    logger.debug("Put symbol " + symbol + " with address " + varAddr + " and size " + varSize);
             addresses.put(symbol, new Symbol(Symbol.Type.VARIABLE, symbol, varAddr, varSize));
           } else {
-            int oldAddress = (int) addresses.get(symbol).addr;
+            long oldAddress = addresses.get(symbol).addr;
             if (oldAddress != varAddr) {
               /*logger.warn("Warning, command response not matching previous entry of: "
                + varName);*/
@@ -822,13 +822,13 @@ public class ContikiMoteType implements MoteType {
   public void getCoreMemory(SectionMoteMemory mem) {
     for (MemoryInterface section : mem.getSections().values()) {
       getCoreMemory(
-              (int) (section.getStartAddr() - offset),
+              section.getStartAddr() - offset,
               section.getTotalSize(),
               section.getMemory());
     }
   }
 
-  private void getCoreMemory(int relAddr, int length, byte[] data) {
+  private void getCoreMemory(long relAddr, int length, byte[] data) {
     myCoreComm.getMemory(relAddr, length, data);
   }
 
@@ -842,13 +842,13 @@ public class ContikiMoteType implements MoteType {
   public void setCoreMemory(SectionMoteMemory mem) {
     for (MemoryInterface section : mem.getSections().values()) {
       setCoreMemory(
-              (int) (section.getStartAddr() - offset),
+              section.getStartAddr() - offset,
               section.getTotalSize(),
               section.getMemory());
     }
   }
 
-  private void setCoreMemory(int relAddr, int length, byte[] mem) {
+  private void setCoreMemory(long relAddr, int length, byte[] mem) {
     myCoreComm.setMemory(relAddr, length, mem);
   }
 
