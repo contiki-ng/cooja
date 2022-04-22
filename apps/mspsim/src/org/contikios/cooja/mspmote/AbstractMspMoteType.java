@@ -141,18 +141,14 @@ public abstract class AbstractMspMoteType extends MspMoteType {
                             true
                             );
                 } catch (Exception e) {
-                    MoteTypeCreationException newException =
-                            new MoteTypeCreationException("Mote type creation failed: " + e.getMessage(), e);
-                    newException.setCompilationOutput(compilationOutput);
-
                     /* Print last 10 compilation errors to console */
                     MessageContainer[] messages = compilationOutput.getMessages();
                     for (int i = Math.max(messages.length - 10, 0); i < messages.length; i++) {
                         logger.fatal(">> " + messages[i]);
                     }
 
-                    logger.fatal("Compilation error: " + e.getMessage());
-                    throw newException;
+                    logger.fatal("Compilation error: " + compilationOutput);
+                    return false;
                 }
             }
         }

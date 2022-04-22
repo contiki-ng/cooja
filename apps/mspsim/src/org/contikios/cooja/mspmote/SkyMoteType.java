@@ -157,11 +157,6 @@ public class SkyMoteType extends MspMoteType {
               true
           );
         } catch (Exception e) {
-          MoteTypeCreationException newException =
-            new MoteTypeCreationException("Mote type creation failed: " + e.getMessage());
-          newException = (MoteTypeCreationException) newException.initCause(e);
-          newException.setCompilationOutput(compilationOutput);
-
           /* Print last 10 compilation errors to console */
           MessageContainer[] messages = compilationOutput.getMessages();
           for (int i=messages.length-10; i < messages.length; i++) {
@@ -171,8 +166,8 @@ public class SkyMoteType extends MspMoteType {
             logger.fatal(">> " + messages[i]);
           }
 
-          logger.fatal("Compilation error: " + e.getMessage());
-          throw newException;
+          logger.fatal("Compilation error: " + compilationOutput);
+          return false;
         }
       }
     }
