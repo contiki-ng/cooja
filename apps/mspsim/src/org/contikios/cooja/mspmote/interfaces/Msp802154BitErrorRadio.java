@@ -358,7 +358,7 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
       }
     }
 
-    mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote, 0) {
+    mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
       public void execute(long t) {
         super.execute(t);
         radio.receivedByte(inputByte);

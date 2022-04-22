@@ -236,7 +236,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 			}
 
 			final byte byteToDeliver = b;
-			getMote().getSimulation().scheduleEvent(new MspMoteTimeEvent(mote, 0) {
+			getMote().getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
 				public void execute(long t) {
 					super.execute(t);
 					cc1101.receivedByte(byteToDeliver);
@@ -269,7 +269,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 		} else {
 			inputByte = lastIncomingByte;
 		}
-		mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote, 0) {
+		mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
 			public void execute(long t) {
 				super.execute(t);
 				cc1101.receivedByte(inputByte);
@@ -366,7 +366,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 		}
 		currentSignalStrength = signalStrength;
 		if (rssiLastCounter == 0) {
-			getMote().getSimulation().scheduleEvent(new MspMoteTimeEvent(mote, 0) {
+			getMote().getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
 				public void execute(long t) {
 					super.execute(t);
 

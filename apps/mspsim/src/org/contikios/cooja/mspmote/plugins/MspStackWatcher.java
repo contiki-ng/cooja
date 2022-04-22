@@ -114,7 +114,7 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
     stackUI = new StackUI(cpu, -1); /* Needs manual updates */
     stackUI.init("Stack usage", mspMote.registry);
     stackUI.start();
-    increasePosTimeEvent = new MoteTimeEvent(mspMote, 0) {
+    increasePosTimeEvent = new MoteTimeEvent(mspMote) {
       public void execute(long t) {
         stackUI.requestIncreasePos();
         simulation.scheduleEvent(this, t + Simulation.MILLISECOND);

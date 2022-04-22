@@ -88,7 +88,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
     }
   };
 
-  private final TimeEvent ageArrowsTimeEvent = new TimeEvent(0) {
+  private final TimeEvent ageArrowsTimeEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
       if (!active) {

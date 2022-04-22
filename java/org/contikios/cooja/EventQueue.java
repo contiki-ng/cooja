@@ -30,13 +30,57 @@
 
 package org.contikios.cooja;
 
+import java.util.PriorityQueue;
+import java.util.function.Predicate;
+
 /**
  * @author Joakim Eriksson (ported to COOJA by Fredrik Osterlind)
  */
-public class EventQueue {
+public final class EventQueue {
 
-  private TimeEvent first;
-  private int eventCount = 0;
+  private long count = 0;
+
+  public final class Pair implements Comparable<Pair> {
+    public final TimeEvent event;
+    public final long time;
+
+    private final long uuid;
+
+    public Pair(TimeEvent event, long time, long uuid) {
+      this.event = event;
+      this.time = time;
+      this.uuid = uuid;
+    }
+
+    public final int compareTo(Pair other) {
+      if (time < other.time)
+      {
+        return -1;
+      }
+      else if (time > other.time)
+      {
+        return +1;
+      }
+      else
+      {
+        // Tie breaker, to prioritise events based on insertion order
+        if (uuid < other.uuid)
+        {
+          return -1;
+        }
+        else if (uuid > other.uuid)
+        {
+          return +1;
+        }
+        else
+        {
+          throw new RuntimeException("Bad compare");
+        }
+      }
+    }
+  }
+
+  private final PriorityQueue<Pair> queue = new PriorityQueue<Pair>();
 
   /**
    * Should only be called from simulation thread!
@@ -45,41 +89,19 @@ public class EventQueue {
    * @param time Time
    */
   public void addEvent(TimeEvent event, long time) {
-    event.time = time;
-    addEvent(event);
-  }
-
-  private void addEvent(TimeEvent event) {
-    if (event.queue != null) {
-      if (event.isScheduled) {
+    if (event.isQueued()) {
+      if (event.isScheduled()) {
         throw new IllegalStateException("Event is already scheduled: " + event);
       }
       removeFromQueue(event);
     }
 
-    if (first == null) {
-      first = event;
-    } else {
-      TimeEvent pos = first;
-      TimeEvent lastPos = first;
-      while (pos != null && pos.time <= event.time) {
-        lastPos = pos;
-        pos = pos.nextEvent;
-      }
-      // Here pos will be the first TE after event
-      // and lastPos the first before
-      if (pos == first) {
-        // Before all other
-        event.nextEvent = pos;
-        first = event;
-      } else {
-        event.nextEvent = pos;
-        lastPos.nextEvent = event;
-      }
-    }
-    event.queue = this;
-    event.isScheduled = true;
-    eventCount++;
+    // Each event is given a monotonically increasing unique id.
+    // This is used in a tiebreaker in the queue, so events that are
+    // inserted earlier are executed first.
+    queue.add(new Pair(event, time, count++));
+
+    event.setScheduled(true);
   }
 
   /**
@@ -89,38 +111,20 @@ public class EventQueue {
    * @return True if event was removed
    */
   private boolean removeFromQueue(TimeEvent event) {
-    TimeEvent pos = first;
-    TimeEvent lastPos = first;
+    boolean removed = queue.removeIf((Pair p) -> p.event == event);
 
-    while (pos != null && pos != event) {
-      lastPos = pos;
-      pos = pos.nextEvent;
-    }
-    if (pos == null) {
-      return false;
-    }
-    // pos == event!
-    if (pos == first) {
-      // remove it from first pos.
-      first = pos.nextEvent;
-    } else {
-      // else link prev to next...
-      lastPos.nextEvent = pos.nextEvent;
-    }
-    // unlink
-    pos.nextEvent = null;
+    assert removed == event.isQueued();
 
-    event.queue = null;
-    event.isScheduled = false;
-    eventCount--;
-    return true;
+    if (removed)
+    {
+      event.setScheduled(false);
+    }
+
+    return removed;
   }
 
-  public void removeAll() {
-    TimeEvent event = popFirst();
-    while (event != null) {
-      event = popFirst();
-    }
+  public void clear() {
+    queue.clear();
   }
 
   /**
@@ -128,33 +132,42 @@ public class EventQueue {
    *
    * @return Event
    */
-  public TimeEvent popFirst() {
-    TimeEvent tmp = first;
-    if (tmp == null) {
-      return null;
+  public Pair popFirst() {
+    Pair tmp;
+
+    while (true)
+    {
+      tmp = queue.poll();
+
+      if (tmp == null) {
+        return null;
+      }
+
+      boolean scheduled = tmp.event.isScheduled();
+
+      // No longer scheduled or queued
+      tmp.event.setScheduled(false);
+
+      if (scheduled)
+      {
+        break;
+      }
+
+      // If not scheduled, then find the next scheduled event
     }
 
-    first = tmp.nextEvent;
-    // Unlink.
-    tmp.nextEvent = null;
-
-    // No longer scheduled!
-    tmp.queue = null;
-    eventCount--;
-
-    if (!tmp.isScheduled) {
-      /* pop and return another event instead */
-      return popFirst();
-    }
-    tmp.isScheduled = false;
     return tmp;
   }
 
-  public TimeEvent peekFirst() {
-    return first;
+  public boolean isEmpty() {
+    return queue.isEmpty();
+  }
+
+  public boolean removeIf(final Predicate<TimeEvent> pred) {
+    return queue.removeIf((Pair p) -> pred.test(p.event));
   }
 
   public String toString() {
-    return "EventQueue with " + eventCount + " events";
+    return "EventQueue with " + queue.size() + " events";
   }
 }

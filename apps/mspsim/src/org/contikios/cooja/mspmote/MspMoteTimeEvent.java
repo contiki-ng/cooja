@@ -40,12 +40,12 @@ import org.contikios.cooja.MoteTimeEvent;
  * @author Fredrik Osterlind
  */
 public abstract class MspMoteTimeEvent extends MoteTimeEvent {
-  private static Logger logger = Logger.getLogger(MspMoteTimeEvent.class);
+  private static final Logger logger = Logger.getLogger(MspMoteTimeEvent.class);
 
-  private MspMote mote;
+  private final MspMote mote;
 
-  public MspMoteTimeEvent(MspMote mote, long time) {
-    super(mote, time);
+  public MspMoteTimeEvent(MspMote mote) {
+    super(mote);
     this.mote = mote;
   }
 

@@ -217,7 +217,7 @@ public class BufferListener extends VisPlugin {
   private ArrayList<Mote> motes = new ArrayList<Mote>();
   private ArrayList<SegmentMemoryMonitor> memoryMonitors = new ArrayList<SegmentMemoryMonitor>();
 
-  private TimeEvent hourTimeEvent = new TimeEvent(0) {
+  private TimeEvent hourTimeEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
       hasHours = true;
