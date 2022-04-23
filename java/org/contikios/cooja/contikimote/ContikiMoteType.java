@@ -498,7 +498,7 @@ public class ContikiMoteType implements MoteType {
 
       getCoreMemory(tmp);
 
-      offset = varMem.getIntValueOf("referenceVar") & 0xFFFFFFFFL;
+      offset = varMem.getAddrValueOf("referenceVar");
       logger.debug(getContikiFirmwareFile().getName()
               + ": offsetting Cooja mote address space: 0x" + Long.toHexString(offset));
     }
