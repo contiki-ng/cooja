@@ -487,17 +487,6 @@ public class CompileContiki {
     ar2 = ar2.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
     ccFlags = ccFlags.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
 
-    /* Replace JAVA_HOME variable */
-    String javaHome = System.getenv().get("JAVA_HOME");
-    if (javaHome == null) {
-      javaHome = "";
-    }
-    link1 = link1.replace("$(JAVA_HOME)", javaHome);
-    link2 = link2.replace("$(JAVA_HOME)", javaHome);
-    ar1 = ar1.replace("$(JAVA_HOME)", javaHome);
-    ar2 = ar2.replace("$(JAVA_HOME)", javaHome);
-    ccFlags = ccFlags.replace("$(JAVA_HOME)", javaHome);
-
     /* Strip away contiki application .c extension */
     String contikiAppNoExtension = contikiApp.getName().substring(0, contikiApp.getName().length()-2);
 
