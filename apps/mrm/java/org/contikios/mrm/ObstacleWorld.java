@@ -35,7 +35,8 @@ import java.awt.geom.*;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Vector;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 /**
@@ -45,7 +46,7 @@ import org.jdom.Element;
  * @author Fredrik Osterlind
  */
 class ObstacleWorld {
-  private static Logger logger = Logger.getLogger(ObstacleWorld.class);
+  private static final Logger logger = LogManager.getLogger(ObstacleWorld.class);
   
   // All registered obstacles
   private Vector<Rectangle2D> allObstacles = null;

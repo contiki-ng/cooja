@@ -49,7 +49,8 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.coffee.CoffeeFS;
@@ -68,7 +69,7 @@ import org.contikios.cooja.dialogs.TableColumnAdjuster;
  */
 @ClassDescription("Coffee Filesystem")
 public class SkyCoffeeFilesystem extends MoteInterface {
-  private static Logger logger = Logger.getLogger(SkyCoffeeFilesystem.class);
+  private static final Logger logger = LogManager.getLogger(SkyCoffeeFilesystem.class);
 
   private Mote mote;
 

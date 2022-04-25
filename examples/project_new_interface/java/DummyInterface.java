@@ -30,7 +30,8 @@
 
 import java.util.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -59,7 +60,7 @@ import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
  */
 @ClassDescription("Dummy Interface")
 public class DummyInterface extends MoteInterface implements ContikiMoteInterface, PolledBeforeAllTicks, PolledAfterAllTicks {
-  private static Logger logger = Logger.getLogger(DummyInterface.class);
+  private static final Logger logger = LogManager.getLogger(DummyInterface.class);
 
   private Mote mote;
   private SectionMoteMemory memory;

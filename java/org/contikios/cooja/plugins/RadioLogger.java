@@ -78,7 +78,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -112,7 +113,7 @@ import org.contikios.cooja.util.StringUtils;
 @PluginType(PluginType.SIM_PLUGIN)
 public class RadioLogger extends VisPlugin {
 
-  private static Logger logger = Logger.getLogger(RadioLogger.class);
+  private static final Logger logger = LogManager.getLogger(RadioLogger.class);
   private static final long serialVersionUID = -6927091711697081353L;
 
   private final static int COLUMN_NO = 0;

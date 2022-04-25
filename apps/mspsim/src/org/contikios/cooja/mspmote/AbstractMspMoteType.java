@@ -41,7 +41,8 @@ import java.net.URL;
 
 import javax.swing.*;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.*;
 import org.contikios.cooja.dialogs.*;
@@ -51,7 +52,7 @@ import org.contikios.cooja.dialogs.*;
  */
 public abstract class AbstractMspMoteType extends MspMoteType {
 
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LogManager.getLogger(getClass());
 
     public abstract String getMoteType();
 

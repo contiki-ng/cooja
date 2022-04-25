@@ -51,7 +51,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Watchpoint;
@@ -63,7 +64,7 @@ import org.contikios.cooja.WatchpointMote;
  * @author Fredrik Osterlind
  */
 public class BreakpointsUI extends JPanel {
-  private static Logger logger = Logger.getLogger(BreakpointsUI.class);
+  private static final Logger logger = LogManager.getLogger(BreakpointsUI.class);
 
   private static final int COLUMN_ADDRESS = 0;
   private static final int COLUMN_FILELINE = 1;

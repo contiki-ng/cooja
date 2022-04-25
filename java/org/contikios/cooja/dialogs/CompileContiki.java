@@ -47,7 +47,8 @@ import java.util.regex.Matcher;
 
 import javax.swing.Action;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteType;
@@ -61,7 +62,7 @@ import org.contikios.cooja.contikimote.ContikiMoteType;
  * @author Fredrik Osterlind
  */
 public class CompileContiki {
-  private static Logger logger = Logger.getLogger(CompileContiki.class);
+  private static final Logger logger = LogManager.getLogger(CompileContiki.class);
 
   /**
    * Executes a Contiki compilation command.

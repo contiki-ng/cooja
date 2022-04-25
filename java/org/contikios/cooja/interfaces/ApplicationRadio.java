@@ -47,7 +47,8 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
@@ -65,7 +66,7 @@ import org.contikios.cooja.Simulation;
  * @author Fredrik Osterlind
  */
 public class ApplicationRadio extends Radio implements NoiseSourceRadio, DirectionalAntennaRadio {
-  private static Logger logger = Logger.getLogger(ApplicationRadio.class);
+  private static final Logger logger = LogManager.getLogger(ApplicationRadio.class);
 
   private Simulation simulation;
   private Mote mote;

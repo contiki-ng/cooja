@@ -46,7 +46,8 @@ import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Simulation;
@@ -69,7 +70,7 @@ import statistics.GaussianWrapper;
  * @author Fredrik Osterlind
  */
 public class ChannelModel {
-  private static Logger logger = Logger.getLogger(ChannelModel.class);
+  private static final Logger logger = LogManager.getLogger(ChannelModel.class);
 
   private static final double C = 299792458; /* m/s */
 

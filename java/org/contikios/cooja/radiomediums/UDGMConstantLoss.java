@@ -30,7 +30,8 @@
 
 package org.contikios.cooja.radiomediums;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Simulation;
@@ -44,7 +45,7 @@ import org.contikios.cooja.interfaces.Radio;
  */
 @ClassDescription("UDGM: Constant Loss")
 public class UDGMConstantLoss extends UDGM {
-  private static Logger logger = Logger.getLogger(UDGMConstantLoss.class);
+  private static final Logger logger = LogManager.getLogger(UDGMConstantLoss.class);
 
   public UDGMConstantLoss(Simulation simulation) {
     super(simulation);

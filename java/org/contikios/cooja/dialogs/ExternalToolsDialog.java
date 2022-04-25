@@ -34,7 +34,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.*;
 
@@ -46,7 +47,7 @@ import org.contikios.cooja.*;
  */
 public class ExternalToolsDialog extends JDialog {
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(ExternalToolsDialog.class);
+  private static final Logger logger = LogManager.getLogger(ExternalToolsDialog.class);
 
   private ExternalToolsEventHandler myEventHandler = new ExternalToolsEventHandler();
 

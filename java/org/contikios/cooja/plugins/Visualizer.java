@@ -93,7 +93,8 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -142,7 +143,7 @@ import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
 public class Visualizer extends VisPlugin implements HasQuickHelp {
 
   private static final long serialVersionUID = 1L;
-  private static final Logger logger = Logger.getLogger(Visualizer.class);
+  private static final Logger logger = LogManager.getLogger(Visualizer.class);
 
   public static final int MOTE_RADIUS = 8;
   private static final Color[] DEFAULT_MOTE_COLORS = {Color.WHITE};

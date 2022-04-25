@@ -38,7 +38,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 import org.contikios.cooja.ContikiError;
 import org.contikios.cooja.Cooja;
@@ -84,7 +85,7 @@ import org.contikios.cooja.mspmote.interfaces.MspClock;
  * @author Fredrik Osterlind
  */
 public abstract class MspMote extends AbstractEmulatedMote implements Mote, WatchpointMote {
-  private static Logger logger = Logger.getLogger(MspMote.class);
+  private static final Logger logger = LogManager.getLogger(MspMote.class);
 
   private final static int EXECUTE_DURATION_US = 1; /* We always execute in 1 us steps */
 
@@ -218,7 +219,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     this.myCpu.setTrace(0); /* TODO Enable */
 
     LogListener ll = new LogListener() {
-      private Logger mlogger = Logger.getLogger("MSPSim");
+      private Logger mlogger = LogManager.getLogger("MSPSim");
       @Override
       public void log(Loggable source, String message) {
         mlogger.debug("" + getID() + ": " + source.getID() + ": " + message);

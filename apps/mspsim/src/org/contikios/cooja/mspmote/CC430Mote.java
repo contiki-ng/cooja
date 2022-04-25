@@ -34,7 +34,8 @@ package org.contikios.cooja.mspmote;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mspmote.MspMote;
@@ -45,7 +46,7 @@ import se.sics.mspsim.platform.ti.CC430Node;
  * @author Fredrik Osterlind
  */
 public class CC430Mote extends MspMote {
-    private static Logger logger = Logger.getLogger(CC430Mote.class);
+    private static final Logger logger = LogManager.getLogger(CC430Mote.class);
 
     public CC430Node cc430Node = null;
 

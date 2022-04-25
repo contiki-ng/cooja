@@ -39,7 +39,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.WeakHashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
@@ -69,7 +70,7 @@ import org.jdom.Element;
  * @author Fredrik Osterlind
  */
 public abstract class AbstractRadioMedium extends RadioMedium {
-	private static Logger logger = Logger.getLogger(AbstractRadioMedium.class);
+	private static final Logger logger = LogManager.getLogger(AbstractRadioMedium.class);
 	
 	/* Signal strengths in dBm.
 	 * Approx. values measured on TmoteSky */

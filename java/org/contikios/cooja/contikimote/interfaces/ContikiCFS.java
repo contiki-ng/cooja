@@ -37,7 +37,8 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -68,7 +69,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 @ClassDescription("Filesystem (CFS)")
 public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, PolledAfterActiveTicks {
-  private static Logger logger = Logger.getLogger(ContikiCFS.class);
+  private static final Logger logger = LogManager.getLogger(ContikiCFS.class);
 
   public int FILESYSTEM_SIZE = 4000; /* Configure CFS size here and in cfs-cooja.c */
   private Mote mote = null;

@@ -32,7 +32,8 @@ package org.contikios.cooja;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.interfaces.Radio;
 
@@ -54,7 +55,7 @@ import org.contikios.cooja.interfaces.Radio;
  * @author Fredrik Osterlind
  */
 public class RadioConnection {
-  private static Logger logger = Logger.getLogger(RadioConnection.class);
+  private static final Logger logger = LogManager.getLogger(RadioConnection.class);
 
   private static int ID = 0; /* Unique radio connection ID. For internal use */
   private int id;

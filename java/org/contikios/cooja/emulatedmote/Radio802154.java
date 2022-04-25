@@ -30,7 +30,8 @@
 package org.contikios.cooja.emulatedmote;
 
 import java.util.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -48,7 +49,7 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
     private final static boolean DEBUG = false;
     
-    private static final Logger logger = Logger.getLogger(Radio802154.class);
+    private static final Logger logger = LogManager.getLogger(Radio802154.class);
 
     protected long lastEventTime = 0;
 

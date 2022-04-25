@@ -37,7 +37,8 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 import org.contikios.cooja.*;
 import org.contikios.cooja.mspmote.MspMote;
@@ -47,7 +48,7 @@ import org.contikios.cooja.mspmote.MspMote;
  */
 @ClassDescription("M25P80 Flash")
 public class SkyFlash extends MoteInterface {
-  private static Logger logger = Logger.getLogger(SkyFlash.class);
+  private static final Logger logger = LogManager.getLogger(SkyFlash.class);
 
   protected final CoojaM25P80 m24p80;
 

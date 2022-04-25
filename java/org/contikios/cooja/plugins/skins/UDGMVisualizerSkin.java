@@ -56,7 +56,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -87,7 +88,7 @@ import org.contikios.cooja.radiomediums.UDGM;
 @SupportedArguments(radioMediums = {UDGM.class})
 public class UDGMVisualizerSkin implements VisualizerSkin {
 
-  private static final Logger logger = Logger.getLogger(UDGMVisualizerSkin.class);
+  private static final Logger logger = LogManager.getLogger(UDGMVisualizerSkin.class);
 
   private static final Color COLOR_TX = new Color(0, 255, 0, 100);
   private static final Color COLOR_INT = new Color(50, 50, 50, 100);

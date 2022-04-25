@@ -33,7 +33,8 @@ package org.contikios.cooja.contikimote.interfaces;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.COOJARadioPacket;
@@ -93,7 +94,7 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
 
   private VarMemory myMoteMemory;
 
-  private static Logger logger = Logger.getLogger(ContikiRadio.class);
+  private static final Logger logger = LogManager.getLogger(ContikiRadio.class);
 
   /**
    * Transmission bitrate (kbps).

@@ -37,7 +37,8 @@ import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
@@ -57,7 +58,7 @@ import org.jdom.Element;
 @ClassDescription("IP Addresses")
 public class IPAddress extends MoteInterface {
 
-  private static final Logger logger = Logger.getLogger(IPAddress.class);
+  private static final Logger logger = LogManager.getLogger(IPAddress.class);
   private static final int IPv6_MAX_ADDRESSES = 4;
   private static final int MONITORED_SIZE = 150;
   

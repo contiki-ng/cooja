@@ -39,7 +39,8 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.jdom.Attribute;
 import org.jdom.Document;
@@ -60,7 +61,7 @@ import org.contikios.cooja.plugins.ScriptRunner;
 import org.contikios.cooja.PluginType;
 
 public class ExecuteJAR {
-  private static Logger logger = Logger.getLogger(ExecuteJAR.class);
+  private static final Logger logger = LogManager.getLogger(ExecuteJAR.class);
 
   public final static String SIMCONFIG_FILENAME = "simulation.csc";
   public final static String EXTERNALTOOLS_FILENAME = "exttools.config";

@@ -40,7 +40,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
@@ -72,7 +73,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 public class ContikiBeeper extends Beeper implements ContikiMoteInterface, PolledAfterActiveTicks {
   private Mote mote = null;
   private VarMemory moteMem = null;
-  private static Logger logger = Logger.getLogger(ContikiBeeper.class);
+  private static final Logger logger = LogManager.getLogger(ContikiBeeper.class);
 
   /**
    * Creates an interface to the beeper at mote.

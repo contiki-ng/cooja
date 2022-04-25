@@ -33,7 +33,8 @@ package org.contikios.cooja.interfaces;
 import java.text.NumberFormat;
 import java.util.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -48,7 +49,7 @@ import org.contikios.cooja.*;
  */
 @ClassDescription("Position")
 public class Position extends MoteInterface {
-  private static Logger logger = Logger.getLogger(Position.class);
+  private static final Logger logger = LogManager.getLogger(Position.class);
   private Mote mote = null;
   private double[] coords = new double[3];
 

@@ -53,7 +53,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.Cooja;
@@ -71,7 +72,7 @@ import org.contikios.cooja.contikimote.ContikiMoteType.NetworkStack;
  */
 public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   private static final long serialVersionUID = -2596048833554777606L;
-  private static Logger logger = Logger.getLogger(ContikiMoteCompileDialog.class);
+  private static final Logger logger = LogManager.getLogger(ContikiMoteCompileDialog.class);
 
   private JComboBox netStackComboBox = new JComboBox(NetworkStack.values());
 

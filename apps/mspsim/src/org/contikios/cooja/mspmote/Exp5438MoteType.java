@@ -39,7 +39,8 @@ import java.net.URL;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
@@ -68,7 +69,7 @@ import org.contikios.cooja.mspmote.interfaces.UsciA1Serial;
 @ClassDescription("EXP430F5438 mote")
 @AbstractionLevelDescription("Emulated level")
 public class Exp5438MoteType extends MspMoteType {
-  private static Logger logger = Logger.getLogger(Exp5438MoteType.class);
+  private static final Logger logger = LogManager.getLogger(Exp5438MoteType.class);
 
   protected MspMote createMote(Simulation simulation) {
     return new Exp5438Mote(this, simulation);

@@ -30,7 +30,8 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 
 /**
@@ -39,7 +40,7 @@ import org.apache.log4j.Logger;
  * @author Fredrik Osterlind
  */
 public class CRCCoder {
-  private static Logger logger = Logger.getLogger(CRCCoder.class);
+  private static final Logger logger = LogManager.getLogger(CRCCoder.class);
 
   /**
    * Updates given accumulated CRC16 checksum with given byte.

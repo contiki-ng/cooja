@@ -39,7 +39,8 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -65,7 +66,7 @@ import se.sics.mspsim.util.ELF;
  */
 @ClassDescription("Msp Mote Type")
 public abstract class MspMoteType implements MoteType {
-  private static Logger logger = Logger.getLogger(MspMoteType.class);
+  private static final Logger logger = LogManager.getLogger(MspMoteType.class);
 
   private String identifier = null;
   private String description = null;

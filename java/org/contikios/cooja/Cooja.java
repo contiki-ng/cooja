@@ -119,7 +119,8 @@ import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -160,7 +161,7 @@ public class Cooja extends Observable {
   private static JFrame frame = null;
   private static JApplet applet = null;
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(Cooja.class);
+  private static final Logger logger = LogManager.getLogger(Cooja.class);
 
   /**
    * External tools configuration.

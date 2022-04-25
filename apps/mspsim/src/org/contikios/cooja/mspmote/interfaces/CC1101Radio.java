@@ -32,7 +32,8 @@ package org.contikios.cooja.mspmote.interfaces;
 
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -55,7 +56,7 @@ import se.sics.mspsim.chip.Radio802154;
  */
 @ClassDescription("TI CC1101")
 public class CC1101Radio extends Radio implements CustomDataRadio {
-	private static Logger logger = Logger.getLogger(CC1101Radio.class);
+	private static final Logger logger = LogManager.getLogger(CC1101Radio.class);
 
 	/**
 	 * Cross-level:

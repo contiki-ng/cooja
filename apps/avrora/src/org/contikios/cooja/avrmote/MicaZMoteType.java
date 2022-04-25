@@ -45,7 +45,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.AbstractionLevelDescription;
@@ -76,7 +77,7 @@ import org.contikios.cooja.interfaces.Position;
 @ClassDescription("MicaZ mote")
 @AbstractionLevelDescription("Emulated level")
 public class MicaZMoteType implements MoteType {
-  private static Logger logger = Logger.getLogger(MicaZMoteType.class);
+  private static final Logger logger = LogManager.getLogger(MicaZMoteType.class);
 
   private String identifier = null;
   private String description = null;

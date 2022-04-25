@@ -71,7 +71,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
@@ -95,7 +96,7 @@ import org.contikios.cooja.interfaces.Position;
  */
 public abstract class AbstractCompileDialog extends JDialog {
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(AbstractCompileDialog.class);
+  private static final Logger logger = LogManager.getLogger(AbstractCompileDialog.class);
 
   protected final static Dimension LABEL_DIMENSION = new Dimension(170, 25);
 

@@ -36,7 +36,8 @@ import java.awt.Point;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -56,7 +57,7 @@ import org.contikios.cooja.plugins.VisualizerSkin;
  */
 @ClassDescription("LEDs")
 public class LEDVisualizerSkin implements VisualizerSkin {
-  private static Logger logger = Logger.getLogger(LEDVisualizerSkin.class);
+  private static final Logger logger = LogManager.getLogger(LEDVisualizerSkin.class);
 
   private Simulation simulation = null;
   private Visualizer visualizer = null;

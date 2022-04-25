@@ -34,7 +34,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
@@ -61,7 +62,7 @@ import org.contikios.cooja.avrmote.interfaces.MicaClock;
  * @author Joakim Eriksson, Fredrik Osterlind
  */
 public class MicaZMote extends AbstractEmulatedMote implements Mote {
-  private static Logger logger = Logger.getLogger(MicaZMote.class);
+  private static final Logger logger = LogManager.getLogger(MicaZMote.class);
 
   /* 8 MHz according to Contiki config */
   public static long NR_CYCLES_PER_MSEC = 8000;

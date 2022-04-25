@@ -51,7 +51,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.SimEventCentral;
@@ -59,7 +60,7 @@ import org.contikios.cooja.Simulation;
 
 public class BufferSettings extends JDialog {
   private static final long serialVersionUID = 7086171115472941104L;
-  private static Logger logger = Logger.getLogger(BufferSettings.class);
+  private static final Logger logger = LogManager.getLogger(BufferSettings.class);
   private final static Dimension LABEL_SIZE = new Dimension(150, 25);
 
   private SimEventCentral central;

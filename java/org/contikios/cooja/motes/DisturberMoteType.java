@@ -33,7 +33,8 @@ package org.contikios.cooja.motes;
 
 import java.awt.Container;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.COOJARadioPacket;
@@ -60,7 +61,7 @@ import org.contikios.cooja.interfaces.Radio.RadioEvent;
 @ClassDescription("Disturber mote")
 @AbstractionLevelDescription("Application level")
 public class DisturberMoteType extends AbstractApplicationMoteType {
-  private static Logger logger = Logger.getLogger(DisturberMoteType.class);
+  private static final Logger logger = LogManager.getLogger(DisturberMoteType.class);
 
   public DisturberMoteType() {
     super();

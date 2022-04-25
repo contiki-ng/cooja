@@ -31,7 +31,8 @@
 package org.contikios.cooja.mspmote;
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.platform.wismote.WismoteNode;
@@ -41,7 +42,7 @@ import se.sics.mspsim.platform.wismote.WismoteNode;
  */
 public class WismoteMote extends MspMote {
 
-    private static Logger logger = Logger.getLogger(WismoteMote.class);
+    private static final Logger logger = LogManager.getLogger(WismoteMote.class);
 
     public WismoteMote(MspMoteType moteType, Simulation sim) {
         super(moteType, sim);

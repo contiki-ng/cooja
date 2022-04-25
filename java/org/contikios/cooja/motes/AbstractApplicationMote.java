@@ -34,7 +34,8 @@ import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
@@ -58,7 +59,7 @@ import org.contikios.cooja.mote.memory.MemoryLayout;
  * @author Fredrik Osterlind
  */
 public abstract class AbstractApplicationMote extends AbstractWakeupMote implements Mote {
-  private static Logger logger = Logger.getLogger(AbstractApplicationMote.class);
+  private static final Logger logger = LogManager.getLogger(AbstractApplicationMote.class);
 
   private MoteType moteType = null;
 

@@ -38,7 +38,8 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -69,7 +70,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 @ClassDescription("EEPROM")
 public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface, PolledAfterActiveTicks {
-  private static Logger logger = Logger.getLogger(ContikiEEPROM.class);
+  private static final Logger logger = LogManager.getLogger(ContikiEEPROM.class);
 
   public int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */
   private Mote mote = null;

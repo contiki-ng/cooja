@@ -41,7 +41,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
@@ -69,7 +70,7 @@ import org.contikios.cooja.mspmote.interfaces.TR1001Radio;
 @ClassDescription("ESB mote")
 @AbstractionLevelDescription("Emulated level")
 public class ESBMoteType extends MspMoteType {
-  private static Logger logger = Logger.getLogger(ESBMoteType.class);
+  private static final Logger logger = LogManager.getLogger(ESBMoteType.class);
 
   public Icon getMoteTypeIcon() {
     Toolkit toolkit = Toolkit.getDefaultToolkit();

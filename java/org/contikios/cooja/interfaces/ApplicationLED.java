@@ -8,14 +8,15 @@ import java.util.Observer;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
 import org.contikios.cooja.contikimote.interfaces.ContikiLED;
 
 public class ApplicationLED extends LED {
-    private static Logger logger = Logger.getLogger(ContikiLED.class);
+    private static final Logger logger = LogManager.getLogger(ContikiLED.class);
 
     private Mote mote = null;
     private byte currentLedValue = 0;
