@@ -259,7 +259,7 @@ public class Simulation extends Observable implements Runnable {
 
   public void run() {
     lastStartTime = System.currentTimeMillis();
-    logger.info("Simulation main loop started, system time: " + lastStartTime);
+    logger.info("Simulation started, system time: " + lastStartTime);
     isRunning = true;
     speedLimitLastRealtime = System.currentTimeMillis();
     speedLimitLastSimtime = getSimulationTime();
@@ -318,7 +318,7 @@ public class Simulation extends Observable implements Runnable {
 
     this.setChanged();
     this.notifyObservers(this);
-    logger.info("Simulation main loop stopped, system time: " + System.currentTimeMillis() +
+    logger.info("Simulation completed, system time: " + System.currentTimeMillis() +
         "\tDuration: " + (System.currentTimeMillis() - lastStartTime) +
                 " ms" +
                 "\tSimulated time " + getSimulationTimeMillis() +

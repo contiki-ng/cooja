@@ -385,7 +385,7 @@ public class ScriptRunner extends VisPlugin {
           updateTitle();
         }
 
-        logger.info("Test script activated");
+        logger.debug("Test script activated");
 
       } catch (ScriptException e) {
         logger.fatal("Test script error: ", e);
@@ -428,7 +428,7 @@ public class ScriptRunner extends VisPlugin {
         codeEditor.setEnabled(true);
         updateTitle();
       }
-      logger.info("Test script deactivated");
+      logger.debug("Test script deactivated");
     }
   }
 

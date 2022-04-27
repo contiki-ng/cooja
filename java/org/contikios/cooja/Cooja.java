@@ -1321,7 +1321,6 @@ public class Cooja extends Observable {
   }
 
   public static Simulation quickStartSimulationConfig(File config, boolean vis, Long manualRandomSeed) {
-    logger.info("> Starting Cooja");
     JDesktopPane desktop = createDesktopPane();
     if (vis) {
       frame = new JFrame(WINDOW_TITLE);
@@ -1356,7 +1355,6 @@ public class Cooja extends Observable {
    * @return True if simulation was created
    */
   private static Simulation quickStartSimulation(String source) {
-    logger.info("> Starting Cooja");
     JDesktopPane desktop = createDesktopPane();
     frame = new JFrame(WINDOW_TITLE);
     Cooja gui = new Cooja(desktop);

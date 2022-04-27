@@ -296,7 +296,6 @@ public class LogScriptEngine {
     };
     scriptThread = new Thread(group, new Runnable() {
       public void run() {
-        /*logger.info("test script thread starts");*/
         try {
           ((Invocable)engine).getInterface(Runnable.class).run();
         } catch (RuntimeException e) {
@@ -307,7 +306,7 @@ public class LogScriptEngine {
 
           if (throwable.getMessage() != null &&
               throwable.getMessage().contains("test script killed") ) {
-            logger.info("Test script finished");
+            logger.debug("Test script finished");
           } else {
             if (!Cooja.isVisualized()) {
               logger.fatal("Test script error, terminating Cooja.");
@@ -324,7 +323,6 @@ public class LogScriptEngine {
             }
           }
         }
-        /*logger.info("test script thread exits");*/
       }
     });
     scriptThread.start(); /* Starts by acquiring semaphore (blocks) */
