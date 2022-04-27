@@ -95,6 +95,7 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.TableColumnAdjuster;
 import org.contikios.cooja.dialogs.UpdateAggregator;
+import org.contikios.cooja.dialogs.HistoryUI;
 import org.contikios.cooja.util.ArrayQueue;
 
 /**
@@ -149,6 +150,8 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   private JTextField filterTextField = null;
   private JLabel filterLabel = new JLabel("Filter: ");
   private Color filterTextFieldBackground;
+  /* filter history */
+  private HistoryUI                 filterHistory = new HistoryUI();;
 
   private AbstractTableModel model;
 
@@ -515,6 +518,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     filterTextField.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         String str = filterTextField.getText();
+        filterHistory.add(str);
         setFilter(str);
 
         /* Autoscroll */
@@ -536,6 +540,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         });
       }
     });
+    filterHistory.assignOnUI(filterTextField);
     filterPanel.add(Box.createHorizontalStrut(2));
 
     getContentPane().add(BorderLayout.CENTER, new JScrollPane(logTable));
@@ -618,6 +623,10 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       element.setText(simulation.getCooja().createPortablePath(appendStreamFile).getPath());
       config.add(element);
     }
+    element = filterHistory.getConfigXML("filterhistory");
+    if (element != null) {
+        config.add(element);
+    }
     return config;
   }
 
@@ -653,6 +662,9 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
           } catch (IOException e) {
           }
         }
+      }
+      else if(name.equals("filterhistory")) {
+          filterHistory.setConfigXML(element);
       }
     }
 
