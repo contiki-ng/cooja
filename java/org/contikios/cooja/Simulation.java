@@ -711,7 +711,7 @@ public class Simulation extends Observable implements Runnable {
         } else {
           logger
               .fatal("Mote type was not created: " + element.getText().trim());
-          throw new Exception("All mote types were not recreated");
+          return false;
         }
       }
 
