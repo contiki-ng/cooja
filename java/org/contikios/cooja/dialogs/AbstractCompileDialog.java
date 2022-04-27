@@ -479,6 +479,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         continue;
       }
 
+      cmd = Cooja.resolveCommandOnSource(cmd, contikiSource);
       commands.add(cmd);
     }
     if (commands.isEmpty()) {

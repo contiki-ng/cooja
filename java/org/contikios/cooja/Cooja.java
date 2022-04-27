@@ -2770,6 +2770,46 @@ public class Cooja extends Observable {
         return path;
     }
 
+    public static
+    String resolveCommandOnSource(String command, final File source) {
+        Path src = source.toPath().getParent().toAbsolutePath();
+        logger.debug("fixup refs for "+ source + " path:"+src);
+        return resolveCommandAtPath(command, src);
+    }
+    
+    public static
+    String resolveCommandAtPath(String command, Path src) {
+        for(final String[] elem : PATH_IDENTIFIER ){
+            if (command.indexOf(elem[0]) <= 0 )
+                continue;
+
+            File elem_path = new File( Cooja.getExternalToolsSetting(elem[1]) );
+            String canonical = elem_path.getAbsolutePath();
+            String relative  = src.relativize(elem_path.getAbsoluteFile().toPath()).normalize().toString();
+            if (canonical.length() < relative.length()) {
+                command = command.replace( elem[0] , canonical);
+                logger.debug("fixup reference "+ elem[0] +" -> "+ canonical);
+            }
+            else {
+                command = command.replace( elem[0] , relative);
+                logger.debug("fixup reference "+ elem[0] 
+                            +" -> "+ relative 
+                            +" :" + canonical);
+            }
+        }
+        return command;
+    }
+
+    public static
+    String[] resolveCommandAtPath(String[] command, Path src) {
+        String fixcmd[] = new String[command.length];
+        for (int i = 0; i < command.length; ++i) {
+            fixcmd[i] = Cooja.resolveCommandAtPath( command[i], src );
+        }
+        return fixcmd;
+    }
+
+
   // // EXTERNAL TOOLS SETTINGS METHODS ////
 
   /**

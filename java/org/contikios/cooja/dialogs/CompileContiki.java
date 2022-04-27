@@ -142,10 +142,12 @@ public class CompileContiki {
       messageDialog.addMessage("", MessageList.NORMAL);
       messageDialog.addMessage("> " + cmd, MessageList.NORMAL);
     }
+    
+    String fixcmd[] = Cooja.resolveCommandAtPath( command, directory.toPath() );
 
     final Process compileProcess;
     try {
-      compileProcess = Runtime.getRuntime().exec(command, env, directory);
+      compileProcess = Runtime.getRuntime().exec(fixcmd, env, directory);
 
       final BufferedReader processNormal = new BufferedReader(
           new InputStreamReader(compileProcess.getInputStream()));
