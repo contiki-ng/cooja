@@ -97,6 +97,7 @@ import org.contikios.cooja.WatchpointMote.WatchpointListener;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.interfaces.Radio.RadioEvent;
+import org.contikios.cooja.interfaces.TimeSelect;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
 
 /**
@@ -106,7 +107,8 @@ import org.contikios.cooja.motes.AbstractEmulatedMote;
  */
 @ClassDescription("Timeline")
 @PluginType(PluginType.SIM_STANDARD_PLUGIN)
-public class TimeLine extends VisPlugin implements HasQuickHelp {
+public class TimeLine extends VisPlugin implements HasQuickHelp, TimeSelect 
+{
   private static final long serialVersionUID = -883154261246961973L;
   public static final int LED_PIXEL_HEIGHT = 2;
   public static final int EVENT_PIXEL_HEIGHT = 4;
@@ -914,6 +916,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     return output.toString();
   }
 
+  // TimeSelect
   public void trySelectTime(final long toTime) {
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
@@ -935,52 +938,11 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     });
   }
 
-  private Action radioLoggerAction = new AbstractAction("Show in " + Cooja.getDescriptionOf(RadioLogger.class)) {
-    private static final long serialVersionUID = 7690116136861949864L;
-    public void actionPerformed(ActionEvent e) {
-      if (popupLocation == null) {
-        return;
-      }
-      long time = (long) (popupLocation.x*currentPixelDivisor);
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-      	if (!(p instanceof RadioLogger)) {
-      		continue;
-      	}
-
-        /* Select simulation time */
-      	RadioLogger plugin = (RadioLogger) p;
-        plugin.trySelectTime(time);
-      }
-    }
-  };
-  private Action logListenerAction = new AbstractAction("Show in " + Cooja.getDescriptionOf(LogListener.class)) {
-    private static final long serialVersionUID = -8626118368774023257L;
-    public void actionPerformed(ActionEvent e) {
-      if (popupLocation == null) {
-        return;
-      }
-      long time = (long) (popupLocation.x*currentPixelDivisor);
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-      	if (!(p instanceof LogListener)) {
-      		continue;
-      	}
-
-        /* Select simulation time */
-        LogListener plugin = (LogListener) p;
-        plugin.trySelectTime(time);
-      }
-    }
-  };
-
-  private Action showInAllAction = new AbstractAction("Show in " + Cooja.getDescriptionOf(LogListener.class) + " and " + Cooja.getDescriptionOf(RadioLogger.class)) {
+  private Action showInAllAction = new AbstractAction("Show in TimeSelect-ables ") {
     private static final long serialVersionUID = -2458733078524773995L;
     public void actionPerformed(ActionEvent e) {
-      logListenerAction.actionPerformed(null);
-      radioLoggerAction.actionPerformed(null);
+      long time = (long) (popupLocation.x*currentPixelDivisor);
+      performTimePlugins(simulation, time);
     }
   };
 
@@ -1408,8 +1370,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       final JPopupMenu popupMenu = new JPopupMenu();
 
       popupMenu.add(new JMenuItem(showInAllAction));
-      popupMenu.add(new JMenuItem(logListenerAction));
-      popupMenu.add(new JMenuItem(radioLoggerAction));
 
       JMenu advancedMenu = new JMenu("Advanced");
       advancedMenu.add(new JCheckBoxMenuItem(executionDetailsAction) {
@@ -1431,21 +1391,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           if (System.currentTimeMillis() - lastClick < 250) {
             popupLocation = e.getPoint();
             showInAllAction.actionPerformed(null);
-
-            long time = (long) (popupLocation.x*currentPixelDivisor);
-            Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-            for (Plugin p: plugins) {
-            	if (!(p instanceof TimeLine)) {
-            		continue;
-            	}
-            	if (p == TimeLine.this) {
-            		continue;
-            	}
-              /* Select simulation time */
-            	TimeLine plugin = (TimeLine) p;
-              plugin.trySelectTime(time);
-            }
-
           }
           lastClick = System.currentTimeMillis();
         }

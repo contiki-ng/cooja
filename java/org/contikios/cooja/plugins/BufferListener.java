@@ -99,6 +99,7 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.TableColumnAdjuster;
 import org.contikios.cooja.dialogs.UpdateAggregator;
 import org.contikios.cooja.interfaces.IPAddress;
+import org.contikios.cooja.interfaces.TimeSelect;
 import org.contikios.cooja.mote.memory.MemoryBuffer;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor;
@@ -113,7 +114,9 @@ import org.contikios.cooja.util.StringUtils;
  */
 @ClassDescription("Buffer view")
 @PluginType(PluginType.SIM_PLUGIN)
-public class BufferListener extends VisPlugin {
+public class BufferListener extends VisPlugin
+    implements TimeSelect
+{
   private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(BufferListener.class);
 
@@ -1164,23 +1167,7 @@ public class BufferListener extends VisPlugin {
     private static final long serialVersionUID = -6358463434933029699L;
     @Override
     public void actionPerformed(ActionEvent e) {
-      int view = logTable.getSelectedRow();
-      if (view < 0) {
-        return;
-      }
-      int model = logTable.convertRowIndexToModel(view);
-      long time = logs.get(model).time;
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-        if (!(p instanceof BufferListener)) {
-          continue;
-        }
-
-        /* Select simulation time */
-        BufferListener plugin = (BufferListener) p;
-        plugin.trySelectTime(time);
-      }
+      focusTimePlugins(BufferListener.class);
     }
   };
 
@@ -1188,23 +1175,7 @@ public class BufferListener extends VisPlugin {
     private static final long serialVersionUID = -6358463434933029699L;
     @Override
     public void actionPerformed(ActionEvent e) {
-      int view = logTable.getSelectedRow();
-      if (view < 0) {
-        return;
-      }
-      int model = logTable.convertRowIndexToModel(view);
-      long time = logs.get(model).time;
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-        if (!(p instanceof TimeLine)) {
-          continue;
-        }
-
-        /* Select simulation time */
-        TimeLine plugin = (TimeLine) p;
-        plugin.trySelectTime(time);
-      }
+      focusTimePlugins(TimeLine.class);
     }
   };
 
@@ -1212,25 +1183,20 @@ public class BufferListener extends VisPlugin {
     private static final long serialVersionUID = -3041714249257346688L;
     @Override
     public void actionPerformed(ActionEvent e) {
+        focusTimePlugins(RadioLogger.class);
+    }
+  };
+
+  private <N extends Plugin & TimeSelect>
+  void focusTimePlugins(Class<N> pluginClass) {
       int view = logTable.getSelectedRow();
       if (view < 0) {
         return;
       }
       int model = logTable.convertRowIndexToModel(view);
       long time = logs.get(model).time;
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-        if (!(p instanceof RadioLogger)) {
-          continue;
-        }
-
-        /* Select simulation time */
-        RadioLogger plugin = (RadioLogger) p;
-        plugin.trySelectTime(time);
-      }
-    }
-  };
+      performTimePlugins(simulation, time, pluginClass);
+  }
 
   private Action showInAllAction = new AbstractAction("All") {
     private static final long serialVersionUID = -8433490108577001803L;
@@ -1240,8 +1206,13 @@ public class BufferListener extends VisPlugin {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      timeLineAction.actionPerformed(null);
-      radioLoggerAction.actionPerformed(null);
+        int view = logTable.getSelectedRow();
+        if (view < 0) {
+          return;
+        }
+        int model = logTable.convertRowIndexToModel(view);
+        long time = logs.get(model).time;
+        performTimePlugins(simulation, time);
     }
   };
 

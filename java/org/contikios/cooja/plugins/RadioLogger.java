@@ -94,6 +94,7 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.TableColumnAdjuster;
 import org.contikios.cooja.interfaces.Radio;
+import org.contikios.cooja.interfaces.TimeSelect;
 import org.contikios.cooja.plugins.analyzers.FragHeadPacketAnalyzer;
 import org.contikios.cooja.plugins.analyzers.ICMPv6Analyzer;
 import org.contikios.cooja.plugins.analyzers.IEEE802154Analyzer;
@@ -111,7 +112,9 @@ import org.contikios.cooja.util.StringUtils;
  */
 @ClassDescription("Radio messages")
 @PluginType(PluginType.SIM_PLUGIN)
-public class RadioLogger extends VisPlugin {
+public class RadioLogger extends VisPlugin
+    implements TimeSelect
+{
 
   private static final Logger logger = LogManager.getLogger(RadioLogger.class);
   private static final long serialVersionUID = -6927091711697081353L;
@@ -351,6 +354,23 @@ public class RadioLogger extends VisPlugin {
                 dataTable.getModel().getColumnName(COLUMN_TIME));
         repaint();
       }
+    });
+
+    dataTable.addMouseListener(new MouseAdapter() {
+        long lastClick = -1;
+        
+        public void mouseClicked(MouseEvent e) {
+            int rowIndex = dataTable.rowAtPoint(e.getPoint());
+            if (rowIndex == -1) {
+              return;
+            }
+
+            /* Focus on double-click */
+            if (System.currentTimeMillis() - lastClick < 250) {
+              showInAllAction.actionPerformed(null);
+            }
+            lastClick = System.currentTimeMillis();
+        }
     });
 
     dataTable.addKeyListener(new KeyAdapter() {
@@ -1056,17 +1076,7 @@ public class RadioLogger extends VisPlugin {
       if (selectedRow < 0) return;
 
       long time = connections.get(selectedRow).startTime;
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-        if (!(p instanceof TimeLine)) {
-          continue;
-        }
-
-        /* Select simulation time */
-        TimeLine plugin = (TimeLine) p;
-        plugin.trySelectTime(time);
-      }
+      performTimePlugins(simulation, time, TimeLine.class);
     }
   };
 
@@ -1081,21 +1091,11 @@ public class RadioLogger extends VisPlugin {
       if (selectedRow < 0) return;
 
       long time = connections.get(selectedRow).startTime;
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-        if (!(p instanceof LogListener)) {
-          continue;
-        }
-
-        /* Select simulation time */
-        LogListener plugin = (LogListener) p;
-        plugin.trySelectTime(time);
-      }
+      performTimePlugins(simulation, time, LogListener.class);
     }
   };
 
-  private Action showInAllAction = new AbstractAction("Timeline and mote output") {
+  private Action showInAllAction = new AbstractAction("TimeSelect-able output") {
     private static final long serialVersionUID = -3888292108886138128L;
 
     {
@@ -1104,8 +1104,13 @@ public class RadioLogger extends VisPlugin {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      timeLineAction.actionPerformed(null);
-      logListenerAction.actionPerformed(null);
+        int selectedRow = dataTable.getSelectedRow();
+        if (selectedRow < 0) return;
+        selectedRow = dataTable.convertRowIndexToModel(selectedRow);
+        if (selectedRow < 0) return;
+
+        long time = connections.get(selectedRow).startTime;
+        performTimePlugins(simulation, time);
     }
   };
 
