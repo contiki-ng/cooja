@@ -1134,6 +1134,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           /* Radio RXTX events */
           if (radioEv == RadioEvent.TRANSMISSION_STARTED ||
               radioEv == RadioEvent.TRANSMISSION_FINISHED ||
+              radioEv == RadioEvent.TRANSMISSION_BROKEN ||
               radioEv == RadioEvent.RECEPTION_STARTED ||
               radioEv == RadioEvent.RECEPTION_INTERFERED ||
               radioEv == RadioEvent.RECEPTION_FINISHED) {
@@ -1142,7 +1143,11 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             /* Override events, instead show state */
             if (moteRadio.isTransmitting()) {
               ev = new RadioRXTXEvent(
-                  simulation.getSimulationTime(), RXTXRadioEvent.TRANSMITTING);
+                  simulation.getSimulationTime()
+                  , (radioEv != RadioEvent.TRANSMISSION_BROKEN)
+                          ? RXTXRadioEvent.TRANSMITTING
+                          : RXTXRadioEvent.INTERFERED
+                  );
             } else if (!moteRadio.isRadioOn()) {
               ev = new RadioRXTXEvent(
                   simulation.getSimulationTime(), RXTXRadioEvent.IDLE);
@@ -2019,9 +2024,26 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       if (state == RXTXRadioEvent.IDLE) {
         return null;
       } else if (state == RXTXRadioEvent.TRANSMITTING) {
-        return Color.BLUE;
+
+          //if receiving frame that interfere later, show it as bad 
+          if (next == null)
+              return Color.BLUE;
+
+          RadioRXTXEvent later = RadioRXTXEvent.class.cast(next); 
+          if ( later.state != RXTXRadioEvent.INTERFERED)
+              return Color.BLUE;
+          return Color.MAGENTA;
+
       } else if (state == RXTXRadioEvent.RECEIVING) {
-        return Color.GREEN;
+          //if receiving frame that interfere later, show it as bad 
+          if (next == null)
+              return Color.GREEN;
+
+          RadioRXTXEvent later = RadioRXTXEvent.class.cast(next); 
+          if ( later.state != RXTXRadioEvent.INTERFERED)
+              return Color.GREEN;
+          return Color.ORANGE;
+
       } else if (state == RXTXRadioEvent.INTERFERED) {
         return Color.RED;
       } else {
