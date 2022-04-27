@@ -47,6 +47,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
@@ -98,6 +99,7 @@ import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.interfaces.Radio.RadioEvent;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
+import org.contikios.cooja.util.StringUtils;
 
 /**
  * Shows events such as mote logs, LEDs, and radio transmissions, in a timeline.
@@ -684,6 +686,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
                 new FileOutputStream(
                     saveFile)));
 
+        if(true) {
+            dumpEventsTimeOrder(outStream, allMoteEvents);
+        }
+        else
         /* Output all events (sorted per mote) */
         for (MoteEvents moteEvents: allMoteEvents) {
           for (MoteEvent ev: moteEvents.ledEvents) {
@@ -707,14 +713,52 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         }
 
         outStream.close();
-      } catch (Exception ex) {
-        logger.fatal("Could not write to file: " + saveFile);
+      }
+      catch (IOException ex) {
+          logger.fatal("Could not write to file: " + saveFile);
+          return;
+      }
+      catch (Exception ex) {
+          logger.fatal("dump file " + saveFile + " eception:\n"+ ex.toString()
+                      + "\ndump:\n" + StringUtils.dumpStackTrace(ex)
+                          );
         return;
       }
 
     }
   };
 
+  // output events for motes, ordered by time
+  public void dumpEventsTimeOrder(BufferedWriter outStream, final ArrayList<MoteEvents> events)
+      throws IOException
+  {
+      MoteEvents.LinesCursor[] cursors = new MoteEvents.LinesCursor[events.size()];
+      for (int i = 0; i < events.size(); i++ ) {
+          cursors[i] = events.get(i).new LinesCursor();
+      }
+      MoteEvent[] ev = new MoteEvent[cursors.length];
+      for (int i = 0; i < cursors.length; i++ ) {
+          ev[i] = cursors[i].take();
+      }
+    
+      // now scan first time order event, and proceed it
+      MoteEvent now_ev = null;
+      int       now_idx;
+      while (true) {
+          now_idx = select_first(ev);
+          if (now_idx < 0)
+              break;
+          now_ev = ev[now_idx];
+          if (now_ev == null) break;
+          final String msg = cursors[now_idx].getMote() + "\t" 
+                  + now_ev.time + "\t" 
+                  + now_ev.toString() + "\n"
+                  ;
+          outStream.write(msg);
+          ev[now_idx] = cursors[now_idx].take();
+      }
+  }
+  
   private Action clearAction = new AbstractAction("Clear all timeline data") {
     private static final long serialVersionUID = -4592530582786872403L;
     public void actionPerformed(ActionEvent e) {
@@ -1991,6 +2035,43 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
     }
   }
+
+  public static 
+  int select_first(final MoteEvent[] lines ) {
+      int  L      = -1;
+      MoteEvent ev= null;
+      long now    = 0;
+      
+      for (int i = 0; i < lines.length; i++) {
+          if (lines[i] == null)
+              continue;
+          if (ev == null) {
+              ev  = lines[i];
+              now = ev.time;
+              L   = i;
+              continue;
+          }
+          if (now > lines[i].time) {
+              now = lines[i].time;
+              L   = i;
+          }
+      }
+      if (ev != null)
+          return L;
+      return -1;
+  }
+
+  public static
+  class EventsList extends ArrayList<MoteEvent> {
+      public
+      MoteEvent first() {
+          if (!isEmpty())
+              return get(0);
+          else
+              return null;
+      }
+  }
+
   class NoHistoryEvent extends MoteEvent {
     public NoHistoryEvent(long time) {
       super(time);
@@ -2280,14 +2361,17 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
     }
   }
+
   class MoteEvents {
     Mote mote;
-    ArrayList<MoteEvent> radioRXTXEvents;
-    ArrayList<MoteEvent> radioChannelEvents;
-    ArrayList<MoteEvent> radioHWEvents;
-    ArrayList<MoteEvent> ledEvents;
-    ArrayList<MoteEvent> logEvents;
-    ArrayList<MoteEvent> watchpointEvents;
+
+
+    EventsList radioRXTXEvents;
+    EventsList radioChannelEvents;
+    EventsList radioHWEvents;
+    EventsList ledEvents;
+    EventsList logEvents;
+    EventsList watchpointEvents;
 
     private MoteEvent lastRadioRXTXEvent = null;
     private MoteEvent lastRadioChannelEvent = null;
@@ -2298,12 +2382,12 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     public MoteEvents(Mote mote) {
       this.mote = mote;
-      this.radioRXTXEvents = new ArrayList<MoteEvent>();
-      this.radioChannelEvents = new ArrayList<MoteEvent>();
-      this.radioHWEvents = new ArrayList<MoteEvent>();
-      this.ledEvents = new ArrayList<MoteEvent>();
-      this.logEvents = new ArrayList<MoteEvent>();
-      this.watchpointEvents = new ArrayList<MoteEvent>();
+      this.radioRXTXEvents = new EventsList();
+      this.radioChannelEvents = new EventsList();
+      this.radioHWEvents = new EventsList();
+      this.ledEvents = new EventsList();
+      this.logEvents = new EventsList();
+      this.watchpointEvents = new EventsList();
 
       if (mote.getSimulation().getSimulationTime() > 0) {
         /* Create no history events */
@@ -2407,6 +2491,46 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
       watchpointEvents.add(ev);
     }
+
+    // this cursor need for evaluate time-ordered sequence from all lines of Events
+    public 
+    class LinesCursor {
+        final static int  LineID_radioRXTX      = 0;
+        final static int  LineID_radioChanels   = 1; 
+        final static int  LineID_radioHW        = 2;
+        final static int  LineID_led            =3;
+        final static int  LineID_log            =4;
+        final static int  LineID_Watch          = 5;
+        final static int  LineID_TOTAL          = 6;
+
+        MoteEvent[] lines = new MoteEvent[LineID_TOTAL];
+        public Mote getMote() {return mote;};
+
+        public LinesCursor(){
+            start();
+        }
+
+        public 
+        void start() {
+            lines[LineID_radioRXTX]  = radioRXTXEvents.first();
+            lines[LineID_radioChanels]=radioChannelEvents.first();
+            lines[LineID_radioHW]    = radioHWEvents.first();
+            lines[LineID_led]        = ledEvents.first();
+            lines[LineID_log]        = logEvents.first();
+            lines[LineID_Watch]      = watchpointEvents.first();
+        }
+
+        // takes first time event from lines, and 
+        MoteEvent take() {
+            int  L      = select_first(lines);
+            if (L < 0)
+                return null;
+            MoteEvent ev= lines[L];
+            lines[L]    = ev.next;
+            return ev;
+        }
+    } //class LineCursor
+
   }
 
   private long lastRepaintSimulationTime = -1;
