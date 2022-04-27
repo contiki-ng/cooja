@@ -245,12 +245,6 @@ The COOJA Simulator
     </exec>
   </target>
 
-  <target name="java_version" depends="init">
-    <exec executable="javac" dir="${build}" includeantruntime="false">
-      <arg value="-version"/>
-    </exec>
-  </target>
-
   <target name="jar_cooja" depends="init, compile, copy configs">
     <mkdir dir="${dist}"/>
     <jar destfile="${dist}/cooja.jar" basedir="${build}">
