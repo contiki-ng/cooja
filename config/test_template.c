@@ -38,7 +38,7 @@
 
 const struct simInterface *simInterfaces[] = {NULL};
 
-long referenceVar; /* Placed somewhere in the BSS section */
+intptr_t referenceVar; /* Placed somewhere in the BSS section */
 
 /* Variables with known memory addresses */
 int var1=1;
@@ -55,24 +55,24 @@ Java_org_contikios_cooja_corecomm_[CLASS_NAME]_init(JNIEnv *env, jobject obj)
  }
 /*---------------------------------------------------------------------------*/
 JNIEXPORT void JNICALL
-Java_org_contikios_cooja_corecomm_[CLASS_NAME]_getMemory(JNIEnv *env, jobject obj, jint rel_addr, jint length, jbyteArray mem_arr)
+Java_org_contikios_cooja_corecomm_[CLASS_NAME]_getMemory(JNIEnv *env, jobject obj, jlong rel_addr, jint length, jbyteArray mem_arr)
 {
   (*env)->SetByteArrayRegion(
       env,
       mem_arr,
       0,
       (size_t) length,
-      (jbyte *) (((long)rel_addr) + referenceVar)
+      (jbyte *) (((intptr_t)rel_addr) + referenceVar)
   );
 
 }
 /*---------------------------------------------------------------------------*/
 JNIEXPORT void JNICALL
-Java_org_contikios_cooja_corecomm_[CLASS_NAME]_setMemory(JNIEnv *env, jobject obj, jint rel_addr, jint length, jbyteArray mem_arr)
+Java_org_contikios_cooja_corecomm_[CLASS_NAME]_setMemory(JNIEnv *env, jobject obj, jlong rel_addr, jint length, jbyteArray mem_arr)
 {
   jbyte *mem = (*env)->GetByteArrayElements(env, mem_arr, 0);
   memcpy(
-      (char*) (((long)rel_addr) + referenceVar),
+      (char*) (((intptr_t)rel_addr) + referenceVar),
       mem,
       length);
   (*env)->ReleaseByteArrayElements(env, mem_arr, mem, 0);
@@ -86,7 +86,7 @@ Java_org_contikios_cooja_corecomm_[CLASS_NAME]_tick(JNIEnv *env, jobject obj)
 }
 /*---------------------------------------------------------------------------*/
 JNIEXPORT void JNICALL
-Java_org_contikios_cooja_corecomm_[CLASS_NAME]_setReferenceAddress(JNIEnv *env, jobject obj, jint addr)
+Java_org_contikios_cooja_corecomm_[CLASS_NAME]_setReferenceAddress(JNIEnv *env, jobject obj, jlong addr)
 {
-  referenceVar = (((long)&referenceVar) - ((long)addr));
+  referenceVar = (((intptr_t)&referenceVar) - ((intptr_t)addr));
 }

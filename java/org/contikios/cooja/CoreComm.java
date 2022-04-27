@@ -346,7 +346,7 @@ public abstract class CoreComm {
    *
    * @param addr Relative address
    */
-  public abstract void setReferenceAddress(int addr);
+  public abstract void setReferenceAddress(long addr);
 
   /**
    * Fills an byte array with memory segment identified by start and length.
@@ -355,7 +355,7 @@ public abstract class CoreComm {
    * @param length Length of segment
    * @param mem Array to fill with memory segment
    */
-  public abstract void getMemory(int relAddr, int length, byte[] mem);
+  public abstract void getMemory(long relAddr, int length, byte[] mem);
 
   /**
    * Overwrites a memory segment identified by start and length.
@@ -364,6 +364,6 @@ public abstract class CoreComm {
    * @param length Length of segment
    * @param mem New memory segment data
    */
-  public abstract void setMemory(int relAddr, int length, byte[] mem);
+  public abstract void setMemory(long relAddr, int length, byte[] mem);
 
 }

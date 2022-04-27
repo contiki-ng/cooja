@@ -146,9 +146,9 @@ public class ConfigurationWizard extends JDialog {
   private static String javaLibraryName;
   private static CoreComm javaLibrary;
   private static Map<String, Symbol> addresses;
-  private static int relDataSectionAddr;
+  private static long relDataSectionAddr;
   private static int dataSectionSize;
-  private static int relBssSectionAddr;
+  private static long relBssSectionAddr;
   private static int bssSectionSize;
 
   private static MessageListUI output;
@@ -785,16 +785,16 @@ public class ConfigurationWizard extends JDialog {
     dataSectionSize = dataSecParser.getSize();
     relBssSectionAddr = bssSecParser.getStartAddr();
     bssSectionSize = bssSecParser.getSize();
-    testOutput.addMessage("Data section address: 0x" + Integer.toHexString(relDataSectionAddr));
+    testOutput.addMessage("Data section address: 0x" + Long.toHexString(relDataSectionAddr));
     testOutput.addMessage("Data section size: 0x" + Integer.toHexString(dataSectionSize));
-    testOutput.addMessage("BSS section address: 0x" + Integer.toHexString(relBssSectionAddr));
+    testOutput.addMessage("BSS section address: 0x" + Long.toHexString(relBssSectionAddr));
     testOutput.addMessage("BSS section size: 0x" + Integer.toHexString(bssSectionSize));
     if (relDataSectionAddr < 0) {
-      testOutput.addMessage("Data section address < 0: 0x" + Integer.toHexString(relDataSectionAddr), MessageList.ERROR);
+      testOutput.addMessage("Data section address < 0: 0x" + Long.toHexString(relDataSectionAddr), MessageList.ERROR);
       return false;
     }
     if (relBssSectionAddr < 0) {
-      testOutput.addMessage("BSS section address < 0: 0x" + Integer.toHexString(relBssSectionAddr), MessageList.ERROR);
+      testOutput.addMessage("BSS section address < 0: 0x" + Long.toHexString(relBssSectionAddr), MessageList.ERROR);
       return false;
     }
     if (dataSectionSize <= 0) {
@@ -886,16 +886,16 @@ public class ConfigurationWizard extends JDialog {
     if (parserAddresses != null) {
         addresses.putAll(parserAddresses);
     }
-    testOutput.addMessage("Data section address: 0x" + Integer.toHexString(relDataSectionAddr));
+    testOutput.addMessage("Data section address: 0x" + Long.toHexString(relDataSectionAddr));
     testOutput.addMessage("Data section size: 0x" + Integer.toHexString(dataSectionSize));
-    testOutput.addMessage("BSS section address: 0x" + Integer.toHexString(relBssSectionAddr));
+    testOutput.addMessage("BSS section address: 0x" + Long.toHexString(relBssSectionAddr));
     testOutput.addMessage("BSS section size: 0x" + Integer.toHexString(bssSectionSize));
     if (relDataSectionAddr < 0) {
-      testOutput.addMessage("Data section address < 0: 0x" + Integer.toHexString(relDataSectionAddr), MessageList.ERROR);
+      testOutput.addMessage("Data section address < 0: 0x" + Long.toHexString(relDataSectionAddr), MessageList.ERROR);
       return false;
     }
     if (relBssSectionAddr < 0) {
-      testOutput.addMessage("BSS section address < 0: 0x" + Integer.toHexString(relBssSectionAddr), MessageList.ERROR);
+      testOutput.addMessage("BSS section address < 0: 0x" + Long.toHexString(relBssSectionAddr), MessageList.ERROR);
       return false;
     }
     if (dataSectionSize <= 0) {
