@@ -58,7 +58,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 
@@ -71,7 +72,7 @@ import org.contikios.cooja.Cooja;
  */
 public class MessageListUI extends JList implements MessageList {
 
-  private static final Logger logger = Logger.getLogger(MessageListUI.class);
+  private static final Logger logger = LogManager.getLogger(MessageListUI.class);
 
   private Color[] foregrounds = new Color[] { null, Color.red };
   private Color[] backgrounds = new Color[] { null, null };

@@ -32,7 +32,8 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import java.util.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -62,7 +63,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
   private VarMemory moteMem = null;
-  private static Logger logger = Logger.getLogger(ContikiMoteID.class);
+  private static final Logger logger = LogManager.getLogger(ContikiMoteID.class);
 
   private int moteID = 0;
 

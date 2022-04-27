@@ -50,7 +50,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
@@ -58,7 +59,7 @@ import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.interfaces.SerialPort;
 
 public abstract class SerialUI extends Log implements SerialPort {
-  private static Logger logger = Logger.getLogger(SerialUI.class);
+  private static final Logger logger = LogManager.getLogger(SerialUI.class);
 
   private final static int MAX_LENGTH = 16*1024;
 

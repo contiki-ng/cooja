@@ -32,7 +32,8 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.*;
 import org.contikios.cooja.contikimote.ContikiMote;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
@@ -66,7 +67,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 @ClassDescription("Serial port")
 public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, PolledAfterActiveTicks {
-  private static Logger logger = Logger.getLogger(ContikiRS232.class);
+  private static final Logger logger = LogManager.getLogger(ContikiRS232.class);
 
   private ContikiMote mote = null;
   private VarMemory moteMem = null;

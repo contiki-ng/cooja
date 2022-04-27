@@ -34,7 +34,8 @@ import java.util.Collection;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -48,7 +49,7 @@ import org.contikios.cooja.interfaces.Clock;
  */
 @ClassDescription("Cycle clock")
 public class MicaClock extends Clock {
-  private static Logger logger = Logger.getLogger(MicaClock.class);
+  private static final Logger logger = LogManager.getLogger(MicaClock.class);
 
   private Simulation simulation;
   private MicaZMote myMote;

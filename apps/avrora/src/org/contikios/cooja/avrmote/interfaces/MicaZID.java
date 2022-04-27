@@ -35,7 +35,8 @@ import java.util.Vector;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
@@ -52,7 +53,7 @@ public class MicaZID extends MoteID {
 
     private static final boolean PERSISTENT_SET_ID = true;
 
-    private static Logger logger = Logger.getLogger(MicaZID.class);
+    private static final Logger logger = LogManager.getLogger(MicaZID.class);
 
     private int moteID = -1; /* TODO Implement */
 

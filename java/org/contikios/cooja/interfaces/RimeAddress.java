@@ -37,7 +37,8 @@ import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -56,7 +57,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 @ClassDescription("Rime address")
 public class RimeAddress extends MoteInterface {
-  private static Logger logger = Logger.getLogger(RimeAddress.class);
+  private static final Logger logger = LogManager.getLogger(RimeAddress.class);
   private VarMemory moteMem;
 
   public static final int RIME_ADDR_LENGTH = 2;

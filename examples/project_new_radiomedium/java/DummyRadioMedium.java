@@ -29,7 +29,8 @@
  */
 
 import java.util.Collection;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -43,7 +44,7 @@ import org.contikios.cooja.radiomediums.AbstractRadioMedium;
  */
 @ClassDescription("Dummy Radio Medium")
 public class DummyRadioMedium extends AbstractRadioMedium {
-  private static Logger logger = Logger.getLogger(Cooja.class);
+  private static final Logger logger = LogManager.getLogger(Cooja.class);
 
   public DummyRadioMedium(Simulation simulation) {
     super(simulation);

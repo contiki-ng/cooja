@@ -39,7 +39,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -58,7 +59,7 @@ import org.contikios.cooja.contikimote.interfaces.ContikiRadio;
  */
 @ClassDescription("Radio")
 public abstract class Radio extends MoteInterface {
-  private static Logger logger = Logger.getLogger(Radio.class);
+  private static final Logger logger = LogManager.getLogger(Radio.class);
 
   /**
    * Events that radios should notify observers about.

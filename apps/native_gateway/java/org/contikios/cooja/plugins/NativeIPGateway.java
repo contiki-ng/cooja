@@ -63,7 +63,8 @@ import jpcap.NetworkInterface;
 import jpcap.packet.EthernetPacket;
 import jpcap.packet.IPPacket;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -85,7 +86,7 @@ import org.contikios.cooja.interfaces.SerialPort;
 @SupportedArguments(moteInterfaces = {IPAddress.class})
 public class NativeIPGateway extends VisPlugin implements MotePlugin {
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(NativeIPGateway.class);
+  private static final Logger logger = LogManager.getLogger(NativeIPGateway.class);
 
   private final static int IP_HEADER_LEN = 20;
 

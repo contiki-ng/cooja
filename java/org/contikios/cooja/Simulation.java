@@ -38,7 +38,8 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.dialogs.CreateSimDialog;
@@ -78,7 +79,7 @@ public class Simulation extends Observable implements Runnable {
 
   private RadioMedium currentRadioMedium = null;
 
-  private static Logger logger = Logger.getLogger(Simulation.class);
+  private static final Logger logger = LogManager.getLogger(Simulation.class);
 
   private boolean isRunning = false;
 

@@ -77,7 +77,8 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -125,7 +126,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   private boolean needZoomOut = false;
 
-  private static Logger logger = Logger.getLogger(TimeLine.class);
+  private static final Logger logger = LogManager.getLogger(TimeLine.class);
 
   private int paintedMoteHeight = EVENT_PIXEL_HEIGHT;
 

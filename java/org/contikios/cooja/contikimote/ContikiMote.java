@@ -33,7 +33,8 @@ package org.contikios.cooja.contikimote;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
@@ -60,7 +61,7 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
  * @author      Fredrik Osterlind
  */
 public class ContikiMote extends AbstractWakeupMote implements Mote {
-  private static Logger logger = Logger.getLogger(ContikiMote.class);
+  private static final Logger logger = LogManager.getLogger(ContikiMote.class);
 
   private ContikiMoteType myType = null;
   private SectionMoteMemory myMemory = null;

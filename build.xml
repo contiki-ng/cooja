@@ -9,6 +9,8 @@
   <property name="lib" location="lib"/>
   <property name="args" value="" />
 
+  <property name="log4j.version" value="2.17.2" />
+
   <target name="help">
     <echo>
 The COOJA Simulator
@@ -49,7 +51,9 @@ The COOJA Simulator
         <classpath>
           <pathelement path="${build}"/>
           <pathelement location="lib/jdom.jar"/>
-          <pathelement location="lib/log4j.jar"/>
+          <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
+          <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+          <pathelement location="lib/log4j-1.2-api-${log4j.version}.jar" />
           <pathelement location="lib/syntaxpane-1.2.0.jar"/>
           <pathelement location="lib/swingx-all-1.6.4.jar"/>
         </classpath>
@@ -63,7 +67,9 @@ The COOJA Simulator
       <fileset dir="${java}/" includes="**/*.java"/>
       <classpath>
         <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
+        <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-1.2-api-${log4j.version}.jar" />
         <pathelement location="lib/syntaxpane-1.2.0.jar"/>
         <pathelement location="lib/swingx-all-1.6.4.jar"/>
       </classpath>
@@ -78,7 +84,9 @@ The COOJA Simulator
       <classpath>
         <pathelement path="."/>
         <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
+        <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-1.2-api-${log4j.version}.jar" />
         <pathelement location="lib/syntaxpane-1.2.0.jar"/>
         <pathelement location="lib/swingx-all-1.6.4.jar"/>
       </classpath>
@@ -110,7 +118,9 @@ The COOJA Simulator
       <classpath>
         <pathelement path="${build}"/>
         <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
+        <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-1.2-api-${log4j.version}.jar" />
         <pathelement location="lib/syntaxpane-1.2.0.jar"/>
         <pathelement location="lib/swingx-all-1.6.4.jar"/>
       </classpath>
@@ -126,7 +136,9 @@ The COOJA Simulator
       <classpath>
         <pathelement path="${build}"/>
         <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
+        <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-1.2-api-${log4j.version}.jar" />
         <pathelement location="lib/syntaxpane-1.2.0.jar"/>
         <pathelement location="lib/swingx-all-1.6.4.jar"/>
       </classpath>
@@ -141,7 +153,9 @@ The COOJA Simulator
       <classpath>
         <pathelement path="${build}"/>
         <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
+        <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-1.2-api-${log4j.version}.jar" />
         <pathelement location="lib/syntaxpane-1.2.0.jar"/>
         <pathelement location="lib/swingx-all-1.6.4.jar"/>
       </classpath>
@@ -156,7 +170,9 @@ The COOJA Simulator
       <classpath>
         <pathelement path="${build}"/>
         <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
+        <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-1.2-api-${log4j.version}.jar" />
         <pathelement location="lib/syntaxpane-1.2.0.jar"/>
         <pathelement location="lib/swingx-all-1.6.4.jar"/>
       </classpath>
@@ -170,7 +186,9 @@ The COOJA Simulator
       <classpath>
         <pathelement path="${build}"/>
         <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
+        <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-1.2-api-${log4j.version}.jar" />
         <pathelement location="lib/syntaxpane-1.2.0.jar"/>
         <pathelement location="lib/swingx-all-1.6.4.jar"/>
         <pathelement location="mspsim/lib/jfreechart-1.0.11.jar"/>
@@ -186,7 +204,9 @@ The COOJA Simulator
       <classpath>
         <pathelement path="${build}"/>
         <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
+        <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-1.2-api-${log4j.version}.jar" />
         <pathelement location="lib/syntaxpane-1.2.0.jar"/>
         <pathelement location="lib/swingx-all-1.6.4.jar"/>
       </classpath>
@@ -208,7 +228,9 @@ The COOJA Simulator
       <classpath>
         <pathelement path="${build}"/>
         <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
+        <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+        <pathelement location="lib/log4j-1.2-api-${log4j.version}.jar" />
         <pathelement location="lib/syntaxpane-1.2.0.jar"/>
       </classpath>
     </java>
@@ -234,7 +256,7 @@ The COOJA Simulator
     <jar destfile="${dist}/cooja.jar" basedir="${build}">
       <manifest>
         <attribute name="Main-Class" value="org.contikios.cooja.Cooja"/>
-        <attribute name="Class-Path" value=". lib/log4j.jar lib/jdom.jar lib/syntaxpane-1.2.0.jar lib/swingx-all-1.6.4.jar"/>
+        <attribute name="Class-Path" value=". lib/log4j-core-${log4j.version}.jar lib/log4j-api-${log4j.version}.jar lib/log4j-1.2-api-${log4j.version}.jar lib/jdom.jar lib/syntaxpane-1.2.0.jar lib/swingx-all-1.6.4.jar"/>
       </manifest>
     </jar>
     <mkdir dir="${dist}/lib"/>

@@ -30,7 +30,8 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.Button;
@@ -38,7 +39,7 @@ import org.contikios.cooja.mspmote.SkyMote;
 
 @ClassDescription("Button")
 public class SkyButton extends Button {
-  private static final Logger logger = Logger.getLogger(SkyButton.class);
+  private static final Logger logger = LogManager.getLogger(SkyButton.class);
 
   private final SkyMote skyMote;
 

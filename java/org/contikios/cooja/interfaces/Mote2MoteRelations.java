@@ -40,7 +40,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -75,7 +76,7 @@ import org.contikios.cooja.SimEventCentral.MoteCountListener;
  */
 @ClassDescription("Mote2Mote Relations")
 public class Mote2MoteRelations extends MoteInterface {
-  private static Logger logger = Logger.getLogger(Mote2MoteRelations.class);
+  private static final Logger logger = LogManager.getLogger(Mote2MoteRelations.class);
   private Mote mote = null;
 
   private ArrayList<Mote> relations = new ArrayList<Mote>();

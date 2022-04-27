@@ -76,7 +76,8 @@ import javax.swing.filechooser.FileFilter;
 import de.sciss.syntaxpane.DefaultSyntaxKit;
 import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
 import de.sciss.syntaxpane.actions.ScriptRunnerAction;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -92,7 +93,7 @@ import org.contikios.cooja.util.StringUtils;
 @PluginType(PluginType.SIM_CONTROL_PLUGIN)
 public class ScriptRunner extends VisPlugin {
   private static final long serialVersionUID = 7614358340336799109L;
-  private static Logger logger = Logger.getLogger(ScriptRunner.class);
+  private static final Logger logger = LogManager.getLogger(ScriptRunner.class);
 
   static boolean headless;
   {
@@ -690,7 +691,7 @@ public class ScriptRunner extends VisPlugin {
   }
 
   public static class JSyntaxLinkFile extends DefaultSyntaxAction {
-    private static Logger logger = Logger.getLogger(JSyntaxLinkFile.class);
+    private static final Logger logger = LogManager.getLogger(JSyntaxLinkFile.class);
 
     public JSyntaxLinkFile() {
       super("linkfile");

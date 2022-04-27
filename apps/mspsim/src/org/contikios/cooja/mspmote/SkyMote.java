@@ -32,7 +32,8 @@ package org.contikios.cooja.mspmote;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
@@ -43,7 +44,7 @@ import se.sics.mspsim.platform.sky.SkyNode;
  * @author Fredrik Osterlind
  */
 public class SkyMote extends MspMote {
-  private static Logger logger = Logger.getLogger(SkyMote.class);
+  private static final Logger logger = LogManager.getLogger(SkyMote.class);
 
   public SkyNode skyNode = null;
 

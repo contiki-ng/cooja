@@ -57,7 +57,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
@@ -85,7 +86,7 @@ import org.contikios.cooja.util.StringUtils;
 @SupportedArguments(radioMediums = {DirectedGraphMedium.class})
 public class DGRMConfigurator extends VisPlugin {
 	private static final long serialVersionUID = 4769638341635882051L;
-	private static Logger logger = Logger.getLogger(DGRMConfigurator.class);
+	private static final Logger logger = LogManager.getLogger(DGRMConfigurator.class);
 
   private final static int IDX_SRC = 0;
   private final static int IDX_DST = 1;

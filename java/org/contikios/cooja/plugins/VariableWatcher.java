@@ -67,7 +67,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -95,7 +96,7 @@ import org.jdom.Element;
 @PluginType(PluginType.MOTE_PLUGIN)
 public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHelp {
   private static final long serialVersionUID = 1L;
-  private static final Logger logger = Logger.getLogger(VariableWatcher.class.getName());
+  private static final Logger logger = LogManager.getLogger(VariableWatcher.class.getName());
 
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;

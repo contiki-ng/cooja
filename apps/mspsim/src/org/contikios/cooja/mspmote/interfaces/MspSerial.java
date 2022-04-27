@@ -31,7 +31,8 @@ package org.contikios.cooja.mspmote.interfaces;
 
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -51,7 +52,7 @@ import se.sics.mspsim.core.USARTSource;
 public class MspSerial extends SerialUI implements SerialPort {
   private static final long DELAY_INCOMING_DATA = 69; /* 115200 bit/s */
   
-  private static final Logger logger = Logger.getLogger(MspSerial.class);
+  private static final Logger logger = LogManager.getLogger(MspSerial.class);
 
   private Simulation simulation;
   private final MspMote mote;

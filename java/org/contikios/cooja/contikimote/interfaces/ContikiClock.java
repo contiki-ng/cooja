@@ -33,7 +33,8 @@ import java.util.Collection;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
@@ -71,7 +72,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Fredrik Osterlind
  */
 public class ContikiClock extends Clock implements ContikiMoteInterface, PolledBeforeActiveTicks, PolledAfterAllTicks {
-  private static Logger logger = Logger.getLogger(ContikiClock.class);
+  private static final Logger logger = LogManager.getLogger(ContikiClock.class);
 
   private Simulation simulation;
   private ContikiMote mote;

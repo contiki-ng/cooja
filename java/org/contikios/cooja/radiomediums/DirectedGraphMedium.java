@@ -37,7 +37,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -61,7 +62,7 @@ import org.contikios.cooja.plugins.Visualizer;
  */
 @ClassDescription("Directed Graph Radio Medium (DGRM)")
 public class DirectedGraphMedium extends AbstractRadioMedium {
-  private static Logger logger = Logger.getLogger(DirectedGraphMedium.class);
+  private static final Logger logger = LogManager.getLogger(DirectedGraphMedium.class);
 
   private Simulation simulation;
   private Random random;

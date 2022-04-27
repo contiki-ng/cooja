@@ -32,7 +32,8 @@ package org.contikios.cooja.mspmote.interfaces;
 
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -58,7 +59,7 @@ import se.sics.mspsim.core.OperatingModeListener;
  */
 @ClassDescription("IEEE 802.15.4 Radio")
 public class Msp802154Radio extends Radio implements CustomDataRadio {
-  private static Logger logger = Logger.getLogger(Msp802154Radio.class);
+  private static final Logger logger = LogManager.getLogger(Msp802154Radio.class);
 
   /**
    * Cross-level:

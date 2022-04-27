@@ -79,7 +79,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -106,7 +107,7 @@ import org.contikios.cooja.util.ArrayQueue;
 @PluginType(PluginType.SIM_STANDARD_PLUGIN)
 public class LogListener extends VisPlugin implements HasQuickHelp {
   private static final long serialVersionUID = 3294595371354857261L;
-  private static Logger logger = Logger.getLogger(LogListener.class);
+  private static final Logger logger = LogManager.getLogger(LogListener.class);
 
   private final Color[] BG_COLORS = new Color[] {
       new Color(200, 200, 200),

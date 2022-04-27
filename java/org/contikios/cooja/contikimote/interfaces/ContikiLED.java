@@ -33,7 +33,8 @@ package org.contikios.cooja.contikimote.interfaces;
 import java.awt.*;
 import java.util.*;
 import javax.swing.JPanel;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -62,7 +63,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Fredrik Osterlind
  */
 public class ContikiLED extends LED implements ContikiMoteInterface, PolledAfterActiveTicks {
-  private static Logger logger = Logger.getLogger(ContikiLED.class);
+  private static final Logger logger = LogManager.getLogger(ContikiLED.class);
 
   private Mote mote = null;
   private VarMemory moteMem = null;

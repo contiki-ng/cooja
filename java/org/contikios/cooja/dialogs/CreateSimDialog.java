@@ -58,7 +58,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.RadioMedium;
@@ -71,7 +72,7 @@ import org.contikios.cooja.Simulation;
  */
 public class CreateSimDialog extends JDialog {
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(CreateSimDialog.class);
+  private static final Logger logger = LogManager.getLogger(CreateSimDialog.class);
 
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 25;

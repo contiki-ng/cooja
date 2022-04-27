@@ -51,7 +51,8 @@ import java.util.regex.Pattern;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.AbstractionLevelDescription;
@@ -99,7 +100,7 @@ import org.contikios.cooja.util.StringUtils;
 @AbstractionLevelDescription("OS level")
 public class ContikiMoteType implements MoteType {
 
-  private static final Logger logger = Logger.getLogger(ContikiMoteType.class);
+  private static final Logger logger = LogManager.getLogger(ContikiMoteType.class);
 
   public static final String ID_PREFIX = "mtype";
 

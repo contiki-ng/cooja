@@ -3,7 +3,8 @@ package org.contikios.cooja.mspmote.interfaces;
 
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -29,7 +30,7 @@ import se.sics.mspsim.core.OperatingModeListener;
  */
 @ClassDescription("IEEE CC2520 Radio")
 public class CC2520Radio extends Radio implements CustomDataRadio {
-  private static Logger logger = Logger.getLogger(CC2520Radio.class);
+  private static final Logger logger = LogManager.getLogger(CC2520Radio.class);
 
   /**
    * Cross-level:

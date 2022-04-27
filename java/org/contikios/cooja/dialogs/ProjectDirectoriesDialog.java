@@ -81,7 +81,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.COOJAProject;
 import org.contikios.cooja.Cooja;
@@ -95,7 +96,7 @@ import org.contikios.cooja.ProjectConfig;
  */
 public class ProjectDirectoriesDialog extends JDialog {
 	private static final long serialVersionUID = 1896348946753376556L;
-	private static Logger logger = Logger.getLogger(ProjectDirectoriesDialog.class);
+	private static final Logger logger = LogManager.getLogger(ProjectDirectoriesDialog.class);
 
 	private Cooja gui;
 
@@ -499,7 +500,7 @@ public class ProjectDirectoriesDialog extends JDialog {
  */
 class DirectoryTreePanel extends JPanel {
 	private static final long serialVersionUID = -6852893350326771136L;
-	private static Logger logger = Logger.getLogger(DirectoryTreePanel.class);
+	private static final Logger logger = LogManager.getLogger(DirectoryTreePanel.class);
 
 	private ProjectDirectoriesDialog parent;
 	private JTree tree;

@@ -38,7 +38,8 @@ import java.util.Observer;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -55,7 +56,7 @@ import se.sics.mspsim.platform.ti.Exp5438Node;
  */
 @ClassDescription("Exp5438 LEDs")
 public class Exp5438LED extends LED {
-  private static Logger logger = Logger.getLogger(Exp5438LED.class);
+  private static final Logger logger = LogManager.getLogger(Exp5438LED.class);
 
   private Exp5438Mote mspMote;
 

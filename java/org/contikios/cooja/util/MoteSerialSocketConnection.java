@@ -37,7 +37,8 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.SerialPort;
@@ -49,7 +50,7 @@ import org.contikios.cooja.interfaces.SerialPort;
  */
 public class MoteSerialSocketConnection {
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(MoteSerialSocketConnection.class);
+  private static final Logger logger = LogManager.getLogger(MoteSerialSocketConnection.class);
 
   private boolean isConnected = false;
   public int toMote = 0, toSocket = 0;

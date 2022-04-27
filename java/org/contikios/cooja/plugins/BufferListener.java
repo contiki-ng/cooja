@@ -83,7 +83,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -114,7 +115,7 @@ import org.contikios.cooja.util.StringUtils;
 @PluginType(PluginType.SIM_PLUGIN)
 public class BufferListener extends VisPlugin {
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(BufferListener.class);
+  private static final Logger logger = LogManager.getLogger(BufferListener.class);
 
   private final static int COLUMN_TIME = 0;
   private final static int COLUMN_FROM = 1;

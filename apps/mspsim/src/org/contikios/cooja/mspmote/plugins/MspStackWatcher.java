@@ -43,7 +43,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -66,7 +67,7 @@ import se.sics.mspsim.ui.StackUI;
 @PluginType(PluginType.MOTE_PLUGIN)
 @SupportedArguments(motes = { MspMote.class })
 public class MspStackWatcher extends VisPlugin implements MotePlugin {
-  private static Logger logger = Logger.getLogger(MspStackWatcher.class);
+  private static final Logger logger = LogManager.getLogger(MspStackWatcher.class);
 
   private Simulation simulation;
   private MSP430 cpu;

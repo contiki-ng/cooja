@@ -41,7 +41,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
@@ -71,7 +72,7 @@ import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
 @ClassDescription("Sky mote")
 @AbstractionLevelDescription("Emulated level")
 public class SkyMoteType extends MspMoteType {
-  private static Logger logger = Logger.getLogger(SkyMoteType.class);
+  private static final Logger logger = LogManager.getLogger(SkyMoteType.class);
 
   protected MspMote createMote(Simulation simulation) {
     return new SkyMote(this, simulation);

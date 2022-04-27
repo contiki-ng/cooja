@@ -39,7 +39,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
@@ -56,7 +57,7 @@ import org.contikios.cooja.VisPlugin;
 @ClassDescription("Mote Type Information")
 @PluginType(PluginType.SIM_PLUGIN)
 public class MoteTypeInformation extends VisPlugin {
-  private static Logger logger = Logger.getLogger(MoteTypeInformation.class);
+  private static final Logger logger = LogManager.getLogger(MoteTypeInformation.class);
 
   private Simulation simulation;
   private Observer simObserver;

@@ -33,7 +33,8 @@ package org.contikios.cooja.mspmote.interfaces;
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -49,7 +50,7 @@ import se.sics.mspsim.platform.sky.SkyNode;
  */
 @ClassDescription("Sky LED")
 public class SkyLED extends LED {
-  private static Logger logger = Logger.getLogger(SkyLED.class);
+  private static final Logger logger = LogManager.getLogger(SkyLED.class);
 
   private SkyMote mspMote;
   private boolean blueOn = false;

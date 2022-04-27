@@ -42,7 +42,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -60,7 +61,7 @@ import org.contikios.cooja.TimeEvent;
  * @author Fredrik Osterlind
  */
 public class LogScriptEngine {
-  private static Logger logger = Logger.getLogger(LogScriptEngine.class);
+  private static final Logger logger = LogManager.getLogger(LogScriptEngine.class);
   private static final long DEFAULT_TIMEOUT = 20*60*1000*Simulation.MILLISECOND; /* 1200s = 20 minutes */
 
   private ScriptEngine engine =

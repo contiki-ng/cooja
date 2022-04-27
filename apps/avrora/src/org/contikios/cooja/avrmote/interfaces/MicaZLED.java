@@ -39,7 +39,8 @@ import java.util.Observer;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -54,7 +55,7 @@ import avrora.sim.platform.MicaZ;
  */
 @ClassDescription("MicaZ LED")
 public class MicaZLED extends LED {
-  private static Logger logger = Logger.getLogger(MicaZLED.class);
+  private static final Logger logger = LogManager.getLogger(MicaZLED.class);
 
   private boolean blueOn = false;
   private boolean greenOn = false;

@@ -30,7 +30,8 @@
 package org.contikios.cooja.avrmote;
 
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import avrora.arch.avr.AVRProperties;
 import avrora.core.SourceMapping;
@@ -50,7 +51,7 @@ import org.contikios.cooja.mote.memory.MemoryLayout;
  * @author Joakim Eriksson, Fredrik Osterlind, David Kopf, Enrico Jorns
  */
 public class AvrMoteMemory implements MemoryInterface {
-  private static Logger logger = Logger.getLogger(AvrMoteMemory.class);
+  private static final Logger logger = LogManager.getLogger(AvrMoteMemory.class);
   private static final boolean DEBUG = logger.isDebugEnabled();
 
   private final SourceMapping memoryMap;

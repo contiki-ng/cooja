@@ -37,13 +37,14 @@ import javax.swing.Action;
 import javax.swing.JMenuItem;
 
 import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Watchpoint;
 import org.contikios.cooja.WatchpointMote;
 
 public class JSyntaxRemoveBreakpoint extends DefaultSyntaxAction {
-  private static Logger logger = Logger.getLogger(JSyntaxRemoveBreakpoint.class);
+  private static final Logger logger = LogManager.getLogger(JSyntaxRemoveBreakpoint.class);
 
   public JSyntaxRemoveBreakpoint() {
     super("removebreakpoint");

@@ -38,7 +38,8 @@ import java.util.Random;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -104,7 +105,7 @@ import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
  */
 @ClassDescription("LogisticLoss Medium")
 public class LogisticLoss extends AbstractRadioMedium {
-    private static Logger logger = Logger.getLogger(LogisticLoss.class);
+    private static final Logger logger = LogManager.getLogger(LogisticLoss.class);
 
     private Simulation sim = null;
 

@@ -66,7 +66,8 @@ import javax.swing.Timer;
 import javax.swing.border.EtchedBorder;
 import javax.swing.text.NumberFormatter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -88,7 +89,7 @@ import org.contikios.cooja.interfaces.SerialPort;
 @PluginType(PluginType.MOTE_PLUGIN)
 public class SerialSocketServer extends VisPlugin implements MotePlugin {
   private static final long serialVersionUID = 1L;
-  private static final Logger logger = Logger.getLogger(SerialSocketServer.class);
+  private static final Logger logger = LogManager.getLogger(SerialSocketServer.class);
 
   private final static int STATUSBAR_WIDTH = 350;
 

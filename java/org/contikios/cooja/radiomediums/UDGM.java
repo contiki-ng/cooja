@@ -36,7 +36,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -80,7 +81,7 @@ import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
  */
 @ClassDescription("Unit Disk Graph Medium (UDGM): Distance Loss")
 public class UDGM extends AbstractRadioMedium {
-  private static Logger logger = Logger.getLogger(UDGM.class);
+  private static final Logger logger = LogManager.getLogger(UDGM.class);
 
   public double SUCCESS_RATIO_TX = 1.0; /* Success ratio of TX. If this fails, no radios receive the packet */
   public double SUCCESS_RATIO_RX = 1.0; /* Success ratio of RX. If this fails, the single affected receiver does not receive the packet */

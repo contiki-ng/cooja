@@ -32,7 +32,8 @@ package org.contikios.cooja.avrmote;
 import java.awt.Container;
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
@@ -41,7 +42,7 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.AbstractCompileDialog;
 
 public class MicaZCompileDialog extends AbstractCompileDialog {
-  private static Logger logger = Logger.getLogger(MicaZCompileDialog.class);
+  private static final Logger logger = LogManager.getLogger(MicaZCompileDialog.class);
 
   public static boolean showDialog(
       Container parent,

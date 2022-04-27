@@ -33,7 +33,8 @@ package org.contikios.cooja.mspmote.interfaces;
 import java.util.ArrayDeque;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.COOJARadioPacket;
@@ -61,7 +62,7 @@ import se.sics.mspsim.core.USARTSource;
  */
 @ClassDescription("TR1001 Radio")
 public class TR1001Radio extends Radio implements USARTListener, CustomDataRadio {
-  private static Logger logger = Logger.getLogger(TR1001Radio.class);
+  private static final Logger logger = LogManager.getLogger(TR1001Radio.class);
 
   /**
    * Cross-level:
