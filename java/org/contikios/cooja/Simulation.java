@@ -929,6 +929,16 @@ public class Simulation extends Observable implements Runnable {
     return motes.size();
   }
 
+  public int getMotesCount(MoteType x) {
+    int cnt = 0;
+    for (Mote m: getMotes()) {
+        if (m.getType() == x) {
+          ++cnt;
+        }
+      }
+    return cnt;
+  }
+
   /**
    * Returns all motes in this simulation.
    *
@@ -937,6 +947,27 @@ public class Simulation extends Observable implements Runnable {
   public Mote[] getMotes() {
     Mote[] arr = new Mote[motes.size()];
     motes.toArray(arr);
+    return arr;
+  }
+
+  /**
+   * Returns all motes of type in this simulation.
+   *
+   * @return Motes
+   */
+  public Mote[] getMotes(MoteType type) {
+    
+    int cnt = getMotesCount(type);
+    //if(cnt <= 0)  return null;
+
+    Mote[] arr = new Mote[cnt];
+
+    int i = 0;
+    for (Mote m: getMotes()) {
+        if (m.getType() == type) {
+          arr[i++] = m;
+        }
+    }
     return arr;
   }
 

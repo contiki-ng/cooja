@@ -68,8 +68,10 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.CompileContiki;
 import org.contikios.cooja.dialogs.ContikiMoteCompileDialog;
 import org.contikios.cooja.dialogs.MessageList;
+import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.mote.memory.ArrayMemory;
+import org.contikios.cooja.mote.memory.DirectCoreMemory;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.mote.memory.MemoryLayout;
@@ -212,6 +214,7 @@ public class ContikiMoteType implements MoteType {
 
   // Initial memory for all motes of this type
   private SectionMoteMemory initialMemory = null;
+  private SectionMoteMemory directMemory = null;
 
   /** Offset between native (cooja) and contiki address space */
   long offset;
@@ -225,6 +228,16 @@ public class ContikiMoteType implements MoteType {
 
   @Override
   public Mote generateMote(Simulation simulation) {
+    Mote[] motes = simulation.getMotes(this);
+    if ( motes != null )
+    if ( motes.length == 1 ) {
+        // if alredy have such types, need unlink from direct inteface and 
+        //    share corelib memory with array interface 
+        for ( Mote m: motes)
+        if (m.getMemory() == directMemory) {
+            ((ContikiMote)m).setMemory( directMemory.clone() );
+        }
+    }
     return new ContikiMote(this, simulation);
   }
 
@@ -474,7 +487,15 @@ public class ContikiMoteType implements MoteType {
       readonlySecParser = null;
 
     }
-
+    
+    SectionParser.MemoryGenerate directGenerate = new SectionParser.MemoryGenerate() {
+        //private final CoreComm myCore = myCoreComm;
+        final public
+        MemoryInterface run(long adress, int size, MemoryLayout layout, Map<String, Symbol> symbols) {
+            return new DirectCoreMemory(myCoreComm, offset, adress, size, layout, symbols);
+        }
+    };
+    
     /* We first need the value of Contiki's referenceVar, which tells us the
      * memory offset between Contiki's variable and the relative addresses that
      * were calculated directly from the library file.
@@ -484,9 +505,9 @@ public class ContikiMoteType implements MoteType {
     {
       SectionMoteMemory tmp = new SectionMoteMemory(variables);
       VarMemory varMem = new VarMemory(tmp);
-      tmp.addMemorySection("tmp.data", dataSecParser.parse(0));
-      tmp.addMemorySection("tmp.bss", bssSecParser.parse(0));
-      tmp.addMemorySection("tmp.common", commonSecParser.parse(0));
+      tmp.addMemorySection("tmp.data", dataSecParser.parse(0, directGenerate));
+      tmp.addMemorySection("tmp.bss", bssSecParser.parse(0, directGenerate));
+      tmp.addMemorySection("tmp.common", commonSecParser.parse(0, directGenerate));
 
       try {
         long referenceVar = varMem.getVariable("referenceVar").addr;
@@ -497,7 +518,7 @@ public class ContikiMoteType implements MoteType {
           throw new MoteTypeCreationException("Error setting reference variable: " + e.getMessage(), e);
       }
 
-      getCoreMemory(tmp);
+      //getCoreMemory(tmp);
 
       offset = varMem.getAddrValueOf("referenceVar");
       logger.debug(getContikiFirmwareFile().getName()
@@ -505,19 +526,19 @@ public class ContikiMoteType implements MoteType {
     }
 
     /* Create initial memory: data+bss+optional common */
-    initialMemory = new SectionMoteMemory(variables);
+    directMemory = new SectionMoteMemory(variables);
 
-    initialMemory.addMemorySection("data", dataSecParser.parse(offset));
+    directMemory.addMemorySection("data", dataSecParser.parse(offset, directGenerate));
 
-    initialMemory.addMemorySection("bss", bssSecParser.parse(offset));
+    directMemory.addMemorySection("bss", bssSecParser.parse(offset, directGenerate));
 
-    initialMemory.addMemorySection("common", commonSecParser.parse(offset));
+    directMemory.addMemorySection("common", commonSecParser.parse(offset, directGenerate));
 
     if (readonlySecParser != null) {
-      initialMemory.addMemorySection("readonly", readonlySecParser.parse(offset));
+    	directMemory.addMemorySection("readonly", readonlySecParser.parse(offset, directGenerate));
     }
 
-    getCoreMemory(initialMemory);
+    initialMemory = directMemory.clone();
   }
 
   /**
@@ -566,7 +587,24 @@ public class ContikiMoteType implements MoteType {
       return Long.parseLong(retString.trim(), 16);
     }
 
+    @FunctionalInterface
+    public interface MemoryGenerate {
+        // abstract method
+        MemoryInterface run(long adress, int size, MemoryLayout layout, Map<String, Symbol> symbols);
+    }
+
+    public class ArrayGenerate implements MemoryGenerate {
+        final public
+        MemoryInterface run(long adress, int size, MemoryLayout layout, Map<String, Symbol> symbols) {
+            return new ArrayMemory(adress, size, layout, symbols);
+        }
+    }
+    
     public MemoryInterface parse(long offset) {
+        return parse(offset, new ArrayGenerate() );
+    }
+    
+    public MemoryInterface parse(long offset, MemoryGenerate generate ) {
 
       /* Parse start address and size of section */
       parseStartAddr();
@@ -592,11 +630,9 @@ public class ContikiMoteType implements MoteType {
         }
       }
 
-      return new ArrayMemory(
-              getStartAddr() + offset,
-              getSize(),
-              MemoryLayout.getNative(),
-              variables);
+      return generate.run( getStartAddr() + offset, getSize(),
+                          MemoryLayout.getNative(), variables
+                          );
     }
 
   }
@@ -813,6 +849,11 @@ public class ContikiMoteType implements MoteType {
     return initialMemory.clone();
   }
 
+  public SectionMoteMemory createSingleMemory() {
+     setCoreMemory(initialMemory);
+     return directMemory;
+  }
+
   /**
    * Copy core memory to given memory. This should not be used directly, but
    * instead via ContikiMote.getMemory().
@@ -821,6 +862,9 @@ public class ContikiMoteType implements MoteType {
    *          Memory to set
    */
   public void getCoreMemory(SectionMoteMemory mem) {
+    if (mem == directMemory)
+        return;
+    
     for (MemoryInterface section : mem.getSections().values()) {
       getCoreMemory(
               section.getStartAddr() - offset,
@@ -841,6 +885,9 @@ public class ContikiMoteType implements MoteType {
    * New memory
    */
   public void setCoreMemory(SectionMoteMemory mem) {
+    if (mem == directMemory)
+        return;
+    
     for (MemoryInterface section : mem.getSections().values()) {
       setCoreMemory(
               section.getStartAddr() - offset,
