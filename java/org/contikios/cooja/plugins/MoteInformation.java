@@ -113,6 +113,7 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     button = new JButton("Mote type information");
     button.setPreferredSize(size);
     button.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         simulation.getCooja().tryStartPlugin(MoteTypeInformation.class, simulation.getCooja(), simulation, mote);
       }
@@ -134,6 +135,7 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     button = new JButton("Mote interface viewer");
     button.setPreferredSize(size);
     button.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         simulation.getCooja().tryStartPlugin(MoteInterfaceViewer.class, simulation.getCooja(), simulation, mote);
       }
@@ -167,6 +169,7 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     button = new JButton("Remove");
     button.setPreferredSize(size);
     button.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         /* TODO In simulation event (if running) */
         simulation.removeMote(MoteInformation.this.mote);
@@ -184,9 +187,11 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     setSize(new Dimension(getWidth()+15, getHeight()+15));
   }
 
+  @Override
   public void closePlugin() {
   }
 
+  @Override
   public Mote getMote() {
     return mote;
   }

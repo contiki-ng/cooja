@@ -222,6 +222,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	 * new transmissions.
 	 */
 	private Observer radioEventsObserver = new Observer() {
+		@Override
 		public void update(Observable obs, Object obj) {
 			if (!(obs instanceof Radio)) {
 				logger.fatal("Radio event dispatched by non-radio object");
@@ -275,6 +276,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 							/* EXPERIMENTAL: Simulating propagation delay */
 							final Radio delayedRadio = r;
 							TimeEvent delayedEvent = new TimeEvent() {
+								@Override
 								public void execute(long t) {
 									delayedRadio.signalReceptionStart();
 								}
@@ -311,6 +313,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 							/* EXPERIMENTAL: Simulating propagation delay */
 							final Radio delayedRadio = dstRadio;
 							TimeEvent delayedEvent = new TimeEvent() {
+								@Override
 								public void execute(long t) {
 									delayedRadio.signalReceptionEnd();
 								}
@@ -366,6 +369,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 							final CustomDataRadio delayedRadio = (CustomDataRadio) dstRadio;
 							final Object delayedData = data;
 							TimeEvent delayedEvent = new TimeEvent() {
+								@Override
 								public void execute(long t) {
 									delayedRadio.receiveCustomData(delayedData);
 								}
@@ -412,6 +416,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 							final Radio delayedRadio = dstRadio;
 							final RadioPacket delayedPacket = packet;
 							TimeEvent delayedEvent = new TimeEvent() {
+								@Override
 								public void execute(long t) {
 									delayedRadio.setReceivedPacket(delayedPacket);
 								}
@@ -429,14 +434,17 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 		}
 	};
 	
+	@Override
 	public void registerMote(Mote mote, Simulation sim) {
 		registerRadioInterface(mote.getInterfaces().getRadio(), sim);
 	}
 	
+	@Override
 	public void unregisterMote(Mote mote, Simulation sim) {
 		unregisterRadioInterface(mote.getInterfaces().getRadio(), sim);
 	}
 	
+	@Override
 	public void registerRadioInterface(Radio radio, Simulation sim) {
 		if (radio == null) {
 			logger.warn("No radio to register");
@@ -451,6 +459,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 		updateSignalStrengths();
 	}
 	
+	@Override
 	public void unregisterRadioInterface(Radio radio, Simulation sim) {
 		if (!registeredRadios.contains(radio)) {
 			logger.warn("No radio to unregister: " + radio);
@@ -537,14 +546,17 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	 * @see addRadioMediumObserver
 	 * @param observer the Observer to register
 	 */
+	@Override
 	public void addRadioTransmissionObserver(Observer observer) {
 		radioTransmissionObservable.addObserver(observer);
 	}
 	
+	@Override
 	public Observable getRadioTransmissionObservable() {
 		return radioTransmissionObservable;
 	}
 	
+	@Override
 	public void deleteRadioTransmissionObserver(Observer observer) {
 		radioTransmissionObservable.deleteObserver(observer);
 	}
@@ -572,9 +584,11 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 		radioMediumObservable.deleteObserver(observer);
 	}
 	
+	@Override
 	public RadioConnection getLastConnection() {
 		return lastConnection;
 	}
+	@Override
 	public Collection<Element> getConfigXML() {
 		Collection<Element> config = new ArrayList<Element>();
 		for(Entry<Radio, Double> ent: baseRssi.entrySet()){
@@ -596,11 +610,13 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	
 	private Collection<Element> delayedConfiguration = null;
 	
+	@Override
 	public boolean setConfigXML(final Collection<Element> configXML, boolean visAvailable) {
 		delayedConfiguration = configXML;
 		return true;
 	}
 	
+	@Override
 	public void simulationFinishedLoading() {
 		if (delayedConfiguration == null) {
 			return;

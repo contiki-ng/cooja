@@ -131,6 +131,7 @@ public class Position extends MoteInterface {
     return getDistanceTo(m.getInterfaces().getPosition());
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -145,6 +146,7 @@ public class Position extends MoteInterface {
 
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         positionLabel.setText("x=" + form.format(getXCoordinate()) + " "
             + "y=" + form.format(getYCoordinate()) + " "
@@ -158,6 +160,7 @@ public class Position extends MoteInterface {
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -168,6 +171,7 @@ public class Position extends MoteInterface {
     this.deleteObserver(observer);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     Vector<Element> config = new Vector<Element>();
     Element element;
@@ -190,6 +194,7 @@ public class Position extends MoteInterface {
     return config;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     double x = 0, y = 0, z = 0;
 

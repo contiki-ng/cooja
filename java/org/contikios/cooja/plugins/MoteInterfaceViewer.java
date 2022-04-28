@@ -102,6 +102,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
     }
 
     selectInterfaceComboBox.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
 
         // Release old interface visualizer if any
@@ -177,6 +178,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
     return false;
   }
 
+  @Override
   public void closePlugin() {
     // Release old interface visualizer if any
     if (selectedMoteInterface != null && currentInterfaceVisualizer != null) {
@@ -184,6 +186,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
     }
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     Vector<Element> config = new Vector<Element>();
 
@@ -201,6 +204,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
     return config;
   }
 
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("interface")) {
@@ -209,6 +213,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
         String[] scrollPos = element.getText().split(",");
         final Point pos = new Point(Integer.parseInt(scrollPos[0]), Integer.parseInt(scrollPos[1]));
         EventQueue.invokeLater(new Runnable() {
+          @Override
           public void run()  {
             mainScrollPane.getViewport().setViewPosition(pos);
           }
@@ -218,6 +223,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
     return true;
   }
 
+  @Override
   public String getQuickHelp() {
     String help = "<b>" + Cooja.getDescriptionOf(this) + "</b>";
     help += "<p>Lists mote interfaces, and allows mote inspection and interaction via mote interface visualizers.";
@@ -235,6 +241,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
     return help;
   }
 
+  @Override
   public Mote getMote() {
     return mote;
   }

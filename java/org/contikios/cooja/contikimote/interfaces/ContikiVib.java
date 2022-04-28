@@ -92,6 +92,7 @@ public class ContikiVib extends MoteInterface implements ContikiMoteInterface {
    */
   public void triggerChange() {
     mote.getSimulation().invokeSimulationThread(new Runnable() {
+      @Override
       public void run() {
         doTriggerChange();
       }
@@ -108,6 +109,7 @@ public class ContikiVib extends MoteInterface implements ContikiMoteInterface {
 
   /* TODO Energy consumption */
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     final JButton clickButton = new JButton("Vibrate!");
@@ -115,6 +117,7 @@ public class ContikiVib extends MoteInterface implements ContikiMoteInterface {
     panel.add(clickButton);
 
     clickButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         triggerChange();
       }
@@ -123,13 +126,16 @@ public class ContikiVib extends MoteInterface implements ContikiMoteInterface {
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 

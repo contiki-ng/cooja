@@ -73,6 +73,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   private int historyPos = -1;
 
   /* Log */
+  @Override
   public String getLastLogMessage() {
     return lastLogMessage;
   }
@@ -82,6 +83,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     public abstract void notifyNewData();
   }
   private SerialDataObservable serialDataObservable = new SerialDataObservable() {
+    @Override
     public void notifyNewData() {
       if (this.countObservers() == 0) {
         return;
@@ -90,12 +92,15 @@ public abstract class SerialUI extends Log implements SerialPort {
       notifyObservers(SerialUI.this);
     }
   };
+  @Override
   public void addSerialDataObserver(Observer o) {
     serialDataObservable.addObserver(o);
   }
+  @Override
   public void deleteSerialDataObserver(Observer o) {
     serialDataObservable.deleteObserver(o);
   }
+  @Override
   public byte getLastSerialData() {
     return lastSerialData;
   }
@@ -126,6 +131,7 @@ public abstract class SerialUI extends Log implements SerialPort {
 
 
   /* Mote interface visualizer */
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel(new BorderLayout());
     JPanel commandPane = new JPanel(new BorderLayout());
@@ -135,6 +141,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     JButton sendButton = new JButton("Send data");
 
     ActionListener sendCommandAction = new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         final String command = trim(commandField.getText());
         if (command == null) {
@@ -158,6 +165,7 @@ public abstract class SerialUI extends Log implements SerialPort {
           commandField.setText("");
           if (getMote().getSimulation().isRunning()) {
             getMote().getSimulation().invokeSimulationThread(new Runnable() {
+              @Override
               public void run() {
                 writeString(command);
               }
@@ -179,6 +187,7 @@ public abstract class SerialUI extends Log implements SerialPort {
 
     /* History */
     commandField.addKeyListener(new KeyAdapter() {
+      @Override
       public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
         case KeyEvent.VK_UP: {
@@ -219,6 +228,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     logTextPane.setOpaque(false);
     logTextPane.setEditable(false);
     logTextPane.addKeyListener(new KeyAdapter() {
+      @Override
       public void keyPressed(KeyEvent e) {
         if ((e.getModifiers() & (MouseEvent.SHIFT_MASK|MouseEvent.CTRL_MASK)) != 0) {
           return;
@@ -230,9 +240,11 @@ public abstract class SerialUI extends Log implements SerialPort {
     /* Mote interface observer */
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         final String logMessage = getLastLogMessage();
         EventQueue.invokeLater(new Runnable() {
+          @Override
           public void run() {
             appendToTextArea(logTextPane, logMessage);
           }
@@ -248,6 +260,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -259,6 +272,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   }
 
   private static final String HISTORY_SEPARATOR = "~;";
+  @Override
   public Collection<Element> getConfigXML() {
     StringBuilder sb = new StringBuilder();
     for (String s: history) {
@@ -279,6 +293,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     return config;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("history")) {
@@ -291,9 +306,11 @@ public abstract class SerialUI extends Log implements SerialPort {
     }
   }
 
+  @Override
   public void close() {
   }
 
+  @Override
   public void flushInput() {
   }
 

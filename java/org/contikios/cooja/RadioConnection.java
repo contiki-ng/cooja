@@ -229,6 +229,7 @@ public class RadioConnection {
     return onlyInterfered.toArray(new Radio[0]);
   }
 
+  @Override
   public String toString() {
     if (destinationsNonInterfered.size() == 0) {
       return id + ": Radio connection: " + source.getMote() + " -> none";

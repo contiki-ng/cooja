@@ -122,6 +122,7 @@ public class LinearPositioner extends Positioner {
     this.addedInZ = 0;
   }
 
+  @Override
   public double[] getNextPosition() {
     double[] newPosition = new double[] {
         startX + addedInX*xInterval,

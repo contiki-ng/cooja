@@ -149,6 +149,7 @@ public class Simulation extends Observable implements Runnable {
     hasMillisecondObservers = true;
 
     invokeSimulationThread(new Runnable() {
+      @Override
       public void run() {
         if (!millisecondEvent.isScheduled()) {
           scheduleEvent(
@@ -205,6 +206,7 @@ public class Simulation extends Observable implements Runnable {
   }
 
   private final TimeEvent delayEvent = new TimeEvent() {
+    @Override
     public void execute(long t) {
       if (speedLimitNone) {
         /* As fast as possible: no need to reschedule delay event */
@@ -233,12 +235,14 @@ public class Simulation extends Observable implements Runnable {
         speedLimitLastSimtime = getSimulationTime();
       }
     }
+    @Override
     public String toString() {
       return "DELAY";
     }
   };
 
   private final TimeEvent millisecondEvent = new TimeEvent() {
+    @Override
     public void execute(long t) {
       if (!hasMillisecondObservers) {
         return;
@@ -247,6 +251,7 @@ public class Simulation extends Observable implements Runnable {
       millisecondObservable.newMillisecond(getSimulationTime());
       scheduleEvent(this, t+MILLISECOND);
     }
+    @Override
     public String toString() {
       return "MILLISECOND: " + millisecondObservable.countObservers();
     }
@@ -257,6 +262,7 @@ public class Simulation extends Observable implements Runnable {
     pollRequests.clear();
   }
 
+  @Override
   public void run() {
     lastStartTime = System.currentTimeMillis();
     logger.info("Simulation started, system time: " + lastStartTime);
@@ -395,6 +401,7 @@ public class Simulation extends Observable implements Runnable {
       return;
     }
     TimeEvent stopEvent = new TimeEvent() {
+      @Override
       public void execute(long t) {
         /* Stop simulation */
         stopSimulation();
@@ -777,6 +784,7 @@ public class Simulation extends Observable implements Runnable {
 
     /* Simulation is running, remove mote in simulation loop */
     Runnable removeMote = new Runnable() {
+      @Override
       public void run() {
         motes.remove(mote);
         motesUninit.remove(mote);
@@ -834,6 +842,7 @@ public class Simulation extends Observable implements Runnable {
    */
   public void addMote(final Mote mote) {
     Runnable addMote = new Runnable() {
+      @Override
       public void run() {
         if (mote.getInterfaces().getClock() != null) {
           if (maxMoteStartupDelay > 0) {
@@ -1019,6 +1028,7 @@ public class Simulation extends Observable implements Runnable {
    */
   public void setSpeedLimit(final Double newSpeedLimit) {
     Runnable r = new Runnable() {
+      @Override
       public void run() {
         if (newSpeedLimit == null) {
           speedLimitNone = true;

@@ -74,6 +74,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     setDescription("Imported App Mote Type #" + identifier);
   }
 
+  @Override
   public Collection<Element> getConfigXML(Simulation simulation) {
     Collection<Element> config = super.getConfigXML(simulation);
 
@@ -93,6 +94,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     return config;
   }
 
+  @Override
   public boolean setConfigXML(Simulation simulation,
       Collection<Element> configXML, boolean visAvailable)
   throws MoteTypeCreationException {
@@ -110,6 +112,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     return super.setConfigXML(simulation, configXML, visAvailable);
   }
 
+  @Override
   public boolean configureAndInit(Container parentContainer,
       Simulation simulation, boolean visAvailable)
   throws MoteTypeCreationException {
@@ -169,6 +172,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     return mte;
   }
 
+  @Override
   public Mote generateMote(Simulation simulation) {
     try {
       return moteConstructor.newInstance(ImportAppMoteType.this, simulation);

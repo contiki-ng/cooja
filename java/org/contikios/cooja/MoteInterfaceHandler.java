@@ -373,6 +373,7 @@ public class MoteInterfaceHandler {
     polledAfterAll = null;
   }
 
+  @Override
   public String toString() {
     return "Mote interfaces handler (" + moteInterfaces.size() + " mote interfaces)";
   }

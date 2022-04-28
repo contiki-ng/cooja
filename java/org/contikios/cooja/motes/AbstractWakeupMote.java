@@ -46,15 +46,18 @@ public abstract class AbstractWakeupMote implements Mote {
   private long nextWakeupTime = -1;
 
   private final TimeEvent executeMoteEvent = new MoteTimeEvent(this) {
+    @Override
     public void execute(long t) {
       AbstractWakeupMote.this.execute(t);
     }
+    @Override
     public String toString() {
       return "EXECUTE " + AbstractWakeupMote.this.getClass().getName();
     }
   };
 
   
+  @Override
   public Simulation getSimulation() {
       return simulation;
   }
@@ -90,6 +93,7 @@ public abstract class AbstractWakeupMote implements Mote {
     else {
       /* Schedule wakeup asap */
       simulation.invokeSimulationThread(new Runnable() {
+        @Override
         public void run() {
           scheduleNextWakeup(t);
         }
@@ -140,16 +144,19 @@ public abstract class AbstractWakeupMote implements Mote {
     return true;
   }
 
+  @Override
   public void removed() {
   }
   
   private HashMap<String, Object> properties = null;
+  @Override
   public void setProperty(String key, Object obj) {
     if (properties == null) {
       properties = new HashMap<String, Object>();
     }
     properties.put(key, obj);
   }
+  @Override
   public Object getProperty(String key) {
     if (properties == null) {
       return null;

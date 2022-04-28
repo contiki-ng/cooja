@@ -58,6 +58,7 @@ public abstract class MoteID extends MoteInterface {
    */
   public abstract void setMoteID(int id);
   
+  @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<Element>();
     Element element = new Element("id");
@@ -66,6 +67,7 @@ public abstract class MoteID extends MoteInterface {
     return config;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("id")) {

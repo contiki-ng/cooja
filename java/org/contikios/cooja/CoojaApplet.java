@@ -34,11 +34,13 @@ public class CoojaApplet extends JApplet {
 
   public static CoojaApplet applet = null;
 
+  @Override
   public void init()
   {
     applet = this;
   }
 
+  @Override
   public void start(){
     String contikiWebPath = getParameter("contiki_web");
     String contikiBuildPath = getParameter("contiki_build");
@@ -59,6 +61,7 @@ public class CoojaApplet extends JApplet {
         "-build=" + contikiBuildPath});
   }
 
+  @Override
   public void stop(){
   }
 }

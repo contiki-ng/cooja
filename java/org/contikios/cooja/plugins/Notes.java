@@ -76,22 +76,26 @@ public class Notes extends VisPlugin {
       JMenuItem headerMenuItem = new JMenuItem("Toggle decorations");
       headerMenuItem.setEnabled(true);
       headerMenuItem.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           setDecorationsVisible(!decorationsVisible);
         }
       });
       popup.add(headerMenuItem);
       notes.addMouseListener(new MouseAdapter() {
+        @Override
         public void mousePressed(MouseEvent e) {
           if (e.isPopupTrigger()) {
             popup.show(Notes.this, e.getX(), e.getY());
           }
         }
+        @Override
         public void mouseReleased(MouseEvent e) {
           if (e.isPopupTrigger()) {
             popup.show(Notes.this, e.getX(), e.getY());
           }
         }
+        @Override
         public void mouseClicked(MouseEvent e) {
           if (e.isPopupTrigger()) {
             popup.show(Notes.this, e.getX(), e.getY());
@@ -132,6 +136,7 @@ public class Notes extends VisPlugin {
 
     Notes.this.revalidate();
     SwingUtilities.invokeLater(new Runnable() {
+      @Override
       public void run() {
         Notes.this.repaint();
       }
@@ -140,6 +145,7 @@ public class Notes extends VisPlugin {
     decorationsVisible = visible;
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<Element>();
     Element element;
@@ -155,6 +161,7 @@ public class Notes extends VisPlugin {
     return config;
   }
 
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("notes")) {

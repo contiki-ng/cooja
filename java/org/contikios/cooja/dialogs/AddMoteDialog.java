@@ -428,21 +428,26 @@ public class AddMoteDialog extends JDialog {
         ActionListener,
         FocusListener,
         PropertyChangeListener {
+    @Override
     public void propertyChange(PropertyChangeEvent e) {
       checkSettings();
     }
+    @Override
     public void focusGained(final FocusEvent e) {
       if (e.getSource() instanceof JFormattedTextField) {
         SwingUtilities.invokeLater(new Runnable() {
+          @Override
           public void run() {
             ((JFormattedTextField) e.getSource()).selectAll();
           }
         });
       }
     }
+    @Override
     public void focusLost(FocusEvent e) {
       checkSettings();
     }
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("cancel")) {
         newMotes = null;

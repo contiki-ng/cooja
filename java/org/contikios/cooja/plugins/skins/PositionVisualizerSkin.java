@@ -62,17 +62,20 @@ public class PositionVisualizerSkin implements VisualizerSkin {
   private Visualizer visualizer = null;
 
   private Observer positionObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       visualizer.repaint();
     }
   };
   private MoteCountListener simObserver = new MoteCountListener() {
+    @Override
     public void moteWasAdded(Mote mote) {
       Position p = mote.getInterfaces().getPosition();
       if (p != null) {
         p.addObserver(positionObserver);
       }
     }
+    @Override
     public void moteWasRemoved(Mote mote) {
       Position p = mote.getInterfaces().getPosition();
       if (p != null) {
@@ -81,6 +84,7 @@ public class PositionVisualizerSkin implements VisualizerSkin {
     }
   };
 
+  @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
@@ -91,6 +95,7 @@ public class PositionVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public void setInactive() {
     simulation.getEventCentral().removeMoteCountListener(simObserver);
     for (Mote m: simulation.getMotes()) {
@@ -98,13 +103,16 @@ public class PositionVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public Color[] getColorOf(Mote mote) {
     return null;
   }
 
+  @Override
   public void paintBeforeMotes(Graphics g) {
   }
 
+  @Override
   public void paintAfterMotes(Graphics g) {
     g.setColor(Color.BLACK);
 
@@ -153,6 +161,7 @@ public class PositionVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public Visualizer getVisualizer() {
     return visualizer;
   }

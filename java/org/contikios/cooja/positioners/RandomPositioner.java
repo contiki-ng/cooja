@@ -66,6 +66,7 @@ public class RandomPositioner extends Positioner {
     this.endZ = endZ;
   }
 
+  @Override
   public double[] getNextPosition() {
     return new double[] {
         startX + random.nextDouble()*(endX - startX),

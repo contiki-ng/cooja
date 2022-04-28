@@ -91,6 +91,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
     return new String[]{"rs232_interface", "simlog_interface" };
   }
 
+  @Override
   public void doActionsAfterTick() {
     if (moteMem.getByteValueOf("simLoggedFlag") == 1) {
       int len = moteMem.getIntValueOf("simLoggedLength");
@@ -105,10 +106,12 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
     }
   }
 
+  @Override
   public void writeString(String message) {
     final byte[] dataToAppend = message.getBytes();
 
     mote.getSimulation().invokeSimulationThread(new Runnable() {
+      @Override
       public void run() {
         /* Append to existing buffer */
         int oldSize = moteMem.getIntValueOf("simSerialReceivingLength");
@@ -134,12 +137,14 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
     });
   }
 
+  @Override
   public Mote getMote() {
     return mote;
   }
 
   private TimeEvent pendingBytesEvent = null;
   private Vector<Byte> pendingBytes = new Vector<Byte>();
+  @Override
   public void writeArray(byte[] s) {
     for (byte b: s) {
       pendingBytes.add(b);
@@ -151,6 +156,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
     }
 
     pendingBytesEvent = new MoteTimeEvent(mote) {
+      @Override
       public void execute(long t) {
         ContikiRS232.this.pendingBytesEvent = null;
         if (pendingBytes.isEmpty()) {
@@ -191,6 +197,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
       }
     };
     mote.getSimulation().invokeSimulationThread(new Runnable() {
+      @Override
       public void run() {
         mote.getSimulation().scheduleEvent(
             pendingBytesEvent,
@@ -200,6 +207,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
     });
   }
 
+  @Override
   public void writeByte(final byte b) {
     pendingBytes.add(b);
 
@@ -209,6 +217,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
     }
 
     pendingBytesEvent = new MoteTimeEvent(mote) {
+      @Override
       public void execute(long t) {
         ContikiRS232.this.pendingBytesEvent = null;
         if (pendingBytes.isEmpty()) {
@@ -259,7 +268,8 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
     }
 
     mote.getSimulation().invokeSimulationThread(new Runnable() {
-    	public void run() {
+      @Override
+      public void run() {
     		if (pendingBytesEvent.isScheduled()) {
     			return;
     		}

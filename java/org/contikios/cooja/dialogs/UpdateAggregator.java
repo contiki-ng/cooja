@@ -70,6 +70,7 @@ public abstract class UpdateAggregator<A> {
     this.maxPending = maxEvents;
     pending = new ArrayList<A>();
     t = new Timer(interval, new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         consume.run();
       }
@@ -83,6 +84,7 @@ public abstract class UpdateAggregator<A> {
    * Consumer: called from event queue
    */
   private Runnable consume = new Runnable() {
+    @Override
     public void run() {
       if (pending.isEmpty()) {
         return;

@@ -69,6 +69,7 @@ public class MoteTypeVisualizerSkin implements VisualizerSkin {
     new Color[] {Color.RED},
   };
   
+  @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
@@ -77,11 +78,13 @@ public class MoteTypeVisualizerSkin implements VisualizerSkin {
     visualizer.registerMoteMenuAction(DeleteAllAction.class);
   }
 
+  @Override
   public void setInactive() {
     /* Unregister menu actions */
     visualizer.unregisterMoteMenuAction(DeleteAllAction.class);
   }
 
+  @Override
   public Color[] getColorOf(Mote mote) {
     MoteType[] types = simulation.getMoteTypes();
     MoteType type = mote.getType();
@@ -93,21 +96,26 @@ public class MoteTypeVisualizerSkin implements VisualizerSkin {
     return null;
   }
 
+  @Override
   public void paintBeforeMotes(Graphics g) {
   }
 
+  @Override
   public void paintAfterMotes(Graphics g) {
   }
 
   public static class DeleteAllAction implements MoteMenuAction {
+    @Override
     public boolean isEnabled(Visualizer visualizer, Mote mote) {
       return true;
     }
 
+    @Override
     public String getDescription(Visualizer visualizer, Mote mote) {
       return "Delete all motes of type: " + mote.getType().getDescription();
     }
 
+    @Override
     public void doAction(Visualizer visualizer, Mote mote) {
       /* Remove all motes of this type */
       /* TODO Confirm? */
@@ -121,6 +129,7 @@ public class MoteTypeVisualizerSkin implements VisualizerSkin {
     }
   };
 
+  @Override
   public Visualizer getVisualizer() {
     return visualizer;
   }

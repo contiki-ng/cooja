@@ -68,19 +68,24 @@ public class LogVisualizerSkin implements VisualizerSkin {
   private Visualizer visualizer = null;
 
   private LogOutputListener logOutputListener = new LogOutputListener() {
+    @Override
     public void moteWasAdded(Mote mote) {
       visualizer.repaint();
     }
+    @Override
     public void moteWasRemoved(Mote mote) {
       visualizer.repaint();
     }
+    @Override
     public void newLogOutput(LogOutputEvent ev) {
       visualizer.repaint();
     }
+    @Override
     public void removedLogOutput(LogOutputEvent ev) {
     }
   };
 
+  @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
@@ -88,17 +93,21 @@ public class LogVisualizerSkin implements VisualizerSkin {
     simulation.getEventCentral().addLogOutputListener(logOutputListener);
   }
 
+  @Override
   public void setInactive() {
     simulation.getEventCentral().removeLogOutputListener(logOutputListener);
   }
 
+  @Override
   public Color[] getColorOf(Mote mote) {
     return null;
   }
 
+  @Override
   public void paintBeforeMotes(Graphics g) {
   }
 
+  @Override
   public void paintAfterMotes(Graphics g) {
     FontMetrics fm = g.getFontMetrics();
     g.setColor(Color.BLACK);
@@ -129,6 +138,7 @@ public class LogVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public Visualizer getVisualizer() {
     return visualizer;
   }

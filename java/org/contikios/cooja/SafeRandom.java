@@ -83,6 +83,7 @@ public class SafeRandom extends Random {
     this.sim = sim;
   }
   
+  @Override
   synchronized public void setSeed(long seed) {
     assertSimThread();
     super.setSeed(seed);
@@ -92,6 +93,7 @@ public class SafeRandom extends Random {
    * This function is called by all functions returning random numbers
    * @see java.util.Random#next(int)
    */
+  @Override
   protected int next(int bits) {
     assertSimThread();
     return super.next(bits);

@@ -66,6 +66,7 @@ public class EllipsePositioner extends Positioner {
     currentAngle = 0;
   }
 
+  @Override
   public double[] getNextPosition() {
     currentAngle += deltaAngle;
     return new double[] {

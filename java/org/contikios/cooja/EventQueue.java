@@ -52,6 +52,7 @@ public final class EventQueue {
       this.uuid = uuid;
     }
 
+    @Override
     public final int compareTo(Pair other) {
       if (time < other.time)
       {
@@ -167,6 +168,7 @@ public final class EventQueue {
     return queue.removeIf((Pair p) -> pred.test(p.event));
   }
 
+  @Override
   public String toString() {
     return "EventQueue with " + queue.size() + " events";
   }

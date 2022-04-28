@@ -50,6 +50,7 @@ public class JSyntaxAddBreakpoint extends DefaultSyntaxAction {
     super("addbreakpoint");
   }
   
+  @Override
   public void actionPerformed(ActionEvent e) {
     JMenuItem menuItem = (JMenuItem) e.getSource();
     Action action = menuItem.getAction();

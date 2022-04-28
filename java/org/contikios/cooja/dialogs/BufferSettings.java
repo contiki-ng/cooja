@@ -94,6 +94,7 @@ public class BufferSettings extends JDialog {
     JFormattedTextField value = addEntry(main, "Log output messages");
     value.setValue(central.getLogOutputBufferSize());
     value.addPropertyChangeListener("value", new PropertyChangeListener() {
+      @Override
       public void propertyChange(PropertyChangeEvent evt) {
         int newVal = ((Number)evt.getNewValue()).intValue();
         if (newVal < 1) {
@@ -133,6 +134,7 @@ public class BufferSettings extends JDialog {
   }
 
   private Action setDefaultAction = new AbstractAction("Set default") {
+    @Override
     public void actionPerformed(ActionEvent e) {
       Object[] options = { "Ok", "Cancel" };
 
@@ -151,6 +153,7 @@ public class BufferSettings extends JDialog {
   };
 
   private Action disposeAction = new AbstractAction("OK") {
+    @Override
     public void actionPerformed(ActionEvent e) {
       dispose();
     }

@@ -85,6 +85,7 @@ public class MoteAttributes extends MoteInterface {
   private HashMap<String, Object> attributes = new HashMap<String, Object>();
 
   private Observer logObserver = new Observer() {
+    @Override
     public void update(Observable o, Object arg) {
       String msg = ((Log) o).getLastLogMessage();
       handleNewLog(msg);
@@ -95,6 +96,7 @@ public class MoteAttributes extends MoteInterface {
     this.mote = mote;
   }
 
+  @Override
   public void added() {
     super.added();
     
@@ -106,6 +108,7 @@ public class MoteAttributes extends MoteInterface {
     }
   }
   
+  @Override
   public void removed() {
     super.removed();
 
@@ -169,6 +172,7 @@ public class MoteAttributes extends MoteInterface {
       return sb.toString();
   }
   
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     panel.setLayout(new BorderLayout());
@@ -180,6 +184,7 @@ public class MoteAttributes extends MoteInterface {
 
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
           attributes.setText(getText());
       }
@@ -191,6 +196,7 @@ public class MoteAttributes extends MoteInterface {
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -200,10 +206,12 @@ public class MoteAttributes extends MoteInterface {
     this.deleteObserver(observer);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 

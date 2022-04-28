@@ -275,6 +275,7 @@ public class TableColumnAdjuster implements PropertyChangeListener, TableModelLi
   //
   //  Implement the PropertyChangeListener
   //
+  @Override
   public void propertyChange(PropertyChangeEvent e) {
     //  When the TableModel changes we need to update the listeners
     //  and column widths
@@ -294,6 +295,7 @@ public class TableColumnAdjuster implements PropertyChangeListener, TableModelLi
   //
   //  Implement the TableModelListener
   //
+  @Override
   public void tableChanged(final TableModelEvent e) {
     if (e.getType() == TableModelEvent.INSERT) {
       adjustColumnsForNewRows(e.getFirstRow(), e.getLastRow());

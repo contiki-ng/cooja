@@ -80,6 +80,7 @@ public class MoteTypeInformation extends VisPlugin {
     nrMotesTypes = simulation.getMoteTypes().length;
 
     simulation.addObserver(simObserver = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         if (MoteTypeInformation.this.simulation.getMoteTypes().length == nrMotesTypes) {
           return;
@@ -120,6 +121,7 @@ public class MoteTypeInformation extends VisPlugin {
   }
 
 
+  @Override
   public void closePlugin() {
     simulation.deleteObserver(simObserver);
   }

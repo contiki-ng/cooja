@@ -86,10 +86,12 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
     return new String[]{"moteid_interface"};
   }
 
+  @Override
   public int getMoteID() {
     return moteID;
   }
 
+  @Override
   public void setMoteID(int newID) {
     moteID = newID;
     moteMem.setIntValueOf("simMoteID", moteID);
@@ -99,6 +101,7 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
     notifyObservers();
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     final JLabel idLabel = new JLabel();
@@ -109,6 +112,7 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
 
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         idLabel.setText("Mote ID: " + moteID);
       }
@@ -120,6 +124,7 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -130,6 +135,7 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
     this.deleteObserver(observer);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     Vector<Element> config = new Vector<Element>();
     Element element;
@@ -142,6 +148,7 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
     return config;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("id")) {

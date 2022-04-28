@@ -72,6 +72,7 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
     setDescription("Disturber Mote Type #" + identifier);
   }
 
+  @Override
   public boolean configureAndInit(Container parentContainer,
       Simulation simulation, boolean visAvailable) 
   throws MoteTypeCreationException {
@@ -82,6 +83,7 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
     return true;
   }
   
+  @Override
   public Mote generateMote(Simulation simulation) {
     return new DisturberMote(this, simulation);
   }
@@ -102,6 +104,7 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
       super(moteType, simulation);
     }
     
+    @Override
     public void execute(long time) {
       if (radio == null) {
         radio = (ApplicationRadio) getInterfaces().getRadio();
@@ -112,12 +115,15 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
       radio.startTransmittingPacket(radioPacket, DURATION);
     }
 
+    @Override
     public void receivedPacket(RadioPacket p) {
       /* Ignore */
     }
+    @Override
     public void sentPacket(RadioPacket p) {
       /* Send another packet after a small pause */
       getSimulation().scheduleEvent(new MoteTimeEvent(this) {
+        @Override
         public void execute(long t) {
           /*logger.info("Sending another radio packet on channel: " + radio.getChannel());*/
           radio.startTransmittingPacket(radioPacket, DURATION);
@@ -125,6 +131,7 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
       }, getSimulation().getSimulationTime() + DELAY);
     }
 
+    @Override
     public String toString() {
       return "Disturber " + getID();
     }

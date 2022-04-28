@@ -526,6 +526,7 @@ public class ProjectConfig {
     return getBooleanValue(callingClass, id, false);
   }
 
+  @Override
   public ProjectConfig clone() {
     try {
       ProjectConfig clone = new ProjectConfig(false);

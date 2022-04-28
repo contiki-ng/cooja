@@ -68,9 +68,11 @@ public abstract class VisPlugin extends JInternalFrame implements Plugin {
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
     addInternalFrameListener(new InternalFrameAdapter() {
+      @Override
       public void internalFrameClosing(InternalFrameEvent e) {
         gui.removePlugin(VisPlugin.this, true);
       }
+      @Override
       public void internalFrameActivated(InternalFrameEvent e) {
         /* Highlight mote in COOJA */
         Plugin p = VisPlugin.this;
@@ -83,20 +85,25 @@ public abstract class VisPlugin extends JInternalFrame implements Plugin {
     );
   }
 
+  @Override
   public JInternalFrame getCooja() {
     return this;
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     return false;
   }
 
+  @Override
   public void startPlugin() {
   }
+  @Override
   public void closePlugin() {
   }
   
