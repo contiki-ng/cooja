@@ -63,24 +63,6 @@ public abstract class AbstractMspMoteType extends MspMoteType {
     @Override
     public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
             throws MoteTypeCreationException {
-
-        /* SPECIAL CASE: Cooja started in applet.
-         * Use preconfigured Contiki firmware */
-        if (Cooja.isVisualizedInApplet()) {
-            String firmware = Cooja.getExternalToolsSetting(getMoteType().toUpperCase() + "_FIRMWARE", "");
-            if (!firmware.equals("")) {
-                setContikiFirmwareFile(new File(firmware));
-                JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-                        "Creating mote type from precompiled firmware: " + firmware,
-                        "Compiled firmware file available", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-                        "No precompiled firmware found",
-                        "Compiled firmware file not available", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-        }
-
         /* If visualized, show compile dialog and let user configure */
         if (visAvailable && !simulation.isQuickSetup()) {
 

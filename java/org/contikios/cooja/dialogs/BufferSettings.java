@@ -66,10 +66,6 @@ public class BufferSettings extends JDialog {
   private SimEventCentral central;
 
   public static void showDialog(JDesktopPane parent, Simulation simulation) {
-    if (Cooja.isVisualizedInApplet()) {
-      return;
-    }
-
     BufferSettings dialog = new BufferSettings(simulation);
     dialog.setLocationRelativeTo(parent); 
     dialog.setVisible(true);

@@ -87,7 +87,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultDesktopManager;
 import javax.swing.InputMap;
-import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
@@ -159,7 +158,6 @@ import org.contikios.cooja.util.ScnObservable;
  */
 public class Cooja extends Observable {
   private static JFrame frame = null;
-  private static JApplet applet = null;
   private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(Cooja.class);
 
@@ -493,7 +491,7 @@ public class Cooja extends Observable {
    * @return True if simulator is visualized
    */
   public static boolean isVisualized() {
-    return isVisualizedInFrame() || isVisualizedInApplet();
+    return isVisualizedInFrame();
   }
 
   public static Container getTopParentContainer() {
@@ -501,37 +499,11 @@ public class Cooja extends Observable {
       return frame;
     }
 
-    if (isVisualizedInApplet()) {
-      /* Find parent frame for applet */
-      Container container = applet;
-      while((container = container.getParent()) != null){
-        if (container instanceof Frame) {
-          return container;
-        }
-        if (container instanceof Dialog) {
-          return container;
-        }
-        if (container instanceof Window) {
-          return container;
-        }
-      }
-
-      logger.fatal("Returning null top owner container");
-    }
-
     return null;
   }
 
   public static boolean isVisualizedInFrame() {
     return frame != null;
-  }
-
-  public static URL getAppletCodeBase() {
-    return applet.getCodeBase();
-  }
-
-  public static boolean isVisualizedInApplet() {
-    return applet != null;
   }
 
   /**
@@ -595,9 +567,6 @@ public class Cooja extends Observable {
   }
 
   private void updateOpenHistoryMenuItems() {
-    if (isVisualizedInApplet()) {
-      return;
-    }
     if (!hasFileHistoryChanged) {
       return;
     }
@@ -752,11 +721,6 @@ public class Cooja extends Observable {
     menuOpenSimulation = new JMenu("Open simulation");
     menuOpenSimulation.setMnemonic(KeyEvent.VK_O);
     fileMenu.add(menuOpenSimulation);
-    if (isVisualizedInApplet()) {
-      menuOpenSimulation.setEnabled(false);
-      menuOpenSimulation.setToolTipText("Not available in applet version");
-    }
-
     fileMenu.add(new JMenuItem(closeSimulationAction));
 
     hasFileHistoryChanged = true;
@@ -865,10 +829,6 @@ public class Cooja extends Observable {
           menuItem.putClientProperty("class", moteTypeClass);
         /*  menuItem.setToolTipText(abstractionLevelDescription);*/
           menuItem.addActionListener(guiEventHandler);
-          if (isVisualizedInApplet() && moteTypeClass.equals(ContikiMoteType.class)) {
-            menuItem.setEnabled(false);
-            menuItem.setToolTipText("Not available in applet version");
-          }
 
           /* Add new item directly after cross level separator */
           for (int i=0; i < menuMoteTypeClasses.getMenuComponentCount(); i++) {
@@ -1104,28 +1064,16 @@ public class Cooja extends Observable {
     menuItem.setActionCommand("edit paths");
     menuItem.addActionListener(guiEventHandler);
     settingsMenu.add(menuItem);
-    if (isVisualizedInApplet()) {
-      menuItem.setEnabled(false);
-      menuItem.setToolTipText("Not available in applet version");
-    }
 
     menuItem = new JMenuItem("Cooja extensions...");
     menuItem.setActionCommand("manage extensions");
     menuItem.addActionListener(guiEventHandler);
     settingsMenu.add(menuItem);
-    if (isVisualizedInApplet()) {
-      menuItem.setEnabled(false);
-      menuItem.setToolTipText("Not available in applet version");
-    }
 
     menuItem = new JMenuItem("Cooja mote configuration wizard...");
     menuItem.setActionCommand("configuration wizard");
     menuItem.addActionListener(guiEventHandler);
     settingsMenu.add(menuItem);
-    if (isVisualizedInApplet()) {
-      menuItem.setEnabled(false);
-      menuItem.setToolTipText("Not available in applet version");
-    }
 
     settingsMenu.add(new JMenuItem(showBufferSettingsAction));
 
@@ -1229,28 +1177,6 @@ public class Cooja extends Observable {
     }
 
     frame.setVisible(true);
-
-    if (createSimDialog) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          gui.doCreateSimulation(true);
-        }
-      });
-    }
-  }
-
-  private static void configureApplet(final Cooja gui, boolean createSimDialog) {
-    applet = CoojaApplet.applet;
-
-    // Add menu bar
-    JMenuBar menuBar = gui.createMenuBar();
-    applet.setJMenuBar(menuBar);
-
-    JComponent newContentPane = gui.getDesktopPane();
-    newContentPane.setOpaque(true);
-    applet.setContentPane(newContentPane);
-    applet.setSize(700, 700);
 
     if (createSimDialog) {
       SwingUtilities.invokeLater(new Runnable() {
@@ -1542,11 +1468,7 @@ public class Cooja extends Observable {
    */
   public void reparseProjectConfig() throws ParseProjectsException {
     if (PROJECT_DEFAULT_CONFIG_FILENAME == null) {
-      if (isVisualizedInApplet()) {
-        PROJECT_DEFAULT_CONFIG_FILENAME = "/cooja_applet.config";
-      } else {
-        PROJECT_DEFAULT_CONFIG_FILENAME = "/cooja_default.config";
-      }
+      PROJECT_DEFAULT_CONFIG_FILENAME = "/cooja_default.config";
     }
 
     /* Remove current dependencies */
@@ -1568,26 +1490,24 @@ public class Cooja extends Observable {
       throw (ParseProjectsException) new ParseProjectsException(
           "Error when reading default extension config file: " + PROJECT_DEFAULT_CONFIG_FILENAME).initCause(e);
     }
-    if (!isVisualizedInApplet()) {
-      for (COOJAProject project: currentProjects) {
-        try {
-          projectConfig.appendProjectDir(project.dir);
-        } catch (FileNotFoundException e) {
-          throw (ParseProjectsException) new ParseProjectsException(
-              "Error when loading extension: " + e.getMessage()).initCause(e);
-        } catch (IOException e) {
-          throw (ParseProjectsException) new ParseProjectsException(
-              "Error when reading extension config: " + e.getMessage()).initCause(e);
-        }
-      }
-
-      /* Create extension class loader */
+    for (COOJAProject project: currentProjects) {
       try {
-        projectDirClassLoader = createClassLoader(currentProjects);
-      } catch (ClassLoaderCreationException e) {
+        projectConfig.appendProjectDir(project.dir);
+      } catch (FileNotFoundException e) {
         throw (ParseProjectsException) new ParseProjectsException(
-        "Error when creating class loader").initCause(e);
+            "Error when loading extension: " + e.getMessage()).initCause(e);
+      } catch (IOException e) {
+        throw (ParseProjectsException) new ParseProjectsException(
+            "Error when reading extension config: " + e.getMessage()).initCause(e);
       }
+    }
+
+    /* Create extension class loader */
+    try {
+      projectDirClassLoader = createClassLoader(currentProjects);
+    } catch (ClassLoaderCreationException e) {
+      throw (ParseProjectsException) new ParseProjectsException(
+          "Error when creating class loader").initCause(e);
     }
 
     // Register mote types
@@ -2323,10 +2243,6 @@ public class Cooja extends Observable {
    * @param configFile Configuration file to load, if null a dialog will appear
    */
   public void doLoadConfig(boolean askForConfirmation, final boolean quick, File configFile, Long manualRandomSeed) {
-    if (isVisualizedInApplet()) {
-      return;
-    }
-
     /* Warn about memory usage */
     if (warnMemory()) {
       return;
@@ -2643,10 +2559,6 @@ public class Cooja extends Observable {
    *          Ask for confirmation before overwriting file
    */
   public File doSaveConfig(boolean askForConfirmation) {
-    if (isVisualizedInApplet()) {
-      return null;
-    }
-
     if (mySimulation == null) {
       return null;
     }
@@ -2749,10 +2661,6 @@ public class Cooja extends Observable {
   }
   
   public void doQuit(boolean askForConfirmation, int exitCode) {
-    if (isVisualizedInApplet()) {
-      return;
-    }
-
     if (askForConfirmation) {
       if (getSimulation() != null) {
         /* Save? */
@@ -2972,10 +2880,6 @@ public class Cooja extends Observable {
    * Save external tools user settings to file.
    */
   public static void saveExternalToolsUserSettings() {
-    if (isVisualizedInApplet()) {
-      return;
-    }
-
     if (externalToolsUserSettingsFileReadOnly) {
       return;
     }
@@ -3080,16 +2984,14 @@ public class Cooja extends Observable {
     } catch (UnsupportedClassVersionError e) {
     }
 
-    if (!isVisualizedInApplet()) {
-      try {
-        if (projectDirClassLoader != null) {
-          return projectDirClassLoader.loadClass(className).asSubclass(
-              classType);
-        }
-      } catch (NoClassDefFoundError e) {
-      } catch (ClassNotFoundException e) {
-      } catch (UnsupportedClassVersionError e) {
+    try {
+      if (projectDirClassLoader != null) {
+        return projectDirClassLoader.loadClass(className).asSubclass(
+            classType);
       }
+    } catch (NoClassDefFoundError e) {
+    } catch (ClassNotFoundException e) {
+    } catch (UnsupportedClassVersionError e) {
     }
 
     return null;
@@ -3154,7 +3056,6 @@ public class Cooja extends Observable {
     }
 
     URL[] urlsArray = urls.toArray(new URL[urls.size()]);
-    /* TODO Load from webserver if applet */
     return new URLClassLoader(urlsArray, parent);
   }
 
@@ -3380,47 +3281,7 @@ public class Cooja extends Observable {
           System.exit(1);
         }
       }
-
-
-      
-    } else if (args.length > 0 && args[0].startsWith("-applet")) {
-
-      String tmpWebPath=null, tmpBuildPath=null, tmpEsbFirmware=null, tmpSkyFirmware=null;
-      for (int i = 1; i < args.length; i++) {
-        if (args[i].startsWith("-web=")) {
-          tmpWebPath = args[i].substring("-web=".length());
-        } else if (args[i].startsWith("-sky_firmware=")) {
-          tmpSkyFirmware = args[i].substring("-sky_firmware=".length());
-        } else if (args[i].startsWith("-esb_firmware=")) {
-          tmpEsbFirmware = args[i].substring("-esb_firmware=".length());
-        } else if (args[i].startsWith("-build=")) {
-          tmpBuildPath = args[i].substring("-build=".length());
-        }
-      }
-
-      // Applet start-up
-      final String webPath = tmpWebPath, buildPath = tmpBuildPath;
-      final String skyFirmware = tmpSkyFirmware, esbFirmware = tmpEsbFirmware;
-      javax.swing.SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          JDesktopPane desktop = createDesktopPane();
-
-          applet = CoojaApplet.applet;
-          Cooja gui = new Cooja(desktop);
-
-          Cooja.setExternalToolsSetting("PATH_CONTIKI_BUILD", buildPath);
-          Cooja.setExternalToolsSetting("PATH_CONTIKI_WEB", webPath);
-
-          Cooja.setExternalToolsSetting("SKY_FIRMWARE", skyFirmware);
-          Cooja.setExternalToolsSetting("ESB_FIRMWARE", esbFirmware);
-
-          configureApplet(gui, false);
-        }
-      });
-
     } else {
-
       // Frame start-up
       javax.swing.SwingUtilities.invokeLater(new Runnable() {
         @Override
@@ -4624,9 +4485,6 @@ public class Cooja extends Observable {
     }
     @Override
     public boolean shouldBeEnabled() {
-      if (isVisualizedInApplet()) {
-        return false;
-      }
       return getSimulation() != null;
     }
   };
@@ -4733,9 +4591,6 @@ public class Cooja extends Observable {
     }
     @Override
     public boolean shouldBeEnabled() {
-      if (isVisualizedInApplet()) {
-        return false;
-      }
       return true;
     }
   };

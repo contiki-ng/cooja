@@ -117,10 +117,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 	 * @return New COOJA projects, or null
 	 */
 	public static COOJAProject[] showDialog(Container parent, Cooja gui, COOJAProject[] currentProjects) {
-		if (Cooja.isVisualizedInApplet()) {
-			return null;
-		}
-
 		ProjectDirectoriesDialog dialog = new ProjectDirectoriesDialog((Window) parent, currentProjects);
 		dialog.gui = gui;
 		dialog.setLocationRelativeTo(parent);

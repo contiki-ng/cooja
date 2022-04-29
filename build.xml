@@ -218,15 +218,6 @@ The COOJA Simulator
     </java>
   </target>
 
-  <target name="run_applet" depends="init, compile, jar, copy configs">
-    <exec executable="appletviewer" dir="${build}">
-      <arg value="-J-Djava.security.policy=cooja.policy"/>
-      <arg value="cooja.html"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <env key="CLASSPATH" path="${build}"/>
-    </exec>
-  </target>
-
   <target name="jar_cooja" depends="init, compile, copy configs">
     <mkdir dir="${dist}"/>
     <jar destfile="${dist}/cooja.jar" basedir="${build}">

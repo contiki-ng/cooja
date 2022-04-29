@@ -199,15 +199,13 @@ public class MicaZMoteType implements MoteType {
     smallPane.add(BorderLayout.EAST, textArea);
     panel.add(smallPane);
 
-    /* Icon (if available) */
-    if (!Cooja.isVisualizedInApplet()) {
-      Icon moteTypeIcon = getMoteTypeIcon();
-      if (moteTypeIcon != null) {
-        smallPane = new JPanel(new BorderLayout());
-        label = new JLabel(moteTypeIcon);
-        smallPane.add(BorderLayout.CENTER, label);
-        panel.add(smallPane);
-      }
+    /* Icon */
+    Icon moteTypeIcon = getMoteTypeIcon();
+    if (moteTypeIcon != null) {
+      smallPane = new JPanel(new BorderLayout());
+      label = new JLabel(moteTypeIcon);
+      smallPane.add(BorderLayout.CENTER, label);
+      panel.add(smallPane);
     }
 
     panel.add(Box.createRigidArea(new Dimension(0, 5)));

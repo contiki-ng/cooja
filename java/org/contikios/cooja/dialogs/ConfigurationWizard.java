@@ -157,10 +157,6 @@ public class ConfigurationWizard extends JDialog {
   private static JProgressBar progressBar;
 
   public static boolean startWizard(Container parentContainer, Cooja gui) {
-    if (Cooja.isVisualizedInApplet()) {
-      return false;
-    }
-
     /* Initial info message */
     if (!showWizardInfo(parentContainer, gui)) {
       return false;

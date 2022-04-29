@@ -359,9 +359,6 @@ public class AreaViewer extends VisPlugin {
     JRadioButton customButton = new JRadioButton("From bitmap");
     customButton.setActionCommand("set custom bitmap");
     customButton.addActionListener(obstacleHandler);
-    if (Cooja.isVisualizedInApplet()) {
-      customButton.setEnabled(false);
-    }
 
     group = new ButtonGroup();
     group.add(noneButton);
