@@ -29,6 +29,8 @@
 
 package org.contikios.cooja.plugins;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -51,12 +53,12 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -82,11 +84,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
-
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -107,6 +106,7 @@ import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.util.ArrayQueue;
 import org.contikios.cooja.util.IPUtils;
 import org.contikios.cooja.util.StringUtils;
+import org.jdom.Element;
 
 /**
  * @author Fredrik Osterlind, Niclas Finne
@@ -1131,7 +1131,7 @@ public class BufferListener extends VisPlugin {
       }
 
       try {
-        PrintWriter outStream = new PrintWriter(new FileWriter(saveFile));
+        PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
 
         StringBuilder sb = new StringBuilder();
         for (int i=0; i < logTable.getRowCount(); i++) {
@@ -1670,7 +1670,7 @@ public class BufferListener extends VisPlugin {
       }
       byte[] termString = new byte[i];
       System.arraycopy(ba.mem, 0, termString, 0, i);
-      return new String(termString).replaceAll("[^\\p{Print}]", "");
+      return new String(termString, UTF_8).replaceAll("[^\\p{Print}]", "");
     }
   }
 
@@ -1679,7 +1679,7 @@ public class BufferListener extends VisPlugin {
     @Override
     public String parseString(BufferAccess ba) {
       /* TODO Diff? */
-      return new String(ba.mem).replaceAll("[^\\p{Print}]", "");
+      return new String(ba.mem, UTF_8).replaceAll("[^\\p{Print}]", "");
     }
   }
 

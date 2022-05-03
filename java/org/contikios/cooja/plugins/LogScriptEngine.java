@@ -30,21 +30,24 @@
 
 package org.contikios.cooja.plugins;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Hashtable;
 import java.util.Observer;
 import java.util.concurrent.Semaphore;
-
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.SimEventCentral.LogOutputEvent;
@@ -437,8 +440,7 @@ public class LogScriptEngine {
     @Override
     public void append(String filename, String msg) {
       try{
-        FileWriter fstream = new FileWriter(filename, true);
-        BufferedWriter out = new BufferedWriter(fstream);
+        BufferedWriter out = Files.newBufferedWriter(Paths.get(filename), UTF_8, CREATE, APPEND);
         out.write(msg);
         out.close();
       } catch (Exception e) {
@@ -448,8 +450,7 @@ public class LogScriptEngine {
     @Override
     public void writeFile(String filename, String msg) {
       try{
-        FileWriter fstream = new FileWriter(filename, false);
-        BufferedWriter out = new BufferedWriter(fstream);
+        BufferedWriter out = Files.newBufferedWriter(Paths.get(filename), UTF_8);
         out.write(msg);
         out.close();
       } catch (Exception e) {

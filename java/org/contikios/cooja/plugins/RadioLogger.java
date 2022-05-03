@@ -29,6 +29,8 @@
  */
 package org.contikios.cooja.plugins;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -44,6 +46,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,7 +55,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
 import java.util.regex.PatternSyntaxException;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
@@ -77,11 +79,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
-
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.ConvertedRadioPacket;
 import org.contikios.cooja.Cooja;
@@ -102,6 +101,7 @@ import org.contikios.cooja.plugins.analyzers.IPv6PacketAnalyzer;
 import org.contikios.cooja.plugins.analyzers.PacketAnalyzer;
 import org.contikios.cooja.plugins.analyzers.RadioLoggerAnalyzerSuite;
 import org.contikios.cooja.util.StringUtils;
+import org.jdom.Element;
 
 /**
  * Radio logger listens to the simulation radio medium and lists all transmitted
@@ -1032,7 +1032,7 @@ public class RadioLogger extends VisPlugin {
       }
 
       try {
-        PrintWriter outStream = new PrintWriter(new FileWriter(saveFile));
+        PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
         for (int i = 0; i < connections.size(); i++) {
           outStream.print(connections.get(i).toString() + "\n");
         }

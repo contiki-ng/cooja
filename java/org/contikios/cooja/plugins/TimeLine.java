@@ -30,6 +30,8 @@
 
 package org.contikios.cooja.plugins;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -51,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JCheckBox;
@@ -76,11 +77,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
-
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -98,6 +96,7 @@ import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.interfaces.Radio.RadioEvent;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
+import org.jdom.Element;
 
 /**
  * Shows events such as mote logs, LEDs, and radio transmissions, in a timeline.
@@ -707,7 +706,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         BufferedWriter outStream = new BufferedWriter(
             new OutputStreamWriter(
                 new FileOutputStream(
-                    saveFile)));
+                    saveFile), UTF_8));
 
         /* Output all events (sorted per mote) */
         for (MoteEvents moteEvents: allMoteEvents) {

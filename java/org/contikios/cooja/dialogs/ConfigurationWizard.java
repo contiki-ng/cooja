@@ -30,6 +30,8 @@
 
 package org.contikios.cooja.dialogs;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -49,9 +51,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
-
+import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -63,14 +66,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-
-import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.Cooja;
+import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
-import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.contikimote.ContikiMoteType.SectionParser;
 import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
+import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.mote.memory.VarMemory;
 
 /* TODO Test common section */
@@ -559,15 +561,19 @@ public class ConfigurationWizard extends JDialog {
     BufferedReader templateReader = null;
     try {
       if ((new File(testTemplate)).exists()) {
-        templateReader = new BufferedReader(new FileReader(testTemplate));
+        templateReader = Files.newBufferedReader(Paths.get(testTemplate), UTF_8);
       } else {
         InputStream input = ConfigurationWizard.class.getResourceAsStream('/' + testTemplate);
         if (input == null) {
           throw new FileNotFoundException("File not found: " + testTemplate);
         }
-        templateReader = new BufferedReader(new InputStreamReader(input));
+        templateReader = new BufferedReader(new InputStreamReader(input, UTF_8));
       }
     } catch (FileNotFoundException e) {
+      e.printStackTrace(errorStream);
+      testOutput.addMessage("### Error: " + e.getMessage(), MessageList.ERROR);
+      return false;
+    } catch (IOException e) {
       e.printStackTrace(errorStream);
       testOutput.addMessage("### Error: " + e.getMessage(), MessageList.ERROR);
       return false;
@@ -589,7 +595,7 @@ public class ConfigurationWizard extends JDialog {
     }
     BufferedWriter cLibraryWriter = null;
     try {
-      cLibraryWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cLibrarySourceFile)));
+      cLibraryWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cLibrarySourceFile), UTF_8));
       String line;
       while ((line = templateReader.readLine()) != null) {
         line = line.replaceFirst("\\[CLASS_NAME\\]", javaLibraryName);

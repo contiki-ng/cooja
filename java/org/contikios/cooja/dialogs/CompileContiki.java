@@ -30,6 +30,8 @@
 
 package org.contikios.cooja.dialogs;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,15 +43,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-
+import java.util.regex.Pattern;
 import javax.swing.Action;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
@@ -148,9 +149,9 @@ public class CompileContiki {
       compileProcess = Runtime.getRuntime().exec(command, env, directory);
 
       final BufferedReader processNormal = new BufferedReader(
-          new InputStreamReader(compileProcess.getInputStream()));
+          new InputStreamReader(compileProcess.getInputStream(), UTF_8));
       final BufferedReader processError = new BufferedReader(
-          new InputStreamReader(compileProcess.getErrorStream()));
+          new InputStreamReader(compileProcess.getErrorStream(), UTF_8));
 
       if (outputFile != null) {
         if (outputFile.exists()) {
@@ -365,19 +366,19 @@ public class CompileContiki {
       Reader reader;
       String mainTemplate = Cooja.getExternalToolsSetting("CONTIKI_MAIN_TEMPLATE_FILENAME");
       if ((new File(mainTemplate)).exists()) {
-        reader = new FileReader(mainTemplate);
+        reader = Files.newBufferedReader(Paths.get(mainTemplate), UTF_8);
       } else {
         /* Try JAR, or fail */
         InputStream input = CompileContiki.class.getResourceAsStream('/' + mainTemplate);
         if (input == null) {
           throw new FileNotFoundException(mainTemplate + " not found");
         }
-        reader = new InputStreamReader(input);
+        reader = new InputStreamReader(input, UTF_8);
       }
 
       templateReader = new BufferedReader(reader);
       sourceFileWriter = new BufferedWriter(new OutputStreamWriter(
-          new FileOutputStream(sourceFile)));
+          new FileOutputStream(sourceFile), UTF_8));
 
       // Replace special fields in template
       String line;

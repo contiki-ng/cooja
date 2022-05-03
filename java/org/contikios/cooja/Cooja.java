@@ -28,6 +28,8 @@
 
 package org.contikios.cooja;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -61,9 +63,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.AccessControlException;
@@ -80,7 +83,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -117,17 +119,10 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
-
 import org.apache.log4j.BasicConfigurator;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.VisPlugin.PluginRequiresVisualizationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
@@ -145,6 +140,12 @@ import org.contikios.cooja.plugins.SimControl;
 import org.contikios.cooja.plugins.SimInformation;
 import org.contikios.cooja.util.ExecuteJAR;
 import org.contikios.cooja.util.ScnObservable;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 /**
  * Main file of COOJA Simulator. Typically contains a visualizer for the
@@ -4512,7 +4513,7 @@ public class Cooja extends Observable {
         /* Load quickhelp.txt */
         try {
           quickHelpProperties = new Properties();
-          quickHelpProperties.load(new FileReader("quickhelp.txt"));
+          quickHelpProperties.load(Files.newBufferedReader(Paths.get("quickhelp.txt"), UTF_8));
         } catch (Exception e) {
           quickHelpProperties = null;
           help = "<html><b>Failed to read quickhelp.txt:</b><p>" + e.getMessage() + "</html>";
