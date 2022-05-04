@@ -767,7 +767,7 @@ public class ContikiMoteType implements MoteType {
         if (matcher.find()) {
           /* Line matched variable address */
           String symbol = matcher.group("symbol");
-          long varAddr = Integer.parseInt(matcher.group("address"), 16) + offset;
+          long varAddr = Long.parseUnsignedLong(matcher.group("address"), 16) + offset;
           int varSize;
 
           if (matcher.group(2) != null) {
