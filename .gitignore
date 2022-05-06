@@ -1,6 +1,7 @@
 *~
 build
 /dist
+/javadoc
 /apps/mspsim/lib
 /apps/mrm/mrm.jar
 /apps/avrora/cooja-avrora.jar
