@@ -63,17 +63,20 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
   private Visualizer visualizer = null;
 
   private Observer attributesObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       visualizer.repaint();
     }
   };
   private MoteCountListener newMotesListener = new MoteCountListener() {
+    @Override
     public void moteWasAdded(Mote mote) {
       MoteAttributes intf = mote.getInterfaces().getInterfaceOfType(MoteAttributes.class);
       if (intf != null) {
         intf.addObserver(attributesObserver);
       }
     }
+    @Override
     public void moteWasRemoved(Mote mote) {
       MoteAttributes intf = mote.getInterfaces().getInterfaceOfType(MoteAttributes.class);
       if (intf != null) {
@@ -82,6 +85,7 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
     }
   };
 
+  @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
@@ -92,6 +96,7 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public void setInactive() {
     simulation.getEventCentral().removeMoteCountListener(newMotesListener);
     for (Mote m: simulation.getMotes()) {
@@ -99,6 +104,7 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public Color[] getColorOf(Mote mote) {
     String[] as = getAttributesStrings(mote);
     if (as == null) {
@@ -138,6 +144,7 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
       return null;
     }
   }
+  @Override
   public void paintBeforeMotes(Graphics g) {
   }
 
@@ -154,6 +161,7 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
     return text.split("\n");
   }
   
+  @Override
   public void paintAfterMotes(Graphics g) {
     FontMetrics fm = g.getFontMetrics();
     g.setColor(Color.BLACK);
@@ -197,6 +205,7 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public Visualizer getVisualizer() {
     return visualizer;
   }

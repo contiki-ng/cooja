@@ -91,6 +91,7 @@ public class ManualPositioner extends Positioner {
     }
   }
 
+  @Override
   public double[] getNextPosition() {
     /* Generate the rest randomly? */
     if (skipRemainder) {
@@ -149,16 +150,19 @@ public class ManualPositioner extends Positioner {
       panel.add(new JLabel("Z:"));
 
       FocusListener focusListener = new FocusListener() {
+        @Override
         public void focusGained(FocusEvent e) {
           final JFormattedTextField source = ((JFormattedTextField)e.getSource());
           SwingUtilities.invokeLater(
               new Runnable() {
+                @Override
                 public void run() {
                   source.selectAll();
                 }
               }
           );
         }
+        @Override
         public void focusLost(FocusEvent e) {
         }
       };
@@ -191,6 +195,7 @@ public class ManualPositioner extends Positioner {
 
       button = new JButton("Next");
       button.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           dispose();
         }
@@ -200,6 +205,7 @@ public class ManualPositioner extends Positioner {
 
       button = new JButton("Skip remainder (random)");
       button.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           shouldSkipRemainder = true;
           dispose();

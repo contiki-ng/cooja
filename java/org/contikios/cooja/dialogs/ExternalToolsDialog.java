@@ -218,12 +218,15 @@ public class ExternalToolsDialog extends JDialog {
       implements
         ActionListener,
         FocusListener {
+    @Override
     public void focusGained(FocusEvent e) {
       // NOP
     }
+    @Override
     public void focusLost(FocusEvent e) {
       compareWithDefaults();
     }
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("reset")) {
         Cooja.loadExternalToolsDefaultSettings();

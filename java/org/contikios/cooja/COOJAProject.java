@@ -160,6 +160,7 @@ public class COOJAProject {
 		return getStringArray("org.contikios.cooja.contikimote.ContikiMoteType.C_SOURCES");
 	}
 
+	@Override
 	public String toString() {
 		if (getDescription() != null) {
 			return getDescription();

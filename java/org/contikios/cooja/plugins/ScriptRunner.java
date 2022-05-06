@@ -146,6 +146,7 @@ public class ScriptRunner extends VisPlugin {
       final String file = EXAMPLE_SCRIPTS[i];
       JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
       exampleItem.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           String script = loadScript(file);
           if (script == null) {
@@ -185,6 +186,7 @@ public class ScriptRunner extends VisPlugin {
 
     final JCheckBoxMenuItem activateMenuItem = new JCheckBoxMenuItem("Activate");
     activateMenuItem.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent ev) {
         try {
           setScriptActive(!isActive());
@@ -198,6 +200,7 @@ public class ScriptRunner extends VisPlugin {
     final JMenuItem runTestMenuItem = new JMenuItem("Save simulation and run with script");
     runMenu.add(runTestMenuItem);
     runTestMenuItem.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         exportAndRun();
       }
@@ -211,13 +214,16 @@ public class ScriptRunner extends VisPlugin {
     );
 
     MenuListener toggleMenuItems = new MenuListener() {
+      @Override
       public void menuSelected(MenuEvent e) {
         activateMenuItem.setSelected(isActive());
         runTestMenuItem.setEnabled(!isActive());
         examplesMenu.setEnabled(!isActive());
       }
+      @Override
       public void menuDeselected(MenuEvent e) {
       }
+      @Override
       public void menuCanceled(MenuEvent e) {
       }
     };
@@ -278,6 +284,7 @@ public class ScriptRunner extends VisPlugin {
     }
   }
 
+  @Override
   public void startPlugin() {
 	/* start simulation */
 	if (!Cooja.isVisualized()) {
@@ -334,6 +341,7 @@ public class ScriptRunner extends VisPlugin {
       if (Cooja.isVisualized()) {
         /* Attach visualized log observer */
         engine.setScriptLogObserver(new Observer() {
+          @Override
           public void update(Observable obs, Object obj) {
             logTextArea.append((String) obj);
             logTextArea.setCaretPosition(logTextArea.getText().length());
@@ -353,6 +361,7 @@ public class ScriptRunner extends VisPlugin {
             logWriter.flush();
           }
           engine.setScriptLogObserver(new Observer() {
+            @Override
             public void update(Observable obs, Object obj) {
               try {
                 if (logWriter != null) {
@@ -507,6 +516,7 @@ public class ScriptRunner extends VisPlugin {
       /* GUI components */
       final MessageListUI testOutput = new MessageListUI();
       final AbstractAction abort = new AbstractAction() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           process.destroy();
           if (progressDialog.isDisplayable()) {
@@ -529,6 +539,7 @@ public class ScriptRunner extends VisPlugin {
       progressDialog.setSize(800, 300);
       progressDialog.setLocationRelativeTo(ScriptRunner.this);
       progressDialog.addWindowListener(new WindowAdapter() {
+        @Override
         public void windowClosed(WindowEvent e) {
           abort.actionPerformed(null);
         }
@@ -536,6 +547,7 @@ public class ScriptRunner extends VisPlugin {
       progressDialog.setVisible(true);
 
       Thread readInput = new Thread(new Runnable() {
+        @Override
         public void run() {
           String line;
           try {
@@ -584,6 +596,7 @@ public class ScriptRunner extends VisPlugin {
       });
 
       Thread readError = new Thread(new Runnable() {
+        @Override
         public void run() {
           String line;
           try {
@@ -621,6 +634,7 @@ public class ScriptRunner extends VisPlugin {
     logTextArea.setText("");
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<Element>();
     Element element;
@@ -646,6 +660,7 @@ public class ScriptRunner extends VisPlugin {
     return engine != null;
 
   }
+  @Override
   public void closePlugin() {
     try {
       setScriptActive(false);
@@ -653,6 +668,7 @@ public class ScriptRunner extends VisPlugin {
     }
   }
 
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       String name = element.getName();
@@ -697,6 +713,7 @@ public class ScriptRunner extends VisPlugin {
       super("linkfile");
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       JMenuItem menuItem = (JMenuItem) e.getSource();
       Action action = menuItem.getAction();
@@ -718,6 +735,7 @@ public class ScriptRunner extends VisPlugin {
       fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
       fileChooser.setDialogTitle("Select script file");
       fileChooser.setFileFilter(new FileFilter() {
+        @Override
         public boolean accept(File file) {
           if (file.isDirectory()) { return true; }
           if (file.getName().endsWith(".js")) {
@@ -725,6 +743,7 @@ public class ScriptRunner extends VisPlugin {
           }
           return false;
         }
+        @Override
         public String getDescription() {
           return "Javascript";
         }

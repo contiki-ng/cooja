@@ -38,6 +38,7 @@ public class ConvertedRadioPacket implements RadioPacket {
     this.originalData = originalData;
   }
 
+  @Override
   public byte[] getPacketData() {
     return convertedData;
   }

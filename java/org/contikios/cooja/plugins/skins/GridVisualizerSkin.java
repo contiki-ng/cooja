@@ -54,17 +54,21 @@ public class GridVisualizerSkin implements VisualizerSkin {
 
   private Visualizer visualizer = null;
 
+  @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.visualizer = vis;
   }
 
+  @Override
   public void setInactive() {
   }
 
+  @Override
   public Color[] getColorOf(Mote mote) {
     return null;
   }
 
+  @Override
   public void paintBeforeMotes(Graphics g) {
 
     /* Background grid every 10 meters */
@@ -116,9 +120,11 @@ public class GridVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public void paintAfterMotes(Graphics g) {
   }
 
+  @Override
   public Visualizer getVisualizer() {
     return visualizer;
   }

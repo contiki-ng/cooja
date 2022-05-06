@@ -164,17 +164,21 @@ public abstract class AbstractCompileDialog extends JDialog {
     sourcePanel.add(label);
     contikiField = new JTextField(40);
     final Runnable selectedContikiFile = new Runnable() {
+      @Override
       public void run() {
         setContikiSelection(new File(contikiField.getText()));
       }
     };
     DocumentListener contikiFieldListener = new DocumentListener() {
+      @Override
       public void changedUpdate(DocumentEvent e) {
         selectedContikiFile.run();
       }
+      @Override
       public void insertUpdate(DocumentEvent e) {
         selectedContikiFile.run();
       }
+      @Override
       public void removeUpdate(DocumentEvent e) {
         selectedContikiFile.run();
       }
@@ -182,6 +186,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     sourcePanel.add(contikiField);
     JButton browseButton = new JButton("Browse");
     browseButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         JFileChooser fc = new JFileChooser();
 
@@ -221,6 +226,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.addChoosableFileFilter(new FileFilter() {
+          @Override
           public boolean accept(File f) {
             if (f.isDirectory()) {
               return true;
@@ -242,6 +248,7 @@ public abstract class AbstractCompileDialog extends JDialog {
             return false;
           }
 
+          @Override
           public String getDescription() {
             return "Contiki process source or Precompiled firmware";
           }
@@ -259,13 +266,15 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     
     Action cancelAction = new AbstractAction("Cancel") {
+      @Override
       public void actionPerformed(ActionEvent e) {
         AbstractCompileDialog.this.dispose();
       }
     };
     Action compileAction = new AbstractAction("Compile") {
     	private static final long serialVersionUID = 1L;
-    	public void actionPerformed(ActionEvent e) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
     		if (!compileButton.isEnabled()) {
     			return;
     		}
@@ -280,7 +289,8 @@ public abstract class AbstractCompileDialog extends JDialog {
     cleanButton = new JButton("Clean");
     cleanButton.setToolTipText("make clean TARGET=" + getTargetName());
     cleanButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
 				try {
 					currentCompilationProcess = CompileContiki.compile(
 							"make clean TARGET=" + getTargetName(),
@@ -304,6 +314,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     createButton = new JButton("Create");
     createButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
       	/* Write mote type settings (generic) */
       	moteType.setDescription(descriptionField.getText());
@@ -344,6 +355,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {
+      @Override
       public void windowClosing(WindowEvent e) {
         abortAnyCompilation();
         contikiSource = null;
@@ -489,6 +501,7 @@ public abstract class AbstractCompileDialog extends JDialog {
       setDialogState(DialogState.IS_COMPILING);
     } else {
       SwingUtilities.invokeAndWait(new Runnable() {
+        @Override
         public void run() {
           setDialogState(DialogState.IS_COMPILING);
         }
@@ -500,6 +513,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     final JMenuItem abortMenuItem = new JMenuItem("Abort compilation");
     abortMenuItem.setEnabled(true);
     abortMenuItem.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         abortAnyCompilation();
       }
@@ -509,6 +523,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     /* Called when last command has finished (success only) */
     final Action compilationSuccessAction = new AbstractAction() {
 			private static final long serialVersionUID = -3815068126197234346L;
+			@Override
 			public void actionPerformed(ActionEvent e) {
         abortMenuItem.setEnabled(false);
 
@@ -525,6 +540,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     /* Called immediately if any command fails */
     final Action compilationFailureAction = new AbstractAction() {
 			private static final long serialVersionUID = -800799353242963993L;
+			@Override
 			public void actionPerformed(ActionEvent e) {
         abortMenuItem.setEnabled(false);
         setDialogState(DialogState.AWAITING_COMPILATION);
@@ -534,6 +550,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     /* Called once per command */
     final Action nextCommandAction = new AbstractAction() {
 			private static final long serialVersionUID = -4525372566302330762L;
+			@Override
 			public void actionPerformed(ActionEvent e) {
         Action nextSuccessAction;
         if (commands.size() == 1) {
@@ -690,12 +707,15 @@ public abstract class AbstractCompileDialog extends JDialog {
   private void addCompileCommandTab(JTabbedPane parent) {
     commandsArea = new JTextArea(10, 1);
     commandsArea.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
       public void changedUpdate(DocumentEvent e) {
         setDialogState(DialogState.AWAITING_COMPILATION);
       }
+      @Override
       public void insertUpdate(DocumentEvent e) {
         setDialogState(DialogState.AWAITING_COMPILATION);
       }
+      @Override
       public void removeUpdate(DocumentEvent e) {
         setDialogState(DialogState.AWAITING_COMPILATION);
       }
@@ -716,6 +736,7 @@ public abstract class AbstractCompileDialog extends JDialog {
   }
 
   private Action defaultAction = new AbstractAction("Use default") {
+    @Override
     public void actionPerformed(ActionEvent e) {
       /* Unselect all */
       for (Component c : moteIntfBox.getComponents()) {
@@ -800,6 +821,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     intfCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
     intfCheckBox.setToolTipText(intfClass.getName());
     intfCheckBox.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (contikiSource == null &&
             contikiFirmware != null) {

@@ -127,6 +127,7 @@ public class MessageListUI extends JList implements MessageList {
     }
   }
 
+  @Override
   public PrintStream getInputStream(final int type) {
     try {
       PipedInputStream input = new PipedInputStream();
@@ -156,12 +157,14 @@ public class MessageListUI extends JList implements MessageList {
     }
   }
 
+  @Override
   public void addMessage(String message) {
     addMessage(message, NORMAL);
   }
 
   private ArrayList<MessageContainer> messages = new ArrayList<MessageContainer>();
 
+  @Override
   public MessageContainer[] getMessages() {
     return messages.toArray(new MessageContainer[0]);
   }
@@ -182,6 +185,7 @@ public class MessageListUI extends JList implements MessageList {
     }
   }
 
+  @Override
   public void addMessage(final String message, final int type) {
     Cooja.setProgressMessage(message, type);
 
@@ -196,6 +200,7 @@ public class MessageListUI extends JList implements MessageList {
     });
   }
 
+  @Override
   public void clearMessages() {
     messages.clear();
     ((DefaultListModel) getModel()).clear();

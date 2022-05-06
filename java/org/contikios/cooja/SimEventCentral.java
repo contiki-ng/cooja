@@ -97,6 +97,7 @@ public class SimEventCentral {
       return time;
     }
 
+    @Override
     public String toString() {
       return "" + ID;
     }
@@ -133,6 +134,7 @@ public class SimEventCentral {
   }
   private MoteCountListener[] moteCountListeners;
   private Observer moteCountObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       if (obj == null || !(obj instanceof Mote)) {
         return;
@@ -205,6 +207,7 @@ public class SimEventCentral {
   }
   private LogOutputListener[] logOutputListeners;
   private Observer logOutputObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       Mote mote = (Mote) obj;
       String msg = ((Log) obs).getLastLogMessage();
@@ -333,6 +336,7 @@ public class SimEventCentral {
     }
   }
 
+  @Override
   public String toString() {
     return 
     "\nActive mote observations: " + moteObservations.size() +

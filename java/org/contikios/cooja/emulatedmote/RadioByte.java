@@ -42,6 +42,7 @@ public class RadioByte implements RadioPacket {
     this.data[0] = (byte) intData;
   }
 
+  @Override
   public byte[] getPacketData() {
     return data;
   }

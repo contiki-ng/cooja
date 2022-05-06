@@ -50,6 +50,7 @@ public class DestinationRadio {
 		this.radio = dest;
 	}
 
+	@Override
 	public String toString() {
 		return radio.getMote().toString();
 	}

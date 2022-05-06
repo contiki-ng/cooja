@@ -99,6 +99,7 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
     return new String[]{"clock_interface"};
   }
 
+  @Override
   public void setTime(long newTime) {
     moteTime = newTime;
     if (moteTime > 0) {
@@ -106,27 +107,33 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
     }
   }
 
+  @Override
   public void setDrift(long drift) {
     this.timeDrift = drift - (drift % 1000); /* Round to ms */
     setTime(timeDrift);
   }
 
+  @Override
   public long getDrift() {
     return timeDrift;
   }
 
+  @Override
   public long getTime() {
     return moteTime;
   }
   
+  @Override
   public void setDeviation(double deviation) {
     logger.fatal("Can't change deviation");;
   }
 
+  @Override
   public double getDeviation() {
   	return 1.0;
   }
 
+  @Override
   public void doActionsBeforeTick() {
     /* Update time */
     long currentSimulationTime = simulation.getSimulationTime();
@@ -134,6 +141,7 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
     moteMem.setInt64ValueOf("simRtimerCurrentTicks", currentSimulationTime);
   }
 
+  @Override
   public void doActionsAfterTick() {
     long currentSimulationTime = mote.getSimulation().getSimulationTime();
 
@@ -173,17 +181,21 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
   }
 
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     return null;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 }

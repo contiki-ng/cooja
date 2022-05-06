@@ -166,6 +166,7 @@ public class CompileContiki {
       }
 
       Thread readInput = new Thread(new Runnable() {
+        @Override
         public void run() {
           try {
             String readLine;
@@ -181,6 +182,7 @@ public class CompileContiki {
       }, "read input stream thread");
 
       Thread readError = new Thread(new Runnable() {
+        @Override
         public void run() {
           try {
             String readLine;
@@ -197,6 +199,7 @@ public class CompileContiki {
 
       final MoteTypeCreationException syncException = new MoteTypeCreationException("");
       Thread handleCompilationResultThread = new Thread(new Runnable() {
+        @Override
         public void run() {
 
           /* Wait for compilation to end */

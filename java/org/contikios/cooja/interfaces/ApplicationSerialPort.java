@@ -22,16 +22,20 @@ public class ApplicationSerialPort extends SerialUI {
     dataReceived('\n');
   }
 
+  @Override
   public Mote getMote() {
     return mote;
   }
 
+  @Override
   public void writeArray(byte[] s) {
     ((AbstractApplicationMote) getMote()).writeArray(s);
   }
+  @Override
   public void writeByte(byte b) {
     ((AbstractApplicationMote)getMote()).writeByte(b);
   }
+  @Override
   public void writeString(String s) {
     ((AbstractApplicationMote)getMote()).writeString(s);
   }

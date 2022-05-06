@@ -100,22 +100,27 @@ public class ContikiLED extends LED implements ContikiMoteInterface, PolledAfter
     return new String[]{"leds_interface"};
   }
 
+  @Override
   public boolean isAnyOn() {
     return currentLedValue > 0;
   }
 
+  @Override
   public boolean isGreenOn() {
     return (currentLedValue & LEDS_GREEN) > 0;
   }
 
+  @Override
   public boolean isYellowOn() {
     return (currentLedValue & LEDS_YELLOW) > 0;
   }
 
+  @Override
   public boolean isRedOn() {
     return (currentLedValue & LEDS_RED) > 0;
   }
 
+  @Override
   public void doActionsAfterTick() {
     boolean ledChanged;
 
@@ -133,8 +138,10 @@ public class ContikiLED extends LED implements ContikiMoteInterface, PolledAfter
     }
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     final JPanel panel = new JPanel() {
+      @Override
       public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -180,6 +187,7 @@ public class ContikiLED extends LED implements ContikiMoteInterface, PolledAfter
 
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         panel.repaint();
       }
@@ -194,6 +202,7 @@ public class ContikiLED extends LED implements ContikiMoteInterface, PolledAfter
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -204,10 +213,12 @@ public class ContikiLED extends LED implements ContikiMoteInterface, PolledAfter
     this.deleteObserver(observer);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 

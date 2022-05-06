@@ -62,14 +62,18 @@ public class Battery extends MoteInterface {
   public Battery(Mote mote) {
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
+  @Override
   public JPanel getInterfaceVisualizer() {
     return null;
   }
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 

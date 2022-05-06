@@ -63,17 +63,20 @@ public class LEDVisualizerSkin implements VisualizerSkin {
   private Visualizer visualizer = null;
 
   private Observer ledObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       visualizer.repaint();
     }
   };
   private MoteCountListener newMotesListener = new MoteCountListener() {
+    @Override
     public void moteWasAdded(Mote mote) {
       LED led = mote.getInterfaces().getLED();
       if (led != null) {
         led.addObserver(ledObserver);
       }
     }
+    @Override
     public void moteWasRemoved(Mote mote) {
       LED led = mote.getInterfaces().getLED();
       if (led != null) {
@@ -82,6 +85,7 @@ public class LEDVisualizerSkin implements VisualizerSkin {
     }
   };
 
+  @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
@@ -92,6 +96,7 @@ public class LEDVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public void setInactive() {
     simulation.getEventCentral().removeMoteCountListener(newMotesListener);
     for (Mote m: simulation.getMotes()) {
@@ -99,13 +104,16 @@ public class LEDVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public Color[] getColorOf(Mote mote) {
     return null;
   }
 
+  @Override
   public void paintBeforeMotes(Graphics g) {
   }
 
+  @Override
   public void paintAfterMotes(Graphics g) {
     /* Paint LEDs left of each mote */
     Mote[] allMotes = simulation.getMotes();
@@ -146,6 +154,7 @@ public class LEDVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public Visualizer getVisualizer() {
     return visualizer;
   }

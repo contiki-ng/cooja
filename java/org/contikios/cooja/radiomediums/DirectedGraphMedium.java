@@ -86,6 +86,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     requestEdgeAnalysis();
   }
 
+  @Override
   public void removed() {
     super.removed();
   }
@@ -132,6 +133,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     return edgesDirty;
   }
 
+  @Override
   public void unregisterRadioInterface(Radio radio, Simulation sim) {
     super.unregisterRadioInterface(radio, sim);
 
@@ -145,6 +147,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
 
 
   
+  @Override
   public void updateSignalStrengths() {
 
     /* Reset signal strengths (Default: SS_NOTHING) */
@@ -242,6 +245,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     return edgesTable.get(source);
   }
 
+  @Override
   public RadioConnection createConnections(Radio source) {
     if (edgesDirty) {
       analyzeEdges();
@@ -334,6 +338,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     return newConn;
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     Collection<Element> config = super.getConfigXML();
 
@@ -348,6 +353,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
   }
 
   private Collection<Element> delayedConfiguration = null;
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     super.setConfigXML(configXML, visAvailable);
 
@@ -358,7 +364,8 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     return true;
   }
   
-public void simulationFinishedLoading() {
+  @Override
+  public void simulationFinishedLoading() {
     if (delayedConfiguration == null) {
       return;
     }

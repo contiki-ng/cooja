@@ -240,6 +240,7 @@ public class ConfigurationWizard extends JDialog {
 
       /* Start test */
       new Thread(new Runnable() {
+        @Override
         public void run() {
           testCounter++;
           PrintStream normalStream = new PrintStream(output.getInputStream(MessageList.NORMAL));
@@ -295,6 +296,7 @@ public class ConfigurationWizard extends JDialog {
 
       /* Start test */
       new Thread(new Runnable() {
+        @Override
         public void run() {
           testCounter++;
           PrintStream normalStream = new PrintStream(output.getInputStream(MessageList.NORMAL));
@@ -351,6 +353,7 @@ public class ConfigurationWizard extends JDialog {
 
       /* Start test */
       new Thread(new Runnable() {
+        @Override
         public void run() {
           testCounter++;
           PrintStream normalStream = new PrintStream(output.getInputStream(MessageList.NORMAL));
@@ -406,6 +409,7 @@ public class ConfigurationWizard extends JDialog {
 
       /* Start test */
       new Thread(new Runnable() {
+        @Override
         public void run() {
           testCounter++;
           PrintStream normalStream = new PrintStream(output.getInputStream(MessageList.NORMAL));
@@ -445,6 +449,7 @@ public class ConfigurationWizard extends JDialog {
     JPanel progressPanel = new JPanel(new BorderLayout());
     button.setEnabled(false);
     button.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (progressDialog.isDisplayable()) {
           progressDialog.dispose();
@@ -493,6 +498,7 @@ public class ConfigurationWizard extends JDialog {
       }
     }
     combo.addItemListener(new ItemListener() {
+      @Override
       public void itemStateChanged(ItemEvent e) {
         Cooja.setExternalToolsSetting(name, (String) e.getItem());
       }

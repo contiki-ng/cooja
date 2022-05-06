@@ -49,6 +49,7 @@ public class ContikiProcess {
     return processName;
   }
 
+  @Override
   public String toString() {
     return processName + " (" + sourceFile.getPath() + ")";
   }

@@ -88,8 +88,10 @@ public class ContikiPIR extends PIR implements ContikiMoteInterface {
   /**
    * Simulates a change in the PIR sensor.
    */
-  public void triggerChange() { 
+  @Override
+  public void triggerChange() {
     mote.getSimulation().invokeSimulationThread(new Runnable() {
+      @Override
       public void run() {
         doTriggerChange();
       }
@@ -104,6 +106,7 @@ public class ContikiPIR extends PIR implements ContikiMoteInterface {
     }
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     final JButton clickButton = new JButton("Signal PIR");
@@ -111,6 +114,7 @@ public class ContikiPIR extends PIR implements ContikiMoteInterface {
     panel.add(clickButton);
 
     clickButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         triggerChange();
       }
@@ -119,13 +123,16 @@ public class ContikiPIR extends PIR implements ContikiMoteInterface {
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 

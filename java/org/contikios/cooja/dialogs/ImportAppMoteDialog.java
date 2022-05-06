@@ -115,6 +115,7 @@ public class ImportAppMoteDialog extends JDialog {
 
     JButton browseButton = new JButton("Browse");
     browseButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         JFileChooser fc = new JFileChooser();
 
@@ -138,6 +139,7 @@ public class ImportAppMoteDialog extends JDialog {
 
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.addChoosableFileFilter(new FileFilter() {
+          @Override
           public boolean accept(File f) {
             if (f.isDirectory()) {
               return true;
@@ -149,6 +151,7 @@ public class ImportAppMoteDialog extends JDialog {
             return false;
           }
 
+          @Override
           public String getDescription() {
             return "Application Mote Java Class";
           }
@@ -167,6 +170,7 @@ public class ImportAppMoteDialog extends JDialog {
 
     ActionListener cancelAction = new ActionListener() {
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         setVisible(false);
         dispose();
@@ -180,6 +184,7 @@ public class ImportAppMoteDialog extends JDialog {
 
     createButton = new JButton("Create");
     createButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         String className = classField.getText();
         if (className.length() == 0) {
@@ -227,6 +232,7 @@ public class ImportAppMoteDialog extends JDialog {
 
     setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {
+      @Override
       public void windowClosing(WindowEvent e) {
         cancelButton.doClick();
       }

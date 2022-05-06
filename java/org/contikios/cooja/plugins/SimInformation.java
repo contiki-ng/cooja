@@ -195,6 +195,7 @@ public class SimInformation extends VisPlugin {
 
     // Register as simulation observer
     simulation.addObserver(simObserver = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         if (simulation == null) {
           return;
@@ -223,6 +224,7 @@ public class SimInformation extends VisPlugin {
 
   }
 
+  @Override
   public void closePlugin() {
     // Remove log observer from all log interfaces
     if (simObserver != null) {
@@ -234,6 +236,7 @@ public class SimInformation extends VisPlugin {
   }
 
   private Timer updateLabelTimer = new Timer(LABEL_UPDATE_INTERVAL, new ActionListener() {
+    @Override
     public void actionPerformed(ActionEvent e) {
       labelSimTime.setText("" + simulation.getSimulationTimeMillis());
 

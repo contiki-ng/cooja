@@ -71,6 +71,7 @@ public class MoteSerialSocketConnection {
     /* Simulated -> socket */
     motePort = (SerialPort) mote.getInterfaces().getLog();
     motePort.addSerialDataObserver(moteObserver = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         try {
           if (socketOut == null) {
@@ -99,6 +100,7 @@ public class MoteSerialSocketConnection {
     socketOut = new DataOutputStream(socket.getOutputStream());
     socketOut.flush();
     Thread socketThread = new Thread(new Runnable() {
+      @Override
       public void run() {
         int numRead = 0;
         byte[] data = new byte[16*1024];

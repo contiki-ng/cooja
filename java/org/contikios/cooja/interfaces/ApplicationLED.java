@@ -40,18 +40,22 @@ public class ApplicationLED extends LED {
        return new String[]{"leds_interface"};
      }
 
+     @Override
      public boolean isAnyOn() {
        return currentLedValue > 0;
      }
 
+     @Override
      public boolean isGreenOn() {
        return (currentLedValue & LEDS_GREEN) > 0;
      }
 
+     @Override
      public boolean isYellowOn() {
        return (currentLedValue & LEDS_YELLOW) > 0;
      }
 
+     @Override
      public boolean isRedOn() {
        return (currentLedValue & LEDS_RED) > 0;
      }
@@ -67,8 +71,10 @@ public class ApplicationLED extends LED {
        }
      }
 
+     @Override
      public JPanel getInterfaceVisualizer() {
        final JPanel panel = new JPanel() {
+         @Override
          public void paintComponent(Graphics g) {
            super.paintComponent(g);
 
@@ -114,6 +120,7 @@ public class ApplicationLED extends LED {
 
        Observer observer;
        this.addObserver(observer = new Observer() {
+         @Override
          public void update(Observable obs, Object obj) {
            panel.repaint();
          }
@@ -128,6 +135,7 @@ public class ApplicationLED extends LED {
        return panel;
      }
 
+     @Override
      public void releaseInterfaceVisualizer(JPanel panel) {
        Observer observer = (Observer) panel.getClientProperty("intf_obs");
        if (observer == null) {
@@ -138,6 +146,7 @@ public class ApplicationLED extends LED {
        this.deleteObserver(observer);
      }
 
+     @Override
      public Collection<Element> getConfigXML() {
        return null;
      }
