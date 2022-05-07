@@ -671,11 +671,10 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
 
       switch (mFormat) {
         case CHAR:
-          return String.format("%c", value);
         case DEC:
-          return String.format("%d", value);
+          return value.toString();
         case HEX:
-          return String.format("0x%x", value);
+          return String.format("0x%x", ((Number)value).longValue());
         default:
           return "";
       }
