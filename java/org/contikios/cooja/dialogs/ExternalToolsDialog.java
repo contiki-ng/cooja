@@ -65,10 +65,6 @@ public class ExternalToolsDialog extends JDialog {
    *          Parent container for dialog
    */
   public static void showDialog(Container parentContainer) {
-    if (Cooja.isVisualizedInApplet()) {
-      return;
-    }
-
     ExternalToolsDialog myDialog = null;
     if (parentContainer instanceof Window) {
       myDialog = new ExternalToolsDialog((Window) parentContainer);

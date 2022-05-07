@@ -168,12 +168,10 @@ public abstract class MspMoteType implements MoteType {
 
     JLabel label = new JLabel(sb.append("</table></html>").toString());
     label.setVerticalTextPosition(JLabel.TOP);
-    /* Icon (if available) */
-    if (!Cooja.isVisualizedInApplet()) {
-      Icon moteTypeIcon = getMoteTypeIcon();
-      if (moteTypeIcon != null) {
-        label.setIcon(moteTypeIcon);
-      }
+    /* Icon */
+    Icon moteTypeIcon = getMoteTypeIcon();
+    if (moteTypeIcon != null) {
+      label.setIcon(moteTypeIcon);
     }
     return label;
   }
@@ -336,9 +334,6 @@ public abstract class MspMoteType implements MoteType {
   private ELF elf; /* cached */
   public ELF getELF() throws IOException {
     if (elf == null) {
-      if (Cooja.isVisualizedInApplet()) {
-        logger.warn("ELF loading in applet not implemented");
-      }
       elf = loadELF(getContikiFirmwareFile().getPath());
     }
     return elf;
