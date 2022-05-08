@@ -144,7 +144,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     SHORT("short", 2),
     INT("int", 2),
     LONG("long", 4),
-    ADDR("address", 4);
+    ADDR("address", 8);
 
     String mRep;
     int mSize;
@@ -770,7 +770,6 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     long address = (varAddressField.getValue() == null) ? 0 : (long) varAddressField.getValue();
     int bytes;
     try {
-      //address = Integer.parseInt(varAddressField.getText());
       bytes = Integer.parseInt(varSizeField.getText());
     } catch (NumberFormatException ex) {
       bytes = 0;

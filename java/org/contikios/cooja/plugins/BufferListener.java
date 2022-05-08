@@ -682,13 +682,13 @@ public class BufferListener extends VisPlugin {
 
   static class PointerMemoryMonitor extends SegmentMemoryMonitor {
     private SegmentMemoryMonitor segmentMonitor = null;
-    private int lastSegmentAddress = -1;
-    private final int pointerAddress;
+    private long lastSegmentAddress = -1;
+    private final long pointerAddress;
     private final int pointerSize;
 
     public PointerMemoryMonitor(
         BufferListener bl, Mote mote,
-        int pointerAddress, int pointerSize, int segmentSize)
+        long pointerAddress, int pointerSize, int segmentSize)
     throws Exception {
       super(bl, mote, pointerAddress, pointerSize);
       this.pointerAddress = pointerAddress;
@@ -699,7 +699,7 @@ public class BufferListener extends VisPlugin {
 
     private void registerSegmentMonitor(int size, boolean notify) throws Exception {
       byte[] pointerValue = mote.getMemory().getMemorySegment(pointerAddress, pointerSize);
-      int segmentAddress = MemoryBuffer.wrap(mote.getMemory().getLayout(), pointerValue).getInt();
+      long segmentAddress = MemoryBuffer.wrap(mote.getMemory().getLayout(), pointerValue).getAddr();
 
       segmentMonitor = new SegmentMemoryMonitor(bl, mote, segmentAddress, size);
       if (notify) {
@@ -716,7 +716,7 @@ public class BufferListener extends VisPlugin {
       }
 
       byte[] pointerValue = mote.getMemory().getMemorySegment(pointerAddress, pointerSize);
-      int segmentAddress = MemoryBuffer.wrap(mote.getMemory().getLayout(), pointerValue).getInt();
+      long segmentAddress = MemoryBuffer.wrap(mote.getMemory().getLayout(), pointerValue).getAddr();
       if (segmentAddress == lastSegmentAddress) {
         return;
       }
@@ -746,12 +746,12 @@ public class BufferListener extends VisPlugin {
     protected final BufferListener bl;
     protected final Mote mote;
 
-    private final int address;
+    private final long address;
     private final int size;
 
     private byte[] oldData = null;
 
-    public SegmentMemoryMonitor(BufferListener bl, Mote mote, int address, int size)
+    public SegmentMemoryMonitor(BufferListener bl, Mote mote, long address, int size)
     throws Exception {
       this.bl = bl;
       this.mote = mote;
@@ -768,7 +768,7 @@ public class BufferListener extends VisPlugin {
     public Mote getMote() {
       return mote;
     }
-    public int getAddress() {
+    public long getAddress() {
       return address;
     }
     public int getSize() {
@@ -791,7 +791,7 @@ public class BufferListener extends VisPlugin {
       oldData = newData;
     }
 
-    void addBufferAccess(BufferListener bl, Mote mote, byte[] oldData, byte[] newData, EventType type, int address) {
+    void addBufferAccess(BufferListener bl, Mote mote, byte[] oldData, byte[] newData, EventType type, long address) {
       BufferAccess ba = new BufferAccess(
           mote,
           mote.getSimulation().getSimulationTime(),
@@ -1020,10 +1020,10 @@ public class BufferListener extends VisPlugin {
     public final SegmentMonitor.EventType type;
     public final String sourceStr;
     public final String stackTrace;
-    public final int address;
+    public final long address;
 
     public BufferAccess(
-        Mote mote, long time, int address, byte[] newData, byte[] oldData, SegmentMonitor.EventType type, boolean withStackTrace) {
+        Mote mote, long time, long address, byte[] newData, byte[] oldData, SegmentMonitor.EventType type, boolean withStackTrace) {
       this.mote = mote;
       this.time = time;
       this.mem = newData==null?NULL_DATA:newData;
@@ -1495,7 +1495,7 @@ public class BufferListener extends VisPlugin {
   }
 
   public static interface Buffer {
-    public int getAddress(Mote mote);
+    public long getAddress(Mote mote);
     public int getSize(Mote mote);
 
     public String getStatusString();
@@ -1533,7 +1533,7 @@ public class BufferListener extends VisPlugin {
   }
 
   public static abstract class PointerBuffer extends AbstractBuffer {
-    public abstract int getPointerAddress(Mote mote);
+    public abstract long getPointerAddress(Mote mote);
 
     @Override
     public SegmentMemoryMonitor createMemoryMonitor(BufferListener bl, Mote mote)
@@ -1799,11 +1799,11 @@ public class BufferListener extends VisPlugin {
   @ClassDescription("Variable: node_id")
   public static class NodeIDBuffer extends SegmentBuffer {
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey("node_id")) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get("node_id").addr;
+      return mote.getMemory().getSymbolMap().get("node_id").addr;
     }
     @Override
     public int getSize(Mote mote) {
@@ -1815,12 +1815,12 @@ public class BufferListener extends VisPlugin {
   @ClassDescription("Queuebuf 0 RAM")
   public static class Queuebuf0Buffer extends SegmentBuffer {
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey("buframmem")) {
         return -1;
       }
-      int offset = 0;
-      return (int) mote.getMemory().getSymbolMap().get("buframmem").addr + offset;
+      long offset = 0;
+      return mote.getMemory().getSymbolMap().get("buframmem").addr + offset;
     }
     @Override
     public int getSize(Mote mote) {
@@ -1831,11 +1831,11 @@ public class BufferListener extends VisPlugin {
   @ClassDescription("packetbuf_aligned")
   public static class PacketbufBuffer extends SegmentBuffer {
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey("packetbuf_aligned")) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get("packetbuf_aligned").addr;
+      return mote.getMemory().getSymbolMap().get("packetbuf_aligned").addr;
     }
     @Override
     public int getSize(Mote mote) {
@@ -1847,19 +1847,19 @@ public class BufferListener extends VisPlugin {
   public static class PacketbufPointerBuffer extends PointerBuffer {
     VarMemory varMem =  new VarMemory(null);
     @Override
-    public int getPointerAddress(Mote mote) {
+    public long getPointerAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey("packetbufptr")) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get("packetbufptr").addr;
+      return mote.getMemory().getSymbolMap().get("packetbufptr").addr;
     }
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey("packetbufptr")) {
         return -1;
       }
       varMem.associateMemory(mote.getMemory());
-      return varMem.getIntValueOf("packetbufptr");
+      return varMem.getAddrValueOf("packetbufptr");
     }
     @Override
     public int getSize(Mote mote) {
@@ -1871,22 +1871,22 @@ public class BufferListener extends VisPlugin {
   public static class CustomPointerBuffer extends PointerBuffer {
     public String variable;
     public int size;
-    public int offset;
+    public long offset;
     VarMemory varMem =  new VarMemory(null);
     @Override
-    public int getPointerAddress(Mote mote) {
+    public long getPointerAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey(variable)) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get(variable).addr;
+      return mote.getMemory().getSymbolMap().get(variable).addr;
     }
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey(variable)) {
         return -1;
       }
       varMem.associateMemory(mote.getMemory());
-      return varMem.getIntValueOf(variable)+offset;
+      return varMem.getAddrValueOf(variable)+offset;
     }
     @Override
     public int getSize(Mote mote) {
@@ -1915,7 +1915,7 @@ public class BufferListener extends VisPlugin {
     public void applyConfig(Element element) {
       variable = element.getAttributeValue("variable");
       size = Integer.parseInt(element.getAttributeValue("size"));
-      offset = Integer.parseInt(element.getAttributeValue("offset"));
+      offset = Long.parseLong(element.getAttributeValue("offset"));
     }
     @Override
     public boolean configure(BufferListener bl) {
@@ -1949,7 +1949,7 @@ public class BufferListener extends VisPlugin {
         return false;
       }
       try {
-        offset = Integer.parseInt(infoComponent.getOffset());
+        offset = Long.parseLong(infoComponent.getOffset());
       } catch (RuntimeException e) {
         logger.fatal("Failed parsing buffer offset " + infoComponent.getOffset() + ": " + e.getMessage(), e);
         /* Abort */
@@ -1967,13 +1967,13 @@ public class BufferListener extends VisPlugin {
   public static class CustomVariableBuffer extends SegmentBuffer {
     public String variable;
     public int size;
-    public int offset;
+    public long offset;
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey(variable)) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get(variable).addr+offset;
+      return mote.getMemory().getSymbolMap().get(variable).addr+offset;
     }
     @Override
     public int getSize(Mote mote) {
@@ -2002,7 +2002,7 @@ public class BufferListener extends VisPlugin {
     public void applyConfig(Element element) {
       variable = element.getAttributeValue("variable");
       size = Integer.parseInt(element.getAttributeValue("size"));
-      offset = Integer.parseInt(element.getAttributeValue("offset"));
+      offset = Long.parseLong(element.getAttributeValue("offset"));
     }
     @Override
     public boolean configure(BufferListener bl) {
@@ -2036,7 +2036,7 @@ public class BufferListener extends VisPlugin {
         return false;
       }
       try {
-        offset = Integer.parseInt(infoComponent.getOffset());
+        offset = Long.parseLong(infoComponent.getOffset());
       } catch (RuntimeException e) {
         logger.fatal("Failed parsing buffer offset " + infoComponent.getOffset() + ": " + e.getMessage(), e);
         /* Abort */
@@ -2053,11 +2053,11 @@ public class BufferListener extends VisPlugin {
   public static class CustomIntegerBuffer extends SegmentBuffer {
     public String variable;
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey(variable)) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get(variable).addr;
+      return mote.getMemory().getSymbolMap().get(variable).addr;
     }
     @Override
     public int getSize(Mote mote) {
