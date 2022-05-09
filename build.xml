@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 
 <project name="COOJA Simulator" default="run" basedir=".">
+  <fail message="Ant 1.10+ required">
+    <condition>
+      <not><antversion atleast="1.10" /></not>
+    </condition>
+  </fail>
+
   <property name="java" location="java"/>
   <property name="build" location="build"/>
   <property name="javadoc" location="javadoc"/>
@@ -77,7 +83,7 @@ The COOJA Simulator
 
   <target name="compile" depends="init">
     <mkdir dir="${build}"/>
-    <javac srcdir="${java}" destdir="${build}" debug="on"
+    <javac srcdir="${java}" destdir="${build}" debug="on" release="11"
            includeantruntime="false"
            encoding="utf-8">
       <classpath refid="cooja.classpath"/>
