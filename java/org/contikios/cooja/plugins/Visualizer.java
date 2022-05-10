@@ -1184,7 +1184,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
    * @return All motes in range
    */
   public Mote[] findMotesInRange(int startX, int startY, int width, int height) {
-    List<Mote> motes = new LinkedList<>();
+    List<Mote> motes = new ArrayList<>();
     for (Mote m : simulation.getMotes()) {
       Position pos = m.getInterfaces().getPosition();
       int moteX = transformToPixelX(pos.getXCoordinate());

@@ -33,15 +33,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
@@ -74,7 +73,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
   private Visualizer visualizer = null;
   private AbstractRadioMedium radioMedium = null;
 
-  private final List<RadioConnectionArrow> historyList = new LinkedList<>();
+  private final List<RadioConnectionArrow> historyList = new ArrayList<>();
 
   private Observer radioMediumObserver = new Observer() {
     @Override
