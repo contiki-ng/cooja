@@ -133,17 +133,6 @@ public class ExternalToolsDialog extends JDialog {
     // Some explanations
     Box explanations = Box.createVerticalBox();
     explanations.add(new JLabel("Special variables used in COMPILER_ARGS, LINK_COMMAND_[12] and AR_COMMAND_[12]:"));
-    String javaHome = System.getenv().get("JAVA_HOME");
-    if (javaHome != null) {
-      javaHome = javaHome.replace(File.separatorChar, '/');
-      JLabel javaHomeLabel = new JLabel("  $(JAVA_HOME) maps to the environment Java home: " + javaHome);
-      explanations.add(javaHomeLabel);
-    } else {
-      javaHome = "[null]";
-      JLabel javaHomeLabel = new JLabel("  $(JAVA_HOME) maps to the environment Java home: " + javaHome);
-      javaHomeLabel.setForeground(Color.RED);
-      explanations.add(javaHomeLabel);
-    }
     explanations.add(new JLabel("  $(LIBFILE) maps to the current library file being created (\"mtype1.library\")"));
     explanations.add(new JLabel("  $(MAPFILE) maps to the current map file being created (\"mtype1.map\")"));
     explanations.add(new JLabel("  $(ARFILE) maps to the current archive file being created (\"mtype1.a\")"));

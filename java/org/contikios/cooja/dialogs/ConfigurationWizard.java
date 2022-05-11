@@ -82,16 +82,16 @@ public class ConfigurationWizard extends JDialog {
   private static final String COMPILER_ARGS_suggestions[] = new String[] {
     "",
     "Windows cygwin:",
-    "-mno-cygwin -Wall -I'$(JAVA_HOME)/include' -I'$(JAVA_HOME)/include/win32' -fno-builtin-printf",
-    "-mno-cygwin -Wall -I'$(JAVA_HOME)/include' -I'$(JAVA_HOME)/include/win32'",
-    "-Wall -D_JNI_IMPLEMENTATION_ -I'$(JAVA_HOME)/include' -I'$(JAVA_HOME)/include/win32'",
-    "-mno-cygwin -I'$(JAVA_HOME)/include' -I'$(JAVA_HOME)/include/win32'",
+    "-mno-cygwin -Wall -fno-builtin-printf",
+    "-mno-cygwin -Wall",
+    "-Wall -D_JNI_IMPLEMENTATION_",
+    "-mno-cygwin",
 
     "Linux:",
-    "-I'$(JAVA_HOME)/include' -I'$(JAVA_HOME)/include/linux' -fno-builtin-printf -fPIC",
+    "-fno-builtin-printf -fPIC",
 
     "Mac OS X:",
-    "-Wall -I/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Headers -dynamiclib -fno-common"
+    "-Wall -dynamiclib -fno-common"
   };
 
   private static final String LINK_COMMAND_1_suggestions[] = new String[] {
@@ -101,7 +101,7 @@ public class ConfigurationWizard extends JDialog {
     "gcc -shared -Wl,-Map=$(MAPFILE) -o $(LIBFILE)",
     "",
     "Linux:",
-    "gcc -I'$(JAVA_HOME)/include' -I'$(JAVA_HOME)/include/linux' -shared -Wl,-Map=$(MAPFILE) -o $(LIBFILE)",
+    "gcc -shared -Wl,-Map=$(MAPFILE) -o $(LIBFILE)",
     "ld -Map=$(MAPFILE) -shared --add-stdcall-alias /usr/lib/mingw/dllcrt2.o -o $(LIBFILE)",
     "gcc -shared -Wl,-Map=$(MAPFILE) -Wall -D_JNI_IMPLEMENTATION_ -Wl,--kill-at -o $(LIBFILE)",
     "",
