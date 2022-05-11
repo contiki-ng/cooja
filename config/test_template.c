@@ -49,6 +49,23 @@ int arr2[10];
 int uvar1;
 int uvar2;
 
+/**
+ * \brief           Callback on load of library.
+ * \param vm        unused
+ * \param reserved  unused
+ *
+ * This function is required to return at least the JNI version for
+ * the functions we use.
+ *
+ * Java 11 is the oldest supported Java version so the function returns
+ * JNI_VERSION_10 for now.
+ */
+JNIEXPORT jint JNICALL
+JNI_OnLoad(JavaVM *vm, void *reserved)
+{
+  return JNI_VERSION_10;
+}
+
 JNIEXPORT void JNICALL
 Java_org_contikios_cooja_corecomm_[CLASS_NAME]_init(JNIEnv *env, jobject obj)
 {
