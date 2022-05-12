@@ -460,12 +460,14 @@ public class LogScriptEngine {
     @Override
     public void testOK() {
       exitCode = 0;
+      logger.info("TEST OK\n");
       log("TEST OK\n");
       deactive();
     }
     @Override
     public void testFailed() {
       exitCode = 1;
+      logger.warn("TEST FAILED\n");
       log("TEST FAILED\n");
       deactive();
     }
