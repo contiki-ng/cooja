@@ -265,7 +265,7 @@ public class Simulation extends Observable implements Runnable {
   @Override
   public void run() {
     lastStartTime = System.currentTimeMillis();
-    logger.info("Simulation started, system time: " + lastStartTime);
+    logger.debug("Simulation started, system time: " + lastStartTime);
     isRunning = true;
     speedLimitLastRealtime = System.currentTimeMillis();
     speedLimitLastSimtime = getSimulationTime();
