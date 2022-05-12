@@ -1749,7 +1749,7 @@ public class Cooja extends Observable {
         Throwable cause = ex;
         do {
           if (cause instanceof PluginRequiresVisualizationException) {
-            logger.info("Visualized plugin was not started: " + pluginClass);
+            logger.debug("Visualized plugin was not started: " + pluginClass);
             return null;
           }
         } while (cause != null && (cause=cause.getCause()) != null);
