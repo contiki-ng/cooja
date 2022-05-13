@@ -60,8 +60,7 @@ public class IPAddress extends MoteInterface {
 
   private static final Logger logger = LogManager.getLogger(IPAddress.class);
   private static final int IPv6_MAX_ADDRESSES = 4;
-  private static final int MONITORED_SIZE = 150;
-  
+
   private enum IPv {
     NONE,
     IPv4,
