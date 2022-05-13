@@ -308,7 +308,7 @@ public class MessageListUI extends JList implements MessageList {
   // Renderer for messages
   // -------------------------------------------------------------------
 
-  private class MessageModel extends DefaultListModel {
+  private static class MessageModel extends DefaultListModel {
     public void updateList() {
       fireContentsChanged(this, 0, getSize());
     }

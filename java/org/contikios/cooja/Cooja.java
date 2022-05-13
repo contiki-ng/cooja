@@ -3740,28 +3740,28 @@ public class Cooja extends Observable {
     return true;
   }
 
-  public class ParseProjectsException extends Exception {
+  public static class ParseProjectsException extends Exception {
 		private static final long serialVersionUID = 1508168026300714850L;
 		public ParseProjectsException(String message) {
       super(message);
     }
   }
 
-  public class ClassLoaderCreationException extends Exception {
+  public static class ClassLoaderCreationException extends Exception {
 		private static final long serialVersionUID = 1578001681266277774L;
 		public ClassLoaderCreationException(String message) {
       super(message);
     }
   }
 
-  public class SimulationCreationException extends Exception {
+  public static class SimulationCreationException extends Exception {
 		private static final long serialVersionUID = -2414899187405770448L;
 		public SimulationCreationException(String message) {
       super(message);
     }
   }
 
-  public class PluginConstructionException extends Exception {
+  public static class PluginConstructionException extends Exception {
 		private static final long serialVersionUID = 8004171223353676751L;
 		public PluginConstructionException(String message) {
       super(message);
@@ -4390,7 +4390,7 @@ public class Cooja extends Observable {
   }
 
   /* GUI actions */
-  abstract class GUIAction extends AbstractAction {
+  abstract static class GUIAction extends AbstractAction {
 		private static final long serialVersionUID = 6946179457635198477L;
 		public GUIAction(String name) {
       super(name);

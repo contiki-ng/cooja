@@ -79,7 +79,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   }
 
   /* SerialPort */
-  private abstract class SerialDataObservable extends Observable {
+  private abstract static class SerialDataObservable extends Observable {
     public abstract void notifyNewData();
   }
   private SerialDataObservable serialDataObservable = new SerialDataObservable() {

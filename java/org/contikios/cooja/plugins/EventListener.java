@@ -94,7 +94,7 @@ public class EventListener extends VisPlugin {
 
   private JPanel generalPanel = null;
 
-  protected abstract class EventObserver implements Observer {
+  protected abstract static class EventObserver implements Observer {
     protected Observable myObservation = null;
 
     protected EventListener myParent = null;

@@ -99,7 +99,7 @@ public class Simulation extends Observable implements Runnable {
 
   private boolean hasMillisecondObservers = false;
   private MillisecondObservable millisecondObservable = new MillisecondObservable();
-  private class MillisecondObservable extends Observable {
+  private static class MillisecondObservable extends Observable {
     private void newMillisecond(long time) {
       setChanged();
       notifyObservers(time);

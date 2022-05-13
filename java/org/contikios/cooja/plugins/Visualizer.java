@@ -1902,7 +1902,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
             + "Use the View menu to select views. ";
   }
 
-  private class Selection {
+  private static class Selection {
 
     private int x;
     private int y;
