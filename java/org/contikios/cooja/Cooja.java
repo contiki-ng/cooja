@@ -2444,7 +2444,7 @@ public class Cooja extends Observable {
             shouldRetry = false;
             cooja.doRemoveSimulation(false);
             PROGRESS_WARNINGS.clear();
-            Simulation newSim = loadSimulationConfig(root, true, new Long(randomSeed));
+            Simulation newSim = loadSimulationConfig(root, true, randomSeed);
             cooja.setSimulation(newSim, false);
 
             if (autoStart) {
@@ -4672,7 +4672,7 @@ public class Cooja extends Observable {
       boolean show = ((JCheckBoxMenuItem) e.getSource()).isSelected();
       quickHelpTextPane.setVisible(show);
       quickHelpScroll.setVisible(show);
-      setExternalToolsSetting("SHOW_QUICKHELP", new Boolean(show).toString());
+      setExternalToolsSetting("SHOW_QUICKHELP", Boolean.toString(show));
       ((JPanel)frame.getContentPane()).revalidate();
       updateDesktopSize(getDesktopPane());
     }
