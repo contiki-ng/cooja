@@ -34,8 +34,6 @@ import java.util.Collection;
 
 import javax.swing.JPanel;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -54,8 +52,6 @@ import org.contikios.cooja.MoteInterface;
  */
 @ClassDescription("Battery")
 public class Battery extends MoteInterface {
-  private static final Logger logger = LogManager.getLogger(Battery.class);
-
   /**
    * @param mote Mote
    */
