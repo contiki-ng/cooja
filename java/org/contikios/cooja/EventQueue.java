@@ -40,7 +40,7 @@ public final class EventQueue {
 
   private long count = 0;
 
-  public final class Pair implements Comparable<Pair> {
+  public static final class Pair implements Comparable<Pair> {
     public final TimeEvent event;
     public final long time;
 

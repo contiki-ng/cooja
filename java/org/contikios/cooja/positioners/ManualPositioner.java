@@ -130,7 +130,7 @@ public class ManualPositioner extends Positioner {
     return new double[] { lastX, lastY, lastZ };
   }
 
-  class PositionDialog extends JDialog {
+  static class PositionDialog extends JDialog {
     private NumberFormat doubleFormat = NumberFormat.getNumberInstance();
 
     public boolean shouldSkipRemainder = false;

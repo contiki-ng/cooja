@@ -1040,7 +1040,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
 
   /* XXX Keeps track of observed mote interfaces */
-  class MoteObservation {
+  static class MoteObservation {
     private Observer observer;
     private Observable observable;
     private Mote mote;

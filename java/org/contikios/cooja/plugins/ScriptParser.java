@@ -276,7 +276,7 @@ public class ScriptParser {
     return timeoutTime;
   }
 
-  public class ScriptSyntaxErrorException extends ScriptException {
+  public static class ScriptSyntaxErrorException extends ScriptException {
     public ScriptSyntaxErrorException(String msg) {
       super(msg);
     }
