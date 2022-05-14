@@ -334,7 +334,11 @@ public class LogScriptEngine {
     });
     scriptThread.start(); /* Starts by acquiring semaphore (blocks) */
     while (!semaphoreScript.hasQueuedThreads()) {
-      Thread.yield();
+      try {
+        Thread.sleep(50);
+      } catch (InterruptedException e) {
+        // Does not matter, we are waiting.
+      }
     }
 
     /* Setup simulation observers */
