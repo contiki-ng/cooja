@@ -348,7 +348,6 @@ public class Simulation extends Observable implements Runnable {
     if (!isRunning()) {
       isRunning = true;
       simulationThread = new Thread(this);
-      simulationThread.setPriority(Thread.MIN_PRIORITY);
       simulationThread.start();
     }
   }
