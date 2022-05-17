@@ -3276,6 +3276,10 @@ public class Cooja extends Observable {
         }
       }
     } else {
+      if (GraphicsEnvironment.isHeadless()) {
+        logger.fatal("Trying to start GUI in headless environment, aborting");
+        System.exit(1);
+      }
       // Frame start-up
       javax.swing.SwingUtilities.invokeLater(new Runnable() {
         @Override
