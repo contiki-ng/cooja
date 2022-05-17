@@ -102,7 +102,7 @@ public class CompileContiki {
   }
 
   /**
-   * Executes a Contiki compilation command.
+   * Perform variable expansion and execute a Contiki compilation command.
    *
    * @param command Command
    * @param env (Optional) Environment. May be null.
@@ -116,7 +116,7 @@ public class CompileContiki {
    * @throws Exception If process returns error, or outputFile does not exist
    */
   public static Process compile(
-      final String command[],
+      final String commandIn[],
       final String[] env,
       final File outputFile,
       final File directory,
@@ -132,7 +132,12 @@ public class CompileContiki {
   	} else {
   		messageDialog = compilationOutput;
   	}
-  	
+    String cpus = Integer.toString(Runtime.getRuntime().availableProcessors());
+    // Perform compile command variable expansions.
+    String command[] = new String[commandIn.length];
+    for (int i = 0; i < commandIn.length; i++) {
+      command[i] = commandIn[i].replace("$(CPUS)", cpus);
+    }
     {
       String cmd = "";
       for (String c: command) {
