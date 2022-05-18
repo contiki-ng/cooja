@@ -30,6 +30,7 @@
 
 package org.contikios.cooja.interfaces;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,8 +38,8 @@ import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
@@ -75,7 +76,7 @@ public class IPAddress extends MoteInterface {
 
   private final SegmentMonitor memMonitor;
 
-  private List<IPContainer> ipList = new LinkedList<>();
+  private List<IPContainer> ipList = new ArrayList<>();
 
   private int ipv6_addr_size = 0;
   private int ipv6_addr_list_offset = 0;
