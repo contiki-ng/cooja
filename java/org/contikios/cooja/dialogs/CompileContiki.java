@@ -513,6 +513,15 @@ public class CompileContiki {
     env.add(new String[] { "AR_COMMAND_2", ar2 });
     env.add(new String[] { "SYMBOLS", includeSymbols?"1":"" });
     env.add(new String[] { "PATH", System.getenv("PATH") });
+    // Pass through environment variables for the Contiki-NG CI.
+    String ci = System.getenv("CI");
+    if (ci != null) {
+      env.add(new String[] { "CI", ci });
+    }
+    String relstr = System.getenv("RELSTR");
+    if (relstr != null) {
+      env.add(new String[] { "RELSTR", relstr });
+    }
     return env.toArray(new String[0][0]);
   }
 
