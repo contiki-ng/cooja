@@ -974,7 +974,7 @@ public class ConfigurationWizard extends JDialog {
       testOutput.addMessage("Could not find address of referenceVar", MessageList.ERROR);
       return false;
     }
-    int relRefAddress = (int) addresses.get("referenceVar").addr;
+    long relRefAddress = addresses.get("referenceVar").addr;
     javaLibrary.setReferenceAddress(relRefAddress);
 
     testOutput.addMessage("### Creating data and BSS memory sections");
