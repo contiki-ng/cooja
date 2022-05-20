@@ -3031,7 +3031,7 @@ public class Cooja extends Observable {
     for (COOJAProject project: projects) {
     	File projectDir = project.dir;
       try {
-        urls.add((new File(projectDir, "java")).toURI().toURL());
+        urls.add(new File(projectDir, "java").toURI().toURL());
 
         // Read configuration to check if any JAR files should be loaded
         ProjectConfig projectConfig = new ProjectConfig(false);
