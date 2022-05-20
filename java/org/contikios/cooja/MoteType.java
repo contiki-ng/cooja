@@ -93,8 +93,9 @@ public interface MoteType {
   public File getContikiSourceFile();
 
   /**
-   * @param file Contiki main process source file.
-   * @see #getContikiSourceFile()
+   *See {@link #getContikiSourceFile()}.
+ @param file Contiki main process source file.
+   *
    */
   public void setContikiSourceFile(File file);
 
@@ -108,8 +109,9 @@ public interface MoteType {
   public File getContikiFirmwareFile();
 
   /**
-   * @param file Contiki firmware file or library.
-   * @see #getContikiFirmwareFile()
+   *See {@link #getContikiFirmwareFile()}.
+ @param file Contiki firmware file or library.
+   *
    */
   public void setContikiFirmwareFile(File file);
 
@@ -125,14 +127,16 @@ public interface MoteType {
   public String getCompileCommands();
 
   /**
-   * @param commands Compile commands
-   * @see #getCompileCommands()
+   *See {@link #getCompileCommands()}.
+ @param commands Compile commands
+   *
    */
   public void setCompileCommands(String commands);
 
   /**
-   * @return Mote interface classes of mote type.
-   * @see #setMoteInterfaceClasses(Class[])
+   *See {@link #setMoteInterfaceClasses(Class[])}.
+ @return Mote interface classes of mote type.
+   *
    */
   public Class<? extends MoteInterface>[] getMoteInterfaceClasses();
 

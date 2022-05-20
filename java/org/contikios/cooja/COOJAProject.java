@@ -124,7 +124,8 @@ public class COOJAProject {
 	}
 
 	/**
-	 * @return Description or null
+	 * Returns description or null.
+
 	 */
 	public String getDescription() {
 		return config.getStringValue("DESCRIPTION");

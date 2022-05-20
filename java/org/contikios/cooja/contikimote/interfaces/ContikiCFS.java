@@ -137,14 +137,16 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
   }
 
   /**
-   * @return Read bytes count last change.
+   * Returns read bytes count last change.
+
    */
   public int getLastReadCount() {
     return lastRead;
   }
 
   /**
-   * @return Written bytes count last change.
+   * Returns written bytes count last change.
+
    */
   public int getLastWrittenCount() {
     return lastWritten;

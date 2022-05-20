@@ -43,7 +43,8 @@ import org.contikios.cooja.*;
 public abstract class Beeper extends MoteInterface {
 
   /**
-   * @return True if beeper is beeping
+   * Returns true if beeper is beeping.
+
    */
   public abstract boolean isBeeping();
 }

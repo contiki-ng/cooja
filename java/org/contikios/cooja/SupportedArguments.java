@@ -53,17 +53,20 @@ import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
 public @interface SupportedArguments {
 
   /**
-   * @return List of accepted mote classes.
+   * Returns list of accepted mote classes.
+
    */
   Class<? extends Mote>[] motes() default { Mote.class };
 
   /**
-   * @return List of accepted radio medium classes.
+   * Returns list of accepted radio medium classes.
+
    */
   Class<? extends RadioMedium>[] radioMediums() default { RadioMedium.class };
 
   /**
-   * @return List of required mote interfaces.
+   * Returns list of required mote interfaces.
+
    */
   Class<? extends MoteInterface>[] moteInterfaces() default { MoteInterface.class };
 }

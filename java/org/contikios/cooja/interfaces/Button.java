@@ -122,7 +122,8 @@ public abstract class Button extends MoteInterface {
   protected abstract void doReleaseButton();
 
   /**
-   * @return True if button is pressed
+   * Returns true if button is pressed.
+
    */
   public abstract boolean isPressed();
 

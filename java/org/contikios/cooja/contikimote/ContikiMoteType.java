@@ -900,7 +900,8 @@ public class ContikiMoteType implements MoteType {
   }
 
   /**
-   * @return Whether core library has system symbols information
+   * Returns whether core library has system symbols information.
+
    */
   public boolean hasSystemSymbols() {
     return hasSystemSymbols;
@@ -914,7 +915,8 @@ public class ContikiMoteType implements MoteType {
   }
 
   /**
-   * @return Contiki network stack
+   * Returns contiki network stack.
+
    */
   public NetworkStack getNetworkStack() {
     return netStack;

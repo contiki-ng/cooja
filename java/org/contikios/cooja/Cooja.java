@@ -489,7 +489,8 @@ public class Cooja extends Observable {
   }
 
   /**
-   * @return True if simulator is visualized
+   * Returns true if simulator is visualized.
+
    */
   public static boolean isVisualized() {
     return isVisualizedInFrame();
@@ -1190,7 +1191,8 @@ public class Cooja extends Observable {
   }
 
   /**
-   * @return Current desktop pane (simulator visualizer)
+   * Returns current desktop pane (simulator visualizer).
+
    */
   public JDesktopPane getDesktopPane() {
     return myDesktopPane;
@@ -1381,7 +1383,8 @@ public class Cooja extends Observable {
   }
 
   /**
-   * @return All registered mote type classes
+   * Returns all registered mote type classes.
+
    */
   public Vector<Class<? extends MoteType>> getRegisteredMoteTypes() {
     return moteTypeClasses;
@@ -1418,7 +1421,8 @@ public class Cooja extends Observable {
   }
 
   /**
-   * @return All registered positioner classes
+   * Returns all registered positioner classes.
+
    */
   public Vector<Class<? extends Positioner>> getRegisteredPositioners() {
     return positionerClasses;
@@ -1454,7 +1458,8 @@ public class Cooja extends Observable {
   }
 
   /**
-   * @return All registered radio medium classes
+   * Returns all registered radio medium classes.
+
    */
   public Vector<Class<? extends RadioMedium>> getRegisteredRadioMediums() {
     return radioMediumClasses;
@@ -2086,7 +2091,8 @@ public class Cooja extends Observable {
   // // GUI CONTROL METHODS ////
 
   /**
-   * @return Current simulation
+   * Returns current simulation.
+
    */
   public Simulation getSimulation() {
     return mySimulation;
@@ -2732,7 +2738,8 @@ public class Cooja extends Observable {
   // // EXTERNAL TOOLS SETTINGS METHODS ////
 
   /**
-   * @return Number of external tools settings
+   * Returns number of external tools settings.
+
    */
   public static int getExternalToolsSettingsCount() {
     return externalToolsSettingNames.length;
@@ -2750,20 +2757,22 @@ public class Cooja extends Observable {
   }
 
   /**
-   * @param name
+   * Returns value.
+ @param name
    *          Name of setting
-   * @return Value
+   *
    */
   public static String getExternalToolsSetting(String name) {
     return getExternalToolsSetting(name, null);
   }
 
   /**
-   * @param name
+   * Returns value.
+ @param name
    *          Name of setting
    * @param defaultValue
    *          Default value
-   * @return Value
+   *
    */
   public static String getExternalToolsSetting(String name, String defaultValue) {
     if (specifiedContikiPath != null && "PATH_CONTIKI".equals(name)) {
@@ -2776,11 +2785,12 @@ public class Cooja extends Observable {
   }
 
   /**
-   * @param name
+   * Returns value.
+ @param name
    *          Name of setting
    * @param defaultValue
    *          Default value
-   * @return Value
+   *
    */
   public static String getExternalToolsDefaultSetting(String name, String defaultValue) {
     return defaultExternalToolsSettings.getProperty(name, defaultValue);
@@ -4056,9 +4066,10 @@ public class Cooja extends Observable {
   }
 
   /**
-   * @return All current mote relations.
+   *See {@link #addMoteRelationsObserver(Observer)}.
+ @return All current mote relations.
    *
-   * @see #addMoteRelationsObserver(Observer)
+   *
    */
   public MoteRelation[] getMoteRelations() {
     return moteRelations.toArray(new MoteRelation[moteRelations.size()]);

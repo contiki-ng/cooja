@@ -113,7 +113,8 @@ public class EventListener extends VisPlugin {
     }
 
     /**
-     * @return Object being observed.
+     * Returns object being observed.
+
      */
     public Observable getObservable() {
       return myObservation;

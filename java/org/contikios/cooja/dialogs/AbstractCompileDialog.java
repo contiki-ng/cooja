@@ -451,7 +451,8 @@ public abstract class AbstractCompileDialog extends JDialog {
   }
 
   /**
-   * @return Mote type was created without errors
+   * Returns mote type was created without errors.
+
    */
   public boolean createdOK() {
     if (contikiFirmware == null) {
@@ -757,7 +758,8 @@ public abstract class AbstractCompileDialog extends JDialog {
   public abstract Class<? extends MoteInterface>[] getAllMoteInterfaces();
 
   /**
-   * @return Currently selected mote interface classes
+   * Returns currently selected mote interface classes.
+
    */
   public Class<? extends MoteInterface>[] getSelectedMoteInterfaceClasses() {
     ArrayList<Class<? extends MoteInterface>> selected = new ArrayList<Class<? extends MoteInterface>>();
@@ -853,7 +855,8 @@ public abstract class AbstractCompileDialog extends JDialog {
   }
 
   /**
-   * @return User configured compile commands
+   * Returns user configured compile commands.
+
    */
   public String getCompileCommands() {
     /* TODO Split into String[] */
@@ -861,14 +864,16 @@ public abstract class AbstractCompileDialog extends JDialog {
   }
 
   /**
-   * @param source Contiki source
-   * @return Suggested compile commands for compiling source
+   * Returns suggested compile commands for compiling source.
+ @param source Contiki source
+   *
    */
   public abstract String getDefaultCompileCommands(File source);
 
   /**
-   * @param source Contiki source
-   * @return Expected Contiki firmware compiled from source
+   * Returns expected Contiki firmware compiled from source.
+ @param source Contiki source
+   *
    */
   public abstract File getExpectedFirmwareFile(File source);
 

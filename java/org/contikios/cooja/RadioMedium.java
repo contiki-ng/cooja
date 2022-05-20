@@ -106,7 +106,8 @@ public abstract class RadioMedium {
   public abstract void addRadioTransmissionObserver(Observer observer);
 
   /**
-   * @return Radio medium observable
+   * Returns radio medium observable.
+
    */
   public abstract Observable getRadioTransmissionObservable();
 
@@ -120,7 +121,8 @@ public abstract class RadioMedium {
   public abstract void deleteRadioTransmissionObserver(Observer observer);
 
   /**
-   * @return Last radio connection finished in the radio medium
+   * Returns last radio connection finished in the radio medium.
+
    */
   public abstract RadioConnection getLastConnection();
 

@@ -46,7 +46,8 @@ import org.jdom.Element;
 public interface Mote {
 
   /**
-   * @return Unique mote ID
+   * Returns unique mote ID.
+
    */
   public int getID();
 

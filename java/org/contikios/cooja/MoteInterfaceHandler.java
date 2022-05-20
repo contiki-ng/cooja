@@ -191,7 +191,8 @@ public class MoteInterfaceHandler {
   }
 
   /**
-   * @return Rime address interface
+   * Returns rime address interface.
+
    */
   public RimeAddress getRimeAddress() {
     if (myRimeAddress == null) {
@@ -349,7 +350,8 @@ public class MoteInterfaceHandler {
   }
 
   /**
-   * @return Mote interfaces
+   * Returns mote interfaces.
+
    */
   public Collection<MoteInterface> getInterfaces() {
     return moteInterfaces;

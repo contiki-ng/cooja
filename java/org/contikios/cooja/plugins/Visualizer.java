@@ -1457,7 +1457,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   }
 
   /**
-   * @return Canvas
+   * Returns canvas.
+
    */
   public JPanel getCurrentCanvas() {
     return canvas;
@@ -1532,7 +1533,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   }
 
   /**
-   * @return Selected mote
+   * Returns selected mote.
+
    */
   public Set<Mote> getSelectedMotes() {
     return selectedMotes;
