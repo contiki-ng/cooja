@@ -29,6 +29,11 @@
 
 package org.contikios.cooja.plugins;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import de.sciss.syntaxpane.DefaultSyntaxKit;
+import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
+import de.sciss.syntaxpane.actions.ScriptRunnerAction;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -46,11 +51,11 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.script.ScriptException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -72,14 +77,8 @@ import javax.swing.JTextArea;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
-
-import de.sciss.syntaxpane.DefaultSyntaxKit;
-import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
-import de.sciss.syntaxpane.actions.ScriptRunnerAction;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
-
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.PluginType;
@@ -88,6 +87,7 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.util.StringUtils;
+import org.jdom.Element;
 
 @ClassDescription("Simulation script editor")
 @PluginType(PluginType.SIM_CONTROL_PLUGIN)
@@ -356,7 +356,7 @@ public class ScriptRunner extends VisPlugin {
             if (logFile.exists()) {
               logFile.delete();
             }
-            logWriter = new BufferedWriter(new FileWriter(logFile));
+            logWriter = Files.newBufferedWriter(logFile.toPath(), UTF_8);
             logWriter.write("Random seed: " + simulation.getRandomSeed() + "\n");
             logWriter.flush();
           }
@@ -510,8 +510,8 @@ public class ScriptRunner extends VisPlugin {
 
       /* Start process */
       final Process process = Runtime.getRuntime().exec(command, null, coojaBuild);
-      final BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-      final BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+      final BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream(), UTF_8));
+      final BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream(), UTF_8));
 
       /* GUI components */
       final MessageListUI testOutput = new MessageListUI();

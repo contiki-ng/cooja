@@ -30,6 +30,8 @@
 
 package org.contikios.cooja.dialogs;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -48,7 +50,6 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBoxMenuItem;
@@ -58,9 +59,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.Cooja;
 
 /**
@@ -132,7 +132,7 @@ public class MessageListUI extends JList implements MessageList {
     try {
       PipedInputStream input = new PipedInputStream();
       PipedOutputStream output = new PipedOutputStream(input);
-      final BufferedReader stringInput = new BufferedReader(new InputStreamReader(input));
+      final BufferedReader stringInput = new BufferedReader(new InputStreamReader(input, UTF_8));
 
       Thread readThread = new Thread(new Runnable() {
         @Override

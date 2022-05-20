@@ -29,6 +29,8 @@
  */
 package org.contikios.cooja.contikimote;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.Container;
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,35 +49,32 @@ import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
-
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
-import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.Cooja;
+import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.ProjectConfig;
-import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.CompileContiki;
 import org.contikios.cooja.dialogs.ContikiMoteCompileDialog;
-import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageContainer;
+import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.mote.memory.ArrayMemory;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.mote.memory.MemoryLayout;
+import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.mote.memory.UnknownVariableException;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.contikios.cooja.util.StringUtils;
+import org.jdom.Element;
 
 /**
  * The Cooja mote type holds the native library used to communicate with an
@@ -975,7 +974,7 @@ public class ContikiMoteType implements MoteType {
               libraryFile.getParentFile()
       );
       BufferedReader input = new BufferedReader(
-              new InputStreamReader(p.getInputStream())
+              new InputStreamReader(p.getInputStream(), UTF_8)
       );
       p.getErrorStream().close();
       while ((line = input.readLine()) != null) {

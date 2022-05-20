@@ -28,11 +28,14 @@
 
 package org.contikios.cooja;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Vector;
-
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageContainer;
@@ -140,14 +143,14 @@ public abstract class CoreComm {
           .getExternalToolsSetting("CORECOMM_TEMPLATE_FILENAME");
 
       if ((new File(mainTemplate)).exists()) {
-        reader = new FileReader(mainTemplate);
+        reader = Files.newBufferedReader(Paths.get(mainTemplate), UTF_8);
       } else {
         InputStream input = CoreComm.class
             .getResourceAsStream('/' + mainTemplate);
         if (input == null) {
           throw new FileNotFoundException(mainTemplate + " not found");
         }
-        reader = new InputStreamReader(input);
+        reader = new InputStreamReader(input, UTF_8);
       }
 
       templateFileReader = new BufferedReader(reader);
@@ -159,7 +162,7 @@ public abstract class CoreComm {
       }
 
       sourceFileWriter = new BufferedWriter(new OutputStreamWriter(
-          new FileOutputStream("org/contikios/cooja/corecomm/" + destFilename)));
+          new FileOutputStream("org/contikios/cooja/corecomm/" + destFilename), UTF_8));
 
       // Replace special fields in template
       String line;

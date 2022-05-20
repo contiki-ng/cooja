@@ -30,6 +30,10 @@
 
 package org.contikios.cooja.plugins;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -49,12 +53,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -78,11 +82,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
-
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -96,6 +97,7 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.TableColumnAdjuster;
 import org.contikios.cooja.dialogs.UpdateAggregator;
 import org.contikios.cooja.util.ArrayQueue;
+import org.jdom.Element;
 
 /**
  * A simple mote log listener.
@@ -804,7 +806,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
 
       try {
-        PrintWriter outStream = new PrintWriter(new FileWriter(saveFile));
+        PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
         for(LogData data : logs) {
           outStream.println(
               data.getTime() + "\t" +
@@ -840,7 +842,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
           appendStream.close();
           appendStream = null;
         }
-        appendStream = new PrintWriter(new FileWriter(file,true));
+        appendStream = new PrintWriter(Files.newBufferedWriter(file.toPath(), UTF_8, CREATE, APPEND));
         appendStreamFile = file;
         appendToFileWroteHeader = false;
       } catch (Exception ex) {

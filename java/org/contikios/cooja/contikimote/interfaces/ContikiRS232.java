@@ -30,10 +30,11 @@
 
 package org.contikios.cooja.contikimote.interfaces;
 
-import java.util.Vector;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
-import org.apache.logging.log4j.Logger;
+import java.util.Vector;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.*;
 import org.contikios.cooja.contikimote.ContikiMote;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
@@ -108,7 +109,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
 
   @Override
   public void writeString(String message) {
-    final byte[] dataToAppend = message.getBytes();
+    final byte[] dataToAppend = message.getBytes(UTF_8);
 
     mote.getSimulation().invokeSimulationThread(new Runnable() {
       @Override
