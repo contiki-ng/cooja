@@ -4098,9 +4098,7 @@ public class Cooja extends Observable {
   }
 
   public File createPortablePath(File file, boolean allowConfigRelativePaths) {
-    File portable = null;
-
-    portable = createContikiRelativePath(file);
+    File portable = createContikiRelativePath(file);
     if (portable != null) {
       /*logger.info("Generated Contiki relative path '" + file.getPath() + "' to '" + portable.getPath() + "'");*/
       return portable;
@@ -4132,8 +4130,7 @@ public class Cooja extends Observable {
       return file;
     }
 
-    File absolute = null;
-    absolute = restoreContikiRelativePath(file);
+    File absolute = restoreContikiRelativePath(file);
     if (absolute != null) {
       /*logger.info("Restored Contiki relative path '" + file.getPath() + "' to '" + absolute.getPath() + "'");*/
       return absolute;
@@ -4154,7 +4151,7 @@ public class Cooja extends Observable {
 	  {"[COOJA_DIR]","PATH_COOJA",""},
 	  {"[APPS_DIR]","PATH_APPS","apps"}
   };
-  
+
   private File createContikiRelativePath(File file) {
     try {
     	int elem = PATH_IDENTIFIER.length;

@@ -30,9 +30,6 @@
 
 package org.contikios.cooja.contikimote.interfaces;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.*;
 import org.contikios.cooja.contikimote.ContikiMote;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
@@ -62,8 +59,6 @@ import org.contikios.cooja.mote.memory.VarMemory;
 public class ContikiButton extends Button implements ContikiMoteInterface {
   private final VarMemory moteMem;
   private final ContikiMote mote;
-
-  private static final Logger logger = LogManager.getLogger(ContikiButton.class);
 
   /**
    * Creates an interface to the button at mote.
