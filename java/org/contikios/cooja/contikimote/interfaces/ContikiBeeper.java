@@ -45,7 +45,6 @@ import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.Beeper;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;

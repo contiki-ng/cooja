@@ -57,7 +57,6 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.CompileContiki;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageListUI;
-import org.contikios.cooja.plugins.ScriptRunner;
 import org.contikios.cooja.PluginType;
 
 public class ExecuteJAR {
