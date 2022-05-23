@@ -7,6 +7,14 @@
     </condition>
   </fail>
 
+  <!-- Ant ignores the release tag when using an old JDK. Make sure
+       we fail when detecting a class that was removed in Java 11. -->
+  <fail message="Java 11+ is required to build">
+    <condition>
+      <available classname="javax.xml.ws.Service"/>
+    </condition>
+  </fail>
+
   <property name="java" location="java"/>
   <property name="build" location="build"/>
   <property name="javadoc" location="javadoc"/>
