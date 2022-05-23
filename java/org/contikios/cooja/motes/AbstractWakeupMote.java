@@ -30,17 +30,12 @@ package org.contikios.cooja.motes;
 
 import java.util.HashMap;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteTimeEvent;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 
 public abstract class AbstractWakeupMote implements Mote {
-  private static final Logger logger = LogManager.getLogger(AbstractWakeupMote.class);
-
   protected Simulation simulation = null;
 
   private long nextWakeupTime = -1;

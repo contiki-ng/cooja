@@ -34,8 +34,6 @@ import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
@@ -52,8 +50,6 @@ import org.contikios.cooja.util.ArrayUtils;
  * @author Fredrik Osterlind
  */
 public class SimEventCentral {
-  private static final Logger logger = LogManager.getLogger(SimEventCentral.class);
-
   private Simulation simulation;
 
   public SimEventCentral(Simulation simulation) {
