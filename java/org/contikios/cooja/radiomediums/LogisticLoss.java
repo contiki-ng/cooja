@@ -30,7 +30,6 @@
 
 package org.contikios.cooja.radiomediums;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;

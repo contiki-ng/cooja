@@ -32,7 +32,6 @@ package org.contikios.cooja.dialogs;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 import javax.swing.*;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
