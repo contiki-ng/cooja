@@ -1104,7 +1104,7 @@ public class ContikiMoteType implements MoteType {
     boolean okID = false;
 
     while (!okID) {
-      testID = ID_PREFIX + (new Random().nextInt(1000));
+      testID = ID_PREFIX + new Random().nextInt(1000);
       okID = true;
 
       // Check if identifier is reserved

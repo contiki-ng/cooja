@@ -142,7 +142,7 @@ public abstract class CoreComm {
       String mainTemplate = Cooja
           .getExternalToolsSetting("CORECOMM_TEMPLATE_FILENAME");
 
-      if ((new File(mainTemplate)).exists()) {
+      if (new File(mainTemplate).exists()) {
         reader = Files.newBufferedReader(Paths.get(mainTemplate), UTF_8);
       } else {
         InputStream input = CoreComm.class
