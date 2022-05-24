@@ -1226,7 +1226,7 @@ public class ContikiMoteType implements MoteType {
     }
 
     element = new Element("symbols");
-    element.setText(new Boolean(hasSystemSymbols()).toString());
+    element.setText(Boolean.toString(hasSystemSymbols()));
     config.add(element);
 
     if (getNetworkStack() != NetworkStack.DEFAULT) {

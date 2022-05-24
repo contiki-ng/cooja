@@ -651,7 +651,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   public Watchpoint addBreakpoint(File codeFile, int lineNr, int address) {
-    MspBreakpoint bp = new MspBreakpoint(this, address, codeFile, new Integer(lineNr));
+    MspBreakpoint bp = new MspBreakpoint(this, address, codeFile, lineNr);
     watchpoints.add(bp);
 
     for (WatchpointListener listener: watchpointListeners) {

@@ -105,7 +105,7 @@ public class RadioConnection {
    * @param radio Radio
    */
   public void addDestination(Radio radio) {
-    addDestination(radio, new Long(0));
+    addDestination(radio, 0L);
   }
   
   /**
