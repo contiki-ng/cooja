@@ -97,7 +97,8 @@ public abstract class AbstractWakeupMote implements Mote {
   }
 
   /**
-   * @return Next wakeup time, or -1 if not scheduled
+   * Returns next wakeup time, or -1 if not scheduled.
+
    */
   public long getNextWakeupTime() {
     if (!executeMoteEvent.isScheduled()) {

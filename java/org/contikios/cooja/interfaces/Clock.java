@@ -63,7 +63,8 @@ public abstract class Clock extends MoteInterface {
   public abstract void setTime(long newTime);
 
   /**
-   * @return Current time
+   * Returns current time.
+
    */
   public abstract long getTime();
 

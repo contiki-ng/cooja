@@ -80,12 +80,14 @@ public abstract class Radio extends MoteInterface {
   public abstract void setReceivedPacket(RadioPacket packet);
 
   /**
-   * @return Last packet transmitted by radio
+   * Returns last packet transmitted by radio.
+
    */
   public abstract RadioPacket getLastPacketTransmitted();
 
   /**
-   * @return Last packet received by radio
+   * Returns last packet received by radio.
+
    */
   public abstract RadioPacket getLastPacketReceived();
 
@@ -139,7 +141,8 @@ public abstract class Radio extends MoteInterface {
   public abstract boolean isInterfered();
 
   /**
-   * @return True if the simulated radio transceiver is on
+   * Returns true if the simulated radio transceiver is on.
+
    */
   public abstract boolean isRadioOn();
 
@@ -156,17 +159,20 @@ public abstract class Radio extends MoteInterface {
   public abstract void interfereAnyReception();
 
   /**
-   * @return Current output power (dBm)
+   * Returns current output power (dBm).
+
    */
   public abstract double getCurrentOutputPower();
 
   /**
-   * @return Current output power indicator
+   * Returns current output power indicator.
+
    */
   public abstract int getCurrentOutputPowerIndicator();
 
   /**
-   * @return Maximum output power indicator
+   * Returns maximum output power indicator.
+
    */
   public abstract int getOutputPowerIndicatorMax();
   
@@ -190,7 +196,8 @@ public abstract class Radio extends MoteInterface {
   }
 
   /**
-   * @return Current surrounding signal strength
+   * Returns current surrounding signal strength.
+
    */
   public abstract double getCurrentSignalStrength();
 

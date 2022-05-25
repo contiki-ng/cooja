@@ -42,22 +42,26 @@ import org.contikios.cooja.*;
 public abstract class LED extends MoteInterface {
   
   /**
-   * @return True if any LED is on, false otherwise
+   * Returns true if any LED is on, false otherwise.
+
    */
   public abstract boolean isAnyOn();
   
   /**
-   * @return True if green LED is on, false otherwise
+   * Returns true if green LED is on, false otherwise.
+
    */
   public abstract boolean isGreenOn();
 
   /**
-   * @return True if yellow LED is on, false otherwise
+   * Returns true if yellow LED is on, false otherwise.
+
    */
   public abstract boolean isYellowOn();
   
   /**
-   * @return True if red LED is on, false otherwise
+   * Returns true if red LED is on, false otherwise.
+
    */
   public abstract boolean isRedOn();
   

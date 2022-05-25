@@ -31,8 +31,9 @@ package org.contikios.cooja;
 
 public interface HasQuickHelp {
   /**
-   * @return Quick help. May be HTML formatted, but must not include the
-   *         document html-tags.
+   * Returns quick help. May be HTML formatted, but must not include the
+         document html-tags.
+
    */
   public String getQuickHelp();
 }

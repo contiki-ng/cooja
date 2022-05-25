@@ -58,7 +58,8 @@ public interface WatchpointMote extends Mote {
   public void removeWatchpointListener(WatchpointListener listener);
 
   /**
-   * @return All registered listeners
+   * Returns all registered listeners.
+
    */
   public WatchpointListener[] getWatchpointListeners();
 

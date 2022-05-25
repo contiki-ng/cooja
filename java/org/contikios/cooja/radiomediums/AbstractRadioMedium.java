@@ -110,14 +110,16 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	}
 	
 	/**
-	 * @return All registered radios
+	 * Returns all registered radios.
+
 	 */
 	public Radio[] getRegisteredRadios() {
 		return registeredRadios.toArray(new Radio[0]);
 	}
 	
 	/**
-	 * @return All active connections
+	 * Returns all active connections.
+
 	 */
 	public RadioConnection[] getActiveConnections() {
 		/* NOTE: toArray([0]) creates array and handles synchronization */
@@ -573,7 +575,8 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	}
 	
 	/**
-	 * @return the radioMediumObservable
+	 * Returns the radioMediumObservable.
+
 	 */
 	public Observable getRadioMediumObservable() {
 		return radioMediumObservable;

@@ -42,7 +42,8 @@ import org.contikios.cooja.*;
 public abstract class Log extends MoteInterface {
 
   /**
-   * @return Last log message. Note that several messages may appear during one tick.
+   * Returns last log message. Note that several messages may appear during one tick.
+
    */
   public abstract String getLastLogMessage();
 

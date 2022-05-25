@@ -35,25 +35,28 @@ import org.contikios.cooja.plugins.TimeLine;
 public abstract class AbstractEmulatedMote extends AbstractWakeupMote implements Mote {
 
   /**
-   * @return CPU frequency (Hz)
+   * Returns cPU frequency (Hz).
+
    */
   public int getCPUFrequency() {
     return -1;
   }
   
   /**
-   * @return Execution details, for instance a stack trace
-   * @see TimeLine
+   *See {@link TimeLine}.
+ @return Execution details, for instance a stack trace
+   *
    */
   public String getExecutionDetails() {
     return null;
   }
 
   /**
-   * @return One-liner describing current PC, for instance source file and line.
+   *See {@link BufferListener}.
+ @return One-liner describing current PC, for instance source file and line.
    * May return null.
    * 
-   * @see BufferListener
+   *
    */
   public String getPCString() {
     return null;

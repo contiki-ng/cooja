@@ -45,7 +45,8 @@ import org.contikios.cooja.interfaces.CustomDataRadio;
 public interface RadioPacket {
 
   /**
-   * @return Packet data
+   * Returns packet data.
+
    */
   public byte[] getPacketData();
 

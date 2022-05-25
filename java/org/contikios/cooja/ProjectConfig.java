@@ -314,7 +314,8 @@ public class ProjectConfig {
   }
 
   /**
-   * @return All property names in configuration
+   * Returns all property names in configuration.
+
    */
   public Enumeration<String> getPropertyNames() {
     return (Enumeration<String>) myConfig.propertyNames();

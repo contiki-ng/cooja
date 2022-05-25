@@ -86,21 +86,24 @@ public class Position extends MoteInterface {
   }
 
   /**
-   * @return X coordinate
+   * Returns x coordinate.
+
    */
   public double getXCoordinate() {
     return coords[0];
   }
 
   /**
-   * @return Y coordinate
+   * Returns y coordinate.
+
    */
   public double getYCoordinate() {
     return coords[1];
   }
 
   /**
-   * @return Z coordinate
+   * Returns z coordinate.
+
    */
   public double getZCoordinate() {
     return coords[2];

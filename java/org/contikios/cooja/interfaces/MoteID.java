@@ -48,7 +48,8 @@ import org.contikios.cooja.MoteInterface;
 public abstract class MoteID extends MoteInterface {
 
   /**
-   * @return Current mote ID number
+   * Returns current mote ID number.
+
    */
   public abstract int getMoteID();
   

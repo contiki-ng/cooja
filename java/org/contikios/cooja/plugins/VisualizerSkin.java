@@ -94,7 +94,8 @@ public interface VisualizerSkin {
   public void paintAfterMotes(Graphics g);
 
   /**
-   * @return Visualizer plugin where this skin is showing
+   * Returns visualizer plugin where this skin is showing.
+
    */
   public Visualizer getVisualizer();
 

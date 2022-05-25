@@ -84,14 +84,16 @@ public class RadioConnection {
   }
 
   /**
-   * @return Radio connection start time
+   * Returns radio connection start time.
+
    */
   public long getStartTime() {
     return startTime;
   }
 
   /**
-   * @return Start time of ongoing reception
+   * Returns start time of ongoing reception.
+
    */
   public long getReceptionStartTime() {
     /* TODO XXX: This may currently return the start time of an ongoing 
@@ -144,8 +146,9 @@ public class RadioConnection {
   }
 
   /**
-   * @param radio Radio
-   * @return Radio propagation delay (us)
+   * Returns radio propagation delay (us).
+ @param radio Radio
+   *
    */
   public long getDestinationDelay(Radio radio) {
     int idx = allDestinations.indexOf(radio);
@@ -179,47 +182,53 @@ public class RadioConnection {
   }
 
   /**
-   * @param radio Radio
-   * @return True if radio is a non-interfered destination in this connection
+   * Returns true if radio is a non-interfered destination in this connection.
+ @param radio Radio
+   *
    */
   public boolean isDestination(Radio radio) {
     return destinationsNonInterfered.contains(radio);
   }
 
   /**
-   * @param radio Radio
-   * @return True if radio is interfered in this connection
+   * Returns true if radio is interfered in this connection.
+ @param radio Radio
+   *
    */
   public boolean isInterfered(Radio radio) {
     return allInterfered.contains(radio);
   }
 
   /**
-   * @return Source radio
+   * Returns source radio.
+
    */
   public Radio getSource() {
     return source;
   }
 
   /**
-   * @see #getAllDestinations()
-   * @return All non-interfered destinations
+   * Returns all non-interfered destinations.
+ @see #getAllDestinations()
+   *
    */
   public Radio[] getDestinations() {
     return destinationsNonInterfered.toArray(new Radio[0]);
   }
 
   /**
-   * @see #getDestinations()
-   * @return All destination radios, including radios that became
-   * interfered after the connection started.
+   * Returns all destination radios, including radios that became
+ interfered after the connection started.
+ @see #getDestinations()
+   *
    */
   public Radio[] getAllDestinations() {
     return allDestinations.toArray(new Radio[0]);
   }
 
   /**
-   * @return All radios interfered by this connection, including destinations
+   * Returns all radios interfered by this connection, including destinations.
+
    */
   public Radio[] getInterfered() {
     return allInterfered.toArray(new Radio[0]);
