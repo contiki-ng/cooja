@@ -104,7 +104,7 @@ public class Mote2MoteRelations extends MoteInterface {
     /* Observe log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
       if (mi instanceof Log) {
-        ((Log)mi).addObserver(logObserver);
+        mi.addObserver(logObserver);
       }
     }
 
@@ -138,7 +138,7 @@ public class Mote2MoteRelations extends MoteInterface {
     /* Stop observing log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
       if (mi instanceof Log) {
-        ((Log)mi).deleteObserver(logObserver);
+        mi.deleteObserver(logObserver);
       }
     }
     logObserver = null;

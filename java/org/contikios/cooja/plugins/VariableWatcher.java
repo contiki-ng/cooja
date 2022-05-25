@@ -457,7 +457,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       @Override
       public void actionPerformed(ActionEvent e) {
         if (!moteMemory.variableExists((String) varNameCombo.getSelectedItem())) {
-          ((JTextField) varNameCombo.getEditor().getEditorComponent()).setForeground(Color.RED);
+          varNameCombo.getEditor().getEditorComponent().setForeground(Color.RED);
           writeButton.setEnabled(false);
           return;
         }
@@ -594,7 +594,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       }
       updateNumberOfValues();
     } catch (UnknownVariableException ex) {
-      ((JTextField) varNameCombo.getEditor().getEditorComponent()).setForeground(Color.RED);
+      varNameCombo.getEditor().getEditorComponent().setForeground(Color.RED);
       writeButton.setEnabled(false);
     }
   }
