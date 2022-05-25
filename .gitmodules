@@ -1,3 +1,4 @@
 [submodule "mspsim"]
 	path = mspsim
 	url = https://github.com/contiki-ng/mspsim.git
+	ignore = untracked
