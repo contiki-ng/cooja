@@ -127,10 +127,7 @@ public class AddMoteDialog extends JDialog {
 
     myDialog.setLocationRelativeTo(parentContainer);
     myDialog.checkSettings();
-
-    if (myDialog != null) {
-      myDialog.setVisible(true);
-    }
+    myDialog.setVisible(true);
     return myDialog.newMotes;
   }
 
