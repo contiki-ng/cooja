@@ -978,28 +978,28 @@ public class AreaViewer extends VisPlugin {
         tempPanel = new JPanel(new GridLayout(1, 2));
         tempPanel.add(new JLabel("Start X (m)     "));
         virtualStartXField = new JFormattedTextField(doubleFormat);
-        virtualStartXField.setValue(new Double(0.0));
+        virtualStartXField.setValue(0.0);
         tempPanel.add(virtualStartXField);
         mainPanel.add(tempPanel);
 
         tempPanel = new JPanel(new GridLayout(1, 2));
         tempPanel.add(new JLabel("Start Y (m)"));
         virtualStartYField = new JFormattedTextField(doubleFormat);
-        virtualStartYField.setValue(new Double(0.0));
+        virtualStartYField.setValue(0.0);
         tempPanel.add(virtualStartYField);
         mainPanel.add(tempPanel);
 
         tempPanel = new JPanel(new GridLayout(1, 2));
         tempPanel.add(new JLabel("Width (m)"));
         virtualWidthField = new JFormattedTextField(doubleFormat);
-        virtualWidthField.setValue(new Double(100.0));
+        virtualWidthField.setValue(100.0);
         tempPanel.add(virtualWidthField);
         mainPanel.add(tempPanel);
 
         tempPanel = new JPanel(new GridLayout(1, 2));
         tempPanel.add(new JLabel("Height (m)"));
         virtualHeightField = new JFormattedTextField(doubleFormat);
-        virtualHeightField.setValue(new Double(100.0));
+        virtualHeightField.setValue(100.0);
         tempPanel.add(virtualHeightField);
         mainPanel.add(tempPanel);
 

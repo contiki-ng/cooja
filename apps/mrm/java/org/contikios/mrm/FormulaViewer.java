@@ -426,7 +426,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     label.setPreferredSize(labelDimension);
     panel.add(Box.createHorizontalGlue());
     panel.add(textField = new JFormattedTextField(doubleFormat));
-    textField.setValue(new Double(initialValue));
+    textField.setValue(initialValue);
     textField.setColumns(4);
     textField.putClientProperty("id", id);
     textField.addPropertyChangeListener("value", new PropertyChangeListener() {
@@ -481,7 +481,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     label.setPreferredSize(labelDimension);
     panel.add(Box.createHorizontalGlue());
     panel.add(textField = new JFormattedTextField(integerFormat));
-    textField.setValue(new Double(initialValue));
+    textField.setValue((double) initialValue);
     textField.setColumns(4);
     textField.putClientProperty("id", id);
     textField.addPropertyChangeListener("value", new PropertyChangeListener() {
@@ -542,7 +542,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
       public void actionPerformed(ActionEvent e) {
         JCheckBox checkBox = (JCheckBox) e.getSource();
         Parameter id = (Parameter) checkBox.getClientProperty("id");
-        Object val = new Boolean(checkBox.isSelected());
+        Object val = checkBox.isSelected();
         channelModel.setParameterValue(id, val);
         if (!Parameter.getDefaultValue(id).equals(val)) {
           checkBox.setText("<");

@@ -139,59 +139,59 @@ public class ChannelModel {
     public static Object getDefaultValue(Parameter p) {
       switch (p) {
       case apply_random:
-        return new Boolean(false);
+        return Boolean.FALSE;
       case snr_threshold:
-        return new Double(6);
+        return 6.0;
       case bg_noise_mean:
-        return new Double(AbstractRadioMedium.SS_NOTHING);
+        return AbstractRadioMedium.SS_NOTHING;
       case bg_noise_var:
-        return new Double(1);
+        return 1.0;
       case system_gain_mean:
-        return new Double(0);
+        return 0.0;
       case system_gain_var:
-        return new Double(4);
+        return 4.0;
       case frequency: /* MHz */
-        return new Double(2400);
+        return 2400.0;
       case tx_power:
-        return new Double(1.5);
+        return 1.5;
       case tx_with_gain:
-        return new Boolean(true);
+        return Boolean.TRUE;
       case rx_sensitivity:
-        return new Double(-100);
+        return -100.0;
       case rx_with_gain:
-        return new Boolean(false);
+        return Boolean.FALSE;
       case rt_disallow_direct_path:
-        return new Boolean(false);
+        return Boolean.FALSE;
       case rt_ignore_non_direct:
-        return new Boolean(false);
+        return Boolean.FALSE;
       case rt_fspl_on_total_length:
-        return new Boolean(true);
+        return Boolean.TRUE;
       case rt_max_rays:
-        return new Integer(1);
+        return 1;
       case rt_max_refractions:
-        return new Integer(1);
+        return 1;
       case rt_max_reflections:
-        return new Integer(1);
+        return 1;
       case rt_max_diffractions:
-        return new Integer(0);
+        return 0;
       case rt_use_scattering:
-        return new Boolean(false);
+        return Boolean.FALSE;
       case rt_refrac_coefficient:
-        return new Double(-3);
+        return -3.0;
       case rt_reflec_coefficient:
-        return new Double(-5);
+        return -5.0;
       case rt_diffr_coefficient:
-        return new Double(-10);
+        return -10.0;
       case rt_scatt_coefficient:
-        return new Double(-20);
+        return -20.0;
       case obstacle_attenuation:
-        return new Double(-3);
+        return -3.0;
       case captureEffect:
         return true;
       case captureEffectPreambleDuration:
         return (double) (1000*1000*4*0.5*8/250000); /* 2 bytes, 250kbit/s, us */
       case captureEffectSignalTreshold:
-        return (double) 3; /* dB, according to previous 802.15.4 studies */
+        return 3.0; /* dB, according to previous 802.15.4 studies */
       }
       throw new RuntimeException("Unknown default value: " + p);
     }
@@ -1870,7 +1870,7 @@ public class ChannelModel {
         
         Class<?> paramClass = parameters.get(param).getClass();
         if (paramClass == Double.class) {
-          parameters.put(param, new Double(Double.parseDouble(value)));
+          parameters.put(param, Double.parseDouble(value));
         } else if (paramClass == Boolean.class) {
           parameters.put(param, Boolean.parseBoolean(value));
         } else if (paramClass == Integer.class) {

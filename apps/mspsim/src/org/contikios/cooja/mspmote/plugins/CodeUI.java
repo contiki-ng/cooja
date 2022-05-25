@@ -183,14 +183,14 @@ public class CodeUI extends JPanel {
           actionAddBreakpoint.setEnabled(true);
           actionAddBreakpoint.putValue("WatchpointMote", CodeUI.this.mote);
           actionAddBreakpoint.putValue("WatchpointFile", displayedFile);
-          actionAddBreakpoint.putValue("WatchpointLine", new Integer(line));
-          actionAddBreakpoint.putValue("WatchpointAddress", new Integer(address));
+          actionAddBreakpoint.putValue("WatchpointLine", line);
+          actionAddBreakpoint.putValue("WatchpointAddress", address);
         } else {
           actionRemoveBreakpoint.setEnabled(true);
           actionRemoveBreakpoint.putValue("WatchpointMote", CodeUI.this.mote);
           actionRemoveBreakpoint.putValue("WatchpointFile", displayedFile);
-          actionRemoveBreakpoint.putValue("WatchpointLine", new Integer(line));
-          actionRemoveBreakpoint.putValue("WatchpointAddress", new Integer(address));
+          actionRemoveBreakpoint.putValue("WatchpointLine", line);
+          actionRemoveBreakpoint.putValue("WatchpointAddress", address);
         }
       }
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {

@@ -192,7 +192,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(integerFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Integer(1));
+    numberField.setValue(1);
     numberField.setColumns(10);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -250,7 +250,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(0.0));
+    numberField.setValue(0.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -264,7 +264,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(100.0));
+    numberField.setValue(100.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -291,7 +291,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(0.0));
+    numberField.setValue(0.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -305,7 +305,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(100.0));
+    numberField.setValue(100.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -332,7 +332,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(0.0));
+    numberField.setValue(0.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -346,7 +346,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(0.0));
+    numberField.setValue(0.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);

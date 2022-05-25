@@ -219,7 +219,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
           return "? bytes";
         }
       }
-      return new Boolean(false);
+      return Boolean.FALSE;
     }
     public boolean isCellEditable(int row, int col){
       return getColumnClass(col) == Boolean.class;
