@@ -111,7 +111,7 @@ public class Simulation extends Observable implements Runnable {
 
   /* Poll requests */
   private boolean hasPollRequests = false;
-  private ArrayDeque<Runnable> pollRequests = new ArrayDeque<Runnable>();
+  private final ArrayDeque<Runnable> pollRequests = new ArrayDeque<>();
 
 
   /**
