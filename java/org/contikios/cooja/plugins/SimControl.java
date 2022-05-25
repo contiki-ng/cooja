@@ -199,12 +199,7 @@ public class SimControl extends VisPlugin implements HasQuickHelp {
     simulation.addObserver(simObserver = new Observer() {
       @Override
       public void update(Observable obs, Object obj) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            updateValues();
-          }
-        });
+        SwingUtilities.invokeLater(() -> updateValues());
       }
     });
     /* Set initial values */

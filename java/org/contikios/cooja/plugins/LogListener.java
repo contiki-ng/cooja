@@ -495,12 +495,9 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
 
     /* Column width adjustment */
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        /* Make sure this happens *after* adding history */
-        adjuster.setDynamicAdjustment(true);
-      }
+    java.awt.EventQueue.invokeLater(() -> {
+      /* Make sure this happens *after* adding history */
+      adjuster.setDynamicAdjustment(true);
     });
 
     /* Start observing motes for new log output */
@@ -652,12 +649,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       String name = element.getName();
       if ("filter".equals(name)) {
         final String str = element.getText();
-        EventQueue.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            setFilter(str);
-          }
-        });
+        EventQueue.invokeLater(() -> setFilter(str));
       } else if ("coloring".equals(name)) {
         backgroundColors = true;
         colorCheckbox.setSelected(true);

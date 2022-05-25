@@ -168,12 +168,9 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
 
     button = new JButton("Remove");
     button.setPreferredSize(size);
-    button.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        /* TODO In simulation event (if running) */
-        simulation.removeMote(MoteInformation.this.mote);
-      }
+    button.addActionListener(e -> {
+      /* TODO In simulation event (if running) */
+      simulation.removeMote(MoteInformation.this.mote);
     });
     smallPane.add(BorderLayout.EAST, button);
     mainPane.add(smallPane);

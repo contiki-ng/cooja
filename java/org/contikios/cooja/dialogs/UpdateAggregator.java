@@ -29,8 +29,6 @@
 package org.contikios.cooja.dialogs;
 
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,12 +67,7 @@ public abstract class UpdateAggregator<A> {
   public UpdateAggregator(int interval, int maxEvents) {
     this.maxPending = maxEvents;
     pending = new ArrayList<A>();
-    t = new Timer(interval, new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        consume.run();
-      }
-    });
+    t = new Timer(interval, e -> consume.run());
     t.setInitialDelay(0);
     t.setCoalesce(true);
     t.setRepeats(true);

@@ -1600,12 +1600,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
                   /* Backwards compatibility */
                   || wanted.equals(Cooja.getDescriptionOf(skinClass))) {
             final Class<? extends VisualizerSkin> skin = skinClass;
-            SwingUtilities.invokeLater(new Runnable() {
-              @Override
-              public void run() {
-                generateAndActivateSkin(skin);
-              }
-            });
+            SwingUtilities.invokeLater(() -> generateAndActivateSkin(skin));
             wanted = null;
             break;
           }
@@ -1857,12 +1852,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         ui.getNorthPane().setPreferredSize(new Dimension(0, 0));
       }
       visualizer.revalidate();
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          visualizer.repaint();
-        }
-      });
+      SwingUtilities.invokeLater(() -> visualizer.repaint());
     }
 
     @Override

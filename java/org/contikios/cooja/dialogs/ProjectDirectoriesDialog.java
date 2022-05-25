@@ -976,12 +976,7 @@ class ConfigViewer extends JDialog {
 		buttonPane.add(Box.createHorizontalGlue());
 
 		button = new JButton("Close");
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
+		button.addActionListener(e -> dispose());
 		buttonPane.add(button);
 
 		/* Config */

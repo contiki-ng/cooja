@@ -199,12 +199,7 @@ public class ScriptRunner extends VisPlugin {
 
     final JMenuItem runTestMenuItem = new JMenuItem("Save simulation and run with script");
     runMenu.add(runTestMenuItem);
-    runTestMenuItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        exportAndRun();
-      }
-    });
+    runTestMenuItem.addActionListener(e -> exportAndRun());
 
     doLayout();
     centerPanel = new JSplitPane(

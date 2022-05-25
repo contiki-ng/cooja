@@ -744,12 +744,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     @Override
     public void actionPerformed(ActionEvent e) {
       if (simulation.isRunning()) {
-        simulation.invokeSimulationThread(new Runnable() {
-          @Override
-          public void run() {
-            clear();
-          }
-        });
+        simulation.invokeSimulationThread(() -> clear());
       } else {
         clear();
       }

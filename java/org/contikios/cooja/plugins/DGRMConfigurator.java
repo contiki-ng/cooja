@@ -32,8 +32,6 @@ package org.contikios.cooja.plugins;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -202,30 +200,15 @@ public class DGRMConfigurator extends VisPlugin {
 
     JPanel southPanel = new JPanel(new GridLayout(1, 3));
     JButton button = new JButton("Add");
-    button.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        doAddLink();
-      }
-    });
+    button.addActionListener(e -> doAddLink());
     southPanel.add(button);
     button = new JButton("Remove");
-    button.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      	doRemoveSelectedLink();
-      }
-    });
+    button.addActionListener(e -> doRemoveSelectedLink());
     removeButton = button;
     removeButton.setEnabled(false);
     southPanel.add(button);
     button = new JButton("Import");
-    button.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      	doImportFromFile();
-      }
-    });
+    button.addActionListener(e -> doImportFromFile());
     southPanel.add(button);
 
     getContentPane().setLayout(new BorderLayout());

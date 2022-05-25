@@ -164,12 +164,7 @@ public abstract class SerialUI extends Log implements SerialPort {
           appendToTextArea(logTextPane, "> " + command);
           commandField.setText("");
           if (getMote().getSimulation().isRunning()) {
-            getMote().getSimulation().invokeSimulationThread(new Runnable() {
-              @Override
-              public void run() {
-                writeString(command);
-              }
-            });
+            getMote().getSimulation().invokeSimulationThread(() -> writeString(command));
           } else {
             writeString(command);
           }
@@ -241,12 +236,7 @@ public abstract class SerialUI extends Log implements SerialPort {
       @Override
       public void update(Observable obs, Object obj) {
         final String logMessage = getLastLogMessage();
-        EventQueue.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            appendToTextArea(logTextPane, logMessage);
-          }
-        });
+        EventQueue.invokeLater(() -> appendToTextArea(logTextPane, logMessage));
       }
     });
     panel.putClientProperty("intf_obs", observer);

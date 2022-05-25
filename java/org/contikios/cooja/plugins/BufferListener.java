@@ -886,12 +886,7 @@ public class BufferListener extends VisPlugin {
       String name = element.getName();
       if ("filter".equals(name)) {
         final String str = element.getText();
-        EventQueue.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            setFilter(str);
-          }
-        });
+        EventQueue.invokeLater(() -> setFilter(str));
       } else if ("coloring".equals(name)) {
         backgroundColors = true;
         colorCheckbox.setSelected(true);

@@ -563,12 +563,7 @@ public class Cooja extends Observable {
         lastItem = new JMenuItem(file.getName());
       }
       final File f = file;
-      lastItem.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          doLoadConfigAsync(quick, f);
-  			}
-      });
+      lastItem.addActionListener(e -> doLoadConfigAsync(quick, f));
       lastItem.putClientProperty("file", file);
       lastItem.setToolTipText(file.getAbsolutePath());
       menu.add(lastItem);
@@ -576,12 +571,7 @@ public class Cooja extends Observable {
   }
 
   private void doLoadConfigAsync(final boolean quick, final File file) {
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        cooja.doLoadConfig(true, quick, file, null);
-      }
-    }).start();
+    new Thread(() -> cooja.doLoadConfig(true, quick, file, null)).start();
   }
   private void updateOpenHistoryMenuItems(File[] openFilesHistory) {
   	menuOpenSimulation.removeAll();
@@ -589,24 +579,14 @@ public class Cooja extends Observable {
     /* Reconfigure submenu */
     JMenu reconfigureMenu = new JMenu("Open and Reconfigure");
     JMenuItem browseItem2 = new JMenuItem("Browse...");
-    browseItem2.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        doLoadConfigAsync(false, null);
-			}
-    });
+    browseItem2.addActionListener(e -> doLoadConfigAsync(false, null));
     reconfigureMenu.add(browseItem2);
     reconfigureMenu.add(new JSeparator());
     populateMenuWithHistory(reconfigureMenu, false, openFilesHistory);
 
     /* Open menu */
     JMenuItem browseItem = new JMenuItem("Browse...");
-    browseItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        doLoadConfigAsync(true, null);
-			}
-    });
+    browseItem.addActionListener(e -> doLoadConfigAsync(true, null));
     menuOpenSimulation.add(browseItem);
     menuOpenSimulation.add(new JSeparator());
     menuOpenSimulation.add(reconfigureMenu);
@@ -2306,12 +2286,7 @@ public class Cooja extends Observable {
           progressDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
           progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
-          java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              progressDialog.setVisible(true);
-            }
-          });
+          java.awt.EventQueue.invokeLater(() -> progressDialog.setVisible(true));
 
           return progressDialog;
         }
@@ -3802,12 +3777,7 @@ public class Cooja extends Observable {
       }
 
       try {
-        java.awt.EventQueue.invokeAndWait(new Runnable() {
-          @Override
-          public void run() {
-            val = RunnableInEDT.this.work();
-          }
-        });
+        java.awt.EventQueue.invokeAndWait(() -> val = RunnableInEDT.this.work());
       } catch (InterruptedException | InvocationTargetException e) {
         e.printStackTrace();
       }
@@ -4262,12 +4232,7 @@ public class Cooja extends Observable {
       if (getSimulation() == null) {
         /* Reload last opened simulation */
         final File file = getLastOpenedFile();
-        new Thread(new Runnable() {
-          @Override
-          public void run() {
-            cooja.doLoadConfig(true, true, file, null);
-          }
-        }).start();
+        new Thread(() -> cooja.doLoadConfig(true, true, file, null)).start();
         return;
       }
       reloadCurrentSimulation();
