@@ -200,7 +200,7 @@ public class StringUtils {
         }
       }
       
-      if (sb != null && sb.length() > 0) {
+      if (sb.length() > 0) {
         return sb.toString();
       }
       return null;

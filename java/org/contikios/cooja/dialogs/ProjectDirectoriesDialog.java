@@ -260,7 +260,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 					String newDefaultProjectDirs = "";
 					for (COOJAProject p: currentProjects) {
-						if (newDefaultProjectDirs != "") {
+						if (!newDefaultProjectDirs.isEmpty()) {
 							newDefaultProjectDirs += ";";
 						}
 
@@ -778,7 +778,7 @@ class DirectoryTreePanel extends JPanel {
 		}
 		@Override
 		public String toString() {
-			if (dir.getName() == null || dir.getName().equals("")) {
+			if (dir.getName().isEmpty()) {
 				return dir.getAbsolutePath();
 			}
 			return dir.getName();

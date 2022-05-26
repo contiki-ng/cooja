@@ -233,7 +233,7 @@ public abstract class AbstractCompileDialog extends JDialog {
             }
 
             String filename = f.getName();
-            if (filename == null) {
+            if (filename.isEmpty()) {
               return false;
             }
 

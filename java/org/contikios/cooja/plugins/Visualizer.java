@@ -905,7 +905,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           Class<VisualizerSkin> skinClass
                   = (Class<VisualizerSkin>) menuItem.getClientProperty("skinclass");
           if (skinClass == null) {
-            logger.fatal("Unknown visualizer skin class: " + skinClass);
+            logger.fatal("Unknown visualizer skin class");
             return;
           }
 
