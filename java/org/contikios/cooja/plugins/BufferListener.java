@@ -386,11 +386,7 @@ public class BufferListener extends VisPlugin {
           char last = d.getID().charAt(d.getID().length()-1);
           if (last >= '0' && last <= '9') {
             bgColor = BG_COLORS[last - '0'];
-          } else {
-            bgColor = null;
           }
-        } else {
-          bgColor = null;
         }
         if (isSelected) {
           bgColor = table.getSelectionBackground();

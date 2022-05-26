@@ -209,9 +209,7 @@ public abstract class SerialUI extends Log implements SerialPort {
             historyPos = -1;
             commandField.setText("");
             commandField.getToolkit().beep();
-            break;
-          }
-          if (historyPos >= 0 && historyPos < history.size()) {
+          } else if (historyPos < history.size()) {
             commandField.setText(history.get(historyPos));
           } else {
             commandField.setText("");
