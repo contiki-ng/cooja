@@ -61,7 +61,7 @@ import org.contikios.cooja.SimEventCentral.MoteCountListener;
  * typically via printf()'s of the serial port.
  *
  * Syntax:
- * "<relation identifier #L> <destination mote ID> <add/remove>"
+ * "&lt;relation identifier #L&gt; &lt;destination mote ID&gt; &lt;add/remove&gt;"
  *
  * Example, add relation between this mote and mote with ID 1
  * "#L 1 1"
