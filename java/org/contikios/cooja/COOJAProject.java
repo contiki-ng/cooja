@@ -54,7 +54,7 @@ public class COOJAProject {
 			return null;
 		}
 		depth--;
-		ArrayList<File> dirs = new ArrayList<File>();
+		ArrayList<File> dirs = new ArrayList<>();
 		
 		if(!folder.isDirectory()){
 			logger.warn("Project directorys: " + folder.getPath() + "is not a Folder" );

@@ -452,7 +452,7 @@ public class AddMoteDialog extends JDialog {
 	  }
 
 	  // Create new motes
-          newMotes = new Vector<Mote>();
+          newMotes = new Vector<>();
           int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
           while (newMotes.size() < motesToAdd) {
             Mote newMote = moteType.generateMote(simulation);

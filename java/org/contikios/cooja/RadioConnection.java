@@ -62,12 +62,12 @@ public class RadioConnection {
 
   private final Radio source;
   
-  private final ArrayList<Radio> allDestinations = new ArrayList<Radio>();
-  private final ArrayList<Long> allDestinationDelays = new ArrayList<Long>();
+  private final ArrayList<Radio> allDestinations = new ArrayList<>();
+  private final ArrayList<Long> allDestinationDelays = new ArrayList<>();
 
-  private final ArrayList<Radio> allInterfered = new ArrayList<Radio>();
-  private final ArrayList<Radio> onlyInterfered = new ArrayList<Radio>();
-  private final ArrayList<Radio> destinationsNonInterfered = new ArrayList<Radio>();
+  private final ArrayList<Radio> allInterfered = new ArrayList<>();
+  private final ArrayList<Radio> onlyInterfered = new ArrayList<>();
+  private final ArrayList<Radio> destinationsNonInterfered = new ArrayList<>();
   
   private final long startTime;
 

@@ -77,9 +77,9 @@ import org.contikios.cooja.dialogs.MessageList;
 public abstract class CoreComm {
 
   // Static pointers to current libraries
-  private final static Vector<CoreComm> coreComms = new Vector<CoreComm>();
+  private final static Vector<CoreComm> coreComms = new Vector<>();
 
-  private final static Vector<File> coreCommFiles = new Vector<File>();
+  private final static Vector<File> coreCommFiles = new Vector<>();
 
   private static int fileCounter = 1;
 

@@ -60,7 +60,7 @@ public abstract class MoteID extends MoteInterface {
   
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element = new Element("id");
     element.setText(Integer.toString(getMoteID()));
     config.add(element);

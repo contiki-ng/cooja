@@ -296,7 +296,7 @@ public class SectionMoteMemory implements MemoryInterface {
     return clone;
   }
 
-  private final ArrayList<PolledMemorySegments> polledMemories = new ArrayList<PolledMemorySegments>();
+  private final ArrayList<PolledMemorySegments> polledMemories = new ArrayList<>();
   public void pollForMemoryChanges() {
     for (PolledMemorySegments mem: polledMemories.toArray(new PolledMemorySegments[0])) {
       mem.notifyIfChanged();

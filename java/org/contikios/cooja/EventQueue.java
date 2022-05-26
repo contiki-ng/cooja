@@ -81,7 +81,7 @@ public final class EventQueue {
     }
   }
 
-  private final PriorityQueue<Pair> queue = new PriorityQueue<Pair>();
+  private final PriorityQueue<Pair> queue = new PriorityQueue<>();
 
   /**
    * Should only be called from simulation thread!

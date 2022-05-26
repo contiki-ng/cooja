@@ -66,11 +66,11 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
   private Simulation simulation;
   private Random random;
 
-  private final ArrayList<Edge> edges = new ArrayList<Edge>();
+  private final ArrayList<Edge> edges = new ArrayList<>();
   private boolean edgesDirty = true;
 
   /* Used for optimizing lookup time */
-  private Hashtable<Radio,DGRMDestinationRadio[]> edgesTable = new Hashtable<Radio,DGRMDestinationRadio[]>();
+  private Hashtable<Radio,DGRMDestinationRadio[]> edgesTable = new Hashtable<>();
 
   public DirectedGraphMedium() {
     /* Do not initialize radio medium: use only for hash table */
@@ -199,13 +199,13 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
    */
   protected void analyzeEdges() {
     Hashtable<Radio,ArrayList<DGRMDestinationRadio>> listTable =
-      new Hashtable<Radio,ArrayList<DGRMDestinationRadio>>();
+            new Hashtable<>();
 
     /* Fill edge hash table with all edges */
     for (Edge edge: getEdges()) {
       ArrayList<DGRMDestinationRadio> destRadios;
       if (!listTable.containsKey(edge.source)) {
-        destRadios = new ArrayList<DGRMDestinationRadio>();
+        destRadios = new ArrayList<>();
       } else {
         destRadios = listTable.get(edge.source);
       }
@@ -215,7 +215,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     }
 
     /* Convert to arrays */
-    Hashtable<Radio,DGRMDestinationRadio[]> arrTable =  new Hashtable<Radio,DGRMDestinationRadio[]>();
+    Hashtable<Radio,DGRMDestinationRadio[]> arrTable = new Hashtable<>();
     Enumeration<Radio> sources = listTable.keys();
     while (sources.hasMoreElements()) {
       Radio source = sources.nextElement();
@@ -456,7 +456,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     }
 
     private Collection<Element> getConfigXML() {
-      ArrayList<Element> config = new ArrayList<Element>();
+      ArrayList<Element> config = new ArrayList<>();
       Element element;
 
       element = new Element("source");

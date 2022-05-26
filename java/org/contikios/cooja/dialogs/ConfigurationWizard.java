@@ -741,7 +741,7 @@ public class ConfigurationWizard extends JDialog {
     }
 
     testOutput.addMessage("### Parsing map file data for addresses");
-    addresses = new HashMap<String, Symbol>();
+    addresses = new HashMap<>();
 //    boolean parseOK = ContikiMoteType.parseMapFileData(mapData, addresses);
 //    if (!parseOK) {
 //      testOutput.addMessage("### Error: Failed parsing map file data", MessageList.ERROR);
@@ -831,7 +831,7 @@ public class ConfigurationWizard extends JDialog {
     }
 
     testOutput.addMessage("### Parsing command output for addresses");
-    addresses = new HashMap<String, Symbol>();
+    addresses = new HashMap<>();
 //    boolean parseOK = ContikiMoteType.parseCommandData(commandData, addresses);
 //    if (!parseOK) {
 //      testOutput.addMessage("### Error: Failed parsing command output", MessageList.ERROR);

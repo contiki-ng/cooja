@@ -59,14 +59,14 @@ public class SimEventCentral {
     logOutputBufferSize = Integer.parseInt(Cooja.getExternalToolsSetting("BUFFERSIZE_LOGOUTPUT", "" + 40000));
 
     
-    moteObservations = new ArrayList<MoteObservation>();
+    moteObservations = new ArrayList<>();
 
     /* Mote count: notifications */
     moteCountListeners = new MoteCountListener[0];
 
     /* Log output: notifications and history */
     logOutputListeners = new LogOutputListener[0];
-    logOutputEvents = new ArrayDeque<LogOutputEvent>();
+    logOutputEvents = new ArrayDeque<>();
   }
   
 
@@ -344,7 +344,7 @@ public class SimEventCentral {
   
 
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     /* Log output buffer size */

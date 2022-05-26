@@ -104,7 +104,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 	private final JTextArea projectInfo = new JTextArea("Extension information:");
 	private DirectoryTreePanel treePanel = null;
 
-	private final ArrayList<COOJAProject> currentProjects = new ArrayList<COOJAProject>();
+	private final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
 	private COOJAProject[] returnedProjects = null;
 
 	/**

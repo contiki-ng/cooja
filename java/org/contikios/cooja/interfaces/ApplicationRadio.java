@@ -440,7 +440,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
 
   /* Noise source radio support (app mote API) */
   private int noiseSignal = Integer.MIN_VALUE;
-  private final ArrayList<NoiseLevelListener> noiseListeners = new ArrayList<NoiseLevelListener>();
+  private final ArrayList<NoiseLevelListener> noiseListeners = new ArrayList<>();
   public void setNoiseLevel(int signal) {
     this.noiseSignal = signal;
     for (NoiseLevelListener l: noiseListeners) {

@@ -1251,7 +1251,7 @@ public class ContikiMoteType implements MoteType {
     File oldVersionSource = null;
     String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
 
-    moteInterfacesClasses = new ArrayList<Class<? extends MoteInterface>>();
+    moteInterfacesClasses = new ArrayList<>();
 
     for (Element element : configXML) {
       String name = element.getName();

@@ -484,7 +484,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     }
 
     /* Handle multiple compilation commands one by one */
-    final ArrayList<String> commands = new ArrayList<String>();
+    final ArrayList<String> commands = new ArrayList<>();
     String[] arr = getCompileCommands().split("\n");
     for (String cmd: arr) {
       if (cmd.trim().isEmpty()) {
@@ -760,7 +760,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @return Currently selected mote interface classes
    */
   public Class<? extends MoteInterface>[] getSelectedMoteInterfaceClasses() {
-    ArrayList<Class<? extends MoteInterface>> selected = new ArrayList<Class<? extends MoteInterface>>();
+    ArrayList<Class<? extends MoteInterface>> selected = new ArrayList<>();
 
     for (Component c : moteIntfBox.getComponents()) {
       if (!(c instanceof JCheckBox)) {

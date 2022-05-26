@@ -311,29 +311,29 @@ public class Cooja extends Observable {
   private JMenu menuOpenSimulation;
   private boolean hasFileHistoryChanged;
 
-  private final Vector<Class<? extends Plugin>> menuMotePluginClasses = new Vector<Class<? extends Plugin>>();
+  private final Vector<Class<? extends Plugin>> menuMotePluginClasses = new Vector<>();
 
   private final JDesktopPane myDesktopPane;
 
-  private final Vector<Plugin> startedPlugins = new Vector<Plugin>();
+  private final Vector<Plugin> startedPlugins = new Vector<>();
 
-  private final ArrayList<GUIAction> guiActions = new ArrayList<GUIAction>();
+  private final ArrayList<GUIAction> guiActions = new ArrayList<>();
 
   // Platform configuration variables
   // Maintained via method reparseProjectConfig()
   private ProjectConfig projectConfig;
 
-  private final ArrayList<COOJAProject> currentProjects = new ArrayList<COOJAProject>();
+  private final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
 
   public ClassLoader projectDirClassLoader;
 
-  private final Vector<Class<? extends MoteType>> moteTypeClasses = new Vector<Class<? extends MoteType>>();
+  private final Vector<Class<? extends MoteType>> moteTypeClasses = new Vector<>();
 
-  private final Vector<Class<? extends Plugin>> pluginClasses = new Vector<Class<? extends Plugin>>();
+  private final Vector<Class<? extends Plugin>> pluginClasses = new Vector<>();
 
-  private final Vector<Class<? extends RadioMedium>> radioMediumClasses = new Vector<Class<? extends RadioMedium>>();
+  private final Vector<Class<? extends RadioMedium>> radioMediumClasses = new Vector<>();
 
-  private final Vector<Class<? extends Positioner>> positionerClasses = new Vector<Class<? extends Positioner>>();
+  private final Vector<Class<? extends Positioner>> positionerClasses = new Vector<>();
 
 
   private final ScnObservable moteHighlightObservable = new ScnObservable();
@@ -357,7 +357,7 @@ public class Cooja extends Observable {
       this.color = color;
     }
   }
-  private final ArrayList<MoteRelation> moteRelations = new ArrayList<MoteRelation>();
+  private final ArrayList<MoteRelation> moteRelations = new ArrayList<>();
 
   /**
    * Creates a new COOJA Simulator GUI.
@@ -2924,7 +2924,7 @@ public class Cooja extends Observable {
     }
 
     /* Create class loader from JARs */
-    ArrayList<URL> urls = new ArrayList<URL>();
+    ArrayList<URL> urls = new ArrayList<>();
     for (COOJAProject project: projects) {
     	File projectDir = project.dir;
       try {
@@ -3167,7 +3167,7 @@ public class Cooja extends Observable {
         if (mySimulation != null) {
           existingMoteTypes = mySimulation.getMoteTypes();
         }
-        ArrayList<Object> reserved = new ArrayList<Object>();
+        ArrayList<Object> reserved = new ArrayList<>();
         reserved.addAll(moteTypeIDMappings.keySet());
         reserved.addAll(moteTypeIDMappings.values());
         String newID = ContikiMoteType.generateUniqueMoteTypeID(existingMoteTypes, reserved);
@@ -3293,7 +3293,7 @@ public class Cooja extends Observable {
    * @return Config or null
    */
   public Collection<Element> getPluginsConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element pluginElement, pluginSubElement;
 
     /* Loop over all plugins */
@@ -4120,7 +4120,7 @@ public class Cooja extends Observable {
   }
 
   private static JProgressBar PROGRESS_BAR = null;
-  private static final ArrayList<String> PROGRESS_WARNINGS = new ArrayList<String>();
+  private static final ArrayList<String> PROGRESS_WARNINGS = new ArrayList<>();
   public static void setProgressMessage(String msg) {
     setProgressMessage(msg, MessageListUI.NORMAL);
   }

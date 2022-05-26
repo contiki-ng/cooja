@@ -79,7 +79,7 @@ public class Mote2MoteRelations extends MoteInterface {
   private static final Logger logger = LogManager.getLogger(Mote2MoteRelations.class);
   private Mote mote = null;
 
-  private final ArrayList<Mote> relations = new ArrayList<Mote>();
+  private final ArrayList<Mote> relations = new ArrayList<>();
   private final Cooja gui;
 
   private Observer logObserver = new Observer() {

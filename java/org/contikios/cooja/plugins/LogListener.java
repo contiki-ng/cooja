@@ -143,7 +143,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
   private final JTable logTable;
   private final TableRowSorter<TableModel> logFilter;
-  private final ArrayQueue<LogData> logs = new ArrayQueue<LogData>();
+  private final ArrayQueue<LogData> logs = new ArrayQueue<>();
 
   private final Simulation simulation;
 
@@ -167,7 +167,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   private final JCheckBoxMenuItem appendCheckBox;
 
   private static final int UPDATE_INTERVAL = 250;
-  private final UpdateAggregator<LogData> logUpdateAggregator = new UpdateAggregator<LogData>(UPDATE_INTERVAL) {
+  private final UpdateAggregator<LogData> logUpdateAggregator = new UpdateAggregator<>(UPDATE_INTERVAL) {
     private final Runnable scroll = new Runnable() {
       @Override
       public void run() {
@@ -370,7 +370,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         }
       }
     });
-    logFilter = new TableRowSorter<TableModel>(model);
+    logFilter = new TableRowSorter<>(model);
     for (int i = 0, n = model.getColumnCount(); i < n; i++) {
       logFilter.setSortable(i, false);
     }
@@ -612,7 +612,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     element = new Element("filter");
@@ -692,7 +692,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       } else {
       	regexp = null;
       }
-    	RowFilter<Object, Object> wrapped = new RowFilter<Object, Object>() {
+    	RowFilter<Object, Object> wrapped = new RowFilter<>() {
         @Override
         public boolean include(RowFilter.Entry<? extends Object, ? extends Object> entry) {
     		  if (regexp != null) {
@@ -1061,7 +1061,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
 
     final LogData ld = new LogData(ev);
-    RowFilter.Entry<? extends TableModel, ? extends Integer> entry = new RowFilter.Entry<TableModel, Integer>() {
+    RowFilter.Entry<? extends TableModel, ? extends Integer> entry = new RowFilter.Entry<>() {
       @Override
       public TableModel getModel() {
         return model;

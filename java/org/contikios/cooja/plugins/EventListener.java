@@ -82,7 +82,7 @@ public class EventListener extends VisPlugin {
 
   private final Simulation mySimulation;
 
-  private final Vector<EventObserver> allObservers = new Vector<EventObserver>();
+  private final Vector<EventObserver> allObservers = new Vector<>();
 
   private final EventListener myPlugin;
 
@@ -174,8 +174,8 @@ public class EventListener extends VisPlugin {
     myPlugin = this;
 
     /* Create selectable interfaces list (only supports Contiki mote types) */
-    Vector<Class<? extends MoteInterface>> allInterfaces = new Vector<Class<? extends MoteInterface>>();
-    Vector<Class<? extends MoteInterface>> allInterfacesDups = new Vector<Class<? extends MoteInterface>>();
+    Vector<Class<? extends MoteInterface>> allInterfaces = new Vector<>();
+    Vector<Class<? extends MoteInterface>> allInterfacesDups = new Vector<>();
 
     // Add standard interfaces
     allInterfacesDups.add(Button.class);
@@ -339,7 +339,7 @@ public class EventListener extends VisPlugin {
 
   @Override
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<Element>();
+    Vector<Element> config = new Vector<>();
 
     Element element;
 

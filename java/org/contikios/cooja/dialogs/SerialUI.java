@@ -69,7 +69,7 @@ public abstract class SerialUI extends Log implements SerialPort {
 
   /* Command history */
   private final static int HISTORY_SIZE = 15;
-  private final ArrayList<String> history = new ArrayList<String>();
+  private final ArrayList<String> history = new ArrayList<>();
   private int historyPos = -1;
 
   /* Log */
@@ -273,7 +273,7 @@ public abstract class SerialUI extends Log implements SerialPort {
       return null;
     }
 
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element = new Element("history");
     element.setText(sb.toString());
     config.add(element);

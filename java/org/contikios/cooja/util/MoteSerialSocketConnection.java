@@ -179,7 +179,7 @@ public class MoteSerialSocketConnection {
 
   public void addListener(MoteSerialSocketConnectionListener l) {
     if (listeners == null) {
-      listeners = new ArrayList<MoteSerialSocketConnectionListener>();
+      listeners = new ArrayList<>();
     }
 
     listeners.add(l);

@@ -188,7 +188,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
 
   @Override
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<Element>();
+    Vector<Element> config = new Vector<>();
 
     Element element;
 

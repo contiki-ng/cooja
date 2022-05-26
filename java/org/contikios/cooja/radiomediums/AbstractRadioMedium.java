@@ -76,12 +76,12 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	public static final double SS_NOTHING = -100;
 	public static final double SS_STRONG = -10;
 	public static final double SS_WEAK = -95;
-	protected Map<Radio, Double> baseRssi = java.util.Collections.synchronizedMap(new HashMap<Radio, Double>());
-	protected Map<Radio, Double> sendRssi = java.util.Collections.synchronizedMap(new HashMap<Radio, Double>());
+	protected Map<Radio, Double> baseRssi = java.util.Collections.synchronizedMap(new HashMap<>());
+	protected Map<Radio, Double> sendRssi = java.util.Collections.synchronizedMap(new HashMap<>());
 	
-	private final ArrayList<Radio> registeredRadios = new ArrayList<Radio>();
+	private final ArrayList<Radio> registeredRadios = new ArrayList<>();
 	
-	private final ArrayList<RadioConnection> activeConnections = new ArrayList<RadioConnection>();
+	private final ArrayList<RadioConnection> activeConnections = new ArrayList<>();
 	
 	private RadioConnection lastConnection = null;
 	
@@ -584,7 +584,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	}
 	@Override
 	public Collection<Element> getConfigXML() {
-		Collection<Element> config = new ArrayList<Element>();
+		Collection<Element> config = new ArrayList<>();
 		for(Entry<Radio, Double> ent: baseRssi.entrySet()){
 			Element element = new Element("BaseRSSIConfig");
 			element.setAttribute("Mote", "" + ent.getKey().getMote().getID());

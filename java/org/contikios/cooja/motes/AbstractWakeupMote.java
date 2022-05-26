@@ -141,7 +141,7 @@ public abstract class AbstractWakeupMote implements Mote {
   @Override
   public void setProperty(String key, Object obj) {
     if (properties == null) {
-      properties = new HashMap<String, Object>();
+      properties = new HashMap<>();
     }
     properties.put(key, obj);
   }
