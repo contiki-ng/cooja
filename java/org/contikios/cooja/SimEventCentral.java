@@ -194,7 +194,7 @@ public class SimEventCentral {
     }
   }
   private int logOutputBufferSize;
-  private ArrayDeque<LogOutputEvent> logOutputEvents;
+  private final ArrayDeque<LogOutputEvent> logOutputEvents;
   public interface LogOutputListener extends MoteCountListener {
     public void removedLogOutput(LogOutputEvent ev);
     public void newLogOutput(LogOutputEvent ev);
