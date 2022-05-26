@@ -104,13 +104,13 @@ public class CompileContiki {
   /**
    * Perform variable expansion and execute a Contiki compilation command.
    *
-   * @param command Command
+   * @param commandIn Command
    * @param env (Optional) Environment. May be null.
    * @param outputFile Expected output. May be null.
    * @param directory Directory in which to execute command
    * @param onSuccess Action called if compilation succeeds
    * @param onFailure Action called if compilation fails
-   * @param messageDialog Is written both std and err process output
+   * @param compilationOutput Is written both std and err process output
    * @param synchronous If true, method blocks until process completes
    * @return Sub-process if called asynchronously
    * @throws Exception If process returns error, or outputFile does not exist
