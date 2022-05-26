@@ -15,6 +15,7 @@
     </condition>
   </fail>
 
+  <property name="languageversion" value="11" />
   <property name="java" location="java"/>
   <property name="build" location="build"/>
   <property name="javadoc" location="javadoc"/>
@@ -84,7 +85,7 @@ The COOJA Simulator
   <target name="javadoc" depends="init">
     <delete dir="${javadoc}" quiet="true"/>
     <mkdir dir="${javadoc}/"/>
-    <javadoc destdir="${javadoc}">
+    <javadoc destdir="${javadoc}" source="${languageversion}">
       <fileset dir="${java}/" includes="**/*.java"/>
       <classpath refid="cooja.classpath"/>
     </javadoc>
@@ -92,7 +93,7 @@ The COOJA Simulator
 
   <target name="compile" depends="init">
     <mkdir dir="${build}"/>
-    <javac srcdir="${java}" destdir="${build}" debug="on" release="11"
+    <javac srcdir="${java}" destdir="${build}" debug="on" release="${languageversion}"
            includeantruntime="false"
            encoding="utf-8">
       <classpath refid="cooja.classpath"/>
