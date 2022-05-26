@@ -121,7 +121,7 @@ public class RadioLogger extends VisPlugin {
   private final static int COLUMN_TO = 3;
   private final static int COLUMN_DATA = 4;
 
-  private JSplitPane splitPane;
+  private final JSplitPane splitPane;
   private JTextPane verboseBox = null;
 
   private boolean formatTimeString = true;
@@ -136,19 +136,19 @@ public class RadioLogger extends VisPlugin {
 
   private final Simulation simulation;
   private final JTable dataTable;
-  private TableRowSorter<TableModel> logFilter;
-  private ArrayList<RadioConnectionLog> connections = new ArrayList<RadioConnectionLog>();
-  private RadioMedium radioMedium;
-  private Observer radioMediumObserver;
-  private AbstractTableModel model;
+  private final TableRowSorter<TableModel> logFilter;
+  private final ArrayList<RadioConnectionLog> connections = new ArrayList<RadioConnectionLog>();
+  private final RadioMedium radioMedium;
+  private final Observer radioMediumObserver;
+  private final AbstractTableModel model;
 
-  private HashMap<String, Action> analyzerMap = new HashMap<String, Action>();
+  private final HashMap<String, Action> analyzerMap = new HashMap<String, Action>();
   private String analyzerName = null;
   private ArrayList<PacketAnalyzer> analyzers = null;
-  private IEEE802154Analyzer analyzerWithPcap;
+  private final IEEE802154Analyzer analyzerWithPcap;
   private File pcapFile;
 
-  private JTextField searchField = new JTextField(30);
+  private final JTextField searchField = new JTextField(30);
 
   public RadioLogger(final Simulation simulationToControl, final Cooja gui) {
     super("Radio messages", gui);
@@ -948,7 +948,7 @@ public class RadioLogger extends VisPlugin {
     return action;
   }
 
-  private Action clearAction = new AbstractAction("Clear") {
+  private final Action clearAction = new AbstractAction("Clear") {
     private static final long serialVersionUID = -6135583266684643117L;
 
     @Override
@@ -962,7 +962,7 @@ public class RadioLogger extends VisPlugin {
     }
   };
 
-  private Action copyAction = new AbstractAction("Copy selected") {
+  private final Action copyAction = new AbstractAction("Copy selected") {
     private static final long serialVersionUID = 8412062977916108054L;
 
     @Override
@@ -982,7 +982,7 @@ public class RadioLogger extends VisPlugin {
     }
   };
 
-  private Action copyAllAction = new AbstractAction("Copy all") {
+  private final Action copyAllAction = new AbstractAction("Copy all") {
     private static final long serialVersionUID = 1905586689441157304L;
 
     @Override
@@ -999,7 +999,7 @@ public class RadioLogger extends VisPlugin {
     }
   };
 
-  private Action saveAction = new AbstractAction("Save to file...") {
+  private final Action saveAction = new AbstractAction("Save to file...") {
     private static final long serialVersionUID = -3942984643211482179L;
 
     @Override
@@ -1044,7 +1044,7 @@ public class RadioLogger extends VisPlugin {
     }
   };
 
-  private Action timeLineAction = new AbstractAction("Timeline") {
+  private final Action timeLineAction = new AbstractAction("Timeline") {
     private static final long serialVersionUID = -4035633464748224192L;
 
     @Override
@@ -1069,7 +1069,7 @@ public class RadioLogger extends VisPlugin {
     }
   };
 
-  private Action logListenerAction = new AbstractAction("Mote output") {
+  private final Action logListenerAction = new AbstractAction("Mote output") {
     private static final long serialVersionUID = 1985006491187878651L;
 
     @Override
@@ -1094,7 +1094,7 @@ public class RadioLogger extends VisPlugin {
     }
   };
 
-  private Action showInAllAction = new AbstractAction("Timeline and mote output") {
+  private final Action showInAllAction = new AbstractAction("Timeline and mote output") {
     private static final long serialVersionUID = -3888292108886138128L;
 
     {
@@ -1109,7 +1109,7 @@ public class RadioLogger extends VisPlugin {
   };
 
   private Properties aliases = null;
-  private Action aliasAction = new AbstractAction("Payload alias...") {
+  private final Action aliasAction = new AbstractAction("Payload alias...") {
     private static final long serialVersionUID = -1678771087456128721L;
 
     @Override
@@ -1163,7 +1163,7 @@ public class RadioLogger extends VisPlugin {
   };
 
   private boolean showDuplicates = false;
-  private AbstractAction showDuplicatesAction = new AbstractAction("Show duplicates") {
+  private final AbstractAction showDuplicatesAction = new AbstractAction("Show duplicates") {
     @Override
     public void actionPerformed(ActionEvent e) {
       showDuplicates = !showDuplicates;
@@ -1172,7 +1172,7 @@ public class RadioLogger extends VisPlugin {
   };
 
   private boolean hideNoDestinationPackets = false;
-  private AbstractAction hideNoDestinationAction = new AbstractAction("Hide airshots") {
+  private final AbstractAction hideNoDestinationAction = new AbstractAction("Hide airshots") {
     @Override
     public void actionPerformed(ActionEvent e) {
       hideNoDestinationPackets = !hideNoDestinationPackets;

@@ -59,8 +59,8 @@ import org.contikios.cooja.VisPlugin;
 public class MoteTypeInformation extends VisPlugin {
   private static final Logger logger = LogManager.getLogger(MoteTypeInformation.class);
 
-  private Simulation simulation;
-  private Observer simObserver;
+  private final Simulation simulation;
+  private final Observer simObserver;
   private int nrMotesTypes = -1;
 
   /**

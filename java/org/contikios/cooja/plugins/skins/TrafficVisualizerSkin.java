@@ -74,7 +74,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
 
   private final List<RadioConnectionArrow> historyList = new ArrayList<>();
 
-  private Observer radioMediumObserver = new Observer() {
+  private final Observer radioMediumObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
       RadioConnection last = radioMedium.getLastConnection();

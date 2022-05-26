@@ -74,7 +74,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   private static final long serialVersionUID = -2596048833554777606L;
   private static final Logger logger = LogManager.getLogger(ContikiMoteCompileDialog.class);
 
-  private JComboBox netStackComboBox = new JComboBox(NetworkStack.values());
+  private final JComboBox netStackComboBox = new JComboBox(NetworkStack.values());
 
   public static boolean showDialog(
       Container parent,

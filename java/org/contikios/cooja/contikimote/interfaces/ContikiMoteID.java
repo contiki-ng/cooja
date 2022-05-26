@@ -67,7 +67,7 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
 
   private int moteID = 0;
 
-  private Mote mote;
+  private final Mote mote;
   
   /**
    * Creates an interface to the mote ID at mote.

@@ -101,10 +101,10 @@ public class ProjectDirectoriesDialog extends JDialog {
 	private Cooja gui;
 
 	private JTable table = null;
-	private JTextArea projectInfo = new JTextArea("Extension information:");
+	private final JTextArea projectInfo = new JTextArea("Extension information:");
 	private DirectoryTreePanel treePanel = null;
 
-	private ArrayList<COOJAProject> currentProjects = new ArrayList<COOJAProject>();
+	private final ArrayList<COOJAProject> currentProjects = new ArrayList<COOJAProject>();
 	private COOJAProject[] returnedProjects = null;
 
 	/**
@@ -511,9 +511,9 @@ class DirectoryTreePanel extends JPanel {
 	private static final long serialVersionUID = -6852893350326771136L;
 	private static final Logger logger = LogManager.getLogger(DirectoryTreePanel.class);
 
-	private ProjectDirectoriesDialog parent;
-	private JTree tree;
-	private DefaultMutableTreeNode treeRoot;
+	private final ProjectDirectoriesDialog parent;
+	private final JTree tree;
+	private final DefaultMutableTreeNode treeRoot;
 	public DirectoryTreePanel(ProjectDirectoriesDialog parent) {
 		super(new BorderLayout());
 		this.parent = parent;
@@ -526,9 +526,9 @@ class DirectoryTreePanel extends JPanel {
 		tree.expandRow(0);
 		tree.setCellRenderer(new DefaultTreeCellRenderer() {
 			private static final long serialVersionUID = 280434957859560569L;
-			private Icon unselectedIcon = new CheckboxIcon(null);
-			private Icon selectedIcon = new CheckboxIcon(new Color(0, 255, 0, 128));
-			private Icon errorIcon = new CheckboxIcon(new Color(255, 0, 0, 128));
+			private final Icon unselectedIcon = new CheckboxIcon(null);
+			private final Icon selectedIcon = new CheckboxIcon(new Color(0, 255, 0, 128));
+			private final Icon errorIcon = new CheckboxIcon(new Color(255, 0, 0, 128));
 			private Font boldFont = null;
 			private Font normalFont = null;
 			@Override
@@ -570,7 +570,7 @@ class DirectoryTreePanel extends JPanel {
 			}
 			class CheckboxIcon implements Icon {
 				Icon icon;
-				Color color;
+				final Color color;
 				public CheckboxIcon(Color color) {
 					this.icon = (Icon) UIManager.get("CheckBox.icon");
 					this.color = color;
@@ -787,7 +787,7 @@ class DirectoryTreePanel extends JPanel {
 	private class COOJAProjectTreeModel extends DefaultTreeModel {
 		private static final long serialVersionUID = -4673855124090194313L;
 
-		private DefaultMutableTreeNode computerNode;
+		private final DefaultMutableTreeNode computerNode;
 
 		public COOJAProjectTreeModel(DefaultMutableTreeNode computerNode) {
 			super(computerNode);

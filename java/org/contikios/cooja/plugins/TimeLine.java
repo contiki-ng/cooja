@@ -129,21 +129,21 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   private int paintedMoteHeight = EVENT_PIXEL_HEIGHT;
 
-  private Simulation simulation;
-  private LogOutputListener newMotesListener;
+  private final Simulation simulation;
+  private final LogOutputListener newMotesListener;
   
   /* Expermental features: Use currently active plugin to filter Timeline Log outputs */
   private LogListener logEventFilterPlugin = null;
 
-  private JScrollPane timelineScrollPane;
-  private MoteRuler timelineMoteRuler;
-  private JComponent timeline;
+  private final JScrollPane timelineScrollPane;
+  private final MoteRuler timelineMoteRuler;
+  private final JComponent timeline;
 
   private Observer moteHighlightObserver = null;
-  private ArrayList<Mote> highlightedMotes = new ArrayList<Mote>();
+  private final ArrayList<Mote> highlightedMotes = new ArrayList<Mote>();
   private final static Color HIGHLIGHT_COLOR = Color.CYAN;
 
-  private ArrayList<MoteObservation> activeMoteObservers = new ArrayList<MoteObservation>();
+  private final ArrayList<MoteObservation> activeMoteObservers = new ArrayList<MoteObservation>();
 
   private ArrayList<MoteEvents> allMoteEvents = new ArrayList<MoteEvents>();
 
@@ -156,12 +156,12 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   private Point popupLocation = null;
 
-  private JCheckBox showWatchpointsCheckBox;
-  private JCheckBox showLogsCheckBox;
-  private JCheckBox showLedsCheckBox;
-  private JCheckBox showRadioOnoffCheckbox;
-  private JCheckBox showRadioChannelsCheckbox;
-  private JCheckBox showRadioTXRXCheckbox;
+  private final JCheckBox showWatchpointsCheckBox;
+  private final JCheckBox showLogsCheckBox;
+  private final JCheckBox showLedsCheckBox;
+  private final JCheckBox showRadioOnoffCheckbox;
+  private final JCheckBox showRadioChannelsCheckbox;
+  private final JCheckBox showRadioTXRXCheckbox;
 
   /**
    * @param simulation Simulation
@@ -409,7 +409,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     return checkBox;
   }
 
-  private Action removeMoteAction = new AbstractAction() {
+  private final Action removeMoteAction = new AbstractAction() {
     private static final long serialVersionUID = 2924285037480429045L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -418,7 +418,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       removeMote(m);
     }
   };
-  private Action removeAllOtherMotesAction = new AbstractAction() {
+  private final Action removeAllOtherMotesAction = new AbstractAction() {
   	private static final long serialVersionUID = 2924285037480429045L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -433,7 +433,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   		}
   	}
   };
-  private Action sortMoteAction = new AbstractAction() {
+  private final Action sortMoteAction = new AbstractAction() {
     private static final long serialVersionUID = 621116674700872058L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -459,7 +459,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       numberMotesWasUpdated();
     }
   };
-  private Action topMoteAction = new AbstractAction() {
+  private final Action topMoteAction = new AbstractAction() {
 		private static final long serialVersionUID = 4683178751482241843L;
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -479,7 +479,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   		numberMotesWasUpdated();
   	}
   };
-  private Action addMoteAction = new AbstractAction("Show motes...") {
+  private final Action addMoteAction = new AbstractAction("Show motes...") {
     private static final long serialVersionUID = 7546685285707302865L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -606,7 +606,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     zoomFinishLevel(zoomGetLevel()+1, focusTime, focusCenter);
   }
 
-  private Action zoomInAction = new AbstractAction("Zoom in (Ctrl+)") {
+  private final Action zoomInAction = new AbstractAction("Zoom in (Ctrl+)") {
     private static final long serialVersionUID = -2592452356547803615L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -624,7 +624,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action zoomOutAction = new AbstractAction("Zoom out (Ctrl-)") {
+  private final Action zoomOutAction = new AbstractAction("Zoom out (Ctrl-)") {
     private static final long serialVersionUID = 6837091379835151725L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -642,7 +642,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action zoomSliderAction = new AbstractAction("Zoom slider (Ctrl+Mouse)") {
+  private final Action zoomSliderAction = new AbstractAction("Zoom slider (Ctrl+Mouse)") {
     private static final long serialVersionUID = -4288046377707363837L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -672,7 +672,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   /**
    * Save logged raw data to file for post-processing.
    */
-  private Action saveDataAction = new AbstractAction("Save to file...") {
+  private final Action saveDataAction = new AbstractAction("Save to file...") {
     private static final long serialVersionUID = 975176793514425718L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -739,7 +739,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action clearAction = new AbstractAction("Clear all timeline data") {
+  private final Action clearAction = new AbstractAction("Clear all timeline data") {
     private static final long serialVersionUID = -4592530582786872403L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -798,7 +798,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       return sb.toString();
     }
   }
-  private Action statisticsAction = new AbstractAction("Print statistics to console") {
+  private final Action statisticsAction = new AbstractAction("Print statistics to console") {
     private static final long serialVersionUID = 8671605486913497397L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -964,7 +964,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     });
   }
 
-  private Action radioLoggerAction = new AbstractAction("Show in " + Cooja.getDescriptionOf(RadioLogger.class)) {
+  private final Action radioLoggerAction = new AbstractAction("Show in " + Cooja.getDescriptionOf(RadioLogger.class)) {
     private static final long serialVersionUID = 7690116136861949864L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -985,7 +985,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
     }
   };
-  private Action logListenerAction = new AbstractAction("Show in " + Cooja.getDescriptionOf(LogListener.class)) {
+  private final Action logListenerAction = new AbstractAction("Show in " + Cooja.getDescriptionOf(LogListener.class)) {
     private static final long serialVersionUID = -8626118368774023257L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1007,7 +1007,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action showInAllAction = new AbstractAction("Show in " + Cooja.getDescriptionOf(LogListener.class) + " and " + Cooja.getDescriptionOf(RadioLogger.class)) {
+  private final Action showInAllAction = new AbstractAction("Show in " + Cooja.getDescriptionOf(LogListener.class) + " and " + Cooja.getDescriptionOf(RadioLogger.class)) {
     private static final long serialVersionUID = -2458733078524773995L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1017,7 +1017,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   };
 
   private boolean executionDetails = false;
-  private Action executionDetailsAction = new AbstractAction("Show execution details in tooltips") {
+  private final Action executionDetailsAction = new AbstractAction("Show execution details in tooltips") {
     private static final long serialVersionUID = -8626118368774023257L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1508,7 +1508,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       });
     }
 
-    private MouseAdapter mouseAdapter = new MouseAdapter() {
+    private final MouseAdapter mouseAdapter = new MouseAdapter() {
       private Popup popUpToolTip = null;
       private double zoomInitialPixelDivisor;
       private int zoomInitialMouseY;
@@ -2479,7 +2479,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
 
   private long lastRepaintSimulationTime = -1;
-  private Timer repaintTimelineTimer = new Timer(TIMELINE_UPDATE_INTERVAL, new ActionListener() {
+  private final Timer repaintTimelineTimer = new Timer(TIMELINE_UPDATE_INTERVAL, new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
       /* Only set new size if simulation time has changed */

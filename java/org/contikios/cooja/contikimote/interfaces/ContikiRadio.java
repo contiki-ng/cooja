@@ -89,9 +89,9 @@ import org.contikios.cooja.util.CCITT_CRC;
  * @author Fredrik Osterlind
  */
 public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledAfterActiveTicks {
-  private ContikiMote mote;
+  private final ContikiMote mote;
 
-  private VarMemory myMoteMemory;
+  private final VarMemory myMoteMemory;
 
   private static final Logger logger = LogManager.getLogger(ContikiRadio.class);
 

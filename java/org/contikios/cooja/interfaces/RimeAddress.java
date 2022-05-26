@@ -58,7 +58,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 @ClassDescription("Rime address")
 public class RimeAddress extends MoteInterface {
   private static final Logger logger = LogManager.getLogger(RimeAddress.class);
-  private VarMemory moteMem;
+  private final VarMemory moteMem;
 
   public static final int RIME_ADDR_LENGTH = 2;
 

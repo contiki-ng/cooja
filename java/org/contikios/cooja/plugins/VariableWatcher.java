@@ -101,29 +101,29 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;
 
-  private JComboBox varNameCombo;
-  private JComboBox varTypeCombo;
-  private JComboBox varFormatCombo;
-  private JPanel infoPane;
-  private JFormattedTextField varAddressField;
-  private JTextField varSizeField;
-  private JPanel valuePane;
+  private final JComboBox varNameCombo;
+  private final JComboBox varTypeCombo;
+  private final JComboBox varFormatCombo;
+  private final JPanel infoPane;
+  private final JFormattedTextField varAddressField;
+  private final JTextField varSizeField;
+  private final JPanel valuePane;
   private JFormattedTextField[] varValues;
   private byte[] bufferedBytes;
-  private JButton readButton;
-  private AbstractButton monitorButton;
-  private JButton writeButton;
-  private JLabel debuglbl;
-  private VarMemory moteMemory;
+  private final JButton readButton;
+  private final AbstractButton monitorButton;
+  private final JButton writeButton;
+  private final JLabel debuglbl;
+  private final VarMemory moteMemory;
 
   MemoryInterface.SegmentMonitor memMonitor;
   long monitorAddr;
   int monitorSize;
 
-  private NumberFormat integerFormat;
-  private ValueFormatter hf;
+  private final NumberFormat integerFormat;
+  private final ValueFormatter hf;
 
-  private Mote mote;
+  private final Mote mote;
 
   @Override
   public String getQuickHelp() {
@@ -875,7 +875,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
 class JTextFieldLimit extends PlainDocument {
 
   private static final long serialVersionUID = 1L;
-  private int limit;
+  private final int limit;
   // optional uppercase conversion
   private boolean toUppercase = false;
 

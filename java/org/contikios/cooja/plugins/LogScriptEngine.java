@@ -66,11 +66,11 @@ public class LogScriptEngine {
   private static final Logger logger = LogManager.getLogger(LogScriptEngine.class);
   private static final long DEFAULT_TIMEOUT = 20*60*1000*Simulation.MILLISECOND; /* 1200s = 20 minutes */
 
-  private ScriptEngine engine =
+  private final ScriptEngine engine =
     new ScriptEngineManager().getEngineByName("JavaScript");
 
   /* Log output listener */
-  private LogOutputListener logOutputListener = new LogOutputListener() {
+  private final LogOutputListener logOutputListener = new LogOutputListener() {
     @Override
     public void moteWasAdded(Mote mote) {
     }
@@ -99,7 +99,7 @@ public class LogScriptEngine {
 
   private boolean stopSimulation = false, quitCooja = false;
 
-  private Simulation simulation;
+  private final Simulation simulation;
 
   private boolean scriptActive = false;
 
@@ -405,13 +405,13 @@ public class LogScriptEngine {
     }
   };
 
-  private Runnable stopSimulationRunnable = new Runnable() {
+  private final Runnable stopSimulationRunnable = new Runnable() {
     @Override
     public void run() {
       simulation.stopSimulation();
     }
   };
-  private Runnable quitRunnable = new Runnable() {
+  private final Runnable quitRunnable = new Runnable() {
     @Override
     public void run() {
       simulation.stopSimulation();
@@ -433,7 +433,7 @@ public class LogScriptEngine {
     }
   };
 
-  private ScriptLog scriptLog = new ScriptLog() {
+  private final ScriptLog scriptLog = new ScriptLog() {
     @Override
     public void log(String msg) {
       if (scriptLogObserver != null) {

@@ -62,7 +62,7 @@ public class Notes extends VisPlugin {
   private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(Visualizer.class);
 
-  private JTextArea notes = new JTextArea("Enter notes here");
+  private final JTextArea notes = new JTextArea("Enter notes here");
   private boolean decorationsVisible = true;
 
   public Notes(Simulation simulation, Cooja gui) {

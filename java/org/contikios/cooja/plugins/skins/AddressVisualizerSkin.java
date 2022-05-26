@@ -68,13 +68,13 @@ public class AddressVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private Observer addrObserver = new Observer() {
+  private final Observer addrObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
       visualizer.repaint();
     }
   };
-  private MoteCountListener newMotesListener = new MoteCountListener() {
+  private final MoteCountListener newMotesListener = new MoteCountListener() {
     @Override
     public void moteWasAdded(Mote mote) {
       IPAddress ipAddr = mote.getInterfaces().getIPAddress();

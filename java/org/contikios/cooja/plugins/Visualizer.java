@@ -155,7 +155,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   private final JMenu viewMenu;
 
   /* Viewport */
-  private AffineTransform viewportTransform;
+  private final AffineTransform viewportTransform;
   public int resetViewport = 0;
 
   private static final int SELECT_MASK = Event.CTRL_MASK;
@@ -186,10 +186,10 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   /* Position where mouse button was pressed */
   Position pressedPos;
 
-  private Set<Mote> movedMotes = null;
+  private final Set<Mote> movedMotes = null;
   private long moveStartTime = -1;
   private static final Cursor MOVE_CURSOR = new Cursor(Cursor.MOVE_CURSOR);
-  private Selection selection;
+  private final Selection selection;
 
   /* Visualizers */
   private static final ArrayList<Class<? extends VisualizerSkin>> visualizerSkins
@@ -207,13 +207,13 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     registerVisualizerSkin(MoteTypeVisualizerSkin.class);
     registerVisualizerSkin(AttributeVisualizerSkin.class);
   }
-  private ArrayList<VisualizerSkin> currentSkins = new ArrayList<>();
+  private final ArrayList<VisualizerSkin> currentSkins = new ArrayList<>();
 
   /* Generic visualization */
-  private MoteCountListener newMotesListener;
+  private final MoteCountListener newMotesListener;
   private Observer posObserver = null;
   private Observer moteHighligtObserver = null;
-  private ArrayList<Mote> highlightedMotes = new ArrayList<>();
+  private final ArrayList<Mote> highlightedMotes = new ArrayList<>();
   private final static Color HIGHLIGHT_COLOR = Color.CYAN;
   private final static Color MOVE_COLOR = Color.WHITE;
   private Observer moteRelationsObserver = null;
@@ -237,9 +237,9 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     public void doAction(Visualizer visualizer, Mote mote);
   }
 
-  private ArrayList<Class<? extends SimulationMenuAction>> simulationMenuActions
+  private final ArrayList<Class<? extends SimulationMenuAction>> simulationMenuActions
           = new ArrayList<>();
-  private ArrayList<Class<? extends MoteMenuAction>> moteMenuActions
+  private final ArrayList<Class<? extends MoteMenuAction>> moteMenuActions
           = new ArrayList<>();
 
   public Visualizer(Simulation simulation, Cooja gui) {
@@ -1326,7 +1326,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     }
   }
 
-  private Polygon arrowPoly = new Polygon();
+  private final Polygon arrowPoly = new Polygon();
 
   private void drawArrow(Graphics g, int xSource, int ySource, int xDest, int yDest, int delta) {
     double dx = xSource - xDest;
@@ -1640,7 +1640,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     return true;
   }
 
-  private AbstractAction makeSkinsDefaultAction = new AbstractAction() {
+  private final AbstractAction makeSkinsDefaultAction = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
       StringBuilder sb = new StringBuilder();

@@ -82,7 +82,7 @@ public class MoteAttributes extends MoteInterface {
   private static final Logger logger = LogManager.getLogger(MoteAttributes.class);
   private Mote mote = null;
 
-  private HashMap<String, Object> attributes = new HashMap<String, Object>();
+  private final HashMap<String, Object> attributes = new HashMap<String, Object>();
 
   private Observer logObserver = new Observer() {
     @Override

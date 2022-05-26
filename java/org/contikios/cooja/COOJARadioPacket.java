@@ -31,7 +31,7 @@
 package org.contikios.cooja;
 
 public class COOJARadioPacket implements RadioPacket {
-  private byte[] data;
+  private final byte[] data;
 
   public COOJARadioPacket(byte[] data) {
     this.data = data;

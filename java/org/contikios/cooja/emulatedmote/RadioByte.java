@@ -32,7 +32,7 @@ package org.contikios.cooja.emulatedmote;
 import org.contikios.cooja.RadioPacket;
 
 public class RadioByte implements RadioPacket {
-  private byte[] data = new byte[1];
+  private final byte[] data = new byte[1];
 
   public RadioByte(byte data) {
     this.data[0] = data;

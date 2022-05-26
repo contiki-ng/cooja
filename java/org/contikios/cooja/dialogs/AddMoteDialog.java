@@ -81,7 +81,7 @@ public class AddMoteDialog extends JDialog {
   private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(AddMoteDialog.class);
 
-  private AddMotesEventHandler myEventHandler = new AddMotesEventHandler();
+  private final AddMotesEventHandler myEventHandler = new AddMotesEventHandler();
 
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;

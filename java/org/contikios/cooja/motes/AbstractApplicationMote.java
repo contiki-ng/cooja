@@ -68,7 +68,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
   protected MoteInterfaceHandler moteInterfaces = null;
 
   /* Observe our own radio for incoming radio packets */
-  private Observer radioDataObserver = new Observer() {
+  private final Observer radioDataObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
       ApplicationRadio radio = (ApplicationRadio) obs;

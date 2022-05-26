@@ -68,8 +68,8 @@ import org.contikios.cooja.Simulation;
 public class ApplicationRadio extends Radio implements NoiseSourceRadio, DirectionalAntennaRadio {
   private static final Logger logger = LogManager.getLogger(ApplicationRadio.class);
 
-  private Simulation simulation;
-  private Mote mote;
+  private final Simulation simulation;
+  private final Mote mote;
 
   private RadioPacket packetFromMote = null;
   private RadioPacket packetToMote = null;
@@ -78,7 +78,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
   private boolean isReceiving = false;
   private boolean isInterfered = false;
 
-  private long transmissionEndTime = 0;
+  private final long transmissionEndTime = 0;
 
   private RadioEvent lastEvent = RadioEvent.UNKNOWN;
   private long lastEventTime = 0;
@@ -440,7 +440,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
 
   /* Noise source radio support (app mote API) */
   private int noiseSignal = Integer.MIN_VALUE;
-  private ArrayList<NoiseLevelListener> noiseListeners = new ArrayList<NoiseLevelListener>();
+  private final ArrayList<NoiseLevelListener> noiseListeners = new ArrayList<NoiseLevelListener>();
   public void setNoiseLevel(int signal) {
     this.noiseSignal = signal;
     for (NoiseLevelListener l: noiseListeners) {

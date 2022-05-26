@@ -51,10 +51,10 @@ import org.contikios.cooja.plugins.LogListener;
  */
 public abstract class UpdateAggregator<A> {
   private static final int DEFAULT_MAX_PENDING = 256;
-  private int maxPending;
+  private final int maxPending;
   
   private ArrayList<A> pending;
-  private Timer t;
+  private final Timer t;
 
   /**
    * @param interval Max interval (ms)
@@ -83,7 +83,7 @@ public abstract class UpdateAggregator<A> {
   /**
    * Consumer: called from event queue
    */
-  private Runnable consume = new Runnable() {
+  private final Runnable consume = new Runnable() {
     @Override
     public void run() {
       if (pending.isEmpty()) {

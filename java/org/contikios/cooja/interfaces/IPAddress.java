@@ -75,7 +75,7 @@ public class IPAddress extends MoteInterface {
 
   private final SegmentMonitor memMonitor;
 
-  private List<IPContainer> ipList = new ArrayList<>();
+  private final List<IPContainer> ipList = new ArrayList<>();
 
   private int ipv6_addr_size = 0;
   private int ipv6_addr_list_offset = 0;

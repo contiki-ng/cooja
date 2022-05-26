@@ -56,7 +56,7 @@ import javax.swing.table.TableModel;
 public class TableColumnAdjuster implements PropertyChangeListener, TableModelListener {
 
   private final JTable table;
-  private int spacing;
+  private final int spacing;
   private boolean isColumnHeaderIncluded;
   private boolean isColumnDataIncluded;
   private boolean isOnlyAdjustLarger;
@@ -69,7 +69,7 @@ public class TableColumnAdjuster implements PropertyChangeListener, TableModelLi
     this(table, 6);
   }
 
-  private boolean[] adjustColumns;
+  private final boolean[] adjustColumns;
 
   /*
    *  Specify the table and spacing

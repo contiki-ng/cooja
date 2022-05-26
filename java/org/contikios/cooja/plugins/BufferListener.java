@@ -134,7 +134,7 @@ public class BufferListener extends VisPlugin {
 
   final static int MAX_BUFFER_SIZE = 16 * 1024;
 
-  private static ArrayList<Class<? extends Parser>> bufferParsers =
+  private static final ArrayList<Class<? extends Parser>> bufferParsers =
     new ArrayList<Class<? extends Parser>>();
   static {
     registerBufferParser(ByteArrayParser.class);
@@ -150,7 +150,7 @@ public class BufferListener extends VisPlugin {
 
   /* TODO Hide identical lines? */
 
-  private static ArrayList<Class<? extends Buffer>> bufferTypes =
+  private static final ArrayList<Class<? extends Buffer>> bufferTypes =
     new ArrayList<Class<? extends Buffer>>();
   static {
     registerBufferType(PacketbufBuffer.class);
@@ -185,36 +185,36 @@ public class BufferListener extends VisPlugin {
   private boolean hasHours = false;
 
   private final JTable logTable;
-  private TableRowSorter<TableModel> logFilter;
-  private ArrayQueue<BufferAccess> logs = new ArrayQueue<BufferAccess>();
+  private final TableRowSorter<TableModel> logFilter;
+  private final ArrayQueue<BufferAccess> logs = new ArrayQueue<BufferAccess>();
 
-  private Simulation simulation;
+  private final Simulation simulation;
 
   private JTextField filterTextField = null;
-  private JLabel filterLabel = new JLabel("Filter: ");
-  private Color filterTextFieldBackground;
+  private final JLabel filterLabel = new JLabel("Filter: ");
+  private final Color filterTextFieldBackground;
 
-  private AbstractTableModel model;
+  private final AbstractTableModel model;
 
-  private MoteCountListener logOutputListener;
+  private final MoteCountListener logOutputListener;
 
   private boolean backgroundColors = false;
-  private JCheckBoxMenuItem colorCheckbox;
+  private final JCheckBoxMenuItem colorCheckbox;
 
   private boolean inverseFilter = false;
-  private JCheckBoxMenuItem inverseFilterCheckbox;
+  private final JCheckBoxMenuItem inverseFilterCheckbox;
 
   private boolean hideReads = true;
-  private JCheckBoxMenuItem hideReadsCheckbox;
+  private final JCheckBoxMenuItem hideReadsCheckbox;
 
   private boolean withStackTrace = false;
-  private JCheckBoxMenuItem withStackTraceCheckbox;
+  private final JCheckBoxMenuItem withStackTraceCheckbox;
 
-  private JMenu bufferMenu = new JMenu("Buffer");
-  private JMenu parserMenu = new JMenu("Show as");
+  private final JMenu bufferMenu = new JMenu("Buffer");
+  private final JMenu parserMenu = new JMenu("Show as");
 
-  private ArrayList<Mote> motes = new ArrayList<Mote>();
-  private ArrayList<SegmentMemoryMonitor> memoryMonitors = new ArrayList<SegmentMemoryMonitor>();
+  private final ArrayList<Mote> motes = new ArrayList<Mote>();
+  private final ArrayList<SegmentMemoryMonitor> memoryMonitors = new ArrayList<SegmentMemoryMonitor>();
 
   private TimeEvent hourTimeEvent = new TimeEvent() {
     @Override
@@ -226,8 +226,8 @@ public class BufferListener extends VisPlugin {
   };
 
   private static final int UPDATE_INTERVAL = 250;
-  private UpdateAggregator<BufferAccess> logUpdateAggregator = new UpdateAggregator<BufferAccess>(UPDATE_INTERVAL) {
-    private Runnable scroll = new Runnable() {
+  private final UpdateAggregator<BufferAccess> logUpdateAggregator = new UpdateAggregator<BufferAccess>(UPDATE_INTERVAL) {
+    private final Runnable scroll = new Runnable() {
       @Override
       public void run() {
         logTable.scrollRectToVisible(
@@ -1090,7 +1090,7 @@ public class BufferListener extends VisPlugin {
     }
   }
 
-  private Action saveAction = new AbstractAction("Save to file") {
+  private final Action saveAction = new AbstractAction("Save to file") {
     private static final long serialVersionUID = -4140706275748686944L;
 
     @Override
@@ -1154,7 +1154,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action bufferListenerAction = new AbstractAction("in Buffer Listener") {
+  private final Action bufferListenerAction = new AbstractAction("in Buffer Listener") {
     private static final long serialVersionUID = -6358463434933029699L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1178,7 +1178,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action timeLineAction = new AbstractAction("in Timeline") {
+  private final Action timeLineAction = new AbstractAction("in Timeline") {
     private static final long serialVersionUID = -6358463434933029699L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1202,7 +1202,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action radioLoggerAction = new AbstractAction("in Radio Logger") {
+  private final Action radioLoggerAction = new AbstractAction("in Radio Logger") {
     private static final long serialVersionUID = -3041714249257346688L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1226,7 +1226,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action showInAllAction = new AbstractAction("All") {
+  private final Action showInAllAction = new AbstractAction("All") {
     private static final long serialVersionUID = -8433490108577001803L;
     {
       putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true));
@@ -1239,7 +1239,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action clearAction = new AbstractAction("Clear") {
+  private final Action clearAction = new AbstractAction("Clear") {
     private static final long serialVersionUID = -2115620313183440224L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1251,7 +1251,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action copyAction = new AbstractAction("Selected") {
+  private final Action copyAction = new AbstractAction("Selected") {
     private static final long serialVersionUID = -8433490108577001803L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1283,7 +1283,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action copyAllAction = new AbstractAction("All") {
+  private final Action copyAllAction = new AbstractAction("All") {
     private static final long serialVersionUID = -5038884975254178373L;
 
     @Override
@@ -1384,10 +1384,10 @@ public class BufferListener extends VisPlugin {
   }
 
   private static class BufferInput {
-    private JPanel mainPanel = new JPanel();
-    private JTextField textName = new JTextField();
-    private JTextField textSize = new JTextField();
-    private JTextField textOffset = new JTextField();
+    private final JPanel mainPanel = new JPanel();
+    private final JTextField textName = new JTextField();
+    private final JTextField textSize = new JTextField();
+    private final JTextField textOffset = new JTextField();
 
     public BufferInput(String name, String size, String offset) {
       mainPanel.setLayout(new GridLayout(3, 2, 5, 5));
@@ -1618,7 +1618,7 @@ public class BufferListener extends VisPlugin {
 
   @ClassDescription("Integer array")
   public static class IntegerParser extends StringParser {
-    private VarMemory varMem = new VarMemory(null);
+    private final VarMemory varMem = new VarMemory(null);
     @Override
     public String parseString(BufferAccess ba) {
       StringBuilder sb = new StringBuilder();
@@ -1733,7 +1733,7 @@ public class BufferListener extends VisPlugin {
       parser.paintComponent(g, this);
     }
   };
-  private GrapicalParserPanel graphicalParserPanel = new GrapicalParserPanel();
+  private final GrapicalParserPanel graphicalParserPanel = new GrapicalParserPanel();
 
   @ClassDescription("Graphical: Height")
   public static class GraphicalHeight4BitsParser extends GraphicalParser {

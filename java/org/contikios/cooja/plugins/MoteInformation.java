@@ -65,13 +65,13 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
   private static final long serialVersionUID = 2359676837283723500L;
   private static final Logger logger = LogManager.getLogger(MoteInformation.class);
 
-  private Mote mote;
+  private final Mote mote;
 
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 20;
   private final static Dimension size = new Dimension(LABEL_WIDTH,LABEL_HEIGHT);
   
-  private Simulation simulation;
+  private final Simulation simulation;
 
   /**
    * Create a new mote information window.

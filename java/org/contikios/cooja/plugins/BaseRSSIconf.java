@@ -79,9 +79,9 @@ public class BaseRSSIconf extends VisPlugin {
 
 	private Cooja gui = null;
 	private AbstractRadioMedium radioMedium = null;
-	private Observer changeObserver;
+	private final Observer changeObserver;
 	private JTable motesTable = null;
-	private JComboBox<Number> combo = new JComboBox<Number>();
+	private final JComboBox<Number> combo = new JComboBox<Number>();
 	private Simulation sim = null;
 	
 	

@@ -68,11 +68,11 @@ import org.contikios.cooja.VisPlugin;
 public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, MotePlugin {
   private static final long serialVersionUID = 1L;
 
-  private Mote mote;
+  private final Mote mote;
   private MoteInterface selectedMoteInterface = null;
   private JPanel currentInterfaceVisualizer = null;
   private JComboBox selectInterfaceComboBox = null;
-  private JScrollPane mainScrollPane;
+  private final JScrollPane mainScrollPane;
 
   /**
    * Create a new mote interface viewer.

@@ -79,9 +79,9 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	protected Map<Radio, Double> baseRssi = java.util.Collections.synchronizedMap(new HashMap<Radio, Double>());
 	protected Map<Radio, Double> sendRssi = java.util.Collections.synchronizedMap(new HashMap<Radio, Double>());
 	
-	private ArrayList<Radio> registeredRadios = new ArrayList<Radio>();
+	private final ArrayList<Radio> registeredRadios = new ArrayList<Radio>();
 	
-	private ArrayList<RadioConnection> activeConnections = new ArrayList<RadioConnection>();
+	private final ArrayList<RadioConnection> activeConnections = new ArrayList<RadioConnection>();
 	
 	private RadioConnection lastConnection = null;
 	
@@ -220,7 +220,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	 * This observer is responsible for detecting radio interface events, for example
 	 * new transmissions.
 	 */
-	private Observer radioEventsObserver = new Observer() {
+	private final Observer radioEventsObserver = new Observer() {
 		@Override
 		public void update(Observable obs, Object obj) {
 			if (!(obs instanceof Radio)) {

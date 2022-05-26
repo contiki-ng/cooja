@@ -79,13 +79,14 @@ public class CreateSimDialog extends JDialog {
 
   private Simulation mySimulation = null;
 
-  private JFormattedTextField randomSeed, delayedStartup;
-  private JCheckBox randomSeedGenerated;
+  private final JFormattedTextField randomSeed;
+  private final JFormattedTextField delayedStartup;
+  private final JCheckBox randomSeedGenerated;
 
-  private JTextField title;
-  private JComboBox radioMediumBox;
+  private final JTextField title;
+  private final JComboBox radioMediumBox;
 
-  private JButton cancelButton;
+  private final JButton cancelButton;
 
   /**
    * Shows a dialog for configuring a simulation.
@@ -340,7 +341,7 @@ public class CreateSimDialog extends JDialog {
     pack();
   }
 
-  private ActionListener createSimulationListener = new ActionListener() {
+  private final ActionListener createSimulationListener = new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
       mySimulation.setTitle(title.getText());

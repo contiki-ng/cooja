@@ -55,8 +55,8 @@ public class MoteSerialSocketConnection {
   private boolean isConnected = false;
   public int toMote = 0, toSocket = 0;
 
-  private SerialPort motePort;
-  private Observer moteObserver;
+  private final SerialPort motePort;
+  private final Observer moteObserver;
 
   private Socket socket;
   private DataInputStream socketIn;

@@ -63,7 +63,7 @@ public class LogVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private LogOutputListener logOutputListener = new LogOutputListener() {
+  private final LogOutputListener logOutputListener = new LogOutputListener() {
     @Override
     public void moteWasAdded(Mote mote) {
       visualizer.repaint();

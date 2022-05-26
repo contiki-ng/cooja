@@ -42,7 +42,7 @@ import org.contikios.cooja.*;
 public class RandomPositioner extends Positioner {
   double startX, endX, startY, endY, startZ, endZ;
 
-  private Random random = new Random(); /* Do not use main random generator for setup */
+  private final Random random = new Random(); /* Do not use main random generator for setup */
 
   /**
    * Creates a random positioner.
