@@ -138,8 +138,7 @@ public class BaseRSSIconf extends VisPlugin {
 									setText(value.toString());
 									return;
 								}
-								double v = ((Double) value).doubleValue();
-								setText(String.format("%1.1f", v));
+								setText(String.format("%1.1f", (Double) value));
 							}
 						});
 		motesTable.getColumnModel().getColumn(IDX_BaseRSSI)
@@ -152,8 +151,7 @@ public class BaseRSSIconf extends VisPlugin {
 							setText(value.toString());
 							return;
 						}
-						double v = ((Double) value).doubleValue();
-						setText(String.format("%1.1f dBm", v));
+						setText(String.format("%1.1f dBm", (Double) value));
 					}
 				});
 		motesTable.getColumnModel().getColumn(IDX_Mote)
