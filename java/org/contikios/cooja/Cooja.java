@@ -138,6 +138,7 @@ import org.contikios.cooja.plugins.SimControl;
 import org.contikios.cooja.plugins.SimInformation;
 import org.contikios.cooja.util.ExecuteJAR;
 import org.contikios.cooja.util.ScnObservable;
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -2371,14 +2372,16 @@ public class Cooja extends Observable {
 
     // Load simulation in this thread, while showing progress monitor
     final File fileToLoad = configFile;
-    Simulation newSim = null;
     boolean shouldRetry = false;
     do {
       try {
         shouldRetry = false;
         cooja.doRemoveSimulation(false);
         PROGRESS_WARNINGS.clear();
-        newSim = loadSimulationConfig(fileToLoad, quick, manualRandomSeed);
+        Simulation newSim = loadSimulationConfig(fileToLoad, quick, manualRandomSeed);
+        if (newSim == null) {
+          throw new SimulationCreationException("Failed to load simulation: " + fileToLoad);
+        }
         cooja.setSimulation(newSim, false);
 
         /* Optionally show compilation warnings */
@@ -3344,8 +3347,10 @@ public class Cooja extends Observable {
         return null;
       }
 
-      /* Verify extension directories */
-      boolean projectsOk = verifyProjects(root.getChildren());
+      // Verify that we have the required extensions.
+      if (!verifyProjects(root.getChildren())) {
+        return null;
+      }
 
       /* GENERATE UNIQUE MOTE TYPE IDENTIFIERS */
       root.detach();
@@ -3568,15 +3573,19 @@ public class Cooja extends Observable {
   }
 
   public boolean verifyProjects(Collection<Element> configXML) {
-    boolean allOk = true;
-
     /* Match current extensions against extensions in simulation config */
     for (final Element pluginElement : configXML.toArray(new Element[0])) {
       if (pluginElement.getName().equals("project")) {
+        Attribute a = pluginElement.getAttribute("EXPORT");
+        if (a != null && a.getValue().equals("discard")) {
+          continue; // Do not warn about discarded exports.
+        }
         File projectFile = restorePortablePath(new File(pluginElement.getText()));
         try {
           projectFile = projectFile.getCanonicalFile();
         } catch (IOException e) {
+          logger.warn("Could not get canonical name of file: " + e);
+          return false;
         }
 
         boolean found = false;
@@ -3589,13 +3598,13 @@ public class Cooja extends Observable {
         }
 
         if (!found) {
-          logger.warn("Loaded simulation may depend on not found  extension: '" + projectFile + "'");
-          allOk = false;
+          logger.warn("Loaded simulation depends on not found extension: '" + projectFile + "'");
+          return false;
         }
       }
     }
 
-    return allOk;
+    return true;
   }
 
 
