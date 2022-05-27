@@ -24,7 +24,7 @@
     <delete file="${jarfile}"/>
   </target>
 
-  <target name="jar" depends="clean, init, compile">
+  <target name="jar" depends="init, compile">
     <mkdir dir="lib"/>
     <jar destfile="${jarfile}" basedir="build">
       <manifest>
