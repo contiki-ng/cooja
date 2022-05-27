@@ -289,7 +289,7 @@ public class Simulation extends Observable implements Runnable {
           throw new RuntimeException("No more events");
         }
         if (nextEvent.time < currentSimulationTime) {
-          throw new RuntimeException("Next event is in the past: " + nextEvent.time + " < " + currentSimulationTime + ": " + nextEvent);
+          throw new RuntimeException("Next event is in the past: " + nextEvent.time + " < " + currentSimulationTime + ": " + nextEvent.event);
         }
         currentSimulationTime = nextEvent.time;
         /*logger.info("Executing event #" + EVENT_COUNTER++ + " @ " + currentSimulationTime + ": " + nextEvent);*/
