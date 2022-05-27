@@ -2714,17 +2714,16 @@ public class Cooja extends Observable {
   }
 
     public static String resolvePathIdentifiers(String path) {
-        for(int i = 0; i < PATH_IDENTIFIER.length; i++) {
-            if(path.contains(PATH_IDENTIFIER[i][0])) {
-                String p = Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1]);
-                if (p != null) {
-                    path = path.replace(PATH_IDENTIFIER[i][0], p);
-                } else {
-                    logger.warn("could not resolve path identifier " +
-                                PATH_IDENTIFIER[i][0]);
-                }
-            }
+      for (String[] pair : PATH_IDENTIFIER) {
+        if (path.contains(pair[0])) {
+          String p = Cooja.getExternalToolsSetting(pair[1]);
+          if (p != null) {
+            path = path.replace(pair[0], p);
+          } else {
+            logger.warn("could not resolve path identifier " + pair[0]);
+          }
         }
+      }
         return path;
     }
 

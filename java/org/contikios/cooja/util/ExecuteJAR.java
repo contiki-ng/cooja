@@ -436,9 +436,8 @@ public class ExecuteJAR {
       );
     } catch (Exception e) {
       logger.warn("Building executable JAR error: " + e.getMessage());
-      MessageContainer[] err = errors.getMessages();
-      for (int i=0; i < err.length; i++) {
-        logger.fatal(">> " + err[i]);
+      for (MessageContainer msgs : errors.getMessages()) {
+        logger.fatal(">> " + msgs);
       }
       
       /* Forward exception */

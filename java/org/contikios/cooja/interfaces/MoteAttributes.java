@@ -145,9 +145,8 @@ public class MoteAttributes extends MoteInterface {
   private void setAttributes(String att) {
     if (att.indexOf(",") >= 0) {
       /* Handle each attribute separately */
-      String[] atts = att.split(",");
-      for (int i = 0; i < atts.length; i++) {
-        setAttributes(atts[i]);
+      for (String s : att.split(",")) {
+        setAttributes(s);
       }
       return;
     }
@@ -165,10 +164,9 @@ public class MoteAttributes extends MoteInterface {
   
   public String getText() {
       StringBuilder sb = new StringBuilder();
-      Object[] keys = attributes.keySet().toArray();
-      for (int i = 0; i < keys.length; i++) {
-          sb.append(keys[i]).append("=").append(attributes.get(keys[i])).append("\n");
-      }
+    for (Object key : attributes.keySet().toArray()) {
+      sb.append(key).append("=").append(attributes.get(key)).append("\n");
+    }
       return sb.toString();
   }
   
