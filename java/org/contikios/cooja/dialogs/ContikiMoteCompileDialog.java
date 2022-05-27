@@ -403,18 +403,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       ContikiMoteType.getRequiredCoreInterfaces(getSelectedMoteInterfaceClasses());
     ((ContikiMoteType)moteType).setCoreInterfaces(coreInterfaces);
 
-    /* Generate Contiki main source */
-    /*try {
-      CompileContiki.generateSourceFile(
-          ((ContikiMoteType)moteType).libSource,
-          ((ContikiMoteType)moteType).javaClassName,
-          ((ContikiMoteType)moteType).getSensors(),
-          ((ContikiMoteType)moteType).getCoreInterfaces()
-      );
-    } catch (Exception e) {
-      throw (Exception) new Exception("Error when generating Contiki main source").initCause(e);
-    }*/
-
     /* Start compiling */
     super.compileContiki();
   }
