@@ -151,9 +151,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
 
       moteClass = loader.loadClass(moteClassName).asSubclass(AbstractApplicationMote.class);
       moteConstructor = moteClass.getConstructor(new Class[] { MoteType.class, Simulation.class });
-    } catch (Exception e) {
-      throw createError(e);
-    } catch(LinkageError e) {
+    } catch (Exception | LinkageError e) {
       throw createError(e);
     }
 
@@ -209,9 +207,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
         // Successfully found the class
         moteClassPath = test.getTestClassPath();
         moteClassName = test.getTestClassName();
-      } catch (Exception e) {
-        // Ignore
-      } catch (LinkageError e) {
+      } catch (Exception | LinkageError e) {
         // Ignore
       }
     }
