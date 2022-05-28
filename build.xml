@@ -55,9 +55,9 @@ The COOJA Simulator
   > ant run_errorbox
 
   Start COOJA and immediately load simulation in sim.csc
-  > java -mx512m -jar dist/cooja.jar -quickstart=sim.csc
+  > ant run -Dargs="-quickstart=sim.csc"
   Start COOJA without GUI and run simulation in sim.csc
-  > java -mx512m -jar dist/cooja.jar -nogui=sim.csc
+  > ant run_nogui -Dargs=sim.csc
 
   Build executable simulation JAR from mysim.csc
   > ant export-jar -DCSC="c:/mysim.csc"
@@ -73,7 +73,7 @@ The COOJA Simulator
 
   <target name="export-jar" depends="init, jar">
     <java fork="yes" dir="${build}" classname="org.contikios.cooja.util.ExecuteJAR"
-          failonerror="true" maxmemory="512m">
+          failonerror="true">
         <sysproperty key="user.language" value="en"/>
         <arg file="${CSC}"/>
         <arg file="exported.jar"/>
@@ -119,7 +119,7 @@ The COOJA Simulator
 
   <target name="run" depends="init, compile, jar, copy configs">
     <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
-          failonerror="true" maxmemory="512m">
+          failonerror="true">
       <sysproperty key="user.language" value="en"/>
       <arg line="${args}"/>
       <env key="LD_LIBRARY_PATH" value="."/>
@@ -129,7 +129,7 @@ The COOJA Simulator
 
   <target name="run_errorbox" depends="init, compile, jar, copy configs">
     <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
-          failonerror="true" maxmemory="512m">
+          failonerror="true">
       <sysproperty key="user.language" value="en"/>
       <jvmarg value="-XX:+ShowMessageBoxOnError"/>
       <env key="LD_LIBRARY_PATH" value="."/>
@@ -179,7 +179,7 @@ The COOJA Simulator
 
   <target name="run_nogui" depends="init, compile, jar, copy configs">
     <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
-          failonerror="true" maxmemory="512m">
+          failonerror="true">
       <arg line="-nogui=${args}"/>
       <env key="LD_LIBRARY_PATH" value="."/>
       <classpath refid="cooja.nogui.classpath"/>
