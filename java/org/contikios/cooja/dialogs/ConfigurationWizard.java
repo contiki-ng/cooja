@@ -51,6 +51,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -656,9 +657,16 @@ public class ConfigurationWizard extends JDialog {
     }
     dummyStream.close();
 
+    Path tmpDir;
+    try {
+      tmpDir = Files.createTempDirectory("cooja");
+    } catch (IOException e) {
+      return false;
+    }
+    tmpDir.toFile().deleteOnExit();
     testOutput.addMessage("### Generating Java library source: org/contikios/cooja/corecomm/" + javaLibraryName + ".java");
     try {
-      CoreComm.generateLibSourceFile(javaLibraryName);
+      CoreComm.generateLibSourceFile(tmpDir, javaLibraryName);
     } catch (MoteTypeCreationException e) {
       e.printStackTrace(errorStream);
       testOutput.addMessage("### Error: " + e.getMessage(), MessageList.ERROR);
@@ -667,7 +675,7 @@ public class ConfigurationWizard extends JDialog {
 
     testOutput.addMessage("### Compiling Java library source: org/contikios/cooja/corecomm/" + javaLibraryName + ".java");
     try {
-      CoreComm.compileSourceFile(javaLibraryName);
+      CoreComm.compileSourceFile(tmpDir, javaLibraryName);
     } catch (MoteTypeCreationException e) {
       e.printStackTrace(errorStream);
       testOutput.addMessage("### Error: " + e.getMessage(), MessageList.ERROR);
@@ -677,7 +685,7 @@ public class ConfigurationWizard extends JDialog {
     testOutput.addMessage("### Loading Java library class: org/contikios/cooja/corecomm/" + javaLibraryName);
     Class<? extends CoreComm> javaLibraryClass = null;
     try {
-      javaLibraryClass = (Class<? extends CoreComm>) CoreComm.loadClassFile(javaLibraryName);
+      javaLibraryClass = (Class<? extends CoreComm>) CoreComm.loadClassFile(tmpDir, javaLibraryName);
     } catch (MoteTypeCreationException e) {
       e.printStackTrace(errorStream);
       testOutput.addMessage("### Error: " + e.getMessage(), MessageList.ERROR);

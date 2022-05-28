@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -351,8 +353,17 @@ public class ContikiMoteType implements MoteType {
       }
     }
 
-    /* Load compiled library */
-    doInit();
+    Path tmpDir;
+    try {
+      tmpDir = Files.createTempDirectory("cooja");
+    } catch (IOException e) {
+      logger.warn("Failed to create temp directory:" + e);
+      return false;
+    }
+    tmpDir.toFile().deleteOnExit();
+
+    // Create, compile, and load the Java wrapper that loads the C library.
+    doInit(tmpDir);
     return true;
   }
 
@@ -371,9 +382,10 @@ public class ContikiMoteType implements MoteType {
    * It furthermore parses library Contiki memory addresses and creates the
    * initial memory.
    *
+   * @param tempDir Directory for temporary files
    * @throws MoteTypeCreationException
    */
-  private void doInit() throws MoteTypeCreationException {
+  private void doInit(Path tempDir) throws MoteTypeCreationException {
 
     if (myCoreComm != null) {
       throw new MoteTypeCreationException(
@@ -391,7 +403,7 @@ public class ContikiMoteType implements MoteType {
 
     // Allocate core communicator class
     logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + getContikiFirmwareFile().getPath() + "'");
-    myCoreComm = CoreComm.createCoreComm(this.javaClassName, getContikiFirmwareFile());
+    myCoreComm = CoreComm.createCoreComm(tempDir, this.javaClassName, getContikiFirmwareFile());
 
     /* Parse addresses using map file
      * or output of command specified in external tools settings (e.g. nm -a )
