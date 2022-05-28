@@ -51,6 +51,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
@@ -351,8 +352,11 @@ public class ScriptRunner extends VisPlugin {
           /* Continously write test output to file */
           if (logWriter == null) {
             /* Warning: static variable, used by all active test editor plugins */
-            File logFile = new File("COOJA.testlog");
-            if (logFile.exists()) {
+            File logFile = new File(gui.logDirectory + "/COOJA.testlog");
+            Path logDirPath = Path.of(gui.logDirectory);
+            if (!Files.exists(logDirPath)) {
+              Files.createDirectory(logDirPath);
+            } else if (logFile.exists()) {
               logFile.delete();
             }
             logWriter = Files.newBufferedWriter(logFile.toPath(), UTF_8);
