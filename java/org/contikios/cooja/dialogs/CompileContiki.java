@@ -143,7 +143,6 @@ public class CompileContiki {
       for (String c: command) {
       	cmd += c + " ";
       }
-      logger.info("> " + cmd);
       messageDialog.addMessage("", MessageList.NORMAL);
       messageDialog.addMessage("> " + cmd, MessageList.NORMAL);
     }
