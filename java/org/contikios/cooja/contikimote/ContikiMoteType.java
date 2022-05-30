@@ -280,19 +280,6 @@ public class ContikiMoteType implements MoteType {
       archiveFile.delete();
       mapFile.delete();
 
-      /* Generate Contiki main source */
-      /*try {
-       CompileContiki.generateSourceFile(
-       libSource,
-       javaClassName,
-       getSensors(),
-       getCoreInterfaces()
-       );
-       } catch (Exception e) {
-       throw (MoteTypeCreationException) new MoteTypeCreationException(
-       "Error when generating Contiki main source").initCause(e);
-       }*/
-
       /* Prepare compiler environment */
       String[][] env;
       try {
