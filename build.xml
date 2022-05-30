@@ -26,17 +26,13 @@
 
   <property name="log4j.version" value="2.17.2" />
 
-  <path id="cooja.nogui.classpath">
+  <path id="cooja.classpath">
     <pathelement path="${build}"/>
     <pathelement location="lib/jdom.jar"/>
     <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
     <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
     <pathelement location="lib/log4j-1.2-api-${log4j.version}.jar" />
     <pathelement location="lib/syntaxpane-1.2.0.jar"/>
-  </path>
-
-  <path id="cooja.classpath">
-    <path refid="cooja.nogui.classpath"/>
     <pathelement location="lib/swingx-all-1.6.4.jar"/>
   </path>
 
@@ -67,23 +63,18 @@ The COOJA Simulator
     </echo>
   </target>
 
-  <target name="init">
-    <tstamp/>
-  </target>
-
-  <target name="export-jar" depends="init, jar">
+  <target name="export-jar" depends="jar">
     <java fork="yes" dir="${build}" classname="org.contikios.cooja.util.ExecuteJAR"
           failonerror="true">
         <sysproperty key="user.language" value="en"/>
         <arg file="${CSC}"/>
         <arg file="exported.jar"/>
         <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
-        <env key="LD_LIBRARY_PATH" value="."/>
         <classpath refid="cooja.classpath"/>
     </java>
   </target>
 
-  <target name="javadoc" depends="init">
+  <target name="javadoc">
     <delete dir="${javadoc}" quiet="true"/>
     <mkdir dir="${javadoc}/"/>
     <javadoc destdir="${javadoc}" source="${languageversion}">
@@ -92,7 +83,7 @@ The COOJA Simulator
     </javadoc>
   </target>
 
-  <target name="compile" depends="init">
+  <target name="compile">
     <mkdir dir="${build}"/>
     <javac srcdir="${java}" destdir="${build}" debug="on" release="${languageversion}"
            includeantruntime="false"
@@ -101,14 +92,14 @@ The COOJA Simulator
     </javac>
   </target>
 
-  <target name="copy configs" depends="init">
+  <target name="copy configs">
     <mkdir dir="${build}"/>
     <copy todir="${build}">
       <fileset dir="${config}"/>
     </copy>
   </target>
 
-  <target name="clean" depends="init">
+  <target name="clean">
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
     <ant antfile="build.xml" dir="apps/mrm" target="clean" inheritAll="false"/>
@@ -118,60 +109,43 @@ The COOJA Simulator
     <ant antfile="build.xml" dir="apps/powertracker" target="clean" inheritAll="false"/>
   </target>
 
-  <target name="run" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
-          failonerror="true">
+  <target name="run" depends="jar">
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
       <sysproperty key="user.language" value="en"/>
       <arg line="${args}"/>
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <classpath refid="cooja.classpath"/>
     </java>
   </target>
 
-  <target name="run_errorbox" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
-          failonerror="true">
+  <target name="run_errorbox" depends="jar">
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
       <sysproperty key="user.language" value="en"/>
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
       <jvmarg value="-XX:+ShowMessageBoxOnError"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <classpath refid="cooja.classpath"/>
     </java>
   </target>
 
-  <target name="runprof" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
-          failonerror="true">
+  <target name="runprof" depends="jar">
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
       <arg line="${args}"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
       <jvmarg line="-agentlib:yjpagent"/>
-      <classpath refid="cooja.classpath"/>
     </java>
   </target>
 
-  <target name="runfree" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
+  <target name="runfree" depends="jar">
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
           failonerror="true" maxmemory="1536m">
       <arg line="${args}"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
-      <classpath refid="cooja.classpath"/>
-      <classpath>
-        <pathelement location="mspsim/lib/jfreechart-1.0.11.jar"/>
-        <pathelement location="mspsim/lib/jcommon-1.0.14.jar"/>
-      </classpath>
     </java>
   </target>
 
-  <target name="run_bigmem" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
+  <target name="run_bigmem" depends="jar">
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
           failonerror="true" maxmemory="1536m">
       <arg line="${args}"/>
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <classpath refid="cooja.classpath"/>
     </java>
   </target>
 
@@ -183,13 +157,10 @@ The COOJA Simulator
     <ant antfile="build.xml" dir="apps/powertracker" target="jar" inheritAll="false"/>
   </target>
 
-  <target name="run_nogui" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
-          failonerror="true">
+  <target name="run_nogui" depends="jar">
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
       <arg line="-nogui=${args}"/>
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <classpath refid="cooja.nogui.classpath"/>
     </java>
   </target>
 
@@ -203,15 +174,14 @@ The COOJA Simulator
     </mapper>
   </pathconvert>
 
-  <target name="jar_cooja" depends="init, compile, copy configs">
-    <mkdir dir="${dist}"/>
+  <target name="jar_cooja" depends="compile, copy configs">
+    <mkdir dir="${dist}/lib"/>
     <jar destfile="${dist}/cooja.jar" basedir="${build}">
       <manifest>
         <attribute name="Main-Class" value="org.contikios.cooja.Cooja"/>
         <attribute name="Class-Path" value=". ${manifest.classpath}"/>
       </manifest>
     </jar>
-    <mkdir dir="${dist}/lib"/>
     <copy todir="${dist}/lib">
       <fileset dir="${lib}"/>
     </copy>
