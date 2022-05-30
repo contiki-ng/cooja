@@ -77,6 +77,7 @@ The COOJA Simulator
         <sysproperty key="user.language" value="en"/>
         <arg file="${CSC}"/>
         <arg file="exported.jar"/>
+        <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
         <env key="LD_LIBRARY_PATH" value="."/>
         <classpath refid="cooja.classpath"/>
     </java>
@@ -122,6 +123,7 @@ The COOJA Simulator
           failonerror="true" maxmemory="512m">
       <sysproperty key="user.language" value="en"/>
       <arg line="${args}"/>
+      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
       <env key="LD_LIBRARY_PATH" value="."/>
       <classpath refid="cooja.classpath"/>
     </java>
@@ -131,6 +133,7 @@ The COOJA Simulator
     <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
           failonerror="true" maxmemory="512m">
       <sysproperty key="user.language" value="en"/>
+      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
       <jvmarg value="-XX:+ShowMessageBoxOnError"/>
       <env key="LD_LIBRARY_PATH" value="."/>
       <classpath refid="cooja.classpath"/>
@@ -142,6 +145,7 @@ The COOJA Simulator
           failonerror="true">
       <arg line="${args}"/>
       <env key="LD_LIBRARY_PATH" value="."/>
+      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
       <jvmarg line="-agentlib:yjpagent"/>
       <classpath refid="cooja.classpath"/>
     </java>
@@ -152,6 +156,7 @@ The COOJA Simulator
           failonerror="true" maxmemory="1536m">
       <arg line="${args}"/>
       <env key="LD_LIBRARY_PATH" value="."/>
+      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
       <classpath refid="cooja.classpath"/>
       <classpath>
         <pathelement location="mspsim/lib/jfreechart-1.0.11.jar"/>
@@ -164,6 +169,7 @@ The COOJA Simulator
     <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
           failonerror="true" maxmemory="1536m">
       <arg line="${args}"/>
+      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
       <env key="LD_LIBRARY_PATH" value="."/>
       <classpath refid="cooja.classpath"/>
     </java>
@@ -181,6 +187,7 @@ The COOJA Simulator
     <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja"
           failonerror="true" maxmemory="512m">
       <arg line="-nogui=${args}"/>
+      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
       <env key="LD_LIBRARY_PATH" value="."/>
       <classpath refid="cooja.nogui.classpath"/>
     </java>
