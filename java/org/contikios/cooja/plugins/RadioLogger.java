@@ -722,8 +722,7 @@ public class RadioLogger extends VisPlugin {
       boolean analyze = true;
       while (analyze) {
         analyze = false;
-        for (int i = 0; i < analyzers.size(); i++) {
-          PacketAnalyzer analyzer = analyzers.get(i);
+        for (PacketAnalyzer analyzer : analyzers) {
           if (analyzer.matchPacket(packet)) {
             int res = analyzer.analyzePacket(packet, brief, verbose);
             if (packet.hasMoreData() && brief.length() > 0) {
@@ -988,8 +987,8 @@ public class RadioLogger extends VisPlugin {
       Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
       StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < connections.size(); i++) {
-        sb.append(connections.get(i).toString() + "\n");
+      for (RadioConnectionLog connection : connections) {
+        sb.append(connection.toString() + "\n");
       }
 
       StringSelection stringSelection = new StringSelection(sb.toString());
@@ -1030,8 +1029,8 @@ public class RadioLogger extends VisPlugin {
 
       try {
         PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
-        for (int i = 0; i < connections.size(); i++) {
-          outStream.print(connections.get(i).toString() + "\n");
+        for (RadioConnectionLog connection : connections) {
+          outStream.print(connection.toString() + "\n");
         }
         outStream.close();
       } catch (Exception ex) {

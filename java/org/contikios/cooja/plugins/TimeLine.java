@@ -709,24 +709,24 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
                     saveFile), UTF_8));
 
         /* Output all events (sorted per mote) */
-        for (MoteEvents moteEvents: allMoteEvents) {
-          for (MoteEvent ev: moteEvents.ledEvents) {
-            outStream.write(moteEvents.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+        for (MoteEvents events: allMoteEvents) {
+          for (MoteEvent ev: events.ledEvents) {
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
           }
-          for (MoteEvent ev: moteEvents.logEvents) {
-            outStream.write(moteEvents.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+          for (MoteEvent ev: events.logEvents) {
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
           }
-          for (MoteEvent ev: moteEvents.radioChannelEvents) {
-            outStream.write(moteEvents.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+          for (MoteEvent ev: events.radioChannelEvents) {
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
           }
-          for (MoteEvent ev: moteEvents.radioHWEvents) {
-            outStream.write(moteEvents.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+          for (MoteEvent ev: events.radioHWEvents) {
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
           }
-          for (MoteEvent ev: moteEvents.radioRXTXEvents) {
-            outStream.write(moteEvents.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+          for (MoteEvent ev: events.radioRXTXEvents) {
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
           }
-          for (MoteEvent ev: moteEvents.watchpointEvents) {
-            outStream.write(moteEvents.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+          for (MoteEvent ev: events.watchpointEvents) {
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
           }
         }
 
@@ -1678,7 +1678,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       /* Paint mote events */
       int lineHeightOffset = FIRST_MOTE_PIXEL_OFFSET;
       boolean dark = true;
-      for (int mIndex = 0; mIndex < allMoteEvents.size(); mIndex++) {
+      for (MoteEvents events : allMoteEvents) {
 
         /* Mote separators */
         if (dark) {
@@ -1691,42 +1691,42 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         dark = !dark;
 
         if (showRadioRXTX) {
-          MoteEvent firstEvent = getFirstIntervalEvent(allMoteEvents.get(mIndex).radioRXTXEvents, intervalStart);
+          MoteEvent firstEvent = getFirstIntervalEvent(events.radioRXTXEvents, intervalStart);
           if (firstEvent != null) {
             firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
           }
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showRadioChannels) {
-          MoteEvent firstEvent = getFirstIntervalEvent(allMoteEvents.get(mIndex).radioChannelEvents, intervalStart);
+          MoteEvent firstEvent = getFirstIntervalEvent(events.radioChannelEvents, intervalStart);
           if (firstEvent != null) {
             firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
           }
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showRadioOnoff) {
-          MoteEvent firstEvent = getFirstIntervalEvent(allMoteEvents.get(mIndex).radioHWEvents, intervalStart);
+          MoteEvent firstEvent = getFirstIntervalEvent(events.radioHWEvents, intervalStart);
           if (firstEvent != null) {
             firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
           }
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showLeds) {
-          MoteEvent firstEvent = getFirstIntervalEvent(allMoteEvents.get(mIndex).ledEvents, intervalStart);
+          MoteEvent firstEvent = getFirstIntervalEvent(events.ledEvents, intervalStart);
           if (firstEvent != null) {
             firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
           }
           lineHeightOffset += 3*LED_PIXEL_HEIGHT;
         }
         if (showLogOutputs) {
-          MoteEvent firstEvent = getFirstIntervalEvent(allMoteEvents.get(mIndex).logEvents, intervalStart);
+          MoteEvent firstEvent = getFirstIntervalEvent(events.logEvents, intervalStart);
           if (firstEvent != null) {
             firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
           }
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showWatchpoints) {
-          MoteEvent firstEvent = getFirstIntervalEvent(allMoteEvents.get(mIndex).watchpointEvents, intervalStart);
+          MoteEvent firstEvent = getFirstIntervalEvent(events.watchpointEvents, intervalStart);
           if (firstEvent != null) {
             firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
           }
