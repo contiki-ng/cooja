@@ -203,9 +203,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
             updateForSource(source);
           }
         });
-      } catch (InvocationTargetException e) {
-        logger.fatal("Error when updating for source " + source + ": " + e.getMessage(), e);
-      } catch (InterruptedException e) {
+      } catch (InvocationTargetException | InterruptedException e) {
         logger.fatal("Error when updating for source " + source + ": " + e.getMessage(), e);
       }
     }

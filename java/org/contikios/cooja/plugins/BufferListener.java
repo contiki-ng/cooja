@@ -1369,10 +1369,7 @@ public class BufferListener extends VisPlugin {
     Parser bp = null;
     try {
       bp = bpClass.newInstance();
-    } catch (InstantiationException e) {
-      logger.warn("Could not create buffer parser: " + e.getMessage(), e);
-      return;
-    } catch (IllegalAccessException e) {
+    } catch (InstantiationException | IllegalAccessException e) {
       logger.warn("Could not create buffer parser: " + e.getMessage(), e);
       return;
     }
@@ -1425,10 +1422,7 @@ public class BufferListener extends VisPlugin {
   private static Buffer createBufferInstance(Class<? extends Buffer> btClass) {
     try {
       return btClass.newInstance();
-    } catch (InstantiationException e) {
-      logger.warn("Could not create buffer type: " + e.getMessage(), e);
-      return null;
-    } catch (IllegalAccessException e) {
+    } catch (InstantiationException | IllegalAccessException e) {
       logger.warn("Could not create buffer type: " + e.getMessage(), e);
       return null;
     }

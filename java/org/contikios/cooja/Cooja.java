@@ -2390,9 +2390,7 @@ public class Cooja extends Observable {
         }
         PROGRESS_WARNINGS.clear();
 
-      } catch (UnsatisfiedLinkError e) {
-        shouldRetry = showErrorDialog(Cooja.getTopParentContainer(), "Simulation load error", e, true);
-      } catch (SimulationCreationException e) {
+      } catch (UnsatisfiedLinkError | SimulationCreationException e) {
         shouldRetry = showErrorDialog(Cooja.getTopParentContainer(), "Simulation load error", e, true);
       }
     } while (shouldRetry);
@@ -2460,11 +2458,7 @@ public class Cooja extends Observable {
             }
             PROGRESS_WARNINGS.clear();
 
-          } catch (UnsatisfiedLinkError e) {
-            shouldRetry = showErrorDialog(frame, "Simulation reload error", e, true);
-
-            cooja.doRemoveSimulation(false);
-          } catch (SimulationCreationException e) {
+          } catch (UnsatisfiedLinkError | SimulationCreationException e) {
             shouldRetry = showErrorDialog(frame, "Simulation reload error", e, true);
 
             cooja.doRemoveSimulation(false);
@@ -2869,8 +2863,6 @@ public class Cooja extends Observable {
         setExternalToolsSetting(key, settings.getProperty(key));
       }
       logger.info("External tools user settings: " + externalToolsUserSettingsFile);
-    } catch (FileNotFoundException e) {
-      logger.warn("Error when reading user settings from: " + externalToolsUserSettingsFile);
     } catch (IOException e) {
       logger.warn("Error when reading user settings from: " + externalToolsUserSettingsFile);
     }
@@ -2973,15 +2965,13 @@ public class Cooja extends Observable {
     if (callingObject != null) {
       try {
         return callingObject.getClass().getClassLoader().loadClass(className).asSubclass(classType);
-      } catch (ClassNotFoundException e) {
-      } catch (UnsupportedClassVersionError e) {
+      } catch (ClassNotFoundException | UnsupportedClassVersionError e) {
       }
     }
 
     try {
       return Class.forName(className).asSubclass(classType);
-    } catch (ClassNotFoundException e) {
-    } catch (UnsupportedClassVersionError e) {
+    } catch (ClassNotFoundException | UnsupportedClassVersionError e) {
     }
 
     try {
@@ -2989,9 +2979,7 @@ public class Cooja extends Observable {
         return projectDirClassLoader.loadClass(className).asSubclass(
             classType);
       }
-    } catch (NoClassDefFoundError e) {
-    } catch (ClassNotFoundException e) {
-    } catch (UnsupportedClassVersionError e) {
+    } catch (NoClassDefFoundError | UnsupportedClassVersionError | ClassNotFoundException e) {
     }
 
     return null;
@@ -3983,9 +3971,7 @@ public class Cooja extends Observable {
             val = RunnableInEDT.this.work();
           }
         });
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
+      } catch (InterruptedException | InvocationTargetException e) {
         e.printStackTrace();
       }
 

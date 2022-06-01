@@ -465,9 +465,7 @@ public class RadioLogger extends VisPlugin {
           group.add(rbMenuItem);
           analyzerMenu.add(rbMenuItem);
           logger.debug("Loaded radio logger analyzers: " + suite.getDescription());
-        } catch (InstantiationException e1) {
-          logger.warn("Failed to load analyzer suite '" + suiteName + "': " + e1.getMessage());
-        } catch (IllegalAccessException e1) {
+        } catch (InstantiationException | IllegalAccessException e1) {
           logger.warn("Failed to load analyzer suite '" + suiteName + "': " + e1.getMessage());
         }
       }
