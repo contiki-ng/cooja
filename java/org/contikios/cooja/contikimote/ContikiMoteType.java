@@ -626,8 +626,8 @@ public class ContikiMoteType implements MoteType {
       for (String line : getData()) {
         Matcher matcher = pattern.matcher(line);
         if (matcher.find()) {
-          if (Long.decode(matcher.group(1)).longValue() >= getStartAddr() &&
-              Long.decode(matcher.group(1)).longValue() <= getStartAddr() + getSize()) {
+          if (Long.decode(matcher.group(1)) >= getStartAddr() &&
+              Long.decode(matcher.group(1)) <= getStartAddr() + getSize()) {
             String varName = matcher.group(2);
             varNames.put(varName, new Symbol(
                     Symbol.Type.VARIABLE,

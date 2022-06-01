@@ -156,8 +156,7 @@ public class DGRMConfigurator extends VisPlugin {
           setText(value.toString());
           return;
         }
-        double v = ((Double) value).doubleValue();
-        setText(String.format("%1.1f%%", 100*v));
+        setText(String.format("%1.1f%%", 100* (Double) value));
       }
     });
     graphTable.getColumnModel().getColumn(IDX_SIGNAL).setCellRenderer(new DefaultTableCellRenderer() {
@@ -168,8 +167,7 @@ public class DGRMConfigurator extends VisPlugin {
           setText(value.toString());
           return;
         }
-        double v = ((Double) value).doubleValue();
-        setText(String.format("%1.1f dBm", v));
+        setText(String.format("%1.1f dBm", (Double) value));
       }
     });
     graphTable.getColumnModel().getColumn(IDX_LQI).setCellRenderer(new DefaultTableCellRenderer() {
@@ -180,8 +178,7 @@ public class DGRMConfigurator extends VisPlugin {
 	      setText(value.toString());
 	      return;
 	    }
-    	long v = ((Long) value).longValue();
-    	setText(String.valueOf(v));
+        setText(String.valueOf(value));
 		}
     });
     graphTable.getColumnModel().getColumn(IDX_DELAY).setCellRenderer(new DefaultTableCellRenderer() {
@@ -192,8 +189,7 @@ public class DGRMConfigurator extends VisPlugin {
           setText(value.toString());
           return;
         }
-        long v = ((Long) value).longValue();
-        setText(v + " ms");
+        setText(value + " ms");
       }
     });
     graphTable.getColumnModel().getColumn(IDX_RATIO).setCellEditor(new DefaultCellEditor(combo));
