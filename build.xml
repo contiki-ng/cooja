@@ -23,6 +23,7 @@
   <property name="dist" location="dist"/>
   <property name="lib" location="lib"/>
   <property name="args" value="" />
+  <property name="CC" value="gcc" />
 
   <property name="log4j.version" value="2.17.2" />
 
@@ -114,6 +115,33 @@ The COOJA Simulator
       <sysproperty key="user.language" value="en"/>
       <arg line="${args}"/>
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
+    </java>
+  </target>
+
+  <!-- Target for debugging memory errors in Contiki-NG. Requires
+       Contiki-NG to be built with -fsanitize=address, and possibly
+       also -fno-omit-frame-pointer to get better backtraces,
+       -fno-stack-protector on modern GCCs,
+       and -fsanitize-recover=address if using halt_on_error=0. -->
+  <target name="run_asan" depends="jar">
+    <!-- GCC checks if stderr is a terminal to decide about color output.
+         Force color since output is easier to read with colors. -->
+    <property name="asan_color" value="always" />
+    <!-- JVM needs to handle SEGV. Unlikely to find leaks in Contiki-NG.
+         halt_on_error=0 requires CFLAGS/LDFLAGS to also contain
+         -fsanitize-recover=address -->
+    <property name="asan_options"
+              value="color=${asan_color} handle_segv=0 detect_leaks=0" />
+    <exec executable="${CC}" outputproperty="libasan">
+      <arg value="-print-file-name=libasan.so"/>
+    </exec>
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
+      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
+      <!-- Address sanitizer needs to be initialized early, so LD_PRELOAD
+           the library into the JVM. -->
+      <env key="LD_PRELOAD" value="${libasan}"/>
+      <env key="ASAN_OPTIONS" value="${asan_options}"/>
+      <arg line="${args}"/>
     </java>
   </target>
 
