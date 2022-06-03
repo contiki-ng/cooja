@@ -3163,6 +3163,7 @@ public class Cooja extends Observable {
           randomSeed =  Long.valueOf(arg);
         } catch (Exception e) {
           logger.error("Failed to convert \"" + arg +"\" to an integer.");
+          System.exit(1);
         }
       }
     }
