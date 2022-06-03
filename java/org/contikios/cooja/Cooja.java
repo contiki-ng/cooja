@@ -3178,16 +3178,14 @@ public class Cooja extends Observable {
           path = path.getParent();
         }
         // Cooja JAR/classes are either in the dist or build directories and we want the installation directory
-        path = path.getParent();
-
-        String coojaInstallationDir = path.normalize().toString();
-        if (!coojaInstallationDir.endsWith("/")) {
-          coojaInstallationDir += '/';
-        }
-        Cooja.specifiedCoojaPath = coojaInstallationDir;
+        Cooja.specifiedCoojaPath = path.getParent().normalize().toString();
       } catch (Exception e) {
         logger.warn("Failed to resolve Cooja path - reverting to default", e);
       }
+    }
+
+    if (Cooja.specifiedCoojaPath != null && !Cooja.specifiedCoojaPath.endsWith("/")) {
+      Cooja.specifiedCoojaPath += '/';
     }
 
     // Check if simulator should be quick-started
