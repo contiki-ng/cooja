@@ -506,25 +506,6 @@ public class Cooja extends Observable {
     return frame != null;
   }
 
-  /**
-   * Tries to create/remove simulator visualizer.
-   *
-   * @param visualized Visualized
-   */
-  public void setVisualizedInFrame(boolean visualized) {
-    if (visualized) {
-      if (!isVisualizedInFrame()) {
-        configureFrame(cooja, false);
-      }
-    } else {
-      if (frame != null) {
-        frame.setVisible(false);
-        frame.dispose();
-        frame = null;
-      }
-    }
-  }
-
   public File getLastOpenedFile() {
     // Fetch current history
     String[] historyArray = getExternalToolsSetting("SIMCFG_HISTORY", "").split(";");
