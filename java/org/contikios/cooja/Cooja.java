@@ -1084,7 +1084,7 @@ public class Cooja extends Observable {
     return menuBar;
   }
 
-  private static void configureFrame(final Cooja gui, boolean createSimDialog) {
+  private static void configureFrame(final Cooja gui) {
 
     if (frame == null) {
       frame = new JFrame(WINDOW_TITLE);
@@ -1158,15 +1158,6 @@ public class Cooja extends Observable {
     }
 
     frame.setVisible(true);
-
-    if (createSimDialog) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          gui.doCreateSimulation(true);
-        }
-      });
-    }
   }
 
   /**
@@ -1276,7 +1267,7 @@ public class Cooja extends Observable {
     }
     Cooja gui = new Cooja(desktop);
     if (vis) {
-      configureFrame(gui, false);
+      configureFrame(gui);
     }
 
     if (vis) {
@@ -1307,7 +1298,7 @@ public class Cooja extends Observable {
     JDesktopPane desktop = createDesktopPane();
     frame = new JFrame(WINDOW_TITLE);
     Cooja gui = new Cooja(desktop);
-    configureFrame(gui, false);
+    configureFrame(gui);
 
     logger.info("> Creating simulation");
     Simulation sim = new Simulation(gui);
@@ -3255,7 +3246,7 @@ public class Cooja extends Observable {
           JDesktopPane desktop = createDesktopPane();
           frame = new JFrame(WINDOW_TITLE);
           Cooja gui = new Cooja(desktop);
-          configureFrame(gui, false);
+          configureFrame(gui);
         }
       });
 
