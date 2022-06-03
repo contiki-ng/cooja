@@ -572,7 +572,7 @@ public class Cooja extends Observable {
       lastItem.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-  				doLoadConfigAsync(true, quick, f);
+          doLoadConfigAsync(quick, f);
   			}
       });
       lastItem.putClientProperty("file", file);
@@ -581,11 +581,11 @@ public class Cooja extends Observable {
     }
   }
 
-  private void doLoadConfigAsync(final boolean ask, final boolean quick, final File file) {
+  private void doLoadConfigAsync(final boolean quick, final File file) {
     new Thread(new Runnable() {
       @Override
       public void run() {
-        cooja.doLoadConfig(ask, quick, file, null);
+        cooja.doLoadConfig(true, quick, file, null);
       }
     }).start();
   }
@@ -598,7 +598,7 @@ public class Cooja extends Observable {
     browseItem2.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-				doLoadConfigAsync(true, false, null);
+        doLoadConfigAsync(false, null);
 			}
     });
     reconfigureMenu.add(browseItem2);
@@ -610,7 +610,7 @@ public class Cooja extends Observable {
     browseItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-				doLoadConfigAsync(true, true, null);
+        doLoadConfigAsync(true, null);
 			}
     });
     menuOpenSimulation.add(browseItem);
