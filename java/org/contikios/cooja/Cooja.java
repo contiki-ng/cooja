@@ -506,25 +506,6 @@ public class Cooja extends Observable {
     return frame != null;
   }
 
-  /**
-   * Tries to create/remove simulator visualizer.
-   *
-   * @param visualized Visualized
-   */
-  public void setVisualizedInFrame(boolean visualized) {
-    if (visualized) {
-      if (!isVisualizedInFrame()) {
-        configureFrame(cooja, false);
-      }
-    } else {
-      if (frame != null) {
-        frame.setVisible(false);
-        frame.dispose();
-        frame = null;
-      }
-    }
-  }
-
   public File getLastOpenedFile() {
     // Fetch current history
     String[] historyArray = getExternalToolsSetting("SIMCFG_HISTORY", "").split(";");
@@ -591,7 +572,7 @@ public class Cooja extends Observable {
       lastItem.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-  				doLoadConfigAsync(true, quick, f);
+          doLoadConfigAsync(quick, f);
   			}
       });
       lastItem.putClientProperty("file", file);
@@ -600,11 +581,11 @@ public class Cooja extends Observable {
     }
   }
 
-  private void doLoadConfigAsync(final boolean ask, final boolean quick, final File file) {
+  private void doLoadConfigAsync(final boolean quick, final File file) {
     new Thread(new Runnable() {
       @Override
       public void run() {
-        cooja.doLoadConfig(ask, quick, file, null);
+        cooja.doLoadConfig(true, quick, file, null);
       }
     }).start();
   }
@@ -617,7 +598,7 @@ public class Cooja extends Observable {
     browseItem2.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-				doLoadConfigAsync(true, false, null);
+        doLoadConfigAsync(false, null);
 			}
     });
     reconfigureMenu.add(browseItem2);
@@ -629,7 +610,7 @@ public class Cooja extends Observable {
     browseItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-				doLoadConfigAsync(true, true, null);
+        doLoadConfigAsync(true, null);
 			}
     });
     menuOpenSimulation.add(browseItem);
@@ -1103,7 +1084,7 @@ public class Cooja extends Observable {
     return menuBar;
   }
 
-  private static void configureFrame(final Cooja gui, boolean createSimDialog) {
+  private static void configureFrame(final Cooja gui) {
 
     if (frame == null) {
       frame = new JFrame(WINDOW_TITLE);
@@ -1177,15 +1158,6 @@ public class Cooja extends Observable {
     }
 
     frame.setVisible(true);
-
-    if (createSimDialog) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          gui.doCreateSimulation(true);
-        }
-      });
-    }
   }
 
   /**
@@ -1295,7 +1267,7 @@ public class Cooja extends Observable {
     }
     Cooja gui = new Cooja(desktop);
     if (vis) {
-      configureFrame(gui, false);
+      configureFrame(gui);
     }
 
     if (vis) {
@@ -1326,7 +1298,7 @@ public class Cooja extends Observable {
     JDesktopPane desktop = createDesktopPane();
     frame = new JFrame(WINDOW_TITLE);
     Cooja gui = new Cooja(desktop);
-    configureFrame(gui, false);
+    configureFrame(gui);
 
     logger.info("> Creating simulation");
     Simulation sim = new Simulation(gui);
@@ -2627,13 +2599,10 @@ public class Cooja extends Observable {
 
   /**
    * Create a new simulation
-   *
-   * @param askForConfirmation
-   *          Should we ask for confirmation if a simulation is already active?
    */
-  public void doCreateSimulation(boolean askForConfirmation) {
+  public void doCreateSimulation() {
     /* Remove current simulation */
-    if (!doRemoveSimulation(askForConfirmation)) {
+    if (!doRemoveSimulation(true)) {
       return;
     }
 
@@ -3273,7 +3242,7 @@ public class Cooja extends Observable {
           JDesktopPane desktop = createDesktopPane();
           frame = new JFrame(WINDOW_TITLE);
           Cooja gui = new Cooja(desktop);
-          configureFrame(gui, false);
+          configureFrame(gui);
         }
       });
 
@@ -4398,7 +4367,7 @@ public class Cooja extends Observable {
 		private static final long serialVersionUID = 5053703908505299911L;
     @Override
     public void actionPerformed(ActionEvent e) {
-      cooja.doCreateSimulation(true);
+      cooja.doCreateSimulation();
     }
     @Override
     public boolean shouldBeEnabled() {
