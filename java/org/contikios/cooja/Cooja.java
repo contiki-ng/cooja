@@ -2599,13 +2599,10 @@ public class Cooja extends Observable {
 
   /**
    * Create a new simulation
-   *
-   * @param askForConfirmation
-   *          Should we ask for confirmation if a simulation is already active?
    */
-  public void doCreateSimulation(boolean askForConfirmation) {
+  public void doCreateSimulation() {
     /* Remove current simulation */
-    if (!doRemoveSimulation(askForConfirmation)) {
+    if (!doRemoveSimulation(true)) {
       return;
     }
 
@@ -4371,7 +4368,7 @@ public class Cooja extends Observable {
 		private static final long serialVersionUID = 5053703908505299911L;
     @Override
     public void actionPerformed(ActionEvent e) {
-      cooja.doCreateSimulation(true);
+      cooja.doCreateSimulation();
     }
     @Override
     public boolean shouldBeEnabled() {
