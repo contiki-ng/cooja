@@ -33,15 +33,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.security.AccessControlException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -67,16 +64,6 @@ public class ExecuteJAR {
   public final static String PROJECT_DEFAULT_CONFIG_FILENAME = "cooja_default.config";
 
   public static void main(String[] args) {
-    try {
-      if ((new File(Cooja.LOG_CONFIG_FILE)).exists()) {
-        DOMConfigurator.configure(Cooja.LOG_CONFIG_FILE);
-      } else {
-        DOMConfigurator.configure(Cooja.class.getResource("/" + Cooja.LOG_CONFIG_FILE));
-      }
-    } catch (AccessControlException e) {
-      BasicConfigurator.configure();
-    }
-
     if (args.length > 0) {
       /* Generate executable JAR */
       if (args.length != 2) {

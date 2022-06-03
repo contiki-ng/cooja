@@ -68,7 +68,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.AccessControlException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -117,10 +116,16 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.VisPlugin.PluginRequiresVisualizationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
@@ -159,7 +164,7 @@ import org.jdom.output.XMLOutputter;
 public class Cooja extends Observable {
   private static JFrame frame = null;
   private static final long serialVersionUID = 1L;
-  private static final Logger logger = LogManager.getLogger(Cooja.class);
+  private static Logger logger = null;
 
   /**
    * External tools configuration.
@@ -196,16 +201,11 @@ public class Cooja extends Observable {
    * External tools user settings filename.
    */
   public static final String EXTERNAL_TOOLS_USER_SETTINGS_FILENAME = ".cooja.user.properties";
-  public static File externalToolsUserSettingsFile;
+  public static File externalToolsUserSettingsFile = null;
   private static boolean externalToolsUserSettingsFileReadOnly = false;
 
   private static String specifiedCoojaPath = null;
   private static String specifiedContikiPath = null;
-
-  /**
-   * Logger settings filename.
-   */
-  public static final String LOG_CONFIG_FILE = "log4j_config.xml";
 
   /**
    * Default extension configuration filename.
@@ -3074,38 +3074,65 @@ public class Cooja extends Observable {
   public static void main(String[] args) {
     String logConfigFile = null;
     String cfgLogDir = ".";
+    String logName = "COOJA.log";
     Long randomSeed = null;
 
     for (String element : args) {
-      if (element.startsWith("-log4j=")) {
-        String arg = element.substring("-log4j=".length());
+      if (element.startsWith("-log4j2=")) {
+        String arg = element.substring("-log4j2=".length());
+        if (!Files.exists(Path.of(arg))) {
+          System.err.println("Configuration file '" + arg + "' does not exist");
+          System.exit(1);
+        }
         logConfigFile = arg;
       } else if (element.startsWith("-logdir=")) {
         cfgLogDir = element.substring("-logdir=".length());
+      } else if (element.startsWith("-logname=")) {
+        logName = element.substring("-logname=".length());
       }
     }
 
-    try {
-      // Configure logger
-      if (logConfigFile != null) {
-        if (new File(logConfigFile).exists()) {
-          DOMConfigurator.configure(logConfigFile);
-        } else {
-          logger.error("Failed to open " + logConfigFile);
-          System.exit(1);
-        }
-      } else if (new File(LOG_CONFIG_FILE).exists()) {
-        DOMConfigurator.configure(LOG_CONFIG_FILE);
-      } else {
-        // Used when starting from jar
-        DOMConfigurator.configure(Cooja.class.getResource("/" + LOG_CONFIG_FILE));
-      }
-
-      externalToolsUserSettingsFile = new File(System.getProperty("user.home"), EXTERNAL_TOOLS_USER_SETTINGS_FILENAME);
-    } catch (AccessControlException e) {
-      BasicConfigurator.configure();
-      externalToolsUserSettingsFile = null;
+    if (!logName.endsWith(".log")) {
+      logName += ".log";
     }
+
+    // Configure logger
+    if (logConfigFile == null) {
+      ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
+      builder.setStatusLevel(Level.INFO);
+      builder.setConfigurationName("DefaultConfig");
+      builder.add(builder.newFilter("ThresholdFilter", Filter.Result.ACCEPT, Filter.Result.NEUTRAL)
+              .addAttribute("level", Level.INFO));
+      // Configure console appender.
+      AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE")
+              .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
+      appenderBuilder.add(builder.newLayout("PatternLayout")
+              .addAttribute("pattern", "%5p [%t] (%F:%L) - %m%n"));
+      appenderBuilder.add(builder.newFilter("MarkerFilter", Filter.Result.DENY, Filter.Result.NEUTRAL)
+              .addAttribute("marker", "FLOW"));
+      builder.add(appenderBuilder);
+      builder.add(builder.newLogger("org.apache.logging.log4j", Level.DEBUG)
+              .add(builder.newAppenderRef("Stdout")).addAttribute("additivity", false));
+      // Configure logfile file appender.
+      appenderBuilder = builder.newAppender("File", "FILE")
+              .addAttribute("fileName", cfgLogDir + "/" + logName)
+              .addAttribute("Append", "false");
+      appenderBuilder.add(builder.newLayout("PatternLayout")
+              .addAttribute("pattern", "[%d{HH:mm:ss} - %t] [%F:%L] [%p] - %m%n"));
+      appenderBuilder.add(builder.newFilter("MarkerFilter", Filter.Result.DENY, Filter.Result.NEUTRAL)
+              .addAttribute("marker", "FLOW"));
+      builder.add(appenderBuilder);
+      builder.add(builder.newLogger("org.apache.logging.log4j", Level.DEBUG)
+              .add(builder.newAppenderRef("File")).addAttribute("additivity", false));
+      // Construct the root logger and initialize the configurator
+      builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("Stdout"))
+              .add(builder.newAppenderRef("File")));
+      Configurator.initialize(builder.build());
+    } else {
+      Configurator.initialize("ConfigFile", logConfigFile);
+    }
+    logger = LogManager.getLogger(Cooja.class);
+    externalToolsUserSettingsFile = new File(System.getProperty("user.home"), EXTERNAL_TOOLS_USER_SETTINGS_FILENAME);
 
     /* Look and Feel: Nimbus */
     setLookAndFeel();
