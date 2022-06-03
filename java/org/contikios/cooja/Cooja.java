@@ -4439,7 +4439,7 @@ public class Cooja extends Observable {
     }
     @Override
     public boolean shouldBeEnabled() {
-      return true;
+      return getSimulation() != null;
     }
   };
   GUIAction reloadRandomSimulationAction = new GUIAction("Reload with new random seed", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK)) {
