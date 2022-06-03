@@ -34,6 +34,7 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Vector;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
@@ -126,12 +127,13 @@ public abstract class CoreComm {
    * Generates new source file by reading default source template and replacing
    * the class name field.
    *
+   * @param tempDir Directory for temporary files
    * @param className
    *          Java class name (without extension)
    * @throws MoteTypeCreationException
    *           If error occurs
    */
-  public static void generateLibSourceFile(String className)
+  public static void generateLibSourceFile(Path tempDir, String className)
       throws MoteTypeCreationException {
     BufferedWriter sourceFileWriter = null;
     BufferedReader templateFileReader = null;
@@ -156,13 +158,20 @@ public abstract class CoreComm {
       templateFileReader = new BufferedReader(reader);
       destFilename = className + ".java";
 
-      File dir = new File("org/contikios/cooja/corecomm");
-      if (!dir.exists()) {
-        dir.mkdirs();
+      File dir = tempDir.toFile();
+      StringBuilder path = new StringBuilder(tempDir.toString());
+      // Gradually do mkdir() since mkdirs() makes deleteOnExit() leave the
+      // directory when Cooja quits.
+      for (String p : new String[] {"/org", "/contikios", "/cooja", "/corecomm"}) {
+        path.append(p);
+        dir = new File(path.toString());
+        dir.mkdir();
+        dir.deleteOnExit();
       }
 
-      sourceFileWriter = new BufferedWriter(new OutputStreamWriter(
-          new FileOutputStream("org/contikios/cooja/corecomm/" + destFilename), UTF_8));
+      Path dst = Path.of(dir + "/" + destFilename);
+      sourceFileWriter = Files.newBufferedWriter(dst, UTF_8);
+      dst.toFile().deleteOnExit();
 
       // Replace special fields in template
       String line;
@@ -189,8 +198,7 @@ public abstract class CoreComm {
           .initCause(e);
     }
 
-    File genFile = new File("org/contikios/cooja/corecomm/" + destFilename);
-    if (genFile.exists()) {
+    if (Files.exists(Path.of(tempDir + "/org/contikios/cooja/corecomm/" + destFilename))) {
       return;
     }
 
@@ -201,12 +209,13 @@ public abstract class CoreComm {
   /**
    * Compiles Java class.
    *
+   * @param tempDir Directory for temporary files
    * @param className
    *          Java class name (without extension)
    * @throws MoteTypeCreationException
    *           If Java class compilation error occurs
    */
-  public static void compileSourceFile(String className)
+  public static void compileSourceFile(Path tempDir, String className)
       throws MoteTypeCreationException {
       /* Try to create a message list with support for GUI - will give not UI if headless */
     MessageList compilationOutput = MessageContainer.createMessageList(true);
@@ -214,8 +223,6 @@ public abstract class CoreComm {
         .getInputStream(MessageList.NORMAL);
     OutputStream compilationErrorStream = compilationOutput
         .getInputStream(MessageList.ERROR);
-
-    File classFile = new File("org/contikios/cooja/corecomm/" + className + ".class");
 
     try {
       int b;
@@ -225,9 +232,10 @@ public abstract class CoreComm {
           "." + File.pathSeparator +
           Cooja.getExternalToolsSetting("PATH_CONTIKI")
           + "/tools/cooja/dist/cooja.jar",
-          "org/contikios/cooja/corecomm/" + className + ".java" };
+          tempDir + "/org/contikios/cooja/corecomm/" + className + ".java" };
 
-      Process p = Runtime.getRuntime().exec(cmd, null, null);
+      ProcessBuilder pb = new ProcessBuilder(cmd);
+      Process p = pb.start();
       InputStream outputStream = p.getInputStream();
       InputStream errorStream = p.getErrorStream();
       while ((b = outputStream.read()) >= 0) {
@@ -236,12 +244,11 @@ public abstract class CoreComm {
       while ((b = errorStream.read()) >= 0) {
         compilationErrorStream.write(b);
       }
-      p.waitFor();
-
-      if (classFile.exists()) {
+      if (p.waitFor() == 0) {
+        File classFile = new File(tempDir + "/org/contikios/cooja/corecomm/" + className + ".class");
+        classFile.deleteOnExit();
         return;
       }
-
     } catch (IOException | InterruptedException e) {
       MoteTypeCreationException exception = (MoteTypeCreationException) new MoteTypeCreationException(
           "Could not compile corecomm source file: " + className + ".java")
@@ -259,16 +266,17 @@ public abstract class CoreComm {
   /**
    * Loads given Java class file from disk.
    *
+   * @param tempDir Directory for temporary files
    * @param className Java class name
    * @return Loaded class
    * @throws MoteTypeCreationException If error occurs
    */
-  public static Class<?> loadClassFile(String className)
+  public static Class<?> loadClassFile(Path tempDir, String className)
       throws MoteTypeCreationException {
     Class<?> loadedClass = null;
     try {
       ClassLoader urlClassLoader = new URLClassLoader(
-          new URL[] { new File(".").toURI().toURL() },
+          new URL[] { tempDir.toUri().toURL() },
           CoreComm.class.getClassLoader());
       loadedClass = urlClassLoader.loadClass("org.contikios.cooja.corecomm."
           + className);
@@ -290,19 +298,20 @@ public abstract class CoreComm {
    * Create and return an instance of the core communicator identified by
    * className. This core communicator will load the native library libFile.
    *
+   * @param tempDir Directory for temporary files
    * @param className
    *          Class name of core communicator
    * @param libFile
    *          Native library file
    * @return Core Communicator
    */
-  public static CoreComm createCoreComm(String className, File libFile)
+  public static CoreComm createCoreComm(Path tempDir, String className, File libFile)
       throws MoteTypeCreationException {
-    generateLibSourceFile(className);
+    generateLibSourceFile(tempDir, className);
 
-    compileSourceFile(className);
+    compileSourceFile(tempDir, className);
 
-    Class newCoreCommClass = loadClassFile(className);
+    Class newCoreCommClass = loadClassFile(tempDir, className);
 
     try {
       Constructor constr = newCoreCommClass
