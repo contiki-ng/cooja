@@ -952,26 +952,24 @@ public class ContikiMoteType implements MoteType {
                                 libraryFile.getName().replace(File.separatorChar, '/'));
 
       /* Execute command, read response */
-      String line;
-      Process p = Runtime.getRuntime().exec(
-              command.split(" "),
-              null,
-              libraryFile.getParentFile()
-      );
+      ProcessBuilder pb = new ProcessBuilder("/bin/sh", "-c", command);
+      pb.directory(libraryFile.getParentFile());
+      Process p = pb.start();
       BufferedReader input = new BufferedReader(
               new InputStreamReader(p.getInputStream(), UTF_8)
       );
       p.getErrorStream().close();
+      String line;
       while ((line = input.readLine()) != null) {
         output.add(line);
       }
       input.close();
 
-      if (output == null || output.isEmpty()) {
+      if (p.waitFor() != 0 || output.isEmpty()) {
         return null;
       }
       return output.toArray(new String[0]);
-    } catch (IOException err) {
+    } catch (InterruptedException | IOException err) {
       logger.fatal("Command error: " + err.getMessage(), err);
       return null;
     }
