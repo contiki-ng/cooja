@@ -103,7 +103,7 @@ public class ExecuteJAR {
     Cooja.externalToolsUserSettingsFile = new File(
         System.getProperty("user.home"), 
         Cooja.EXTERNAL_TOOLS_USER_SETTINGS_FILENAME);
-    Simulation s = Cooja.quickStartSimulationConfig(config, false, null);
+    Simulation s = Cooja.quickStartSimulationConfig(config, false, null, ".");
     if (s == null) {
       throw new RuntimeException(
           "Error when creating simulation"
@@ -188,7 +188,7 @@ public class ExecuteJAR {
 
     logger.info("Starting simulation");
     Cooja.setLookAndFeel();
-    Simulation sim = Cooja.quickStartSimulationConfig(new File(executeDir, SIMCONFIG_FILENAME), false, null);
+    Simulation sim = Cooja.quickStartSimulationConfig(new File(executeDir, SIMCONFIG_FILENAME), false, null, ".");
     if (sim != null){
         /* Set simulation speed to maximum and start simulation */
         sim.setSpeedLimit(null);

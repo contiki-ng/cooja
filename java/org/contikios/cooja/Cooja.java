@@ -250,6 +250,11 @@ public class Cooja extends Observable {
   public static Properties defaultExternalToolsSettings;
   public static Properties currentExternalToolsSettings;
 
+  /**
+   * The name of the directory to output logs to.
+   */
+  public final String logDirectory;
+
   private static final String externalToolsSettingNames[] = new String[] {
     "PATH_COOJA",
     "PATH_CONTIKI", "PATH_COOJA_CORE_RELATIVE","PATH_APPS",
@@ -362,10 +367,12 @@ public class Cooja extends Observable {
   /**
    * Creates a new COOJA Simulator GUI.
    *
-   * @param desktop Desktop pane
+   * @param logDirectory Directory for log files
+   * @param desktop      Desktop pane
    */
-  public Cooja(JDesktopPane desktop) {
+  public Cooja(String logDirectory, JDesktopPane desktop) {
     cooja = this;
+    this.logDirectory = logDirectory;
     mySimulation = null;
     myDesktopPane = desktop;
 
@@ -1260,12 +1267,12 @@ public class Cooja extends Observable {
     return desktop;
   }
 
-  public static Simulation quickStartSimulationConfig(File config, boolean vis, Long manualRandomSeed) {
+  public static Simulation quickStartSimulationConfig(File config, boolean vis, Long manualRandomSeed, String logDirectory) {
     JDesktopPane desktop = createDesktopPane();
     if (vis) {
       frame = new JFrame(WINDOW_TITLE);
     }
-    Cooja gui = new Cooja(desktop);
+    Cooja gui = new Cooja(logDirectory, desktop);
     if (vis) {
       configureFrame(gui);
     }
@@ -1291,13 +1298,14 @@ public class Cooja extends Observable {
   /**
    * Allows user to create a simulation with a single mote type.
    *
-   * @param source Contiki application file name
+   * @param source       Contiki application file name
+   * @param logDirectory Directory for log files
    * @return True if simulation was created
    */
-  private static Simulation quickStartSimulation(String source) {
+  private static Simulation quickStartSimulation(String source, String logDirectory) {
     JDesktopPane desktop = createDesktopPane();
     frame = new JFrame(WINDOW_TITLE);
-    Cooja gui = new Cooja(desktop);
+    Cooja gui = new Cooja(logDirectory, desktop);
     configureFrame(gui);
 
     logger.info("> Creating simulation");
@@ -3061,18 +3069,19 @@ public class Cooja extends Observable {
   /**
    * Load configurations and create a GUI.
    *
-   * @param args
-   *          null
+   * @param args Command line arguments
    */
   public static void main(String[] args) {
     String logConfigFile = null;
+    String cfgLogDir = ".";
     Long randomSeed = null;
-    
-    
+
     for (String element : args) {
       if (element.startsWith("-log4j=")) {
         String arg = element.substring("-log4j=".length());
         logConfigFile = arg;
+      } else if (element.startsWith("-logdir=")) {
+        cfgLogDir = element.substring("-logdir=".length());
       }
     }
 
@@ -3125,7 +3134,7 @@ public class Cooja extends Observable {
           Cooja.externalToolsUserSettingsFileReadOnly = true;
         }
       }
-      
+
       if (element.startsWith("-random-seed=")) {
         String arg = element.substring("-random-seed=".length());
         try {          
@@ -3137,6 +3146,7 @@ public class Cooja extends Observable {
       }
     }
 
+    final String logDirectory = cfgLogDir;
     if (Cooja.specifiedCoojaPath == null) {
       try {
         /* Find path to Cooja installation directory from code base */
@@ -3170,7 +3180,7 @@ public class Cooja extends Observable {
 
       Simulation sim = null;
       if (contikiApp.endsWith(".csc")) {
-        sim = quickStartSimulationConfig(new File(contikiApp), true, randomSeed);
+        sim = quickStartSimulationConfig(new File(contikiApp), true, randomSeed, logDirectory);
       } else {
         if (contikiApp.endsWith(".cooja")) {
           contikiApp = contikiApp.substring(0, contikiApp.length() - ".cooja".length());
@@ -3179,7 +3189,7 @@ public class Cooja extends Observable {
           contikiApp += ".c";
         }
 
-        sim = quickStartSimulation(contikiApp);
+        sim = quickStartSimulation(contikiApp, logDirectory);
       }
 
       if (sim == null) {
@@ -3192,7 +3202,7 @@ public class Cooja extends Observable {
       /* Load simulation */
       String config = args[0].substring("-nogui=".length());
       File configFile = new File(config);
-      Simulation sim = quickStartSimulationConfig(configFile, false, randomSeed);
+      Simulation sim = quickStartSimulationConfig(configFile, false, randomSeed, logDirectory);
       if (sim == null) {
         System.exit(1);
       }
@@ -3241,7 +3251,7 @@ public class Cooja extends Observable {
         public void run() {
           JDesktopPane desktop = createDesktopPane();
           frame = new JFrame(WINDOW_TITLE);
-          Cooja gui = new Cooja(desktop);
+          Cooja gui = new Cooja(logDirectory, desktop);
           configureFrame(gui);
         }
       });

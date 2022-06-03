@@ -53,7 +53,10 @@ import org.contikios.cooja.plugins.SimControl;
  * @author Fredrik Osterlind
  */
 public abstract class VisPlugin extends JInternalFrame implements Plugin {
-
+  /**
+   * Reference to Cooja so public variables can be accessed.
+   */
+  protected final Cooja gui;
   public VisPlugin(String title, final Cooja gui) {
     this(title, gui, true);
   }
@@ -65,6 +68,7 @@ public abstract class VisPlugin extends JInternalFrame implements Plugin {
       throw new PluginRequiresVisualizationException();
     }
 
+    this.gui = gui;
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
     addInternalFrameListener(new InternalFrameAdapter() {
