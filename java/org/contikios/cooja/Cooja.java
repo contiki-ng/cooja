@@ -2384,12 +2384,10 @@ public class Cooja extends Observable {
   /**
    * Reload currently configured simulation.
    * Reloading a simulation may include recompiling Contiki.
-   *
-   * @param autoStart Start executing simulation when loaded
-   * @param randomSeed Simulation's next random seed
    */
-  public void reloadCurrentSimulation(final boolean autoStart, final long randomSeed) {
-    if (getSimulation() == null) {
+  public void reloadCurrentSimulation() {
+    final Simulation sim = getSimulation();
+    if (sim == null) {
       logger.fatal("No simulation to reload");
       return;
     }
@@ -2399,6 +2397,8 @@ public class Cooja extends Observable {
       return;
     }
 
+    final boolean autoStart = sim.isRunning();
+    final long randomSeed = sim.getRandomSeed();
     final JDialog progressDialog = new JDialog(frame, "Reloading", true);
     final Thread loadThread = new Thread(new Runnable() {
       @Override
@@ -2512,18 +2512,6 @@ public class Cooja extends Observable {
     }
 
     return false;
-  }
-
-  /**
-   * Reload currently configured simulation.
-   * Reloading a simulation may include recompiling Contiki.
-   * The same random seed is used.
-   *
-   * @see #reloadCurrentSimulation(boolean, long)
-   * @param autoStart Start executing simulation when loaded
-   */
-  public void reloadCurrentSimulation(boolean autoStart) {
-    reloadCurrentSimulation(autoStart, getSimulation().getRandomSeed());
   }
 
   /**
@@ -4437,10 +4425,7 @@ public class Cooja extends Observable {
         }).start();
         return;
       }
-
-      /* Reload current simulation */
-      long seed = getSimulation().getRandomSeed();
-      reloadCurrentSimulation(getSimulation().isRunning(), seed);
+      reloadCurrentSimulation();
     }
     @Override
     public boolean shouldBeEnabled() {
