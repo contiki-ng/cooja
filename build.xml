@@ -32,6 +32,9 @@
     <pathelement location="lib/jdom.jar"/>
     <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
     <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+    <!-- Downloaded from
+         https://mvnrepository.com/artifact/info.picocli/picocli/4.6.3 -->
+    <pathelement location="lib/picocli-4.6.3.jar"/>
     <pathelement location="lib/syntaxpane-1.2.0.jar"/>
     <pathelement location="lib/swingx-all-1.6.4.jar"/>
   </path>
@@ -205,7 +208,7 @@ The COOJA Simulator
     <mkdir dir="${dist}/lib"/>
     <jar destfile="${dist}/cooja.jar" basedir="${build}">
       <manifest>
-        <attribute name="Main-Class" value="org.contikios.cooja.Cooja"/>
+        <attribute name="Main-Class" value="org.contikios.cooja.Main"/>
         <attribute name="Class-Path" value=". ${manifest.classpath}"/>
       </manifest>
     </jar>
