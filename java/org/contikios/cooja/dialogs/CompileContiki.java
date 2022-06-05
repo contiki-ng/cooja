@@ -246,7 +246,7 @@ public class CompileContiki {
           }
 
           messageDialog.addMessage("", MessageList.NORMAL);
-          messageDialog.addMessage("Compilation succeded", MessageList.NORMAL);
+          messageDialog.addMessage("Compilation succeeded", MessageList.NORMAL);
           if (onSuccess != null) {
             onSuccess.actionPerformed(null);
           }
