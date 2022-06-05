@@ -1706,11 +1706,11 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Same as the {@link #startPlugin(Class, Cooja, Simulation, Mote)} method,
+   * Same as the {@link #startPlugin(Class, Cooja, Simulation, Mote, boolean)} method,
    * but does not throw exceptions. If COOJA is visualised, an error dialog
    * is shown if plugin could not be started.
    *
-   * @see #startPlugin(Class, Cooja, Simulation, Mote)
+   * @see #startPlugin(Class, Cooja, Simulation, Mote, boolean)
    * @param pluginClass Plugin class
    * @param argGUI Plugin GUI argument
    * @param argSimulation Plugin simulation argument
@@ -1743,13 +1743,6 @@ public class Cooja extends Observable {
   public Plugin tryStartPlugin(final Class<? extends Plugin> pluginClass,
       final Cooja argGUI, final Simulation argSimulation, final Mote argMote) {
     return tryStartPlugin(pluginClass, argGUI, argSimulation, argMote, true);
-  }
-
-  public Plugin startPlugin(final Class<? extends Plugin> pluginClass,
-      final Cooja argGUI, final Simulation argSimulation, final Mote argMote)
-  throws PluginConstructionException
-  {
-    return startPlugin(pluginClass, argGUI, argSimulation, argMote, true);
   }
 
   /**
