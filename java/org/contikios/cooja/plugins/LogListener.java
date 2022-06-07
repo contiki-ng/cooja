@@ -736,7 +736,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     });
   }
 
-  private enum  FilterState { NONE, PASS, REJECTED };
+  static private enum  FilterState { NONE, PASS, REJECTED };
   private class LogData {
     public final LogOutputEvent ev;
     public       FilterState    filtered;
