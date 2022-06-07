@@ -1,0 +1,5 @@
+Language: Java
+BasedOnStyle: LLVM
+ColumnLimit: 100
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
