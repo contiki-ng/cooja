@@ -33,8 +33,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.Throwable;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.zip.GZIPInputStream;
@@ -216,5 +218,14 @@ public class StringUtils {
     } catch (Exception ex) {
       return false;
     }
+  }
+
+  public static
+  String dumpStackTrace(Throwable ex) {
+      StringWriter writer = new StringWriter();
+      PrintWriter printWriter = new PrintWriter( writer );
+      ex.printStackTrace( printWriter );
+      printWriter.flush();
+      return writer.toString();
   }
 }
