@@ -62,11 +62,9 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -116,16 +114,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
-import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.VisPlugin.PluginRequiresVisualizationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
@@ -162,9 +152,13 @@ import org.jdom.output.XMLOutputter;
  * @author Fredrik Osterlind
  */
 public class Cooja extends Observable {
+  /**
+   * Version of Cooja.
+   */
+  public static final String VERSION = "4.8";
   private static JFrame frame = null;
   private static final long serialVersionUID = 1L;
-  private static Logger logger = null;
+  private static final Logger logger = LogManager.getLogger(Cooja.class);
 
   /**
    * External tools configuration.
@@ -3041,135 +3035,35 @@ public class Cooja extends Observable {
   /**
    * Load configurations and create a GUI.
    *
-   * @param args Command line arguments
+   * @param options Parsed command line options
    */
-  public static void main(String[] args) {
-    String logConfigFile = null;
-    String cfgLogDir = ".";
-    String logName = "COOJA.log";
-    Long randomSeed = null;
-
-    for (String element : args) {
-      if (element.startsWith("-log4j2=")) {
-        String arg = element.substring("-log4j2=".length());
-        if (!Files.exists(Path.of(arg))) {
-          System.err.println("Configuration file '" + arg + "' does not exist");
-          System.exit(1);
-        }
-        logConfigFile = arg;
-      } else if (element.startsWith("-logdir=")) {
-        cfgLogDir = element.substring("-logdir=".length());
-      } else if (element.startsWith("-logname=")) {
-        logName = element.substring("-logname=".length());
-      }
-    }
-
-    if (!logName.endsWith(".log")) {
-      logName += ".log";
-    }
-
-    // Configure logger
-    if (logConfigFile == null) {
-      ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
-      builder.setStatusLevel(Level.INFO);
-      builder.setConfigurationName("DefaultConfig");
-      builder.add(builder.newFilter("ThresholdFilter", Filter.Result.ACCEPT, Filter.Result.NEUTRAL)
-              .addAttribute("level", Level.INFO));
-      // Configure console appender.
-      AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE")
-              .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
-      appenderBuilder.add(builder.newLayout("PatternLayout")
-              .addAttribute("pattern", "%5p [%t] (%F:%L) - %m%n"));
-      appenderBuilder.add(builder.newFilter("MarkerFilter", Filter.Result.DENY, Filter.Result.NEUTRAL)
-              .addAttribute("marker", "FLOW"));
-      builder.add(appenderBuilder);
-      builder.add(builder.newLogger("org.apache.logging.log4j", Level.DEBUG)
-              .add(builder.newAppenderRef("Stdout")).addAttribute("additivity", false));
-      // Configure logfile file appender.
-      appenderBuilder = builder.newAppender("File", "FILE")
-              .addAttribute("fileName", cfgLogDir + "/" + logName)
-              .addAttribute("Append", "false");
-      appenderBuilder.add(builder.newLayout("PatternLayout")
-              .addAttribute("pattern", "[%d{HH:mm:ss} - %t] [%F:%L] [%p] - %m%n"));
-      appenderBuilder.add(builder.newFilter("MarkerFilter", Filter.Result.DENY, Filter.Result.NEUTRAL)
-              .addAttribute("marker", "FLOW"));
-      builder.add(appenderBuilder);
-      builder.add(builder.newLogger("org.apache.logging.log4j", Level.DEBUG)
-              .add(builder.newAppenderRef("File")).addAttribute("additivity", false));
-      // Construct the root logger and initialize the configurator
-      builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("Stdout"))
-              .add(builder.newAppenderRef("File")));
-      Configurator.initialize(builder.build());
+  public static void go(Main options) {
+    externalToolsUserSettingsFileReadOnly = options.externalToolsConfig != null;
+    if (options.externalToolsConfig == null) {
+      externalToolsUserSettingsFile = new File(System.getProperty("user.home"), EXTERNAL_TOOLS_USER_SETTINGS_FILENAME);
     } else {
-      Configurator.initialize("ConfigFile", logConfigFile);
+      externalToolsUserSettingsFile = new File(options.externalToolsConfig);
     }
-    logger = LogManager.getLogger(Cooja.class);
-    externalToolsUserSettingsFile = new File(System.getProperty("user.home"), EXTERNAL_TOOLS_USER_SETTINGS_FILENAME);
+
+    specifiedContikiPath = options.contikiPath;
+    specifiedCoojaPath = options.coojaPath;
 
     /* Look and Feel: Nimbus */
     setLookAndFeel();
 
-    // Parse general command arguments
-    for (String element : args) {
-      if (element.startsWith("-contiki=")) {
-        String arg = element.substring("-contiki=".length());
-        Cooja.specifiedContikiPath = arg;
-      }
-
-      if (element.startsWith("-cooja=")) {
-        String arg = element.substring("-cooja=".length());
-        Cooja.specifiedCoojaPath = arg;
-      }
-
-      if (element.startsWith("-external_tools_config=")) {
-        String arg = element.substring("-external_tools_config=".length());
-        File specifiedExternalToolsConfigFile = new File(arg);
-        if (!specifiedExternalToolsConfigFile.exists()) {
-          logger.fatal("Specified external tools configuration not found: " + specifiedExternalToolsConfigFile);
-          specifiedExternalToolsConfigFile = null;
-          System.exit(1);
-        } else {
-          Cooja.externalToolsUserSettingsFile = specifiedExternalToolsConfigFile;
-          Cooja.externalToolsUserSettingsFileReadOnly = true;
-        }
-      }
-
-      if (element.startsWith("-random-seed=")) {
-        String arg = element.substring("-random-seed=".length());
-        try {          
-          randomSeed =  Long.valueOf(arg);
-        } catch (Exception e) {
-          logger.error("Failed to convert \"" + arg +"\" to an integer.");
-          System.exit(1);
-        }
-      }
-    }
-
-    final String logDirectory = cfgLogDir;
-    if (Cooja.specifiedCoojaPath == null) {
-      try {
-        /* Find path to Cooja installation directory from code base */
-        URI domain_uri = Cooja.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-        Path path = Paths.get(domain_uri).toAbsolutePath();
-        File fp = path.toFile();
-        if (fp.isFile()) {
-          // Get the directory where the JAR file is placed
-          path = path.getParent();
-        }
-        // Cooja JAR/classes are either in the dist or build directories and we want the installation directory
-        Cooja.specifiedCoojaPath = path.getParent().normalize().toString();
-      } catch (Exception e) {
-        logger.warn("Failed to resolve Cooja path - reverting to default", e);
-      }
-    }
-
-    if (Cooja.specifiedCoojaPath != null && !Cooja.specifiedCoojaPath.endsWith("/")) {
-      Cooja.specifiedCoojaPath += '/';
-    }
-
     // Check if simulator should be quick-started
-    if (args.length > 0 && args[0].startsWith("-quickstart=")) {
-      String contikiApp = args[0].substring("-quickstart=".length());
+    final String logDirectory = options.logDir;
+    if (options.action == null) {
+      // Frame start-up
+      javax.swing.SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          Cooja gui = new Cooja(logDirectory, createDesktopPane(true));
+          configureFrame(gui);
+        }
+      });
+    } else if (options.action.quickstart != null) {
+      String contikiApp = options.action.quickstart;
 
       /* Cygwin fix */
       if (contikiApp.startsWith("/cygdrive/")) {
@@ -3179,7 +3073,7 @@ public class Cooja extends Observable {
 
       Simulation sim = null;
       if (contikiApp.endsWith(".csc")) {
-        sim = quickStartSimulationConfig(new File(contikiApp), true, randomSeed, logDirectory);
+        sim = quickStartSimulationConfig(new File(contikiApp), true, options.randomSeed, logDirectory);
       } else {
         if (contikiApp.endsWith(".cooja")) {
           contikiApp = contikiApp.substring(0, contikiApp.length() - ".cooja".length());
@@ -3194,14 +3088,11 @@ public class Cooja extends Observable {
       if (sim == null) {
         System.exit(1);
       }
-      
-
-    } else if (args.length > 0 && args[0].startsWith("-nogui=")) {
-
+    } else if (options.action.nogui != null) {
       /* Load simulation */
-      String config = args[0].substring("-nogui=".length());
+      String config = options.action.nogui;
       File configFile = new File(config);
-      Simulation sim = quickStartSimulationConfig(configFile, false, randomSeed, logDirectory);
+      Simulation sim = quickStartSimulationConfig(configFile, false, options.randomSeed, logDirectory);
       if (sim == null) {
         System.exit(1);
       }
@@ -3239,20 +3130,6 @@ public class Cooja extends Observable {
           System.exit(1);
         }
       }
-    } else {
-      if (GraphicsEnvironment.isHeadless()) {
-        logger.fatal("Trying to start GUI in headless environment, aborting");
-        System.exit(1);
-      }
-      // Frame start-up
-      javax.swing.SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          Cooja gui = new Cooja(logDirectory, createDesktopPane(true));
-          configureFrame(gui);
-        }
-      });
-
     }
   }
 
