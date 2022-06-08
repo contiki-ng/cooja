@@ -129,7 +129,6 @@ import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
 import org.contikios.cooja.plugins.MoteTypeInformation;
-import org.contikios.cooja.plugins.ScriptRunner;
 import org.contikios.cooja.plugins.SimControl;
 import org.contikios.cooja.plugins.SimInformation;
 import org.contikios.cooja.util.ExecuteJAR;
@@ -3052,44 +3051,8 @@ public class Cooja extends Observable {
     } else if (options.action.nogui != null) {
       /* Load simulation */
       String config = options.action.nogui;
-      File configFile = new File(config);
-      Simulation sim = quickStartSimulationConfig(configFile, false, options.randomSeed, logDirectory);
-      if (sim == null) {
+      if (quickStartSimulationConfig(new File(config), false, options.randomSeed, logDirectory) == null) {
         System.exit(1);
-      }
-      Cooja gui = sim.getCooja();
-
-      /* Make sure at least one plugin controlling the simulation */
-      boolean hasController = false;
-      for (Plugin startedPlugin : gui.startedPlugins) {
-    	int pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
-    	if (pluginType == PluginType.SIM_CONTROL_PLUGIN) {
-    	  hasController = true;
-    	}
-      }
-
-      /* Backwards compatibility:
-       * simulation has no control plugin, but has external (old style) test script.
-       * We will manually start a test editor from here. */
-      if (!hasController) {
-        File scriptFile = new File(config.substring(0, config.length()-4) + ".js");
-        if (scriptFile.exists()) {
-          logger.info("Detected old simulation test, starting test editor manually from: " + scriptFile);
-          ScriptRunner plugin = (ScriptRunner) gui.tryStartPlugin(ScriptRunner.class, gui, sim, null);
-          if (plugin == null) {
-            System.exit(1);
-          }
-          plugin.updateScript(scriptFile);
-          try {
-            plugin.setScriptActive(true);
-          } catch (Exception e) {
-            logger.fatal("Error: " + e.getMessage(), e);
-            System.exit(1);
-          }
-        } else {
-          logger.fatal("No plugin controlling simulation, aborting");
-          System.exit(1);
-        }
       }
     }
   }
@@ -3219,6 +3182,22 @@ public class Cooja extends Observable {
     } catch (Exception e) {
       throw (SimulationCreationException) new SimulationCreationException(
           "Unknown error: " + e.getMessage()).initCause(e);
+    }
+
+    // Non-GUI Cooja requires a simulation controller, ensure one is started.
+    if (newSim != null && !isVisualized()) {
+      boolean hasController = false;
+      for (var p : newSim.getCooja().startedPlugins) {
+        int pluginType = p.getClass().getAnnotation(PluginType.class).value();
+        if (pluginType == PluginType.SIM_CONTROL_PLUGIN) {
+          hasController = true;
+          break;
+        }
+      }
+      if (!hasController) {
+        logger.fatal("No plugin controlling simulation, aborting");
+        return null;
+      }
     }
 
     return newSim;
