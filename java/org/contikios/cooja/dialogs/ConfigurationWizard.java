@@ -96,36 +96,9 @@ public class ConfigurationWizard extends JDialog {
     "-Wall -dynamiclib -fno-common"
   };
 
-  private static final String LINK_COMMAND_1_suggestions[] = new String[] {
-    "",
-    "Windows cygwin:",
-    "gcc -mno-cygwin -shared -Wl,-Map=$(MAPFILE) -Wl,--add-stdcall-alias -o $(LIBFILE)",
-    "gcc -shared -Wl,-Map=$(MAPFILE) -o $(LIBFILE)",
-    "",
-    "Linux:",
-    "gcc -shared -Wl,-Map=$(MAPFILE) -o $(LIBFILE)",
-    "ld -Map=$(MAPFILE) -shared --add-stdcall-alias /usr/lib/mingw/dllcrt2.o -o $(LIBFILE)",
-    "gcc -shared -Wl,-Map=$(MAPFILE) -Wall -D_JNI_IMPLEMENTATION_ -Wl,--kill-at -o $(LIBFILE)",
-    "",
-    "Mac OS X:",
-    "gcc -dynamiclib -fno-common -o $(LIBFILE)"
-  };
-
-  private static final String LINK_COMMAND_2_suggestions[] = new String[] {
-    "",
-    "-L/usr/lib/mingw -lmsvcrt",
-    "-L/usr/lib/mingw -lmingw32 -lmingwex -lmsvcrt",
-    "-framework JavaVM"
-  };
-
   private static final String PARSE_WITH_COMMAND_suggestions[] = new String[] {
     "true",
     "false"
-  };
-
-  private static final String AR_COMMAND_1_suggestions[] = new String[] {
-    "ar rcf $(ARFILE)",
-    "ar rc $(ARFILE)"
   };
 
   private static final String PARSE_COMMAND_suggestions[] = new String[] {
@@ -217,7 +190,7 @@ public class ConfigurationWizard extends JDialog {
           "Generates, compiles and links a Cooja/Contiki stub.\n",
           testDescription,
           new String[] {
-              "COMPILER_ARGS", "LINK_COMMAND_1", "LINK_COMMAND_2", "AR_COMMAND_1", "AR_COMMAND_2"
+              "COMPILER_ARGS"
           },
           true
       );
@@ -479,14 +452,8 @@ public class ConfigurationWizard extends JDialog {
     String[] suggestions = null;
     if (name.equals("COMPILER_ARGS")) {
       suggestions = COMPILER_ARGS_suggestions;
-    } else if (name.equals("LINK_COMMAND_1")) {
-      suggestions = LINK_COMMAND_1_suggestions;
-    } else if (name.equals("LINK_COMMAND_2")) {
-      suggestions = LINK_COMMAND_2_suggestions;
     } else if (name.equals("PARSE_WITH_COMMAND")) {
       suggestions = PARSE_WITH_COMMAND_suggestions;
-    } else if (name.equals("AR_COMMAND_1")) {
-      suggestions = AR_COMMAND_1_suggestions;
     } else if (name.equals("PARSE_COMMAND")) {
       suggestions = PARSE_COMMAND_suggestions;
     }

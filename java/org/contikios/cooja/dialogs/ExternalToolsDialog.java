@@ -129,14 +129,6 @@ public class ExternalToolsDialog extends JDialog {
     buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
     buttonPane.add(button);
 
-    // Some explanations
-    Box explanations = Box.createVerticalBox();
-    explanations.add(new JLabel("Special variables used in COMPILER_ARGS, LINK_COMMAND_[12] and AR_COMMAND_[12]:"));
-    explanations.add(new JLabel("  $(LIBFILE) maps to the current library file being created (\"mtype1.library\")"));
-    explanations.add(new JLabel("  $(MAPFILE) maps to the current map file being created (\"mtype1.map\")"));
-    explanations.add(new JLabel("  $(ARFILE) maps to the current archive file being created (\"mtype1.a\")"));
-    explanations.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
     // MAIN PART
     textFields = new JTextField[Cooja.getExternalToolsSettingsCount()];
     for (int i = 0; i < Cooja.getExternalToolsSettingsCount(); i++) {
@@ -169,7 +161,6 @@ public class ExternalToolsDialog extends JDialog {
     Container contentPane = getContentPane();
     JScrollPane scrollPane = new JScrollPane(mainPane);
     scrollPane.setPreferredSize(new Dimension(700, 500));
-    contentPane.add(explanations, BorderLayout.NORTH);
     contentPane.add(scrollPane, BorderLayout.CENTER);
     contentPane.add(buttonPane, BorderLayout.SOUTH);
 
