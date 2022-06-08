@@ -1092,10 +1092,6 @@ public class Cooja extends Observable {
   }
 
   private static void configureFrame(final Cooja gui) {
-
-    if (frame == null) {
-      frame = new JFrame(WINDOW_TITLE);
-    }
     frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
     /* Menu bar */
@@ -1230,7 +1226,7 @@ public class Cooja extends Observable {
     desktop.revalidate();
   }
 
-  private static JDesktopPane createDesktopPane() {
+  private static JDesktopPane createDesktopPane(boolean vis) {
     final JDesktopPane desktop = new JDesktopPane() {
 			private static final long serialVersionUID = -8272040875621119329L;
       @Override
@@ -1264,20 +1260,16 @@ public class Cooja extends Observable {
       }
     });
     desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+    if (vis) {
+      frame = new JFrame(WINDOW_TITLE);
+    }
     return desktop;
   }
 
   public static Simulation quickStartSimulationConfig(File config, boolean vis, Long manualRandomSeed, String logDirectory) {
-    JDesktopPane desktop = createDesktopPane();
-    if (vis) {
-      frame = new JFrame(WINDOW_TITLE);
-    }
-    Cooja gui = new Cooja(logDirectory, desktop);
+    Cooja gui = new Cooja(logDirectory, createDesktopPane(vis));
     if (vis) {
       configureFrame(gui);
-    }
-
-    if (vis) {
       gui.doLoadConfig(false, true, config, manualRandomSeed);
       return gui.getSimulation();
     } else {
@@ -1299,13 +1291,12 @@ public class Cooja extends Observable {
    * Allows user to create a simulation with a single mote type.
    *
    * @param source       Contiki application file name
+   * @param vis          True if GUI mode
    * @param logDirectory Directory for log files
    * @return True if simulation was created
    */
-  private static Simulation quickStartSimulation(String source, String logDirectory) {
-    JDesktopPane desktop = createDesktopPane();
-    frame = new JFrame(WINDOW_TITLE);
-    Cooja gui = new Cooja(logDirectory, desktop);
+  private static Simulation quickStartSimulation(String source, boolean vis, String logDirectory) {
+    Cooja gui = new Cooja(logDirectory, createDesktopPane(vis));
     configureFrame(gui);
 
     logger.info("> Creating simulation");
@@ -1324,7 +1315,7 @@ public class Cooja extends Observable {
     moteType.setDescription("Cooja mote type (" + source + ")");
 
     try {
-      boolean compileOK = moteType.configureAndInit(Cooja.getTopParentContainer(), sim, true);
+      boolean compileOK = moteType.configureAndInit(Cooja.getTopParentContainer(), sim, vis);
       if (!compileOK) {
         logger.fatal("Mote type initialization failed, aborting quickstart");
         return null;
@@ -3197,7 +3188,7 @@ public class Cooja extends Observable {
           contikiApp += ".c";
         }
 
-        sim = quickStartSimulation(contikiApp, logDirectory);
+        sim = quickStartSimulation(contikiApp, true, logDirectory);
       }
 
       if (sim == null) {
@@ -3257,9 +3248,7 @@ public class Cooja extends Observable {
       javax.swing.SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          JDesktopPane desktop = createDesktopPane();
-          frame = new JFrame(WINDOW_TITLE);
-          Cooja gui = new Cooja(logDirectory, desktop);
+          Cooja gui = new Cooja(logDirectory, createDesktopPane(true));
           configureFrame(gui);
         }
       });
