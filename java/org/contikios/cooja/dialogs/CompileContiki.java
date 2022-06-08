@@ -366,7 +366,10 @@ public class CompileContiki {
 
     /* Create environment */
     ArrayList<String[]> env = new ArrayList<String[]>();
-    env.add(new String[] { "LIBNAME", identifier });
+    env.add(new String[] { "LIBNAME", "$(BUILD_DIR_BOARD)/" + identifier + ".cooja" });
+    // COOJA_VERSION is used to detect incompatibility with the Contiki-NG
+    // build system. The format is <YYYY><MM><DD><2 digit sequence number>.
+    env.add(new String[] { "COOJA_VERSION", "2022052601" });
     env.add(new String[] { "CLASSNAME", javaClass });
     env.add(new String[] { "CONTIKI_APP", contikiAppNoExtension });
     env.add(new String[] { "COOJA_SOURCEDIRS", "" });
