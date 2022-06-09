@@ -51,6 +51,7 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -292,7 +293,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     };
     zoomInAction.putValue(
             Action.ACCELERATOR_KEY,
-            KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK)
+            KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, InputEvent.CTRL_DOWN_MASK)
     );
     JMenuItem zoomInItem = new JMenuItem(zoomInAction);
     zoomMenu.add(zoomInItem);
@@ -305,7 +306,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     };
     zoomOutAction.putValue(
             Action.ACCELERATOR_KEY,
-            KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK)
+            KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.CTRL_DOWN_MASK)
     );
     JMenuItem zoomOutItem = new JMenuItem(zoomOutAction);
     zoomMenu.add(zoomOutItem);
