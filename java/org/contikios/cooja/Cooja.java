@@ -492,19 +492,11 @@ public class Cooja extends Observable {
    * @return True if simulator is visualized
    */
   public static boolean isVisualized() {
-    return isVisualizedInFrame();
+    return frame != null;
   }
 
   public static Container getTopParentContainer() {
-    if (isVisualizedInFrame()) {
-      return frame;
-    }
-
-    return null;
-  }
-
-  public static boolean isVisualizedInFrame() {
-    return frame != null;
+    return frame;
   }
 
   public File getLastOpenedFile() {
@@ -2183,7 +2175,7 @@ public class Cooja extends Observable {
     updateGUIComponentState();
 
     // Reset frame title
-    if (isVisualizedInFrame()) {
+    if (isVisualized()) {
       frame.setTitle(WINDOW_TITLE);
     }
 
@@ -2632,7 +2624,7 @@ public class Cooja extends Observable {
     }
 
     /* Store frame size and position */
-    if (isVisualizedInFrame()) {
+    if (isVisualized()) {
       setExternalToolsSetting("FRAME_SCREEN", frame.getGraphicsConfiguration().getDevice().getIDstring());
       setExternalToolsSetting("FRAME_POS_X", "" + frame.getLocationOnScreen().x);
       setExternalToolsSetting("FRAME_POS_Y", "" + frame.getLocationOnScreen().y);
