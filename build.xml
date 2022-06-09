@@ -114,7 +114,11 @@ The COOJA Simulator
   </target>
 
   <target name="run" depends="jar">
-    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
+    <!-- FIXME: this target should let the JVM decide maxmemory, but Cooja
+                currently crashes on 64-bit Ubuntu on machines with >8G
+                memory if we don't set maxmemory. -->
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
+          failonerror="true" maxmemory="${maxmem}">
       <sysproperty key="user.language" value="en"/>
       <arg line="${args}"/>
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
@@ -138,7 +142,9 @@ The COOJA Simulator
     <exec executable="${CC}" outputproperty="libasan">
       <arg value="-print-file-name=libasan.so"/>
     </exec>
-    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
+    <!-- See maxmemory comment on run target. -->
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
+          failonerror="true" maxmemory="${maxmem}">
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
       <!-- Address sanitizer needs to be initialized early, so LD_PRELOAD
            the library into the JVM. -->
