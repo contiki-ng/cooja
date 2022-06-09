@@ -33,17 +33,9 @@ package org.contikios.cooja.dialogs;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -422,11 +414,6 @@ public class CompileContiki {
     	/* Redefine sources. TODO Move to createCompilationEnvironment. */
     	sources += s + " ";
     	dirs += p.getPath() + " ";
-    	
-    	/* XXX Cygwin specific directory style */
-    	if (dirs.contains("C:\\")) {
-    		dirs += p.getPath().replace("C:\\", "/cygdrive/c/") + " ";
-    	}
     }
 
     if (!sources.trim().isEmpty()) {

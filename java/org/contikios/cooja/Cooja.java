@@ -3056,13 +3056,6 @@ public class Cooja extends Observable {
       });
     } else if (options.action.quickstart != null) {
       String contikiApp = options.action.quickstart;
-
-      /* Cygwin fix */
-      if (contikiApp.startsWith("/cygdrive/")) {
-        char driveCharacter = contikiApp.charAt("/cygdrive/".length());
-        contikiApp = contikiApp.replace("/cygdrive/" + driveCharacter + "/", driveCharacter + ":/");
-      }
-
       Simulation sim = null;
       if (contikiApp.endsWith(".csc")) {
         sim = quickStartSimulationConfig(new File(contikiApp), true, options.randomSeed, logDirectory);
