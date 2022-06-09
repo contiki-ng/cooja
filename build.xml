@@ -22,6 +22,7 @@
   <property name="config" location="config"/>
   <property name="dist" location="dist"/>
   <property name="lib" location="lib"/>
+  <property name="maxmem" value="2048m" />
   <property name="args" value="" />
   <property name="CC" value="gcc" />
 
@@ -173,7 +174,7 @@ The COOJA Simulator
 
   <target name="run_bigmem" depends="jar">
     <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
-          failonerror="true" maxmemory="1536m">
+          failonerror="true" maxmemory="${maxmem}">
       <arg line="${args}"/>
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
     </java>
