@@ -22,6 +22,10 @@
   <property name="config" location="config"/>
   <property name="dist" location="dist"/>
   <property name="lib" location="lib"/>
+  <property name="maxmem" value="2048m" />
+  <!-- Flags passed to the JVM. Potentially useful flags for debugging
+       crashes: -XX:+ShowMessageBoxOnError -->
+  <property name="jvmargs" value="" />
   <property name="args" value="" />
   <property name="CC" value="gcc" />
 
@@ -45,19 +49,15 @@ The COOJA Simulator
 
   Start COOJA
   > ant run
-  Build COOJA (dist/cooja.jar) and all default projects (MSPSim et al)
-  > ant jar
-
-  Start COOJA with more memory allocated (for large simulations)
-  > ant run_bigmem
-  Start COOJA, show error box if process terminates unexpectedly.
-  > ant run_errorbox
-
   Start COOJA and immediately load simulation in sim.csc
   > ant run -Dargs="-quickstart=sim.csc"
   Start COOJA without GUI and run simulation in sim.csc
-  > ant run_nogui -Dargs=sim.csc
+  > ant run -Dargs="-nogui=sim.csc"
+  Start COOJA with more memory allocated (for large simulations)
+  > ant run_bigmem
 
+  Build COOJA (dist/cooja.jar) and all default projects (MSPSim et al)
+  > ant jar
   Build executable simulation JAR from mysim.csc
   > ant export-jar -DCSC="c:/mysim.csc"
     or
@@ -113,10 +113,15 @@ The COOJA Simulator
   </target>
 
   <target name="run" depends="jar">
-    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
+    <!-- FIXME: this target should let the JVM decide maxmemory, but Cooja
+                currently crashes on 64-bit Ubuntu on machines with >8G
+                memory if we don't set maxmemory. -->
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
+          failonerror="true" maxmemory="${maxmem}">
       <sysproperty key="user.language" value="en"/>
-      <arg line="${args}"/>
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
+      <jvmarg line="${jvmargs}" />
+      <arg line="${args}"/>
     </java>
   </target>
 
@@ -137,45 +142,25 @@ The COOJA Simulator
     <exec executable="${CC}" outputproperty="libasan">
       <arg value="-print-file-name=libasan.so"/>
     </exec>
-    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
-      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
+    <!-- See maxmemory comment on run target. -->
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
+          failonerror="true" maxmemory="${maxmem}">
       <!-- Address sanitizer needs to be initialized early, so LD_PRELOAD
            the library into the JVM. -->
       <env key="LD_PRELOAD" value="${libasan}"/>
       <env key="ASAN_OPTIONS" value="${asan_options}"/>
-      <arg line="${args}"/>
-    </java>
-  </target>
-
-  <target name="run_errorbox" depends="jar">
-    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
-      <sysproperty key="user.language" value="en"/>
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
-      <jvmarg value="-XX:+ShowMessageBoxOnError"/>
-    </java>
-  </target>
-
-  <target name="runprof" depends="jar">
-    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
+      <jvmarg line="${jvmargs}" />
       <arg line="${args}"/>
-      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
-      <jvmarg line="-agentlib:yjpagent"/>
-    </java>
-  </target>
-
-  <target name="runfree" depends="jar">
-    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
-          failonerror="true" maxmemory="1536m">
-      <arg line="${args}"/>
-      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
     </java>
   </target>
 
   <target name="run_bigmem" depends="jar">
     <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
-          failonerror="true" maxmemory="1536m">
-      <arg line="${args}"/>
+          failonerror="true" maxmemory="${maxmem}">
       <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
+      <jvmarg line="${jvmargs}" />
+      <arg line="${args}"/>
     </java>
   </target>
 
@@ -185,13 +170,6 @@ The COOJA Simulator
     <ant antfile="build.xml" dir="apps/avrora" target="jar" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/serial_socket" target="jar" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/powertracker" target="jar" inheritAll="false"/>
-  </target>
-
-  <target name="run_nogui" depends="jar">
-    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar" failonerror="true">
-      <arg line="-nogui=${args}"/>
-      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
-    </java>
   </target>
 
   <pathconvert property="manifest.classpath" pathsep=" ">
