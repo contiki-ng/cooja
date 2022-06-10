@@ -1144,7 +1144,6 @@ public class BufferListener extends VisPlugin {
         outStream.close();
       } catch (Exception ex) {
         logger.fatal("Could not write to file: " + saveFile);
-        return;
       }
     }
   };

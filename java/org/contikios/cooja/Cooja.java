@@ -1168,7 +1168,6 @@ public class Cooja extends Observable {
     /* System */
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      return;
     } catch (Exception e) {
     }
   }
@@ -2323,7 +2322,6 @@ public class Cooja extends Observable {
     if (progressDialog != null && progressDialog.isDisplayable()) {
       progressDialog.dispose();
     }
-    return;
   }
 
   /**
