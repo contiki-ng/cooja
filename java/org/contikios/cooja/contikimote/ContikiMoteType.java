@@ -367,11 +367,21 @@ public class ContikiMoteType implements MoteType {
     return true;
   }
 
-  public static File getExpectedFirmwareFile(File source) {
+  /**
+   * Returns make target based on source file.
+   *
+   * @param source The source file
+   * @return Make target based on source file
+   */
+  public static File getMakeTargetName(File source) {
     File parentDir = source.getParentFile();
     String sourceNoExtension = source.getName().substring(0, source.getName().length() - 2);
-
     return new File(parentDir, sourceNoExtension + librarySuffix);
+  }
+
+  public static File getExpectedFirmwareFile(String moteId, File source) {
+    return new File(source.getParentFile(),
+            ContikiMoteType.tempOutputDirectory + "/" + moteId + ContikiMoteType.librarySuffix);
   }
 
   /**
@@ -1330,12 +1340,12 @@ public class ContikiMoteType implements MoteType {
       setContikiSourceFile(oldVersionSource);
       logger.info("Guessing Contiki source: " + oldVersionSource.getAbsolutePath());
 
-      setContikiFirmwareFile(getExpectedFirmwareFile(oldVersionSource));
+      setContikiFirmwareFile(getExpectedFirmwareFile(getIdentifier(), oldVersionSource));
       logger.info("Guessing Contiki firmware: " + getContikiFirmwareFile().getAbsolutePath());
 
       /* Guess compile commands */
       String compileCommands
-              = "make " + getExpectedFirmwareFile(oldVersionSource).getName() + " TARGET=cooja";
+              = "make " + getMakeTargetName(oldVersionSource).getName() + " TARGET=cooja";
       logger.info("Guessing compile commands: " + compileCommands);
       setCompileCommands(compileCommands);
     }

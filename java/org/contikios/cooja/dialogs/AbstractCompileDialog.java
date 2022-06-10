@@ -641,7 +641,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     	createButton.setEnabled(false);
     	commandsArea.setEnabled(true);
       setCompileCommands(getDefaultCompileCommands(sourceFile));
-      contikiFirmware = getExpectedFirmwareFile(sourceFile);
+      contikiFirmware = getExpectedFirmwareFile(moteType.getIdentifier(), sourceFile);
       contikiSource = sourceFile;
       setDialogState(DialogState.AWAITING_COMPILATION);
       break;
@@ -871,6 +871,17 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @return Expected Contiki firmware compiled from source
    */
   public abstract File getExpectedFirmwareFile(File source);
+
+  /**
+   * Returns the Contiki firmware name for moteId and source.
+   *
+   * @param moteId The ID of the mote
+   * @param source Contiki source
+   * @return Expected Contiki firmware compiled from source
+   */
+  public File getExpectedFirmwareFile(String moteId, File source) {
+    return getExpectedFirmwareFile(source);
+  }
 
   private void abortAnyCompilation() {
     if (currentCompilationProcess == null) {
