@@ -98,7 +98,6 @@ public class LogisticLossVisualizerSkin implements VisualizerSkin {
   public void setInactive() {
     if (simulation == null) {
       /* Skin was never activated */
-      return;
     }
   }
 

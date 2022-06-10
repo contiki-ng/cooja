@@ -807,7 +807,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         outStream.close();
       } catch (Exception ex) {
         logger.fatal("Could not write to file: " + saveFile);
-        return;
       }
     }
   };
