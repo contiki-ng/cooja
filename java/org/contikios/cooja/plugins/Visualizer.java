@@ -179,7 +179,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   }
 
   /* All selected motes */
-  public Set<Mote> selectedMotes = new HashSet<>();
+  public final Set<Mote> selectedMotes = new HashSet<>();
   /* Mote that was under curser while mouse press */
   Mote cursorMote;
 
@@ -1011,7 +1011,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     repaint();
   }
 
-  Map<Mote, double[]> moveStartPositions = new HashMap<>();
+  final Map<Mote, double[]> moveStartPositions = new HashMap<>();
 
   private void handleMouseDrag(MouseEvent e, boolean stop) {
     Position currPos = transformPixelToPosition(e.getPoint());

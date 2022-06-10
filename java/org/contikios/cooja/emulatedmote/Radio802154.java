@@ -73,7 +73,7 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
     private RadioPacket lastIncomingPacket = null;
 
     //    private int mode;
-    protected Mote mote;
+    protected final Mote mote;
      
     public Radio802154(Mote mote) {
         this.mote = mote;
@@ -81,7 +81,7 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
     int len = 0;
     int expLen = 0;
-    byte[] buffer = new byte[127 + 15];
+    final byte[] buffer = new byte[127 + 15];
     protected void handleTransmit(byte val) {
         if (len == 0) {
             lastEventTime = mote.getSimulation().getSimulationTime();

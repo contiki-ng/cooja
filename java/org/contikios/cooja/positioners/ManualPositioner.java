@@ -137,7 +137,9 @@ public class ManualPositioner extends Positioner {
     private final NumberFormat doubleFormat = NumberFormat.getNumberInstance();
 
     public boolean shouldSkipRemainder = false;
-    public JFormattedTextField xField, yField, zField;
+    public final JFormattedTextField xField;
+    public final JFormattedTextField yField;
+    public final JFormattedTextField zField;
     public PositionDialog(int mote) {
       JButton button;
       JFormattedTextField numberField;

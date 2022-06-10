@@ -1984,7 +1984,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     MoteEvent prev = null;
     MoteEvent next = null;
     String details = null;
-    long time;
+    final long time;
     public MoteEvent(long time) {
       this.time = time;
     }
@@ -2109,8 +2109,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     Color.decode("0xFF00FF"), Color.decode("0x808000"), Color.decode("0x800080"),
   };
   class RadioChannelEvent extends MoteEvent {
-    int channel;
-    boolean radioOn;
+    final int channel;
+    final boolean radioOn;
     public RadioChannelEvent(long time, int channel, boolean radioOn) {
       super(time);
       this.channel = channel;
@@ -2135,7 +2135,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
 
   class RadioHWEvent extends MoteEvent {
-    boolean on;
+    final boolean on;
     public RadioHWEvent(long time, boolean on) {
       super(time);
       this.on = on;
@@ -2157,10 +2157,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   }
   class LEDEvent extends MoteEvent {
-    boolean red;
-    boolean green;
-    boolean blue;
-    Color color;
+    final boolean red;
+    final boolean green;
+    final boolean blue;
+    final Color color;
     public LEDEvent(long time, boolean red, boolean green, boolean blue) {
       super(time);
       this.red = red;
@@ -2242,7 +2242,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   }
   class LogEvent extends MoteEvent {
-    LogOutputEvent logEvent;
+    final LogOutputEvent logEvent;
     public LogEvent(LogOutputEvent ev) {
       super(ev.getTime());
       this.logEvent = ev;
@@ -2298,7 +2298,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   }
   class WatchpointEvent extends MoteEvent {
-    Watchpoint watchpoint;
+    final Watchpoint watchpoint;
     public WatchpointEvent(long time, Watchpoint watchpoint) {
       super(time);
       this.watchpoint = watchpoint;
@@ -2345,13 +2345,13 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   }
   class MoteEvents {
-    Mote mote;
-    ArrayList<MoteEvent> radioRXTXEvents;
-    ArrayList<MoteEvent> radioChannelEvents;
-    ArrayList<MoteEvent> radioHWEvents;
-    ArrayList<MoteEvent> ledEvents;
-    ArrayList<MoteEvent> logEvents;
-    ArrayList<MoteEvent> watchpointEvents;
+    final Mote mote;
+    final ArrayList<MoteEvent> radioRXTXEvents;
+    final ArrayList<MoteEvent> radioChannelEvents;
+    final ArrayList<MoteEvent> radioHWEvents;
+    final ArrayList<MoteEvent> ledEvents;
+    final ArrayList<MoteEvent> logEvents;
+    final ArrayList<MoteEvent> watchpointEvents;
 
     private MoteEvent lastRadioRXTXEvent = null;
     private MoteEvent lastRadioChannelEvent = null;

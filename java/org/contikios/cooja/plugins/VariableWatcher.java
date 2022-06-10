@@ -146,7 +146,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     LONG("long", 4),
     ADDR("address", 8);
 
-    String mRep;
+    final String mRep;
     int mSize;
 
     VarTypes(String rep, int size) {
@@ -187,8 +187,8 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     DEC("Decimal", 10),
     HEX("Hex", 16);
 
-    String mRep;
-    int mBase;
+    final String mRep;
+    final int mBase;
 
     VarFormats(String rep, int base) {
       mRep = rep;
@@ -206,8 +206,8 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     }
   }
 
-  VarFormats[] valueFormats = {VarFormats.CHAR, VarFormats.DEC, VarFormats.HEX};
-  VarTypes[] valueTypes = {VarTypes.BYTE, VarTypes.SHORT, VarTypes.INT, VarTypes.LONG, VarTypes.ADDR};
+  final VarFormats[] valueFormats = {VarFormats.CHAR, VarFormats.DEC, VarFormats.HEX};
+  final VarTypes[] valueTypes = {VarTypes.BYTE, VarTypes.SHORT, VarTypes.INT, VarTypes.LONG, VarTypes.ADDR};
 
   /**
    * @param moteToView Mote

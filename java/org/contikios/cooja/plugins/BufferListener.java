@@ -1826,7 +1826,7 @@ public class BufferListener extends VisPlugin {
 
   @ClassDescription("*packetbufptr")
   public static class PacketbufPointerBuffer extends PointerBuffer {
-    VarMemory varMem =  new VarMemory(null);
+    final VarMemory varMem =  new VarMemory(null);
     @Override
     public long getPointerAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey("packetbufptr")) {
@@ -1853,7 +1853,7 @@ public class BufferListener extends VisPlugin {
     public String variable;
     public int size;
     public long offset;
-    VarMemory varMem =  new VarMemory(null);
+    final VarMemory varMem =  new VarMemory(null);
     @Override
     public long getPointerAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey(variable)) {

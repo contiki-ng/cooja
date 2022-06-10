@@ -53,7 +53,7 @@ public final class EventQueue {
     }
 
     @Override
-    public final int compareTo(Pair other) {
+    public int compareTo(Pair other) {
       if (time < other.time)
       {
         return -1;
