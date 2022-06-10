@@ -76,8 +76,8 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	public static final double SS_NOTHING = -100;
 	public static final double SS_STRONG = -10;
 	public static final double SS_WEAK = -95;
-	protected Map<Radio, Double> baseRssi = java.util.Collections.synchronizedMap(new HashMap<>());
-	protected Map<Radio, Double> sendRssi = java.util.Collections.synchronizedMap(new HashMap<>());
+	protected final Map<Radio, Double> baseRssi = java.util.Collections.synchronizedMap(new HashMap<>());
+	protected final Map<Radio, Double> sendRssi = java.util.Collections.synchronizedMap(new HashMap<>());
 	
 	private final ArrayList<Radio> registeredRadios = new ArrayList<>();
 	
@@ -97,8 +97,8 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	 * @see #addRadioTransmissionObserver
 	 * @see #addRadioMediumObserver
 	 */
-	protected ScnObservable radioMediumObservable = new ScnObservable();
-	protected ScnObservable radioTransmissionObservable = new ScnObservable();
+	protected final ScnObservable radioMediumObservable = new ScnObservable();
+	protected final ScnObservable radioTransmissionObservable = new ScnObservable();
 	
 	/**
 	 * This constructor should always be called from implemented radio mediums.

@@ -304,7 +304,7 @@ public class Cooja extends Observable {
 
   private Simulation mySimulation;
 
-  protected GUIEventHandler guiEventHandler = new GUIEventHandler();
+  protected final GUIEventHandler guiEventHandler = new GUIEventHandler();
 
   private JMenu menuMoteTypeClasses, menuMoteTypes;
 
@@ -348,9 +348,9 @@ public class Cooja extends Observable {
    * Mote relation (directed).
    */
   public static class MoteRelation {
-    public Mote source;
-    public Mote dest;
-    public Color color;
+    public final Mote source;
+    public final Mote dest;
+    public final Color color;
     public MoteRelation(Mote source, Mote dest, Color color) {
       this.source = source;
       this.dest = dest;
@@ -4203,7 +4203,7 @@ public class Cooja extends Observable {
     }
     public abstract boolean shouldBeEnabled();
   }
-  GUIAction newSimulationAction = new GUIAction("New simulation...", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK)) {
+  final GUIAction newSimulationAction = new GUIAction("New simulation...", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK)) {
 		private static final long serialVersionUID = 5053703908505299911L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4214,7 +4214,7 @@ public class Cooja extends Observable {
       return true;
     }
   };
-  GUIAction closeSimulationAction = new GUIAction("Close simulation", KeyEvent.VK_C) {
+  final GUIAction closeSimulationAction = new GUIAction("Close simulation", KeyEvent.VK_C) {
 		private static final long serialVersionUID = -4783032948880161189L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4225,7 +4225,7 @@ public class Cooja extends Observable {
       return getSimulation() != null;
     }
   };
-  GUIAction reloadSimulationAction = new GUIAction("Reload with same random seed", KeyEvent.VK_K, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK)) {
+  final GUIAction reloadSimulationAction = new GUIAction("Reload with same random seed", KeyEvent.VK_K, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK)) {
 		private static final long serialVersionUID = 66579555555421977L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4242,7 +4242,7 @@ public class Cooja extends Observable {
       return true;
     }
   };
-  GUIAction reloadRandomSimulationAction = new GUIAction("Reload with new random seed", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) {
+  final GUIAction reloadRandomSimulationAction = new GUIAction("Reload with new random seed", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) {
 		private static final long serialVersionUID = -4494402222740250203L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4257,7 +4257,7 @@ public class Cooja extends Observable {
       return getSimulation() != null;
     }
   };
-  GUIAction saveSimulationAction = new GUIAction("Save simulation as...", KeyEvent.VK_S) {
+  final GUIAction saveSimulationAction = new GUIAction("Save simulation as...", KeyEvent.VK_S) {
 		private static final long serialVersionUID = 1132582220401954286L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4280,7 +4280,7 @@ public class Cooja extends Observable {
       return !startedPlugins.isEmpty();
     }
     };*/
-  GUIAction exportExecutableJARAction = new GUIAction("Export simulation...") {
+    final GUIAction exportExecutableJARAction = new GUIAction("Export simulation...") {
 		private static final long serialVersionUID = -203601967460630049L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4363,7 +4363,7 @@ public class Cooja extends Observable {
       return getSimulation() != null;
     }
   };
-  GUIAction exitCoojaAction = new GUIAction("Exit", 'x') {
+  final GUIAction exitCoojaAction = new GUIAction("Exit", 'x') {
 		private static final long serialVersionUID = 7523822251658687665L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4374,7 +4374,7 @@ public class Cooja extends Observable {
       return true;
     }
   };
-  GUIAction startStopSimulationAction = new GUIAction("Start simulation", KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)) {
+  final GUIAction startStopSimulationAction = new GUIAction("Start simulation", KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)) {
 		private static final long serialVersionUID = 6750107157493939710L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4428,7 +4428,7 @@ public class Cooja extends Observable {
     }
   }
 
-  GUIAction removeAllMotesAction = new GUIAction("Remove all motes") {
+  final GUIAction removeAllMotesAction = new GUIAction("Remove all motes") {
 		private static final long serialVersionUID = 4709776747913364419L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4447,7 +4447,7 @@ public class Cooja extends Observable {
       return s != null && s.getMotesCount() > 0;
     }
   };
-  GUIAction showQuickHelpAction = new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
+  final GUIAction showQuickHelpAction = new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
 		private static final long serialVersionUID = 3151729036597971681L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4467,7 +4467,7 @@ public class Cooja extends Observable {
       return true;
     }
   };
-  GUIAction showGettingStartedAction = new GUIAction("Getting started") {
+  final GUIAction showGettingStartedAction = new GUIAction("Getting started") {
     private static final long serialVersionUID = 2382848024856978524L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4487,7 +4487,7 @@ public class Cooja extends Observable {
       return true;
     }
   };
-  GUIAction showKeyboardShortcutsAction = new GUIAction("Keyboard shortcuts") {
+  final GUIAction showKeyboardShortcutsAction = new GUIAction("Keyboard shortcuts") {
 		private static final long serialVersionUID = 2382848024856978524L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -4507,7 +4507,7 @@ public class Cooja extends Observable {
       return true;
     }
   };
-  GUIAction showBufferSettingsAction = new GUIAction("Buffer sizes...") {
+  final GUIAction showBufferSettingsAction = new GUIAction("Buffer sizes...") {
 		private static final long serialVersionUID = 7018661735211901837L;
     @Override
     public void actionPerformed(ActionEvent e) {

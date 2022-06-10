@@ -108,14 +108,14 @@ public abstract class AbstractCompileDialog extends JDialog {
     SELECTED_FIRMWARE,
   }
 
-  protected Simulation simulation;
-  protected Cooja gui;
-  protected MoteType moteType;
+  protected final Simulation simulation;
+  protected final Cooja gui;
+  protected final MoteType moteType;
 
-  protected JTabbedPane tabbedPane;
+  protected final JTabbedPane tabbedPane;
   protected Box moteIntfBox;
 
-  protected JTextField contikiField;
+  protected final JTextField contikiField;
   private final JTextField descriptionField;
   private JTextArea commandsArea;
   private final JButton cleanButton;

@@ -71,7 +71,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, PolledAfterActiveTicks {
   private static final Logger logger = LogManager.getLogger(ContikiCFS.class);
 
-  public int FILESYSTEM_SIZE = 4000; /* Configure CFS size here and in cfs-cooja.c */
+  public final int FILESYSTEM_SIZE = 4000; /* Configure CFS size here and in cfs-cooja.c */
   private Mote mote = null;
   private VarMemory moteMem = null;
 
