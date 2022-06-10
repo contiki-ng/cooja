@@ -212,12 +212,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
       } else if (element.getName().equals("scrollpos")) {
         String[] scrollPos = element.getText().split(",");
         final Point pos = new Point(Integer.parseInt(scrollPos[0]), Integer.parseInt(scrollPos[1]));
-        EventQueue.invokeLater(new Runnable() {
-          @Override
-          public void run()  {
-            mainScrollPane.getViewport().setViewPosition(pos);
-          }
-        });
+        EventQueue.invokeLater(() -> mainScrollPane.getViewport().setViewPosition(pos));
       }
     }
     return true;

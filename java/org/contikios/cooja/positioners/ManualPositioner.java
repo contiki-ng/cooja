@@ -31,8 +31,6 @@
 package org.contikios.cooja.positioners;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.NumberFormat;
@@ -158,14 +156,7 @@ public class ManualPositioner extends Positioner {
         @Override
         public void focusGained(FocusEvent e) {
           final JFormattedTextField source = ((JFormattedTextField)e.getSource());
-          SwingUtilities.invokeLater(
-              new Runnable() {
-                @Override
-                public void run() {
-                  source.selectAll();
-                }
-              }
-          );
+          SwingUtilities.invokeLater(() -> source.selectAll());
         }
         @Override
         public void focusLost(FocusEvent e) {
@@ -199,22 +190,14 @@ public class ManualPositioner extends Positioner {
       buttons.add(Box.createHorizontalGlue());
 
       button = new JButton("Next");
-      button.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          dispose();
-        }
-      });
+      button.addActionListener(e -> dispose());
       buttons.add(button);
       getRootPane().setDefaultButton(button);
 
       button = new JButton("Skip remainder (random)");
-      button.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          shouldSkipRemainder = true;
-          dispose();
-        }
+      button.addActionListener(e -> {
+        shouldSkipRemainder = true;
+        dispose();
       });
       buttons.add(button);
 

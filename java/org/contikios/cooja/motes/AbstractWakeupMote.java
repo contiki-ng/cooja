@@ -84,15 +84,9 @@ public abstract class AbstractWakeupMote implements Mote {
     if (simulation.isSimulationThread()) {
       /* Schedule wakeup immediately */
       scheduleNextWakeup(t);
-    }
-    else {
+    } else {
       /* Schedule wakeup asap */
-      simulation.invokeSimulationThread(new Runnable() {
-        @Override
-        public void run() {
-          scheduleNextWakeup(t);
-        }
-      });
+      simulation.invokeSimulationThread(() -> scheduleNextWakeup(t));
     }
   }
 

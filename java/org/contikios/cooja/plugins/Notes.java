@@ -32,8 +32,6 @@ package org.contikios.cooja.plugins;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -75,12 +73,7 @@ public class Notes extends VisPlugin {
       final JPopupMenu popup = new JPopupMenu();
       JMenuItem headerMenuItem = new JMenuItem("Toggle decorations");
       headerMenuItem.setEnabled(true);
-      headerMenuItem.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          setDecorationsVisible(!decorationsVisible);
-        }
-      });
+      headerMenuItem.addActionListener(e -> setDecorationsVisible(!decorationsVisible));
       popup.add(headerMenuItem);
       notes.addMouseListener(new MouseAdapter() {
         @Override
@@ -135,12 +128,7 @@ public class Notes extends VisPlugin {
     }
 
     Notes.this.revalidate();
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        Notes.this.repaint();
-      }
-    });
+    SwingUtilities.invokeLater(() -> Notes.this.repaint());
 
     decorationsVisible = visible;
   }

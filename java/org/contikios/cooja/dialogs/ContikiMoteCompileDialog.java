@@ -197,12 +197,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       updateForSource(source);
     } else {
       try {
-        SwingUtilities.invokeAndWait(new Runnable() {
-          @Override
-          public void run() {
-            updateForSource(source);
-          }
-        });
+        SwingUtilities.invokeAndWait(() -> updateForSource(source));
       } catch (InvocationTargetException | InterruptedException e) {
         logger.fatal("Error when updating for source " + source + ": " + e.getMessage(), e);
       }

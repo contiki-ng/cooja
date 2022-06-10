@@ -380,13 +380,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       }
     });
     /* Update when content might have changed */
-    varAddressField.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        updateNumberOfValues();
-      }
-    });
+    varAddressField.addActionListener(e -> updateNumberOfValues());
     addrInfoPane.add(varAddressField);
 
     infoPane.add(addrInfoPane);
@@ -410,12 +404,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       }
     });
     /* Update size information when text box action fired */
-    varSizeField.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        updateNumberOfValues();
-      }
-    });
+    varSizeField.addActionListener(e -> updateNumberOfValues());
     sizeInfoPane.add(varSizeField);
 
     infoPane.add(sizeInfoPane);
