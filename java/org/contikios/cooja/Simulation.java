@@ -843,7 +843,11 @@ public class Simulation extends Observable implements Runnable {
    *          Mote to add
    */
   public void addMote(final Mote mote) {
-    Runnable addMote = new Runnable() {
+    // Add to list of uninitialized motes.
+    motesUninit.add(mote);
+
+    // Add from simulation thread, otherwise SafeRandom throws an exception.
+    invokeSimulationThread(new Runnable() {
       @Override
       public void run() {
         if (mote.getInterfaces().getClock() != null) {
@@ -870,19 +874,7 @@ public class Simulation extends Observable implements Runnable {
         notifyObservers(mote);
         cooja.updateGUIComponentState();
       }
-    };
-
-    //Add to list of uninitialized motes
-    motesUninit.add(mote);
-
-    if (!isRunning()) {
-      /* Simulation is stopped, add mote immediately */
-      addMote.run();
-    } else {
-      /* Add mote from simulation thread */
-      invokeSimulationThread(addMote);
-    }
-    
+    });
   }
 
   /**
