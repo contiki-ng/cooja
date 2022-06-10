@@ -306,55 +306,12 @@ public class CompileContiki {
     if (identifier == null) {
       throw new Exception("No identifier specified");
     }
-    if (contikiApp == null) {
-      throw new Exception("No Contiki application specified");
-    }
-    if (mapFile == null) {
-      throw new Exception("No map file specified");
-    }
-    if (libFile == null) {
-      throw new Exception("No library output specified");
-    }
-    if (archiveFile == null) {
-      throw new Exception("No archive file specified");
-    }
     if (javaClass == null) {
       throw new Exception("No Java library class name specified");
     }
 
-    boolean includeSymbols = false; /* TODO */
-
     /* Fetch configuration from external tools */
-    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
-    String link1 = Cooja.getExternalToolsSetting("LINK_COMMAND_1", "");
-    String link2 = Cooja.getExternalToolsSetting("LINK_COMMAND_2", "");
-    String ar1 = Cooja.getExternalToolsSetting("AR_COMMAND_1", "");
-    String ar2 = Cooja.getExternalToolsSetting("AR_COMMAND_2", "");
     String ccFlags = Cooja.getExternalToolsSetting("COMPILER_ARGS", "");
-
-    /* Replace MAPFILE variable */
-    link1 = link1.replace("$(MAPFILE)", output_dir + "/" + mapFile.getName());
-    link2 = link2.replace("$(MAPFILE)", output_dir + "/" + mapFile.getName());
-    ar1 = ar1.replace("$(MAPFILE)", output_dir + "/" + mapFile.getName());
-    ar2 = ar2.replace("$(MAPFILE)", output_dir + "/" + mapFile.getName());
-    ccFlags = ccFlags.replace("$(MAPFILE)", output_dir + "/" + mapFile.getName());
-
-    /* Replace LIBFILE variable */
-    link1 = link1.replace("$(LIBFILE)", output_dir + "/" + libFile.getName());
-    link2 = link2.replace("$(LIBFILE)", output_dir + "/" + libFile.getName());
-    ar1 = ar1.replace("$(LIBFILE)", output_dir + "/" + libFile.getName());
-    ar2 = ar2.replace("$(LIBFILE)", output_dir + "/" + libFile.getName());
-    ccFlags = ccFlags.replace("$(LIBFILE)", output_dir + "/" + libFile.getName());
-
-    /* Replace ARFILE variable */
-    link1 = link1.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
-    link2 = link2.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
-    ar1 = ar1.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
-    ar2 = ar2.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
-    ccFlags = ccFlags.replace("$(ARFILE)", output_dir + "/" + archiveFile.getName());
-
-    /* Strip away contiki application .c extension */
-    String contikiAppNoExtension = contikiApp.getName().substring(0, contikiApp.getName().length()-2);
 
     /* Create environment */
     ArrayList<String[]> env = new ArrayList<String[]>();
@@ -363,19 +320,14 @@ public class CompileContiki {
     // build system. The format is <YYYY><MM><DD><2 digit sequence number>.
     env.add(new String[] { "COOJA_VERSION", "2022052601" });
     env.add(new String[] { "CLASSNAME", javaClass });
-    env.add(new String[] { "CONTIKI_APP", contikiAppNoExtension });
+    // WARNING: COOJA_SOURCE* are updated by redefineCOOJASources().
     env.add(new String[] { "COOJA_SOURCEDIRS", "" });
     env.add(new String[] { "COOJA_SOURCEFILES", "" });
     env.add(new String[] { "CC", Cooja.getExternalToolsSetting("PATH_C_COMPILER") });
     env.add(new String[] { "OBJCOPY", Cooja.getExternalToolsSetting("PATH_OBJCOPY") });
     env.add(new String[] { "EXTRA_CC_ARGS", ccFlags });
     env.add(new String[] { "LD", Cooja.getExternalToolsSetting("PATH_LINKER") });
-    env.add(new String[] { "LINK_COMMAND_1", link1 });
-    env.add(new String[] { "LINK_COMMAND_2", link2 });
     env.add(new String[] { "AR", Cooja.getExternalToolsSetting("PATH_AR") });
-    env.add(new String[] { "AR_COMMAND_1", ar1 });
-    env.add(new String[] { "AR_COMMAND_2", ar2 });
-    env.add(new String[] { "SYMBOLS", includeSymbols?"1":"" });
     env.add(new String[] { "PATH", System.getenv("PATH") });
     // Pass through environment variables for the Contiki-NG CI.
     String ci = System.getenv("CI");
