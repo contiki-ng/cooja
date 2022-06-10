@@ -50,7 +50,7 @@ import org.contikios.cooja.interfaces.*;
 public class MoteInterfaceHandler {
   private static final Logger logger = LogManager.getLogger(MoteInterfaceHandler.class);
 
-  private final ArrayList<MoteInterface> moteInterfaces = new ArrayList<MoteInterface>();
+  private final ArrayList<MoteInterface> moteInterfaces = new ArrayList<>();
 
   /* Cached interfaces */
   private Battery myBattery;
@@ -277,7 +277,7 @@ public class MoteInterfaceHandler {
    */
   public void doActiveActionsBeforeTick() {
     if (polledBeforeActive == null) {
-      ArrayList<PolledBeforeActiveTicks> intfs = new ArrayList<PolledBeforeActiveTicks>();
+      ArrayList<PolledBeforeActiveTicks> intfs = new ArrayList<>();
       for (MoteInterface intf: moteInterfaces) {
         if (intf instanceof PolledBeforeActiveTicks) {
           intfs.add((PolledBeforeActiveTicks)intf);
@@ -296,7 +296,7 @@ public class MoteInterfaceHandler {
    */
   public void doActiveActionsAfterTick() {
     if (polledAfterActive == null) {
-      ArrayList<PolledAfterActiveTicks> intfs = new ArrayList<PolledAfterActiveTicks>();
+      ArrayList<PolledAfterActiveTicks> intfs = new ArrayList<>();
       for (MoteInterface intf: moteInterfaces) {
         if (intf instanceof PolledAfterActiveTicks) {
           intfs.add((PolledAfterActiveTicks)intf);
@@ -315,7 +315,7 @@ public class MoteInterfaceHandler {
    */
   public void doPassiveActionsBeforeTick() {
     if (polledBeforeAll == null) {
-      ArrayList<PolledBeforeAllTicks> intfs = new ArrayList<PolledBeforeAllTicks>();
+      ArrayList<PolledBeforeAllTicks> intfs = new ArrayList<>();
       for (MoteInterface intf: moteInterfaces) {
         if (intf instanceof PolledBeforeAllTicks) {
           intfs.add((PolledBeforeAllTicks)intf);
@@ -334,7 +334,7 @@ public class MoteInterfaceHandler {
    */
   public void doPassiveActionsAfterTick() {
     if (polledAfterAll == null) {
-      ArrayList<PolledAfterAllTicks> intfs = new ArrayList<PolledAfterAllTicks>();
+      ArrayList<PolledAfterAllTicks> intfs = new ArrayList<>();
       for (MoteInterface intf: moteInterfaces) {
         if (intf instanceof PolledAfterAllTicks) {
           intfs.add((PolledAfterAllTicks)intf);

@@ -140,12 +140,12 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private final JComponent timeline;
 
   private Observer moteHighlightObserver = null;
-  private final ArrayList<Mote> highlightedMotes = new ArrayList<Mote>();
+  private final ArrayList<Mote> highlightedMotes = new ArrayList<>();
   private final static Color HIGHLIGHT_COLOR = Color.CYAN;
 
-  private final ArrayList<MoteObservation> activeMoteObservers = new ArrayList<MoteObservation>();
+  private final ArrayList<MoteObservation> activeMoteObservers = new ArrayList<>();
 
-  private ArrayList<MoteEvents> allMoteEvents = new ArrayList<MoteEvents>();
+  private ArrayList<MoteEvents> allMoteEvents = new ArrayList<>();
 
   private boolean showRadioRXTX = true;
   private boolean showRadioChannels = false;
@@ -441,7 +441,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       Mote m = (Mote) b.getClientProperty("mote");
 
       /* Sort by distance */
-      ArrayList<MoteEvents> sortedMoteEvents = new ArrayList<MoteEvents>();
+      ArrayList<MoteEvents> sortedMoteEvents = new ArrayList<>();
       for (MoteEvents me: allMoteEvents.toArray(new MoteEvents[0])) {
         double d = me.mote.getInterfaces().getPosition().getDistanceTo(m);
 
@@ -484,7 +484,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     @Override
     public void actionPerformed(ActionEvent e) {
 
-      JComboBox<Object> source = new JComboBox<Object>();
+      JComboBox<Object> source = new JComboBox<>();
       source.addItem("All motes");
       for (Mote m: simulation.getMotes()) {
         source.addItem(m);
@@ -812,7 +812,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     StringBuilder output = new StringBuilder();
 
     /* Process all events (per mote basis) */
-    ArrayList<MoteStatistics> allStats = new ArrayList<MoteStatistics>();
+    ArrayList<MoteStatistics> allStats = new ArrayList<>();
     for (MoteEvents moteEvents: allMoteEvents) {
       MoteStatistics stats = new MoteStatistics();
       allStats.add(stats);
@@ -1318,7 +1318,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     /* Remember observed motes */
@@ -2362,12 +2362,12 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     public MoteEvents(Mote mote) {
       this.mote = mote;
-      this.radioRXTXEvents = new ArrayList<MoteEvent>();
-      this.radioChannelEvents = new ArrayList<MoteEvent>();
-      this.radioHWEvents = new ArrayList<MoteEvent>();
-      this.ledEvents = new ArrayList<MoteEvent>();
-      this.logEvents = new ArrayList<MoteEvent>();
-      this.watchpointEvents = new ArrayList<MoteEvent>();
+      this.radioRXTXEvents = new ArrayList<>();
+      this.radioChannelEvents = new ArrayList<>();
+      this.radioHWEvents = new ArrayList<>();
+      this.ledEvents = new ArrayList<>();
+      this.logEvents = new ArrayList<>();
+      this.watchpointEvents = new ArrayList<>();
 
       if (mote.getSimulation().getSimulationTime() > 0) {
         /* Create no history events */

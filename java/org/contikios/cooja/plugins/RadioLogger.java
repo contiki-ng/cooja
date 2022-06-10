@@ -137,12 +137,12 @@ public class RadioLogger extends VisPlugin {
   private final Simulation simulation;
   private final JTable dataTable;
   private final TableRowSorter<TableModel> logFilter;
-  private final ArrayList<RadioConnectionLog> connections = new ArrayList<RadioConnectionLog>();
+  private final ArrayList<RadioConnectionLog> connections = new ArrayList<>();
   private final RadioMedium radioMedium;
   private final Observer radioMediumObserver;
   private final AbstractTableModel model;
 
-  private final HashMap<String, Action> analyzerMap = new HashMap<String, Action>();
+  private final HashMap<String, Action> analyzerMap = new HashMap<>();
   private String analyzerName = null;
   private ArrayList<PacketAnalyzer> analyzers = null;
   private final IEEE802154Analyzer analyzerWithPcap;
@@ -171,7 +171,7 @@ public class RadioLogger extends VisPlugin {
 
     this.setJMenuBar(menuBar);
 
-    ArrayList<PacketAnalyzer> lowpanAnalyzers = new ArrayList<PacketAnalyzer>();
+    ArrayList<PacketAnalyzer> lowpanAnalyzers = new ArrayList<>();
     lowpanAnalyzers.add(new IEEE802154Analyzer(false));
     lowpanAnalyzers.add(new FragHeadPacketAnalyzer());
     lowpanAnalyzers.add(new IPHCPacketAnalyzer());
@@ -179,7 +179,7 @@ public class RadioLogger extends VisPlugin {
     lowpanAnalyzers.add(new ICMPv6Analyzer());
 
     analyzerWithPcap = new IEEE802154Analyzer(true);
-    ArrayList<PacketAnalyzer> lowpanAnalyzersPcap = new ArrayList<PacketAnalyzer>();
+    ArrayList<PacketAnalyzer> lowpanAnalyzersPcap = new ArrayList<>();
     lowpanAnalyzersPcap.add(analyzerWithPcap);
     lowpanAnalyzersPcap.add(new FragHeadPacketAnalyzer());
     lowpanAnalyzersPcap.add(new IPHCPacketAnalyzer());
@@ -371,7 +371,7 @@ public class RadioLogger extends VisPlugin {
       }
     });
 
-    logFilter = new TableRowSorter<TableModel>(model);
+    logFilter = new TableRowSorter<>(model);
     for (int i = 0, n = model.getColumnCount(); i < n; i++) {
       logFilter.setSortable(i, false);
     }
@@ -633,7 +633,7 @@ public class RadioLogger extends VisPlugin {
 
     try {
       logFilter.setRowFilter(null);
-      RowFilter<Object, Object> filter = new RowFilter<Object, Object>() {
+      RowFilter<Object, Object> filter = new RowFilter<>() {
         @Override
         public boolean include(RowFilter.Entry<? extends Object, ? extends Object> entry) {
           int row = (Integer) entry.getIdentifier();
@@ -789,7 +789,7 @@ public class RadioLogger extends VisPlugin {
 
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
 
     Element element = new Element("split");
     element.addContent(Integer.toString(splitPane.getDividerLocation()));

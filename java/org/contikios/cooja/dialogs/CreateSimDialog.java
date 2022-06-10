@@ -239,7 +239,7 @@ public class CreateSimDialog extends JDialog {
     label = new JLabel("Radio medium");
     label.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT));
 
-    Vector<String> radioMediumDescriptions = new Vector<String>();
+    Vector<String> radioMediumDescriptions = new Vector<>();
     for (Class<? extends RadioMedium> radioMediumClass: gui.getRegisteredRadioMediums()) {
       String description = Cooja.getDescriptionOf(radioMediumClass);
       radioMediumDescriptions.add(description);

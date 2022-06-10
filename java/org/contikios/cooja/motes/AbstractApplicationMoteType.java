@@ -203,7 +203,7 @@ public abstract class AbstractApplicationMoteType implements MoteType {
 
   @Override
   public Collection<Element> getConfigXML(Simulation simulation) {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     element = new Element("identifier");

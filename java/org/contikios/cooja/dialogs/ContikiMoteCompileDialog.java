@@ -227,7 +227,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   public Class<? extends MoteInterface>[] getAllMoteInterfaces() {
 	  ProjectConfig projectConfig = moteType.getConfig();
 	  String[] intfNames = projectConfig.getStringArrayValue(ContikiMoteType.class, "MOTE_INTERFACES");
-	  ArrayList<Class<? extends MoteInterface>> classes = new ArrayList<Class<? extends MoteInterface>>();
+	  ArrayList<Class<? extends MoteInterface>> classes = new ArrayList<>();
 
 	  /* Load mote interface classes */
 	  for (String intfName : intfNames) {

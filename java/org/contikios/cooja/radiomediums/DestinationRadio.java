@@ -56,7 +56,7 @@ public class DestinationRadio {
 	}
 
 	public Collection<Element> getConfigXML() {
-		ArrayList<Element> config = new ArrayList<Element>();
+		ArrayList<Element> config = new ArrayList<>();
 		Element element;
 
 		element = new Element("radio");

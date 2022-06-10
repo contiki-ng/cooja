@@ -104,7 +104,7 @@ public class ProjectConfig {
       FileNotFoundException {
     // Create empty configuration
     myConfig = new Properties();
-    myProjectDirHistory = new Vector<File>();
+    myProjectDirHistory = new Vector<>();
 
 
     if (useDefault) {

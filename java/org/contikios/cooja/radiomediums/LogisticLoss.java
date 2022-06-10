@@ -158,7 +158,7 @@ public class LogisticLoss extends AbstractRadioMedium {
 
     private Random random = null;
 
-    private final Hashtable<Index, TimeVaryingEdge> edgesTable = new Hashtable<Index, TimeVaryingEdge>();
+    private final Hashtable<Index, TimeVaryingEdge> edgesTable = new Hashtable<>();
 
     public LogisticLoss(Simulation simulation) {
         super(simulation);

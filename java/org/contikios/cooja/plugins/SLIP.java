@@ -49,7 +49,7 @@ public class SLIP {
    * @param packet Packet data
    */
   public static byte[] asSlip(byte[] packet) {
-    ArrayList<Byte> bytes = new ArrayList<Byte>();
+    ArrayList<Byte> bytes = new ArrayList<>();
 
     bytes.add(SLIP_END);
 

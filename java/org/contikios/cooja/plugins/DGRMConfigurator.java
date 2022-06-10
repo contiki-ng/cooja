@@ -322,12 +322,12 @@ public class DGRMConfigurator extends VisPlugin {
 	}
 
 	private void importEdges(DirectedGraphMedium.Edge[] edges) {
-		Arrays.sort(edges, new Comparator<DirectedGraphMedium.Edge>() {
-			@Override
-			public int compare(Edge o1, Edge o2) {
-				return o1.source.getMote().getID() - o2.source.getMote().getID();
-			}
-		});
+		Arrays.sort(edges, new Comparator<>() {
+      @Override
+      public int compare(Edge o1, Edge o2) {
+        return o1.source.getMote().getID() - o2.source.getMote().getID();
+      }
+    });
 		for (DirectedGraphMedium.Edge e: edges) {
 			radioMedium.addEdge(e);
 		}
@@ -345,7 +345,7 @@ public class DGRMConfigurator extends VisPlugin {
 	static final int INDEX_RSSI_MAX = 8;
 	public static DirectedGraphMedium.Edge[] parseDGRMLinksFile(File file, Simulation simulation) {
 		String fileContents = StringUtils.loadFromFile(file);
-		ArrayList<DirectedGraphMedium.Edge> edges = new ArrayList<DirectedGraphMedium.Edge>();
+		ArrayList<DirectedGraphMedium.Edge> edges = new ArrayList<>();
 
 		/* format: # [src] [dst] [prr] [prr_ci] [num_tx] [num_rx] [rssi] [rssi_min] [rssi_max] */
 		for (String l: fileContents.split("\n")) {

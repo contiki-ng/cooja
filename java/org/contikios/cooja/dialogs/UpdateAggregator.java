@@ -66,7 +66,7 @@ public abstract class UpdateAggregator<A> {
    */
   public UpdateAggregator(int interval, int maxEvents) {
     this.maxPending = maxEvents;
-    pending = new ArrayList<A>();
+    pending = new ArrayList<>();
     t = new Timer(interval, e -> consume.run());
     t.setInitialDelay(0);
     t.setCoalesce(true);
@@ -103,7 +103,7 @@ public abstract class UpdateAggregator<A> {
   private synchronized List<A> getPending() {
     /* Queue pending packets */
     ArrayList<A> tmp = pending;
-    pending = new ArrayList<A>();
+    pending = new ArrayList<>();
     return tmp;
   }
 

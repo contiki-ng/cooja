@@ -81,7 +81,7 @@ public class BaseRSSIconf extends VisPlugin {
 	private AbstractRadioMedium radioMedium = null;
 	private final Observer changeObserver;
 	private JTable motesTable = null;
-	private final JComboBox<Number> combo = new JComboBox<Number>();
+	private final JComboBox<Number> combo = new JComboBox<>();
 	private Simulation sim = null;
 	
 	

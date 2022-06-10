@@ -135,7 +135,7 @@ public class BufferListener extends VisPlugin {
   final static int MAX_BUFFER_SIZE = 16 * 1024;
 
   private static final ArrayList<Class<? extends Parser>> bufferParsers =
-    new ArrayList<Class<? extends Parser>>();
+          new ArrayList<>();
   static {
     registerBufferParser(ByteArrayParser.class);
     registerBufferParser(IntegerParser.class);
@@ -151,7 +151,7 @@ public class BufferListener extends VisPlugin {
   /* TODO Hide identical lines? */
 
   private static final ArrayList<Class<? extends Buffer>> bufferTypes =
-    new ArrayList<Class<? extends Buffer>>();
+          new ArrayList<>();
   static {
     registerBufferType(PacketbufBuffer.class);
     registerBufferType(PacketbufPointerBuffer.class);
@@ -186,7 +186,7 @@ public class BufferListener extends VisPlugin {
 
   private final JTable logTable;
   private final TableRowSorter<TableModel> logFilter;
-  private final ArrayQueue<BufferAccess> logs = new ArrayQueue<BufferAccess>();
+  private final ArrayQueue<BufferAccess> logs = new ArrayQueue<>();
 
   private final Simulation simulation;
 
@@ -213,8 +213,8 @@ public class BufferListener extends VisPlugin {
   private final JMenu bufferMenu = new JMenu("Buffer");
   private final JMenu parserMenu = new JMenu("Show as");
 
-  private final ArrayList<Mote> motes = new ArrayList<Mote>();
-  private final ArrayList<SegmentMemoryMonitor> memoryMonitors = new ArrayList<SegmentMemoryMonitor>();
+  private final ArrayList<Mote> motes = new ArrayList<>();
+  private final ArrayList<SegmentMemoryMonitor> memoryMonitors = new ArrayList<>();
 
   private TimeEvent hourTimeEvent = new TimeEvent() {
     @Override
@@ -226,7 +226,7 @@ public class BufferListener extends VisPlugin {
   };
 
   private static final int UPDATE_INTERVAL = 250;
-  private final UpdateAggregator<BufferAccess> logUpdateAggregator = new UpdateAggregator<BufferAccess>(UPDATE_INTERVAL) {
+  private final UpdateAggregator<BufferAccess> logUpdateAggregator = new UpdateAggregator<>(UPDATE_INTERVAL) {
     private final Runnable scroll = new Runnable() {
       @Override
       public void run() {
@@ -420,7 +420,7 @@ public class BufferListener extends VisPlugin {
         }
       }
     });
-    logFilter = new TableRowSorter<TableModel>(model);
+    logFilter = new TableRowSorter<>(model);
     for (int i = 0, n = model.getColumnCount(); i < n; i++) {
       logFilter.setSortable(i, false);
     }
@@ -841,7 +841,7 @@ public class BufferListener extends VisPlugin {
 
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     element = new Element("filter");
@@ -945,7 +945,7 @@ public class BufferListener extends VisPlugin {
       } else {
         regexp = null;
       }
-      RowFilter<Object, Object> wrapped = new RowFilter<Object, Object>() {
+      RowFilter<Object, Object> wrapped = new RowFilter<>() {
         @Override
         public boolean include(RowFilter.Entry<? extends Object, ? extends Object> entry) {
           if (hideReads) {

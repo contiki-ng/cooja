@@ -399,7 +399,7 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
 
   @Override
   public Collection<Element> getConfigXML() {
-           ArrayList<Element> config = new ArrayList<Element>();
+           ArrayList<Element> config = new ArrayList<>();
 
            Element element;
 

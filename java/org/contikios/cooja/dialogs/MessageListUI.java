@@ -162,7 +162,7 @@ public class MessageListUI extends JList implements MessageList {
     addMessage(message, NORMAL);
   }
 
-  private final ArrayList<MessageContainer> messages = new ArrayList<MessageContainer>();
+  private final ArrayList<MessageContainer> messages = new ArrayList<>();
 
   @Override
   public MessageContainer[] getMessages() {

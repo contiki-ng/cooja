@@ -173,7 +173,7 @@ public class Position extends MoteInterface {
 
   @Override
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<Element>();
+    Vector<Element> config = new Vector<>();
     Element element;
 
     // X coordinate

@@ -137,7 +137,7 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
 
   @Override
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<Element>();
+    Vector<Element> config = new Vector<>();
     Element element;
 
     // Infinite boolean

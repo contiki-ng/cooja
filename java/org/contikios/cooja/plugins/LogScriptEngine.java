@@ -349,7 +349,7 @@ public class LogScriptEngine {
     /* Create script output logger */
     engine.put("log", scriptLog);
 
-    Hashtable<Object, Object> hash = new Hashtable<Object, Object>();
+    Hashtable<Object, Object> hash = new Hashtable<>();
     engine.put("global", hash);
     engine.put("sim", simulation);
     engine.put("gui", simulation.getCooja());

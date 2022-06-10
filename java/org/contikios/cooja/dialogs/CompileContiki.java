@@ -82,7 +82,7 @@ public class CompileContiki {
   throws Exception {
     Pattern p = Pattern.compile("([^\\s\"']+|\"[^\"]*\"|'[^']*')");
     Matcher m = p.matcher(command);
-    ArrayList<String> commandList = new ArrayList<String>();
+    ArrayList<String> commandList = new ArrayList<>();
     while(m.find()) {
       String arg = m.group();
       if (arg.length() > 1 && (arg.charAt(0) == '"' || arg.charAt(0) == '\'')) {
@@ -314,7 +314,7 @@ public class CompileContiki {
     String ccFlags = Cooja.getExternalToolsSetting("COMPILER_ARGS", "");
 
     /* Create environment */
-    ArrayList<String[]> env = new ArrayList<String[]>();
+    ArrayList<String[]> env = new ArrayList<>();
     env.add(new String[] { "LIBNAME", "$(BUILD_DIR_BOARD)/" + identifier + ".cooja" });
     // COOJA_VERSION is used to detect incompatibility with the Contiki-NG
     // build system. The format is <YYYY><MM><DD><2 digit sequence number>.

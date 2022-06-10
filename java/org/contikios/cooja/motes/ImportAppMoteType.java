@@ -223,7 +223,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
 
   public TestLoader createTestLoader(File classFile) throws IOException {
     classFile = classFile.getCanonicalFile();
-    ArrayList<URL> list = new ArrayList<URL>();
+    ArrayList<URL> list = new ArrayList<>();
     for(File parent = classFile.getParentFile();
         parent != null;
         parent = parent.getParentFile()) {

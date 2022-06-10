@@ -59,10 +59,10 @@ public class Simulation extends Observable implements Runnable {
 
   /*private static long EVENT_COUNTER = 0;*/
 
-  private final Vector<Mote> motes = new Vector<Mote>();
-  private final Vector<Mote> motesUninit = new Vector<Mote>();
+  private final Vector<Mote> motes = new Vector<>();
+  private final Vector<Mote> motesUninit = new Vector<>();
   
-  private final Vector<MoteType> moteTypes = new Vector<MoteType>();
+  private final Vector<MoteType> moteTypes = new Vector<>();
 
   /* If true, run simulation at full speed */
   private boolean speedLimitNone = true;
@@ -484,7 +484,7 @@ public class Simulation extends Observable implements Runnable {
    * @return Current simulation config
    */
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
 
     Element element;
 
@@ -547,7 +547,7 @@ public class Simulation extends Observable implements Runnable {
 
       Collection<Element> moteConfig = mote.getConfigXML();
       if (moteConfig == null) {
-        moteConfig = new ArrayList<Element>();
+        moteConfig = new ArrayList<>();
       }
 
       /* Add mote type identifier */
