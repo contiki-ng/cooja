@@ -66,8 +66,8 @@ import org.contikios.cooja.mote.memory.VarMemory;
 @ClassDescription("Vibration sensor")
 public class ContikiVib extends MoteInterface implements ContikiMoteInterface {
 
-  private ContikiMote mote;
-  private VarMemory moteMem;
+  private final ContikiMote mote;
+  private final VarMemory moteMem;
 
   /**
    * Creates an interface to the vibration sensor at mote.

@@ -66,7 +66,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
   private Simulation simulation;
   private Random random;
 
-  private ArrayList<Edge> edges = new ArrayList<Edge>();
+  private final ArrayList<Edge> edges = new ArrayList<Edge>();
   private boolean edgesDirty = true;
 
   /* Used for optimizing lookup time */

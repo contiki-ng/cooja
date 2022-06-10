@@ -72,11 +72,11 @@ public class ImportAppMoteDialog extends JDialog {
   private static String lastPath;
   private static String lastFile;
 
-  private JTextField descriptionField;
-  private JTextField pathField;
-  private JTextField classField;
-  private JButton cancelButton;
-  private JButton createButton;
+  private final JTextField descriptionField;
+  private final JTextField pathField;
+  private final JTextField classField;
+  private final JButton cancelButton;
+  private final JButton createButton;
   private boolean hasSelected = false;
 
   public ImportAppMoteDialog(Container parent, final Simulation simulation, final ImportAppMoteType moteType) {

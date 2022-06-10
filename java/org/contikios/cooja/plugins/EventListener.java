@@ -80,11 +80,11 @@ public class EventListener extends VisPlugin {
 
   private static final Logger logger = LogManager.getLogger(EventListener.class);
 
-  private Simulation mySimulation;
+  private final Simulation mySimulation;
 
-  private Vector<EventObserver> allObservers = new Vector<EventObserver>();
+  private final Vector<EventObserver> allObservers = new Vector<EventObserver>();
 
-  private EventListener myPlugin;
+  private final EventListener myPlugin;
 
   private JLabel messageLabel = null;
 
@@ -276,7 +276,7 @@ public class EventListener extends VisPlugin {
     });
   }
 
-  private ActionListener interfaceCheckBoxListener = new ActionListener() {
+  private final ActionListener interfaceCheckBoxListener = new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
       Class<? extends MoteInterface> interfaceClass = (Class<? extends MoteInterface>) ((JCheckBox) e
@@ -307,7 +307,7 @@ public class EventListener extends VisPlugin {
     }
   };
 
-  private ActionListener generalCheckBoxListener = new ActionListener() {
+  private final ActionListener generalCheckBoxListener = new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
       Observable observable = (Observable) ((JCheckBox) e.getSource())

@@ -51,7 +51,7 @@ import org.contikios.cooja.*;
 public class Position extends MoteInterface {
   private static final Logger logger = LogManager.getLogger(Position.class);
   private Mote mote = null;
-  private double[] coords = new double[3];
+  private final double[] coords = new double[3];
 
   /**
    * Creates a position for given mote with coordinates (x=0, y=0, z=0).

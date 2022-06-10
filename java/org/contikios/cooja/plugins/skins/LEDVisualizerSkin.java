@@ -62,13 +62,13 @@ public class LEDVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private Observer ledObserver = new Observer() {
+  private final Observer ledObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
       visualizer.repaint();
     }
   };
-  private MoteCountListener newMotesListener = new MoteCountListener() {
+  private final MoteCountListener newMotesListener = new MoteCountListener() {
     @Override
     public void moteWasAdded(Mote mote) {
       LED led = mote.getInterfaces().getLED();

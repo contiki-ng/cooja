@@ -236,7 +236,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
   public static class TestLoader extends URLClassLoader {
     private final File classFile;
     private File classPath;
-    private Class<?> testClass;
+    private final Class<?> testClass;
 
     private TestLoader(URL[] classpath, ClassLoader parentClassLoader, File classFile)
       throws IOException

@@ -87,7 +87,7 @@ public class UDGM extends AbstractRadioMedium {
   public double TRANSMITTING_RANGE = 50; /* Transmission range. */
   public double INTERFERENCE_RANGE = 100; /* Interference range. Ignored if below transmission range. */
 
-  private DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
+  private final DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
 
   private Random random = null;
 

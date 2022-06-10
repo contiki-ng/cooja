@@ -50,7 +50,7 @@ import org.contikios.cooja.util.ArrayUtils;
  * @author Fredrik Osterlind
  */
 public class SimEventCentral {
-  private Simulation simulation;
+  private final Simulation simulation;
 
   public SimEventCentral(Simulation simulation) {
     this.simulation = simulation;
@@ -118,7 +118,7 @@ public class SimEventCentral {
       observable.deleteObserver(observer);
     }
   }
-  private ArrayList<MoteObservation> moteObservations;
+  private final ArrayList<MoteObservation> moteObservations;
 
   
   /* ADDED/REMOVED MOTES */
@@ -127,7 +127,7 @@ public class SimEventCentral {
     public void moteWasRemoved(Mote mote);
   }
   private MoteCountListener[] moteCountListeners;
-  private Observer moteCountObserver = new Observer() {
+  private final Observer moteCountObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
       if (obj == null || !(obj instanceof Mote)) {
@@ -200,7 +200,7 @@ public class SimEventCentral {
     public void newLogOutput(LogOutputEvent ev);
   }
   private LogOutputListener[] logOutputListeners;
-  private Observer logOutputObserver = new Observer() {
+  private final Observer logOutputObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
       Mote mote = (Mote) obj;

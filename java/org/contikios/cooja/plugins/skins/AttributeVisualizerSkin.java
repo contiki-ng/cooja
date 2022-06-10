@@ -62,13 +62,13 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private Observer attributesObserver = new Observer() {
+  private final Observer attributesObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
       visualizer.repaint();
     }
   };
-  private MoteCountListener newMotesListener = new MoteCountListener() {
+  private final MoteCountListener newMotesListener = new MoteCountListener() {
     @Override
     public void moteWasAdded(Mote mote) {
       MoteAttributes intf = mote.getInterfaces().getInterfaceOfType(MoteAttributes.class);

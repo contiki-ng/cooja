@@ -63,7 +63,7 @@ public class BufferSettings extends JDialog {
   private static final Logger logger = LogManager.getLogger(BufferSettings.class);
   private final static Dimension LABEL_SIZE = new Dimension(150, 25);
 
-  private SimEventCentral central;
+  private final SimEventCentral central;
 
   public static void showDialog(JDesktopPane parent, Simulation simulation) {
     BufferSettings dialog = new BufferSettings(simulation);
@@ -129,7 +129,7 @@ public class BufferSettings extends JDialog {
     return value;
   }
 
-  private Action setDefaultAction = new AbstractAction("Set default") {
+  private final Action setDefaultAction = new AbstractAction("Set default") {
     @Override
     public void actionPerformed(ActionEvent e) {
       Object[] options = { "Ok", "Cancel" };
@@ -148,7 +148,7 @@ public class BufferSettings extends JDialog {
     }
   };
 
-  private Action disposeAction = new AbstractAction("OK") {
+  private final Action disposeAction = new AbstractAction("OK") {
     @Override
     public void actionPerformed(ActionEvent e) {
       dispose();

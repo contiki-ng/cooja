@@ -50,7 +50,7 @@ import org.contikios.cooja.interfaces.*;
 public class MoteInterfaceHandler {
   private static final Logger logger = LogManager.getLogger(MoteInterfaceHandler.class);
 
-  private ArrayList<MoteInterface> moteInterfaces = new ArrayList<MoteInterface>();
+  private final ArrayList<MoteInterface> moteInterfaces = new ArrayList<MoteInterface>();
 
   /* Cached interfaces */
   private Battery myBattery;

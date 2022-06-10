@@ -62,8 +62,13 @@ public class ManualPositioner extends Positioner {
   private boolean skipRemainder = false;
   private double lastX, lastY, lastZ;
 
-  private double startX, endX, startY, endY, startZ, endZ;
-  private Random random = new Random(); /* Do not use main random generator for setup */
+  private final double startX;
+  private final double endX;
+  private final double startY;
+  private final double endY;
+  private final double startZ;
+  private final double endZ;
+  private final Random random = new Random(); /* Do not use main random generator for setup */
 
   public ManualPositioner(int totalNumberOfMotes,
       double startX, double endX,
@@ -131,7 +136,7 @@ public class ManualPositioner extends Positioner {
   }
 
   static class PositionDialog extends JDialog {
-    private NumberFormat doubleFormat = NumberFormat.getNumberInstance();
+    private final NumberFormat doubleFormat = NumberFormat.getNumberInstance();
 
     public boolean shouldSkipRemainder = false;
     public JFormattedTextField xField, yField, zField;

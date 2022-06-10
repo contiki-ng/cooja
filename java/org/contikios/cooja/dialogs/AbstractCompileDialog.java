@@ -116,11 +116,11 @@ public abstract class AbstractCompileDialog extends JDialog {
   protected Box moteIntfBox;
 
   protected JTextField contikiField;
-  private JTextField descriptionField;
+  private final JTextField descriptionField;
   private JTextArea commandsArea;
-  private JButton cleanButton;
-  private JButton compileButton;
-  private JButton createButton;
+  private final JButton cleanButton;
+  private final JButton compileButton;
+  private final JButton createButton;
 
   private Component currentCompilationOutput = null;
   private Process currentCompilationProcess = null;
@@ -735,7 +735,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     parent.addTab("Mote interfaces", null, panel, "Mote interfaces");
   }
 
-  private Action defaultAction = new AbstractAction("Use default") {
+  private final Action defaultAction = new AbstractAction("Use default") {
     @Override
     public void actionPerformed(ActionEvent e) {
       /* Unselect all */

@@ -40,8 +40,13 @@ import org.contikios.cooja.*;
 @ClassDescription("Ellipse positioning")
 public class EllipsePositioner extends Positioner {
 
-  private double xRadius, yRadius, xMiddle, yMiddle;
-  private double zValue, deltaAngle, currentAngle;
+  private final double xRadius;
+  private final double yRadius;
+  private final double xMiddle;
+  private final double yMiddle;
+  private final double zValue;
+  private final double deltaAngle;
+  private double currentAngle;
 
   /**
    * Creates a circle positioner.

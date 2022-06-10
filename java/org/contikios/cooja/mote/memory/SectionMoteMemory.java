@@ -52,7 +52,7 @@ public class SectionMoteMemory implements MemoryInterface {
   private static final Logger logger = LogManager.getLogger(SectionMoteMemory.class);
   private static final boolean DEBUG = logger.isDebugEnabled();
 
-  private Map<String, MemoryInterface> sections = new HashMap<>();
+  private final Map<String, MemoryInterface> sections = new HashMap<>();
 
   private final Map<String, Symbol> symbols;
   private MemoryLayout memLayout;
@@ -296,7 +296,7 @@ public class SectionMoteMemory implements MemoryInterface {
     return clone;
   }
 
-  private ArrayList<PolledMemorySegments> polledMemories = new ArrayList<PolledMemorySegments>();
+  private final ArrayList<PolledMemorySegments> polledMemories = new ArrayList<PolledMemorySegments>();
   public void pollForMemoryChanges() {
     for (PolledMemorySegments mem: polledMemories.toArray(new PolledMemorySegments[0])) {
       mem.notifyIfChanged();

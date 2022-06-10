@@ -65,11 +65,11 @@ public abstract class SerialUI extends Log implements SerialPort {
 
   private byte lastSerialData = 0; /* SerialPort */
   private String lastLogMessage = ""; /* Log */
-  private StringBuilder newMessage = new StringBuilder(); /* Log */
+  private final StringBuilder newMessage = new StringBuilder(); /* Log */
 
   /* Command history */
   private final static int HISTORY_SIZE = 15;
-  private ArrayList<String> history = new ArrayList<String>();
+  private final ArrayList<String> history = new ArrayList<String>();
   private int historyPos = -1;
 
   /* Log */
@@ -82,7 +82,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   private abstract static class SerialDataObservable extends Observable {
     public abstract void notifyNewData();
   }
-  private SerialDataObservable serialDataObservable = new SerialDataObservable() {
+  private final SerialDataObservable serialDataObservable = new SerialDataObservable() {
     @Override
     public void notifyNewData() {
       if (this.countObservers() == 0) {

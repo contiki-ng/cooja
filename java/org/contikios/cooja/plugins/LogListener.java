@@ -142,33 +142,33 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   private boolean hasHours = false;
 
   private final JTable logTable;
-  private TableRowSorter<TableModel> logFilter;
-  private ArrayQueue<LogData> logs = new ArrayQueue<LogData>();
+  private final TableRowSorter<TableModel> logFilter;
+  private final ArrayQueue<LogData> logs = new ArrayQueue<LogData>();
 
-  private Simulation simulation;
+  private final Simulation simulation;
 
   private JTextField filterTextField = null;
-  private JLabel filterLabel = new JLabel("Filter: ");
-  private Color filterTextFieldBackground;
+  private final JLabel filterLabel = new JLabel("Filter: ");
+  private final Color filterTextFieldBackground;
 
-  private AbstractTableModel model;
+  private final AbstractTableModel model;
 
-  private LogOutputListener logOutputListener;
+  private final LogOutputListener logOutputListener;
 
   private boolean backgroundColors = true;
-  private JCheckBoxMenuItem colorCheckbox;
+  private final JCheckBoxMenuItem colorCheckbox;
 
   private boolean inverseFilter = false;
-  private JCheckBoxMenuItem inverseFilterCheckbox;
+  private final JCheckBoxMenuItem inverseFilterCheckbox;
 
   private boolean hideDebug = false;
-  private JCheckBoxMenuItem hideDebugCheckbox;
+  private final JCheckBoxMenuItem hideDebugCheckbox;
 
-  private JCheckBoxMenuItem appendCheckBox;
+  private final JCheckBoxMenuItem appendCheckBox;
 
   private static final int UPDATE_INTERVAL = 250;
-  private UpdateAggregator<LogData> logUpdateAggregator = new UpdateAggregator<LogData>(UPDATE_INTERVAL) {
-    private Runnable scroll = new Runnable() {
+  private final UpdateAggregator<LogData> logUpdateAggregator = new UpdateAggregator<LogData>(UPDATE_INTERVAL) {
+    private final Runnable scroll = new Runnable() {
       @Override
       public void run() {
         logTable.scrollRectToVisible(
@@ -770,7 +770,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   }
 
-  private Action saveAction = new AbstractAction("Save to file") {
+  private final Action saveAction = new AbstractAction("Save to file") {
     private static final long serialVersionUID = -4140706275748686944L;
 
     @Override
@@ -860,7 +860,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     return true;
   }
 
-  private Action appendAction = new AbstractAction("Append to file") {
+  private final Action appendAction = new AbstractAction("Append to file") {
     private static final long serialVersionUID = -3041714249257346688L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -901,7 +901,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action timeLineAction = new AbstractAction("Timeline") {
+  private final Action timeLineAction = new AbstractAction("Timeline") {
     private static final long serialVersionUID = -6358463434933029699L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -925,7 +925,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action radioLoggerAction = new AbstractAction("Radio Logger") {
+  private final Action radioLoggerAction = new AbstractAction("Radio Logger") {
     private static final long serialVersionUID = -3041714249257346688L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -949,7 +949,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action showInAllAction = new AbstractAction("All") {
+  private final Action showInAllAction = new AbstractAction("All") {
     private static final long serialVersionUID = -8433490108577001803L;
     {
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true));
@@ -962,7 +962,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action clearAction = new AbstractAction("Clear all messages") {
+  private final Action clearAction = new AbstractAction("Clear all messages") {
     private static final long serialVersionUID = -2115620313183440224L;
 
     @Override
@@ -979,7 +979,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   }
 
-  private Action copyAction = new AbstractAction("Copy selected") {
+  private final Action copyAction = new AbstractAction("Copy selected") {
     private static final long serialVersionUID = -8433490108577001803L;
 
     @Override
@@ -1003,7 +1003,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action copyAllAction = new AbstractAction("Copy all data") {
+  private final Action copyAllAction = new AbstractAction("Copy all data") {
     private static final long serialVersionUID = -5038884975254178373L;
 
     @Override
@@ -1025,7 +1025,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action copyAllMessagesAction = new AbstractAction("Copy all messages") {
+  private final Action copyAllMessagesAction = new AbstractAction("Copy all messages") {
     private static final long serialVersionUID = -5038884975254178373L;
 
     @Override

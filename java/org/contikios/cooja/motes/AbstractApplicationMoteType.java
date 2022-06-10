@@ -59,7 +59,7 @@ import org.contikios.cooja.interfaces.Position;
 public abstract class AbstractApplicationMoteType implements MoteType {
   private static final Logger logger = LogManager.getLogger(AbstractApplicationMoteType.class);
 
-  private ProjectConfig myConfig = null;
+  private final ProjectConfig myConfig = null;
 
   private String identifier = null;
   private String description = null;

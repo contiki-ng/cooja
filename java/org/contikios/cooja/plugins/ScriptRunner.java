@@ -111,14 +111,14 @@ public class ScriptRunner extends VisPlugin {
       "plugins.js", "Interact with surrounding Cooja plugins",
   };
 
-  private Simulation simulation;
+  private final Simulation simulation;
   private LogScriptEngine engine;
 
   private static BufferedWriter logWriter = null; /* For non-GUI tests */
 
-  private JEditorPane codeEditor;
-  private JTextArea logTextArea;
-  private JSplitPane centerPanel;
+  private final JEditorPane codeEditor;
+  private final JTextArea logTextArea;
+  private final JSplitPane centerPanel;
 
   private JSyntaxLinkFile actionLinkFile = null;
   private File linkedFile = null;

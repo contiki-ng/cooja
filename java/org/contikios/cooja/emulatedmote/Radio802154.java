@@ -57,12 +57,12 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
     protected boolean isInterfered = false;
 
-    private boolean isTransmitting = false;
+    private final boolean isTransmitting = false;
 
     protected boolean isReceiving = false;
     //    private boolean hasFailedReception = false;
 
-    private boolean radioOn = true;
+    private final boolean radioOn = true;
 
     private RadioByte lastOutgoingByte = null;
 

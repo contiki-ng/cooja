@@ -101,10 +101,10 @@ public class DGRMConfigurator extends VisPlugin {
 
   private Cooja gui = null;
   private DirectedGraphMedium radioMedium = null;
-  private Observer radioMediumObserver;
+  private final Observer radioMediumObserver;
   private JTable graphTable = null;
-  private JComboBox combo = new JComboBox();
-	private JButton removeButton;
+  private final JComboBox combo = new JComboBox();
+	private final JButton removeButton;
 
   public DGRMConfigurator(Simulation sim, Cooja gui) {
     super("DGRM Configurator", gui);

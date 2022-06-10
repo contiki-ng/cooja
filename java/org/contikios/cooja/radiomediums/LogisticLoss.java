@@ -154,11 +154,11 @@ public class LogisticLoss extends AbstractRadioMedium {
 
     private long lastTimeVariationUpdatePeriod = 0;
 
-    private DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
+    private final DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
 
     private Random random = null;
 
-    private Hashtable<Index, TimeVaryingEdge> edgesTable = new Hashtable<Index, TimeVaryingEdge>();
+    private final Hashtable<Index, TimeVaryingEdge> edgesTable = new Hashtable<Index, TimeVaryingEdge>();
 
     public LogisticLoss(Simulation simulation) {
         super(simulation);
@@ -573,8 +573,8 @@ public class LogisticLoss extends AbstractRadioMedium {
 
     // Invariant: x <= y
     private static class Index {
-        private int x;
-        private int y;
+        private final int x;
+        private final int y;
 
         public Index(int a, int b) {
             if(a <= b) {

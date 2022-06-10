@@ -7,7 +7,7 @@ import org.contikios.cooja.dialogs.SerialUI;
 import org.contikios.cooja.motes.AbstractApplicationMote;
 
 public class ApplicationSerialPort extends SerialUI {
-  private Mote mote;
+  private final Mote mote;
 
   public ApplicationSerialPort(Mote mote) {
     this.mote = mote;

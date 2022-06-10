@@ -48,7 +48,7 @@ public class ExternalToolsDialog extends JDialog {
   private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(ExternalToolsDialog.class);
 
-  private ExternalToolsEventHandler myEventHandler = new ExternalToolsEventHandler();
+  private final ExternalToolsEventHandler myEventHandler = new ExternalToolsEventHandler();
 
   private final static int LABEL_WIDTH = 220;
   private final static int LABEL_HEIGHT = 15;

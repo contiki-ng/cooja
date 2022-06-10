@@ -60,7 +60,7 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
   public final static byte[] UNSPECIFIED_ADDRESS
           = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  private static byte[][] addrContexts = new byte[][]{
+  private static final byte[][] addrContexts = new byte[][]{
     {(byte) 0xaa, (byte) 0xaa, 0, 0, 0, 0, 0, 0}
   };
 

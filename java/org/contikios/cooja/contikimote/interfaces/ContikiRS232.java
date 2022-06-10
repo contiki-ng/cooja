@@ -144,7 +144,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
   }
 
   private TimeEvent pendingBytesEvent = null;
-  private Vector<Byte> pendingBytes = new Vector<Byte>();
+  private final Vector<Byte> pendingBytes = new Vector<Byte>();
   @Override
   public void writeArray(byte[] s) {
     for (byte b: s) {
