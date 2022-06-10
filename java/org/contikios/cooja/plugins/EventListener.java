@@ -150,7 +150,7 @@ public class EventListener extends VisPlugin {
     }
   }
 
-  protected class GeneralEventObserver extends EventObserver {
+  protected static class GeneralEventObserver extends EventObserver {
     public GeneralEventObserver(EventListener parent, Observable objectToObserve) {
       super(parent, objectToObserve);
     }
