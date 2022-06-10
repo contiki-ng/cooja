@@ -592,7 +592,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
    * String to Value to String conversion for JFormattedTextField
    * based on selected VarTypes and VarFormats.
    */
-  public class ValueFormatter extends JFormattedTextField.AbstractFormatter {
+  public static class ValueFormatter extends JFormattedTextField.AbstractFormatter {
 
     final String TEXT_NOT_TO_TOUCH;
 
