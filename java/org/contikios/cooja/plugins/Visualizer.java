@@ -1067,8 +1067,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         int pressedY = transformToPixelY(pressedPos.getYCoordinate());
         int currX = transformToPixelX(currPos.getXCoordinate());
         int currY = transformToPixelY(currPos.getYCoordinate());
-        int startX = pressedX < currX ? pressedX : currX;
-        int startY = pressedY < currY ? pressedY : currY;
+        int startX = Math.min(pressedX, currX);
+        int startY = Math.min(pressedY, currY);
         int width = Math.abs(pressedX - currX);
         int height = Math.abs(pressedY - currY);
 

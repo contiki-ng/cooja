@@ -80,7 +80,7 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     if (capacity < minCapacity) {
 //      int newCapacity = (capacity * 3) / 2 + 1;
       int newCapacity = capacity * 2;
-      set(newCapacity < minCapacity ? minCapacity : newCapacity);
+      set(Math.max(newCapacity, minCapacity));
     }
     modCount++;
   }
