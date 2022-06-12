@@ -286,10 +286,6 @@ public class ContikiMoteType implements MoteType {
                 libFile,
                 archiveFile,
                 javaClassName);
-        CompileContiki.redefineCOOJASources(
-                this,
-                env
-        );
       } catch (Exception e) {
         throw new MoteTypeCreationException("Error when creating environment: " + e.getMessage(), e);
       }

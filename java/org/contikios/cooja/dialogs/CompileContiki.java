@@ -43,7 +43,6 @@ import javax.swing.Action;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.MoteType;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 
@@ -310,6 +309,24 @@ public class CompileContiki {
       throw new Exception("No Java library class name specified");
     }
 
+    String sources = "";
+    String dirs = "";
+    // Check whether Cooja projects include additional sources.
+    String[] coojaSources = mote.getConfig().getStringArrayValue(ContikiMoteType.class, "C_SOURCES");
+    if (coojaSources != null) {
+      for (String s : coojaSources) {
+        if (s.trim().isEmpty()) {
+          continue;
+        }
+        File p = mote.getConfig().getUserProjectDefining(ContikiMoteType.class, "C_SOURCES", s);
+        if (p == null) {
+          logger.warn("Project defining C_SOURCES$" + s + " not found");
+          continue;
+        }
+        sources += s + " ";
+        dirs += p.getPath() + " ";
+      }
+    }
     /* Fetch configuration from external tools */
     String ccFlags = Cooja.getExternalToolsSetting("COMPILER_ARGS", "");
 
@@ -320,9 +337,8 @@ public class CompileContiki {
     // build system. The format is <YYYY><MM><DD><2 digit sequence number>.
     env.add(new String[] { "COOJA_VERSION", "2022052601" });
     env.add(new String[] { "CLASSNAME", javaClass });
-    // WARNING: COOJA_SOURCE* are updated by redefineCOOJASources().
-    env.add(new String[] { "COOJA_SOURCEDIRS", "" });
-    env.add(new String[] { "COOJA_SOURCEFILES", "" });
+    env.add(new String[] { "COOJA_SOURCEDIRS", dirs.replace("\\", "/") });
+    env.add(new String[] { "COOJA_SOURCEFILES", sources });
     env.add(new String[] { "CC", Cooja.getExternalToolsSetting("PATH_C_COMPILER") });
     env.add(new String[] { "OBJCOPY", Cooja.getExternalToolsSetting("PATH_OBJCOPY") });
     env.add(new String[] { "EXTRA_CC_ARGS", ccFlags });
@@ -340,49 +356,4 @@ public class CompileContiki {
     }
     return env.toArray(new String[0][0]);
   }
-
-	public static void redefineCOOJASources(MoteType moteType, String[][] env) {
-    if (moteType == null || env == null) {
-    	return;
-    }
-
-    /* Check whether cooja projects include additional sources */
-    String[] coojaSources = moteType.getConfig().getStringArrayValue(ContikiMoteType.class, "C_SOURCES");
-    if (coojaSources == null) {
-    	return;
-    }
-
-    String sources = "";
-    String dirs = "";
-    for (String s: coojaSources) {
-    	if (s.trim().isEmpty()) {
-    		continue;
-    	}
-    	File p = moteType.getConfig().getUserProjectDefining(ContikiMoteType.class, "C_SOURCES", s);
-    	if (p == null) {
-    		logger.warn("Project defining C_SOURCES$" + s + " not found");
-    		continue;
-    	}
-    	/* Redefine sources. TODO Move to createCompilationEnvironment. */
-    	sources += s + " ";
-    	dirs += p.getPath() + " ";
-    }
-
-    if (!sources.trim().isEmpty()) {
-    	for (int i=0; i < env.length; i++) {
-    		if (env[i][0].equals("COOJA_SOURCEFILES")) {
-    			env[i][1] = sources;
-    			break;
-    		}
-    	}
-    }
-    if (!dirs.trim().isEmpty()) {
-    	for (int i=0; i < env.length; i++) {
-    		if (env[i][0].equals("COOJA_SOURCEDIRS")) {
-    			env[i][1] = dirs.replace("\\", "/");
-    			break;
-    		}
-    	}
-    }
-	}
 }
