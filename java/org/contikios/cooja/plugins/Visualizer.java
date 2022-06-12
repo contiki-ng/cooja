@@ -188,7 +188,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   Position pressedPos;
 
   private final Set<Mote> movedMotes = null;
-  private long moveStartTime = -1;
   private static final Cursor MOVE_CURSOR = new Cursor(Cursor.MOVE_CURSOR);
   private final Selection selection;
 
@@ -1130,11 +1129,9 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   }
 
   private void beginMoveRequest(Mote selectedMote, boolean withTiming, boolean confirm) {
+    long moveStartTime = -1;
     if (withTiming) {
       moveStartTime = System.currentTimeMillis();
-    }
-    else {
-      moveStartTime = -1;
     }
     /* Save start positions and set move-start position to clicked mote */
     for (Mote m : selectedMotes) {

@@ -225,14 +225,165 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     menuBar.add(showMenu);
     this.setJMenuBar(menuBar);
 
+    Action copyAllAction = new AbstractAction("Copy all data") {
+      private static final long serialVersionUID = -5038884975254178373L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        StringBuilder sb = new StringBuilder();
+        for (var data : logs) {
+          sb.append(data.getTime()).append("\t");
+          sb.append(data.getID()).append("\t");
+          sb.append(data.ev.getMessage()).append("\n");
+        }
+
+        StringSelection stringSelection = new StringSelection(sb.toString());
+        clipboard.setContents(stringSelection, null);
+      }
+    };
     editMenu.add(new JMenuItem(copyAllAction));
+    Action copyAllMessagesAction = new AbstractAction("Copy all messages") {
+      private static final long serialVersionUID = -5038884975254178373L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        StringBuilder sb = new StringBuilder();
+        for (var data : logs) {
+          sb.append(data.ev.getMessage()).append("\n");
+        }
+
+        StringSelection stringSelection = new StringSelection(sb.toString());
+        clipboard.setContents(stringSelection, null);
+      }
+    };
     editMenu.add(new JMenuItem(copyAllMessagesAction));
+    Action copyAction = new AbstractAction("Copy selected") {
+      private static final long serialVersionUID = -8433490108577001803L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        int[] selectedRows = logTable.getSelectedRows();
+
+        StringBuilder sb = new StringBuilder();
+        for (int i : selectedRows) {
+          sb.append(logTable.getValueAt(i, COLUMN_TIME)).append("\t");
+          sb.append(logTable.getValueAt(i, COLUMN_FROM)).append("\t");
+          sb.append(logTable.getValueAt(i, COLUMN_DATA)).append("\n");
+        }
+
+        StringSelection stringSelection = new StringSelection(sb.toString());
+        clipboard.setContents(stringSelection, null);
+      }
+    };
     editMenu.add(new JMenuItem(copyAction));
     editMenu.addSeparator();
+    Action clearAction = new AbstractAction("Clear all messages") {
+      private static final long serialVersionUID = -2115620313183440224L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        clear();
+      }
+    };
     editMenu.add(new JMenuItem(clearAction));
 
 
+    Action saveAction = new AbstractAction("Save to file") {
+      private static final long serialVersionUID = -4140706275748686944L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JFileChooser fc = new JFileChooser();
+        File suggest = new File(Cooja.getExternalToolsSetting("LOG_LISTENER_SAVEFILE", "loglistener.txt"));
+        fc.setSelectedFile(suggest);
+        int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+          return;
+        }
+
+        File saveFile = fc.getSelectedFile();
+        if (saveFile.exists()) {
+          String s1 = "Overwrite";
+          String s2 = "Cancel";
+          Object[] options = {s1, s2};
+          int n = JOptionPane.showOptionDialog(
+                  Cooja.getTopParentContainer(),
+                  "A file with the same name already exists.\nDo you want to remove it?",
+                  "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
+                  JOptionPane.QUESTION_MESSAGE, null, options, s1);
+          if (n != JOptionPane.YES_OPTION) {
+            return;
+          }
+        }
+
+        Cooja.setExternalToolsSetting("LOG_LISTENER_SAVEFILE", saveFile.getPath());
+        if (saveFile.exists() && !saveFile.canWrite()) {
+          logger.fatal("No write access to file: " + saveFile);
+          return;
+        }
+
+        try {
+          PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
+          for (LogData data : logs) {
+            outStream.println(
+                    data.getTime() + "\t" +
+                            data.getID() + "\t" +
+                            data.ev.getMessage());
+          }
+          outStream.close();
+        } catch (Exception ex) {
+          logger.fatal("Could not write to file: " + saveFile);
+        }
+      }
+    };
     fileMenu.add(new JMenuItem(saveAction));
+    Action appendAction = new AbstractAction("Append to file") {
+      private static final long serialVersionUID = -3041714249257346688L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JCheckBoxMenuItem cb = (JCheckBoxMenuItem) e.getSource();
+        appendToFile = cb.isSelected();
+        if (!appendToFile) {
+          appendToFile(null, null);
+          appendStreamFile = null;
+          return;
+        }
+
+        JFileChooser fc = new JFileChooser();
+        File suggest = new File(Cooja.getExternalToolsSetting("LOG_LISTENER_APPENDFILE", "loglistener_append.txt"));
+        fc.setSelectedFile(suggest);
+        int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+          appendToFile = false;
+          cb.setSelected(appendToFile);
+          return;
+        }
+
+        File saveFile = fc.getSelectedFile();
+        Cooja.setExternalToolsSetting("LOG_LISTENER_APPENDFILE", saveFile.getPath());
+        if (saveFile.exists() && !saveFile.canWrite()) {
+          logger.fatal("No write access to file: " + saveFile);
+          appendToFile = false;
+          cb.setSelected(appendToFile);
+          return;
+        }
+        appendToFile = true;
+        appendStreamFile = saveFile;
+        if (!appendStreamFile.exists()) {
+          try {
+            appendStreamFile.createNewFile();
+          } catch (IOException ex) {
+          }
+        }
+      }
+    };
     appendCheckBox = new JCheckBoxMenuItem(appendAction);
     fileMenu.add(appendCheckBox);
 
@@ -762,55 +913,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   }
 
-  private final Action saveAction = new AbstractAction("Save to file") {
-    private static final long serialVersionUID = -4140706275748686944L;
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      JFileChooser fc = new JFileChooser();
-      File suggest = new File(Cooja.getExternalToolsSetting("LOG_LISTENER_SAVEFILE", "loglistener.txt"));
-      fc.setSelectedFile(suggest);
-      int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
-      if (returnVal != JFileChooser.APPROVE_OPTION) {
-        return;
-      }
-
-      File saveFile = fc.getSelectedFile();
-      if (saveFile.exists()) {
-        String s1 = "Overwrite";
-        String s2 = "Cancel";
-        Object[] options = { s1, s2 };
-        int n = JOptionPane.showOptionDialog(
-            Cooja.getTopParentContainer(),
-            "A file with the same name already exists.\nDo you want to remove it?",
-            "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE, null, options, s1);
-        if (n != JOptionPane.YES_OPTION) {
-          return;
-        }
-      }
-
-      Cooja.setExternalToolsSetting("LOG_LISTENER_SAVEFILE", saveFile.getPath());
-      if (saveFile.exists() && !saveFile.canWrite()) {
-        logger.fatal("No write access to file: " + saveFile);
-        return;
-      }
-
-      try {
-        PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
-        for(LogData data : logs) {
-          outStream.println(
-              data.getTime() + "\t" +
-              data.getID() + "\t" +
-              data.ev.getMessage());
-        }
-        outStream.close();
-      } catch (Exception ex) {
-        logger.fatal("Could not write to file: " + saveFile);
-      }
-    }
-  };
-
   private boolean appendToFile = false;
   private File appendStreamFile = null;
   private boolean appendToFileWroteHeader = false;
@@ -850,47 +952,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     appendStream.flush();
     return true;
   }
-
-  private final Action appendAction = new AbstractAction("Append to file") {
-    private static final long serialVersionUID = -3041714249257346688L;
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cb = (JCheckBoxMenuItem) e.getSource();
-      appendToFile = cb.isSelected();
-      if (!appendToFile) {
-        appendToFile(null, null);
-        appendStreamFile = null;
-        return;
-      }
-
-      JFileChooser fc = new JFileChooser();
-      File suggest = new File(Cooja.getExternalToolsSetting("LOG_LISTENER_APPENDFILE", "loglistener_append.txt"));
-      fc.setSelectedFile(suggest);
-      int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
-      if (returnVal != JFileChooser.APPROVE_OPTION) {
-        appendToFile = false;
-        cb.setSelected(appendToFile);
-        return;
-      }
-
-      File saveFile = fc.getSelectedFile();
-      Cooja.setExternalToolsSetting("LOG_LISTENER_APPENDFILE", saveFile.getPath());
-      if (saveFile.exists() && !saveFile.canWrite()) {
-        logger.fatal("No write access to file: " + saveFile);
-        appendToFile = false;
-        cb.setSelected(appendToFile);
-        return;
-      }
-      appendToFile = true;
-      appendStreamFile = saveFile;
-      if (!appendStreamFile.exists()) {
-        try {
-          appendStreamFile.createNewFile();
-        } catch (IOException ex) {
-        }
-      }
-    }
-  };
 
   private final Action timeLineAction = new AbstractAction("Timeline") {
     private static final long serialVersionUID = -6358463434933029699L;
@@ -953,15 +1014,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private final Action clearAction = new AbstractAction("Clear all messages") {
-    private static final long serialVersionUID = -2115620313183440224L;
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      clear();
-    }
-  };
-
   public void clear() {
     int size = logs.size();
     if (size > 0) {
@@ -969,70 +1021,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       model.fireTableRowsDeleted(0, size - 1);
     }
   }
-
-  private final Action copyAction = new AbstractAction("Copy selected") {
-    private static final long serialVersionUID = -8433490108577001803L;
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      int[] selectedRows = logTable.getSelectedRows();
-
-      StringBuilder sb = new StringBuilder();
-      for (int i: selectedRows) {
-        sb.append(logTable.getValueAt(i, COLUMN_TIME));
-        sb.append("\t");
-        sb.append(logTable.getValueAt(i, COLUMN_FROM));
-        sb.append("\t");
-        sb.append(logTable.getValueAt(i, COLUMN_DATA));
-        sb.append("\n");
-      }
-
-      StringSelection stringSelection = new StringSelection(sb.toString());
-      clipboard.setContents(stringSelection, null);
-    }
-  };
-
-  private final Action copyAllAction = new AbstractAction("Copy all data") {
-    private static final long serialVersionUID = -5038884975254178373L;
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      StringBuilder sb = new StringBuilder();
-      for(LogData data : logs) {
-        sb.append(data.getTime());
-        sb.append("\t");
-        sb.append(data.getID());
-        sb.append("\t");
-        sb.append(data.ev.getMessage());
-        sb.append("\n");
-      }
-
-      StringSelection stringSelection = new StringSelection(sb.toString());
-      clipboard.setContents(stringSelection, null);
-    }
-  };
-
-  private final Action copyAllMessagesAction = new AbstractAction("Copy all messages") {
-    private static final long serialVersionUID = -5038884975254178373L;
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      StringBuilder sb = new StringBuilder();
-      for(LogData data : logs) {
-        sb.append(data.ev.getMessage());
-        sb.append("\n");
-      }
-
-      StringSelection stringSelection = new StringSelection(sb.toString());
-      clipboard.setContents(stringSelection, null);
-    }
-  };
 
   @Override
   public String getQuickHelp() {

@@ -104,7 +104,6 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
   private final JComboBox varNameCombo;
   private final JComboBox varTypeCombo;
   private final JComboBox varFormatCombo;
-  private final JPanel infoPane;
   private final JFormattedTextField varAddressField;
   private final JTextField varSizeField;
   private final JPanel valuePane;
@@ -113,14 +112,12 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
   private final JButton readButton;
   private final AbstractButton monitorButton;
   private final JButton writeButton;
-  private final JLabel debuglbl;
   private final VarMemory moteMemory;
 
   MemoryInterface.SegmentMonitor memMonitor;
   long monitorAddr;
   int monitorSize;
 
-  private final NumberFormat integerFormat;
   private final ValueFormatter hf;
 
   private final Mote mote;
@@ -220,7 +217,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     moteMemory = new VarMemory(moteToView.getMemory());
 
     JLabel label;
-    integerFormat = NumberFormat.getIntegerInstance();
+    NumberFormat integerFormat = NumberFormat.getIntegerInstance();
     JPanel mainPane = new JPanel();
     mainPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
@@ -328,7 +325,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
 
     mainPane.add(Box.createRigidArea(new Dimension(0,5)));
 
-    infoPane = new JPanel();
+    var infoPane = new JPanel();
     infoPane.setLayout(new BoxLayout(infoPane, BoxLayout.Y_AXIS));
 
     JPanel addrInfoPane = new JPanel();
@@ -432,7 +429,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     mainPane.add(valuePane);
     mainPane.add(Box.createRigidArea(new Dimension(0,5)));
 
-    debuglbl = new JLabel();
+    var debuglbl = new JLabel();
     mainPane.add(new JPanel().add(debuglbl));
     mainPane.add(Box.createRigidArea(new Dimension(0,5)));
 

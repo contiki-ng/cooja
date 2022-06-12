@@ -81,6 +81,12 @@ public class BufferSettings extends JDialog {
     /* Escape key */
     InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "dispose");
+    Action disposeAction = new AbstractAction("OK") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        dispose();
+      }
+    };
     getRootPane().getActionMap().put("dispose", disposeAction);
 
     Box main = Box.createVerticalBox();
@@ -105,6 +111,24 @@ public class BufferSettings extends JDialog {
 
     Box line = Box.createHorizontalBox();
     line.add(Box.createHorizontalGlue());
+    Action setDefaultAction = new AbstractAction("Set default") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Object[] options = {"Ok", "Cancel"};
+
+        String question = "Use current settings as default for future simulations?";
+        String title = "Set default?";
+        int answer = JOptionPane.showOptionDialog(BufferSettings.this, question, title,
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                options, options[0]);
+
+        if (answer != JOptionPane.YES_OPTION) {
+          return;
+        }
+
+        Cooja.setExternalToolsSetting("BUFFERSIZE_LOGOUTPUT", "" + central.getLogOutputBufferSize());
+      }
+    };
     line.add(new JButton(setDefaultAction));
     line.add(okButton);
     main.add(line);
@@ -128,31 +152,5 @@ public class BufferSettings extends JDialog {
     container.add(box);
     return value;
   }
-
-  private final Action setDefaultAction = new AbstractAction("Set default") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Object[] options = { "Ok", "Cancel" };
-
-      String question = "Use current settings as default for future simulations?";
-      String title = "Set default?";
-      int answer = JOptionPane.showOptionDialog(BufferSettings.this, question, title,
-          JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-          options, options[0]);
-
-      if (answer != JOptionPane.YES_OPTION) {
-        return;
-      }
-
-      Cooja.setExternalToolsSetting("BUFFERSIZE_LOGOUTPUT", "" + central.getLogOutputBufferSize());
-    }
-  };
-
-  private final Action disposeAction = new AbstractAction("OK") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      dispose();
-    }
-  };
 
 }

@@ -80,7 +80,6 @@ public class BaseRSSIconf extends VisPlugin {
 	private Cooja gui = null;
 	private AbstractRadioMedium radioMedium = null;
 	private final Observer changeObserver;
-	private JTable motesTable = null;
 	private final JComboBox<Number> combo = new JComboBox<>();
 	private Simulation sim = null;
 	
@@ -106,7 +105,7 @@ public class BaseRSSIconf extends VisPlugin {
 		sim.addObserver(changeObserver);
 
 		/* Represent motes and RSSI by table */
-		motesTable = new JTable(model) {
+		var motesTable = new JTable(model) {
 			private static final long serialVersionUID = -4680013510092815210L;
 
 			@Override

@@ -118,7 +118,6 @@ public class ScriptRunner extends VisPlugin {
 
   private final JEditorPane codeEditor;
   private final JTextArea logTextArea;
-  private final JSplitPane centerPanel;
 
   private JSyntaxLinkFile actionLinkFile = null;
   private File linkedFile = null;
@@ -202,10 +201,10 @@ public class ScriptRunner extends VisPlugin {
     runTestMenuItem.addActionListener(e -> exportAndRun());
 
     doLayout();
-    centerPanel = new JSplitPane(
-        JSplitPane.VERTICAL_SPLIT,
-        new JScrollPane(codeEditor),
-        new JScrollPane(logTextArea)
+    var centerPanel = new JSplitPane(
+            JSplitPane.VERTICAL_SPLIT,
+            new JScrollPane(codeEditor),
+            new JScrollPane(logTextArea)
     );
 
     MenuListener toggleMenuItems = new MenuListener() {

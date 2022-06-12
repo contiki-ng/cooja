@@ -76,7 +76,6 @@ public class ImportAppMoteDialog extends JDialog {
   private final JTextField pathField;
   private final JTextField classField;
   private final JButton cancelButton;
-  private final JButton createButton;
   private boolean hasSelected = false;
 
   public ImportAppMoteDialog(Container parent, final Simulation simulation, final ImportAppMoteType moteType) {
@@ -182,7 +181,7 @@ public class ImportAppMoteDialog extends JDialog {
     KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
     getRootPane().registerKeyboardAction(cancelAction, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-    createButton = new JButton("Create");
+    var createButton = new JButton("Create");
     createButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
