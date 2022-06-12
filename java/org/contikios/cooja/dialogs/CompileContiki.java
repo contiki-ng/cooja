@@ -260,22 +260,19 @@ public class CompileContiki {
           if (e instanceof InterruptedException) {
             msg = "Aborted by user";
           }
-          throw (MoteTypeCreationException) new MoteTypeCreationException(
-              "Compilation error: " + msg).initCause(e);
+          throw new MoteTypeCreationException("Compilation error: " + msg, e);
         }
 
         /* Detect error manually */
         if (syncException.hasCompilationOutput()) {
-          throw (MoteTypeCreationException) new MoteTypeCreationException(
-          "Bad return value").initCause(syncException);
+          throw new MoteTypeCreationException("Bad return value", syncException);
         }
       }
     } catch (IOException ex) {
       if (onFailure != null) {
         onFailure.actionPerformed(null);
       }
-      throw (MoteTypeCreationException) new MoteTypeCreationException(
-          "Compilation error: " + ex.getMessage()).initCause(ex);
+      throw new MoteTypeCreationException("Compilation error: " + ex.getMessage(), ex);
     }
 
     return compileProcess;

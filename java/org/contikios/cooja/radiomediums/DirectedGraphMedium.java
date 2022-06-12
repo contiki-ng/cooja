@@ -428,8 +428,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
 				List<Element> children = edgeElement.getChildren();
 				dest.setConfigXML(children, simulation);
               } catch (Exception e) {
-                throw (RuntimeException) 
-                new RuntimeException("Unknown class: " + destClassName).initCause(e);
+                throw new RuntimeException("Unknown class: " + destClassName, e);
               }
             }
           }

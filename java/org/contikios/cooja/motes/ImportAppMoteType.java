@@ -165,8 +165,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     MoteTypeCreationException mte =
       new MoteTypeCreationException("Error when loading class from: "
           + (moteClassPath != null ? moteClassPath.getAbsolutePath() : "") + " "
-          + moteClassName);
-    mte.initCause(e);
+          + moteClassName, e);
     return mte;
   }
 
@@ -175,7 +174,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     try {
       return moteConstructor.newInstance(ImportAppMoteType.this, simulation);
     } catch (Exception e) {
-      throw (RuntimeException) new RuntimeException("Error when generating mote").initCause(e);
+      throw new RuntimeException("Error when generating mote", e);
     }
   }
 

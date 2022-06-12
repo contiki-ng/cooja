@@ -249,9 +249,8 @@ public class ExecuteJAR {
       workingDir.mkdir();
       logger.info("Creating temporary directory: " + workingDir.getAbsolutePath());
     } catch (IOException e1) {
-      throw (RuntimeException) new RuntimeException(
-          "Error when creating temporary directory: " + e1.getMessage()
-      ).initCause(e1);
+      throw new RuntimeException(
+          "Error when creating temporary directory: " + e1.getMessage(), e1);
     }
 
     /* Unpacking project JARs */
@@ -279,9 +278,7 @@ public class ExecuteJAR {
         );
         unjarProcess.waitFor();
       } catch (Exception e1) {
-        throw (RuntimeException)  new RuntimeException(
-            "Error unpacking JAR file: " + e1.getMessage()
-        ).initCause(e1);
+        throw new RuntimeException("Error unpacking JAR file: " + e1.getMessage(), e1);
       }
     }
 
@@ -306,9 +303,7 @@ public class ExecuteJAR {
         );
         unjarProcess.waitFor();
       } catch (Exception e1) {
-        throw (RuntimeException) new RuntimeException(
-            "Error unpacking JAR file: " + e1.getMessage()
-        ).initCause(e1);
+        throw new RuntimeException("Error unpacking JAR file: " + e1.getMessage(), e1);
       }
     }
 
@@ -327,9 +322,7 @@ public class ExecuteJAR {
       outputter.output(doc, out);
       out.close();
     } catch (Exception e1) {
-      throw (RuntimeException) new RuntimeException(
-          "Error when writing simulation configuration: " + configFile
-      ).initCause(e1);
+      throw new RuntimeException("Error when writing simulation configuration: " + configFile, e1);
     }
     logger.info("Wrote simulation configuration: " + configFile.getName());
 
@@ -355,9 +348,8 @@ public class ExecuteJAR {
       out.close();
       logger.info("Wrote external tools config: " + externalToolsConfig.getName());
     } catch (Exception e2) {
-      throw (RuntimeException) new RuntimeException(
-          "Error when writing external tools configuration: " + e2.getMessage()   
-      ).initCause(e2);
+      throw new RuntimeException(
+          "Error when writing external tools configuration: " + e2.getMessage(), e2);
     }
 
     /* Export current project configuration */
@@ -375,9 +367,8 @@ public class ExecuteJAR {
       logger.info("Wrote project config: " + newConfigFile.getName());
     } catch (Exception e1) {
       e1.printStackTrace();
-      throw (RuntimeException) new RuntimeException(
-          "Error when writing project config: " + e1.getMessage()   
-      ).initCause(e1);
+      throw new RuntimeException(
+          "Error when writing project config: " + e1.getMessage(), e1);
     }
     
     /* Delete existing META-INF dir */
@@ -428,8 +419,7 @@ public class ExecuteJAR {
       }
       
       /* Forward exception */
-      throw (RuntimeException) 
-      new RuntimeException("Error when building executable JAR: " + e.getMessage()).initCause(e);
+      throw new RuntimeException("Error when building executable JAR: " + e.getMessage(), e);
     }
 
     /* Delete temporary working directory */

@@ -193,9 +193,8 @@ public abstract class CoreComm {
       } catch (Exception e2) {
       }
 
-      throw (MoteTypeCreationException) new MoteTypeCreationException(
-          "Could not generate corecomm source file: " + className + ".java")
-          .initCause(e);
+      throw new MoteTypeCreationException(
+          "Could not generate corecomm source file: " + className + ".java", e);
     }
 
     if (Files.exists(Path.of(tempDir + "/org/contikios/cooja/corecomm/" + destFilename))) {
@@ -250,9 +249,8 @@ public abstract class CoreComm {
         return;
       }
     } catch (IOException | InterruptedException e) {
-      MoteTypeCreationException exception = (MoteTypeCreationException) new MoteTypeCreationException(
-          "Could not compile corecomm source file: " + className + ".java")
-          .initCause(e);
+      var exception = new MoteTypeCreationException(
+          "Could not compile corecomm source file: " + className + ".java", e);
       exception.setCompilationOutput(compilationOutput);
       throw exception;
     }
@@ -282,9 +280,8 @@ public abstract class CoreComm {
           + className);
 
     } catch (MalformedURLException | ClassNotFoundException e) {
-      throw (MoteTypeCreationException) new MoteTypeCreationException(
-          "Could not load corecomm class file: " + className + ".class")
-          .initCause(e);
+      throw new MoteTypeCreationException(
+          "Could not load corecomm class file: " + className + ".class", e);
     }
     if (loadedClass == null) {
       throw new MoteTypeCreationException(
@@ -325,8 +322,8 @@ public abstract class CoreComm {
 
       return newCoreComm;
     } catch (Exception e) {
-      throw (MoteTypeCreationException) new MoteTypeCreationException(
-          "Error when creating corecomm instance: " + className).initCause(e);
+      throw new MoteTypeCreationException(
+          "Error when creating corecomm instance: " + className, e);
     }
   }
 
