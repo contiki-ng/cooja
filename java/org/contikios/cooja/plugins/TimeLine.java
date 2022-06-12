@@ -901,7 +901,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           }
           if (rxtxEvent.state == RXTXRadioEvent.RECEIVING) {
             stats.onTimeRX += diff;
-            continue;
           }
         }
       }
