@@ -67,7 +67,7 @@ public abstract class Positioner {
    *          Highest Z value of positions generated using returned positioner
    * @return Postioner instance
    */
-  public static final Positioner generateInterface(
+  public static Positioner generateInterface(
       Class<? extends Positioner> positionerClass, int totalNumberOfMotes,
       double startX, double endX,
       double startY, double endY,
