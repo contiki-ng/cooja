@@ -122,7 +122,6 @@ import org.contikios.cooja.VisPlugin.PluginRequiresVisualizationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.AddMoteDialog;
 import org.contikios.cooja.dialogs.BufferSettings;
-import org.contikios.cooja.dialogs.ConfigurationWizard;
 import org.contikios.cooja.dialogs.CreateSimDialog;
 import org.contikios.cooja.dialogs.ExternalToolsDialog;
 import org.contikios.cooja.dialogs.MessageList;
@@ -1021,11 +1020,6 @@ public class Cooja extends Observable {
 
     menuItem = new JMenuItem("Cooja extensions...");
     menuItem.setActionCommand("manage extensions");
-    menuItem.addActionListener(guiEventHandler);
-    settingsMenu.add(menuItem);
-
-    menuItem = new JMenuItem("Cooja mote configuration wizard...");
-    menuItem.setActionCommand("configuration wizard");
     menuItem.addActionListener(guiEventHandler);
     settingsMenu.add(menuItem);
 
@@ -2848,8 +2842,6 @@ public class Cooja extends Observable {
             showErrorDialog(getTopParentContainer(), "Cooja extensions load error", ex, false);
           }
         }
-      } else if (e.getActionCommand().equals("configuration wizard")) {
-        ConfigurationWizard.startWizard(Cooja.getTopParentContainer(), Cooja.this);
       } else {
         logger.warn("Unhandled action: " + e.getActionCommand());
       }
