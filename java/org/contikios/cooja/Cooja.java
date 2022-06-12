@@ -3403,8 +3403,7 @@ public class Cooja extends Observable {
         if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
         		pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
         		pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
-        		pluginClassName.equals("org.contikios.cooja.plugins.VisState") ||
-        		pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM")) {
+        		pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
         	logger.warn("Old simulation config detected: visualizers have been remade");
         	pluginClassName = "org.contikios.cooja.plugins.Visualizer";
         }
