@@ -284,8 +284,8 @@ public class CompileContiki {
   /**
    * Generate compiler environment using external tools settings.
    * Used by Contiki Mote Type.
-   * 
-   * @param identifier Mote type identifier, "mtype123"
+   *
+   * @param mote        Mote type
    * @param contikiApp Contiki application source, "hello-world.c"
    * @param mapFile Output map file, "mtype123.map"
    * @param libFile Output JNI library, "mtype123.cooja"
@@ -295,7 +295,7 @@ public class CompileContiki {
    * @throws Exception At errors
    */
   public static String[][] createCompilationEnvironment(
-      String identifier,
+      ContikiMoteType mote,
       File contikiApp,
       File mapFile,
       File libFile,
@@ -303,8 +303,8 @@ public class CompileContiki {
       String javaClass)
   throws Exception {
 
-    if (identifier == null) {
-      throw new Exception("No identifier specified");
+    if (mote == null) {
+      throw new Exception("No mote specified");
     }
     if (javaClass == null) {
       throw new Exception("No Java library class name specified");
@@ -315,7 +315,7 @@ public class CompileContiki {
 
     /* Create environment */
     ArrayList<String[]> env = new ArrayList<>();
-    env.add(new String[] { "LIBNAME", "$(BUILD_DIR_BOARD)/" + identifier + ".cooja" });
+    env.add(new String[] { "LIBNAME", "$(BUILD_DIR_BOARD)/" + mote.getIdentifier() + ".cooja" });
     // COOJA_VERSION is used to detect incompatibility with the Contiki-NG
     // build system. The format is <YYYY><MM><DD><2 digit sequence number>.
     env.add(new String[] { "COOJA_VERSION", "2022052601" });

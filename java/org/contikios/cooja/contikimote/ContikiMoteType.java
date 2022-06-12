@@ -280,7 +280,7 @@ public class ContikiMoteType implements MoteType {
       String[][] env;
       try {
         env = CompileContiki.createCompilationEnvironment(
-                getIdentifier(),
+                this,
                 contikiApp,
                 mapFile,
                 libFile,
