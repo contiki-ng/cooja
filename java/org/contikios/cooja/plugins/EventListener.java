@@ -118,7 +118,7 @@ public class EventListener extends VisPlugin {
     public Observable getObservable() {
       return myObservation;
     }
-  };
+  }
 
   protected class InterfaceEventObserver extends EventObserver {
     private Mote myMote = null;

@@ -672,7 +672,7 @@ public class BufferListener extends VisPlugin {
     return true;
   }
 
-  public enum MemoryMonitorType { SEGMENT, POINTER, CONSTPOINTER };
+  public enum MemoryMonitorType { SEGMENT, POINTER, CONSTPOINTER }
 
   static class PointerMemoryMonitor extends SegmentMemoryMonitor {
     private SegmentMemoryMonitor segmentMonitor = null;
@@ -1720,7 +1720,8 @@ public class BufferListener extends VisPlugin {
 
       parser.paintComponent(g, this);
     }
-  };
+  }
+
   private final GrapicalParserPanel graphicalParserPanel = new GrapicalParserPanel();
 
   @ClassDescription("Graphical: Height")

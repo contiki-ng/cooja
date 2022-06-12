@@ -127,7 +127,7 @@ public class MoteTypeVisualizerSkin implements VisualizerSkin {
         }
       }
     }
-  };
+  }
 
   @Override
   public Visualizer getVisualizer() {

@@ -420,7 +420,7 @@ public class LogScriptEngine {
         public void run() {
           try { Thread.sleep(500); } catch (InterruptedException e) { }
           simulation.getCooja().doQuit(false, exitCode);
-        };
+        }
       }.start();
       new Thread() {
         @Override
@@ -428,7 +428,7 @@ public class LogScriptEngine {
           try { Thread.sleep(2000); } catch (InterruptedException e) { }
           logger.warn("Killing Cooja");
           System.exit(exitCode);
-        };
+        }
       }.start();
     }
   };

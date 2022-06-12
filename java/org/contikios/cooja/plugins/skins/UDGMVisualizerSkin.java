@@ -416,7 +416,7 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
         }
       }
     }
-  };
+  }
 
   public static class SuccessRatioMenuAction implements SimulationMenuAction {
 
@@ -442,7 +442,7 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
         }
       }
     }
-  };
+  }
 
   private void updateRatioRangeFrame() {
     if (rrFrame.getDesktopPane() == null) {

@@ -159,7 +159,7 @@ public class StringUtils {
       int read;
       while ((read = reader.read(buf)) > 0) {
         sb.append(buf, 0, read);
-      };
+      }
 
       reader.close();
       return sb.toString();
@@ -186,7 +186,7 @@ public class StringUtils {
       int read;
       while ((read = reader.read(buf)) > 0) {
         sb.append(buf, 0, read);
-      };
+      }
 
       reader.close();
       return sb.toString();

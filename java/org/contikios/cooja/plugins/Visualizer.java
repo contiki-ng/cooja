@@ -1667,7 +1667,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     public void doAction(Visualizer visualizer, Mote mote) {
       mote.getInterfaces().getButton().clickButton();
     }
-  };
+  }
 
   protected static class DeleteMoteMenuAction implements MoteMenuAction {
 
@@ -1698,7 +1698,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       /* Invoke 'delete_motes' action */
       visualizer.canvas.getActionMap().get("delete_motes").actionPerformed(null);
     }
-  };
+  }
 
   protected static class ShowLEDMoteMenuAction implements MoteMenuAction {
 
@@ -1735,7 +1735,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       viewer.setSelectedInterface(desc);
       viewer.pack();
     }
-  };
+  }
 
   protected static class ShowSerialMoteMenuAction implements MoteMenuAction {
 
@@ -1784,7 +1784,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       viewer.setSelectedInterface(desc);
       viewer.pack();
     }
-  };
+  }
 
   protected static class MoveMoteMenuAction implements MoteMenuAction {
 
@@ -1812,7 +1812,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       }
       visualizer.beginMoveRequest(mote, false, false);
     }
-  };
+  }
 
   protected static class ResetViewportAction implements SimulationMenuAction {
 
@@ -1831,7 +1831,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     public boolean isEnabled(Visualizer visualizer, Simulation simulation) {
       return true;
     }
-  };
+  }
 
   protected static class ToggleDecorationsMenuAction implements SimulationMenuAction {
 

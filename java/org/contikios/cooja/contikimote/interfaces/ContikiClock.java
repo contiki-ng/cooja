@@ -124,7 +124,7 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
   
   @Override
   public void setDeviation(double deviation) {
-    logger.fatal("Can't change deviation");;
+    logger.fatal("Can't change deviation");
   }
 
   @Override

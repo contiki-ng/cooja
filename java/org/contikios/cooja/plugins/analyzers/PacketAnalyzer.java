@@ -85,7 +85,7 @@ public abstract class PacketAnalyzer {
     public long getTimestamp() {
       return ts;
     }
-  };
+  }
 
   public abstract boolean matchPacket(Packet packet);
 
