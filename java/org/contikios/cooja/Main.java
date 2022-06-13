@@ -126,19 +126,23 @@ class Main {
   boolean versionRequested;
 
   @Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
-  private boolean helpRequested;
+  boolean helpRequested;
 
   public static void main(String[] args) {
     Main options = new Main();
     CommandLine commandLine = new CommandLine(options);
-    commandLine.setUnmatchedArgumentsAllowed(false);
-    commandLine.parseArgs(args);
+    try {
+      commandLine.parseArgs(args);
+    } catch (CommandLine.ParameterException e) {
+      System.err.println(e.getMessage());
+      System.exit(1);
+    }
 
-    if (commandLine.isUsageHelpRequested()) {
+    if (options.helpRequested) {
       commandLine.usage(System.out);
       return;
     }
-    if (commandLine.isVersionHelpRequested()) {
+    if (options.versionRequested) {
       commandLine.printVersionHelp(System.out);
       return;
     }
