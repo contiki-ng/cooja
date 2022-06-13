@@ -41,7 +41,7 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.awt.*;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
@@ -143,8 +143,8 @@ class Main {
       return;
     }
 
-    if (options.action != null && options.action.quickstart == null &&
-        options.action.nogui == null && GraphicsEnvironment.isHeadless()) {
+    if ((options.action == null || options.action.nogui == null) &&
+        GraphicsEnvironment.isHeadless()) {
       System.err.println("Trying to start GUI in headless environment, aborting");
       System.exit(1);
     }
