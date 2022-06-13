@@ -30,8 +30,6 @@ package org.contikios.cooja;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.swing.MenuElement;
-
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
 
