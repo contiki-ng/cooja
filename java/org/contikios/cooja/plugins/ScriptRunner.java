@@ -703,8 +703,6 @@ public class ScriptRunner extends VisPlugin {
   }
 
   public static class JSyntaxLinkFile extends DefaultSyntaxAction {
-    private static final Logger logger = LogManager.getLogger(JSyntaxLinkFile.class);
-
     public JSyntaxLinkFile() {
       super("linkfile");
     }

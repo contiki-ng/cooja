@@ -33,9 +33,6 @@ package org.contikios.cooja.plugins.skins;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteType;
@@ -54,8 +51,6 @@ import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
  */
 @ClassDescription("Mote type")
 public class MoteTypeVisualizerSkin implements VisualizerSkin {
-  private static final Logger logger = LogManager.getLogger(MoteTypeVisualizerSkin.class);
-
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 

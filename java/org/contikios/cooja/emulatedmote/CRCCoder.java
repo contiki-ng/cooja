@@ -29,8 +29,6 @@
  */
 
 package org.contikios.cooja.emulatedmote;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * Ported from contiki-2.x/core/lib/crc16.[ch].
@@ -38,9 +36,6 @@ import org.apache.logging.log4j.LogManager;
  * @author Fredrik Osterlind
  */
 public class CRCCoder {
-
-    private static final Logger logger = LogManager.getLogger(CRCCoder.class);
-
     /**
      * Updates given accumulated CRC16 checksum with given byte.
      *

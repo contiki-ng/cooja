@@ -48,8 +48,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -78,8 +76,6 @@ import org.contikios.cooja.interfaces.Radio;
 @PluginType(PluginType.SIM_PLUGIN)
 public class EventListener extends VisPlugin {
   private static final long serialVersionUID = 1L;
-
-  private static final Logger logger = LogManager.getLogger(EventListener.class);
 
   private final Simulation mySimulation;
 

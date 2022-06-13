@@ -36,7 +36,6 @@ import java.util.Observer;
 
 import org.jdom.Element;
 
-import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.util.ArrayUtils;
 

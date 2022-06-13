@@ -42,9 +42,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -63,7 +60,6 @@ import org.contikios.cooja.motes.AbstractEmulatedMote;
 @PluginType(PluginType.MOTE_PLUGIN)
 public class MoteInformation extends VisPlugin implements MotePlugin {
   private static final long serialVersionUID = 2359676837283723500L;
-  private static final Logger logger = LogManager.getLogger(MoteInformation.class);
 
   private final Mote mote;
 

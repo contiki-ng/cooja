@@ -35,14 +35,10 @@ import java.util.regex.Pattern;
 
 import javax.script.ScriptException;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.Simulation;
 
 public class ScriptParser {
   private static final long serialVersionUID = 1L;
-  private static final Logger logger = LogManager.getLogger(ScriptParser.class);
 
   private long timeoutTime = -1;
   private String timeoutCode = null;

@@ -44,8 +44,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -58,7 +56,6 @@ import org.contikios.cooja.VisPlugin;
 @PluginType(PluginType.SIM_STANDARD_PLUGIN)
 public class Notes extends VisPlugin {
   private static final long serialVersionUID = 1L;
-  private static final Logger logger = LogManager.getLogger(Visualizer.class);
 
   private final JTextArea notes = new JTextArea("Enter notes here");
   private boolean decorationsVisible = true;
