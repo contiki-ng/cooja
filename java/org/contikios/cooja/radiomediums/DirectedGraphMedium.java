@@ -395,8 +395,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
                 Integer.parseInt(edgeElement.getText())).getInterfaces().getRadio();
           } else if (oldConfig && edgeElement.getName().equals("ratio")) {
             /* Old config: parse link ratio */
-            double ratio = Double.parseDouble(edgeElement.getText());
-            dest.ratio = ratio;
+            dest.ratio = Double.parseDouble(edgeElement.getText());
           } else if (edgeElement.getName().equals("dest")) {
             if (oldConfig) {
               /* Old config: create simple destination link */

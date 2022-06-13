@@ -230,8 +230,7 @@ public abstract class AbstractApplicationMoteType implements MoteType {
       }
     }
 
-    boolean createdOK = configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
-    return createdOK;
+    return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
   }
 
   public static class SimpleMoteID extends MoteID {

@@ -2119,15 +2119,13 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         if (!radioOn) {
           return null;
         }
-        Color c = CHANNEL_COLORS[channel % CHANNEL_COLORS.length];
-        return c;
+        return CHANNEL_COLORS[channel % CHANNEL_COLORS.length];
       }
       return null;
     }
     @Override
     public String toString() {
-      String str = "Radio channel " + channel + "<br>";
-      return str;
+      return "Radio channel " + channel + "<br>";
     }
   }
 
@@ -2149,8 +2147,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
     @Override
     public String toString() {
-      String str = "Radio HW was turned " + (on?"on":"off") + "<br>";
-      return str;
+      return "Radio HW was turned " + (on?"on":"off") + "<br>";
     }
   }
   class LEDEvent extends MoteEvent {

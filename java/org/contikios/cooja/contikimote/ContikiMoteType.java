@@ -1342,8 +1342,7 @@ public class ContikiMoteType implements MoteType {
       setCompileCommands(compileCommands);
     }
 
-    boolean createdOK = configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
-    return createdOK;
+    return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
   }
 
   public static String[] getRequiredCoreInterfaces(

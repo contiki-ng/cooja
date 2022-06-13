@@ -4082,8 +4082,7 @@ public class Cooja extends Observable {
     if (!portablePath.startsWith(PATH_CONFIG_IDENTIFIER)) {
       return null;
     }
-    File absolute = new File(portablePath.replace(PATH_CONFIG_IDENTIFIER, configPath.getAbsolutePath()));
-    return absolute;
+    return new File(portablePath.replace(PATH_CONFIG_IDENTIFIER, configPath.getAbsolutePath()));
   }
 
   private static JProgressBar PROGRESS_BAR = null;
