@@ -568,62 +568,12 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     /* Popup menu */
 
     JPopupMenu popupMenu = new JPopupMenu();
-    /*
-    JMenu copyClipboard = new JMenu("Copy to clipboard");
-    copyClipboard.add(new JMenuItem(copyAllAction));
-    copyClipboard.add(new JMenuItem(copyAllMessagesAction));
-    copyClipboard.add(new JMenuItem(copyAction));
-    popupMenu.add(copyClipboard);
-    popupMenu.add(new JMenuItem(clearAction));
-    popupMenu.addSeparator();
-    popupMenu.add(new JMenuItem(saveAction));
-    appendCheckBox = new JCheckBoxMenuItem(appendAction);
-    popupMenu.add(appendCheckBox);
-    popupMenu.addSeparator();
-    */
     JMenu focusMenu = new JMenu("Show in");
     focusMenu.add(new JMenuItem(showInAllAction));
     focusMenu.addSeparator();
     focusMenu.add(new JMenuItem(timeLineAction));
     focusMenu.add(new JMenuItem(radioLoggerAction));
     popupMenu.add(focusMenu);
-    /*
-    popupMenu.addSeparator();
-    colorCheckbox = new JCheckBoxMenuItem("Mote-specific coloring");
-    popupMenu.add(colorCheckbox);
-    colorCheckbox.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        backgroundColors = colorCheckbox.isSelected();
-        repaint();
-      }
-    });
-    hideDebugCheckbox = new JCheckBoxMenuItem("Hide \"DEBUG: \" messages");
-    popupMenu.add(hideDebugCheckbox);
-    hideDebugCheckbox.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        hideDebug = hideDebugCheckbox.isSelected();
-        setFilter(getFilter());
-        repaint();
-      }
-    });
-    inverseFilterCheckbox = new JCheckBoxMenuItem("Inverse filter");
-    popupMenu.add(inverseFilterCheckbox);
-    inverseFilterCheckbox.addActionListener(new ActionListener() {
-    	public void actionPerformed(ActionEvent e) {
-    		inverseFilter = inverseFilterCheckbox.isSelected();
-    		if (inverseFilter) {
-    			filterLabel.setText("Exclude:");
-    		} else {
-    			filterLabel.setText("Filter:");
-    		}
-        setFilter(getFilter());
-    		repaint();
-    	}
-    });
-
-
-    logTable.setComponentPopupMenu(popupMenu);
-*/
     /* Fetch log output history */
     LogOutputEvent[] history = simulation.getEventCentral().getLogOutputHistory();
     if (history.length > 0) {
@@ -749,8 +699,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 	}
 
 	private void updateTitle() {
- /*   setTitle("Log Listener listening on "
-        + simulation.getEventCentral().getLogOutputObservationsCount() + " log interfaces");*/
   }
 
   @Override

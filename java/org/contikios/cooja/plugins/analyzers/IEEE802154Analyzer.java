@@ -29,9 +29,6 @@ public class IEEE802154Analyzer extends PacketAnalyzer {
   private static final String[] addrModeNames = {"None", "Reserved", "Short", "Long"};
   private PcapExporter pcapExporter;
 
-//    private int defaultAddressMode = LONG_ADDRESS;
-//    private byte seqNo = 0;
-//    private int myPanID = 0xabcd;
   public IEEE802154Analyzer(boolean pcap) {
     if (pcap) {
       pcapExporter = new PcapExporter();

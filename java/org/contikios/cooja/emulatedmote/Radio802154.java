@@ -231,8 +231,6 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
         lastEventTime = mote.getSimulation().getSimulationTime();
         lastEvent = RadioEvent.RECEPTION_FINISHED;
         if (DEBUG) logger.debug("----- 802.15.4 RECEPTION FINISHED -----");
-       // Exception e = new IllegalStateException("Why finished?");
-       // e.printStackTrace();
         setChanged();
         notifyObservers();
     }

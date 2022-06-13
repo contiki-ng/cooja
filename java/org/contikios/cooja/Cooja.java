@@ -1921,17 +1921,6 @@ public class Cooja extends Observable {
       }
     }
 
-    /*if (!moteInterfacesOK) {
-      menuItem.setToolTipText(
-          "<html><pre>" + moteTypeInterfacesError + "</html>"
-      );
-    }
-    if (!moteTypeOK) {
-      menuItem.setToolTipText(
-          "<html><pre>" + moteTypeError + "</html>"
-      );
-    }*/
-
     return moteInterfacesOK && moteTypeOK;
   }
 
@@ -4234,18 +4223,6 @@ public class Cooja extends Observable {
       return getSimulation() != null;
     }
   };
-    /*  GUIAction closePluginsAction = new GUIAction("Close all plugins") {
-		private static final long serialVersionUID = -37575622808266989L;
-		public void actionPerformed(ActionEvent e) {
-      Object[] plugins = startedPlugins.toArray();
-      for (Object plugin : plugins) {
-        removePlugin((Plugin) plugin, false);
-      }
-    }
-    public boolean shouldBeEnabled() {
-      return !startedPlugins.isEmpty();
-    }
-    };*/
     final GUIAction exportExecutableJARAction = new GUIAction("Export simulation...") {
 		private static final long serialVersionUID = -203601967460630049L;
     @Override

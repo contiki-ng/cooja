@@ -290,8 +290,6 @@ public class CreateSimDialog extends JDialog {
     horizBox.add(comboBox);
     horizBox.setToolTipText("Determines the radio surroundings behaviour");
 
-    /*vertBox.add(horizBox);
-    vertBox.add(Box.createRigidArea(new Dimension(0,5)));*/
     advancedBox.add(horizBox);
     advancedBox.add(Box.createRigidArea(new Dimension(0,5)));
 
