@@ -1022,15 +1022,6 @@ public class ContikiMoteType implements MoteType {
   }
 
   /**
-   * Returns all core interfaces of this mote type
-   *
-   * @return All core interfaces
-   */
-  public String[] getCoreInterfaces() {
-    return coreInterfaces;
-  }
-
-  /**
    * Set core interfaces
    *
    * @param coreInterfaces
@@ -1151,7 +1142,7 @@ public class ContikiMoteType implements MoteType {
 
     /* Contiki core mote interfaces */
     sb.append("<tr><td valign=\"top\">Contiki's mote interface</td><td>");
-    for (String coreInterface : getCoreInterfaces()) {
+    for (var coreInterface : coreInterfaces) {
       sb.append(coreInterface).append("<br>");
     }
     sb.append("</td></tr>");
