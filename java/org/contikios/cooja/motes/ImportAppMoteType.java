@@ -62,7 +62,6 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
 
   private File moteClassPath = null;
   private String moteClassName = null;
-  private Class<? extends AbstractApplicationMote> moteClass = null;
   private Constructor<? extends AbstractApplicationMote> moteConstructor = null;
 
   public ImportAppMoteType() {
@@ -149,7 +148,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
         loader = parentLoader;
       }
 
-      moteClass = loader.loadClass(moteClassName).asSubclass(AbstractApplicationMote.class);
+      var moteClass = loader.loadClass(moteClassName).asSubclass(AbstractApplicationMote.class);
       moteConstructor = moteClass.getConstructor(new Class[] { MoteType.class, Simulation.class });
     } catch (Exception | LinkageError e) {
       throw createError(e);

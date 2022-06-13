@@ -185,9 +185,6 @@ public class ContikiMoteType implements MoteType {
   private File fileFirmware = null;
   private String compileCommands = null;
 
-  /* For internal use only: using during Contiki compilation. */
-  private File contikiApp = null; /* Contiki application: hello-world.c */
-
   public File libSource = null; /* JNI library: build/cooja/mtype1.c */
 
   public File libFile = null; /* JNI library: build/cooja/mtype1.lib */
@@ -257,7 +254,8 @@ public class ContikiMoteType implements MoteType {
       }
 
       /* Create variables used for compiling Contiki */
-      contikiApp = getContikiSourceFile();
+      // Contiki application: hello-world.c
+      File contikiApp = getContikiSourceFile();
       libSource = new File(
               contikiApp.getParentFile(),
               output_dir + "/" + getIdentifier() + ".c");

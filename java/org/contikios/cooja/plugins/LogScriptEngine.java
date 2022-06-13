@@ -95,7 +95,6 @@ public class LogScriptEngine {
   private Semaphore semaphoreSim = null;
   private Thread scriptThread = null; /* Script thread */
   private Observer scriptLogObserver = null;
-  private ScriptMote scriptMote;
 
   private boolean stopSimulation = false, quitCooja = false;
 
@@ -355,7 +354,7 @@ public class LogScriptEngine {
     engine.put("gui", simulation.getCooja());
     engine.put("msg", new String(""));
 
-    scriptMote = new ScriptMote();
+    var scriptMote = new ScriptMote();
     engine.put("node", scriptMote);
 
     Runnable activate = new Runnable() {

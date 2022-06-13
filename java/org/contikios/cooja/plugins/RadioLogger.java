@@ -400,11 +400,111 @@ public class RadioLogger extends VisPlugin {
 
     dataTable.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
+    Action copyAllAction = new AbstractAction("Copy all") {
+      private static final long serialVersionUID = 1905586689441157304L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        StringBuilder sb = new StringBuilder();
+        for (RadioConnectionLog connection : connections) {
+          sb.append(connection.toString()).append("\n");
+        }
+
+        StringSelection stringSelection = new StringSelection(sb.toString());
+        clipboard.setContents(stringSelection, null);
+      }
+    };
     editMenu.add(new JMenuItem(copyAllAction));
+    Action copyAction = new AbstractAction("Copy selected") {
+      private static final long serialVersionUID = 8412062977916108054L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        int[] selectedRows = dataTable.getSelectedRows();
+
+        StringBuilder sb = new StringBuilder();
+        for (int i : selectedRows) {
+          int iModel = dataTable.convertRowIndexToModel(i);
+          sb.append(connections.get(iModel).toString()).append("\n");
+        }
+
+        StringSelection stringSelection = new StringSelection(sb.toString());
+        clipboard.setContents(stringSelection, null);
+      }
+    };
     editMenu.add(new JMenuItem(copyAction));
     editMenu.add(new JSeparator());
+    Action clearAction = new AbstractAction("Clear") {
+      private static final long serialVersionUID = -6135583266684643117L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int size = connections.size();
+        if (size > 0) {
+          connections.clear();
+          model.fireTableRowsDeleted(0, size - 1);
+          setTitle("Radio messages: showing " + dataTable.getRowCount() + "/" + connections.size() + " packets");
+        }
+      }
+    };
     editMenu.add(new JMenuItem(clearAction));
 
+    Action aliasAction = new AbstractAction("Payload alias...") {
+      private static final long serialVersionUID = -1678771087456128721L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int selectedRow = dataTable.getSelectedRow();
+        if (selectedRow < 0) return;
+        selectedRow = dataTable.convertRowIndexToModel(selectedRow);
+        if (selectedRow < 0) return;
+
+        String current = "";
+        if (aliases != null && aliases.get(connections.get(selectedRow).data) != null) {
+          current = (String) aliases.get(connections.get(selectedRow).data);
+        }
+
+        String alias = (String) JOptionPane.showInputDialog(
+                Cooja.getTopParentContainer(),
+                "Enter alias for all packets with identical payload.\n"
+                        + "An empty string removes the current alias.\n\n"
+                        + connections.get(selectedRow).data + "\n",
+                "Create packet payload alias",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                null,
+                current);
+        if (alias == null) {
+          // Cancelled
+          return;
+        }
+
+        // Should be null if empty
+        if (aliases == null) {
+          aliases = new Properties();
+        }
+
+        // Remove current alias
+        if (alias.equals("")) {
+          aliases.remove(connections.get(selectedRow).data);
+
+          // Should be null if empty
+          if (aliases.isEmpty()) {
+            aliases = null;
+          }
+          repaint();
+          return;
+        }
+
+        // (Re)define alias
+        aliases.put(connections.get(selectedRow).data, alias);
+        repaint();
+      }
+    };
     payloadMenu.add(new JMenuItem(aliasAction));
     payloadMenu.add(new JCheckBoxMenuItem(showDuplicatesAction) {
       @Override
@@ -419,6 +519,48 @@ public class RadioLogger extends VisPlugin {
       }
     });
 
+    Action saveAction = new AbstractAction("Save to file...") {
+      private static final long serialVersionUID = -3942984643211482179L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JFileChooser fc = new JFileChooser();
+        int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+          return;
+        }
+
+        File saveFile = fc.getSelectedFile();
+        if (saveFile.exists()) {
+          String s1 = "Overwrite";
+          String s2 = "Cancel";
+          Object[] options = {s1, s2};
+          int n = JOptionPane.showOptionDialog(
+                  Cooja.getTopParentContainer(),
+                  "A file with the same name already exists.\nDo you want to remove it?",
+                  "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
+                  JOptionPane.QUESTION_MESSAGE, null, options, s1);
+          if (n != JOptionPane.YES_OPTION) {
+            return;
+          }
+        }
+
+        if (saveFile.exists() && !saveFile.canWrite()) {
+          logger.fatal("No write access to file: " + saveFile);
+          return;
+        }
+
+        try {
+          PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
+          for (RadioConnectionLog connection : connections) {
+            outStream.print(connection.toString() + "\n");
+          }
+          outStream.close();
+        } catch (Exception ex) {
+          logger.fatal("Could not write to file: " + saveFile);
+        }
+      }
+    };
     fileMenu.add(new JMenuItem(saveAction));
 
     JPopupMenu popupMenu = new JPopupMenu();
@@ -945,101 +1087,6 @@ public class RadioLogger extends VisPlugin {
     return action;
   }
 
-  private final Action clearAction = new AbstractAction("Clear") {
-    private static final long serialVersionUID = -6135583266684643117L;
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      int size = connections.size();
-      if (size > 0) {
-        connections.clear();
-        model.fireTableRowsDeleted(0, size - 1);
-        setTitle("Radio messages: showing " + dataTable.getRowCount() + "/" + connections.size() + " packets");
-      }
-    }
-  };
-
-  private final Action copyAction = new AbstractAction("Copy selected") {
-    private static final long serialVersionUID = 8412062977916108054L;
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      int[] selectedRows = dataTable.getSelectedRows();
-
-      StringBuilder sb = new StringBuilder();
-      for (int i: selectedRows) {
-        int iModel = dataTable.convertRowIndexToModel(i);
-        sb.append(connections.get(iModel).toString() + "\n");
-      }
-
-      StringSelection stringSelection = new StringSelection(sb.toString());
-      clipboard.setContents(stringSelection, null);
-    }
-  };
-
-  private final Action copyAllAction = new AbstractAction("Copy all") {
-    private static final long serialVersionUID = 1905586689441157304L;
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      StringBuilder sb = new StringBuilder();
-      for (RadioConnectionLog connection : connections) {
-        sb.append(connection.toString() + "\n");
-      }
-
-      StringSelection stringSelection = new StringSelection(sb.toString());
-      clipboard.setContents(stringSelection, null);
-    }
-  };
-
-  private final Action saveAction = new AbstractAction("Save to file...") {
-    private static final long serialVersionUID = -3942984643211482179L;
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      JFileChooser fc = new JFileChooser();
-      int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
-      if (returnVal != JFileChooser.APPROVE_OPTION) {
-        return;
-      }
-
-      File saveFile = fc.getSelectedFile();
-      if (saveFile.exists()) {
-        String s1 = "Overwrite";
-        String s2 = "Cancel";
-        Object[] options = {s1, s2};
-        int n = JOptionPane.showOptionDialog(
-                Cooja.getTopParentContainer(),
-                "A file with the same name already exists.\nDo you want to remove it?",
-                "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE, null, options, s1);
-        if (n != JOptionPane.YES_OPTION) {
-          return;
-        }
-      }
-
-      if (saveFile.exists() && !saveFile.canWrite()) {
-        logger.fatal("No write access to file: " + saveFile);
-        return;
-      }
-
-      try {
-        PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
-        for (RadioConnectionLog connection : connections) {
-          outStream.print(connection.toString() + "\n");
-        }
-        outStream.close();
-      } catch (Exception ex) {
-        logger.fatal("Could not write to file: " + saveFile);
-      }
-
-    }
-  };
-
   private final Action timeLineAction = new AbstractAction("Timeline") {
     private static final long serialVersionUID = -4035633464748224192L;
 
@@ -1105,58 +1152,6 @@ public class RadioLogger extends VisPlugin {
   };
 
   private Properties aliases = null;
-  private final Action aliasAction = new AbstractAction("Payload alias...") {
-    private static final long serialVersionUID = -1678771087456128721L;
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      int selectedRow = dataTable.getSelectedRow();
-      if (selectedRow < 0) return;
-      selectedRow = dataTable.convertRowIndexToModel(selectedRow);
-      if (selectedRow < 0) return;
-
-      String current = "";
-      if (aliases != null && aliases.get(connections.get(selectedRow).data) != null) {
-        current = (String) aliases.get(connections.get(selectedRow).data);
-      }
-
-      String alias = (String) JOptionPane.showInputDialog(
-              Cooja.getTopParentContainer(),
-              "Enter alias for all packets with identical payload.\n"
-              + "An empty string removes the current alias.\n\n"
-              + connections.get(selectedRow).data + "\n",
-              "Create packet payload alias",
-              JOptionPane.QUESTION_MESSAGE,
-              null,
-              null,
-              current);
-      if (alias == null) {
-        /* Cancelled */
-        return;
-      }
-
-      /* Should be null if empty */
-      if (aliases == null) {
-        aliases = new Properties();
-      }
-
-      /* Remove current alias */
-      if (alias.equals("")) {
-        aliases.remove(connections.get(selectedRow).data);
-
-        /* Should be null if empty */
-        if (aliases.isEmpty()) {
-          aliases = null;
-        }
-        repaint();
-        return;
-      }
-
-      /* (Re)define alias */
-      aliases.put(connections.get(selectedRow).data, alias);
-      repaint();
-    }
-  };
 
   private boolean showDuplicates = false;
   private final AbstractAction showDuplicatesAction = new AbstractAction("Show duplicates") {

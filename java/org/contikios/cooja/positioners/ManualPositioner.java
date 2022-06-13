@@ -134,8 +134,6 @@ public class ManualPositioner extends Positioner {
   }
 
   static class PositionDialog extends JDialog {
-    private final NumberFormat doubleFormat = NumberFormat.getNumberInstance();
-
     public boolean shouldSkipRemainder = false;
     public final JFormattedTextField xField;
     public final JFormattedTextField yField;
@@ -165,6 +163,7 @@ public class ManualPositioner extends Positioner {
         }
       };
 
+      NumberFormat doubleFormat = NumberFormat.getNumberInstance();
       numberField = new JFormattedTextField(doubleFormat);
       numberField.setValue(0.0);
       numberField.setColumns(5);
