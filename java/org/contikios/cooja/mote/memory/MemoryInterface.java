@@ -151,8 +151,7 @@ public interface MemoryInterface {
    */
   interface SegmentMonitor {
 
-    public static enum EventType {
-
+    enum EventType {
       READ,
       WRITE,
       READWRITE
