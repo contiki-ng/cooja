@@ -158,6 +158,20 @@ class Main {
       System.setProperty("java.awt.headless", "true");
     }
 
+    // Verify soundness of -nogui/-quickstart argument.
+    if (options.action != null) {
+      String file = options.action.nogui == null ? options.action.quickstart : options.action.nogui;
+      if (!file.endsWith(".csc")) {
+        String option = options.action.nogui == null ? "-quickstart" : "-nogui";
+        System.err.println("Cooja " + option + " expects a filename extension of '.csc'");
+        System.exit(1);
+      }
+      if (!Files.exists(Path.of(file))) {
+        System.err.println("File '" + file + "' does not exist");
+        System.exit(1);
+      }
+    }
+
     if (options.logConfigFile != null && !Files.exists(Path.of(options.logConfigFile))) {
       System.err.println("Configuration file '" + options.logConfigFile + "' does not exist");
       System.exit(1);

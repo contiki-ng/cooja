@@ -1242,50 +1242,6 @@ public class Cooja extends Observable {
     }
   }
 
-  /**
-   * Allows user to create a simulation with a single mote type.
-   *
-   * @param source       Contiki application file name
-   * @param vis          True if GUI mode
-   * @param logDirectory Directory for log files
-   * @return True if simulation was created
-   */
-  private static Simulation quickStartSimulation(String source, boolean vis, String logDirectory) {
-    Cooja gui = new Cooja(logDirectory, createDesktopPane(vis));
-    configureFrame(gui);
-
-    logger.info("> Creating simulation");
-    Simulation sim = new Simulation(gui);
-    sim.setTitle("Quickstarted simulation: " + source);
-    boolean simOK = CreateSimDialog.showDialog(Cooja.getTopParentContainer(), sim);
-    if (!simOK) {
-      logger.fatal("No simulation, aborting quickstart");
-      System.exit(1);
-    }
-    gui.setSimulation(sim, true);
-
-    logger.info("> Creating mote type");
-    ContikiMoteType moteType = new ContikiMoteType();
-    moteType.setContikiSourceFile(new File(source));
-    moteType.setDescription("Cooja mote type (" + source + ")");
-
-    try {
-      boolean compileOK = moteType.configureAndInit(Cooja.getTopParentContainer(), sim, vis);
-      if (!compileOK) {
-        logger.fatal("Mote type initialization failed, aborting quickstart");
-        return null;
-      }
-    } catch (MoteTypeCreationException e1) {
-      logger.fatal("Mote type initialization failed, aborting quickstart");
-      return null;
-    }
-    sim.addMoteType(moteType);
-
-    logger.info("> Adding motes");
-    gui.doAddMotes(moteType);
-    return sim;
-  }
-
   //// PROJECT CONFIG AND EXTENDABLE PARTS METHODS ////
 
   /**
@@ -2997,21 +2953,7 @@ public class Cooja extends Observable {
       });
     } else if (options.action.quickstart != null) {
       String contikiApp = options.action.quickstart;
-      Simulation sim = null;
-      if (contikiApp.endsWith(".csc")) {
-        sim = quickStartSimulationConfig(new File(contikiApp), true, options.randomSeed, logDirectory);
-      } else {
-        if (contikiApp.endsWith(".cooja")) {
-          contikiApp = contikiApp.substring(0, contikiApp.length() - ".cooja".length());
-        }
-        if (!contikiApp.endsWith(".c")) {
-          contikiApp += ".c";
-        }
-
-        sim = quickStartSimulation(contikiApp, true, logDirectory);
-      }
-
-      if (sim == null) {
+      if (quickStartSimulationConfig(new File(contikiApp), true, options.randomSeed, logDirectory) == null) {
         System.exit(1);
       }
     } else if (options.action.nogui != null) {
