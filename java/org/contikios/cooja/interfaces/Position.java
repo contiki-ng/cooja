@@ -31,13 +31,19 @@
 package org.contikios.cooja.interfaces;
 
 import java.text.NumberFormat;
-import java.util.*;
-import javax.swing.*;
+import java.util.Collection;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Vector;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Mote;
+import org.contikios.cooja.MoteInterface;
 import org.jdom.Element;
-
-import org.contikios.cooja.*;
 
 /**
  * Mote 3D position.

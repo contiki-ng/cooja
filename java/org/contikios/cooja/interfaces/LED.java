@@ -30,7 +30,8 @@
 
 package org.contikios.cooja.interfaces;
 
-import org.contikios.cooja.*;
+import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.MoteInterface;
 
 /**
  * A LED represents three mote LEDs (green, yellow and red). An implementation should notify all

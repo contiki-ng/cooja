@@ -29,8 +29,10 @@
  */
 
 package org.contikios.cooja.plugins;
-import org.contikios.cooja.*;
-import org.contikios.cooja.interfaces.*;
+import org.contikios.cooja.Mote;
+import org.contikios.cooja.interfaces.Log;
+import org.contikios.cooja.interfaces.SerialPort;
+
 /**
  * 
  *

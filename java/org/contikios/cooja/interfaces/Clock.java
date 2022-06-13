@@ -41,7 +41,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.contikios.cooja.*;
+import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.MoteInterface;
+import org.contikios.cooja.Simulation;
 import org.jdom.Element;
 
 /**
