@@ -39,7 +39,9 @@ import org.contikios.cooja.*;
 @ClassDescription("Linear positioning")
 public class LinearPositioner extends Positioner {
 
-  private double startX, startY, startZ;
+  private final double startX;
+  private final double startY;
+  private final double startZ;
   private int addedInX, addedInY, addedInZ;
   private int numberInX, numberInY, numberInZ;
   private double xInterval, yInterval, zInterval;
@@ -122,6 +124,7 @@ public class LinearPositioner extends Positioner {
     this.addedInZ = 0;
   }
 
+  @Override
   public double[] getNextPosition() {
     double[] newPosition = new double[] {
         startX + addedInX*xInterval,

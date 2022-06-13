@@ -32,7 +32,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * COOJA Project.
@@ -41,7 +42,7 @@ import org.apache.log4j.Logger;
  * @author Moritz Strübe
  */
 public class COOJAProject {
-	private static Logger logger = Logger.getLogger(COOJAProject.class);
+	private static final Logger logger = LogManager.getLogger(COOJAProject.class);
 	
 	
 	public static File[] sarchProjects(File folder){
@@ -53,7 +54,7 @@ public class COOJAProject {
 			return null;
 		}
 		depth--;
-		ArrayList<File> dirs = new ArrayList<File>();
+		ArrayList<File> dirs = new ArrayList<>();
 		
 		if(!folder.isDirectory()){
 			logger.warn("Project directorys: " + folder.getPath() + "is not a Folder" );
@@ -159,6 +160,7 @@ public class COOJAProject {
 		return getStringArray("org.contikios.cooja.contikimote.ContikiMoteType.C_SOURCES");
 	}
 
+	@Override
 	public String toString() {
 		if (getDescription() != null) {
 			return getDescription();

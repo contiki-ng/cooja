@@ -35,7 +35,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.mote.memory.MemoryInterface;
@@ -47,7 +48,7 @@ import se.sics.mspsim.core.Memory.AccessType;
 import se.sics.mspsim.util.MapEntry;
 
 public class MspMoteMemory implements MemoryInterface {
-  private static Logger logger = Logger.getLogger(MspMoteMemory.class);
+  private static final Logger logger = LogManager.getLogger(MspMoteMemory.class);
   private final ArrayList<MapEntry> mapEntries;
   private final MemoryLayout memLayout;
 

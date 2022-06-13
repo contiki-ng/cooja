@@ -32,7 +32,8 @@ package org.contikios.cooja.mspmote.interfaces;
 
 import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -54,7 +55,7 @@ import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
  */
 @ClassDescription("IEEE 802.15.4 Bit Error Radio")
 public class Msp802154BitErrorRadio extends Msp802154Radio {
-  private static Logger logger = Logger.getLogger(Msp802154Radio.class);
+  private static final Logger logger = LogManager.getLogger(Msp802154Radio.class);
 
   private static final double NOISE_FLOOR = AbstractRadioMedium.SS_WEAK;
   private static final double GOOD_SIGNAL = NOISE_FLOOR + 15.0;
@@ -358,7 +359,7 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
       }
     }
 
-    mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote, 0) {
+    mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
       public void execute(long t) {
         super.execute(t);
         radio.receivedByte(inputByte);

@@ -8,14 +8,15 @@ import java.util.Observer;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
 import org.contikios.cooja.contikimote.interfaces.ContikiLED;
 
 public class ApplicationLED extends LED {
-    private static Logger logger = Logger.getLogger(ContikiLED.class);
+    private static final Logger logger = LogManager.getLogger(ContikiLED.class);
 
     private Mote mote = null;
     private byte currentLedValue = 0;
@@ -39,18 +40,22 @@ public class ApplicationLED extends LED {
        return new String[]{"leds_interface"};
      }
 
+     @Override
      public boolean isAnyOn() {
        return currentLedValue > 0;
      }
 
+     @Override
      public boolean isGreenOn() {
        return (currentLedValue & LEDS_GREEN) > 0;
      }
 
+     @Override
      public boolean isYellowOn() {
        return (currentLedValue & LEDS_YELLOW) > 0;
      }
 
+     @Override
      public boolean isRedOn() {
        return (currentLedValue & LEDS_RED) > 0;
      }
@@ -66,8 +71,10 @@ public class ApplicationLED extends LED {
        }
      }
 
+     @Override
      public JPanel getInterfaceVisualizer() {
        final JPanel panel = new JPanel() {
+         @Override
          public void paintComponent(Graphics g) {
            super.paintComponent(g);
 
@@ -113,6 +120,7 @@ public class ApplicationLED extends LED {
 
        Observer observer;
        this.addObserver(observer = new Observer() {
+         @Override
          public void update(Observable obs, Object obj) {
            panel.repaint();
          }
@@ -127,6 +135,7 @@ public class ApplicationLED extends LED {
        return panel;
      }
 
+     @Override
      public void releaseInterfaceVisualizer(JPanel panel) {
        Observer observer = (Observer) panel.getClientProperty("intf_obs");
        if (observer == null) {
@@ -137,6 +146,7 @@ public class ApplicationLED extends LED {
        this.deleteObserver(observer);
      }
 
+     @Override
      public Collection<Element> getConfigXML() {
        return null;
      }

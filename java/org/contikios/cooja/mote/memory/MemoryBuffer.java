@@ -115,7 +115,7 @@ public class MemoryBuffer {
       /* get size of next element in structure */
       int nextsize = structure[structIndex + 1].getSize();
       /* limit padding to word size */
-      nextsize = nextsize > memLayout.WORD_SIZE ? memLayout.WORD_SIZE : nextsize;
+      nextsize = Math.min(nextsize, memLayout.WORD_SIZE);
       /* calc padding */
       int pad = nextsize - type.getSize();
       /* Skip padding bytes */

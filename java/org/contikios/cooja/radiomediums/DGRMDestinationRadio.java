@@ -55,6 +55,7 @@ public class DGRMDestinationRadio extends DestinationRadio {
 		return channel;
 	}
 
+	@Override
 	protected Object clone() {
 		DGRMDestinationRadio clone = new DGRMDestinationRadio(this.radio);
 		clone.ratio = this.ratio;
@@ -65,6 +66,7 @@ public class DGRMDestinationRadio extends DestinationRadio {
 		return clone;
 	}
 	
+	@Override
 	public Collection<Element> getConfigXML() {
 		Collection<Element> config = super.getConfigXML();
 		Element element;
@@ -92,6 +94,7 @@ public class DGRMDestinationRadio extends DestinationRadio {
 		return config;
 	}
 	
+	@Override
 	public boolean setConfigXML(final Collection<Element> configXML, Simulation simulation) {
 		if (!super.setConfigXML(configXML, simulation)) {
 			return false;

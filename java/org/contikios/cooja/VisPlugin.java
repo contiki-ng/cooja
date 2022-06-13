@@ -53,7 +53,10 @@ import org.contikios.cooja.plugins.SimControl;
  * @author Fredrik Osterlind
  */
 public abstract class VisPlugin extends JInternalFrame implements Plugin {
-
+  /**
+   * Reference to Cooja so public variables can be accessed.
+   */
+  protected final Cooja gui;
   public VisPlugin(String title, final Cooja gui) {
     this(title, gui, true);
   }
@@ -65,12 +68,15 @@ public abstract class VisPlugin extends JInternalFrame implements Plugin {
       throw new PluginRequiresVisualizationException();
     }
 
+    this.gui = gui;
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
     addInternalFrameListener(new InternalFrameAdapter() {
+      @Override
       public void internalFrameClosing(InternalFrameEvent e) {
         gui.removePlugin(VisPlugin.this, true);
       }
+      @Override
       public void internalFrameActivated(InternalFrameEvent e) {
         /* Highlight mote in COOJA */
         Plugin p = VisPlugin.this;
@@ -83,20 +89,25 @@ public abstract class VisPlugin extends JInternalFrame implements Plugin {
     );
   }
 
+  @Override
   public JInternalFrame getCooja() {
     return this;
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     return false;
   }
 
+  @Override
   public void startPlugin() {
   }
+  @Override
   public void closePlugin() {
   }
   

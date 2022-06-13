@@ -44,7 +44,7 @@ import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
  * See below code usage examples.
  *
  * @see Cooja#createMotePluginsSubmenu(Mote)
- * @see Visualizer#populateSkinMenu(MenuElement)
+ * @see Visualizer#isSkinCompatible(Class)
  * @see DGRMVisualizerSkin
  *
  * @author Fredrik Osterlind

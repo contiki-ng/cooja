@@ -33,7 +33,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Represents a mote memory consisting of non-overlapping memory sections with
@@ -48,10 +49,10 @@ import org.apache.log4j.Logger;
  * @author Enrico Jorns
  */
 public class SectionMoteMemory implements MemoryInterface {
-  private static Logger logger = Logger.getLogger(SectionMoteMemory.class);
+  private static final Logger logger = LogManager.getLogger(SectionMoteMemory.class);
   private static final boolean DEBUG = logger.isDebugEnabled();
 
-  private Map<String, MemoryInterface> sections = new HashMap<>();
+  private final Map<String, MemoryInterface> sections = new HashMap<>();
 
   private final Map<String, Symbol> symbols;
   private MemoryLayout memLayout;
@@ -92,7 +93,7 @@ public class SectionMoteMemory implements MemoryInterface {
         return false;
       }
       /* Min start address is main start address */
-      startAddr = sec.getStartAddr() < startAddr ? sec.getStartAddr() : startAddr;
+      startAddr = Math.min(sec.getStartAddr(), startAddr);
       /* Layout is last layout. XXX Check layout consistency? */
       memLayout = section.getLayout();
     }
@@ -295,7 +296,7 @@ public class SectionMoteMemory implements MemoryInterface {
     return clone;
   }
 
-  private ArrayList<PolledMemorySegments> polledMemories = new ArrayList<PolledMemorySegments>();
+  private final ArrayList<PolledMemorySegments> polledMemories = new ArrayList<>();
   public void pollForMemoryChanges() {
     for (PolledMemorySegments mem: polledMemories.toArray(new PolledMemorySegments[0])) {
       mem.notifyIfChanged();

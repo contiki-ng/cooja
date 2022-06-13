@@ -35,7 +35,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -53,7 +54,7 @@ import org.contikios.cooja.radiomediums.DirectedGraphMedium;
 @SupportedArguments(radioMediums = {DirectedGraphMedium.class})
 public class DGRMVisualizerSkin implements VisualizerSkin {
 
-  private static final Logger logger = Logger.getLogger(DGRMVisualizerSkin.class);
+  private static final Logger logger = LogManager.getLogger(DGRMVisualizerSkin.class);
 
   private Simulation simulation = null;
   private Visualizer visualizer = null;
@@ -72,7 +73,6 @@ public class DGRMVisualizerSkin implements VisualizerSkin {
   public void setInactive() {
     if (simulation == null) {
       /* Skin was never activated */
-      return;
     }
   }
 

@@ -33,14 +33,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.security.AccessControlException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -56,27 +54,16 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.CompileContiki;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageListUI;
-import org.contikios.cooja.plugins.ScriptRunner;
 import org.contikios.cooja.PluginType;
 
 public class ExecuteJAR {
-  private static Logger logger = Logger.getLogger(ExecuteJAR.class);
+  private static final Logger logger = LogManager.getLogger(ExecuteJAR.class);
 
   public final static String SIMCONFIG_FILENAME = "simulation.csc";
   public final static String EXTERNALTOOLS_FILENAME = "exttools.config";
   public final static String PROJECT_DEFAULT_CONFIG_FILENAME = "cooja_default.config";
 
   public static void main(String[] args) {
-    try {
-      if ((new File(Cooja.LOG_CONFIG_FILE)).exists()) {
-        DOMConfigurator.configure(Cooja.LOG_CONFIG_FILE);
-      } else {
-        DOMConfigurator.configure(Cooja.class.getResource("/" + Cooja.LOG_CONFIG_FILE));
-      }
-    } catch (AccessControlException e) {
-      BasicConfigurator.configure();
-    }
-
     if (args.length > 0) {
       /* Generate executable JAR */
       if (args.length != 2) {
@@ -103,7 +90,7 @@ public class ExecuteJAR {
     Cooja.externalToolsUserSettingsFile = new File(
         System.getProperty("user.home"), 
         Cooja.EXTERNAL_TOOLS_USER_SETTINGS_FILENAME);
-    Simulation s = Cooja.quickStartSimulationConfig(config, false, null);
+    Simulation s = Cooja.quickStartSimulationConfig(config, false, null, ".");
     if (s == null) {
       throw new RuntimeException(
           "Error when creating simulation"
@@ -188,7 +175,7 @@ public class ExecuteJAR {
 
     logger.info("Starting simulation");
     Cooja.setLookAndFeel();
-    Simulation sim = Cooja.quickStartSimulationConfig(new File(executeDir, SIMCONFIG_FILENAME), false, null);
+    Simulation sim = Cooja.quickStartSimulationConfig(new File(executeDir, SIMCONFIG_FILENAME), false, null, ".");
     if (sim != null){
         /* Set simulation speed to maximum and start simulation */
         sim.setSpeedLimit(null);
@@ -262,9 +249,8 @@ public class ExecuteJAR {
       workingDir.mkdir();
       logger.info("Creating temporary directory: " + workingDir.getAbsolutePath());
     } catch (IOException e1) {
-      throw (RuntimeException) new RuntimeException(
-          "Error when creating temporary directory: " + e1.getMessage()
-      ).initCause(e1);
+      throw new RuntimeException(
+          "Error when creating temporary directory: " + e1.getMessage(), e1);
     }
 
     /* Unpacking project JARs */
@@ -292,16 +278,14 @@ public class ExecuteJAR {
         );
         unjarProcess.waitFor();
       } catch (Exception e1) {
-        throw (RuntimeException)  new RuntimeException(
-            "Error unpacking JAR file: " + e1.getMessage()
-        ).initCause(e1);
+        throw new RuntimeException("Error unpacking JAR file: " + e1.getMessage(), e1);
       }
     }
 
     /* Unpacking COOJA core JARs */
     String[] coreJARs = new String[] {
         "tools/cooja/lib/jdom.jar", "tools/cooja/lib/log4j.jar",
-            "tools/cooja/dist/cooja.jar", "tools/cooja/lib/jsyntaxpane.jar"
+            "tools/cooja/dist/cooja.jar", "tools/cooja/lib/syntaxpane-1.2.0.jar"
     };
     for (String jar: coreJARs) {
       File jarFile = new File(Cooja.getExternalToolsSetting("PATH_CONTIKI"), jar);
@@ -319,9 +303,7 @@ public class ExecuteJAR {
         );
         unjarProcess.waitFor();
       } catch (Exception e1) {
-        throw (RuntimeException) new RuntimeException(
-            "Error unpacking JAR file: " + e1.getMessage()
-        ).initCause(e1);
+        throw new RuntimeException("Error unpacking JAR file: " + e1.getMessage(), e1);
       }
     }
 
@@ -340,9 +322,7 @@ public class ExecuteJAR {
       outputter.output(doc, out);
       out.close();
     } catch (Exception e1) {
-      throw (RuntimeException) new RuntimeException(
-          "Error when writing simulation configuration: " + configFile
-      ).initCause(e1);
+      throw new RuntimeException("Error when writing simulation configuration: " + configFile, e1);
     }
     logger.info("Wrote simulation configuration: " + configFile.getName());
 
@@ -368,9 +348,8 @@ public class ExecuteJAR {
       out.close();
       logger.info("Wrote external tools config: " + externalToolsConfig.getName());
     } catch (Exception e2) {
-      throw (RuntimeException) new RuntimeException(
-          "Error when writing external tools configuration: " + e2.getMessage()   
-      ).initCause(e2);
+      throw new RuntimeException(
+          "Error when writing external tools configuration: " + e2.getMessage(), e2);
     }
 
     /* Export current project configuration */
@@ -388,9 +367,8 @@ public class ExecuteJAR {
       logger.info("Wrote project config: " + newConfigFile.getName());
     } catch (Exception e1) {
       e1.printStackTrace();
-      throw (RuntimeException) new RuntimeException(
-          "Error when writing project config: " + e1.getMessage()   
-      ).initCause(e1);
+      throw new RuntimeException(
+          "Error when writing project config: " + e1.getMessage(), e1);
     }
     
     /* Delete existing META-INF dir */
@@ -436,14 +414,12 @@ public class ExecuteJAR {
       );
     } catch (Exception e) {
       logger.warn("Building executable JAR error: " + e.getMessage());
-      MessageContainer[] err = errors.getMessages();
-      for (int i=0; i < err.length; i++) {
-        logger.fatal(">> " + err[i]);
+      for (MessageContainer msgs : errors.getMessages()) {
+        logger.fatal(">> " + msgs);
       }
       
       /* Forward exception */
-      throw (RuntimeException) 
-      new RuntimeException("Error when building executable JAR: " + e.getMessage()).initCause(e);
+      throw new RuntimeException("Error when building executable JAR: " + e.getMessage(), e);
     }
 
     /* Delete temporary working directory */
@@ -486,7 +462,7 @@ public class ExecuteJAR {
           throw new RuntimeException("Error when copying file: " + file);
         }
         logger.info("Simconfig: Copied file: " + file.getAbsolutePath() + " -> " + ("[CONFIG_DIR]/" + newFilename));
-        ((Element)c).setText("[CONFIG_DIR]/" + newFilename);
+        c.setText("[CONFIG_DIR]/" + newFilename);
       } else if (a != null && a.getValue().equals("discard")) {
         /* Remove config element */
         e.removeChild(c.getName());

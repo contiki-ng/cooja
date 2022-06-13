@@ -37,7 +37,8 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.SerialPort;
@@ -49,13 +50,13 @@ import org.contikios.cooja.interfaces.SerialPort;
  */
 public class MoteSerialSocketConnection {
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(MoteSerialSocketConnection.class);
+  private static final Logger logger = LogManager.getLogger(MoteSerialSocketConnection.class);
 
   private boolean isConnected = false;
   public int toMote = 0, toSocket = 0;
 
-  private SerialPort motePort;
-  private Observer moteObserver;
+  private final SerialPort motePort;
+  private final Observer moteObserver;
 
   private Socket socket;
   private DataInputStream socketIn;
@@ -70,6 +71,7 @@ public class MoteSerialSocketConnection {
     /* Simulated -> socket */
     motePort = (SerialPort) mote.getInterfaces().getLog();
     motePort.addSerialDataObserver(moteObserver = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         try {
           if (socketOut == null) {
@@ -98,6 +100,7 @@ public class MoteSerialSocketConnection {
     socketOut = new DataOutputStream(socket.getOutputStream());
     socketOut.flush();
     Thread socketThread = new Thread(new Runnable() {
+      @Override
       public void run() {
         int numRead = 0;
         byte[] data = new byte[16*1024];
@@ -176,7 +179,7 @@ public class MoteSerialSocketConnection {
 
   public void addListener(MoteSerialSocketConnectionListener l) {
     if (listeners == null) {
-      listeners = new ArrayList<MoteSerialSocketConnectionListener>();
+      listeners = new ArrayList<>();
     }
 
     listeners.add(l);

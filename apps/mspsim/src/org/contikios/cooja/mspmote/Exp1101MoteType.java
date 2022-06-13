@@ -3,7 +3,8 @@ package org.contikios.cooja.mspmote;
 import java.awt.Container;
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.MoteInterface;
@@ -30,7 +31,7 @@ import org.contikios.cooja.mspmote.interfaces.UsciA1Serial;
 @ClassDescription("Exp1101 mote (MSP430F5438)")
 @AbstractionLevelDescription("Emulated level")
 public class Exp1101MoteType extends Exp5438MoteType {
-  private static Logger logger = Logger.getLogger(Exp1101MoteType.class);
+  private static final Logger logger = LogManager.getLogger(Exp1101MoteType.class);
 
   public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
   throws MoteTypeCreationException {

@@ -9,7 +9,8 @@ import java.util.Observer;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -25,7 +26,7 @@ import se.sics.mspsim.core.PortListener;
  */
 @ClassDescription("Trxeb LEDs")
 public class TrxebLEDs extends LED {
-	private static Logger logger = Logger.getLogger(TrxebLEDs.class);
+	private static final Logger logger = LogManager.getLogger(TrxebLEDs.class);
 
 	private Exp5438Mote mspMote;
 

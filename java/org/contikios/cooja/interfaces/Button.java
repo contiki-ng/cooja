@@ -59,13 +59,13 @@ public abstract class Button extends MoteInterface {
   public Button(Mote mote) {
     sim = mote.getSimulation();
 
-    pressButtonEvent = new MoteTimeEvent(mote, 0) {
+    pressButtonEvent = new MoteTimeEvent(mote) {
       @Override
       public void execute(long t) {
         doPressButton();
       }
     };
-    releaseButtonEvent = new MoteTimeEvent(mote, 0) {
+    releaseButtonEvent = new MoteTimeEvent(mote) {
       @Override
       public void execute(long t) {
         doReleaseButton();
@@ -136,48 +136,24 @@ public abstract class Button extends MoteInterface {
     clickButton.addMouseListener(new MouseAdapter() {
       @Override
       public void mousePressed(MouseEvent e) {
-        sim.invokeSimulationThread(new Runnable() {
-
-          @Override
-          public void run() {
-            doPressButton();
-          }
-        });
+        sim.invokeSimulationThread(() -> doPressButton());
       }
 
       @Override
       public void mouseReleased(MouseEvent e) {
-        sim.invokeSimulationThread(new Runnable() {
-
-          @Override
-          public void run() {
-            doReleaseButton();
-          }
-        });
+        sim.invokeSimulationThread(() -> doReleaseButton());
       }
     });
 
     clickButton.addKeyListener(new KeyAdapter() {
       @Override
       public void keyPressed(KeyEvent e) {
-        sim.invokeSimulationThread(new Runnable() {
-
-          @Override
-          public void run() {
-            doPressButton();
-          }
-        });
+        sim.invokeSimulationThread(() -> doPressButton());
       }
 
       @Override
       public void keyReleased(KeyEvent e) {
-        sim.invokeSimulationThread(new Runnable() {
-
-          @Override
-          public void run() {
-            doReleaseButton();
-          }
-        });
+        sim.invokeSimulationThread(() -> doReleaseButton());
       }
     });
 

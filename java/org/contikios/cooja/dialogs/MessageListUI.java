@@ -30,6 +30,8 @@
 
 package org.contikios.cooja.dialogs;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -48,7 +50,6 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JCheckBoxMenuItem;
@@ -58,8 +59,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
-import org.apache.log4j.Logger;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.Cooja;
 
 /**
@@ -71,10 +72,10 @@ import org.contikios.cooja.Cooja;
  */
 public class MessageListUI extends JList implements MessageList {
 
-  private static final Logger logger = Logger.getLogger(MessageListUI.class);
+  private static final Logger logger = LogManager.getLogger(MessageListUI.class);
 
-  private Color[] foregrounds = new Color[] { null, Color.red };
-  private Color[] backgrounds = new Color[] { null, null };
+  private final Color[] foregrounds = new Color[] { null, Color.red };
+  private final Color[] backgrounds = new Color[] { null, null };
 
   private JPopupMenu popup = null;
   private boolean hideNormal = false;
@@ -126,11 +127,12 @@ public class MessageListUI extends JList implements MessageList {
     }
   }
 
+  @Override
   public PrintStream getInputStream(final int type) {
     try {
       PipedInputStream input = new PipedInputStream();
       PipedOutputStream output = new PipedOutputStream(input);
-      final BufferedReader stringInput = new BufferedReader(new InputStreamReader(input));
+      final BufferedReader stringInput = new BufferedReader(new InputStreamReader(input, UTF_8));
 
       Thread readThread = new Thread(new Runnable() {
         @Override
@@ -155,12 +157,14 @@ public class MessageListUI extends JList implements MessageList {
     }
   }
 
+  @Override
   public void addMessage(String message) {
     addMessage(message, NORMAL);
   }
 
-  private ArrayList<MessageContainer> messages = new ArrayList<MessageContainer>();
+  private final ArrayList<MessageContainer> messages = new ArrayList<>();
 
+  @Override
   public MessageContainer[] getMessages() {
     return messages.toArray(new MessageContainer[0]);
   }
@@ -181,20 +185,17 @@ public class MessageListUI extends JList implements MessageList {
     }
   }
 
+  @Override
   public void addMessage(final String message, final int type) {
     Cooja.setProgressMessage(message, type);
 
     MessageContainer msg = new MessageContainer(message, type);
     messages.add(msg);
 
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        updateModel();
-      }
-    });
+    java.awt.EventQueue.invokeLater(() -> updateModel());
   }
 
+  @Override
   public void clearMessages() {
     messages.clear();
     ((DefaultListModel) getModel()).clear();
@@ -302,14 +303,14 @@ public class MessageListUI extends JList implements MessageList {
   // Renderer for messages
   // -------------------------------------------------------------------
 
-  private class MessageModel extends DefaultListModel {
+  private static class MessageModel extends DefaultListModel {
     public void updateList() {
       fireContentsChanged(this, 0, getSize());
     }
   }
 
   private class MessageRenderer extends DefaultListCellRenderer {
-    private Dimension nullDimension = new Dimension(0,0);
+    private final Dimension nullDimension = new Dimension(0,0);
     @Override
     public Component getListCellRendererComponent(
         JList list,

@@ -33,13 +33,13 @@ package org.contikios.cooja.contikimote.interfaces;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.COOJARadioPacket;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioPacket;
-import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMote;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
@@ -89,11 +89,11 @@ import org.contikios.cooja.util.CCITT_CRC;
  * @author Fredrik Osterlind
  */
 public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledAfterActiveTicks {
-  private ContikiMote mote;
+  private final ContikiMote mote;
 
-  private VarMemory myMoteMemory;
+  private final VarMemory myMoteMemory;
 
-  private static Logger logger = Logger.getLogger(ContikiRadio.class);
+  private static final Logger logger = LogManager.getLogger(ContikiRadio.class);
 
   /**
    * Transmission bitrate (kbps).
@@ -145,39 +145,48 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
   }
 
   /* Packet radio support */
+  @Override
   public RadioPacket getLastPacketTransmitted() {
     return packetFromMote;
   }
 
+  @Override
   public RadioPacket getLastPacketReceived() {
     return packetToMote;
   }
 
+  @Override
   public void setReceivedPacket(RadioPacket packet) {
     packetToMote = packet;
   }
 
   /* General radio support */
+  @Override
   public boolean isRadioOn() {
     return radioOn;
   }
 
+  @Override
   public boolean isTransmitting() {
     return isTransmitting;
   }
 
+  @Override
   public boolean isReceiving() {
     return myMoteMemory.getByteValueOf("simReceiving") == 1;
   }
 
+  @Override
   public boolean isInterfered() {
     return isInterfered;
   }
 
+  @Override
   public int getChannel() {
     return myMoteMemory.getIntValueOf("simRadioChannel");
   }
 
+  @Override
   public void signalReceptionStart() {
     packetToMote = null;
     if (isInterfered() || isReceiving() || isTransmitting()) {
@@ -197,6 +206,7 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
     this.notifyObservers();
   }
 
+  @Override
   public void signalReceptionEnd() {
     if (isInterfered || packetToMote == null) {
       isInterfered = false;
@@ -215,10 +225,12 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
     this.notifyObservers();
   }
 
+  @Override
   public RadioEvent getLastEvent() {
     return lastEvent;
   }
 
+  @Override
   public void interfereAnyReception() {
     if (isInterfered()) {
       return;
@@ -232,24 +244,29 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
     this.notifyObservers();
   }
 
+  @Override
   public double getCurrentOutputPower() {
     /* TODO Implement method */
     logger.warn("Not implemented, always returning 0 dBm");
     return 0;
   }
 
+  @Override
   public int getOutputPowerIndicatorMax() {
     return 100;
   }
 
+  @Override
   public int getCurrentOutputPowerIndicator() {
     return myMoteMemory.getByteValueOf("simPower");
   }
 
+  @Override
   public double getCurrentSignalStrength() {
     return myMoteMemory.getIntValueOf("simSignalStrength");
   }
 
+  @Override
   public void setCurrentSignalStrength(double signalStrength) {
     myMoteMemory.setIntValueOf("simSignalStrength", (int) signalStrength);
   }
@@ -258,6 +275,7 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
    * 
    * @see org.contikios.cooja.interfaces.Radio#setLQI(int)
    */
+  @Override
   public void setLQI(int lqi){
     if(lqi<0) {
       lqi=0;
@@ -268,14 +286,17 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
     myMoteMemory.setIntValueOf("simLQI", lqi);
   }
 
+  @Override
   public int getLQI(){
     return myMoteMemory.getIntValueOf("simLQI");
   }
 
+  @Override
   public Position getPosition() {
     return mote.getInterfaces().getPosition();
   }
 
+  @Override
   public void doActionsAfterTick() {
     long now = mote.getSimulation().getSimulationTime();
 
@@ -376,8 +397,9 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
     }
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
-           ArrayList<Element> config = new ArrayList<Element>();
+           ArrayList<Element> config = new ArrayList<>();
 
            Element element;
 
@@ -389,20 +411,23 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
            return config;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML,
                  boolean visAvailable) {
          for (Element element : configXML) {
                  if (element.getName().equals("bitrate")) {
                          RADIO_TRANSMISSION_RATE_kbps = Double.parseDouble(element.getText());
-                         logger.info("Radio bitrate reconfigured to (kbps): " + RADIO_TRANSMISSION_RATE_kbps);
+                         logger.debug("Radio bitrate reconfigured to (kbps): " + RADIO_TRANSMISSION_RATE_kbps);
                  }
          }
   }
 
+  @Override
   public Mote getMote() {
     return mote;
   }
 
+  @Override
   public String toString() {
     return "Radio at " + mote;
   }

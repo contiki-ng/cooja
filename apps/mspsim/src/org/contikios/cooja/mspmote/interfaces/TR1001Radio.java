@@ -33,7 +33,8 @@ package org.contikios.cooja.mspmote.interfaces;
 import java.util.ArrayDeque;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.COOJARadioPacket;
@@ -61,7 +62,7 @@ import se.sics.mspsim.core.USARTSource;
  */
 @ClassDescription("TR1001 Radio")
 public class TR1001Radio extends Radio implements USARTListener, CustomDataRadio {
-  private static Logger logger = Logger.getLogger(TR1001Radio.class);
+  private static final Logger logger = LogManager.getLogger(TR1001Radio.class);
 
   /**
    * Cross-level:
@@ -133,7 +134,7 @@ public class TR1001Radio extends Radio implements USARTListener, CustomDataRadio
     }
 
     /* Feed incoming bytes to radio "slowly" via time events */
-    TimeEvent receiveCrosslevelDataEvent = new MspMoteTimeEvent(mote, 0) {
+    TimeEvent receiveCrosslevelDataEvent = new MspMoteTimeEvent(mote) {
       public void execute(long t) {
         super.execute(t);
         
@@ -174,7 +175,7 @@ public class TR1001Radio extends Radio implements USARTListener, CustomDataRadio
     receivedByte = isInterfered ? CORRUPTED_DATA : (Byte) data;
 
     final byte finalByte = receivedByte;
-    mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote, 0) {
+    mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
       public void execute(long t) {
         super.execute(t);
 
@@ -320,7 +321,7 @@ public class TR1001Radio extends Radio implements USARTListener, CustomDataRadio
     return mote.getInterfaces().getPosition();
   }
 
-  private TimeEvent timeoutTransmission = new MoteTimeEvent(mote, 0) {
+  private final TimeEvent timeoutTransmission = new MoteTimeEvent(mote) {
     public void execute(long t) {
       if (!isTransmitting()) {
         /* Nothing to do */

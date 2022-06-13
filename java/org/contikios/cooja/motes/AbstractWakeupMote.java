@@ -30,28 +30,29 @@ package org.contikios.cooja.motes;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
-
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteTimeEvent;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 
 public abstract class AbstractWakeupMote implements Mote {
-  private static Logger logger = Logger.getLogger(AbstractWakeupMote.class);
-  
   protected Simulation simulation = null;
 
-  private TimeEvent executeMoteEvent = new MoteTimeEvent(this, 0) {
+  private long nextWakeupTime = -1;
+
+  private final TimeEvent executeMoteEvent = new MoteTimeEvent(this) {
+    @Override
     public void execute(long t) {
       AbstractWakeupMote.this.execute(t);
     }
+    @Override
     public String toString() {
-      return "EXECUTE " + this.getClass().getName();
+      return "EXECUTE " + AbstractWakeupMote.this.getClass().getName();
     }
   };
 
   
+  @Override
   public Simulation getSimulation() {
       return simulation;
   }
@@ -78,32 +79,25 @@ public abstract class AbstractWakeupMote implements Mote {
    * the mote software will execute as soon as possible.
    */
   public void requestImmediateWakeup() {
-//    if (simulation == null) {
-//      simulation = getSimulation();
-//    }
+    long t = simulation.getSimulationTime();
     
     if (simulation.isSimulationThread()) {
       /* Schedule wakeup immediately */
-      scheduleNextWakeup(simulation.getSimulationTime());
-      return;
+      scheduleNextWakeup(t);
+    } else {
+      /* Schedule wakeup asap */
+      simulation.invokeSimulationThread(() -> scheduleNextWakeup(t));
     }
-
-    /* Schedule wakeup asap */
-    simulation.invokeSimulationThread(new Runnable() {
-      public void run() {
-        scheduleNextWakeup(simulation.getSimulationTime());
-      }
-    });
   }
 
   /**
    * @return Next wakeup time, or -1 if not scheduled
    */
   public long getNextWakeupTime() {
-	  if (!executeMoteEvent.isScheduled()) {
-		  return -1;
-	  }
-	  return executeMoteEvent.getTime();
+    if (!executeMoteEvent.isScheduled()) {
+      return -1;
+    }
+    return nextWakeupTime;
   }
   
   /**
@@ -118,14 +112,10 @@ public abstract class AbstractWakeupMote implements Mote {
    * @return True iff wakeup request rescheduled the wakeup time.
    */
   public boolean scheduleNextWakeup(long time) {
-//    if (simulation == null) {
-//      simulation = getSimulation();
-//    }
-
-      assert simulation.isSimulationThread() : "Scheduling event from non-simulation thread";
+    assert simulation.isSimulationThreadOrNull() : "Scheduling event from non-simulation thread (" + Thread.currentThread() + ")";
       
     if (executeMoteEvent.isScheduled() &&
-        executeMoteEvent.getTime() <= time) {
+        nextWakeupTime <= time) {
       /* Already scheduled wakeup event precedes given time - ignore wakeup request */
       return false;
     }
@@ -137,19 +127,25 @@ public abstract class AbstractWakeupMote implements Mote {
     }
 
     simulation.scheduleEvent(executeMoteEvent, time);
+
+    nextWakeupTime = time;
+
     return true;
   }
 
+  @Override
   public void removed() {
   }
   
   private HashMap<String, Object> properties = null;
+  @Override
   public void setProperty(String key, Object obj) {
     if (properties == null) {
-      properties = new HashMap<String, Object>();
+      properties = new HashMap<>();
     }
     properties.put(key, obj);
   }
+  @Override
   public Object getProperty(String key) {
     if (properties == null) {
       return null;

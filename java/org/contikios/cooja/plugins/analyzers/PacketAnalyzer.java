@@ -13,12 +13,12 @@ public abstract class PacketAnalyzer {
 
   public static class Packet {
 
-    byte[] data;
+    final byte[] data;
     int pos;
     int level;
     /* size = length - consumed bytes at tail */
     int size;
-    long ts;  /* in microseconds */
+    final long ts;  /* in microseconds */
 
     /* L2 addresseses */
     byte[] llsender;
@@ -85,7 +85,7 @@ public abstract class PacketAnalyzer {
     public long getTimestamp() {
       return ts;
     }
-  };
+  }
 
   public abstract boolean matchPacket(Packet packet);
 

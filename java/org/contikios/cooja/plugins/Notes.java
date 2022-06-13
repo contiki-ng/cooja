@@ -32,8 +32,6 @@ package org.contikios.cooja.plugins;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -46,7 +44,8 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -59,9 +58,9 @@ import org.contikios.cooja.VisPlugin;
 @PluginType(PluginType.SIM_STANDARD_PLUGIN)
 public class Notes extends VisPlugin {
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(Visualizer.class);
+  private static final Logger logger = LogManager.getLogger(Visualizer.class);
 
-  private JTextArea notes = new JTextArea("Enter notes here");
+  private final JTextArea notes = new JTextArea("Enter notes here");
   private boolean decorationsVisible = true;
 
   public Notes(Simulation simulation, Cooja gui) {
@@ -74,23 +73,22 @@ public class Notes extends VisPlugin {
       final JPopupMenu popup = new JPopupMenu();
       JMenuItem headerMenuItem = new JMenuItem("Toggle decorations");
       headerMenuItem.setEnabled(true);
-      headerMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          setDecorationsVisible(!decorationsVisible);
-        }
-      });
+      headerMenuItem.addActionListener(e -> setDecorationsVisible(!decorationsVisible));
       popup.add(headerMenuItem);
       notes.addMouseListener(new MouseAdapter() {
+        @Override
         public void mousePressed(MouseEvent e) {
           if (e.isPopupTrigger()) {
             popup.show(Notes.this, e.getX(), e.getY());
           }
         }
+        @Override
         public void mouseReleased(MouseEvent e) {
           if (e.isPopupTrigger()) {
             popup.show(Notes.this, e.getX(), e.getY());
           }
         }
+        @Override
         public void mouseClicked(MouseEvent e) {
           if (e.isPopupTrigger()) {
             popup.show(Notes.this, e.getX(), e.getY());
@@ -130,17 +128,14 @@ public class Notes extends VisPlugin {
     }
 
     Notes.this.revalidate();
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        Notes.this.repaint();
-      }
-    });
+    SwingUtilities.invokeLater(() -> Notes.this.repaint());
 
     decorationsVisible = visible;
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     element = new Element("notes");
@@ -154,6 +149,7 @@ public class Notes extends VisPlugin {
     return config;
   }
 
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("notes")) {

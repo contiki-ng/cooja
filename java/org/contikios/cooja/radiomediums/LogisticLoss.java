@@ -30,7 +30,6 @@
 
 package org.contikios.cooja.radiomediums;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
@@ -38,7 +37,8 @@ import java.util.Random;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -104,7 +104,7 @@ import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
  */
 @ClassDescription("LogisticLoss Medium")
 public class LogisticLoss extends AbstractRadioMedium {
-    private static Logger logger = Logger.getLogger(LogisticLoss.class);
+    private static final Logger logger = LogManager.getLogger(LogisticLoss.class);
 
     private Simulation sim = null;
 
@@ -154,17 +154,18 @@ public class LogisticLoss extends AbstractRadioMedium {
 
     private long lastTimeVariationUpdatePeriod = 0;
 
-    private DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
+    private final DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
 
     private Random random = null;
 
-    private Hashtable<Index, TimeVaryingEdge> edgesTable = new Hashtable<Index, TimeVaryingEdge>();
+    private final Hashtable<Index, TimeVaryingEdge> edgesTable = new Hashtable<>();
 
     public LogisticLoss(Simulation simulation) {
         super(simulation);
         random = simulation.getRandomGenerator();
         sim = simulation;
         dgrm = new DirectedGraphMedium() {
+                @Override
                 protected void analyzeEdges() {
                     /* Create edges according to distances.
                      * XXX May be slow for mobile networks */
@@ -206,16 +207,19 @@ public class LogisticLoss extends AbstractRadioMedium {
         /* Register as position observer.
          * If any positions change, re-analyze potential receivers. */
         final Observer positionObserver = new Observer() {
+                @Override
                 public void update(Observable o, Object arg) {
                     dgrm.requestEdgeAnalysis();
                 }
             };
         /* Re-analyze potential receivers if radios are added/removed. */
         simulation.getEventCentral().addMoteCountListener(new MoteCountListener() {
+                @Override
                 public void moteWasAdded(Mote mote) {
                     mote.getInterfaces().getPosition().addObserver(positionObserver);
                     dgrm.requestEdgeAnalysis();
                 }
+                @Override
                 public void moteWasRemoved(Mote mote) {
                     mote.getInterfaces().getPosition().deleteObserver(positionObserver);
                     dgrm.requestEdgeAnalysis();
@@ -230,12 +234,14 @@ public class LogisticLoss extends AbstractRadioMedium {
         Visualizer.registerVisualizerSkin(LogisticLossVisualizerSkin.class);
     }
 
+    @Override
     public void removed() {
         super.removed();
 
         Visualizer.unregisterVisualizerSkin(LogisticLossVisualizerSkin.class);
     }
   
+    @Override
     public RadioConnection createConnections(Radio sender) {
         RadioConnection newConnection = new RadioConnection(sender);
 
@@ -404,6 +410,7 @@ public class LogisticLoss extends AbstractRadioMedium {
         }
     }
 
+    @Override
     public void updateSignalStrengths() {
         /* Override: uses distance as signal strength factor */
 
@@ -467,6 +474,7 @@ public class LogisticLoss extends AbstractRadioMedium {
         }
     }
 
+    @Override
     public Collection<Element> getConfigXML() {
         Collection<Element> config = super.getConfigXML();
         Element element;
@@ -519,6 +527,7 @@ public class LogisticLoss extends AbstractRadioMedium {
         return config;
     }
 
+    @Override
     public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
         super.setConfigXML(configXML, visAvailable);
         for (Element element : configXML) {
@@ -563,9 +572,9 @@ public class LogisticLoss extends AbstractRadioMedium {
     }
 
     // Invariant: x <= y
-    private class Index {
-        private int x;
-        private int y;
+    private static class Index {
+        private final int x;
+        private final int y;
 
         public Index(int a, int b) {
             if(a <= b) {

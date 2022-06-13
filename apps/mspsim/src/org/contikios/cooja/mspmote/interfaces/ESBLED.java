@@ -33,7 +33,8 @@ package org.contikios.cooja.mspmote.interfaces;
 import java.awt.*;
 import java.util.*;
 import javax.swing.JPanel;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -47,7 +48,7 @@ import se.sics.mspsim.platform.esb.ESBNode;
  */
 @ClassDescription("ESB LED")
 public class ESBLED extends LED implements PortListener {
-  private static Logger logger = Logger.getLogger(ESBLED.class);
+  private static final Logger logger = LogManager.getLogger(ESBLED.class);
 
   private ESBMote mote;
   private boolean redOn = false;

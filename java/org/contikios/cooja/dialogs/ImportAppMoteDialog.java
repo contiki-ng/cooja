@@ -72,11 +72,10 @@ public class ImportAppMoteDialog extends JDialog {
   private static String lastPath;
   private static String lastFile;
 
-  private JTextField descriptionField;
-  private JTextField pathField;
-  private JTextField classField;
-  private JButton cancelButton;
-  private JButton createButton;
+  private final JTextField descriptionField;
+  private final JTextField pathField;
+  private final JTextField classField;
+  private final JButton cancelButton;
   private boolean hasSelected = false;
 
   public ImportAppMoteDialog(Container parent, final Simulation simulation, final ImportAppMoteType moteType) {
@@ -115,6 +114,7 @@ public class ImportAppMoteDialog extends JDialog {
 
     JButton browseButton = new JButton("Browse");
     browseButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         JFileChooser fc = new JFileChooser();
 
@@ -138,6 +138,7 @@ public class ImportAppMoteDialog extends JDialog {
 
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.addChoosableFileFilter(new FileFilter() {
+          @Override
           public boolean accept(File f) {
             if (f.isDirectory()) {
               return true;
@@ -149,6 +150,7 @@ public class ImportAppMoteDialog extends JDialog {
             return false;
           }
 
+          @Override
           public String getDescription() {
             return "Application Mote Java Class";
           }
@@ -167,6 +169,7 @@ public class ImportAppMoteDialog extends JDialog {
 
     ActionListener cancelAction = new ActionListener() {
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         setVisible(false);
         dispose();
@@ -178,8 +181,9 @@ public class ImportAppMoteDialog extends JDialog {
     KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
     getRootPane().registerKeyboardAction(cancelAction, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-    createButton = new JButton("Create");
+    var createButton = new JButton("Create");
     createButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         String className = classField.getText();
         if (className.length() == 0) {
@@ -227,6 +231,7 @@ public class ImportAppMoteDialog extends JDialog {
 
     setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {
+      @Override
       public void windowClosing(WindowEvent e) {
         cancelButton.doClick();
       }
@@ -257,12 +262,7 @@ public class ImportAppMoteDialog extends JDialog {
       JOptionPane.showMessageDialog(ImportAppMoteDialog.this,
           "Could not find class '" + classFile + "'", "Failed to load class",
           JOptionPane.ERROR_MESSAGE);
-    } catch (Exception e1) {
-      e1.printStackTrace();
-      JOptionPane.showMessageDialog(ImportAppMoteDialog.this,
-          "Could not load class '" + classFile + "':\n" + e1, "Failed to load class",
-          JOptionPane.ERROR_MESSAGE);
-    } catch (LinkageError e1) {
+    } catch (Exception | LinkageError e1) {
       e1.printStackTrace();
       JOptionPane.showMessageDialog(ImportAppMoteDialog.this,
           "Could not load class '" + classFile + "':\n" + e1, "Failed to load class",

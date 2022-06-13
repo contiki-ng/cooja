@@ -37,7 +37,8 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -68,9 +69,9 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 @ClassDescription("Filesystem (CFS)")
 public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, PolledAfterActiveTicks {
-  private static Logger logger = Logger.getLogger(ContikiCFS.class);
+  private static final Logger logger = LogManager.getLogger(ContikiCFS.class);
 
-  public int FILESYSTEM_SIZE = 4000; /* Configure CFS size here and in cfs-cooja.c */
+  public final int FILESYSTEM_SIZE = 4000; /* Configure CFS size here and in cfs-cooja.c */
   private Mote mote = null;
   private VarMemory moteMem = null;
 
@@ -93,6 +94,7 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
     return new String[]{"cfs_interface"};
   }
 
+  @Override
   public void doActionsAfterTick() {
     if (moteMem.getByteValueOf("simCFSChanged") == 1) {
       lastRead = moteMem.getIntValueOf("simCFSRead");
@@ -148,6 +150,7 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
     return lastWritten;
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -162,6 +165,7 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
     panel.add(uploadButton);
 
     uploadButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         byte[] fileData = readDialogFileBytes(null);
 
@@ -176,6 +180,7 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
 
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         long currentTime = mote.getSimulation().getSimulationTime();
         lastTimeLabel.setText("Last change at time: " + currentTime);
@@ -193,6 +198,7 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -203,10 +209,12 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
     this.deleteObserver(observer);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 

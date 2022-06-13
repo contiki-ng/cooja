@@ -40,7 +40,8 @@ import java.awt.datatransfer.StringSelection;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -62,17 +63,19 @@ import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
  */
 @ClassDescription("Addresses: IP or Rime")
 public class AddressVisualizerSkin implements VisualizerSkin {
-  private static Logger logger = Logger.getLogger(AddressVisualizerSkin.class);
+  private static final Logger logger = LogManager.getLogger(AddressVisualizerSkin.class);
 
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private Observer addrObserver = new Observer() {
+  private final Observer addrObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       visualizer.repaint();
     }
   };
-  private MoteCountListener newMotesListener = new MoteCountListener() {
+  private final MoteCountListener newMotesListener = new MoteCountListener() {
+    @Override
     public void moteWasAdded(Mote mote) {
       IPAddress ipAddr = mote.getInterfaces().getIPAddress();
       if (ipAddr != null) {
@@ -83,6 +86,7 @@ public class AddressVisualizerSkin implements VisualizerSkin {
         rimeAddr.addObserver(addrObserver);
       }
     }
+    @Override
     public void moteWasRemoved(Mote mote) {
       IPAddress ipAddr = mote.getInterfaces().getIPAddress();
       if (ipAddr != null) {
@@ -95,6 +99,7 @@ public class AddressVisualizerSkin implements VisualizerSkin {
     }
   };
 
+  @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
@@ -108,6 +113,7 @@ public class AddressVisualizerSkin implements VisualizerSkin {
     visualizer.registerMoteMenuAction(CopyAddressAction.class);
   }
 
+  @Override
   public void setInactive() {
     simulation.getEventCentral().removeMoteCountListener(newMotesListener);
     for (Mote m: simulation.getMotes()) {
@@ -118,10 +124,12 @@ public class AddressVisualizerSkin implements VisualizerSkin {
     visualizer.unregisterMoteMenuAction(CopyAddressAction.class);
   }
 
+  @Override
   public Color[] getColorOf(Mote mote) {
     return null;
   }
 
+  @Override
   public void paintBeforeMotes(Graphics g) {
   }
 
@@ -141,6 +149,7 @@ public class AddressVisualizerSkin implements VisualizerSkin {
     return null;
   }
   
+  @Override
   public void paintAfterMotes(Graphics g) {
     FontMetrics fm = g.getFontMetrics();
     g.setColor(Color.BLACK);
@@ -162,20 +171,25 @@ public class AddressVisualizerSkin implements VisualizerSkin {
   }
 
   public static class CopyAddressAction implements MoteMenuAction {
+    @Override
     public boolean isEnabled(Visualizer visualizer, Mote mote) {
       return true;
     }
 
+    @Override
     public String getDescription(Visualizer visualizer, Mote mote) {
       return "Copy address to clipboard: \"" + getMoteString(mote) + "\"";
     }
 
+    @Override
     public void doAction(Visualizer visualizer, Mote mote) {
       Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       StringSelection stringSelection = new StringSelection(getMoteString(mote));
       clipboard.setContents(stringSelection, null);
     }
-  };
+  }
+
+  @Override
   public Visualizer getVisualizer() {
     return visualizer;
   }

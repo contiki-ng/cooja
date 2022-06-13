@@ -31,13 +31,15 @@
 package org.contikios.cooja;
 
 public class ConvertedRadioPacket implements RadioPacket {
-  private byte[] convertedData, originalData;
+  private final byte[] convertedData;
+  private final byte[] originalData;
 
   public ConvertedRadioPacket(byte[] convertedData, byte[] originalData) {
     this.convertedData = convertedData;
     this.originalData = originalData;
   }
 
+  @Override
   public byte[] getPacketData() {
     return convertedData;
   }

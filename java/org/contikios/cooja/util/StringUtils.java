@@ -28,13 +28,15 @@
 
 package org.contikios.cooja.util;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -151,13 +153,13 @@ public class StringUtils {
       return null;
     }
     try {
-      InputStreamReader reader = new InputStreamReader(url.openStream());
+      InputStreamReader reader = new InputStreamReader(url.openStream(), UTF_8);
       StringBuilder sb = new StringBuilder();
       char[] buf = new char[4096];
       int read;
       while ((read = reader.read(buf)) > 0) {
         sb.append(buf, 0, read);
-      };
+      }
 
       reader.close();
       return sb.toString();
@@ -175,16 +177,16 @@ public class StringUtils {
     
     try {
       if (file.getName().endsWith(".gz")) {
-        reader = new InputStreamReader(new GZIPInputStream(new FileInputStream(file)));
+        reader = new InputStreamReader(new GZIPInputStream(new FileInputStream(file)), UTF_8);
       } else {
-        reader = new InputStreamReader(new FileInputStream(file));
+        reader = new InputStreamReader(new FileInputStream(file), UTF_8);
       }
 
       char[] buf = new char[4096];
       int read;
       while ((read = reader.read(buf)) > 0) {
         sb.append(buf, 0, read);
-      };
+      }
 
       reader.close();
       return sb.toString();
@@ -198,7 +200,7 @@ public class StringUtils {
         }
       }
       
-      if (sb != null && sb.length() > 0) {
+      if (sb.length() > 0) {
         return sb.toString();
       }
       return null;
@@ -207,7 +209,7 @@ public class StringUtils {
   
   public static boolean saveToFile(File file, String text) {
     try {
-      PrintWriter outStream = new PrintWriter(new FileWriter(file));
+      PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(file.toPath(), UTF_8));
       outStream.print(text);
       outStream.close();
       return true;

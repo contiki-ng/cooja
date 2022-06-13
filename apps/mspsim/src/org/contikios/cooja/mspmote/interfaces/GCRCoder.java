@@ -30,7 +30,8 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Ported from contiki-2.x/core/lib/gcr.[ch].
@@ -38,7 +39,7 @@ import org.apache.log4j.Logger;
  * @author Fredrik Osterlind
  */
 public class GCRCoder {
-  private static Logger logger = Logger.getLogger(GCRCoder.class);
+  private static final Logger logger = LogManager.getLogger(GCRCoder.class);
 
   /*
    * GCR conversion table - used for converting ordinary byte to 10-bits (or 4

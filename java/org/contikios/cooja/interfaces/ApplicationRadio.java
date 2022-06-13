@@ -47,7 +47,8 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
@@ -65,10 +66,10 @@ import org.contikios.cooja.Simulation;
  * @author Fredrik Osterlind
  */
 public class ApplicationRadio extends Radio implements NoiseSourceRadio, DirectionalAntennaRadio {
-  private static Logger logger = Logger.getLogger(ApplicationRadio.class);
+  private static final Logger logger = LogManager.getLogger(ApplicationRadio.class);
 
-  private Simulation simulation;
-  private Mote mote;
+  private final Simulation simulation;
+  private final Mote mote;
 
   private RadioPacket packetFromMote = null;
   private RadioPacket packetToMote = null;
@@ -77,7 +78,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
   private boolean isReceiving = false;
   private boolean isInterfered = false;
 
-  private long transmissionEndTime = 0;
+  private final long transmissionEndTime = 0;
 
   private RadioEvent lastEvent = RadioEvent.UNKNOWN;
   private long lastEventTime = 0;
@@ -95,19 +96,23 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
   }
 
   /* Packet radio support */
+  @Override
   public RadioPacket getLastPacketTransmitted() {
     return packetFromMote;
   }
 
+  @Override
   public RadioPacket getLastPacketReceived() {
     return packetToMote;
   }
 
+  @Override
   public void setReceivedPacket(RadioPacket packet) {
     packetToMote = packet;
   }
 
   /* General radio support */
+  @Override
   public void signalReceptionStart() {
     packetToMote = null;
     if (isInterfered() || isReceiving() || isTransmitting()) {
@@ -122,6 +127,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     this.notifyObservers();
   }
 
+  @Override
   public void signalReceptionEnd() {
     //System.out.println("SignalReceptionEnded for node: " + mote.getID() + " intf:" + interfered);
     if (isInterfered() || packetToMote == null) {
@@ -143,6 +149,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     this.notifyObservers();
   }
 
+  @Override
   public boolean isTransmitting() {
     return isTransmitting;
   }
@@ -151,23 +158,28 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     return transmissionEndTime;
   }
 
+  @Override
   public boolean isReceiving() {
     return isReceiving;
   }
 
+  @Override
   public int getChannel() {
     return radioChannel;
   }
 
+  @Override
   public Position getPosition() {
     return mote.getInterfaces().getPosition();
   }
 
+  @Override
   public RadioEvent getLastEvent() {
     return lastEvent;
   }
 
   /* Note: this must be called exactly as many times as the reception ended */
+  @Override
   public void interfereAnyReception() {
     interfered++;
     if (!isInterfered()) {
@@ -180,26 +192,32 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     }
   }
 
+  @Override
   public boolean isInterfered() {
     return isInterfered;
   }
 
+  @Override
   public double getCurrentOutputPower() {
     return outputPower;
   }
 
+  @Override
   public int getOutputPowerIndicatorMax() {
     return outputPowerIndicator;
   }
 
+  @Override
   public int getCurrentOutputPowerIndicator() {
     return outputPowerIndicator;
   }
 
+  @Override
   public double getCurrentSignalStrength() {
     return signalStrength;
   }
 
+  @Override
   public void setCurrentSignalStrength(double signalStrength) {
     this.signalStrength = signalStrength;
   }
@@ -214,6 +232,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
    */
   public void startTransmittingPacket(final RadioPacket packet, final long duration) {
     Runnable startTransmission = new Runnable() {
+      @Override
       public void run() {
         if (isTransmitting) {
           logger.warn("Already transmitting, aborting new transmission");
@@ -236,7 +255,8 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
         /*logger.info("Transmission started");*/
 
         /* Finish transmission */
-        simulation.scheduleEvent(new MoteTimeEvent(mote, 0) {
+        simulation.scheduleEvent(new MoteTimeEvent(mote) {
+          @Override
           public void execute(long t) {
             isTransmitting = false;
             lastEvent = RadioEvent.TRANSMISSION_FINISHED;
@@ -281,6 +301,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     notifyObservers();
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel(new BorderLayout());
     Box box = Box.createVerticalBox();
@@ -299,6 +320,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
         "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"
     });
     channelMenu.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         JComboBox m = (JComboBox) e.getSource();
         String s = (String) m.getSelectedItem();
@@ -314,8 +336,9 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     } else {
       channelMenu.setSelectedIndex(getChannel());
     }
-    final JFormattedTextField outputPower = new JFormattedTextField(new Double(getCurrentOutputPower()));
+    final JFormattedTextField outputPower = new JFormattedTextField(getCurrentOutputPower());
     outputPower.addPropertyChangeListener("value", new PropertyChangeListener() {
+      @Override
       public void propertyChange(PropertyChangeEvent evt) {
         setOutputPower(((Number)outputPower.getValue()).doubleValue());
       }
@@ -331,6 +354,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     box.add(outputPower);
 
     updateButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         ssLabel.setText("Signal strength (not auto-updated): "
             + String.format("%1.1f", getCurrentSignalStrength()) + " dBm");
@@ -338,6 +362,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     });
 
     final Observer observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         if (isTransmitting()) {
           statusLabel.setText("Transmitting");
@@ -366,15 +391,18 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     return panel;
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     /* TODO Save channel info? */
     /* TODO Save output power? */
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 
+  @Override
   public Mote getMote() {
     return mote;
   }
@@ -391,24 +419,28 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     this.setChanged();
     this.notifyObservers();
   }
+  @Override
   public boolean isRadioOn() {
     return radioOn;
   }
 
   /* Noise source radio support */
+  @Override
   public int getNoiseLevel() {
     return noiseSignal;
   }
+  @Override
   public void addNoiseLevelListener(NoiseLevelListener l) {
     noiseListeners.add(l);
   }
+  @Override
   public void removeNoiseLevelListener(NoiseLevelListener l) {
     noiseListeners.remove(l);
   }
 
   /* Noise source radio support (app mote API) */
   private int noiseSignal = Integer.MIN_VALUE;
-  private ArrayList<NoiseLevelListener> noiseListeners = new ArrayList<NoiseLevelListener>();
+  private final ArrayList<NoiseLevelListener> noiseListeners = new ArrayList<>();
   public void setNoiseLevel(int signal) {
     this.noiseSignal = signal;
     for (NoiseLevelListener l: noiseListeners) {
@@ -416,15 +448,19 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     }
   }
 
+  @Override
   public double getDirection() {
     return 0;
   }
+  @Override
   public double getRelativeGain(double radians, double distance) {
     /* Simple sinus-based gain */
     return 5.0*Math.sin(5.0*radians)/(0.01*distance);
   }
+  @Override
   public void addDirectionChangeListener(DirectionChangeListener l) {
   }
+  @Override
   public void removeDirectionChangeListener(DirectionChangeListener l) {
   }
 

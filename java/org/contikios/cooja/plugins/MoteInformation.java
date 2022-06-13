@@ -42,7 +42,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
@@ -62,15 +63,15 @@ import org.contikios.cooja.motes.AbstractEmulatedMote;
 @PluginType(PluginType.MOTE_PLUGIN)
 public class MoteInformation extends VisPlugin implements MotePlugin {
   private static final long serialVersionUID = 2359676837283723500L;
-  private static Logger logger = Logger.getLogger(MoteInformation.class);
+  private static final Logger logger = LogManager.getLogger(MoteInformation.class);
 
-  private Mote mote;
+  private final Mote mote;
 
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 20;
   private final static Dimension size = new Dimension(LABEL_WIDTH,LABEL_HEIGHT);
   
-  private Simulation simulation;
+  private final Simulation simulation;
 
   /**
    * Create a new mote information window.
@@ -112,6 +113,7 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     button = new JButton("Mote type information");
     button.setPreferredSize(size);
     button.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         simulation.getCooja().tryStartPlugin(MoteTypeInformation.class, simulation.getCooja(), simulation, mote);
       }
@@ -133,6 +135,7 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     button = new JButton("Mote interface viewer");
     button.setPreferredSize(size);
     button.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         simulation.getCooja().tryStartPlugin(MoteInterfaceViewer.class, simulation.getCooja(), simulation, mote);
       }
@@ -165,11 +168,9 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
 
     button = new JButton("Remove");
     button.setPreferredSize(size);
-    button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        /* TODO In simulation event (if running) */
-        simulation.removeMote(MoteInformation.this.mote);
-      }
+    button.addActionListener(e -> {
+      /* TODO In simulation event (if running) */
+      simulation.removeMote(MoteInformation.this.mote);
     });
     smallPane.add(BorderLayout.EAST, button);
     mainPane.add(smallPane);
@@ -183,9 +184,11 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     setSize(new Dimension(getWidth()+15, getHeight()+15));
   }
 
+  @Override
   public void closePlugin() {
   }
 
+  @Override
   public Mote getMote() {
     return mote;
   }

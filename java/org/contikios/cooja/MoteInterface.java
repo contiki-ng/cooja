@@ -33,7 +33,8 @@ package org.contikios.cooja;
 import java.util.Collection;
 import java.util.Observable;
 import javax.swing.JPanel;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
@@ -62,7 +63,7 @@ import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
  * @author Fredrik Osterlind
  */
 public abstract class MoteInterface extends Observable {
-  private static Logger logger = Logger.getLogger(MoteInterface.class);
+  private static final Logger logger = LogManager.getLogger(MoteInterface.class);
 
   /**
    * This method creates an instance of the given class with the given mote as
@@ -75,7 +76,7 @@ public abstract class MoteInterface extends Observable {
    *          Mote that will hold the interface
    * @return Mote interface instance
    */
-  public static final MoteInterface generateInterface(
+  public static MoteInterface generateInterface(
       Class<? extends MoteInterface> interfaceClass, Mote mote) {
     try {
       MoteInterface instance = interfaceClass.getConstructor(

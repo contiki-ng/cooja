@@ -60,7 +60,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -78,9 +79,9 @@ import org.contikios.cooja.interfaces.Position;
 public class AddMoteDialog extends JDialog {
 
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(AddMoteDialog.class);
+  private static final Logger logger = LogManager.getLogger(AddMoteDialog.class);
 
-  private AddMotesEventHandler myEventHandler = new AddMotesEventHandler();
+  private final AddMotesEventHandler myEventHandler = new AddMotesEventHandler();
 
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;
@@ -126,10 +127,7 @@ public class AddMoteDialog extends JDialog {
 
     myDialog.setLocationRelativeTo(parentContainer);
     myDialog.checkSettings();
-
-    if (myDialog != null) {
-      myDialog.setVisible(true);
-    }
+    myDialog.setVisible(true);
     return myDialog.newMotes;
   }
 
@@ -191,7 +189,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(integerFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Integer(1));
+    numberField.setValue(1);
     numberField.setColumns(10);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -249,7 +247,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(0.0));
+    numberField.setValue(0.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -263,7 +261,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(100.0));
+    numberField.setValue(100.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -290,7 +288,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(0.0));
+    numberField.setValue(0.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -304,7 +302,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(100.0));
+    numberField.setValue(100.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -331,7 +329,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(0.0));
+    numberField.setValue(0.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -345,7 +343,7 @@ public class AddMoteDialog extends JDialog {
 
     numberField = new JFormattedTextField(doubleFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(new Double(0.0));
+    numberField.setValue(0.0);
     numberField.setColumns(4);
     numberField.addFocusListener(myEventHandler);
     numberField.addPropertyChangeListener("value", myEventHandler);
@@ -427,21 +425,21 @@ public class AddMoteDialog extends JDialog {
         ActionListener,
         FocusListener,
         PropertyChangeListener {
+    @Override
     public void propertyChange(PropertyChangeEvent e) {
       checkSettings();
     }
+    @Override
     public void focusGained(final FocusEvent e) {
       if (e.getSource() instanceof JFormattedTextField) {
-        SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-            ((JFormattedTextField) e.getSource()).selectAll();
-          }
-        });
+        SwingUtilities.invokeLater(() -> ((JFormattedTextField) e.getSource()).selectAll());
       }
     }
+    @Override
     public void focusLost(FocusEvent e) {
       checkSettings();
     }
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("cancel")) {
         newMotes = null;
@@ -454,7 +452,7 @@ public class AddMoteDialog extends JDialog {
 	  }
 
 	  // Create new motes
-          newMotes = new Vector<Mote>();
+          newMotes = new Vector<>();
           int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
           while (newMotes.size() < motesToAdd) {
             Mote newMote = moteType.generateMote(simulation);
@@ -484,8 +482,8 @@ public class AddMoteDialog extends JDialog {
             return;
           }
 
-          for (int i = 0; i < newMotes.size(); i++) {
-            Position newPosition = newMotes.get(i).getInterfaces().getPosition();
+          for (Mote newMote : newMotes) {
+            Position newPosition = newMote.getInterfaces().getPosition();
             if (newPosition != null) {
               double[] newPositionArray = positioner.getNextPosition();
               if (newPositionArray.length >= 3) {

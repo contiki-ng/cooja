@@ -38,7 +38,8 @@ import java.util.Observer;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -55,7 +56,7 @@ import se.sics.mspsim.platform.tyndall.TyndallNode;
  */
 @ClassDescription("Tyndall LEDs")
 public class TyndallLED extends LED {
-  private static Logger logger = Logger.getLogger(TyndallLED.class);
+  private static final Logger logger = LogManager.getLogger(TyndallLED.class);
 
   private TyndallMote mspMote;
 

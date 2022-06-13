@@ -36,7 +36,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -56,9 +57,9 @@ import org.contikios.cooja.interfaces.Position;
 
 @ClassDescription("Application Mote Type")
 public abstract class AbstractApplicationMoteType implements MoteType {
-  private static Logger logger = Logger.getLogger(AbstractApplicationMoteType.class);
+  private static final Logger logger = LogManager.getLogger(AbstractApplicationMoteType.class);
 
-  private ProjectConfig myConfig = null;
+  private final ProjectConfig myConfig = null;
 
   private String identifier = null;
   private String description = null;
@@ -84,6 +85,7 @@ public abstract class AbstractApplicationMoteType implements MoteType {
     this.description = "Application Mote Type #" + identifier;
   }
 
+  @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
   throws MoteTypeCreationException {
     if (identifier == null) {
@@ -111,30 +113,37 @@ public abstract class AbstractApplicationMoteType implements MoteType {
     return true;
   }
 
+  @Override
   public String getIdentifier() {
     return identifier;
   }
 
+  @Override
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }
 
+  @Override
   public void setDescription(String description) {
     this.description = description;
   }
 
+  @Override
   public Class<? extends MoteInterface>[] getMoteInterfaceClasses() {
     return moteInterfaceClasses;
   }
 
+  @Override
   public void setMoteInterfaceClasses(Class<? extends MoteInterface>[] moteInterfaces) {
     throw new RuntimeException("Can not change the mote interface classes");
   }
 
+  @Override
   public JComponent getTypeVisualizer() {
     StringBuilder sb = new StringBuilder();
     // Identifier
@@ -156,37 +165,45 @@ public abstract class AbstractApplicationMoteType implements MoteType {
     return label;
   }
 
+  @Override
   public File getContikiSourceFile() {
     return null; /* Contiki-independent */
   }
 
+  @Override
   public File getContikiFirmwareFile() {
     return null; /* Contiki-independent */
   }
 
+  @Override
   public void setContikiSourceFile(File file) {
     /* Contiki-independent */
   }
 
+  @Override
   public void setContikiFirmwareFile(File file) {
     /* Contiki-independent */
   }
 
+  @Override
   public String getCompileCommands() {
     /* Contiki-independent */
     return null;
   }
 
+  @Override
   public void setCompileCommands(String commands) {
     /* Contiki-independent */
   }
 
+  @Override
   public ProjectConfig getConfig() {
     return myConfig;
   }
 
+  @Override
   public Collection<Element> getConfigXML(Simulation simulation) {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     element = new Element("identifier");
@@ -200,6 +217,7 @@ public abstract class AbstractApplicationMoteType implements MoteType {
     return config;
   }
 
+  @Override
   public boolean setConfigXML(Simulation simulation,
       Collection<Element> configXML, boolean visAvailable)
   throws MoteTypeCreationException {
@@ -220,15 +238,19 @@ public abstract class AbstractApplicationMoteType implements MoteType {
     private int id = -1;
     public SimpleMoteID(Mote mote) {
     }
+    @Override
     public int getMoteID() {
       return id;
     }
+    @Override
     public void setMoteID(int newID) {
       this.id = newID;
     }
+    @Override
     public JPanel getInterfaceVisualizer() {
       return null;
     }
+    @Override
     public void releaseInterfaceVisualizer(JPanel panel) {
     }
   }

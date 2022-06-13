@@ -30,8 +30,6 @@
 
 package org.contikios.cooja.contikimote.interfaces;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collection;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -39,7 +37,6 @@ import org.jdom.Element;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.contikimote.ContikiMote;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.mote.memory.VarMemory;
@@ -67,8 +64,8 @@ import org.contikios.cooja.mote.memory.VarMemory;
 @ClassDescription("Vibration sensor")
 public class ContikiVib extends MoteInterface implements ContikiMoteInterface {
 
-  private ContikiMote mote;
-  private VarMemory moteMem;
+  private final ContikiMote mote;
+  private final VarMemory moteMem;
 
   /**
    * Creates an interface to the vibration sensor at mote.
@@ -91,11 +88,7 @@ public class ContikiVib extends MoteInterface implements ContikiMoteInterface {
    * Simulates a change in the vibration sensor.
    */
   public void triggerChange() {
-    mote.getSimulation().invokeSimulationThread(new Runnable() {
-      public void run() {
-        doTriggerChange();
-      }
-    });
+    mote.getSimulation().invokeSimulationThread(() -> doTriggerChange());
   }
   
   public void doTriggerChange() { 
@@ -108,28 +101,28 @@ public class ContikiVib extends MoteInterface implements ContikiMoteInterface {
 
   /* TODO Energy consumption */
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     final JButton clickButton = new JButton("Vibrate!");
 
     panel.add(clickButton);
 
-    clickButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        triggerChange();
-      }
-    });
+    clickButton.addActionListener(e -> triggerChange());
 
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 

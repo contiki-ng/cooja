@@ -157,7 +157,7 @@ public abstract class Clock extends MoteInterface {
  
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element = new Element("deviation");
     element.setText(String.valueOf(getDeviation()));
     config.add(element);

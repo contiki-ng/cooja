@@ -32,8 +32,6 @@ package org.contikios.cooja.plugins;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +55,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
@@ -85,7 +84,7 @@ import org.contikios.cooja.util.StringUtils;
 @SupportedArguments(radioMediums = {DirectedGraphMedium.class})
 public class DGRMConfigurator extends VisPlugin {
 	private static final long serialVersionUID = 4769638341635882051L;
-	private static Logger logger = Logger.getLogger(DGRMConfigurator.class);
+	private static final Logger logger = LogManager.getLogger(DGRMConfigurator.class);
 
   private final static int IDX_SRC = 0;
   private final static int IDX_DST = 1;
@@ -100,10 +99,10 @@ public class DGRMConfigurator extends VisPlugin {
 
   private Cooja gui = null;
   private DirectedGraphMedium radioMedium = null;
-  private Observer radioMediumObserver;
+  private final Observer radioMediumObserver;
   private JTable graphTable = null;
-  private JComboBox combo = new JComboBox();
-	private JButton removeButton;
+  private final JComboBox combo = new JComboBox();
+	private final JButton removeButton;
 
   public DGRMConfigurator(Simulation sim, Cooja gui) {
     super("DGRM Configurator", gui);
@@ -112,6 +111,7 @@ public class DGRMConfigurator extends VisPlugin {
 
     /* Listen for graph updates */
     radioMedium.addRadioTransmissionObserver(radioMediumObserver = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         model.fireTableDataChanged();
       }
@@ -120,7 +120,8 @@ public class DGRMConfigurator extends VisPlugin {
     /* Represent directed graph by table */
     graphTable = new JTable(model) {
 			private static final long serialVersionUID = -4680013510092815210L;
-			public TableCellEditor getCellEditor(int row, int column) {
+      @Override
+      public TableCellEditor getCellEditor(int row, int column) {
 				combo.removeAllItems();
         if (column == IDX_RATIO) {
           for (double d=1.0; d >= 0.0; d -= 0.1) {
@@ -132,7 +133,7 @@ public class DGRMConfigurator extends VisPlugin {
           }
         } else if (column == IDX_LQI) {
             for (int d = 110; d > 50; d -= 5) {
-              combo.addItem((int) d);
+              combo.addItem(d);
             }
         } else if (column == IDX_DELAY) {
           for (double d=0; d <= 5; d++) {
@@ -147,46 +148,46 @@ public class DGRMConfigurator extends VisPlugin {
 
     graphTable.getColumnModel().getColumn(IDX_RATIO).setCellRenderer(new DefaultTableCellRenderer() {
 			private static final long serialVersionUID = 4470088575039698508L;
-			public void setValue(Object value) {
+      @Override
+      public void setValue(Object value) {
         if (!(value instanceof Double)) {
           setText(value.toString());
           return;
         }
-        double v = ((Double) value).doubleValue();
-        setText(String.format("%1.1f%%", 100*v));
+        setText(String.format("%1.1f%%", 100* (Double) value));
       }
     });
     graphTable.getColumnModel().getColumn(IDX_SIGNAL).setCellRenderer(new DefaultTableCellRenderer() {
 			private static final long serialVersionUID = -7170745293267593460L;
+			@Override
 			public void setValue(Object value) {
         if (!(value instanceof Long)) {
           setText(value.toString());
           return;
         }
-        double v = ((Double) value).doubleValue();
-        setText(String.format("%1.1f dBm", v));
+        setText(String.format("%1.1f dBm", (Double) value));
       }
     });
     graphTable.getColumnModel().getColumn(IDX_LQI).setCellRenderer(new DefaultTableCellRenderer() {
 		private static final long serialVersionUID = -4669897764928372246L;
-		public void setValue(Object value) {
+      @Override
+      public void setValue(Object value) {
 	    if (!(value instanceof Long)) {
 	      setText(value.toString());
 	      return;
 	    }
-    	long v = ((Long) value).longValue();
-    	setText(String.valueOf(v));
+        setText(String.valueOf(value));
 		}
     });
     graphTable.getColumnModel().getColumn(IDX_DELAY).setCellRenderer(new DefaultTableCellRenderer() {
 			private static final long serialVersionUID = -4669897764928372246L;
-			public void setValue(Object value) {
+      @Override
+      public void setValue(Object value) {
         if (!(value instanceof Long)) {
           setText(value.toString());
           return;
         }
-        long v = ((Long) value).longValue();
-        setText(v + " ms");
+        setText(value + " ms");
       }
     });
     graphTable.getColumnModel().getColumn(IDX_RATIO).setCellEditor(new DefaultCellEditor(combo));
@@ -199,27 +200,15 @@ public class DGRMConfigurator extends VisPlugin {
 
     JPanel southPanel = new JPanel(new GridLayout(1, 3));
     JButton button = new JButton("Add");
-    button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        doAddLink();
-      }
-    });
+    button.addActionListener(e -> doAddLink());
     southPanel.add(button);
     button = new JButton("Remove");
-    button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-      	doRemoveSelectedLink();
-      }
-    });
+    button.addActionListener(e -> doRemoveSelectedLink());
     removeButton = button;
     removeButton.setEnabled(false);
     southPanel.add(button);
     button = new JButton("Import");
-    button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-      	doImportFromFile();
-      }
-    });
+    button.addActionListener(e -> doImportFromFile());
     southPanel.add(button);
 
     getContentPane().setLayout(new BorderLayout());
@@ -227,7 +216,8 @@ public class DGRMConfigurator extends VisPlugin {
     add(BorderLayout.SOUTH, southPanel);
 
     graphTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-    	public void valueChanged(ListSelectionEvent e) {
+      @Override
+      public void valueChanged(ListSelectionEvent e) {
     		ListSelectionModel lsm = (ListSelectionModel)e.getSource();
     		if (e.getValueIsAdjusting()) {
     			return;
@@ -332,11 +322,12 @@ public class DGRMConfigurator extends VisPlugin {
 	}
 
 	private void importEdges(DirectedGraphMedium.Edge[] edges) {
-		Arrays.sort(edges, new Comparator<DirectedGraphMedium.Edge>() {
-			public int compare(Edge o1, Edge o2) {
-				return o1.source.getMote().getID() - o2.source.getMote().getID();
-			}
-		});
+		Arrays.sort(edges, new Comparator<>() {
+      @Override
+      public int compare(Edge o1, Edge o2) {
+        return o1.source.getMote().getID() - o2.source.getMote().getID();
+      }
+    });
 		for (DirectedGraphMedium.Edge e: edges) {
 			radioMedium.addEdge(e);
 		}
@@ -354,7 +345,7 @@ public class DGRMConfigurator extends VisPlugin {
 	static final int INDEX_RSSI_MAX = 8;
 	public static DirectedGraphMedium.Edge[] parseDGRMLinksFile(File file, Simulation simulation) {
 		String fileContents = StringUtils.loadFromFile(file);
-		ArrayList<DirectedGraphMedium.Edge> edges = new ArrayList<DirectedGraphMedium.Edge>();
+		ArrayList<DirectedGraphMedium.Edge> edges = new ArrayList<>();
 
 		/* format: # [src] [dst] [prr] [prr_ci] [num_tx] [num_rx] [rssi] [rssi_min] [rssi_max] */
 		for (String l: fileContents.split("\n")) {
@@ -397,18 +388,22 @@ public class DGRMConfigurator extends VisPlugin {
 
   final AbstractTableModel model = new AbstractTableModel() {
 		private static final long serialVersionUID = 9101118401527171218L;
-		public String getColumnName(int column) {
+    @Override
+    public String getColumnName(int column) {
       if (column < 0 || column >= COLUMN_NAMES.length) {
         return "";
       }
       return COLUMN_NAMES[column];
     }
+    @Override
     public int getRowCount() {
       return radioMedium.getEdges().length;
     }
+    @Override
     public int getColumnCount() {
       return COLUMN_NAMES.length;
     }
+    @Override
     public Object getValueAt(int row, int column) {
       if (row < 0 || row >= radioMedium.getEdges().length) {
         return "";
@@ -424,19 +419,20 @@ public class DGRMConfigurator extends VisPlugin {
         return edge.superDest.radio.getMote();
       }
       if (column == IDX_RATIO) {
-        return ((DGRMDestinationRadio)edge.superDest).ratio;
+        return edge.superDest.ratio;
       }
       if (column == IDX_SIGNAL) {
-        return ((DGRMDestinationRadio)edge.superDest).signal;
+        return edge.superDest.signal;
       }
       if (column == IDX_LQI) {
-          return ((DGRMDestinationRadio)edge.superDest).lqi;
+          return edge.superDest.lqi;
         }
       if (column == IDX_DELAY) {
-        return ((DGRMDestinationRadio)edge.superDest).delay / Simulation.MILLISECOND;
+        return edge.superDest.delay / Simulation.MILLISECOND;
       }
       return "";
     }
+    @Override
     public void setValueAt(Object value, int row, int column) {
       if (row < 0 || row >= radioMedium.getEdges().length) {
         return;
@@ -448,14 +444,14 @@ public class DGRMConfigurator extends VisPlugin {
       DirectedGraphMedium.Edge edge = radioMedium.getEdges()[row];
       try {
       	if (column == IDX_RATIO) {
-      		((DGRMDestinationRadio)edge.superDest).ratio = ((Number)value).doubleValue();
+          edge.superDest.ratio = ((Number) value).doubleValue();
       	} else if (column == IDX_SIGNAL) {
-      		((DGRMDestinationRadio)edge.superDest).signal = ((Number)value).doubleValue();
+          edge.superDest.signal = ((Number) value).doubleValue();
       	} else if (column == IDX_DELAY) {
-      		((DGRMDestinationRadio)edge.superDest).delay =
+          edge.superDest.delay =
       			((Number)value).longValue() * Simulation.MILLISECOND;
       	} else if (column == IDX_LQI) {
-  			((DGRMDestinationRadio)edge.superDest).lqi = ((Number)value).intValue();
+          edge.superDest.lqi = ((Number) value).intValue();
       	} 
       	else {
           super.setValueAt(value, row, column);
@@ -465,6 +461,7 @@ public class DGRMConfigurator extends VisPlugin {
       }
     }
 
+    @Override
     public boolean isCellEditable(int row, int column) {
       if (row < 0 || row >= radioMedium.getEdges().length) {
         return false;
@@ -494,11 +491,13 @@ public class DGRMConfigurator extends VisPlugin {
       return false;
     }
 
+    @Override
     public Class<? extends Object> getColumnClass(int c) {
       return getValueAt(0, c).getClass();
     }
   };
 
+  @Override
   public void closePlugin() {
     radioMedium.deleteRadioTransmissionObserver(radioMediumObserver);
   }

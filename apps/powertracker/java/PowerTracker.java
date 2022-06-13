@@ -51,7 +51,8 @@ import javax.swing.Timer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -72,7 +73,7 @@ import org.contikios.cooja.interfaces.Radio;
 @ClassDescription("Mote radio duty cycle")
 @PluginType(PluginType.SIM_PLUGIN)
 public class PowerTracker extends VisPlugin {
-  private static Logger logger = Logger.getLogger(PowerTracker.class);
+  private static final Logger logger = LogManager.getLogger(PowerTracker.class);
 
   private static final int POWERTRACKER_UPDATE_INTERVAL = 100; /* ms */
 

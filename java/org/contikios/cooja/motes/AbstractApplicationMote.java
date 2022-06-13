@@ -34,7 +34,8 @@ import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
@@ -58,7 +59,7 @@ import org.contikios.cooja.mote.memory.MemoryLayout;
  * @author Fredrik Osterlind
  */
 public abstract class AbstractApplicationMote extends AbstractWakeupMote implements Mote {
-  private static Logger logger = Logger.getLogger(AbstractApplicationMote.class);
+  private static final Logger logger = LogManager.getLogger(AbstractApplicationMote.class);
 
   private MoteType moteType = null;
 
@@ -67,7 +68,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
   protected MoteInterfaceHandler moteInterfaces = null;
 
   /* Observe our own radio for incoming radio packets */
-  private Observer radioDataObserver = new Observer() {
+  private final Observer radioDataObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
       ApplicationRadio radio = (ApplicationRadio) obs;
@@ -93,7 +94,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
     setSimulation(sim);
     this.moteType = moteType;
     MemoryLayout.getNative();
-    this.memory = new SectionMoteMemory(new HashMap<String, Symbol>());
+    this.memory = new SectionMoteMemory(new HashMap<>());
     this.moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     this.moteInterfaces.getRadio().addObserver(radioDataObserver);
     requestImmediateWakeup();
@@ -118,7 +119,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
   }
 
   public void setMemory(SectionMoteMemory memory) {
-    this.memory = (SectionMoteMemory) memory;
+    this.memory = memory;
   }
 
   @Override
@@ -132,7 +133,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
 
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     for (MoteInterface moteInterface: moteInterfaces.getInterfaces()) {
@@ -153,7 +154,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
   public boolean setConfigXML(Simulation simulation,
       Collection<Element> configXML, boolean visAvailable) {
     setSimulation(simulation);
-    this.memory = new SectionMoteMemory(new HashMap<String, Symbol>());
+    this.memory = new SectionMoteMemory(new HashMap<>());
     moteInterfaces.getRadio().addObserver(radioDataObserver);
 
     for (Element element : configXML) {

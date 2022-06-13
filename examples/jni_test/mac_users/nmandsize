@@ -1,4 +1,4 @@
-nm -a -m $1
+symbols $1
 
 S="$(size -x -m -l $1)"
 

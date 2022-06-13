@@ -33,7 +33,8 @@ package org.contikios.cooja.interfaces;
 import java.text.NumberFormat;
 import java.util.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -48,9 +49,9 @@ import org.contikios.cooja.*;
  */
 @ClassDescription("Position")
 public class Position extends MoteInterface {
-  private static Logger logger = Logger.getLogger(Position.class);
+  private static final Logger logger = LogManager.getLogger(Position.class);
   private Mote mote = null;
-  private double[] coords = new double[3];
+  private final double[] coords = new double[3];
 
   /**
    * Creates a position for given mote with coordinates (x=0, y=0, z=0).
@@ -130,6 +131,7 @@ public class Position extends MoteInterface {
     return getDistanceTo(m.getInterfaces().getPosition());
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -144,6 +146,7 @@ public class Position extends MoteInterface {
 
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         positionLabel.setText("x=" + form.format(getXCoordinate()) + " "
             + "y=" + form.format(getYCoordinate()) + " "
@@ -157,6 +160,7 @@ public class Position extends MoteInterface {
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -167,8 +171,9 @@ public class Position extends MoteInterface {
     this.deleteObserver(observer);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<Element>();
+    Vector<Element> config = new Vector<>();
     Element element;
 
     // X coordinate
@@ -189,6 +194,7 @@ public class Position extends MoteInterface {
     return config;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     double x = 0, y = 0, z = 0;
 

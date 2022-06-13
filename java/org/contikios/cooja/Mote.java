@@ -29,7 +29,7 @@ package org.contikios.cooja;
 
 import java.util.Collection;
 import org.contikios.cooja.mote.memory.MemoryInterface;
-
+import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.jdom.Element;
 
 /**
@@ -38,7 +38,7 @@ import org.jdom.Element;
  * All motes have an interface handler, a mote type and a mote memory.
  *
  * @see org.contikios.cooja.MoteInterfaceHandler
- * @see org.contikios.cooja.MoteMemory
+ * @see org.contikios.cooja.mote.memory.SectionMoteMemory
  * @see org.contikios.cooja.MoteType
  *
  * @author Fredrik Osterlind
@@ -53,7 +53,7 @@ public interface Mote {
   /**
    * Returns the interface handler of this mote.
    *
-   * @see #setInterfaces(MoteInterfaceHandler)
+   * @see org.contikios.cooja.contikimote.ContikiMote#setInterfaces(MoteInterfaceHandler)
    * @return Mote interface handler
    */
   public MoteInterfaceHandler getInterfaces();
@@ -61,7 +61,7 @@ public interface Mote {
   /**
    * Returns the memory of this mote.
    *
-   * @see #setMemory(MoteMemory)
+   * @see org.contikios.cooja.contikimote.ContikiMote#setMemory(SectionMoteMemory)
    * @return Mote memory
    */
   public MemoryInterface getMemory();
@@ -69,7 +69,7 @@ public interface Mote {
   /**
    * Returns mote type.
    *
-   * @see #setType(MoteType)
+   * @see org.contikios.cooja.contikimote.ContikiMote#setType(MoteType)
    * @return Mote type
    */
   public MoteType getType();
@@ -77,7 +77,7 @@ public interface Mote {
   /**
    * Returns simulation which holds this mote.
    *
-   * @see #setSimulation(Simulation)
+   * @see org.contikios.cooja.contikimote.ContikiMote#setSimulation(Simulation)
    * @return Simulation
    */
   public Simulation getSimulation();

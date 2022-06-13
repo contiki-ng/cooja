@@ -35,7 +35,8 @@ import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.MoteID;
@@ -50,7 +51,7 @@ import se.sics.mspsim.core.MemoryMonitor;
  * @author Fredrik Osterlind
  */
 public class MspMoteID extends MoteID {
-	private static Logger logger = Logger.getLogger(MspMoteID.class);
+	private static final Logger logger = LogManager.getLogger(MspMoteID.class);
 
 	private MspMote mote;
 	private VarMemory moteMem = null;

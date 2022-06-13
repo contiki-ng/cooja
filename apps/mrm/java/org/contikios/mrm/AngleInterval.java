@@ -34,7 +34,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class represents an angle interval.
@@ -42,7 +43,7 @@ import org.apache.log4j.Logger;
  * @author Fredrik Osterlind
  */
 class AngleInterval {
-  private static Logger logger = Logger.getLogger(AngleInterval.class);
+  private static final Logger logger = LogManager.getLogger(AngleInterval.class);
   
   // Sub intervals all between 0 and 2*PI
   Vector<Interval> subIntervals;

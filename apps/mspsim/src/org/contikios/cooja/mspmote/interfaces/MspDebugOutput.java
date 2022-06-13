@@ -34,7 +34,8 @@ import java.util.Collection;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -60,7 +61,7 @@ import se.sics.mspsim.core.MemoryMonitor;
  */
 @ClassDescription("Debugging output")
 public class MspDebugOutput extends Log {
-  private static Logger logger = Logger.getLogger(MspDebugOutput.class);
+  private static final Logger logger = LogManager.getLogger(MspDebugOutput.class);
 
   private final static String CONTIKI_POINTER = "cooja_debug_ptr";
   
