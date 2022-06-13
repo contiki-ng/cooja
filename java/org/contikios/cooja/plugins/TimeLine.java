@@ -625,16 +625,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     private static final long serialVersionUID = -2592452356547803615L;
     @Override
     public void actionPerformed(ActionEvent e) {
-      Rectangle r = timeline.getVisibleRect();
-      int pixelX = r.x + r.width/2;
-      if (popupLocation != null) {
-        pixelX = popupLocation.x;
-        popupLocation = null;
-      }
-      if (mousePixelPositionX > 0) {
-        pixelX = mousePixelPositionX;
-      }
-      final long centerTime = (long) (pixelX*currentPixelDivisor);
+      final long centerTime = getCenterPointTime(); 
       zoomIn(centerTime, 0.5);
     }
   };
@@ -643,16 +634,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     private static final long serialVersionUID = 6837091379835151725L;
     @Override
     public void actionPerformed(ActionEvent e) {
-      Rectangle r = timeline.getVisibleRect();
-      int pixelX = r.x + r.width/2;
-      if (popupLocation != null) {
-        pixelX = popupLocation.x;
-        popupLocation = null;
-      }
-      if (mousePixelPositionX > 0) {
-        pixelX = mousePixelPositionX;
-      }
-      final long centerTime = (long) (pixelX*currentPixelDivisor);
+      final long centerTime = getCenterPointTime(); 
       zoomOut(centerTime, 0.5);
     }
   };
@@ -661,13 +643,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     private static final long serialVersionUID = -4288046377707363837L;
     @Override
     public void actionPerformed(ActionEvent e) {
+
       final int zoomLevel = zoomGetLevel();
       final JSlider zoomSlider = new JSlider(JSlider.VERTICAL, 0, ZOOM_LEVELS.length-1, zoomLevel);
       zoomSlider.setInverted(true);
       zoomSlider.setPaintTicks(true);
       zoomSlider.setPaintLabels(false);
 
-      final long centerTime = (long) (popupLocation.x*currentPixelDivisor);
+      final long centerTime = getCenterPointTime(); 
 
       zoomSlider.addChangeListener(new ChangeListener() {
         @Override
@@ -683,6 +666,20 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       zoomSlider.requestFocus();
     }
   };
+
+  private
+  long getCenterPointTime() {
+      Rectangle r = timeline.getVisibleRect();
+      int pixelX = r.x + r.width/2;
+      if (popupLocation != null) {
+        pixelX = popupLocation.x;
+        popupLocation = null;
+      }
+      if (mousePixelPositionX > 0) {
+        pixelX = mousePixelPositionX;
+      }
+      return (long) (pixelX*currentPixelDivisor);
+  }
 
   /**
    * Save logged raw data to file for post-processing.
