@@ -160,7 +160,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       return mSize;
     }
 
-    protected void setBytes(int size) {
+    private void setBytes(int size) {
       mSize = size;
     }
 
