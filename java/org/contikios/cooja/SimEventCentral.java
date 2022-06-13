@@ -36,7 +36,6 @@ import java.util.Observer;
 
 import org.jdom.Element;
 
-import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.util.ArrayUtils;
 
@@ -356,8 +355,7 @@ public class SimEventCentral {
   }
 
   public boolean setConfigXML(Simulation simulation,
-      Collection<Element> configXML, boolean visAvailable)
-      throws MoteTypeCreationException {
+      Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       String name = element.getName();
       if (name.equals("logoutput")) {

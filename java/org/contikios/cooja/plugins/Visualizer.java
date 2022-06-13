@@ -838,12 +838,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     /* Visualizer skin actions */
     menu.add(new JSeparator());
-    /*JMenu skinMenu = new JMenu("Visualizers");
-     populateSkinMenu(skinMenu);
-     menu.add(skinMenu);
-     makeSkinsDefaultAction.putValue(Action.NAME, "Set default visualizers");
-     JMenuItem skinDefaultItem = new JMenuItem(makeSkinsDefaultAction);
-     menu.add(skinDefaultItem);*/
 
     /* Show menu */
     menu.setLocation(new Point(

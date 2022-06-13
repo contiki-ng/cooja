@@ -35,14 +35,10 @@ import java.util.regex.Pattern;
 
 import javax.script.ScriptException;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.Simulation;
 
 public class ScriptParser {
   private static final long serialVersionUID = 1L;
-  private static final Logger logger = LogManager.getLogger(ScriptParser.class);
 
   private long timeoutTime = -1;
   private String timeoutCode = null;
@@ -174,14 +170,14 @@ public class ScriptParser {
     return code;
   }
 
-  private String replaceYields(String code) throws ScriptSyntaxErrorException {
+  private String replaceYields(String code) {
     Pattern pattern = Pattern.compile(
         "YIELD\\(\\)"
     );
     return pattern.matcher(code).replaceAll("SCRIPT_SWITCH()");
   }
 
-  private String replaceYieldThenWaitUntils(String code) throws ScriptSyntaxErrorException {
+  private String replaceYieldThenWaitUntils(String code) {
     Pattern pattern = Pattern.compile(
         "YIELD_THEN_WAIT_UNTIL\\(" +
         "(.*)" /* expression */ +
@@ -198,7 +194,7 @@ public class ScriptParser {
     return code;
   }
 
-  private String replaceWaitUntils(String code) throws ScriptSyntaxErrorException {
+  private String replaceWaitUntils(String code) {
     Pattern pattern = Pattern.compile(
         "WAIT_UNTIL\\(" +
         "(.*)" /* expression */ +

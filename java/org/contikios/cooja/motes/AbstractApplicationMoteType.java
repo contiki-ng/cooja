@@ -36,8 +36,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -57,8 +55,6 @@ import org.contikios.cooja.interfaces.Position;
 
 @ClassDescription("Application Mote Type")
 public abstract class AbstractApplicationMoteType implements MoteType {
-  private static final Logger logger = LogManager.getLogger(AbstractApplicationMoteType.class);
-
   private final ProjectConfig myConfig = null;
 
   private String identifier = null;
@@ -230,8 +226,7 @@ public abstract class AbstractApplicationMoteType implements MoteType {
       }
     }
 
-    boolean createdOK = configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
-    return createdOK;
+    return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
   }
 
   public static class SimpleMoteID extends MoteID {

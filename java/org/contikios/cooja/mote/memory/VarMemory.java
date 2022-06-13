@@ -191,8 +191,7 @@ public class VarMemory extends Memory {
    */
   public short getShortValueOf(String varName)
           throws UnknownVariableException {
-    short val = getShortValueOf(getVariable(varName).addr);
-    return val;
+    return getShortValueOf(getVariable(varName).addr);
   }
 
   /**
@@ -203,8 +202,7 @@ public class VarMemory extends Memory {
    */
   public int getIntValueOf(String varName)
           throws UnknownVariableException {
-    int val = getIntValueOf(getVariable(varName).addr);
-    return val;
+    return getIntValueOf(getVariable(varName).addr);
   }
 
   /**
@@ -215,8 +213,7 @@ public class VarMemory extends Memory {
    */
   public long getLongValueOf(String varName)
           throws UnknownVariableException {
-    long val = getLongValueOf(getVariable(varName).addr);
-    return val;
+    return getLongValueOf(getVariable(varName).addr);
   }
 
   /**
@@ -230,8 +227,7 @@ public class VarMemory extends Memory {
    */
   public long getAddrValueOf(String varName)
           throws UnknownVariableException {
-    long val = getAddrValueOf(getVariable(varName).addr);
-    return val;
+    return getAddrValueOf(getVariable(varName).addr);
   }
 
   /**

@@ -38,8 +38,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
@@ -61,8 +59,6 @@ import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 @ClassDescription("Radio traffic")
 @SupportedArguments(radioMediums = {AbstractRadioMedium.class})
 public class TrafficVisualizerSkin implements VisualizerSkin {
-  private static final Logger logger = LogManager.getLogger(TrafficVisualizerSkin.class);
-
   private final int MAX_HISTORY_SIZE = 200;
   private final float TRANSMITTED_COLOR_RGB[] = Color.BLUE.getRGBColorComponents(null);
   private final float UNTRANSMITTED_COLOR_RGB[] = Color.RED.getRGBColorComponents(null);

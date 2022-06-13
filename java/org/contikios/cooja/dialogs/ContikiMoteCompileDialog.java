@@ -251,10 +251,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   private void addAdvancedTab(JTabbedPane parent) {
 
     /* TODO System symbols */
-    /*JCheckBox symbolsCheckBox = new JCheckBox("With system symbols", false);
-    symbolsCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-    symbolsCheckBox.setEnabled(false);
-    symbolsCheckBox.setToolTipText("Not implemented");*/
 
     /* Communication stack */
     JLabel label = new JLabel("Default network stack header");

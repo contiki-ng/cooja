@@ -12,7 +12,7 @@ public class PcapExporter {
 
   DataOutputStream out;
 
-  public PcapExporter() throws IOException {
+  public PcapExporter() {
   }
 
   public void openPcap(File pcapFile) throws IOException {

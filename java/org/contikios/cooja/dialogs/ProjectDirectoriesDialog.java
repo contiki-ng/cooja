@@ -387,8 +387,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 		}
 
 		JPanel topPanel = new JPanel(new BorderLayout());
-		/*		topPanel.add(BorderLayout.CENTER, new JLabel("A Cooja project depends on a cooja.config file, and extends Cooja with radio mediums, mote types, plugins etc."));
-				topPanel.setBackground(Color.WHITE);*/
 		getContentPane().add(BorderLayout.NORTH, topPanel);
 		getContentPane().add(BorderLayout.CENTER, mainPane);
 		getContentPane().add(BorderLayout.SOUTH, buttonPane);

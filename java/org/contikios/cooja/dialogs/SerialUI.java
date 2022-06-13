@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
@@ -285,10 +286,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("history")) {
-        String[] history = element.getText().split(HISTORY_SEPARATOR);
-        for (String h: history) {
-          this.history.add(h);
-        }
+        this.history.addAll(Arrays.asList(element.getText().split(HISTORY_SEPARATOR)));
         historyPos = -1;
       }
     }

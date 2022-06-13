@@ -161,11 +161,9 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
   }
 
   private MoteTypeCreationException createError(Throwable e) {
-    MoteTypeCreationException mte =
-      new MoteTypeCreationException("Error when loading class from: "
-          + (moteClassPath != null ? moteClassPath.getAbsolutePath() : "") + " "
-          + moteClassName, e);
-    return mte;
+    return new MoteTypeCreationException("Error when loading class from: "
+        + (moteClassPath != null ? moteClassPath.getAbsolutePath() : "") + " "
+        + moteClassName, e);
   }
 
   @Override

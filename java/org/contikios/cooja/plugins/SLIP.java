@@ -32,11 +32,7 @@ package org.contikios.cooja.plugins;
 
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 public class SLIP {
-  private static final Logger logger = LogManager.getLogger(SLIP.class);
 
   private final static byte SLIP_END = (byte)0300;
   private final static byte SLIP_ESC = (byte)0333;

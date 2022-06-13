@@ -341,8 +341,6 @@ public class ProjectConfig {
     String val = currentValues.getProperty(callingClass.getName() + "." + id);
 
     if (val == null) {
-      /*logger.warn("Could not find key named '" + callingClass.getName() + "."
-          + id + "'");*/
       return defaultValue;
     }
 

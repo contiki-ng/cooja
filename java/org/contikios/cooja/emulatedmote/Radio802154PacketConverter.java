@@ -181,9 +181,6 @@ public class Radio802154PacketConverter {
             len -= 2;
         }
 
-        /*logger.info("Payload pos: " + pos);
-        logger.info("Payload length: " + len);*/
-
         byte originalData[] = new byte[originalLen];
         System.arraycopy(data, 6, originalData, 0, originalLen);
         if (len < 0) {

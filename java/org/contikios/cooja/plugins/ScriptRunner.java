@@ -312,8 +312,7 @@ public class ScriptRunner extends VisPlugin {
     updateTitle();
   }
 
-  public void setScriptActive(boolean active)
-  throws Exception {
+  public void setScriptActive(boolean active) {
     if (active) {
       /* setScriptActive(true) */
 
@@ -704,8 +703,6 @@ public class ScriptRunner extends VisPlugin {
   }
 
   public static class JSyntaxLinkFile extends DefaultSyntaxAction {
-    private static final Logger logger = LogManager.getLogger(JSyntaxLinkFile.class);
-
     public JSyntaxLinkFile() {
       super("linkfile");
     }

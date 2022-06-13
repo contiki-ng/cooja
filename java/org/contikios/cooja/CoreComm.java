@@ -176,7 +176,7 @@ public abstract class CoreComm {
       // Replace special fields in template
       String line;
       while ((line = templateFileReader.readLine()) != null) {
-        line = line.replaceFirst("\\[CLASSNAME\\]", className);
+        line = line.replace("[CLASSNAME]", className);
         sourceFileWriter.write(line + "\n");
       }
 

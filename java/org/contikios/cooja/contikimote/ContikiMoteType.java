@@ -69,7 +69,6 @@ import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.mote.memory.MemoryLayout;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
-import org.contikios.cooja.mote.memory.UnknownVariableException;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.contikios.cooja.util.StringUtils;
 import org.jdom.Element;
@@ -436,11 +435,7 @@ public class ContikiMoteType implements MoteType {
               Cooja.getExternalToolsSetting("COMMAND_COMMON_END"),
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
       /* XXX Currently Cooja tries to sync readonly memory */
-      readonlySecParser = null;/* new CommandSectionParser(
-              output,
-              Cooja.getExternalToolsSetting("COMMAND_READONLY_START"),
-              Cooja.getExternalToolsSetting("COMMAND_READONLY_END"),
-              Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_READONLY"));*/
+      readonlySecParser = null;
 
     } else {
       /* Parse map file */
@@ -1260,8 +1255,7 @@ public class ContikiMoteType implements MoteType {
       setCompileCommands(compileCommands);
     }
 
-    boolean createdOK = configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
-    return createdOK;
+    return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
   }
 
   public static String[] getRequiredCoreInterfaces(
