@@ -797,20 +797,27 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       StringBuilder sb = new StringBuilder();
       String moteDesc = (mote!=null?"" + mote.getID():"AVERAGE") + " ";
       if (logs) {
-        sb.append(moteDesc + "nr_logs " + nrLogs + "\n");
+        sb.append(moteDesc).append("nr_logs ").append(nrLogs).append("\n");
       }
       if (leds) {
-        sb.append(moteDesc + "led_red " + onTimeRedLED + " us " + 100.0*((double)onTimeRedLED/duration) + " %\n");
-        sb.append(moteDesc + "led_green " + onTimeGreenLED + " us " + 100.0*((double)onTimeGreenLED/duration) + " %\n");
-        sb.append(moteDesc + "led_blue " + onTimeBlueLED + " us " + 100.0*((double)onTimeBlueLED/duration) + " %\n");
+        sb.append(moteDesc).append("led_red ").append(onTimeRedLED).append(" us ")
+                .append(100.0 * ((double) onTimeRedLED / duration)).append(" %\n");
+        sb.append(moteDesc).append("led_green ").append(onTimeGreenLED).append(" us ")
+                .append(100.0 * ((double) onTimeGreenLED / duration)).append(" %\n");
+        sb.append(moteDesc).append("led_blue ").append(onTimeBlueLED).append(" us ")
+                .append(100.0 * ((double) onTimeBlueLED / duration)).append(" %\n");
       }
       if (radioHW) {
-        sb.append(moteDesc + "radio_on " + radioOn + " us " + 100.0*((double)radioOn/duration) + " %\n");
+        sb.append(moteDesc).append("radio_on ").append(radioOn).append(" us ")
+                .append(100.0 * ((double) radioOn / duration)).append(" %\n");
       }
       if (radioRXTX) {
-        sb.append(moteDesc + "radio_tx " + onTimeTX + " us " + 100.0*((double)onTimeTX/duration) + " %\n");
-        sb.append(moteDesc + "radio_rx " + onTimeRX + " us " + 100.0*((double)onTimeRX/duration) + " %\n");
-        sb.append(moteDesc + "radio_int " + onTimeInterfered + " us " + 100.0*((double)onTimeInterfered/duration) + " %\n");
+        sb.append(moteDesc).append("radio_tx ").append(onTimeTX).append(" us ")
+                .append(100.0 * ((double) onTimeTX / duration)).append(" %\n");
+        sb.append(moteDesc).append("radio_rx ").append(onTimeRX).append(" us ")
+                .append(100.0 * ((double) onTimeRX / duration)).append(" %\n");
+        sb.append(moteDesc).append("radio_int ").append(onTimeInterfered)
+                .append(" us ").append(100.0 * ((double) onTimeInterfered / duration)).append(" %\n");
       }
       return sb.toString();
     }

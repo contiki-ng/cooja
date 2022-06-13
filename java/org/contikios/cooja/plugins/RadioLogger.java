@@ -1151,7 +1151,7 @@ public class RadioLogger extends VisPlugin {
     StringBuilder sb = new StringBuilder();
     RadioConnectionLog[] cs = connections.toArray(new RadioConnectionLog[0]);
     for (RadioConnectionLog c : cs) {
-      sb.append(c.toString() + "\n");
+      sb.append(c.toString()).append("\n");
     }
     return sb.toString();
   }

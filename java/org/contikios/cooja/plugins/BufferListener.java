@@ -1613,7 +1613,7 @@ public class BufferListener extends VisPlugin {
         if (red) {
           sb.append("<font color=\"red\">");
         }
-        sb.append(val + " ");
+        sb.append(val).append(" ");
         if (red) {
           sb.append("</font>");
         }

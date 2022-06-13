@@ -268,7 +268,7 @@ public abstract class SerialUI extends Log implements SerialPort {
       if (s == null) {
         continue;
       }
-      sb.append(s + HISTORY_SEPARATOR);
+      sb.append(s).append(HISTORY_SEPARATOR);
     }
     if (sb.length() == 0) {
       return null;

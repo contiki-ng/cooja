@@ -143,7 +143,7 @@ public class MoteAttributes extends MoteInterface {
   }
 
   private void setAttributes(String att) {
-    if (att.indexOf(",") >= 0) {
+    if (att.contains(",")) {
       /* Handle each attribute separately */
       for (String s : att.split(",")) {
         setAttributes(s);

@@ -71,11 +71,11 @@ public interface MemoryInterface {
 
     @Override
     public String toString() {
-      return new StringBuilder("Symbol(").append(type == null ? "N/A" : type.toString())
-              .append(") '").append(name)
-              .append("' in '").append(section == null ? "N/A" : section)
-              .append("' at 0x").append(addr == -1 ? "N/A" : Long.toHexString(addr))
-              .append(" size ").append(size == -1 ? "N/A" : String.valueOf(size)).toString();
+      return "Symbol(" + (type == null ? "N/A" : type.toString()) +
+              ") '" + name +
+              "' in '" + (section == null ? "N/A" : section) +
+              "' at 0x" + (addr == -1 ? "N/A" : Long.toHexString(addr)) +
+              " size " + (size == -1 ? "N/A" : String.valueOf(size));
     }
   }
 

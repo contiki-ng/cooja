@@ -279,7 +279,7 @@ public class MessageListUI extends JList implements MessageList {
               if (hideNormal && msg.type == NORMAL) {
                 continue;
               }
-              sb.append(msg + "\n");
+              sb.append(msg).append("\n");
             }
 
             StringSelection stringSelection = new StringSelection(sb.toString());
