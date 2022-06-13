@@ -362,16 +362,14 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         } else {
           fileName = file.getName();
         }
-        StringBuilder sb = new StringBuilder()
-                .append("<html><table cellspacing=\"0\" cellpadding=\"1\">")
-                .append("<tr><td>Type:</td><td>")
-                .append(motes[0].getType().getIdentifier())
-                .append("</td></tr>")
-                .append("<tr><td>Runs:</td><td>")
-                .append(fileName)
-                .append("</td></tr>")
-                .append("</table></html>");
-        return sb.toString();
+        return "<html><table cellspacing=\"0\" cellpadding=\"1\">" +
+                "<tr><td>Type:</td><td>" +
+                motes[0].getType().getIdentifier() +
+                "</td></tr>" +
+                "<tr><td>Runs:</td><td>" +
+                fileName +
+                "</td></tr>" +
+                "</table></html>";
       }
 
     };

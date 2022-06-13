@@ -177,10 +177,8 @@ public class MemoryLayout {
    */
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    return sb.append("MemoryLayout: ")
-            .append("Endianess: ").append(order)
-            .append(", WORD_SIZE: ").append(WORD_SIZE)
-            .toString();
+    return "MemoryLayout: " +
+            "Endianess: " + order +
+            ", WORD_SIZE: " + WORD_SIZE;
   }
 }
