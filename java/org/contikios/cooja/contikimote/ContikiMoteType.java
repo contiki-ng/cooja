@@ -34,15 +34,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.awt.Container;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1058,36 +1054,6 @@ public class ContikiMoteType implements MoteType {
   public void setMoteInterfaceClasses(Class<? extends MoteInterface>[] moteInterfaces) {
     this.moteInterfacesClasses = new ArrayList<>();
     this.moteInterfacesClasses.addAll(Arrays.asList(moteInterfaces));
-  }
-
-  /**
-   * Create a checksum of file. Used for checking if needed files are unchanged
-   * when loading a saved simulation.
-   *
-   * @param file
-   * File containg data to checksum
-   * @return Checksum
-   */
-  protected byte[] createChecksum(File file) {
-    int bytesRead = 1;
-    byte[] readBytes = new byte[128];
-    MessageDigest messageDigest;
-
-    try {
-      InputStream fileInputStream = new FileInputStream(file);
-      messageDigest = MessageDigest.getInstance("MD5");
-
-      while (bytesRead > 0) {
-        bytesRead = fileInputStream.read(readBytes);
-        if (bytesRead > 0) {
-          messageDigest.update(readBytes, 0, bytesRead);
-        }
-      }
-      fileInputStream.close();
-    } catch (NoSuchAlgorithmException | IOException e) {
-      return null;
-    }
-    return messageDigest.digest();
   }
 
   /**
