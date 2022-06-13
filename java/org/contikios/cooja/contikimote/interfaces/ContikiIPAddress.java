@@ -30,7 +30,7 @@
 
 package org.contikios.cooja.contikimote.interfaces;
 
-import org.contikios.cooja.*;
+import org.contikios.cooja.Mote;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.IPAddress;
 

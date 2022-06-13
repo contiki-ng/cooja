@@ -32,7 +32,7 @@ package org.contikios.cooja.interfaces;
 
 import java.util.Observer;
 
-import org.contikios.cooja.*;
+import org.contikios.cooja.ClassDescription;
 
 @ClassDescription("Serial port")
 public interface SerialPort {

@@ -30,14 +30,24 @@
 
 package org.contikios.cooja.plugins;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
-import javax.swing.*;
+import java.util.Observable;
+import java.util.Observer;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.Timer;
-
-import org.contikios.cooja.*;
+import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
+import org.contikios.cooja.PluginType;
+import org.contikios.cooja.RadioMedium;
+import org.contikios.cooja.Simulation;
+import org.contikios.cooja.VisPlugin;
 
 /**
  * SimInformation is a simple information window for simulations.

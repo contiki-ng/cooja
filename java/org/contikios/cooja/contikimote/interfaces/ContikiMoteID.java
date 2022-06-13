@@ -30,13 +30,17 @@
 
 package org.contikios.cooja.contikimote.interfaces;
 
-import java.util.*;
-import javax.swing.*;
+import java.util.Collection;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Vector;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.Mote;
 import org.jdom.Element;
 
-import org.contikios.cooja.*;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.mote.memory.VarMemory;

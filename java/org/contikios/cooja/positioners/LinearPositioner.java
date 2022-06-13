@@ -29,7 +29,8 @@
  */
 
 package org.contikios.cooja.positioners;
-import org.contikios.cooja.*;
+import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Positioner;
 
 /**
  * Generates positions linearly distributed in a given interval.

@@ -30,11 +30,26 @@
 
 package org.contikios.cooja;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Collection;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.contikios.cooja.interfaces.*;
+import org.contikios.cooja.interfaces.Battery;
+import org.contikios.cooja.interfaces.Beeper;
+import org.contikios.cooja.interfaces.Button;
+import org.contikios.cooja.interfaces.Clock;
+import org.contikios.cooja.interfaces.IPAddress;
+import org.contikios.cooja.interfaces.LED;
+import org.contikios.cooja.interfaces.Log;
+import org.contikios.cooja.interfaces.MoteID;
+import org.contikios.cooja.interfaces.PIR;
+import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
+import org.contikios.cooja.interfaces.PolledAfterAllTicks;
+import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
+import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
+import org.contikios.cooja.interfaces.Position;
+import org.contikios.cooja.interfaces.Radio;
+import org.contikios.cooja.interfaces.RimeAddress;
 
 /**
  * The mote interface handler holds all interfaces for a specific mote.

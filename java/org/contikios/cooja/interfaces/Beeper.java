@@ -30,7 +30,8 @@
 
 package org.contikios.cooja.interfaces;
 
-import org.contikios.cooja.*;
+import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.MoteInterface;
 
 /**
  * A Beeper represents a mote beeper. An implementation should notify all
