@@ -192,7 +192,8 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
       /* Remove old */
       int removed = 0;
-      while (logs.size() > simulation.getEventCentral().getLogOutputBufferSize()) {
+      int log_limit = simulation.getEventCentral().getLogOutputBufferSize();
+      while (logs.size() > log_limit ) {
         logs.remove(0);
         removed++;
       }
@@ -835,19 +836,33 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
   public void setFilter(String str) {
     filterTextField.setText(str);
+    resetFiltered();
 
     try {
-    	final RowFilter<Object,Object> regexp;
+    	final RowFilter<Object,Integer> regexp;
       if (str != null && str.length() > 0) {
       	regexp = RowFilter.regexFilter(str, COLUMN_FROM, COLUMN_DATA, COLUMN_CONCAT);
       } else {
       	regexp = null;
       }
-    	RowFilter<Object, Object> wrapped = new RowFilter<>() {
+    	RowFilter<Object, Integer> wrapped = new RowFilter<Object, Integer>() {
         @Override
-        public boolean include(RowFilter.Entry<? extends Object, ? extends Object> entry) {
+    		public boolean include(RowFilter.Entry<? extends Object, ? extends Integer> entry) {
     		  if (regexp != null) {
-    				boolean pass = regexp.include(entry);
+                    boolean pass;
+                    if (entry.getIdentifier() != null) {
+                        // entry alredy in logs, so can check is it filetred?
+                        int row = entry.getIdentifier().intValue();
+                        LogData log = logs.get(row);
+                        pass = (log.filtered == FilterState.PASS);
+                        if (log.filtered == FilterState.NONE) {
+                            pass = regexp.include(entry);
+                            log.setFiltered(pass);
+                        }
+                    }
+                    else {
+                        pass = regexp.include(entry);
+                    }
     				if (inverseFilter && pass) {
     					return false;
     				} else if (!inverseFilter && !pass) {
@@ -894,10 +909,14 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     });
   }
 
+  static private enum  FilterState { NONE, PASS, REJECTED };
   private class LogData {
     public final LogOutputEvent ev;
+    public       FilterState    filtered;
+
     public LogData(LogOutputEvent ev) {
       this.ev = ev;
+      this.filtered = FilterState.NONE;
     }
 
     public String getID() {
@@ -911,6 +930,19 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         return "" + ev.getTime() / Simulation.MILLISECOND;
       }
     }
+
+    public void setFiltered(boolean pass) {
+        if (pass)
+            filtered = FilterState.PASS;
+        else
+            filtered = FilterState.REJECTED;
+    }
+  }
+  
+  private void resetFiltered() {
+      for( LogData x: logs) {
+          x.filtered = FilterState.NONE;
+      }
   }
 
   private boolean appendToFile = false;

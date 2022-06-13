@@ -134,6 +134,9 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   
   /* Expermental features: Use currently active plugin to filter Timeline Log outputs */
   private LogListener logEventFilterPlugin = null;
+  private String      logEventFilterLast = "";
+  private boolean     logEventFilterChanged = true;
+  private boolean     logEventColorOfMote   = false;
 
   private final JScrollPane timelineScrollPane;
   private final MoteRuler timelineMoteRuler;
@@ -202,6 +205,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       		return executionDetails;
 	    }
     });
+    viewMenu.add(new JCheckBoxMenuItem(logEventMoteColorAction) {
+        private static final long serialVersionUID = 8314556794750277114L;
+        @Override
+        public boolean isSelected() {
+            return logEventColorOfMote;
+        }
+    });
+    
 
     fileMenu.add(new JMenuItem(saveDataAction));
     fileMenu.add(new JMenuItem(statisticsAction));
@@ -261,6 +272,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         /* Check whether there is an active log listener that is used to filter logs */
         logEventFilterPlugin = (LogListener) simulation.getCooja().getPlugin(
             LogListener.class.getName());
+        // invalidate filter stamp
+        logEventFilterLast = "";
+        logEventFilterChanged = true;
+        
         if (showLogOutputs) {
           if (logEventFilterPlugin != null) {
             logger.info("Filtering shown log outputs by use of " + Cooja.getDescriptionOf(LogListener.class) + " plugin");
@@ -1018,6 +1033,16 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   };
 
+  private Action logEventMoteColorAction = new AbstractAction("use Mote colors") {
+      private static final long serialVersionUID = -8626118368774023257L;
+      
+      @Override
+      public void actionPerformed(ActionEvent e) {
+          logEventColorOfMote = !logEventColorOfMote;
+          timeline.repaint();
+      }
+    };
+
   private void numberMotesWasUpdated() {
     /* Plugin title */
     if (allMoteEvents.isEmpty()) {
@@ -1667,6 +1692,18 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
       drawTimeRule(g, intervalStart, intervalEnd);
 
+      // invalidate filter stamp
+      if (logEventFilterPlugin != null) {
+          if (logEventFilterPlugin.getFilter() != logEventFilterLast) {
+              logEventFilterLast = logEventFilterPlugin.getFilter();
+              logEventFilterChanged = true;
+          }
+          else
+              logEventFilterChanged = false;
+      }
+      else
+          logEventFilterChanged = false;
+      
       /* Paint mote events */
       int lineHeightOffset = FIRST_MOTE_PIXEL_OFFSET;
       boolean dark = true;
@@ -2238,30 +2275,54 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       "Blue = " + (blue?"ON":"OFF") + "<br>";
     }
   }
+
+  static private enum  FilterState { NONE, PASS, REJECTED };
   class LogEvent extends MoteEvent {
     final LogOutputEvent logEvent;
+    // filter result cache
+    private  FilterState     filtered;
+
     public LogEvent(LogOutputEvent ev) {
       super(ev.getTime());
       this.logEvent = ev;
+      this.filtered = FilterState.NONE;
     }
+
     @Override
     public Color getEventColor() {
+      if (logEventColorOfMote)
       if (logEventFilterPlugin != null) {
         /* Ask log listener for event color to use */
         return logEventFilterPlugin.getColorOfEntry(logEvent);
       }
-      return Color.GRAY;
+      return Color.GREEN;
     }
     /* Default paint method */
     @Override
     public void paintInterval(Graphics g, int lineHeightOffset, long end) {
       LogEvent ev = this;
+      long time_start = -1;
+      
       while (ev != null && ev.time < end) {
-        /* Ask active log listener whether this should be filtered  */
+          int position = (int)(ev.time/currentPixelDivisor);
+          if (ev.time < time_start ){
+              /* Skip painting event over alredy painted one*/
+              ev = (LogEvent) ev.next;
+              continue;
+          }
+          
+          /* Ask active log listener whether this should be filtered  */
         
         if (logEventFilterPlugin != null) {
-          boolean show = logEventFilterPlugin.filterWouldAccept(ev.logEvent);
-          if (!show) {
+          if (logEventFilterChanged || (filtered == FilterState.NONE) ) {
+              boolean show = logEventFilterPlugin.filterWouldAccept(ev.logEvent);
+              if (show)
+                  filtered = FilterState.PASS;
+              else
+                  filtered = FilterState.REJECTED;
+          }
+          
+          if (filtered == FilterState.REJECTED) {
             /* Skip painting event */
             ev = (LogEvent) ev.next;
             continue;
@@ -2275,16 +2336,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           continue;
         }
 
+        // upper bound of start position
+        time_start = (long)((position+1)*currentPixelDivisor);
+
         g.setColor(color);
-        g.fillRect(
-            (int)(ev.time/currentPixelDivisor), lineHeightOffset,
-            4, EVENT_PIXEL_HEIGHT
-        );
-        g.setColor(Color.BLACK);
-        g.fillRect(
-            (int)(ev.time/currentPixelDivisor), lineHeightOffset,
-            1, EVENT_PIXEL_HEIGHT
-        );
+        g.fillRect( position, lineHeightOffset, 4, EVENT_PIXEL_HEIGHT );
+
+        g.setColor(Color.BLUE);
+        g.fillRect( position, lineHeightOffset, 1, EVENT_PIXEL_HEIGHT );
 
         ev = (LogEvent) ev.next;
       }
