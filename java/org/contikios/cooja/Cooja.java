@@ -1887,13 +1887,10 @@ public class Cooja extends Observable {
     Class<? extends MoteInterface>[] moteInterfaces =
       motePluginClass.getAnnotation(SupportedArguments.class).moteInterfaces();
     StringBuilder moteTypeInterfacesError = new StringBuilder();
-    moteTypeInterfacesError.append(
-        "The plugin:\n" +
-        getDescriptionOf(motePluginClass) +
-        "\nrequires the following mote interfaces:\n"
-    );
+    moteTypeInterfacesError.append("The plugin:\n").append(getDescriptionOf(motePluginClass))
+            .append("\nrequires the following mote interfaces:\n");
     for (Class<? extends MoteInterface> requiredMoteInterface: moteInterfaces) {
-      moteTypeInterfacesError.append(getDescriptionOf(requiredMoteInterface) + "\n");
+      moteTypeInterfacesError.append(getDescriptionOf(requiredMoteInterface)).append("\n");
       if (mote.getInterfaces().getInterfaceOfType(requiredMoteInterface) == null) {
         moteInterfacesOK = false;
       }
@@ -1904,15 +1901,11 @@ public class Cooja extends Observable {
     Class<? extends Mote>[] motes =
       motePluginClass.getAnnotation(SupportedArguments.class).motes();
     StringBuilder moteTypeError = new StringBuilder();
-    moteTypeError.append(
-        "The plugin:\n" +
-        getDescriptionOf(motePluginClass) +
-        "\ndoes not support motes of type:\n" +
-        getDescriptionOf(mote) +
-        "\n\nIt only supports motes of types:\n"
-    );
+    moteTypeError.append("The plugin:\n").append(getDescriptionOf(motePluginClass))
+            .append("\ndoes not support motes of type:\n").append(getDescriptionOf(mote))
+            .append("\n\nIt only supports motes of types:\n");
     for (Class<? extends Mote> supportedMote: motes) {
-      moteTypeError.append(getDescriptionOf(supportedMote) + "\n");
+      moteTypeError.append(getDescriptionOf(supportedMote)).append("\n");
       if (supportedMote.isAssignableFrom(mote.getClass())) {
         moteTypeOK = true;
       }

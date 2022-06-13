@@ -389,7 +389,7 @@ public class ExecuteJAR {
     }
     StringBuilder sb = new StringBuilder();
     sb.append("Manifest-Version: 1.0\r\n");
-    sb.append("Main-Class: " + ExecuteJAR.class.getName() + "\r\n");
+    sb.append("Main-Class: ").append(ExecuteJAR.class.getName()).append("\r\n");
     sb.append("Class-path: .\r\n");
     StringUtils.saveToFile(manifestFile, sb.toString());
     logger.info("Wrote manifest file: " + manifestFile.getName());
