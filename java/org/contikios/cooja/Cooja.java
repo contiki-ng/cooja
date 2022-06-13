@@ -761,7 +761,7 @@ public class Cooja extends Observable {
           /* Check if abstraction description already exists */
           JSeparator abstractionLevelSeparator = null;
           for (Component component: menuMoteTypeClasses.getMenuComponents()) {
-            if (component == null || !(component instanceof JSeparator)) {
+            if (!(component instanceof JSeparator)) {
               continue;
             }
             JSeparator existing = (JSeparator) component;

@@ -129,7 +129,7 @@ public class SimEventCentral {
   private final Observer moteCountObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
-      if (obj == null || !(obj instanceof Mote)) {
+      if (!(obj instanceof Mote)) {
         return;
       }
       Mote evMote = (Mote) obj;
