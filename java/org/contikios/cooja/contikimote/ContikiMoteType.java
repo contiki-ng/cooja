@@ -914,7 +914,7 @@ public class ContikiMoteType implements MoteType {
     return null;
   }
 
-  public static String[] loadMapFile(File mapFile) {
+  private static String[] loadMapFile(File mapFile) {
     String contents = StringUtils.loadFromFile(mapFile);
     if (contents == null) {
       return null;
@@ -928,7 +928,7 @@ public class ContikiMoteType implements MoteType {
    * @param libraryFile Contiki library
    * @return Execution response, or null at failure
    */
-  public static String[] loadCommandData(File libraryFile) {
+  private static String[] loadCommandData(File libraryFile) {
     ArrayList<String> output = new ArrayList<>();
 
     try {
