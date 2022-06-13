@@ -68,6 +68,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -2825,9 +2826,7 @@ public class Cooja extends Observable {
         );
         if (newProjects != null) {
         	currentProjects.clear();
-        	for (COOJAProject p: newProjects) {
-            currentProjects.add(p);
-        	}
+          currentProjects.addAll(Arrays.asList(newProjects));
           try {
             reparseProjectConfig();
           } catch (ParseProjectsException ex) {
