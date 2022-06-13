@@ -1013,15 +1013,6 @@ public class ContikiMoteType implements MoteType {
   }
 
   /**
-   * Returns all sensors of this mote type
-   *
-   * @return All sensors
-   */
-  public String[] getSensors() {
-    return sensors;
-  }
-
-  /**
    * Set core interfaces
    *
    * @param coreInterfaces
