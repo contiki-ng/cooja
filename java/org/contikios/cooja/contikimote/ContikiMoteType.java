@@ -246,7 +246,7 @@ public class ContikiMoteType implements MoteType {
         throw new MoteTypeCreationException("No Contiki application specified");
       }
 
-      /* Create variables used for compiling Contiki */
+      /* Create variables used for compiling Contiki. */
       // Contiki application: hello-world.c
       File contikiApp = getContikiSourceFile();
       libSource = new File(
@@ -349,7 +349,7 @@ public class ContikiMoteType implements MoteType {
     tmpDir.toFile().deleteOnExit();
 
     // Create, compile, and load the Java wrapper that loads the C library.
-    doInit(tmpDir);
+    doInit(tmpDir, visAvailable);
     return true;
   }
 
@@ -379,9 +379,10 @@ public class ContikiMoteType implements MoteType {
    * initial memory.
    *
    * @param tempDir Directory for temporary files
-   * @throws MoteTypeCreationException
+   * @param withUI Specify if UI should be used for error output or not
+   * @throws MoteTypeCreationException if the mote type could not be created.
    */
-  private void doInit(Path tempDir) throws MoteTypeCreationException {
+  private void doInit(Path tempDir, boolean withUI) throws MoteTypeCreationException {
 
     if (myCoreComm != null) {
       throw new MoteTypeCreationException(
@@ -409,15 +410,12 @@ public class ContikiMoteType implements MoteType {
     SectionParser dataSecParser;
     SectionParser bssSecParser;
     SectionParser commonSecParser;
-    SectionParser readonlySecParser = null;
+    SectionParser readonlySecParser;
 
     HashMap<String, Symbol> variables = new HashMap<>();
     if (useCommand) {
       /* Parse command output */
-      String[] output = loadCommandData(getContikiFirmwareFile());
-      if (output == null) {
-        throw new MoteTypeCreationException("No parse command output loaded");
-      }
+      String[] output = loadCommandData(getContikiFirmwareFile(), withUI);
 
       dataSecParser = new CommandSectionParser(
               output,
@@ -745,7 +743,7 @@ public class ContikiMoteType implements MoteType {
     @Override
     public Map<String, Symbol> parseSymbols(long offset) {
       HashMap<String, Symbol> addresses = new HashMap<>();
-      /* Replace "<SECTION>" in regexp by section specific regex */
+      /* Replace "<SECTION>" in regex by section specific regex */
       Pattern pattern = Pattern.compile(
               Cooja.getExternalToolsSetting("COMMAND_VAR_NAME_ADDRESS_SIZE")
                       .replace("<SECTION>", Pattern.quote(sectionRegExp)));
@@ -793,7 +791,7 @@ public class ContikiMoteType implements MoteType {
   /**
    * Creates and returns a copy of this mote type's initial memory (just after
    * the init function has been run). When a new mote is created it should get
-   * it's memory from here.
+   * its memory from here.
    *
    * @return Initial memory of a mote type
    */
@@ -921,48 +919,79 @@ public class ContikiMoteType implements MoteType {
    * Executes configured command on given file and returns the result.
    *
    * @param libraryFile Contiki library
-   * @return Execution response, or null at failure
+   * @param withUI Specifies if UI should be used or not for error output
+   * @return Command execution output
+   * @throws org.contikios.cooja.MoteType.MoteTypeCreationException if any error occurred or command gave no output
    */
-  private static String[] loadCommandData(File libraryFile) {
+  private static String[] loadCommandData(File libraryFile, boolean withUI) throws MoteTypeCreationException {
     ArrayList<String> output = new ArrayList<>();
 
-    try {
-      String command = Cooja.getExternalToolsSetting("PARSE_COMMAND");
-      if (command == null) {
-        return null;
-      }
-
+    String command = Cooja.getExternalToolsSetting("PARSE_COMMAND");
+    if (command != null) {
       command = Cooja.resolvePathIdentifiers(command);
-      if (command == null) {
-        return null;
-      }
+    }
+    if (command == null) {
+      throw new MoteTypeCreationException("No parse command configured!");
+    }
 
-      /* Prepare command */
-      command = command.replace("$(LIBFILE)",
-                                libraryFile.getName().replace(File.separatorChar, '/'));
+    /* Prepare command */
+    command = command.replace("$(LIBFILE)",
+                              libraryFile.getName().replace(File.separatorChar, '/'));
 
+    final MessageList commandOutput = MessageContainer.createMessageList(withUI);
+    try {
       /* Execute command, read response */
       ProcessBuilder pb = new ProcessBuilder("/bin/sh", "-c", command);
       pb.directory(libraryFile.getParentFile());
-      Process p = pb.start();
-      BufferedReader input = new BufferedReader(
-              new InputStreamReader(p.getInputStream(), UTF_8)
-      );
-      p.getErrorStream().close();
-      String line;
-      while ((line = input.readLine()) != null) {
-        output.add(line);
-      }
-      input.close();
+      final Process p = pb.start();
+      Thread readThread = new Thread(() -> {
+        try (BufferedReader errorInput = new BufferedReader(
+                new InputStreamReader(p.getErrorStream(), UTF_8))) {
+          String line;
+          while ((line = errorInput.readLine()) != null) {
+            commandOutput.addMessage(line, MessageList.ERROR);
+          }
+        } catch (IOException e) {
+          commandOutput.addMessage("Error reading from command stderr: "
+                                           + e.getMessage(), MessageList.ERROR);
+        }
+      });
+      readThread.setDaemon(true);
+      readThread.start();
 
-      if (p.waitFor() != 0 || output.isEmpty()) {
-        return null;
+      try (BufferedReader input = new BufferedReader(
+              new InputStreamReader(p.getInputStream(), UTF_8))) {
+        String line;
+        while ((line = input.readLine()) != null) {
+          output.add(line);
+        }
+      }
+
+      int ret = p.waitFor();
+
+      // wait for read thread to finish processing any error output
+      readThread.join();
+
+      if (ret != 0) {
+        // Command returned with error
+        throw createException("Command failed with error: " + ret, null, command, commandOutput);
+      }
+      if (output.isEmpty()) {
+        throw createException("No output from parse command!", null, command, commandOutput);
       }
       return output.toArray(new String[0]);
     } catch (InterruptedException | IOException err) {
-      logger.fatal("Command error: " + err.getMessage(), err);
-      return null;
+      throw createException("Command error: " + err.getMessage(), err, command, commandOutput);
     }
+  }
+
+  private static MoteTypeCreationException createException(String message, Throwable err,
+                                                           String command, MessageList outputList) {
+    outputList.addMessage("Failed to run command: " + command, MessageList.ERROR);
+
+    var e = new MoteTypeCreationException(message, err);
+    e.setCompilationOutput(outputList);
+    return e;
   }
 
   @Override
