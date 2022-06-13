@@ -616,7 +616,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     }
 
     @Override
-    public Object stringToValue(String text) throws ParseException {
+    public Object stringToValue(String text) {
       Object ret;
       switch (mFormat) {
         case CHAR:
@@ -650,7 +650,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     }
 
     @Override
-    public String valueToString(Object value) throws ParseException {
+    public String valueToString(Object value) {
       if (value == null) {
         return "N/A";
       }

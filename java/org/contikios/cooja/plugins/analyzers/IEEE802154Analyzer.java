@@ -34,11 +34,7 @@ public class IEEE802154Analyzer extends PacketAnalyzer {
 //    private int myPanID = 0xabcd;
   public IEEE802154Analyzer(boolean pcap) {
     if (pcap) {
-      try {
-        pcapExporter = new PcapExporter();
-      } catch (IOException e) {
-        logger.error(e);
-      }
+      pcapExporter = new PcapExporter();
     }
   }
 
