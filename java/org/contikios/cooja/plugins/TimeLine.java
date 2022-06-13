@@ -77,6 +77,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.ButtonGroup;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSeparator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
@@ -114,6 +117,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   private static final Color COLOR_BACKGROUND = Color.WHITE;
   private static final boolean PAINT_ZERO_WIDTH_EVENTS = true;
+  private static final int PAINT_MIN_WIDTH_EVENTS = 5;
   private static final int TIMELINE_UPDATE_INTERVAL = 100;
 
   private double currentPixelDivisor = 200;
@@ -128,6 +132,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private static final Logger logger = LogManager.getLogger(TimeLine.class);
 
   private int paintedMoteHeight = EVENT_PIXEL_HEIGHT;
+  private int paintEventMinWidth = PAINT_MIN_WIDTH_EVENTS;
 
   private final Simulation simulation;
   private final LogOutputListener newMotesListener;
@@ -212,7 +217,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             return logEventColorOfMote;
         }
     });
-    
+    viewMenu.add(new JSeparator());
+    ButtonGroup minEvWidthButtonGroup = new ButtonGroup();
+    for ( int s : new int[]{1,5,10} ) {
+        JRadioButtonMenuItem evwidthMenuItemN = new JRadioButtonMenuItem(
+                new ChangeMinEventWidthAction("min event width "+s, s));
+        minEvWidthButtonGroup.add(evwidthMenuItemN);
+        viewMenu.add(evwidthMenuItemN);
+    }
 
     fileMenu.add(new JMenuItem(saveDataAction));
     fileMenu.add(new JMenuItem(statisticsAction));
@@ -667,8 +679,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private
-  long getCenterPointTime() {
+  private long getCenterPointTime() {
       Rectangle r = timeline.getVisibleRect();
       int pixelX = r.x + r.width/2;
       if (popupLocation != null) {
@@ -679,6 +690,18 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         pixelX = mousePixelPositionX;
       }
       return (long) (pixelX*currentPixelDivisor);
+  }
+
+  private class ChangeMinEventWidthAction extends AbstractAction {
+      private int minWidth;
+      public ChangeMinEventWidthAction(String name, int minWidth) {
+        super(name);
+        this.minWidth = minWidth;
+      }
+      public void actionPerformed(ActionEvent e) {
+          paintEventMinWidth = minWidth;
+          timeline.repaint();
+      }
   }
 
   /**
@@ -2052,6 +2075,9 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           }
         }
 
+        if( w < paintEventMinWidth)
+            w = paintEventMinWidth;
+
         Color color = ev.getEventColor();
         if (color == null) {
           /* Skip painting event */
@@ -2232,6 +2258,9 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             continue;
           }
         }
+
+        if( w < paintEventMinWidth)
+            w = paintEventMinWidth;
 
         Color color = ev.getEventColor();
         if (color == null) {
