@@ -34,15 +34,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.awt.Container;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -198,8 +194,6 @@ public class ContikiMoteType implements MoteType {
   private String[] coreInterfaces = null;
 
   private ArrayList<Class<? extends MoteInterface>> moteInterfacesClasses = null;
-
-  private boolean hasSystemSymbols = false;
 
   private NetworkStack netStack = NetworkStack.DEFAULT;
 
@@ -893,20 +887,6 @@ public class ContikiMoteType implements MoteType {
   }
 
   /**
-   * @param symbols Core library has system symbols information
-   */
-  public void setHasSystemSymbols(boolean symbols) {
-    hasSystemSymbols = symbols;
-  }
-
-  /**
-   * @return Whether core library has system symbols information
-   */
-  public boolean hasSystemSymbols() {
-    return hasSystemSymbols;
-  }
-
-  /**
    * @param netStack Contiki network stack
    */
   public void setNetworkStack(NetworkStack netStack) {
@@ -934,7 +914,7 @@ public class ContikiMoteType implements MoteType {
     return null;
   }
 
-  public static String[] loadMapFile(File mapFile) {
+  private static String[] loadMapFile(File mapFile) {
     String contents = StringUtils.loadFromFile(mapFile);
     if (contents == null) {
       return null;
@@ -948,7 +928,7 @@ public class ContikiMoteType implements MoteType {
    * @param libraryFile Contiki library
    * @return Execution response, or null at failure
    */
-  public static String[] loadCommandData(File libraryFile) {
+  private static String[] loadCommandData(File libraryFile) {
     ArrayList<String> output = new ArrayList<>();
 
     try {
@@ -1006,35 +986,6 @@ public class ContikiMoteType implements MoteType {
   }
 
   /**
-   * Sets mote type project configuration. This may differ from the general
-   * simulator project configuration.
-   *
-   * @param moteTypeConfig
-   * Project configuration
-   */
-  public void setConfig(ProjectConfig moteTypeConfig) {
-    myConfig = moteTypeConfig;
-  }
-
-  /**
-   * Returns all sensors of this mote type
-   *
-   * @return All sensors
-   */
-  public String[] getSensors() {
-    return sensors;
-  }
-
-  /**
-   * Returns all core interfaces of this mote type
-   *
-   * @return All core interfaces
-   */
-  public String[] getCoreInterfaces() {
-    return coreInterfaces;
-  }
-
-  /**
    * Set core interfaces
    *
    * @param coreInterfaces
@@ -1058,36 +1009,6 @@ public class ContikiMoteType implements MoteType {
   public void setMoteInterfaceClasses(Class<? extends MoteInterface>[] moteInterfaces) {
     this.moteInterfacesClasses = new ArrayList<>();
     this.moteInterfacesClasses.addAll(Arrays.asList(moteInterfaces));
-  }
-
-  /**
-   * Create a checksum of file. Used for checking if needed files are unchanged
-   * when loading a saved simulation.
-   *
-   * @param file
-   * File containg data to checksum
-   * @return Checksum
-   */
-  protected byte[] createChecksum(File file) {
-    int bytesRead = 1;
-    byte[] readBytes = new byte[128];
-    MessageDigest messageDigest;
-
-    try {
-      InputStream fileInputStream = new FileInputStream(file);
-      messageDigest = MessageDigest.getInstance("MD5");
-
-      while (bytesRead > 0) {
-        bytesRead = fileInputStream.read(readBytes);
-        if (bytesRead > 0) {
-          messageDigest.update(readBytes, 0, bytesRead);
-        }
-      }
-      fileInputStream.close();
-    } catch (NoSuchAlgorithmException | IOException e) {
-      return null;
-    }
-    return messageDigest.digest();
   }
 
   /**
@@ -1185,7 +1106,7 @@ public class ContikiMoteType implements MoteType {
 
     /* Contiki core mote interfaces */
     sb.append("<tr><td valign=\"top\">Contiki's mote interface</td><td>");
-    for (String coreInterface : getCoreInterfaces()) {
+    for (var coreInterface : coreInterfaces) {
       sb.append(coreInterface).append("<br>");
     }
     sb.append("</td></tr>");
@@ -1222,10 +1143,6 @@ public class ContikiMoteType implements MoteType {
       element.setText(moteInterface.getName());
       config.add(element);
     }
-
-    element = new Element("symbols");
-    element.setText(Boolean.toString(hasSystemSymbols()));
-    config.add(element);
 
     if (getNetworkStack() != NetworkStack.DEFAULT) {
       element = new Element("netstack");
@@ -1271,7 +1188,7 @@ public class ContikiMoteType implements MoteType {
           compileCommands = element.getText();
           break;
         case "symbols":
-          hasSystemSymbols = Boolean.parseBoolean(element.getText());
+          // Ignored, this information has never been used.
           break;
         case "commstack":
           logger.warn("The Cooja communication stack config was removed: " + element.getText());
