@@ -131,8 +131,12 @@ class Main {
   public static void main(String[] args) {
     Main options = new Main();
     CommandLine commandLine = new CommandLine(options);
-    commandLine.setUnmatchedArgumentsAllowed(false);
-    commandLine.parseArgs(args);
+    try {
+      commandLine.parseArgs(args);
+    } catch (CommandLine.ParameterException e) {
+      System.err.println(e.getMessage());
+      System.exit(1);
+    }
 
     if (commandLine.isUsageHelpRequested()) {
       commandLine.usage(System.out);
