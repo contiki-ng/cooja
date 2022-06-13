@@ -270,10 +270,6 @@ public class ContikiMoteType implements MoteType {
               output_dir + "/" + getIdentifier() + mapSuffix);
       javaClassName = CoreComm.getAvailableClassName();
 
-      if (javaClassName == null) {
-        throw new MoteTypeCreationException("Could not allocate a core communicator.");
-      }
-
       /* Delete output files */
       libSource.delete();
       libFile.delete();

@@ -76,7 +76,7 @@ public abstract class MoteInterface extends Observable {
    *          Mote that will hold the interface
    * @return Mote interface instance
    */
-  public static final MoteInterface generateInterface(
+  public static MoteInterface generateInterface(
       Class<? extends MoteInterface> interfaceClass, Mote mote) {
     try {
       MoteInterface instance = interfaceClass.getConstructor(

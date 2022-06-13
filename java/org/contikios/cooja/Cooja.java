@@ -3395,8 +3395,7 @@ public class Cooja extends Observable {
         if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
         		pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
         		pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
-        		pluginClassName.equals("org.contikios.cooja.plugins.VisState") ||
-        		pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM")) {
+        		pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
         	logger.warn("Old simulation config detected: visualizers have been remade");
         	pluginClassName = "org.contikios.cooja.plugins.Visualizer";
         }
@@ -3474,7 +3473,7 @@ public class Cooja extends Observable {
                         pluginGUI.setIcon(true);
                       } catch (PropertyVetoException e) {
                       }
-                    };
+                    }
                   });
                 }
               }
@@ -3689,7 +3688,7 @@ public class Cooja extends Observable {
           public void actionPerformed(ActionEvent e) {
             Cooja.setExternalToolsSetting("HIDE_WARNINGS",
                 "" + ((JCheckBox)e.getSource()).isSelected());
-          };
+          }
         });
         buttonBox.add(Box.createHorizontalStrut(10));
         buttonBox.add(hideButton);

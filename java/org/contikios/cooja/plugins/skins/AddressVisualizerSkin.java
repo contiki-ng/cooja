@@ -187,7 +187,8 @@ public class AddressVisualizerSkin implements VisualizerSkin {
       StringSelection stringSelection = new StringSelection(getMoteString(mote));
       clipboard.setContents(stringSelection, null);
     }
-  };
+  }
+
   @Override
   public Visualizer getVisualizer() {
     return visualizer;

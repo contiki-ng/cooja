@@ -93,7 +93,7 @@ public class SectionMoteMemory implements MemoryInterface {
         return false;
       }
       /* Min start address is main start address */
-      startAddr = sec.getStartAddr() < startAddr ? sec.getStartAddr() : startAddr;
+      startAddr = Math.min(sec.getStartAddr(), startAddr);
       /* Layout is last layout. XXX Check layout consistency? */
       memLayout = section.getLayout();
     }

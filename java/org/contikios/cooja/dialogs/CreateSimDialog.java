@@ -196,7 +196,7 @@ public class CreateSimDialog extends JDialog {
       public void actionPerformed(ActionEvent e) {
         mySimulation = null;
         dispose();
-      };
+      }
     });
     buttonBox.add(cancelButton);
 
