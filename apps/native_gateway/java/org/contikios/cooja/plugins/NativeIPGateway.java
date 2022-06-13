@@ -85,7 +85,6 @@ import org.contikios.cooja.interfaces.SerialPort;
 @PluginType(PluginType.MOTE_PLUGIN)
 @SupportedArguments(moteInterfaces = {IPAddress.class})
 public class NativeIPGateway extends VisPlugin implements MotePlugin {
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(NativeIPGateway.class);
 
   private final static int IP_HEADER_LEN = 20;

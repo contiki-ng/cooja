@@ -177,17 +177,12 @@ public class CoffeeFS {
 	}
 
 	public static class CoffeeException extends RuntimeException {
-		private static final long serialVersionUID = 1146474084441011154L;
-
 		public CoffeeException(String message) {
 			super("Coffee error: " + message);
 		}
 	}
 
 	public static class CoffeeFileException extends RuntimeException {
-
-		private static final long serialVersionUID = -2954553141887245203L;
-
 		public CoffeeFileException(String message) {
 			super("Coffee file error: " + message);
 		}

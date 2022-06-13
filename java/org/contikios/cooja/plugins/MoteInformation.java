@@ -59,8 +59,6 @@ import org.contikios.cooja.motes.AbstractEmulatedMote;
 @ClassDescription("Mote Information")
 @PluginType(PluginType.MOTE_PLUGIN)
 public class MoteInformation extends VisPlugin implements MotePlugin {
-  private static final long serialVersionUID = 2359676837283723500L;
-
   private final Mote mote;
 
   private final static int LABEL_WIDTH = 170;

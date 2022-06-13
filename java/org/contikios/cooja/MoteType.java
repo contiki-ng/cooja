@@ -217,8 +217,6 @@ public interface MoteType {
   throws MoteTypeCreationException;
 
   public static class MoteTypeCreationException extends Exception {
-    private static final long serialVersionUID = 7625450894307392953L;
-
     private MessageList compilationOutput;
 
     public MoteTypeCreationException(String message) {

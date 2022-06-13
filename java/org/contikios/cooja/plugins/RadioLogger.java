@@ -113,7 +113,6 @@ import org.jdom.Element;
 public class RadioLogger extends VisPlugin {
 
   private static final Logger logger = LogManager.getLogger(RadioLogger.class);
-  private static final long serialVersionUID = -6927091711697081353L;
 
   private final static int COLUMN_NO = 0;
   private final static int COLUMN_TIME = 1;
@@ -187,9 +186,6 @@ public class RadioLogger extends VisPlugin {
     lowpanAnalyzersPcap.add(new ICMPv6Analyzer());
 
     model = new AbstractTableModel() {
-
-      private static final long serialVersionUID = 1692207305977527004L;
-
       @Override
       public String getColumnName(int col) {
         if (col == COLUMN_TIME && formatTimeString) {
@@ -280,9 +276,6 @@ public class RadioLogger extends VisPlugin {
     };
 
     dataTable = new JTable(model) {
-
-      private static final long serialVersionUID = -2199726885069809686L;
-
       @Override
       public String getToolTipText(MouseEvent e) {
         java.awt.Point p = e.getPoint();
@@ -401,8 +394,6 @@ public class RadioLogger extends VisPlugin {
     dataTable.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
     Action copyAllAction = new AbstractAction("Copy all") {
-      private static final long serialVersionUID = 1905586689441157304L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -418,8 +409,6 @@ public class RadioLogger extends VisPlugin {
     };
     editMenu.add(new JMenuItem(copyAllAction));
     Action copyAction = new AbstractAction("Copy selected") {
-      private static final long serialVersionUID = 8412062977916108054L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -439,8 +428,6 @@ public class RadioLogger extends VisPlugin {
     editMenu.add(new JMenuItem(copyAction));
     editMenu.add(new JSeparator());
     Action clearAction = new AbstractAction("Clear") {
-      private static final long serialVersionUID = -6135583266684643117L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         int size = connections.size();
@@ -454,8 +441,6 @@ public class RadioLogger extends VisPlugin {
     editMenu.add(new JMenuItem(clearAction));
 
     Action aliasAction = new AbstractAction("Payload alias...") {
-      private static final long serialVersionUID = -1678771087456128721L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         int selectedRow = dataTable.getSelectedRow();
@@ -520,8 +505,6 @@ public class RadioLogger extends VisPlugin {
     });
 
     Action saveAction = new AbstractAction("Save to file...") {
-      private static final long serialVersionUID = -3942984643211482179L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         JFileChooser fc = new JFileChooser();
@@ -1071,8 +1054,6 @@ public class RadioLogger extends VisPlugin {
   private Action createAnalyzerAction(String name, final String actionName,
                                       final ArrayList<PacketAnalyzer> analyzerList, boolean selected) {
     Action action = new AbstractAction(name) {
-      private static final long serialVersionUID = -608913700422638454L;
-
       @Override
       public void actionPerformed(ActionEvent event) {
         if (analyzers != analyzerList) {
@@ -1088,8 +1069,6 @@ public class RadioLogger extends VisPlugin {
   }
 
   private final Action timeLineAction = new AbstractAction("Timeline") {
-    private static final long serialVersionUID = -4035633464748224192L;
-
     @Override
     public void actionPerformed(ActionEvent e) {
       int selectedRow = dataTable.getSelectedRow();
@@ -1113,8 +1092,6 @@ public class RadioLogger extends VisPlugin {
   };
 
   private final Action logListenerAction = new AbstractAction("Mote output") {
-    private static final long serialVersionUID = 1985006491187878651L;
-
     @Override
     public void actionPerformed(ActionEvent e) {
       int selectedRow = dataTable.getSelectedRow();
@@ -1138,7 +1115,6 @@ public class RadioLogger extends VisPlugin {
   };
 
   private final Action showInAllAction = new AbstractAction("Timeline and mote output") {
-    private static final long serialVersionUID = -3888292108886138128L;
 
     {
       putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true));

@@ -45,7 +45,6 @@ import org.contikios.cooja.*;
  * @author Fredrik Osterlind
  */
 public class ExternalToolsDialog extends JDialog {
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(ExternalToolsDialog.class);
 
   private final ExternalToolsEventHandler myEventHandler = new ExternalToolsEventHandler();

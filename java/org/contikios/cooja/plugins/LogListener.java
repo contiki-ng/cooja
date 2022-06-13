@@ -107,7 +107,6 @@ import org.jdom.Element;
 @ClassDescription("Mote output")
 @PluginType(PluginType.SIM_STANDARD_PLUGIN)
 public class LogListener extends VisPlugin implements HasQuickHelp {
-  private static final long serialVersionUID = 3294595371354857261L;
   private static final Logger logger = LogManager.getLogger(LogListener.class);
 
   private final Color[] BG_COLORS = new Color[] {
@@ -227,8 +226,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     this.setJMenuBar(menuBar);
 
     Action copyAllAction = new AbstractAction("Copy all data") {
-      private static final long serialVersionUID = -5038884975254178373L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -246,8 +243,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     };
     editMenu.add(new JMenuItem(copyAllAction));
     Action copyAllMessagesAction = new AbstractAction("Copy all messages") {
-      private static final long serialVersionUID = -5038884975254178373L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -263,8 +258,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     };
     editMenu.add(new JMenuItem(copyAllMessagesAction));
     Action copyAction = new AbstractAction("Copy selected") {
-      private static final long serialVersionUID = -8433490108577001803L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -285,8 +278,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     editMenu.add(new JMenuItem(copyAction));
     editMenu.addSeparator();
     Action clearAction = new AbstractAction("Clear all messages") {
-      private static final long serialVersionUID = -2115620313183440224L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         clear();
@@ -296,8 +287,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
 
     Action saveAction = new AbstractAction("Save to file") {
-      private static final long serialVersionUID = -4140706275748686944L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         JFileChooser fc = new JFileChooser();
@@ -345,8 +334,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     };
     fileMenu.add(new JMenuItem(saveAction));
     Action appendAction = new AbstractAction("Append to file") {
-      private static final long serialVersionUID = -3041714249257346688L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         JCheckBoxMenuItem cb = (JCheckBoxMenuItem) e.getSource();
@@ -425,7 +412,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
 
     model = new AbstractTableModel() {
-      private static final long serialVersionUID = 3065150390849332924L;
       @Override
       public String getColumnName(int col) {
       	if (col == COLUMN_TIME && formatTimeString) {
@@ -458,7 +444,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     };
 
     logTable = new JTable(model) {
-      private static final long serialVersionUID = -930616018336483196L;
       @Override
       public String getToolTipText(MouseEvent e) {
         java.awt.Point p = e.getPoint();
@@ -485,7 +470,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
     };
     DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
-      private static final long serialVersionUID = -340743275865216182L;
       @Override
       public Component getTableCellRendererComponent(JTable table,
           Object value, boolean isSelected, boolean hasFocus, int row,
@@ -934,7 +918,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   }
 
   private final Action timeLineAction = new AbstractAction("Timeline") {
-    private static final long serialVersionUID = -6358463434933029699L;
     @Override
     public void actionPerformed(ActionEvent e) {
       int view = logTable.getSelectedRow();
@@ -958,7 +941,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   };
 
   private final Action radioLoggerAction = new AbstractAction("Radio Logger") {
-    private static final long serialVersionUID = -3041714249257346688L;
     @Override
     public void actionPerformed(ActionEvent e) {
       int view = logTable.getSelectedRow();
@@ -982,7 +964,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   };
 
   private final Action showInAllAction = new AbstractAction("All") {
-    private static final long serialVersionUID = -8433490108577001803L;
     {
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true));
     }

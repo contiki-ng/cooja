@@ -157,7 +157,6 @@ public class Cooja extends Observable {
    */
   public static final String VERSION = "4.8";
   private static JFrame frame = null;
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(Cooja.class);
 
   /**
@@ -1188,7 +1187,6 @@ public class Cooja extends Observable {
 
   private static JDesktopPane createDesktopPane(boolean vis) {
     final JDesktopPane desktop = new JDesktopPane() {
-			private static final long serialVersionUID = -8272040875621119329L;
       @Override
       public void setBounds(int x, int y, int w, int h) {
         super.setBounds(x, y, w, h);
@@ -1207,7 +1205,6 @@ public class Cooja extends Observable {
       }
     };
     desktop.setDesktopManager(new DefaultDesktopManager() {
-			private static final long serialVersionUID = -5987404936292377152L;
       @Override
       public void endResizingFrame(JComponent f) {
         super.endResizingFrame(f);
@@ -3501,28 +3498,24 @@ public class Cooja extends Observable {
   }
 
   public static class ParseProjectsException extends Exception {
-		private static final long serialVersionUID = 1508168026300714850L;
 		public ParseProjectsException(String message) {
       super(message);
     }
   }
 
   public static class ClassLoaderCreationException extends Exception {
-		private static final long serialVersionUID = 1578001681266277774L;
 		public ClassLoaderCreationException(String message) {
       super(message);
     }
   }
 
   public static class SimulationCreationException extends Exception {
-		private static final long serialVersionUID = -2414899187405770448L;
 		public SimulationCreationException(String message) {
       super(message);
     }
   }
 
   public static class PluginConstructionException extends Exception {
-		private static final long serialVersionUID = 8004171223353676751L;
 		public PluginConstructionException(String message) {
       super(message);
     }
@@ -3602,7 +3595,6 @@ public class Cooja extends Observable {
 
         if (retryAvailable) {
           Action retryAction = new AbstractAction() {
-						private static final long serialVersionUID = 2370456199250998435L;
             @Override
             public void actionPerformed(ActionEvent e) {
               errorDialog.setTitle("-RETRY-");
@@ -3620,7 +3612,6 @@ public class Cooja extends Observable {
         }
 
         AbstractAction closeAction = new AbstractAction(){
-					private static final long serialVersionUID = 6225539435993362733L;
           @Override
           public void actionPerformed(ActionEvent e) {
             errorDialog.dispose();
@@ -3683,7 +3674,6 @@ public class Cooja extends Observable {
 
         /* Close on escape */
         AbstractAction closeAction = new AbstractAction(){
-					private static final long serialVersionUID = 2646163984382201634L;
           @Override
           public void actionPerformed(ActionEvent e) {
             dialog.dispose();
@@ -4140,7 +4130,6 @@ public class Cooja extends Observable {
 
   /* GUI actions */
   abstract static class GUIAction extends AbstractAction {
-		private static final long serialVersionUID = 6946179457635198477L;
 		public GUIAction(String name) {
       super(name);
     }
@@ -4159,7 +4148,6 @@ public class Cooja extends Observable {
     public abstract boolean shouldBeEnabled();
   }
   final GUIAction newSimulationAction = new GUIAction("New simulation...", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK)) {
-		private static final long serialVersionUID = 5053703908505299911L;
     @Override
     public void actionPerformed(ActionEvent e) {
       cooja.doCreateSimulation();
@@ -4170,7 +4158,6 @@ public class Cooja extends Observable {
     }
   };
   final GUIAction closeSimulationAction = new GUIAction("Close simulation", KeyEvent.VK_C) {
-		private static final long serialVersionUID = -4783032948880161189L;
     @Override
     public void actionPerformed(ActionEvent e) {
       cooja.doRemoveSimulation(true);
@@ -4181,7 +4168,6 @@ public class Cooja extends Observable {
     }
   };
   final GUIAction reloadSimulationAction = new GUIAction("Reload with same random seed", KeyEvent.VK_K, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK)) {
-		private static final long serialVersionUID = 66579555555421977L;
     @Override
     public void actionPerformed(ActionEvent e) {
       if (getSimulation() == null) {
@@ -4198,7 +4184,6 @@ public class Cooja extends Observable {
     }
   };
   final GUIAction reloadRandomSimulationAction = new GUIAction("Reload with new random seed", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) {
-		private static final long serialVersionUID = -4494402222740250203L;
     @Override
     public void actionPerformed(ActionEvent e) {
       /* Replace seed before reloading */
@@ -4213,7 +4198,6 @@ public class Cooja extends Observable {
     }
   };
   final GUIAction saveSimulationAction = new GUIAction("Save simulation as...", KeyEvent.VK_S) {
-		private static final long serialVersionUID = 1132582220401954286L;
     @Override
     public void actionPerformed(ActionEvent e) {
       cooja.doSaveConfig(true);
@@ -4224,7 +4208,6 @@ public class Cooja extends Observable {
     }
   };
     final GUIAction exportExecutableJARAction = new GUIAction("Export simulation...") {
-		private static final long serialVersionUID = -203601967460630049L;
     @Override
     public void actionPerformed(ActionEvent e) {
       getSimulation().stopSimulation();
@@ -4307,7 +4290,6 @@ public class Cooja extends Observable {
     }
   };
   final GUIAction exitCoojaAction = new GUIAction("Exit", 'x') {
-		private static final long serialVersionUID = 7523822251658687665L;
     @Override
     public void actionPerformed(ActionEvent e) {
       cooja.doQuit(true);
@@ -4318,7 +4300,6 @@ public class Cooja extends Observable {
     }
   };
   final GUIAction startStopSimulationAction = new GUIAction("Start simulation", KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)) {
-		private static final long serialVersionUID = 6750107157493939710L;
     @Override
     public void actionPerformed(ActionEvent e) {
       /* Start/Stop current simulation */
@@ -4349,7 +4330,6 @@ public class Cooja extends Observable {
     }
   };
   class StartPluginGUIAction extends GUIAction {
-               private static final long serialVersionUID = 7368495576372376196L;
                public StartPluginGUIAction(String name) {
       super(name);
     }
@@ -4372,7 +4352,6 @@ public class Cooja extends Observable {
   }
 
   final GUIAction removeAllMotesAction = new GUIAction("Remove all motes") {
-		private static final long serialVersionUID = 4709776747913364419L;
     @Override
     public void actionPerformed(ActionEvent e) {
       Simulation s = getSimulation();
@@ -4391,7 +4370,6 @@ public class Cooja extends Observable {
     }
   };
   final GUIAction showQuickHelpAction = new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
-		private static final long serialVersionUID = 3151729036597971681L;
     @Override
     public void actionPerformed(ActionEvent e) {
       if (!(e.getSource() instanceof JCheckBoxMenuItem)) {
@@ -4411,7 +4389,6 @@ public class Cooja extends Observable {
     }
   };
   final GUIAction showGettingStartedAction = new GUIAction("Getting started") {
-    private static final long serialVersionUID = 2382848024856978524L;
     @Override
     public void actionPerformed(ActionEvent e) {
       loadQuickHelp("GETTING_STARTED");
@@ -4431,7 +4408,6 @@ public class Cooja extends Observable {
     }
   };
   final GUIAction showKeyboardShortcutsAction = new GUIAction("Keyboard shortcuts") {
-		private static final long serialVersionUID = 2382848024856978524L;
     @Override
     public void actionPerformed(ActionEvent e) {
       loadQuickHelp("KEYBOARD_SHORTCUTS");
@@ -4451,7 +4427,6 @@ public class Cooja extends Observable {
     }
   };
   final GUIAction showBufferSettingsAction = new GUIAction("Buffer sizes...") {
-		private static final long serialVersionUID = 7018661735211901837L;
     @Override
     public void actionPerformed(ActionEvent e) {
       if (mySimulation == null) {

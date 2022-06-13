@@ -88,7 +88,6 @@ import org.contikios.cooja.interfaces.SerialPort;
 @ClassDescription("Serial Socket (SERVER)")
 @PluginType(PluginType.MOTE_PLUGIN)
 public class SerialSocketServer extends VisPlugin implements MotePlugin {
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(SerialSocketServer.class);
 
   private final static int STATUSBAR_WIDTH = 350;

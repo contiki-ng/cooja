@@ -95,7 +95,6 @@ import org.contikios.cooja.interfaces.Position;
  * @author Fredrik Osterlind
  */
 public abstract class AbstractCompileDialog extends JDialog {
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(AbstractCompileDialog.class);
 
   protected final static Dimension LABEL_DIMENSION = new Dimension(170, 25);
@@ -272,7 +271,6 @@ public abstract class AbstractCompileDialog extends JDialog {
       }
     };
     Action compileAction = new AbstractAction("Compile") {
-    	private static final long serialVersionUID = 1L;
       @Override
       public void actionPerformed(ActionEvent e) {
     		if (!compileButton.isEnabled()) {
@@ -522,7 +520,6 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     /* Called when last command has finished (success only) */
     final Action compilationSuccessAction = new AbstractAction() {
-			private static final long serialVersionUID = -3815068126197234346L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
         abortMenuItem.setEnabled(false);
@@ -539,7 +536,6 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     /* Called immediately if any command fails */
     final Action compilationFailureAction = new AbstractAction() {
-			private static final long serialVersionUID = -800799353242963993L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
         abortMenuItem.setEnabled(false);
@@ -549,7 +545,6 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     /* Called once per command */
     final Action nextCommandAction = new AbstractAction() {
-			private static final long serialVersionUID = -4525372566302330762L;
 			@Override
 			public void actionPerformed(ActionEvent e) {
         Action nextSuccessAction;

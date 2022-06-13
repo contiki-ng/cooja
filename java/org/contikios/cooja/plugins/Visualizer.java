@@ -141,8 +141,6 @@ import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
 @ClassDescription("Network")
 @PluginType(PluginType.SIM_STANDARD_PLUGIN)
 public class Visualizer extends VisPlugin implements HasQuickHelp {
-
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(Visualizer.class);
 
   public static final int MOTE_RADIUS = 8;
@@ -323,7 +321,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     selection = new Selection();
     /* Main canvas */
     canvas = new JPanel() {
-      private static final long serialVersionUID = 1L;
 
       {
         ToolTipManager.sharedInstance().registerComponent(this);

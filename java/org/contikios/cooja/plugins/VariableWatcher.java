@@ -95,7 +95,6 @@ import org.jdom.Element;
 @ClassDescription("Variable Watcher")
 @PluginType(PluginType.MOTE_PLUGIN)
 public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHelp {
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(VariableWatcher.class.getName());
 
   private final static int LABEL_WIDTH = 170;

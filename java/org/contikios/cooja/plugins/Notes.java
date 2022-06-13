@@ -55,8 +55,6 @@ import org.contikios.cooja.VisPlugin;
 @ClassDescription("Notes")
 @PluginType(PluginType.SIM_STANDARD_PLUGIN)
 public class Notes extends VisPlugin {
-  private static final long serialVersionUID = 1L;
-
   private final JTextArea notes = new JTextArea("Enter notes here");
   private boolean decorationsVisible = true;
 
