@@ -195,8 +195,6 @@ public class ContikiMoteType implements MoteType {
 
   private ArrayList<Class<? extends MoteInterface>> moteInterfacesClasses = null;
 
-  private boolean hasSystemSymbols = false;
-
   private NetworkStack netStack = NetworkStack.DEFAULT;
 
   // Type specific class configuration
@@ -889,20 +887,6 @@ public class ContikiMoteType implements MoteType {
   }
 
   /**
-   * @param symbols Core library has system symbols information
-   */
-  public void setHasSystemSymbols(boolean symbols) {
-    hasSystemSymbols = symbols;
-  }
-
-  /**
-   * @return Whether core library has system symbols information
-   */
-  public boolean hasSystemSymbols() {
-    return hasSystemSymbols;
-  }
-
-  /**
    * @param netStack Contiki network stack
    */
   public void setNetworkStack(NetworkStack netStack) {
@@ -1171,10 +1155,6 @@ public class ContikiMoteType implements MoteType {
       config.add(element);
     }
 
-    element = new Element("symbols");
-    element.setText(Boolean.toString(hasSystemSymbols()));
-    config.add(element);
-
     if (getNetworkStack() != NetworkStack.DEFAULT) {
       element = new Element("netstack");
       element.setText(getNetworkStack().getConfig());
@@ -1219,7 +1199,7 @@ public class ContikiMoteType implements MoteType {
           compileCommands = element.getText();
           break;
         case "symbols":
-          hasSystemSymbols = Boolean.parseBoolean(element.getText());
+          // Ignored, this information has never been used.
           break;
         case "commstack":
           logger.warn("The Cooja communication stack config was removed: " + element.getText());

@@ -374,9 +374,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
         output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.librarySuffix
     );
     moteType.setContikiFirmwareFile(contikiFirmware);
-
-    /* TODO System symbols */
-    ((ContikiMoteType)moteType).setHasSystemSymbols(false);
   }
 
   @Override
