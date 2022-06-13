@@ -986,17 +986,6 @@ public class ContikiMoteType implements MoteType {
   }
 
   /**
-   * Sets mote type project configuration. This may differ from the general
-   * simulator project configuration.
-   *
-   * @param moteTypeConfig
-   * Project configuration
-   */
-  public void setConfig(ProjectConfig moteTypeConfig) {
-    myConfig = moteTypeConfig;
-  }
-
-  /**
    * Set core interfaces
    *
    * @param coreInterfaces
