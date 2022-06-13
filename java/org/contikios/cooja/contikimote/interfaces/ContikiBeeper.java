@@ -40,11 +40,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.Beeper;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
@@ -72,7 +72,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 public class ContikiBeeper extends Beeper implements ContikiMoteInterface, PolledAfterActiveTicks {
   private Mote mote = null;
   private VarMemory moteMem = null;
-  private static Logger logger = Logger.getLogger(ContikiBeeper.class);
+  private static final Logger logger = LogManager.getLogger(ContikiBeeper.class);
 
   /**
    * Creates an interface to the beeper at mote.
@@ -87,6 +87,7 @@ public class ContikiBeeper extends Beeper implements ContikiMoteInterface, Polle
     this.moteMem = new VarMemory(mote.getMemory());
   }
 
+  @Override
   public boolean isBeeping() {
     return moteMem.getByteValueOf("simBeeped") == 1;
   }
@@ -95,6 +96,7 @@ public class ContikiBeeper extends Beeper implements ContikiMoteInterface, Polle
     return new String[]{"beep_interface"};
   }
 
+  @Override
   public void doActionsAfterTick() {
     if (moteMem.getByteValueOf("simBeeped") == 1) {
       this.setChanged();
@@ -104,6 +106,7 @@ public class ContikiBeeper extends Beeper implements ContikiMoteInterface, Polle
     }
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -113,6 +116,7 @@ public class ContikiBeeper extends Beeper implements ContikiMoteInterface, Polle
 
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         if (!isBeeping()) {
           return;
@@ -135,6 +139,7 @@ public class ContikiBeeper extends Beeper implements ContikiMoteInterface, Polle
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -145,10 +150,12 @@ public class ContikiBeeper extends Beeper implements ContikiMoteInterface, Polle
     this.deleteObserver(observer);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 

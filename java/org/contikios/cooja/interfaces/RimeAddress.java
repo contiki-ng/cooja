@@ -37,7 +37,8 @@ import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -56,8 +57,8 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 @ClassDescription("Rime address")
 public class RimeAddress extends MoteInterface {
-  private static Logger logger = Logger.getLogger(RimeAddress.class);
-  private VarMemory moteMem;
+  private static final Logger logger = LogManager.getLogger(RimeAddress.class);
+  private final VarMemory moteMem;
 
   public static final int RIME_ADDR_LENGTH = 2;
 
@@ -99,6 +100,7 @@ public class RimeAddress extends MoteInterface {
     return addrString;
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     final JLabel ipLabel = new JLabel();
@@ -109,6 +111,7 @@ public class RimeAddress extends MoteInterface {
 
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         ipLabel.setText("Rime address: " + getAddressString());
       }
@@ -119,6 +122,7 @@ public class RimeAddress extends MoteInterface {
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -129,6 +133,7 @@ public class RimeAddress extends MoteInterface {
     this.deleteObserver(observer);
   }
 
+  @Override
   public void removed() {
     super.removed();
     if (memMonitor != null) {
@@ -136,10 +141,12 @@ public class RimeAddress extends MoteInterface {
     }
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 }

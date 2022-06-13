@@ -29,6 +29,8 @@
 
 package org.contikios.cooja.plugins;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -49,14 +51,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -82,10 +83,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-
-import org.apache.log4j.Logger;
-import org.jdom.Element;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -97,7 +96,6 @@ import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.TableColumnAdjuster;
 import org.contikios.cooja.dialogs.UpdateAggregator;
-import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.mote.memory.MemoryBuffer;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor;
@@ -106,6 +104,7 @@ import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.util.ArrayQueue;
 import org.contikios.cooja.util.IPUtils;
 import org.contikios.cooja.util.StringUtils;
+import org.jdom.Element;
 
 /**
  * @author Fredrik Osterlind, Niclas Finne
@@ -114,7 +113,7 @@ import org.contikios.cooja.util.StringUtils;
 @PluginType(PluginType.SIM_PLUGIN)
 public class BufferListener extends VisPlugin {
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(BufferListener.class);
+  private static final Logger logger = LogManager.getLogger(BufferListener.class);
 
   private final static int COLUMN_TIME = 0;
   private final static int COLUMN_FROM = 1;
@@ -135,8 +134,8 @@ public class BufferListener extends VisPlugin {
 
   final static int MAX_BUFFER_SIZE = 16 * 1024;
 
-  private static ArrayList<Class<? extends Parser>> bufferParsers =
-    new ArrayList<Class<? extends Parser>>();
+  private static final ArrayList<Class<? extends Parser>> bufferParsers =
+          new ArrayList<>();
   static {
     registerBufferParser(ByteArrayParser.class);
     registerBufferParser(IntegerParser.class);
@@ -151,8 +150,8 @@ public class BufferListener extends VisPlugin {
 
   /* TODO Hide identical lines? */
 
-  private static ArrayList<Class<? extends Buffer>> bufferTypes =
-    new ArrayList<Class<? extends Buffer>>();
+  private static final ArrayList<Class<? extends Buffer>> bufferTypes =
+          new ArrayList<>();
   static {
     registerBufferType(PacketbufBuffer.class);
     registerBufferType(PacketbufPointerBuffer.class);
@@ -186,38 +185,38 @@ public class BufferListener extends VisPlugin {
   private boolean hasHours = false;
 
   private final JTable logTable;
-  private TableRowSorter<TableModel> logFilter;
-  private ArrayQueue<BufferAccess> logs = new ArrayQueue<BufferAccess>();
+  private final TableRowSorter<TableModel> logFilter;
+  private final ArrayQueue<BufferAccess> logs = new ArrayQueue<>();
 
-  private Simulation simulation;
+  private final Simulation simulation;
 
   private JTextField filterTextField = null;
-  private JLabel filterLabel = new JLabel("Filter: ");
-  private Color filterTextFieldBackground;
+  private final JLabel filterLabel = new JLabel("Filter: ");
+  private final Color filterTextFieldBackground;
 
-  private AbstractTableModel model;
+  private final AbstractTableModel model;
 
-  private MoteCountListener logOutputListener;
+  private final MoteCountListener logOutputListener;
 
   private boolean backgroundColors = false;
-  private JCheckBoxMenuItem colorCheckbox;
+  private final JCheckBoxMenuItem colorCheckbox;
 
   private boolean inverseFilter = false;
-  private JCheckBoxMenuItem inverseFilterCheckbox;
+  private final JCheckBoxMenuItem inverseFilterCheckbox;
 
   private boolean hideReads = true;
-  private JCheckBoxMenuItem hideReadsCheckbox;
+  private final JCheckBoxMenuItem hideReadsCheckbox;
 
   private boolean withStackTrace = false;
-  private JCheckBoxMenuItem withStackTraceCheckbox;
+  private final JCheckBoxMenuItem withStackTraceCheckbox;
 
-  private JMenu bufferMenu = new JMenu("Buffer");
-  private JMenu parserMenu = new JMenu("Show as");
+  private final JMenu bufferMenu = new JMenu("Buffer");
+  private final JMenu parserMenu = new JMenu("Show as");
 
-  private ArrayList<Mote> motes = new ArrayList<Mote>();
-  private ArrayList<SegmentMemoryMonitor> memoryMonitors = new ArrayList<SegmentMemoryMonitor>();
+  private final ArrayList<Mote> motes = new ArrayList<>();
+  private final ArrayList<SegmentMemoryMonitor> memoryMonitors = new ArrayList<>();
 
-  private TimeEvent hourTimeEvent = new TimeEvent(0) {
+  private TimeEvent hourTimeEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
       hasHours = true;
@@ -227,8 +226,8 @@ public class BufferListener extends VisPlugin {
   };
 
   private static final int UPDATE_INTERVAL = 250;
-  private UpdateAggregator<BufferAccess> logUpdateAggregator = new UpdateAggregator<BufferAccess>(UPDATE_INTERVAL) {
-    private Runnable scroll = new Runnable() {
+  private final UpdateAggregator<BufferAccess> logUpdateAggregator = new UpdateAggregator<>(UPDATE_INTERVAL) {
+    private final Runnable scroll = new Runnable() {
       @Override
       public void run() {
         logTable.scrollRectToVisible(
@@ -387,11 +386,7 @@ public class BufferListener extends VisPlugin {
           char last = d.getID().charAt(d.getID().length()-1);
           if (last >= '0' && last <= '9') {
             bgColor = BG_COLORS[last - '0'];
-          } else {
-            bgColor = null;
           }
-        } else {
-          bgColor = null;
         }
         if (isSelected) {
           bgColor = table.getSelectionBackground();
@@ -425,7 +420,7 @@ public class BufferListener extends VisPlugin {
         }
       }
     });
-    logFilter = new TableRowSorter<TableModel>(model);
+    logFilter = new TableRowSorter<>(model);
     for (int i = 0, n = model.getColumnCount(); i < n; i++) {
       logFilter.setSortable(i, false);
     }
@@ -677,17 +672,17 @@ public class BufferListener extends VisPlugin {
     return true;
   }
 
-  public enum MemoryMonitorType { SEGMENT, POINTER, CONSTPOINTER };
+  public enum MemoryMonitorType { SEGMENT, POINTER, CONSTPOINTER }
 
   static class PointerMemoryMonitor extends SegmentMemoryMonitor {
     private SegmentMemoryMonitor segmentMonitor = null;
-    private int lastSegmentAddress = -1;
-    private final int pointerAddress;
+    private long lastSegmentAddress = -1;
+    private final long pointerAddress;
     private final int pointerSize;
 
     public PointerMemoryMonitor(
         BufferListener bl, Mote mote,
-        int pointerAddress, int pointerSize, int segmentSize)
+        long pointerAddress, int pointerSize, int segmentSize)
     throws Exception {
       super(bl, mote, pointerAddress, pointerSize);
       this.pointerAddress = pointerAddress;
@@ -698,7 +693,7 @@ public class BufferListener extends VisPlugin {
 
     private void registerSegmentMonitor(int size, boolean notify) throws Exception {
       byte[] pointerValue = mote.getMemory().getMemorySegment(pointerAddress, pointerSize);
-      int segmentAddress = MemoryBuffer.wrap(mote.getMemory().getLayout(), pointerValue).getInt();
+      long segmentAddress = MemoryBuffer.wrap(mote.getMemory().getLayout(), pointerValue).getAddr();
 
       segmentMonitor = new SegmentMemoryMonitor(bl, mote, segmentAddress, size);
       if (notify) {
@@ -715,7 +710,7 @@ public class BufferListener extends VisPlugin {
       }
 
       byte[] pointerValue = mote.getMemory().getMemorySegment(pointerAddress, pointerSize);
-      int segmentAddress = MemoryBuffer.wrap(mote.getMemory().getLayout(), pointerValue).getInt();
+      long segmentAddress = MemoryBuffer.wrap(mote.getMemory().getLayout(), pointerValue).getAddr();
       if (segmentAddress == lastSegmentAddress) {
         return;
       }
@@ -745,12 +740,12 @@ public class BufferListener extends VisPlugin {
     protected final BufferListener bl;
     protected final Mote mote;
 
-    private final int address;
+    private final long address;
     private final int size;
 
     private byte[] oldData = null;
 
-    public SegmentMemoryMonitor(BufferListener bl, Mote mote, int address, int size)
+    public SegmentMemoryMonitor(BufferListener bl, Mote mote, long address, int size)
     throws Exception {
       this.bl = bl;
       this.mote = mote;
@@ -767,7 +762,7 @@ public class BufferListener extends VisPlugin {
     public Mote getMote() {
       return mote;
     }
-    public int getAddress() {
+    public long getAddress() {
       return address;
     }
     public int getSize() {
@@ -790,7 +785,7 @@ public class BufferListener extends VisPlugin {
       oldData = newData;
     }
 
-    void addBufferAccess(BufferListener bl, Mote mote, byte[] oldData, byte[] newData, EventType type, int address) {
+    void addBufferAccess(BufferListener bl, Mote mote, byte[] oldData, byte[] newData, EventType type, long address) {
       BufferAccess ba = new BufferAccess(
           mote,
           mote.getSimulation().getSimulationTime(),
@@ -846,7 +841,7 @@ public class BufferListener extends VisPlugin {
 
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     element = new Element("filter");
@@ -891,12 +886,7 @@ public class BufferListener extends VisPlugin {
       String name = element.getName();
       if ("filter".equals(name)) {
         final String str = element.getText();
-        EventQueue.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            setFilter(str);
-          }
-        });
+        EventQueue.invokeLater(() -> setFilter(str));
       } else if ("coloring".equals(name)) {
         backgroundColors = true;
         colorCheckbox.setSelected(true);
@@ -955,7 +945,7 @@ public class BufferListener extends VisPlugin {
       } else {
         regexp = null;
       }
-      RowFilter<Object, Object> wrapped = new RowFilter<Object, Object>() {
+      RowFilter<Object, Object> wrapped = new RowFilter<>() {
         @Override
         public boolean include(RowFilter.Entry<? extends Object, ? extends Object> entry) {
           if (hideReads) {
@@ -1019,10 +1009,10 @@ public class BufferListener extends VisPlugin {
     public final SegmentMonitor.EventType type;
     public final String sourceStr;
     public final String stackTrace;
-    public final int address;
+    public final long address;
 
     public BufferAccess(
-        Mote mote, long time, int address, byte[] newData, byte[] oldData, SegmentMonitor.EventType type, boolean withStackTrace) {
+        Mote mote, long time, long address, byte[] newData, byte[] oldData, SegmentMonitor.EventType type, boolean withStackTrace) {
       this.mote = mote;
       this.time = time;
       this.mem = newData==null?NULL_DATA:newData;
@@ -1095,7 +1085,7 @@ public class BufferListener extends VisPlugin {
     }
   }
 
-  private Action saveAction = new AbstractAction("Save to file") {
+  private final Action saveAction = new AbstractAction("Save to file") {
     private static final long serialVersionUID = -4140706275748686944L;
 
     @Override
@@ -1130,7 +1120,7 @@ public class BufferListener extends VisPlugin {
       }
 
       try {
-        PrintWriter outStream = new PrintWriter(new FileWriter(saveFile));
+        PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
 
         StringBuilder sb = new StringBuilder();
         for (int i=0; i < logTable.getRowCount(); i++) {
@@ -1154,12 +1144,11 @@ public class BufferListener extends VisPlugin {
         outStream.close();
       } catch (Exception ex) {
         logger.fatal("Could not write to file: " + saveFile);
-        return;
       }
     }
   };
 
-  private Action bufferListenerAction = new AbstractAction("in Buffer Listener") {
+  private final Action bufferListenerAction = new AbstractAction("in Buffer Listener") {
     private static final long serialVersionUID = -6358463434933029699L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1183,7 +1172,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action timeLineAction = new AbstractAction("in Timeline") {
+  private final Action timeLineAction = new AbstractAction("in Timeline") {
     private static final long serialVersionUID = -6358463434933029699L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1207,7 +1196,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action radioLoggerAction = new AbstractAction("in Radio Logger") {
+  private final Action radioLoggerAction = new AbstractAction("in Radio Logger") {
     private static final long serialVersionUID = -3041714249257346688L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1231,7 +1220,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action showInAllAction = new AbstractAction("All") {
+  private final Action showInAllAction = new AbstractAction("All") {
     private static final long serialVersionUID = -8433490108577001803L;
     {
       putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true));
@@ -1244,7 +1233,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action clearAction = new AbstractAction("Clear") {
+  private final Action clearAction = new AbstractAction("Clear") {
     private static final long serialVersionUID = -2115620313183440224L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1256,7 +1245,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action copyAction = new AbstractAction("Selected") {
+  private final Action copyAction = new AbstractAction("Selected") {
     private static final long serialVersionUID = -8433490108577001803L;
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1288,7 +1277,7 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private Action copyAllAction = new AbstractAction("All") {
+  private final Action copyAllAction = new AbstractAction("All") {
     private static final long serialVersionUID = -5038884975254178373L;
 
     @Override
@@ -1374,10 +1363,7 @@ public class BufferListener extends VisPlugin {
     Parser bp = null;
     try {
       bp = bpClass.newInstance();
-    } catch (InstantiationException e) {
-      logger.warn("Could not create buffer parser: " + e.getMessage(), e);
-      return;
-    } catch (IllegalAccessException e) {
+    } catch (InstantiationException | IllegalAccessException e) {
       logger.warn("Could not create buffer parser: " + e.getMessage(), e);
       return;
     }
@@ -1389,10 +1375,10 @@ public class BufferListener extends VisPlugin {
   }
 
   private static class BufferInput {
-    private JPanel mainPanel = new JPanel();
-    private JTextField textName = new JTextField();
-    private JTextField textSize = new JTextField();
-    private JTextField textOffset = new JTextField();
+    private final JPanel mainPanel = new JPanel();
+    private final JTextField textName = new JTextField();
+    private final JTextField textSize = new JTextField();
+    private final JTextField textOffset = new JTextField();
 
     public BufferInput(String name, String size, String offset) {
       mainPanel.setLayout(new GridLayout(3, 2, 5, 5));
@@ -1430,10 +1416,7 @@ public class BufferListener extends VisPlugin {
   private static Buffer createBufferInstance(Class<? extends Buffer> btClass) {
     try {
       return btClass.newInstance();
-    } catch (InstantiationException e) {
-      logger.warn("Could not create buffer type: " + e.getMessage(), e);
-      return null;
-    } catch (IllegalAccessException e) {
+    } catch (InstantiationException | IllegalAccessException e) {
       logger.warn("Could not create buffer type: " + e.getMessage(), e);
       return null;
     }
@@ -1466,8 +1449,6 @@ public class BufferListener extends VisPlugin {
 
   public static interface Parser {
     /**
-     * @param mm Memory monitor
-     * @param address Address that changed. May not contain all changes
      * @param ba Buffer Access object
      * @return String or custom graphical object
      */
@@ -1494,7 +1475,7 @@ public class BufferListener extends VisPlugin {
   }
 
   public static interface Buffer {
-    public int getAddress(Mote mote);
+    public long getAddress(Mote mote);
     public int getSize(Mote mote);
 
     public String getStatusString();
@@ -1532,7 +1513,7 @@ public class BufferListener extends VisPlugin {
   }
 
   public static abstract class PointerBuffer extends AbstractBuffer {
-    public abstract int getPointerAddress(Mote mote);
+    public abstract long getPointerAddress(Mote mote);
 
     @Override
     public SegmentMemoryMonitor createMemoryMonitor(BufferListener bl, Mote mote)
@@ -1625,7 +1606,7 @@ public class BufferListener extends VisPlugin {
 
   @ClassDescription("Integer array")
   public static class IntegerParser extends StringParser {
-    private VarMemory varMem = new VarMemory(null);
+    private final VarMemory varMem = new VarMemory(null);
     @Override
     public String parseString(BufferAccess ba) {
       StringBuilder sb = new StringBuilder();
@@ -1669,7 +1650,7 @@ public class BufferListener extends VisPlugin {
       }
       byte[] termString = new byte[i];
       System.arraycopy(ba.mem, 0, termString, 0, i);
-      return new String(termString).replaceAll("[^\\p{Print}]", "");
+      return new String(termString, UTF_8).replaceAll("[^\\p{Print}]", "");
     }
   }
 
@@ -1678,7 +1659,7 @@ public class BufferListener extends VisPlugin {
     @Override
     public String parseString(BufferAccess ba) {
       /* TODO Diff? */
-      return new String(ba.mem).replaceAll("[^\\p{Print}]", "");
+      return new String(ba.mem, UTF_8).replaceAll("[^\\p{Print}]", "");
     }
   }
 
@@ -1739,8 +1720,9 @@ public class BufferListener extends VisPlugin {
 
       parser.paintComponent(g, this);
     }
-  };
-  private GrapicalParserPanel graphicalParserPanel = new GrapicalParserPanel();
+  }
+
+  private final GrapicalParserPanel graphicalParserPanel = new GrapicalParserPanel();
 
   @ClassDescription("Graphical: Height")
   public static class GraphicalHeight4BitsParser extends GraphicalParser {
@@ -1798,11 +1780,11 @@ public class BufferListener extends VisPlugin {
   @ClassDescription("Variable: node_id")
   public static class NodeIDBuffer extends SegmentBuffer {
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey("node_id")) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get("node_id").addr;
+      return mote.getMemory().getSymbolMap().get("node_id").addr;
     }
     @Override
     public int getSize(Mote mote) {
@@ -1814,12 +1796,12 @@ public class BufferListener extends VisPlugin {
   @ClassDescription("Queuebuf 0 RAM")
   public static class Queuebuf0Buffer extends SegmentBuffer {
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey("buframmem")) {
         return -1;
       }
-      int offset = 0;
-      return (int) mote.getMemory().getSymbolMap().get("buframmem").addr + offset;
+      long offset = 0;
+      return mote.getMemory().getSymbolMap().get("buframmem").addr + offset;
     }
     @Override
     public int getSize(Mote mote) {
@@ -1830,11 +1812,11 @@ public class BufferListener extends VisPlugin {
   @ClassDescription("packetbuf_aligned")
   public static class PacketbufBuffer extends SegmentBuffer {
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey("packetbuf_aligned")) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get("packetbuf_aligned").addr;
+      return mote.getMemory().getSymbolMap().get("packetbuf_aligned").addr;
     }
     @Override
     public int getSize(Mote mote) {
@@ -1844,21 +1826,21 @@ public class BufferListener extends VisPlugin {
 
   @ClassDescription("*packetbufptr")
   public static class PacketbufPointerBuffer extends PointerBuffer {
-    VarMemory varMem =  new VarMemory(null);
+    final VarMemory varMem =  new VarMemory(null);
     @Override
-    public int getPointerAddress(Mote mote) {
+    public long getPointerAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey("packetbufptr")) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get("packetbufptr").addr;
+      return mote.getMemory().getSymbolMap().get("packetbufptr").addr;
     }
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey("packetbufptr")) {
         return -1;
       }
       varMem.associateMemory(mote.getMemory());
-      return varMem.getIntValueOf("packetbufptr");
+      return varMem.getAddrValueOf("packetbufptr");
     }
     @Override
     public int getSize(Mote mote) {
@@ -1870,22 +1852,22 @@ public class BufferListener extends VisPlugin {
   public static class CustomPointerBuffer extends PointerBuffer {
     public String variable;
     public int size;
-    public int offset;
-    VarMemory varMem =  new VarMemory(null);
+    public long offset;
+    final VarMemory varMem =  new VarMemory(null);
     @Override
-    public int getPointerAddress(Mote mote) {
+    public long getPointerAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey(variable)) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get(variable).addr;
+      return mote.getMemory().getSymbolMap().get(variable).addr;
     }
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey(variable)) {
         return -1;
       }
       varMem.associateMemory(mote.getMemory());
-      return varMem.getIntValueOf(variable)+offset;
+      return varMem.getAddrValueOf(variable)+offset;
     }
     @Override
     public int getSize(Mote mote) {
@@ -1914,7 +1896,7 @@ public class BufferListener extends VisPlugin {
     public void applyConfig(Element element) {
       variable = element.getAttributeValue("variable");
       size = Integer.parseInt(element.getAttributeValue("size"));
-      offset = Integer.parseInt(element.getAttributeValue("offset"));
+      offset = Long.parseLong(element.getAttributeValue("offset"));
     }
     @Override
     public boolean configure(BufferListener bl) {
@@ -1948,7 +1930,7 @@ public class BufferListener extends VisPlugin {
         return false;
       }
       try {
-        offset = Integer.parseInt(infoComponent.getOffset());
+        offset = Long.parseLong(infoComponent.getOffset());
       } catch (RuntimeException e) {
         logger.fatal("Failed parsing buffer offset " + infoComponent.getOffset() + ": " + e.getMessage(), e);
         /* Abort */
@@ -1966,13 +1948,13 @@ public class BufferListener extends VisPlugin {
   public static class CustomVariableBuffer extends SegmentBuffer {
     public String variable;
     public int size;
-    public int offset;
+    public long offset;
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey(variable)) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get(variable).addr+offset;
+      return mote.getMemory().getSymbolMap().get(variable).addr+offset;
     }
     @Override
     public int getSize(Mote mote) {
@@ -2001,7 +1983,7 @@ public class BufferListener extends VisPlugin {
     public void applyConfig(Element element) {
       variable = element.getAttributeValue("variable");
       size = Integer.parseInt(element.getAttributeValue("size"));
-      offset = Integer.parseInt(element.getAttributeValue("offset"));
+      offset = Long.parseLong(element.getAttributeValue("offset"));
     }
     @Override
     public boolean configure(BufferListener bl) {
@@ -2035,7 +2017,7 @@ public class BufferListener extends VisPlugin {
         return false;
       }
       try {
-        offset = Integer.parseInt(infoComponent.getOffset());
+        offset = Long.parseLong(infoComponent.getOffset());
       } catch (RuntimeException e) {
         logger.fatal("Failed parsing buffer offset " + infoComponent.getOffset() + ": " + e.getMessage(), e);
         /* Abort */
@@ -2052,11 +2034,11 @@ public class BufferListener extends VisPlugin {
   public static class CustomIntegerBuffer extends SegmentBuffer {
     public String variable;
     @Override
-    public int getAddress(Mote mote) {
+    public long getAddress(Mote mote) {
       if (!mote.getMemory().getSymbolMap().containsKey(variable)) {
         return -1;
       }
-      return (int) mote.getMemory().getSymbolMap().get(variable).addr;
+      return mote.getMemory().getSymbolMap().get(variable).addr;
     }
     @Override
     public int getSize(Mote mote) {

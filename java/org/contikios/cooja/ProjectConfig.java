@@ -33,7 +33,8 @@ package org.contikios.cooja;
 import java.io.*;
 import java.util.*;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A project configuration may hold the configuration for one or several project
@@ -84,7 +85,7 @@ import org.apache.log4j.Logger;
  * @author Fredrik Osterlind
  */
 public class ProjectConfig {
-  private static Logger logger = Logger.getLogger(ProjectConfig.class);
+  private static final Logger logger = LogManager.getLogger(ProjectConfig.class);
 
   private Properties myConfig = null;
   private Vector<File> myProjectDirHistory = null;
@@ -103,7 +104,7 @@ public class ProjectConfig {
       FileNotFoundException {
     // Create empty configuration
     myConfig = new Properties();
-    myProjectDirHistory = new Vector<File>();
+    myProjectDirHistory = new Vector<>();
 
 
     if (useDefault) {
@@ -525,6 +526,7 @@ public class ProjectConfig {
     return getBooleanValue(callingClass, id, false);
   }
 
+  @Override
   public ProjectConfig clone() {
     try {
       ProjectConfig clone = new ProjectConfig(false);

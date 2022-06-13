@@ -31,8 +31,6 @@
 package org.contikios.cooja.positioners;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.NumberFormat;
@@ -62,8 +60,13 @@ public class ManualPositioner extends Positioner {
   private boolean skipRemainder = false;
   private double lastX, lastY, lastZ;
 
-  private double startX, endX, startY, endY, startZ, endZ;
-  private Random random = new Random(); /* Do not use main random generator for setup */
+  private final double startX;
+  private final double endX;
+  private final double startY;
+  private final double endY;
+  private final double startZ;
+  private final double endZ;
+  private final Random random = new Random(); /* Do not use main random generator for setup */
 
   public ManualPositioner(int totalNumberOfMotes,
       double startX, double endX,
@@ -91,6 +94,7 @@ public class ManualPositioner extends Positioner {
     }
   }
 
+  @Override
   public double[] getNextPosition() {
     /* Generate the rest randomly? */
     if (skipRemainder) {
@@ -129,11 +133,11 @@ public class ManualPositioner extends Positioner {
     return new double[] { lastX, lastY, lastZ };
   }
 
-  class PositionDialog extends JDialog {
-    private NumberFormat doubleFormat = NumberFormat.getNumberInstance();
-
+  static class PositionDialog extends JDialog {
     public boolean shouldSkipRemainder = false;
-    public JFormattedTextField xField, yField, zField;
+    public final JFormattedTextField xField;
+    public final JFormattedTextField yField;
+    public final JFormattedTextField zField;
     public PositionDialog(int mote) {
       JButton button;
       JFormattedTextField numberField;
@@ -149,34 +153,31 @@ public class ManualPositioner extends Positioner {
       panel.add(new JLabel("Z:"));
 
       FocusListener focusListener = new FocusListener() {
+        @Override
         public void focusGained(FocusEvent e) {
           final JFormattedTextField source = ((JFormattedTextField)e.getSource());
-          SwingUtilities.invokeLater(
-              new Runnable() {
-                public void run() {
-                  source.selectAll();
-                }
-              }
-          );
+          SwingUtilities.invokeLater(() -> source.selectAll());
         }
+        @Override
         public void focusLost(FocusEvent e) {
         }
       };
 
+      NumberFormat doubleFormat = NumberFormat.getNumberInstance();
       numberField = new JFormattedTextField(doubleFormat);
-      numberField.setValue(new Double(0.0));
+      numberField.setValue(0.0);
       numberField.setColumns(5);
       numberField.addFocusListener(focusListener);
       panel.add(numberField);
       xField = numberField;
       numberField = new JFormattedTextField(doubleFormat);
-      numberField.setValue(new Double(0.0));
+      numberField.setValue(0.0);
       numberField.setColumns(5);
       numberField.addFocusListener(focusListener);
       panel.add(numberField);
       yField = numberField;
       numberField = new JFormattedTextField(doubleFormat);
-      numberField.setValue(new Double(0.0));
+      numberField.setValue(0.0);
       numberField.setColumns(5);
       numberField.addFocusListener(focusListener);
       panel.add(numberField);
@@ -190,20 +191,14 @@ public class ManualPositioner extends Positioner {
       buttons.add(Box.createHorizontalGlue());
 
       button = new JButton("Next");
-      button.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          dispose();
-        }
-      });
+      button.addActionListener(e -> dispose());
       buttons.add(button);
       getRootPane().setDefaultButton(button);
 
       button = new JButton("Skip remainder (random)");
-      button.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          shouldSkipRemainder = true;
-          dispose();
-        }
+      button.addActionListener(e -> {
+        shouldSkipRemainder = true;
+        dispose();
       });
       buttons.add(button);
 

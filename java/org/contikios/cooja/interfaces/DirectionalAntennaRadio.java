@@ -31,7 +31,8 @@ package org.contikios.cooja.interfaces;
 /**
  * Directional antenna.
  *
- * @see MRM
+ * See MRM in the apps directory.
+ *
  * @author Fredrik Osterlind
  */
 public interface DirectionalAntennaRadio {
@@ -40,7 +41,7 @@ public interface DirectionalAntennaRadio {
    * @return Current direction (radians). Typically direction 0 has the maximum
    * relative gain.
    *
-   * @see #getRelativeGain(double)
+   * @see #getRelativeGain(double, double)
    */
   public double getDirection();
 

@@ -31,7 +31,8 @@ package org.contikios.cooja.mspmote;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.platform.tyndall.TyndallNode;
@@ -40,7 +41,7 @@ import se.sics.mspsim.platform.tyndall.TyndallNode;
  * @author Fredrik Osterlind
  */
 public class TyndallMote extends MspMote {
-  private static Logger logger = Logger.getLogger(TyndallMote.class);
+  private static final Logger logger = LogManager.getLogger(TyndallMote.class);
 
   public TyndallNode tyndallNode = null;
 

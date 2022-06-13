@@ -40,7 +40,8 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -66,7 +67,7 @@ import org.contikios.cooja.VisPlugin;
 @PluginType(PluginType.SIM_PLUGIN)
 public class MyDummyPlugin extends VisPlugin {
   private static final long serialVersionUID = 4368807123350830772L;
-  private static Logger logger = Logger.getLogger(MyDummyPlugin.class);
+  private static final Logger logger = LogManager.getLogger(MyDummyPlugin.class);
 
   private Simulation sim;
   private Observer msObserver;

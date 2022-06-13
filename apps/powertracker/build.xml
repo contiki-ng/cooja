@@ -25,7 +25,7 @@
     <delete file="powertracker.jar"/>
   </target>
 
-  <target name="jar" depends="clean, init, compile">
+  <target name="jar" depends="init, compile">
     <jar destfile="powertracker.jar" basedir="build">
       <manifest>
         <attribute name="Class-Path" value="."/>

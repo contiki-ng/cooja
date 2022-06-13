@@ -67,7 +67,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -95,34 +96,31 @@ import org.jdom.Element;
 @PluginType(PluginType.MOTE_PLUGIN)
 public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHelp {
   private static final long serialVersionUID = 1L;
-  private static final Logger logger = Logger.getLogger(VariableWatcher.class.getName());
+  private static final Logger logger = LogManager.getLogger(VariableWatcher.class.getName());
 
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;
 
-  private JComboBox varNameCombo;
-  private JComboBox varTypeCombo;
-  private JComboBox varFormatCombo;
-  private JPanel infoPane;
-  private JFormattedTextField varAddressField;
-  private JTextField varSizeField;
-  private JPanel valuePane;
+  private final JComboBox varNameCombo;
+  private final JComboBox varTypeCombo;
+  private final JComboBox varFormatCombo;
+  private final JFormattedTextField varAddressField;
+  private final JTextField varSizeField;
+  private final JPanel valuePane;
   private JFormattedTextField[] varValues;
   private byte[] bufferedBytes;
-  private JButton readButton;
-  private AbstractButton monitorButton;
-  private JButton writeButton;
-  private JLabel debuglbl;
-  private VarMemory moteMemory;
+  private final JButton readButton;
+  private final AbstractButton monitorButton;
+  private final JButton writeButton;
+  private final VarMemory moteMemory;
 
   MemoryInterface.SegmentMonitor memMonitor;
   long monitorAddr;
   int monitorSize;
 
-  private NumberFormat integerFormat;
-  private ValueFormatter hf;
+  private final ValueFormatter hf;
 
-  private Mote mote;
+  private final Mote mote;
 
   @Override
   public String getQuickHelp() {
@@ -143,9 +141,9 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     SHORT("short", 2),
     INT("int", 2),
     LONG("long", 4),
-    ADDR("address", 4);
+    ADDR("address", 8);
 
-    String mRep;
+    final String mRep;
     int mSize;
 
     VarTypes(String rep, int size) {
@@ -186,8 +184,8 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     DEC("Decimal", 10),
     HEX("Hex", 16);
 
-    String mRep;
-    int mBase;
+    final String mRep;
+    final int mBase;
 
     VarFormats(String rep, int base) {
       mRep = rep;
@@ -205,8 +203,8 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     }
   }
 
-  VarFormats[] valueFormats = {VarFormats.CHAR, VarFormats.DEC, VarFormats.HEX};
-  VarTypes[] valueTypes = {VarTypes.BYTE, VarTypes.SHORT, VarTypes.INT, VarTypes.LONG, VarTypes.ADDR};
+  final VarFormats[] valueFormats = {VarFormats.CHAR, VarFormats.DEC, VarFormats.HEX};
+  final VarTypes[] valueTypes = {VarTypes.BYTE, VarTypes.SHORT, VarTypes.INT, VarTypes.LONG, VarTypes.ADDR};
 
   /**
    * @param moteToView Mote
@@ -219,7 +217,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     moteMemory = new VarMemory(moteToView.getMemory());
 
     JLabel label;
-    integerFormat = NumberFormat.getIntegerInstance();
+    NumberFormat integerFormat = NumberFormat.getIntegerInstance();
     JPanel mainPane = new JPanel();
     mainPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
@@ -327,7 +325,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
 
     mainPane.add(Box.createRigidArea(new Dimension(0,5)));
 
-    infoPane = new JPanel();
+    var infoPane = new JPanel();
     infoPane.setLayout(new BoxLayout(infoPane, BoxLayout.Y_AXIS));
 
     JPanel addrInfoPane = new JPanel();
@@ -379,13 +377,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       }
     });
     /* Update when content might have changed */
-    varAddressField.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        updateNumberOfValues();
-      }
-    });
+    varAddressField.addActionListener(e -> updateNumberOfValues());
     addrInfoPane.add(varAddressField);
 
     infoPane.add(addrInfoPane);
@@ -409,12 +401,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       }
     });
     /* Update size information when text box action fired */
-    varSizeField.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        updateNumberOfValues();
-      }
-    });
+    varSizeField.addActionListener(e -> updateNumberOfValues());
     sizeInfoPane.add(varSizeField);
 
     infoPane.add(sizeInfoPane);
@@ -442,7 +429,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     mainPane.add(valuePane);
     mainPane.add(Box.createRigidArea(new Dimension(0,5)));
 
-    debuglbl = new JLabel();
+    var debuglbl = new JLabel();
     mainPane.add(new JPanel().add(debuglbl));
     mainPane.add(Box.createRigidArea(new Dimension(0,5)));
 
@@ -456,7 +443,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       @Override
       public void actionPerformed(ActionEvent e) {
         if (!moteMemory.variableExists((String) varNameCombo.getSelectedItem())) {
-          ((JTextField) varNameCombo.getEditor().getEditorComponent()).setForeground(Color.RED);
+          varNameCombo.getEditor().getEditorComponent().setForeground(Color.RED);
           writeButton.setEnabled(false);
           return;
         }
@@ -593,7 +580,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       }
       updateNumberOfValues();
     } catch (UnknownVariableException ex) {
-      ((JTextField) varNameCombo.getEditor().getEditorComponent()).setForeground(Color.RED);
+      varNameCombo.getEditor().getEditorComponent().setForeground(Color.RED);
       writeButton.setEnabled(false);
     }
   }
@@ -602,7 +589,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
    * String to Value to String conversion for JFormattedTextField
    * based on selected VarTypes and VarFormats.
    */
-  public class ValueFormatter extends JFormattedTextField.AbstractFormatter {
+  public static class ValueFormatter extends JFormattedTextField.AbstractFormatter {
 
     final String TEXT_NOT_TO_TOUCH;
 
@@ -670,11 +657,10 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
 
       switch (mFormat) {
         case CHAR:
-          return String.format("%c", value);
         case DEC:
-          return String.format("%d", value);
+          return value.toString();
         case HEX:
-          return String.format("0x%x", value);
+          return String.format("0x%x", ((Number)value).longValue());
         default:
           return "";
       }
@@ -769,7 +755,6 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     long address = (varAddressField.getValue() == null) ? 0 : (long) varAddressField.getValue();
     int bytes;
     try {
-      //address = Integer.parseInt(varAddressField.getText());
       bytes = Integer.parseInt(varSizeField.getText());
     } catch (NumberFormatException ex) {
       bytes = 0;
@@ -876,7 +861,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
 class JTextFieldLimit extends PlainDocument {
 
   private static final long serialVersionUID = 1L;
-  private int limit;
+  private final int limit;
   // optional uppercase conversion
   private boolean toUppercase = false;
 

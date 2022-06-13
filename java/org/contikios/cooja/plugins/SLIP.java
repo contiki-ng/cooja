@@ -32,10 +32,11 @@ package org.contikios.cooja.plugins;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class SLIP {
-  private static Logger logger = Logger.getLogger(SLIP.class);
+  private static final Logger logger = LogManager.getLogger(SLIP.class);
 
   private final static byte SLIP_END = (byte)0300;
   private final static byte SLIP_ESC = (byte)0333;
@@ -48,7 +49,7 @@ public class SLIP {
    * @param packet Packet data
    */
   public static byte[] asSlip(byte[] packet) {
-    ArrayList<Byte> bytes = new ArrayList<Byte>();
+    ArrayList<Byte> bytes = new ArrayList<>();
 
     bytes.add(SLIP_END);
 
@@ -68,7 +69,7 @@ public class SLIP {
 
     byte[] arr = new byte[bytes.size()];
     for (int i=0; i < bytes.size(); i++) {
-      arr[i] = (bytes.get(i)).byteValue();
+      arr[i] = bytes.get(i);
     }
     return arr;
   }

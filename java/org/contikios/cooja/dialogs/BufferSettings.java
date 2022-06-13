@@ -51,7 +51,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.SimEventCentral;
@@ -59,16 +60,12 @@ import org.contikios.cooja.Simulation;
 
 public class BufferSettings extends JDialog {
   private static final long serialVersionUID = 7086171115472941104L;
-  private static Logger logger = Logger.getLogger(BufferSettings.class);
+  private static final Logger logger = LogManager.getLogger(BufferSettings.class);
   private final static Dimension LABEL_SIZE = new Dimension(150, 25);
 
-  private SimEventCentral central;
+  private final SimEventCentral central;
 
   public static void showDialog(JDesktopPane parent, Simulation simulation) {
-    if (Cooja.isVisualizedInApplet()) {
-      return;
-    }
-
     BufferSettings dialog = new BufferSettings(simulation);
     dialog.setLocationRelativeTo(parent); 
     dialog.setVisible(true);
@@ -84,6 +81,12 @@ public class BufferSettings extends JDialog {
     /* Escape key */
     InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "dispose");
+    Action disposeAction = new AbstractAction("OK") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        dispose();
+      }
+    };
     getRootPane().getActionMap().put("dispose", disposeAction);
 
     Box main = Box.createVerticalBox();
@@ -93,6 +96,7 @@ public class BufferSettings extends JDialog {
     JFormattedTextField value = addEntry(main, "Log output messages");
     value.setValue(central.getLogOutputBufferSize());
     value.addPropertyChangeListener("value", new PropertyChangeListener() {
+      @Override
       public void propertyChange(PropertyChangeEvent evt) {
         int newVal = ((Number)evt.getNewValue()).intValue();
         if (newVal < 1) {
@@ -107,6 +111,24 @@ public class BufferSettings extends JDialog {
 
     Box line = Box.createHorizontalBox();
     line.add(Box.createHorizontalGlue());
+    Action setDefaultAction = new AbstractAction("Set default") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Object[] options = {"Ok", "Cancel"};
+
+        String question = "Use current settings as default for future simulations?";
+        String title = "Set default?";
+        int answer = JOptionPane.showOptionDialog(BufferSettings.this, question, title,
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                options, options[0]);
+
+        if (answer != JOptionPane.YES_OPTION) {
+          return;
+        }
+
+        Cooja.setExternalToolsSetting("BUFFERSIZE_LOGOUTPUT", "" + central.getLogOutputBufferSize());
+      }
+    };
     line.add(new JButton(setDefaultAction));
     line.add(okButton);
     main.add(line);
@@ -130,29 +152,5 @@ public class BufferSettings extends JDialog {
     container.add(box);
     return value;
   }
-
-  private Action setDefaultAction = new AbstractAction("Set default") {
-    public void actionPerformed(ActionEvent e) {
-      Object[] options = { "Ok", "Cancel" };
-
-      String question = "Use current settings as default for future simulations?";
-      String title = "Set default?";
-      int answer = JOptionPane.showOptionDialog(BufferSettings.this, question, title,
-          JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-          options, options[0]);
-
-      if (answer != JOptionPane.YES_OPTION) {
-        return;
-      }
-
-      Cooja.setExternalToolsSetting("BUFFERSIZE_LOGOUTPUT", "" + central.getLogOutputBufferSize());
-    }
-  };
-
-  private Action disposeAction = new AbstractAction("OK") {
-    public void actionPerformed(ActionEvent e) {
-      dispose();
-    }
-  };
 
 }

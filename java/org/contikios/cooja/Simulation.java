@@ -38,7 +38,8 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.dialogs.CreateSimDialog;
@@ -58,10 +59,10 @@ public class Simulation extends Observable implements Runnable {
 
   /*private static long EVENT_COUNTER = 0;*/
 
-  private Vector<Mote> motes = new Vector<Mote>();
-  private Vector<Mote> motesUninit = new Vector<Mote>();
+  private final Vector<Mote> motes = new Vector<>();
+  private final Vector<Mote> motesUninit = new Vector<>();
   
-  private Vector<MoteType> moteTypes = new Vector<MoteType>();
+  private final Vector<MoteType> moteTypes = new Vector<>();
 
   /* If true, run simulation at full speed */
   private boolean speedLimitNone = true;
@@ -78,7 +79,7 @@ public class Simulation extends Observable implements Runnable {
 
   private RadioMedium currentRadioMedium = null;
 
-  private static Logger logger = Logger.getLogger(Simulation.class);
+  private static final Logger logger = LogManager.getLogger(Simulation.class);
 
   private boolean isRunning = false;
 
@@ -94,11 +95,11 @@ public class Simulation extends Observable implements Runnable {
 
   private long maxMoteStartupDelay = 1000*MILLISECOND;
 
-  private SafeRandom randomGenerator;
+  private final SafeRandom randomGenerator;
 
   private boolean hasMillisecondObservers = false;
-  private MillisecondObservable millisecondObservable = new MillisecondObservable();
-  private class MillisecondObservable extends Observable {
+  private final MillisecondObservable millisecondObservable = new MillisecondObservable();
+  private static class MillisecondObservable extends Observable {
     private void newMillisecond(long time) {
       setChanged();
       notifyObservers(time);
@@ -106,11 +107,11 @@ public class Simulation extends Observable implements Runnable {
   }
 
   /* Event queue */
-  private EventQueue eventQueue = new EventQueue();
+  private final EventQueue eventQueue = new EventQueue();
 
   /* Poll requests */
   private boolean hasPollRequests = false;
-  private ArrayDeque<Runnable> pollRequests = new ArrayDeque<Runnable>();
+  private final ArrayDeque<Runnable> pollRequests = new ArrayDeque<>();
 
 
   /**
@@ -148,6 +149,7 @@ public class Simulation extends Observable implements Runnable {
     hasMillisecondObservers = true;
 
     invokeSimulationThread(new Runnable() {
+      @Override
       public void run() {
         if (!millisecondEvent.isScheduled()) {
           scheduleEvent(
@@ -177,6 +179,14 @@ public class Simulation extends Observable implements Runnable {
   }
 
   /**
+   * @return True iff current thread is the simulation thread,
+   * or the simulation threat has not yet been created.
+   */
+  public boolean isSimulationThreadOrNull() {
+    return simulationThread == Thread.currentThread() || simulationThread == null;
+  }
+
+  /**
    * Schedule simulation event for given time.
    * Already scheduled events must be removed before they are rescheduled.
    *
@@ -195,7 +205,8 @@ public class Simulation extends Observable implements Runnable {
     eventQueue.addEvent(e, time);
   }
 
-  private TimeEvent delayEvent = new TimeEvent(0) {
+  private final TimeEvent delayEvent = new TimeEvent() {
+    @Override
     public void execute(long t) {
       if (speedLimitNone) {
         /* As fast as possible: no need to reschedule delay event */
@@ -224,12 +235,14 @@ public class Simulation extends Observable implements Runnable {
         speedLimitLastSimtime = getSimulationTime();
       }
     }
+    @Override
     public String toString() {
       return "DELAY";
     }
   };
 
-  private TimeEvent millisecondEvent = new TimeEvent(0) {
+  private final TimeEvent millisecondEvent = new TimeEvent() {
+    @Override
     public void execute(long t) {
       if (!hasMillisecondObservers) {
         return;
@@ -238,19 +251,21 @@ public class Simulation extends Observable implements Runnable {
       millisecondObservable.newMillisecond(getSimulationTime());
       scheduleEvent(this, t+MILLISECOND);
     }
+    @Override
     public String toString() {
       return "MILLISECOND: " + millisecondObservable.countObservers();
     }
   };
 
   public void clearEvents() {
-    eventQueue.removeAll();
+    eventQueue.clear();
     pollRequests.clear();
   }
 
+  @Override
   public void run() {
     lastStartTime = System.currentTimeMillis();
-    logger.info("Simulation main loop started, system time: " + lastStartTime);
+    logger.debug("Simulation started, system time: " + lastStartTime);
     isRunning = true;
     speedLimitLastRealtime = System.currentTimeMillis();
     speedLimitLastSimtime = getSimulationTime();
@@ -259,7 +274,7 @@ public class Simulation extends Observable implements Runnable {
     this.setChanged();
     this.notifyObservers(this);
 
-    TimeEvent nextEvent = null;
+    EventQueue.Pair nextEvent = null;
     try {
       while (isRunning) {
 
@@ -274,11 +289,11 @@ public class Simulation extends Observable implements Runnable {
           throw new RuntimeException("No more events");
         }
         if (nextEvent.time < currentSimulationTime) {
-          throw new RuntimeException("Next event is in the past: " + nextEvent.time + " < " + currentSimulationTime + ": " + nextEvent);
+          throw new RuntimeException("Next event is in the past: " + nextEvent.time + " < " + currentSimulationTime + ": " + nextEvent.event);
         }
         currentSimulationTime = nextEvent.time;
         /*logger.info("Executing event #" + EVENT_COUNTER++ + " @ " + currentSimulationTime + ": " + nextEvent);*/
-        nextEvent.execute(currentSimulationTime);
+        nextEvent.event.execute(currentSimulationTime);
 
         if (stopSimulation) {
           isRunning = false;
@@ -296,8 +311,8 @@ public class Simulation extends Observable implements Runnable {
     			System.exit(1);
     		} else {
     		  String title = "Simulation error";
-    		  if (nextEvent instanceof MoteTimeEvent) {
-    		    title += ": " + ((MoteTimeEvent)nextEvent).getMote();
+    		  if (nextEvent.event instanceof MoteTimeEvent) {
+    		    title += ": " + ((MoteTimeEvent)nextEvent.event).getMote();
     		  }
     		  Cooja.showErrorDialog(Cooja.getTopParentContainer(), title, e, false);
     		}
@@ -309,7 +324,7 @@ public class Simulation extends Observable implements Runnable {
 
     this.setChanged();
     this.notifyObservers(this);
-    logger.info("Simulation main loop stopped, system time: " + System.currentTimeMillis() +
+    logger.info("Simulation completed, system time: " + System.currentTimeMillis() +
         "\tDuration: " + (System.currentTimeMillis() - lastStartTime) +
                 " ms" +
                 "\tSimulated time " + getSimulationTimeMillis() +
@@ -333,7 +348,6 @@ public class Simulation extends Observable implements Runnable {
     if (!isRunning()) {
       isRunning = true;
       simulationThread = new Thread(this);
-      simulationThread.setPriority(Thread.MIN_PRIORITY);
       simulationThread.start();
     }
   }
@@ -385,7 +399,8 @@ public class Simulation extends Observable implements Runnable {
     if (isRunning()) {
       return;
     }
-    TimeEvent stopEvent = new TimeEvent(0) {
+    TimeEvent stopEvent = new TimeEvent() {
+      @Override
       public void execute(long t) {
         /* Stop simulation */
         stopSimulation();
@@ -419,7 +434,10 @@ public class Simulation extends Observable implements Runnable {
   public void setRandomSeed(long randomSeed) {
     this.randomSeed = randomSeed;
     randomGenerator.setSeed(randomSeed);
-    logger.info("Simulation random seed: " + randomSeed);
+    String name =
+      cooja.currentConfigFile == null ? "(unnamed)"
+                                      : cooja.currentConfigFile.toString();
+    logger.info("Simulation " + name + " random seed: " + randomSeed);
   }
 
   /**
@@ -454,7 +472,7 @@ public class Simulation extends Observable implements Runnable {
     this.maxMoteStartupDelay = Math.max(0, maxMoteStartupDelay);
   }
 
-  private SimEventCentral eventCentral = new SimEventCentral(this);
+  private final SimEventCentral eventCentral = new SimEventCentral(this);
   public SimEventCentral getEventCentral() {
     return eventCentral;
   }
@@ -466,7 +484,7 @@ public class Simulation extends Observable implements Runnable {
    * @return Current simulation config
    */
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
 
     Element element;
 
@@ -529,7 +547,7 @@ public class Simulation extends Observable implements Runnable {
 
       Collection<Element> moteConfig = mote.getConfigXML();
       if (moteConfig == null) {
-        moteConfig = new ArrayList<Element>();
+        moteConfig = new ArrayList<>();
       }
 
       /* Add mote type identifier */
@@ -551,10 +569,6 @@ public class Simulation extends Observable implements Runnable {
       return quick;
   }
   
-  public void setQuickSetup(boolean q) {
-      quick = q;
-  }
-  
   /**
    * Sets the current simulation config depending on the given configuration.
    *
@@ -566,8 +580,8 @@ public class Simulation extends Observable implements Runnable {
    */
   public boolean setConfigXML(Collection<Element> configXML,
       boolean visAvailable, boolean quick, Long manualRandomSeed) throws Exception {
+    this.quick = quick;
 
-      setQuickSetup(quick);
     // Parse elements
     for (Element element : configXML) {
 
@@ -707,7 +721,7 @@ public class Simulation extends Observable implements Runnable {
         } else {
           logger
               .fatal("Mote type was not created: " + element.getText().trim());
-          throw new Exception("All mote types were not recreated");
+          return false;
         }
       }
 
@@ -748,6 +762,9 @@ public class Simulation extends Observable implements Runnable {
       currentRadioMedium.simulationFinishedLoading();
     }
 
+    // Quick load mode only during loading
+    this.quick = false;
+
     setChanged();
     notifyObservers(this);
 
@@ -769,6 +786,7 @@ public class Simulation extends Observable implements Runnable {
 
     /* Simulation is running, remove mote in simulation loop */
     Runnable removeMote = new Runnable() {
+      @Override
       public void run() {
         motes.remove(mote);
         motesUninit.remove(mote);
@@ -783,17 +801,10 @@ public class Simulation extends Observable implements Runnable {
         setChanged();
         notifyObservers(mote);
 
-        /* Loop through all scheduled events.
-         * Delete all events associated with deleted mote. */
-        TimeEvent ev = eventQueue.peekFirst();
-        while (ev != null) {
-          if (ev instanceof MoteTimeEvent) {
-            if (((MoteTimeEvent)ev).getMote() == mote) {
-              ev.remove();
-            }
-          }
-          ev = ev.nextEvent;
-        }
+        // Delete all events associated with deleted mote.
+        eventQueue.removeIf(
+          (TimeEvent ev) ->
+            ev instanceof MoteTimeEvent && ((MoteTimeEvent)ev).getMote() == mote);
       }
     };
 
@@ -833,6 +844,7 @@ public class Simulation extends Observable implements Runnable {
    */
   public void addMote(final Mote mote) {
     Runnable addMote = new Runnable() {
+      @Override
       public void run() {
         if (mote.getInterfaces().getClock() != null) {
           if (maxMoteStartupDelay > 0) {
@@ -1018,6 +1030,7 @@ public class Simulation extends Observable implements Runnable {
    */
   public void setSpeedLimit(final Double newSpeedLimit) {
     Runnable r = new Runnable() {
+      @Override
       public void run() {
         if (newSpeedLimit == null) {
           speedLimitNone = true;
@@ -1027,7 +1040,7 @@ public class Simulation extends Observable implements Runnable {
         speedLimitNone = false;
         speedLimitLastRealtime = System.currentTimeMillis();
         speedLimitLastSimtime = getSimulationTime();
-        speedLimit = newSpeedLimit.doubleValue();
+        speedLimit = newSpeedLimit;
 
         if (delayEvent.isScheduled()) {
           delayEvent.remove();
@@ -1053,7 +1066,7 @@ public class Simulation extends Observable implements Runnable {
     if (speedLimitNone) {
       return null;
     }
-    return new Double(speedLimit);
+    return speedLimit;
   }
 
   /**
@@ -1107,8 +1120,8 @@ public class Simulation extends Observable implements Runnable {
   public void setRadioMedium(RadioMedium radioMedium) {
     // Remove current radio medium from observing motes
     if (currentRadioMedium != null) {
-      for (int i = 0; i < motes.size(); i++) {
-        currentRadioMedium.unregisterMote(motes.get(i), this);
+      for (Mote mote : motes) {
+        currentRadioMedium.unregisterMote(mote, this);
       }
     }
 
@@ -1120,8 +1133,8 @@ public class Simulation extends Observable implements Runnable {
     this.currentRadioMedium = radioMedium;
 
     // Add all current motes to the new radio medium
-    for (int i = 0; i < motes.size(); i++) {
-      currentRadioMedium.registerMote(motes.get(i), this);
+    for (Mote mote : motes) {
+      currentRadioMedium.registerMote(mote, this);
     }
   }
 
@@ -1149,7 +1162,7 @@ public class Simulation extends Observable implements Runnable {
    * @return True if simulation is runnable
    */
   public boolean isRunnable() {
-    return isRunning || hasPollRequests || eventQueue.peekFirst() != null;
+    return isRunning || hasPollRequests || !eventQueue.isEmpty();
   }
 
   /**

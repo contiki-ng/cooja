@@ -30,20 +30,23 @@
 
 package org.contikios.cooja.plugins;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+
 import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Hashtable;
 import java.util.Observer;
 import java.util.concurrent.Semaphore;
-
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-
-import org.apache.log4j.Logger;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.SimEventCentral.LogOutputEvent;
@@ -60,18 +63,21 @@ import org.contikios.cooja.TimeEvent;
  * @author Fredrik Osterlind
  */
 public class LogScriptEngine {
-  private static Logger logger = Logger.getLogger(LogScriptEngine.class);
+  private static final Logger logger = LogManager.getLogger(LogScriptEngine.class);
   private static final long DEFAULT_TIMEOUT = 20*60*1000*Simulation.MILLISECOND; /* 1200s = 20 minutes */
 
-  private ScriptEngine engine =
+  private final ScriptEngine engine =
     new ScriptEngineManager().getEngineByName("JavaScript");
 
   /* Log output listener */
-  private LogOutputListener logOutputListener = new LogOutputListener() {
+  private final LogOutputListener logOutputListener = new LogOutputListener() {
+    @Override
     public void moteWasAdded(Mote mote) {
     }
+    @Override
     public void moteWasRemoved(Mote mote) {
     }
+    @Override
     public void newLogOutput(LogOutputEvent ev) {
       handleNewMoteOutput(
           ev.getMote(),
@@ -80,6 +86,7 @@ public class LogScriptEngine {
           ev.msg
       );
     }
+    @Override
     public void removedLogOutput(LogOutputEvent ev) {
     }
   };
@@ -88,11 +95,10 @@ public class LogScriptEngine {
   private Semaphore semaphoreSim = null;
   private Thread scriptThread = null; /* Script thread */
   private Observer scriptLogObserver = null;
-  private ScriptMote scriptMote;
 
   private boolean stopSimulation = false, quitCooja = false;
 
-  private Simulation simulation;
+  private final Simulation simulation;
 
   private boolean scriptActive = false;
 
@@ -175,6 +181,7 @@ public class LogScriptEngine {
    */
   public void fakeMoteLogOutput(final String msg, final Mote mote) {
     simulation.invokeSimulationThread(new Runnable() {
+      @Override
       public void run() {
         handleNewMoteOutput(
             mote,
@@ -281,6 +288,7 @@ public class LogScriptEngine {
       logger.fatal("Error when creating engine: " + e.getMessage(), e);
     }
     ThreadGroup group = new ThreadGroup("script") {
+      @Override
       public void uncaughtException(Thread t, Throwable e) {
         while (e.getCause() != null) {
           e = e.getCause();
@@ -294,8 +302,8 @@ public class LogScriptEngine {
       }
     };
     scriptThread = new Thread(group, new Runnable() {
+      @Override
       public void run() {
-        /*logger.info("test script thread starts");*/
         try {
           ((Invocable)engine).getInterface(Runnable.class).run();
         } catch (RuntimeException e) {
@@ -306,7 +314,7 @@ public class LogScriptEngine {
 
           if (throwable.getMessage() != null &&
               throwable.getMessage().contains("test script killed") ) {
-            logger.info("Test script finished");
+            logger.debug("Test script finished");
           } else {
             if (!Cooja.isVisualized()) {
               logger.fatal("Test script error, terminating Cooja.");
@@ -323,12 +331,15 @@ public class LogScriptEngine {
             }
           }
         }
-        /*logger.info("test script thread exits");*/
       }
     });
     scriptThread.start(); /* Starts by acquiring semaphore (blocks) */
     while (!semaphoreScript.hasQueuedThreads()) {
-      Thread.yield();
+      try {
+        Thread.sleep(50);
+      } catch (InterruptedException e) {
+        // Does not matter, we are waiting.
+      }
     }
 
     /* Setup simulation observers */
@@ -337,16 +348,17 @@ public class LogScriptEngine {
     /* Create script output logger */
     engine.put("log", scriptLog);
 
-    Hashtable<Object, Object> hash = new Hashtable<Object, Object>();
+    Hashtable<Object, Object> hash = new Hashtable<>();
     engine.put("global", hash);
     engine.put("sim", simulation);
     engine.put("gui", simulation.getCooja());
     engine.put("msg", new String(""));
 
-    scriptMote = new ScriptMote();
+    var scriptMote = new ScriptMote();
     engine.put("node", scriptMote);
 
     Runnable activate = new Runnable() {
+      @Override
       public void run() {
         startRealTime = System.currentTimeMillis();
         startTime = simulation.getSimulationTime();
@@ -366,7 +378,8 @@ public class LogScriptEngine {
     }
   }
 
-  private TimeEvent timeoutEvent = new TimeEvent(0) {
+  private final TimeEvent timeoutEvent = new TimeEvent() {
+    @Override
     public void execute(long t) {
       if (!scriptActive) {
         return;
@@ -377,7 +390,8 @@ public class LogScriptEngine {
       stepScript();
     }
   };
-  private TimeEvent timeoutProgressEvent = new TimeEvent(0) {
+  private final TimeEvent timeoutProgressEvent = new TimeEvent() {
+    @Override
     public void execute(long t) {
       nextProgress = t + timeout/20;
       simulation.scheduleEvent(this, nextProgress);
@@ -390,50 +404,55 @@ public class LogScriptEngine {
     }
   };
 
-  private Runnable stopSimulationRunnable = new Runnable() {
+  private final Runnable stopSimulationRunnable = new Runnable() {
+    @Override
     public void run() {
       simulation.stopSimulation();
     }
   };
-  private Runnable quitRunnable = new Runnable() {
+  private final Runnable quitRunnable = new Runnable() {
+    @Override
     public void run() {
       simulation.stopSimulation();
       new Thread() {
+        @Override
         public void run() {
           try { Thread.sleep(500); } catch (InterruptedException e) { }
           simulation.getCooja().doQuit(false, exitCode);
-        };
+        }
       }.start();
       new Thread() {
+        @Override
         public void run() {
           try { Thread.sleep(2000); } catch (InterruptedException e) { }
           logger.warn("Killing Cooja");
           System.exit(exitCode);
-        };
+        }
       }.start();
     }
   };
 
-  private ScriptLog scriptLog = new ScriptLog() {
+  private final ScriptLog scriptLog = new ScriptLog() {
+    @Override
     public void log(String msg) {
       if (scriptLogObserver != null) {
         scriptLogObserver.update(null, msg);
       }
     }
+    @Override
     public void append(String filename, String msg) {
       try{
-        FileWriter fstream = new FileWriter(filename, true);
-        BufferedWriter out = new BufferedWriter(fstream);
+        BufferedWriter out = Files.newBufferedWriter(Paths.get(filename), UTF_8, CREATE, APPEND);
         out.write(msg);
         out.close();
       } catch (Exception e) {
         logger.warn("Test append failed: " + filename + ": " + e.getMessage());
       }
     }
+    @Override
     public void writeFile(String filename, String msg) {
       try{
-        FileWriter fstream = new FileWriter(filename, false);
-        BufferedWriter out = new BufferedWriter(fstream);
+        BufferedWriter out = Files.newBufferedWriter(Paths.get(filename), UTF_8);
         out.write(msg);
         out.close();
       } catch (Exception e) {
@@ -441,13 +460,17 @@ public class LogScriptEngine {
       }
     }
 
+    @Override
     public void testOK() {
       exitCode = 0;
+      logger.info("TEST OK\n");
       log("TEST OK\n");
       deactive();
     }
+    @Override
     public void testFailed() {
       exitCode = 1;
+      logger.warn("TEST FAILED\n");
       log("TEST FAILED\n");
       deactive();
     }
@@ -466,9 +489,11 @@ public class LogScriptEngine {
       throw new RuntimeException("test script killed");
     }
 
+    @Override
     public void generateMessage(final long delay, final String msg) {
       final Mote currentMote = (Mote) engine.get("mote");
-      final TimeEvent generateEvent = new TimeEvent(0) {
+      final TimeEvent generateEvent = new TimeEvent() {
+        @Override
         public void execute(long t) {
           if (scriptThread == null ||
               !scriptThread.isAlive()) {
@@ -487,6 +512,7 @@ public class LogScriptEngine {
         }
       };
       simulation.invokeSimulationThread(new Runnable() {
+        @Override
         public void run() {
           simulation.scheduleEvent(
               generateEvent,

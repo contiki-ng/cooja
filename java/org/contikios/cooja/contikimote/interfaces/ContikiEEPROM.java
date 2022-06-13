@@ -38,7 +38,8 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -69,9 +70,9 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 @ClassDescription("EEPROM")
 public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface, PolledAfterActiveTicks {
-  private static Logger logger = Logger.getLogger(ContikiEEPROM.class);
+  private static final Logger logger = LogManager.getLogger(ContikiEEPROM.class);
 
-  public int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */
+  public final int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */
   private Mote mote = null;
   private VarMemory moteMem = null;
 
@@ -94,6 +95,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
     return new String[]{"eeprom_interface"};
   }
 
+  @Override
   public void doActionsAfterTick() {
     if (moteMem.getByteValueOf("simEEPROMChanged") == 1) {
       lastRead = moteMem.getIntValueOf("simEEPROMRead");
@@ -185,6 +187,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
       textArea.setCaretPosition(0);
   }
   
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -206,6 +209,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
     panel.add(dataViewScrollPane);
     
     uploadButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         byte[] eepromData = readDialogEEPROMBytes(null);
 
@@ -221,6 +225,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
     });
 
     clearButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         byte[] eepromData = new byte[EEPROM_SIZE];        
 
@@ -234,6 +239,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
     
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         long currentTime = mote.getSimulation().getSimulationTime();
         lastTimeLabel.setText("Last change at time: " + currentTime);
@@ -261,6 +267,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -271,8 +278,9 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
     this.deleteObserver(observer);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
-      Vector<Element> config = new Vector<Element>();
+      Vector<Element> config = new Vector<>();
       Element element;
 
       // Infinite boolean
@@ -283,6 +291,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
       return config;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
       for (Element element : configXML) {
         if (element.getName().equals("eeprom")) {

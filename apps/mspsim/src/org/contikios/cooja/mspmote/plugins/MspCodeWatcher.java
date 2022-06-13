@@ -62,7 +62,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -94,7 +95,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   private static final int SOURCECODE = 0;
   private static final int BREAKPOINTS = 2;
 
-  private static Logger logger = Logger.getLogger(MspCodeWatcher.class);
+  private static final Logger logger = LogManager.getLogger(MspCodeWatcher.class);
   private Simulation simulation;
   private Observer simObserver;
 

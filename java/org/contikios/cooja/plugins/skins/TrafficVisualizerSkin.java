@@ -33,14 +33,13 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-
-import org.apache.log4j.Logger;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
@@ -62,7 +61,7 @@ import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 @ClassDescription("Radio traffic")
 @SupportedArguments(radioMediums = {AbstractRadioMedium.class})
 public class TrafficVisualizerSkin implements VisualizerSkin {
-  private static final Logger logger = Logger.getLogger(TrafficVisualizerSkin.class);
+  private static final Logger logger = LogManager.getLogger(TrafficVisualizerSkin.class);
 
   private final int MAX_HISTORY_SIZE = 200;
   private final float TRANSMITTED_COLOR_RGB[] = Color.BLUE.getRGBColorComponents(null);
@@ -73,9 +72,9 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
   private Visualizer visualizer = null;
   private AbstractRadioMedium radioMedium = null;
 
-  private final List<RadioConnectionArrow> historyList = new LinkedList<>();
+  private final List<RadioConnectionArrow> historyList = new ArrayList<>();
 
-  private Observer radioMediumObserver = new Observer() {
+  private final Observer radioMediumObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
       RadioConnection last = radioMedium.getLastConnection();
@@ -88,7 +87,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
     }
   };
 
-  private final TimeEvent ageArrowsTimeEvent = new TimeEvent(0) {
+  private final TimeEvent ageArrowsTimeEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
       if (!active) {

@@ -56,7 +56,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -87,7 +88,7 @@ import org.contikios.cooja.radiomediums.UDGM;
 @SupportedArguments(radioMediums = {UDGM.class})
 public class UDGMVisualizerSkin implements VisualizerSkin {
 
-  private static final Logger logger = Logger.getLogger(UDGMVisualizerSkin.class);
+  private static final Logger logger = LogManager.getLogger(UDGMVisualizerSkin.class);
 
   private static final Color COLOR_TX = new Color(0, 255, 0, 100);
   private static final Color COLOR_INT = new Color(50, 50, 50, 100);
@@ -111,26 +112,26 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
 
     /* Spinner GUI components */
     SpinnerNumberModel transmissionModel = new SpinnerNumberModel();
-    transmissionModel.setValue(new Double(radioMedium.TRANSMITTING_RANGE));
-    transmissionModel.setStepSize(new Double(1.0)); // 1m
-    transmissionModel.setMinimum(new Double(0.0));
+    transmissionModel.setValue(radioMedium.TRANSMITTING_RANGE);
+    transmissionModel.setStepSize(1.0); // 1m
+    transmissionModel.setMinimum(0.0);
 
     SpinnerNumberModel interferenceModel = new SpinnerNumberModel();
-    interferenceModel.setValue(new Double(radioMedium.INTERFERENCE_RANGE));
-    interferenceModel.setStepSize(new Double(1.0)); // 1m
-    interferenceModel.setMinimum(new Double(0.0));
+    interferenceModel.setValue(radioMedium.INTERFERENCE_RANGE);
+    interferenceModel.setStepSize(1.0); // 1m
+    interferenceModel.setMinimum(0.0);
 
     SpinnerNumberModel successRatioTxModel = new SpinnerNumberModel();
-    successRatioTxModel.setValue(new Double(radioMedium.SUCCESS_RATIO_TX));
-    successRatioTxModel.setStepSize(new Double(0.001)); // 0.1%
-    successRatioTxModel.setMinimum(new Double(0.0));
-    successRatioTxModel.setMaximum(new Double(1.0));
+    successRatioTxModel.setValue(radioMedium.SUCCESS_RATIO_TX);
+    successRatioTxModel.setStepSize(0.001); // 0.1%
+    successRatioTxModel.setMinimum(0.0);
+    successRatioTxModel.setMaximum(1.0);
 
     SpinnerNumberModel successRatioRxModel = new SpinnerNumberModel();
-    successRatioRxModel.setValue(new Double(radioMedium.SUCCESS_RATIO_RX));
-    successRatioRxModel.setStepSize(new Double(0.001)); // 0.1%
-    successRatioRxModel.setMinimum(new Double(0.0));
-    successRatioRxModel.setMaximum(new Double(1.0));
+    successRatioRxModel.setValue(radioMedium.SUCCESS_RATIO_RX);
+    successRatioRxModel.setStepSize(0.001); // 0.1%
+    successRatioRxModel.setMinimum(0.0);
+    successRatioRxModel.setMaximum(1.0);
 
     JSpinner.NumberEditor editor;
     final JSpinner txRangeSpinner = new JSpinner(transmissionModel);
@@ -415,7 +416,7 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
         }
       }
     }
-  };
+  }
 
   public static class SuccessRatioMenuAction implements SimulationMenuAction {
 
@@ -441,7 +442,7 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
         }
       }
     }
-  };
+  }
 
   private void updateRatioRangeFrame() {
     if (rrFrame.getDesktopPane() == null) {

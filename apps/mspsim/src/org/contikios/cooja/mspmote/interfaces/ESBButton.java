@@ -30,7 +30,8 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.*;
 import org.contikios.cooja.interfaces.Button;
@@ -41,7 +42,7 @@ import org.contikios.cooja.mspmote.ESBMote;
  */
 @ClassDescription("Button")
 public class ESBButton extends Button {
-  private static final Logger logger = Logger.getLogger(ESBButton.class);
+  private static final Logger logger = LogManager.getLogger(ESBButton.class);
 
   private final ESBMote mote;
 

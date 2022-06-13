@@ -47,19 +47,19 @@ import org.contikios.cooja.*;
 @ClassDescription("Simulation Information")
 @PluginType(PluginType.SIM_PLUGIN)
 public class SimInformation extends VisPlugin {
-  private Simulation simulation;
+  private final Simulation simulation;
 
   private static final int LABEL_UPDATE_INTERVAL = 100;
 
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;
 
-  private JLabel labelStatus;
-  private JLabel labelSimTime;
-  private JLabel labelNrMotes;
-  private JLabel labelNrMoteTypes;
+  private final JLabel labelStatus;
+  private final JLabel labelSimTime;
+  private final JLabel labelNrMotes;
+  private final JLabel labelNrMoteTypes;
 
-  private Observer simObserver;
+  private final Observer simObserver;
 
   /**
    * Create a new simulation information window.
@@ -195,6 +195,7 @@ public class SimInformation extends VisPlugin {
 
     // Register as simulation observer
     simulation.addObserver(simObserver = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         if (simulation == null) {
           return;
@@ -223,6 +224,7 @@ public class SimInformation extends VisPlugin {
 
   }
 
+  @Override
   public void closePlugin() {
     // Remove log observer from all log interfaces
     if (simObserver != null) {
@@ -233,7 +235,8 @@ public class SimInformation extends VisPlugin {
     updateLabelTimer.stop();
   }
 
-  private Timer updateLabelTimer = new Timer(LABEL_UPDATE_INTERVAL, new ActionListener() {
+  private final Timer updateLabelTimer = new Timer(LABEL_UPDATE_INTERVAL, new ActionListener() {
+    @Override
     public void actionPerformed(ActionEvent e) {
       labelSimTime.setText("" + simulation.getSimulationTimeMillis());
 

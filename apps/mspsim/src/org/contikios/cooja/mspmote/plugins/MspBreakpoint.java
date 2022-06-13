@@ -36,7 +36,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Watchpoint;
@@ -51,7 +52,7 @@ import se.sics.mspsim.core.MemoryMonitor;
  * @author Fredrik Osterlind
  */
 public class MspBreakpoint implements Watchpoint {
-  private static Logger logger = Logger.getLogger(MspBreakpoint.class);
+  private static final Logger logger = LogManager.getLogger(MspBreakpoint.class);
 
   private MspMote mspMote;
 

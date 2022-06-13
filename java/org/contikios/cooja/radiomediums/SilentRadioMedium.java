@@ -47,18 +47,22 @@ public class SilentRadioMedium extends AbstractRadioMedium {
     super(simulation);
   }
 
+  @Override
   public RadioConnection createConnections(Radio radio) {
     return null;
   }
   
+  @Override
   public void updateSignalStrengths() {
   }
   
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
   
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     return true;
   }

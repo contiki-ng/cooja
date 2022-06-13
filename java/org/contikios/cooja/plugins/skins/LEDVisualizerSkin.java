@@ -36,7 +36,8 @@ import java.awt.Point;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -56,23 +57,26 @@ import org.contikios.cooja.plugins.VisualizerSkin;
  */
 @ClassDescription("LEDs")
 public class LEDVisualizerSkin implements VisualizerSkin {
-  private static Logger logger = Logger.getLogger(LEDVisualizerSkin.class);
+  private static final Logger logger = LogManager.getLogger(LEDVisualizerSkin.class);
 
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private Observer ledObserver = new Observer() {
+  private final Observer ledObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       visualizer.repaint();
     }
   };
-  private MoteCountListener newMotesListener = new MoteCountListener() {
+  private final MoteCountListener newMotesListener = new MoteCountListener() {
+    @Override
     public void moteWasAdded(Mote mote) {
       LED led = mote.getInterfaces().getLED();
       if (led != null) {
         led.addObserver(ledObserver);
       }
     }
+    @Override
     public void moteWasRemoved(Mote mote) {
       LED led = mote.getInterfaces().getLED();
       if (led != null) {
@@ -81,6 +85,7 @@ public class LEDVisualizerSkin implements VisualizerSkin {
     }
   };
 
+  @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
@@ -91,6 +96,7 @@ public class LEDVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public void setInactive() {
     simulation.getEventCentral().removeMoteCountListener(newMotesListener);
     for (Mote m: simulation.getMotes()) {
@@ -98,13 +104,16 @@ public class LEDVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public Color[] getColorOf(Mote mote) {
     return null;
   }
 
+  @Override
   public void paintBeforeMotes(Graphics g) {
   }
 
+  @Override
   public void paintAfterMotes(Graphics g) {
     /* Paint LEDs left of each mote */
     Mote[] allMotes = simulation.getMotes();
@@ -145,6 +154,7 @@ public class LEDVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public Visualizer getVisualizer() {
     return visualizer;
   }

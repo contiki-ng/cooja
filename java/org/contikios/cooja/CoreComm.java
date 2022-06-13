@@ -28,11 +28,15 @@
 
 package org.contikios.cooja;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Vector;
-
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageContainer;
@@ -73,9 +77,9 @@ import org.contikios.cooja.dialogs.MessageList;
 public abstract class CoreComm {
 
   // Static pointers to current libraries
-  private final static Vector<CoreComm> coreComms = new Vector<CoreComm>();
+  private final static Vector<CoreComm> coreComms = new Vector<>();
 
-  private final static Vector<File> coreCommFiles = new Vector<File>();
+  private final static Vector<File> coreCommFiles = new Vector<>();
 
   private static int fileCounter = 1;
 
@@ -123,12 +127,13 @@ public abstract class CoreComm {
    * Generates new source file by reading default source template and replacing
    * the class name field.
    *
+   * @param tempDir Directory for temporary files
    * @param className
    *          Java class name (without extension)
    * @throws MoteTypeCreationException
    *           If error occurs
    */
-  public static void generateLibSourceFile(String className)
+  public static void generateLibSourceFile(Path tempDir, String className)
       throws MoteTypeCreationException {
     BufferedWriter sourceFileWriter = null;
     BufferedReader templateFileReader = null;
@@ -139,27 +144,34 @@ public abstract class CoreComm {
       String mainTemplate = Cooja
           .getExternalToolsSetting("CORECOMM_TEMPLATE_FILENAME");
 
-      if ((new File(mainTemplate)).exists()) {
-        reader = new FileReader(mainTemplate);
+      if (new File(mainTemplate).exists()) {
+        reader = Files.newBufferedReader(Paths.get(mainTemplate), UTF_8);
       } else {
         InputStream input = CoreComm.class
             .getResourceAsStream('/' + mainTemplate);
         if (input == null) {
           throw new FileNotFoundException(mainTemplate + " not found");
         }
-        reader = new InputStreamReader(input);
+        reader = new InputStreamReader(input, UTF_8);
       }
 
       templateFileReader = new BufferedReader(reader);
       destFilename = className + ".java";
 
-      File dir = new File("org/contikios/cooja/corecomm");
-      if (!dir.exists()) {
-        dir.mkdirs();
+      File dir = tempDir.toFile();
+      StringBuilder path = new StringBuilder(tempDir.toString());
+      // Gradually do mkdir() since mkdirs() makes deleteOnExit() leave the
+      // directory when Cooja quits.
+      for (String p : new String[] {"/org", "/contikios", "/cooja", "/corecomm"}) {
+        path.append(p);
+        dir = new File(path.toString());
+        dir.mkdir();
+        dir.deleteOnExit();
       }
 
-      sourceFileWriter = new BufferedWriter(new OutputStreamWriter(
-          new FileOutputStream("org/contikios/cooja/corecomm/" + destFilename)));
+      Path dst = Path.of(dir + "/" + destFilename);
+      sourceFileWriter = Files.newBufferedWriter(dst, UTF_8);
+      dst.toFile().deleteOnExit();
 
       // Replace special fields in template
       String line;
@@ -181,13 +193,11 @@ public abstract class CoreComm {
       } catch (Exception e2) {
       }
 
-      throw (MoteTypeCreationException) new MoteTypeCreationException(
-          "Could not generate corecomm source file: " + className + ".java")
-          .initCause(e);
+      throw new MoteTypeCreationException(
+          "Could not generate corecomm source file: " + className + ".java", e);
     }
 
-    File genFile = new File("org/contikios/cooja/corecomm/" + destFilename);
-    if (genFile.exists()) {
+    if (Files.exists(Path.of(tempDir + "/org/contikios/cooja/corecomm/" + destFilename))) {
       return;
     }
 
@@ -198,12 +208,13 @@ public abstract class CoreComm {
   /**
    * Compiles Java class.
    *
+   * @param tempDir Directory for temporary files
    * @param className
    *          Java class name (without extension)
    * @throws MoteTypeCreationException
    *           If Java class compilation error occurs
    */
-  public static void compileSourceFile(String className)
+  public static void compileSourceFile(Path tempDir, String className)
       throws MoteTypeCreationException {
       /* Try to create a message list with support for GUI - will give not UI if headless */
     MessageList compilationOutput = MessageContainer.createMessageList(true);
@@ -211,8 +222,6 @@ public abstract class CoreComm {
         .getInputStream(MessageList.NORMAL);
     OutputStream compilationErrorStream = compilationOutput
         .getInputStream(MessageList.ERROR);
-
-    File classFile = new File("org/contikios/cooja/corecomm/" + className + ".class");
 
     try {
       int b;
@@ -222,9 +231,10 @@ public abstract class CoreComm {
           "." + File.pathSeparator +
           Cooja.getExternalToolsSetting("PATH_CONTIKI")
           + "/tools/cooja/dist/cooja.jar",
-          "org/contikios/cooja/corecomm/" + className + ".java" };
+          tempDir + "/org/contikios/cooja/corecomm/" + className + ".java" };
 
-      Process p = Runtime.getRuntime().exec(cmd, null, null);
+      ProcessBuilder pb = new ProcessBuilder(cmd);
+      Process p = pb.start();
       InputStream outputStream = p.getInputStream();
       InputStream errorStream = p.getErrorStream();
       while ((b = outputStream.read()) >= 0) {
@@ -233,22 +243,14 @@ public abstract class CoreComm {
       while ((b = errorStream.read()) >= 0) {
         compilationErrorStream.write(b);
       }
-      p.waitFor();
-
-      if (classFile.exists()) {
+      if (p.waitFor() == 0) {
+        File classFile = new File(tempDir + "/org/contikios/cooja/corecomm/" + className + ".class");
+        classFile.deleteOnExit();
         return;
       }
-
-    } catch (IOException e) {
-      MoteTypeCreationException exception = (MoteTypeCreationException) new MoteTypeCreationException(
-          "Could not compile corecomm source file: " + className + ".java")
-          .initCause(e);
-      exception.setCompilationOutput(compilationOutput);
-      throw exception;
-    } catch (InterruptedException e) {
-      MoteTypeCreationException exception = (MoteTypeCreationException) new MoteTypeCreationException(
-          "Could not compile corecomm source file: " + className + ".java")
-          .initCause(e);
+    } catch (IOException | InterruptedException e) {
+      var exception = new MoteTypeCreationException(
+          "Could not compile corecomm source file: " + className + ".java", e);
       exception.setCompilationOutput(compilationOutput);
       throw exception;
     }
@@ -262,28 +264,24 @@ public abstract class CoreComm {
   /**
    * Loads given Java class file from disk.
    *
+   * @param tempDir Directory for temporary files
    * @param className Java class name
    * @return Loaded class
    * @throws MoteTypeCreationException If error occurs
    */
-  public static Class<?> loadClassFile(String className)
+  public static Class<?> loadClassFile(Path tempDir, String className)
       throws MoteTypeCreationException {
     Class<?> loadedClass = null;
     try {
       ClassLoader urlClassLoader = new URLClassLoader(
-          new URL[] { new File(".").toURI().toURL() },
+          new URL[] { tempDir.toUri().toURL() },
           CoreComm.class.getClassLoader());
       loadedClass = urlClassLoader.loadClass("org.contikios.cooja.corecomm."
           + className);
 
-    } catch (MalformedURLException e) {
-      throw (MoteTypeCreationException) new MoteTypeCreationException(
-          "Could not load corecomm class file: " + className + ".class")
-          .initCause(e);
-    } catch (ClassNotFoundException e) {
-      throw (MoteTypeCreationException) new MoteTypeCreationException(
-          "Could not load corecomm class file: " + className + ".class")
-          .initCause(e);
+    } catch (MalformedURLException | ClassNotFoundException e) {
+      throw new MoteTypeCreationException(
+          "Could not load corecomm class file: " + className + ".class", e);
     }
     if (loadedClass == null) {
       throw new MoteTypeCreationException(
@@ -297,19 +295,20 @@ public abstract class CoreComm {
    * Create and return an instance of the core communicator identified by
    * className. This core communicator will load the native library libFile.
    *
+   * @param tempDir Directory for temporary files
    * @param className
    *          Class name of core communicator
    * @param libFile
    *          Native library file
    * @return Core Communicator
    */
-  public static CoreComm createCoreComm(String className, File libFile)
+  public static CoreComm createCoreComm(Path tempDir, String className, File libFile)
       throws MoteTypeCreationException {
-    generateLibSourceFile(className);
+    generateLibSourceFile(tempDir, className);
 
-    compileSourceFile(className);
+    compileSourceFile(tempDir, className);
 
-    Class newCoreCommClass = loadClassFile(className);
+    Class newCoreCommClass = loadClassFile(tempDir, className);
 
     try {
       Constructor constr = newCoreCommClass
@@ -323,8 +322,8 @@ public abstract class CoreComm {
 
       return newCoreComm;
     } catch (Exception e) {
-      throw (MoteTypeCreationException) new MoteTypeCreationException(
-          "Error when creating corecomm instance: " + className).initCause(e);
+      throw new MoteTypeCreationException(
+          "Error when creating corecomm instance: " + className, e);
     }
   }
 
@@ -346,7 +345,7 @@ public abstract class CoreComm {
    *
    * @param addr Relative address
    */
-  public abstract void setReferenceAddress(int addr);
+  public abstract void setReferenceAddress(long addr);
 
   /**
    * Fills an byte array with memory segment identified by start and length.
@@ -355,7 +354,7 @@ public abstract class CoreComm {
    * @param length Length of segment
    * @param mem Array to fill with memory segment
    */
-  public abstract void getMemory(int relAddr, int length, byte[] mem);
+  public abstract void getMemory(long relAddr, int length, byte[] mem);
 
   /**
    * Overwrites a memory segment identified by start and length.
@@ -364,6 +363,6 @@ public abstract class CoreComm {
    * @param length Length of segment
    * @param mem New memory segment data
    */
-  public abstract void setMemory(int relAddr, int length, byte[] mem);
+  public abstract void setMemory(long relAddr, int length, byte[] mem);
 
 }

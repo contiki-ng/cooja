@@ -32,7 +32,8 @@ package org.contikios.cooja.mspmote.interfaces;
 
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -55,7 +56,7 @@ import se.sics.mspsim.chip.Radio802154;
  */
 @ClassDescription("TI CC1120")
 public class CC1120Radio extends Radio implements CustomDataRadio {
-	private static Logger logger = Logger.getLogger(CC1120Radio.class);
+	private static final Logger logger = LogManager.getLogger(CC1120Radio.class);
 
 	/**
 	 * Cross-level:
@@ -237,7 +238,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 			}
 
 			final byte byteToDeliver = b;
-			getMote().getSimulation().scheduleEvent(new MspMoteTimeEvent(mote, 0) {
+			getMote().getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
 				public void execute(long t) {
 					super.execute(t);
 					cc1120.receivedByte(byteToDeliver);
@@ -270,7 +271,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		} else {
 			inputByte = lastIncomingByte;
 		}
-		mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote, 0) {
+		mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
 			public void execute(long t) {
 				super.execute(t);
 				cc1120.receivedByte(inputByte);
@@ -367,7 +368,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		}
 		currentSignalStrength = signalStrength;
 		if (rssiLastCounter == 0) {
-			getMote().getSimulation().scheduleEvent(new MspMoteTimeEvent(mote, 0) {
+			getMote().getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
 				public void execute(long t) {
 					super.execute(t);
 

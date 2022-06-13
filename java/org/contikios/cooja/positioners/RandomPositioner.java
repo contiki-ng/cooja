@@ -40,9 +40,14 @@ import org.contikios.cooja.*;
  */
 @ClassDescription("Random positioning")
 public class RandomPositioner extends Positioner {
-  double startX, endX, startY, endY, startZ, endZ;
+  final double startX;
+  final double endX;
+  final double startY;
+  final double endY;
+  final double startZ;
+  final double endZ;
 
-  private Random random = new Random(); /* Do not use main random generator for setup */
+  private final Random random = new Random(); /* Do not use main random generator for setup */
 
   /**
    * Creates a random positioner.
@@ -66,6 +71,7 @@ public class RandomPositioner extends Positioner {
     this.endZ = endZ;
   }
 
+  @Override
   public double[] getNextPosition() {
     return new double[] {
         startX + random.nextDouble()*(endX - startX),

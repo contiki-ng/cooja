@@ -31,7 +31,8 @@ package org.contikios.cooja.mspmote;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.platform.GenericNode;
@@ -45,7 +46,7 @@ import se.sics.mspsim.platform.ti.Trxeb2520Node;
  * @author Fredrik Osterlind
  */
 public class Exp5438Mote extends MspMote {
-  private static Logger logger = Logger.getLogger(Exp5438Mote.class);
+  private static final Logger logger = LogManager.getLogger(Exp5438Mote.class);
 
   public GenericNode exp5438Node = null;
   private String desc = "";

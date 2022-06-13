@@ -1,13 +1,47 @@
 <?xml version="1.0"?>
 
 <project name="COOJA Simulator" default="run" basedir=".">
+  <fail message="Ant 1.10+ required">
+    <condition>
+      <not><antversion atleast="1.10" /></not>
+    </condition>
+  </fail>
+
+  <!-- Ant ignores the release tag when using an old JDK. Make sure
+       we fail when detecting a class that was removed in Java 11. -->
+  <fail message="Java 11+ is required to build">
+    <condition>
+      <available classname="javax.xml.ws.Service"/>
+    </condition>
+  </fail>
+
+  <property name="languageversion" value="11" />
   <property name="java" location="java"/>
   <property name="build" location="build"/>
   <property name="javadoc" location="javadoc"/>
   <property name="config" location="config"/>
   <property name="dist" location="dist"/>
   <property name="lib" location="lib"/>
+  <property name="maxmem" value="2048m" />
+  <!-- Flags passed to the JVM. Potentially useful flags for debugging
+       crashes: -XX:+ShowMessageBoxOnError -->
+  <property name="jvmargs" value="" />
   <property name="args" value="" />
+  <property name="CC" value="gcc" />
+
+  <property name="log4j.version" value="2.17.2" />
+
+  <path id="cooja.classpath">
+    <pathelement path="${build}"/>
+    <pathelement location="lib/jdom.jar"/>
+    <pathelement location="lib/log4j-core-${log4j.version}.jar"/>
+    <pathelement location="lib/log4j-api-${log4j.version}.jar"/>
+    <!-- Downloaded from
+         https://mvnrepository.com/artifact/info.picocli/picocli/4.6.3 -->
+    <pathelement location="lib/picocli-4.6.3.jar"/>
+    <pathelement location="lib/syntaxpane-1.2.0.jar"/>
+    <pathelement location="lib/swingx-all-1.6.4.jar"/>
+  </path>
 
   <target name="help">
     <echo>
@@ -15,19 +49,15 @@ The COOJA Simulator
 
   Start COOJA
   > ant run
-  Build COOJA (dist/cooja.jar) and all default projects (MSPSim et al)
-  > ant jar
-
+  Start COOJA and immediately load simulation in sim.csc
+  > ant run -Dargs="-quickstart=sim.csc"
+  Start COOJA without GUI and run simulation in sim.csc
+  > ant run -Dargs="-nogui=sim.csc"
   Start COOJA with more memory allocated (for large simulations)
   > ant run_bigmem
-  Start COOJA, show error box if process terminates unexpectedly.
-  > ant run_errorbox
 
-  Start COOJA and immediately load simulation in sim.csc
-  > java -mx512m -jar dist/cooja.jar -quickstart=sim.csc
-  Start COOJA without GUI and run simulation in sim.csc
-  > java -mx512m -jar dist/cooja.jar -nogui=sim.csc
-
+  Build COOJA (dist/cooja.jar) and all default projects (MSPSim et al)
+  > ant jar
   Build executable simulation JAR from mysim.csc
   > ant export-jar -DCSC="c:/mysim.csc"
     or
@@ -36,208 +66,128 @@ The COOJA Simulator
     </echo>
   </target>
 
-  <target name="init">
-    <tstamp/>
-  </target>
-
-  <target name="export-jar" depends="init, jar">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.util.ExecuteJAR" maxmemory="512m">
+  <target name="export-jar" depends="jar">
+    <java fork="yes" dir="${build}" classname="org.contikios.cooja.util.ExecuteJAR"
+          failonerror="true">
         <sysproperty key="user.language" value="en"/>
         <arg file="${CSC}"/>
         <arg file="exported.jar"/>
-        <env key="LD_LIBRARY_PATH" value="."/>
-        <classpath>
-          <pathelement path="${build}"/>
-          <pathelement location="lib/jdom.jar"/>
-          <pathelement location="lib/log4j.jar"/>
-          <pathelement location="lib/jsyntaxpane.jar"/>
-          <pathelement location="lib/swingx-all-1.6.4.jar"/>
-        </classpath>
+        <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
+        <classpath refid="cooja.classpath"/>
     </java>
   </target>
 
-  <target name="javadoc" depends="init">
+  <target name="javadoc">
     <delete dir="${javadoc}" quiet="true"/>
     <mkdir dir="${javadoc}/"/>
-    <javadoc destdir="${javadoc}">
+    <javadoc destdir="${javadoc}" source="${languageversion}">
       <fileset dir="${java}/" includes="**/*.java"/>
-      <classpath>
-        <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
-        <pathelement location="lib/jsyntaxpane.jar"/>
-        <pathelement location="lib/swingx-all-1.6.4.jar"/>
-      </classpath>
+      <classpath refid="cooja.classpath"/>
     </javadoc>
   </target>
 
-  <target name="compile" depends="init">
+  <target name="compile">
     <mkdir dir="${build}"/>
-    <javac srcdir="${java}" destdir="${build}" debug="on"
+    <javac srcdir="${java}" destdir="${build}" debug="on" release="${languageversion}"
            includeantruntime="false"
            encoding="utf-8">
-      <classpath>
-        <pathelement path="."/>
-        <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
-        <pathelement location="lib/jsyntaxpane.jar"/>
-        <pathelement location="lib/swingx-all-1.6.4.jar"/>
-      </classpath>
+      <classpath refid="cooja.classpath"/>
     </javac>
   </target>
 
-  <target name="copy configs" depends="init">
+  <target name="copy configs">
     <mkdir dir="${build}"/>
     <copy todir="${build}">
       <fileset dir="${config}"/>
     </copy>
   </target>
 
-  <target name="clean" depends="init">
+  <target name="clean">
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
     <ant antfile="build.xml" dir="apps/mrm" target="clean" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/mspsim" target="clean" inheritAll="false"/>
-    <ant antfile="build.xml" dir="apps/avrora" target="clean" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/serial_socket" target="clean" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/powertracker" target="clean" inheritAll="false"/>
   </target>
 
-  <target name="run" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja" maxmemory="512m">
+  <target name="run" depends="jar">
+    <!-- FIXME: this target should let the JVM decide maxmemory, but Cooja
+                currently crashes on 64-bit Ubuntu on machines with >8G
+                memory if we don't set maxmemory. -->
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
+          failonerror="true" maxmemory="${maxmem}">
       <sysproperty key="user.language" value="en"/>
+      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
+      <jvmarg line="${jvmargs}" />
       <arg line="${args}"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <classpath>
-        <pathelement path="${build}"/>
-        <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
-        <pathelement location="lib/jsyntaxpane.jar"/>
-        <pathelement location="lib/swingx-all-1.6.4.jar"/>
-      </classpath>
     </java>
   </target>
 
-  <target name="run64" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja" maxmemory="512m">
-      <sysproperty key="user.language" value="en"/>
-      <jvmarg value="-d64 -XX:+ShowMessageBoxOnError"/>
+  <!-- Target for debugging memory errors in Contiki-NG. Requires
+       Contiki-NG to be built with -fsanitize=address, and possibly
+       also -fno-omit-frame-pointer to get better backtraces,
+       -fno-stack-protector on modern GCCs,
+       and -fsanitize-recover=address if using halt_on_error=0. -->
+  <target name="run_asan" depends="jar">
+    <!-- GCC checks if stderr is a terminal to decide about color output.
+         Force color since output is easier to read with colors. -->
+    <property name="asan_color" value="always" />
+    <!-- JVM needs to handle SEGV. Unlikely to find leaks in Contiki-NG.
+         halt_on_error=0 requires CFLAGS/LDFLAGS to also contain
+         -fsanitize-recover=address -->
+    <property name="asan_options"
+              value="color=${asan_color} handle_segv=0 detect_leaks=0" />
+    <exec executable="${CC}" outputproperty="libasan">
+      <arg value="-print-file-name=libasan.so"/>
+    </exec>
+    <!-- See maxmemory comment on run target. -->
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
+          failonerror="true" maxmemory="${maxmem}">
+      <!-- Address sanitizer needs to be initialized early, so LD_PRELOAD
+           the library into the JVM. -->
+      <env key="LD_PRELOAD" value="${libasan}"/>
+      <env key="ASAN_OPTIONS" value="${asan_options}"/>
+      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
+      <jvmarg line="${jvmargs}" />
       <arg line="${args}"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <classpath>
-        <pathelement path="${build}"/>
-        <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
-        <pathelement location="lib/jsyntaxpane.jar"/>
-        <pathelement location="lib/swingx-all-1.6.4.jar"/>
-      </classpath>
     </java>
   </target>
 
-  <target name="run_errorbox" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja" maxmemory="512m">
-      <sysproperty key="user.language" value="en"/>
-      <jvmarg value="-XX:+ShowMessageBoxOnError"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <classpath>
-        <pathelement path="${build}"/>
-        <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
-        <pathelement location="lib/jsyntaxpane.jar"/>
-        <pathelement location="lib/swingx-all-1.6.4.jar"/>
-      </classpath>
-    </java>
-  </target>
-
-  <target name="runprof" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja">
+  <target name="run_bigmem" depends="jar">
+    <java fork="yes" dir="${build}" jar="${dist}/cooja.jar"
+          failonerror="true" maxmemory="${maxmem}">
+      <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
+      <jvmarg line="${jvmargs}" />
       <arg line="${args}"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <jvmarg line="-agentlib:yjpagent"/>
-      <classpath>
-        <pathelement path="${build}"/>
-        <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
-        <pathelement location="lib/jsyntaxpane.jar"/>
-        <pathelement location="lib/swingx-all-1.6.4.jar"/>
-      </classpath>
-    </java>
-  </target>
-
-  <target name="runfree" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja" maxmemory="1536m">
-      <arg line="${args}"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <classpath>
-        <pathelement path="${build}"/>
-        <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
-        <pathelement location="lib/jsyntaxpane.jar"/>
-        <pathelement location="lib/swingx-all-1.6.4.jar"/>
-        <pathelement location="mspsim/lib/jfreechart-1.0.11.jar"/>
-        <pathelement location="mspsim/lib/jcommon-1.0.14.jar"/>
-      </classpath>
-    </java>
-  </target>
-
-  <target name="run_bigmem" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja" maxmemory="1536m">
-      <arg line="${args}"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <classpath>
-        <pathelement path="${build}"/>
-        <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
-        <pathelement location="lib/jsyntaxpane.jar"/>
-        <pathelement location="lib/swingx-all-1.6.4.jar"/>
-      </classpath>
     </java>
   </target>
 
   <target name="jar" depends="jar_cooja">
     <ant antfile="build.xml" dir="apps/mrm" target="jar" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/mspsim" target="jar" inheritAll="false"/>
-    <ant antfile="build.xml" dir="apps/avrora" target="jar" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/serial_socket" target="jar" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/powertracker" target="jar" inheritAll="false"/>
   </target>
 
-  <target name="run_nogui" depends="init, compile, jar, copy configs">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.Cooja" maxmemory="512m">
-      <arg line="-nogui=${args}"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <classpath>
-        <pathelement path="${build}"/>
-        <pathelement location="lib/jdom.jar"/>
-        <pathelement location="lib/log4j.jar"/>
-        <pathelement location="lib/jsyntaxpane.jar"/>
-      </classpath>
-    </java>
-  </target>
+  <pathconvert property="manifest.classpath" pathsep=" ">
+    <path refid="cooja.classpath"/>
+    <mapper>
+      <chainedmapper>
+        <flattenmapper/>
+        <globmapper from="*.jar" to="lib/*.jar"/>
+      </chainedmapper>
+    </mapper>
+  </pathconvert>
 
-  <target name="run_applet" depends="init, compile, jar, copy configs">
-    <exec executable="appletviewer" dir="${build}">
-      <arg value="-J-Djava.security.policy=cooja.policy"/>
-      <arg value="cooja.html"/>
-      <env key="LD_LIBRARY_PATH" value="."/>
-      <env key="CLASSPATH" path="${build}"/>
-    </exec>
-  </target>
-
-  <target name="java_version" depends="init">
-    <exec executable="javac" dir="${build}" includeantruntime="false">
-      <arg value="-version"/>
-    </exec>
-  </target>
-
-  <target name="jar_cooja" depends="init, compile, copy configs">
-    <mkdir dir="${dist}"/>
+  <target name="jar_cooja" depends="compile, copy configs">
+    <mkdir dir="${dist}/lib"/>
     <jar destfile="${dist}/cooja.jar" basedir="${build}">
       <manifest>
-        <attribute name="Main-Class" value="org.contikios.cooja.Cooja"/>
-        <attribute name="Class-Path" value=". lib/log4j.jar lib/jdom.jar lib/jsyntaxpane.jar lib/swingx-all-1.6.4.jar"/>
+        <attribute name="Main-Class" value="org.contikios.cooja.Main"/>
+        <attribute name="Class-Path" value=". ${manifest.classpath}"/>
       </manifest>
     </jar>
-    <mkdir dir="${dist}/lib"/>
     <copy todir="${dist}/lib">
       <fileset dir="${lib}"/>
     </copy>

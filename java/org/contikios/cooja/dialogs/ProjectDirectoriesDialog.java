@@ -81,7 +81,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.COOJAProject;
 import org.contikios.cooja.Cooja;
@@ -95,15 +96,15 @@ import org.contikios.cooja.ProjectConfig;
  */
 public class ProjectDirectoriesDialog extends JDialog {
 	private static final long serialVersionUID = 1896348946753376556L;
-	private static Logger logger = Logger.getLogger(ProjectDirectoriesDialog.class);
+	private static final Logger logger = LogManager.getLogger(ProjectDirectoriesDialog.class);
 
 	private Cooja gui;
 
 	private JTable table = null;
-	private JTextArea projectInfo = new JTextArea("Extension information:");
+	private final JTextArea projectInfo = new JTextArea("Extension information:");
 	private DirectoryTreePanel treePanel = null;
 
-	private ArrayList<COOJAProject> currentProjects = new ArrayList<COOJAProject>();
+	private final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
 	private COOJAProject[] returnedProjects = null;
 
 	/**
@@ -116,11 +117,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 	 * @return New COOJA projects, or null
 	 */
 	public static COOJAProject[] showDialog(Container parent, Cooja gui, COOJAProject[] currentProjects) {
-		if (Cooja.isVisualizedInApplet()) {
-			return null;
-		}
-
-		ProjectDirectoriesDialog dialog = new ProjectDirectoriesDialog((Window) parent, currentProjects);
+		ProjectDirectoriesDialog dialog = new ProjectDirectoriesDialog(parent, currentProjects);
 		dialog.gui = gui;
 		dialog.setLocationRelativeTo(parent);
 		dialog.setVisible(true);
@@ -135,12 +132,15 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 		table = new JTable(new AbstractTableModel() {
 			private static final long serialVersionUID = 591599455927509191L;
+			@Override
 			public int getColumnCount() {
 				return 2;
 			}
+			@Override
 			public int getRowCount() {
 				return currentProjects.size();
 			}
+			@Override
 			public Object getValueAt(int rowIndex, int columnIndex) {
 				if (columnIndex == 0) {
 					return rowIndex+1;
@@ -163,6 +163,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 		table.setTableHeader(null);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (table.getSelectedRow() < 0) {
 					return;
@@ -175,6 +176,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 		table.getColumnModel().getColumn(0).setMaxWidth(30);
 		table.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
 			private static final long serialVersionUID = 7224219223448831880L;
+			@Override
 			public Component getTableCellRendererComponent(JTable table,
 					Object value, boolean isSelected, boolean hasFocus, int row,
 					int column) {
@@ -205,6 +207,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 			button = new JButton("View config");
 			button.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
 						/* Default config */
@@ -218,8 +221,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 						ConfigViewer.showDialog(ProjectDirectoriesDialog.this, config);
 					} catch (Exception ex) {
 						logger.fatal("Error when merging config: " + ex.getMessage(), ex);
-						return;
-					}
+          }
 				}
 			});
 			buttonPane.add(button);
@@ -227,6 +229,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 			button = new JButton("Cancel");
 			button.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					ProjectDirectoriesDialog.this.returnedProjects = null;
 					dispose();
@@ -238,6 +241,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 			button = new JButton("Apply for session");
 			button.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					ProjectDirectoriesDialog.this.returnedProjects = currentProjects.toArray(new COOJAProject[0]);
 					dispose();
@@ -249,12 +253,13 @@ public class ProjectDirectoriesDialog extends JDialog {
 			
 			button = new JButton("Save");
 			button.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					Object[] options = { "Ok", "Cancel" };
 
 					String newDefaultProjectDirs = "";
 					for (COOJAProject p: currentProjects) {
-						if (newDefaultProjectDirs != "") {
+						if (!newDefaultProjectDirs.isEmpty()) {
 							newDefaultProjectDirs += ";";
 						}
 
@@ -291,6 +296,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 			sortPane = new JPanel(new BorderLayout());
 			button = new JButton("Move up");
 			button.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					int selectedIndex = table.getSelectedRow();
 					if (selectedIndex <= 0) {
@@ -306,6 +312,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 			
 			button = new JButton("Move down");
 			button.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					int selectedIndex = table.getSelectedRow();
 					if (selectedIndex < 0) {
@@ -326,6 +333,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 				button = new JButton("Remove");
 				
 				button.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						int selectedIndex = table.getSelectedRow();
 						if (selectedIndex < 0) {
@@ -369,6 +377,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 			listPane.setRightComponent(projectPane);
 
 			SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					projectPane.setDividerLocation(0.6);
 					listPane.setDividerLocation(0.5);
@@ -499,11 +508,11 @@ public class ProjectDirectoriesDialog extends JDialog {
  */
 class DirectoryTreePanel extends JPanel {
 	private static final long serialVersionUID = -6852893350326771136L;
-	private static Logger logger = Logger.getLogger(DirectoryTreePanel.class);
+	private static final Logger logger = LogManager.getLogger(DirectoryTreePanel.class);
 
-	private ProjectDirectoriesDialog parent;
-	private JTree tree;
-	private DefaultMutableTreeNode treeRoot;
+	private final ProjectDirectoriesDialog parent;
+	private final JTree tree;
+	private final DefaultMutableTreeNode treeRoot;
 	public DirectoryTreePanel(ProjectDirectoriesDialog parent) {
 		super(new BorderLayout());
 		this.parent = parent;
@@ -516,11 +525,12 @@ class DirectoryTreePanel extends JPanel {
 		tree.expandRow(0);
 		tree.setCellRenderer(new DefaultTreeCellRenderer() {
 			private static final long serialVersionUID = 280434957859560569L;
-			private Icon unselectedIcon = new CheckboxIcon(null);
-			private Icon selectedIcon = new CheckboxIcon(new Color(0, 255, 0, 128));
-			private Icon errorIcon = new CheckboxIcon(new Color(255, 0, 0, 128));
+			private final Icon unselectedIcon = new CheckboxIcon(null);
+			private final Icon selectedIcon = new CheckboxIcon(new Color(0, 255, 0, 128));
+			private final Icon errorIcon = new CheckboxIcon(new Color(255, 0, 0, 128));
 			private Font boldFont = null;
 			private Font normalFont = null;
+			@Override
 			public Component getTreeCellRendererComponent(JTree tree,
 					Object value, boolean sel, boolean expanded, boolean leaf,
 					int row, boolean hasFocus) {
@@ -559,23 +569,26 @@ class DirectoryTreePanel extends JPanel {
 			}
 			class CheckboxIcon implements Icon {
 				Icon icon;
-				Color color;
+				final Color color;
 				public CheckboxIcon(Color color) {
 					this.icon = (Icon) UIManager.get("CheckBox.icon");
 					this.color = color;
 				}
+				@Override
 				public int getIconHeight() {
 					if (icon == null) {
 						return 18;
 					}
 					return icon.getIconHeight();
 				}
+				@Override
 				public int getIconWidth() {
 					if (icon == null) {
 						return 18;
 					}
 					return icon.getIconWidth();
 				}
+				@Override
 				public void paintIcon(Component c, Graphics g, int x, int y) {
 					if (icon != null) {
 						try {
@@ -599,6 +612,7 @@ class DirectoryTreePanel extends JPanel {
 		});
 		tree.setModel(new COOJAProjectTreeModel(treeRoot));
 		tree.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
 				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
 				if (selPath == null) {
@@ -633,6 +647,7 @@ class DirectoryTreePanel extends JPanel {
 			}
 		});
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			@Override
 			public void valueChanged(TreeSelectionEvent e) {
 				TreePath selPath = e.getPath();
 				if (selPath == null) {
@@ -760,8 +775,9 @@ class DirectoryTreePanel extends JPanel {
 			}
 			return false;
 		}
+		@Override
 		public String toString() {
-			if (dir.getName() == null || dir.getName().equals("")) {
+			if (dir.getName().isEmpty()) {
 				return dir.getAbsolutePath();
 			}
 			return dir.getName();
@@ -770,7 +786,7 @@ class DirectoryTreePanel extends JPanel {
 	private class COOJAProjectTreeModel extends DefaultTreeModel {
 		private static final long serialVersionUID = -4673855124090194313L;
 
-		private DefaultMutableTreeNode computerNode;
+		private final DefaultMutableTreeNode computerNode;
 
 		public COOJAProjectTreeModel(DefaultMutableTreeNode computerNode) {
 			super(computerNode);
@@ -787,10 +803,12 @@ class DirectoryTreePanel extends JPanel {
 				computerNode.add(deviceNode);
 			}
 		}
+		@Override
 		public Object getRoot() {
 			return computerNode.getUserObject();
 		}
-		public boolean isLeaf(Object node) {  
+		@Override
+		public boolean isLeaf(Object node) {
 			if ((node instanceof DefaultMutableTreeNode)) {
 				node = ((DefaultMutableTreeNode)node).getUserObject();
 			}
@@ -802,6 +820,7 @@ class DirectoryTreePanel extends JPanel {
 
 			return td.dir.isFile();
 		}
+		@Override
 		public int getChildCount(Object parent) {
 			if ((parent instanceof DefaultMutableTreeNode)) {
 				parent = ((DefaultMutableTreeNode)parent).getUserObject();
@@ -824,6 +843,7 @@ class DirectoryTreePanel extends JPanel {
 			}
 			return children.length;
 		}
+		@Override
 		public Object getChild(Object parent, int index) {
 			if ((parent instanceof DefaultMutableTreeNode)) {
 				parent = ((DefaultMutableTreeNode)parent).getUserObject();
@@ -846,6 +866,7 @@ class DirectoryTreePanel extends JPanel {
 			}
 			return new DefaultMutableTreeNode(new TreeDirectory(children[index]));
 		}
+		@Override
 		public int getIndexOfChild(Object parent, Object child) {
 			if ((parent instanceof DefaultMutableTreeNode)) {
 				parent = ((DefaultMutableTreeNode)parent).getUserObject();
@@ -882,11 +903,15 @@ class DirectoryTreePanel extends JPanel {
 			return -1;
 		}
 
+		@Override
 		public void valueForPathChanged(TreePath path, Object newvalue) {}
+		@Override
 		public void addTreeModelListener(TreeModelListener l) {}
+		@Override
 		public void removeTreeModelListener(TreeModelListener l) {}
 
 		private final FileFilter DIRECTORIES = new FileFilter() {
+			@Override
 			public boolean accept(File file) {
 				if (!file.isDirectory()) {
 					return false;
@@ -950,11 +975,7 @@ class ConfigViewer extends JDialog {
 		buttonPane.add(Box.createHorizontalGlue());
 
 		button = new JButton("Close");
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
+		button.addActionListener(e -> dispose());
 		buttonPane.add(button);
 
 		/* Config */

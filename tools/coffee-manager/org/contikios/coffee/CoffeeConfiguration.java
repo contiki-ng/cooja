@@ -68,7 +68,7 @@ public class CoffeeConfiguration {
 		}
 
 		nameLength = Integer.parseInt(prop.getProperty("name_length"));
-		useMicroLogs = new Boolean(prop.getProperty("use_micro_logs")).booleanValue();
+		useMicroLogs = Boolean.parseBoolean(prop.getProperty("use_micro_logs"));
 		fsSize = Integer.parseInt(prop.getProperty("fs_size"));
 		sectorSize = Integer.parseInt(prop.getProperty("sector_size"));
 		pageSize = Integer.parseInt(prop.getProperty("page_size"));

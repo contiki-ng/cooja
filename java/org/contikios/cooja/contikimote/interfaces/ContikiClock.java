@@ -33,11 +33,11 @@ import java.util.Collection;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMote;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
@@ -71,11 +71,11 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Fredrik Osterlind
  */
 public class ContikiClock extends Clock implements ContikiMoteInterface, PolledBeforeActiveTicks, PolledAfterAllTicks {
-  private static Logger logger = Logger.getLogger(ContikiClock.class);
+  private static final Logger logger = LogManager.getLogger(ContikiClock.class);
 
-  private Simulation simulation;
-  private ContikiMote mote;
-  private VarMemory moteMem;
+  private final Simulation simulation;
+  private final ContikiMote mote;
+  private final VarMemory moteMem;
 
   private long moteTime; /* Microseconds */
   private long timeDrift; /* Microseconds */
@@ -98,6 +98,7 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
     return new String[]{"clock_interface"};
   }
 
+  @Override
   public void setTime(long newTime) {
     moteTime = newTime;
     if (moteTime > 0) {
@@ -105,27 +106,33 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
     }
   }
 
+  @Override
   public void setDrift(long drift) {
     this.timeDrift = drift - (drift % 1000); /* Round to ms */
     setTime(timeDrift);
   }
 
+  @Override
   public long getDrift() {
     return timeDrift;
   }
 
+  @Override
   public long getTime() {
     return moteTime;
   }
   
+  @Override
   public void setDeviation(double deviation) {
-    logger.fatal("Can't change deviation");;
+    logger.fatal("Can't change deviation");
   }
 
+  @Override
   public double getDeviation() {
   	return 1.0;
   }
 
+  @Override
   public void doActionsBeforeTick() {
     /* Update time */
     long currentSimulationTime = simulation.getSimulationTime();
@@ -133,6 +140,7 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
     moteMem.setInt64ValueOf("simRtimerCurrentTicks", currentSimulationTime);
   }
 
+  @Override
   public void doActionsAfterTick() {
     long currentSimulationTime = mote.getSimulation().getSimulationTime();
 
@@ -172,17 +180,21 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
   }
 
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     return null;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 }

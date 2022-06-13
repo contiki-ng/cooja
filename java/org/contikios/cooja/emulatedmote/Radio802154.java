@@ -30,7 +30,8 @@
 package org.contikios.cooja.emulatedmote;
 
 import java.util.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -48,7 +49,7 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
     private final static boolean DEBUG = false;
     
-    private static final Logger logger = Logger.getLogger(Radio802154.class);
+    private static final Logger logger = LogManager.getLogger(Radio802154.class);
 
     protected long lastEventTime = 0;
 
@@ -56,12 +57,12 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
     protected boolean isInterfered = false;
 
-    private boolean isTransmitting = false;
+    private final boolean isTransmitting = false;
 
     protected boolean isReceiving = false;
     //    private boolean hasFailedReception = false;
 
-    private boolean radioOn = true;
+    private final boolean radioOn = true;
 
     private RadioByte lastOutgoingByte = null;
 
@@ -72,7 +73,7 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
     private RadioPacket lastIncomingPacket = null;
 
     //    private int mode;
-    protected Mote mote;
+    protected final Mote mote;
      
     public Radio802154(Mote mote) {
         this.mote = mote;
@@ -80,7 +81,7 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
     int len = 0;
     int expLen = 0;
-    byte[] buffer = new byte[127 + 15];
+    final byte[] buffer = new byte[127 + 15];
     protected void handleTransmit(byte val) {
         if (len == 0) {
             lastEventTime = mote.getSimulation().getSimulationTime();

@@ -32,7 +32,8 @@ package org.contikios.cooja;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A positioner is used for determining initial positions of motes.
@@ -40,7 +41,7 @@ import org.apache.log4j.Logger;
  * @author Fredrik Osterlind
  */
 public abstract class Positioner {
-  private static Logger logger = Logger.getLogger(Positioner.class);
+  private static final Logger logger = LogManager.getLogger(Positioner.class);
 
   /**
    * This method creates an instance of the given class with the given interval
@@ -66,7 +67,7 @@ public abstract class Positioner {
    *          Highest Z value of positions generated using returned positioner
    * @return Postioner instance
    */
-  public static final Positioner generateInterface(
+  public static Positioner generateInterface(
       Class<? extends Positioner> positionerClass, int totalNumberOfMotes,
       double startX, double endX,
       double startY, double endY,

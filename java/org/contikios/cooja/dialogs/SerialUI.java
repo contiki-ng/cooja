@@ -50,7 +50,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
@@ -58,29 +59,31 @@ import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.interfaces.SerialPort;
 
 public abstract class SerialUI extends Log implements SerialPort {
-  private static Logger logger = Logger.getLogger(SerialUI.class);
+  private static final Logger logger = LogManager.getLogger(SerialUI.class);
 
   private final static int MAX_LENGTH = 16*1024;
 
   private byte lastSerialData = 0; /* SerialPort */
   private String lastLogMessage = ""; /* Log */
-  private StringBuilder newMessage = new StringBuilder(); /* Log */
+  private final StringBuilder newMessage = new StringBuilder(); /* Log */
 
   /* Command history */
   private final static int HISTORY_SIZE = 15;
-  private ArrayList<String> history = new ArrayList<String>();
+  private final ArrayList<String> history = new ArrayList<>();
   private int historyPos = -1;
 
   /* Log */
+  @Override
   public String getLastLogMessage() {
     return lastLogMessage;
   }
 
   /* SerialPort */
-  private abstract class SerialDataObservable extends Observable {
+  private abstract static class SerialDataObservable extends Observable {
     public abstract void notifyNewData();
   }
-  private SerialDataObservable serialDataObservable = new SerialDataObservable() {
+  private final SerialDataObservable serialDataObservable = new SerialDataObservable() {
+    @Override
     public void notifyNewData() {
       if (this.countObservers() == 0) {
         return;
@@ -89,12 +92,15 @@ public abstract class SerialUI extends Log implements SerialPort {
       notifyObservers(SerialUI.this);
     }
   };
+  @Override
   public void addSerialDataObserver(Observer o) {
     serialDataObservable.addObserver(o);
   }
+  @Override
   public void deleteSerialDataObserver(Observer o) {
     serialDataObservable.deleteObserver(o);
   }
+  @Override
   public byte getLastSerialData() {
     return lastSerialData;
   }
@@ -125,6 +131,7 @@ public abstract class SerialUI extends Log implements SerialPort {
 
 
   /* Mote interface visualizer */
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel(new BorderLayout());
     JPanel commandPane = new JPanel(new BorderLayout());
@@ -134,6 +141,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     JButton sendButton = new JButton("Send data");
 
     ActionListener sendCommandAction = new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         final String command = trim(commandField.getText());
         if (command == null) {
@@ -156,11 +164,7 @@ public abstract class SerialUI extends Log implements SerialPort {
           appendToTextArea(logTextPane, "> " + command);
           commandField.setText("");
           if (getMote().getSimulation().isRunning()) {
-            getMote().getSimulation().invokeSimulationThread(new Runnable() {
-              public void run() {
-                writeString(command);
-              }
-            });
+            getMote().getSimulation().invokeSimulationThread(() -> writeString(command));
           } else {
             writeString(command);
           }
@@ -178,6 +182,7 @@ public abstract class SerialUI extends Log implements SerialPort {
 
     /* History */
     commandField.addKeyListener(new KeyAdapter() {
+      @Override
       public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
         case KeyEvent.VK_UP: {
@@ -199,9 +204,7 @@ public abstract class SerialUI extends Log implements SerialPort {
             historyPos = -1;
             commandField.setText("");
             commandField.getToolkit().beep();
-            break;
-          }
-          if (historyPos >= 0 && historyPos < history.size()) {
+          } else if (historyPos < history.size()) {
             commandField.setText(history.get(historyPos));
           } else {
             commandField.setText("");
@@ -218,6 +221,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     logTextPane.setOpaque(false);
     logTextPane.setEditable(false);
     logTextPane.addKeyListener(new KeyAdapter() {
+      @Override
       public void keyPressed(KeyEvent e) {
         if ((e.getModifiers() & (MouseEvent.SHIFT_MASK|MouseEvent.CTRL_MASK)) != 0) {
           return;
@@ -229,13 +233,10 @@ public abstract class SerialUI extends Log implements SerialPort {
     /* Mote interface observer */
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         final String logMessage = getLastLogMessage();
-        EventQueue.invokeLater(new Runnable() {
-          public void run() {
-            appendToTextArea(logTextPane, logMessage);
-          }
-        });
+        EventQueue.invokeLater(() -> appendToTextArea(logTextPane, logMessage));
       }
     });
     panel.putClientProperty("intf_obs", observer);
@@ -247,6 +248,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -258,6 +260,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   }
 
   private static final String HISTORY_SEPARATOR = "~;";
+  @Override
   public Collection<Element> getConfigXML() {
     StringBuilder sb = new StringBuilder();
     for (String s: history) {
@@ -270,7 +273,7 @@ public abstract class SerialUI extends Log implements SerialPort {
       return null;
     }
 
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element = new Element("history");
     element.setText(sb.toString());
     config.add(element);
@@ -278,6 +281,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     return config;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("history")) {
@@ -290,9 +294,11 @@ public abstract class SerialUI extends Log implements SerialPort {
     }
   }
 
+  @Override
   public void close() {
   }
 
+  @Override
   public void flushInput() {
   }
 

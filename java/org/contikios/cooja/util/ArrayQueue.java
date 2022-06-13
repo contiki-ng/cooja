@@ -80,7 +80,7 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     if (capacity < minCapacity) {
 //      int newCapacity = (capacity * 3) / 2 + 1;
       int newCapacity = capacity * 2;
-      set(newCapacity < minCapacity ? minCapacity : newCapacity);
+      set(Math.max(newCapacity, minCapacity));
     }
     modCount++;
   }
@@ -124,18 +124,22 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     }
   }
 
+  @Override
   public int size() {
     return size;
   }
 
+  @Override
   public boolean isEmpty() {
     return size == 0;
   }
 
+  @Override
   public boolean contains(Object element) {
     return indexOf(element) >= 0;
   }
 
+  @Override
   public int indexOf(Object element) {
     return indexOf(element, 0);
   }
@@ -163,6 +167,7 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     return -1;
   }
 
+  @Override
   public int lastIndexOf(Object element) {
     final int capacity = queueData.length;
     if (element == null) {
@@ -182,11 +187,13 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     return -1;
   }
 
+  @Override
   public E get(int index) {
     // getPos() will ensure that the index is valid
     return queueData[getPos(index)];
   }
 
+  @Override
   public E set(int index, E element) {
     int pos = getPos(index);
     E oldValue = queueData[pos];
@@ -194,6 +201,7 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     return oldValue;
   }
 
+  @Override
   public void add(int index, E element) {
     // Make sure there is space for the new element.
     ensureCapacity(size + 1);
@@ -232,6 +240,7 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     }
   }
 
+  @Override
   public E remove(int index) {
     E value;
     // This method also checks that the index is valid
@@ -268,6 +277,7 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     return value;
   }
 
+  @Override
   public boolean remove(Object element) {
     int index = indexOf(element);
     if (index >= 0) {
@@ -277,6 +287,7 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     return false;
   }
 
+  @Override
   public void clear() {
     final int capacity = queueData.length;
     for (int i = 0; i < size; i++) {
@@ -290,7 +301,7 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
    * Returns a shallow copy of this queue (the elements themselves are not
    * copied).
    */
-  @SuppressWarnings("unchecked")
+  @Override @SuppressWarnings("unchecked")
   public ArrayQueue<E> clone() {
     try {
       ArrayQueue<E> v = (ArrayQueue<E>) super.clone();
@@ -305,13 +316,14 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     }
   }
 
+  @Override
   public Object[] toArray() {
     Object[] array = new Object[size];
     copy(array);
     return array;
   }
 
-  @SuppressWarnings("unchecked")
+  @Override @SuppressWarnings("unchecked")
   public <T> T[] toArray(T[] array) {
     if (array.length < size) {
       array = (T[]) java.lang.reflect
@@ -331,6 +343,7 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
   }
 
+  @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(getClass().getName()).append('[')

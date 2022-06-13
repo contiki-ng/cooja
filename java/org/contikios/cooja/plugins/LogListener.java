@@ -30,6 +30,10 @@
 
 package org.contikios.cooja.plugins;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -46,15 +50,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -78,10 +81,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-
-import org.apache.log4j.Logger;
-import org.jdom.Element;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -95,6 +96,7 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.TableColumnAdjuster;
 import org.contikios.cooja.dialogs.UpdateAggregator;
 import org.contikios.cooja.util.ArrayQueue;
+import org.jdom.Element;
 
 /**
  * A simple mote log listener.
@@ -106,7 +108,7 @@ import org.contikios.cooja.util.ArrayQueue;
 @PluginType(PluginType.SIM_STANDARD_PLUGIN)
 public class LogListener extends VisPlugin implements HasQuickHelp {
   private static final long serialVersionUID = 3294595371354857261L;
-  private static Logger logger = Logger.getLogger(LogListener.class);
+  private static final Logger logger = LogManager.getLogger(LogListener.class);
 
   private final Color[] BG_COLORS = new Color[] {
       new Color(200, 200, 200),
@@ -140,38 +142,40 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   private boolean hasHours = false;
 
   private final JTable logTable;
-  private TableRowSorter<TableModel> logFilter;
-  private ArrayQueue<LogData> logs = new ArrayQueue<LogData>();
+  private final TableRowSorter<TableModel> logFilter;
+  private final ArrayQueue<LogData> logs = new ArrayQueue<>();
 
-  private Simulation simulation;
+  private final Simulation simulation;
 
   private JTextField filterTextField = null;
-  private JLabel filterLabel = new JLabel("Filter: ");
-  private Color filterTextFieldBackground;
+  private final JLabel filterLabel = new JLabel("Filter: ");
+  private final Color filterTextFieldBackground;
 
-  private AbstractTableModel model;
+  private final AbstractTableModel model;
 
-  private LogOutputListener logOutputListener;
+  private final LogOutputListener logOutputListener;
 
   private boolean backgroundColors = true;
-  private JCheckBoxMenuItem colorCheckbox;
+  private final JCheckBoxMenuItem colorCheckbox;
 
   private boolean inverseFilter = false;
-  private JCheckBoxMenuItem inverseFilterCheckbox;
+  private final JCheckBoxMenuItem inverseFilterCheckbox;
 
   private boolean hideDebug = false;
-  private JCheckBoxMenuItem hideDebugCheckbox;
+  private final JCheckBoxMenuItem hideDebugCheckbox;
 
-  private JCheckBoxMenuItem appendCheckBox;
+  private final JCheckBoxMenuItem appendCheckBox;
 
   private static final int UPDATE_INTERVAL = 250;
-  private UpdateAggregator<LogData> logUpdateAggregator = new UpdateAggregator<LogData>(UPDATE_INTERVAL) {
-    private Runnable scroll = new Runnable() {
+  private final UpdateAggregator<LogData> logUpdateAggregator = new UpdateAggregator<>(UPDATE_INTERVAL) {
+    private final Runnable scroll = new Runnable() {
+      @Override
       public void run() {
         logTable.scrollRectToVisible(
             new Rectangle(0, logTable.getHeight() - 2, 1, logTable.getHeight()));
       }
     };
+    @Override
     protected void handle(List<LogData> ls) {
       boolean isVisible = true;
       if (logTable.getRowCount() > 0) {
@@ -188,7 +192,8 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
       /* Remove old */
       int removed = 0;
-      while (logs.size() > simulation.getEventCentral().getLogOutputBufferSize()) {
+      int log_limit = simulation.getEventCentral().getLogOutputBufferSize();
+      while (logs.size() > log_limit ) {
         logs.remove(0);
         removed++;
       }
@@ -221,20 +226,172 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     menuBar.add(showMenu);
     this.setJMenuBar(menuBar);
 
+    Action copyAllAction = new AbstractAction("Copy all data") {
+      private static final long serialVersionUID = -5038884975254178373L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        StringBuilder sb = new StringBuilder();
+        for (var data : logs) {
+          sb.append(data.getTime()).append("\t");
+          sb.append(data.getID()).append("\t");
+          sb.append(data.ev.getMessage()).append("\n");
+        }
+
+        StringSelection stringSelection = new StringSelection(sb.toString());
+        clipboard.setContents(stringSelection, null);
+      }
+    };
     editMenu.add(new JMenuItem(copyAllAction));
+    Action copyAllMessagesAction = new AbstractAction("Copy all messages") {
+      private static final long serialVersionUID = -5038884975254178373L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        StringBuilder sb = new StringBuilder();
+        for (var data : logs) {
+          sb.append(data.ev.getMessage()).append("\n");
+        }
+
+        StringSelection stringSelection = new StringSelection(sb.toString());
+        clipboard.setContents(stringSelection, null);
+      }
+    };
     editMenu.add(new JMenuItem(copyAllMessagesAction));
+    Action copyAction = new AbstractAction("Copy selected") {
+      private static final long serialVersionUID = -8433490108577001803L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        int[] selectedRows = logTable.getSelectedRows();
+
+        StringBuilder sb = new StringBuilder();
+        for (int i : selectedRows) {
+          sb.append(logTable.getValueAt(i, COLUMN_TIME)).append("\t");
+          sb.append(logTable.getValueAt(i, COLUMN_FROM)).append("\t");
+          sb.append(logTable.getValueAt(i, COLUMN_DATA)).append("\n");
+        }
+
+        StringSelection stringSelection = new StringSelection(sb.toString());
+        clipboard.setContents(stringSelection, null);
+      }
+    };
     editMenu.add(new JMenuItem(copyAction));
     editMenu.addSeparator();
+    Action clearAction = new AbstractAction("Clear all messages") {
+      private static final long serialVersionUID = -2115620313183440224L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        clear();
+      }
+    };
     editMenu.add(new JMenuItem(clearAction));
 
 
+    Action saveAction = new AbstractAction("Save to file") {
+      private static final long serialVersionUID = -4140706275748686944L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JFileChooser fc = new JFileChooser();
+        File suggest = new File(Cooja.getExternalToolsSetting("LOG_LISTENER_SAVEFILE", "loglistener.txt"));
+        fc.setSelectedFile(suggest);
+        int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+          return;
+        }
+
+        File saveFile = fc.getSelectedFile();
+        if (saveFile.exists()) {
+          String s1 = "Overwrite";
+          String s2 = "Cancel";
+          Object[] options = {s1, s2};
+          int n = JOptionPane.showOptionDialog(
+                  Cooja.getTopParentContainer(),
+                  "A file with the same name already exists.\nDo you want to remove it?",
+                  "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
+                  JOptionPane.QUESTION_MESSAGE, null, options, s1);
+          if (n != JOptionPane.YES_OPTION) {
+            return;
+          }
+        }
+
+        Cooja.setExternalToolsSetting("LOG_LISTENER_SAVEFILE", saveFile.getPath());
+        if (saveFile.exists() && !saveFile.canWrite()) {
+          logger.fatal("No write access to file: " + saveFile);
+          return;
+        }
+
+        try {
+          PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
+          for (LogData data : logs) {
+            outStream.println(
+                    data.getTime() + "\t" +
+                            data.getID() + "\t" +
+                            data.ev.getMessage());
+          }
+          outStream.close();
+        } catch (Exception ex) {
+          logger.fatal("Could not write to file: " + saveFile);
+        }
+      }
+    };
     fileMenu.add(new JMenuItem(saveAction));
+    Action appendAction = new AbstractAction("Append to file") {
+      private static final long serialVersionUID = -3041714249257346688L;
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JCheckBoxMenuItem cb = (JCheckBoxMenuItem) e.getSource();
+        appendToFile = cb.isSelected();
+        if (!appendToFile) {
+          appendToFile(null, null);
+          appendStreamFile = null;
+          return;
+        }
+
+        JFileChooser fc = new JFileChooser();
+        File suggest = new File(Cooja.getExternalToolsSetting("LOG_LISTENER_APPENDFILE", "loglistener_append.txt"));
+        fc.setSelectedFile(suggest);
+        int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+          appendToFile = false;
+          cb.setSelected(appendToFile);
+          return;
+        }
+
+        File saveFile = fc.getSelectedFile();
+        Cooja.setExternalToolsSetting("LOG_LISTENER_APPENDFILE", saveFile.getPath());
+        if (saveFile.exists() && !saveFile.canWrite()) {
+          logger.fatal("No write access to file: " + saveFile);
+          appendToFile = false;
+          cb.setSelected(appendToFile);
+          return;
+        }
+        appendToFile = true;
+        appendStreamFile = saveFile;
+        if (!appendStreamFile.exists()) {
+          try {
+            appendStreamFile.createNewFile();
+          } catch (IOException ex) {
+          }
+        }
+      }
+    };
     appendCheckBox = new JCheckBoxMenuItem(appendAction);
     fileMenu.add(appendCheckBox);
 
     colorCheckbox = new JCheckBoxMenuItem("Mote-specific coloring", backgroundColors);
     showMenu.add(colorCheckbox);
     colorCheckbox.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         backgroundColors = colorCheckbox.isSelected();
         repaint();
@@ -243,6 +400,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     hideDebugCheckbox = new JCheckBoxMenuItem("Hide \"DEBUG: \" messages");
     showMenu.add(hideDebugCheckbox);
     hideDebugCheckbox.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         hideDebug = hideDebugCheckbox.isSelected();
         setFilter(getFilter());
@@ -252,6 +410,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     inverseFilterCheckbox = new JCheckBoxMenuItem("Inverse filter");
     showMenu.add(inverseFilterCheckbox);
     inverseFilterCheckbox.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         inverseFilter = inverseFilterCheckbox.isSelected();
         if (inverseFilter) {
@@ -267,18 +426,22 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     model = new AbstractTableModel() {
       private static final long serialVersionUID = 3065150390849332924L;
+      @Override
       public String getColumnName(int col) {
       	if (col == COLUMN_TIME && formatTimeString) {
     			return "Time";
       	}
         return COLUMN_NAMES[col];
       }
+      @Override
       public int getRowCount() {
         return logs.size();
       }
+      @Override
       public int getColumnCount() {
         return COLUMN_NAMES.length;
       }
+      @Override
       public Object getValueAt(int row, int col) {
         LogData log = logs.get(row);
         if (col == COLUMN_TIME) {
@@ -296,6 +459,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     logTable = new JTable(model) {
       private static final long serialVersionUID = -930616018336483196L;
+      @Override
       public String getToolTipText(MouseEvent e) {
         java.awt.Point p = e.getPoint();
         int rowIndex = rowAtPoint(p);
@@ -322,6 +486,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     };
     DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
       private static final long serialVersionUID = -340743275865216182L;
+      @Override
       public Component getTableCellRendererComponent(JTable table,
           Object value, boolean isSelected, boolean hasFocus, int row,
           int column) {
@@ -350,13 +515,14 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     logTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
     logTable.setFont(new Font("Monospaced", Font.PLAIN, 12));
     logTable.addKeyListener(new KeyAdapter() {
+      @Override
       public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
           showInAllAction.actionPerformed(null);
         }
       }
     });
-    logFilter = new TableRowSorter<TableModel>(model);
+    logFilter = new TableRowSorter<>(model);
     for (int i = 0, n = model.getColumnCount(); i < n; i++) {
       logFilter.setSortable(i, false);
     }
@@ -364,7 +530,8 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     /* Toggle time format */
     logTable.getTableHeader().addMouseListener(new MouseAdapter() {
-    	public void mouseClicked(MouseEvent e) {
+      @Override
+      public void mouseClicked(MouseEvent e) {
         int colIndex = logTable.columnAtPoint(e.getPoint());
         int columnIndex = logTable.convertColumnIndexToModel(colIndex);
         if (columnIndex != COLUMN_TIME) {
@@ -375,7 +542,8 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     	}
 		});
     logTable.addMouseListener(new MouseAdapter() {
-    	public void mouseClicked(MouseEvent e) {
+      @Override
+      public void mouseClicked(MouseEvent e) {
         int colIndex = logTable.columnAtPoint(e.getPoint());
         int columnIndex = logTable.convertColumnIndexToModel(colIndex);
         if (columnIndex != COLUMN_FROM) {
@@ -469,6 +637,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         logs.add(data);
       }
       java.awt.EventQueue.invokeLater(new Runnable() {
+        @Override
         public void run() {
           model.fireTableDataChanged();
           logTable.scrollRectToVisible(
@@ -478,27 +647,29 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
 
     /* Column width adjustment */
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      public void run() {
-        /* Make sure this happens *after* adding history */
-        adjuster.setDynamicAdjustment(true);
-      }
+    java.awt.EventQueue.invokeLater(() -> {
+      /* Make sure this happens *after* adding history */
+      adjuster.setDynamicAdjustment(true);
     });
 
     /* Start observing motes for new log output */
     logUpdateAggregator.start();
     simulation.getEventCentral().addLogOutputListener(logOutputListener = new LogOutputListener() {
+      @Override
       public void moteWasAdded(Mote mote) {
         /* Update title */
         updateTitle();
       }
+      @Override
       public void moteWasRemoved(Mote mote) {
         /* Update title */
         updateTitle();
       }
+      @Override
       public void newLogOutput(LogOutputEvent ev) {
         registerNewLogOutput(ev);
       }
+      @Override
       public void removedLogOutput(LogOutputEvent ev) {
       }
     });
@@ -512,12 +683,14 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     filterPanel.add(filterLabel);
     filterPanel.add(filterTextField);
     filterTextField.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         String str = filterTextField.getText();
         setFilter(str);
 
         /* Autoscroll */
         SwingUtilities.invokeLater(new Runnable() {
+          @Override
           public void run() {
             int s = logTable.getSelectedRow();
             if (s < 0) {
@@ -581,6 +754,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         + simulation.getEventCentral().getLogOutputObservationsCount() + " log interfaces");*/
   }
 
+  @Override
   public void closePlugin() {
     /* Stop observing motes */
     appendToFile(null, null);
@@ -588,8 +762,9 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     simulation.getEventCentral().removeLogOutputListener(logOutputListener);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     element = new Element("filter");
@@ -620,16 +795,13 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     return config;
   }
 
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       String name = element.getName();
       if ("filter".equals(name)) {
         final String str = element.getText();
-        EventQueue.invokeLater(new Runnable() {
-          public void run() {
-            setFilter(str);
-          }
-        });
+        EventQueue.invokeLater(() -> setFilter(str));
       } else if ("coloring".equals(name)) {
         backgroundColors = true;
         colorCheckbox.setSelected(true);
@@ -664,18 +836,33 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
   public void setFilter(String str) {
     filterTextField.setText(str);
+    resetFiltered();
 
     try {
-    	final RowFilter<Object,Object> regexp;
+    	final RowFilter<Object,Integer> regexp;
       if (str != null && str.length() > 0) {
       	regexp = RowFilter.regexFilter(str, COLUMN_FROM, COLUMN_DATA, COLUMN_CONCAT);
       } else {
       	regexp = null;
       }
-    	RowFilter<Object, Object> wrapped = new RowFilter<Object, Object>() {
-    		public boolean include(RowFilter.Entry<? extends Object, ? extends Object> entry) {
+    	RowFilter<Object, Integer> wrapped = new RowFilter<Object, Integer>() {
+        @Override
+    		public boolean include(RowFilter.Entry<? extends Object, ? extends Integer> entry) {
     		  if (regexp != null) {
-    				boolean pass = regexp.include(entry);
+                    boolean pass;
+                    if (entry.getIdentifier() != null) {
+                        // entry alredy in logs, so can check is it filetred?
+                        int row = entry.getIdentifier().intValue();
+                        LogData log = logs.get(row);
+                        pass = (log.filtered == FilterState.PASS);
+                        if (log.filtered == FilterState.NONE) {
+                            pass = regexp.include(entry);
+                            log.setFiltered(pass);
+                        }
+                    }
+                    else {
+                        pass = regexp.include(entry);
+                    }
     				if (inverseFilter && pass) {
     					return false;
     				} else if (!inverseFilter && !pass) {
@@ -703,6 +890,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
   public void trySelectTime(final long time) {
     java.awt.EventQueue.invokeLater(new Runnable() {
+      @Override
       public void run() {
         for (int i=0; i < logs.size(); i++) {
           if (logs.get(i).ev.getTime() < time) {
@@ -721,10 +909,14 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     });
   }
 
+  static private enum  FilterState { NONE, PASS, REJECTED };
   private class LogData {
     public final LogOutputEvent ev;
+    public       FilterState    filtered;
+
     public LogData(LogOutputEvent ev) {
       this.ev = ev;
+      this.filtered = FilterState.NONE;
     }
 
     public String getID() {
@@ -738,56 +930,20 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         return "" + ev.getTime() / Simulation.MILLISECOND;
       }
     }
-  }
 
-  private Action saveAction = new AbstractAction("Save to file") {
-    private static final long serialVersionUID = -4140706275748686944L;
-
-    public void actionPerformed(ActionEvent e) {
-      JFileChooser fc = new JFileChooser();
-      File suggest = new File(Cooja.getExternalToolsSetting("LOG_LISTENER_SAVEFILE", "loglistener.txt"));
-      fc.setSelectedFile(suggest);
-      int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
-      if (returnVal != JFileChooser.APPROVE_OPTION) {
-        return;
-      }
-
-      File saveFile = fc.getSelectedFile();
-      if (saveFile.exists()) {
-        String s1 = "Overwrite";
-        String s2 = "Cancel";
-        Object[] options = { s1, s2 };
-        int n = JOptionPane.showOptionDialog(
-            Cooja.getTopParentContainer(),
-            "A file with the same name already exists.\nDo you want to remove it?",
-            "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE, null, options, s1);
-        if (n != JOptionPane.YES_OPTION) {
-          return;
-        }
-      }
-
-      Cooja.setExternalToolsSetting("LOG_LISTENER_SAVEFILE", saveFile.getPath());
-      if (saveFile.exists() && !saveFile.canWrite()) {
-        logger.fatal("No write access to file: " + saveFile);
-        return;
-      }
-
-      try {
-        PrintWriter outStream = new PrintWriter(new FileWriter(saveFile));
-        for(LogData data : logs) {
-          outStream.println(
-              data.getTime() + "\t" +
-              data.getID() + "\t" +
-              data.ev.getMessage());
-        }
-        outStream.close();
-      } catch (Exception ex) {
-        logger.fatal("Could not write to file: " + saveFile);
-        return;
-      }
+    public void setFiltered(boolean pass) {
+        if (pass)
+            filtered = FilterState.PASS;
+        else
+            filtered = FilterState.REJECTED;
     }
-  };
+  }
+  
+  private void resetFiltered() {
+      for( LogData x: logs) {
+          x.filtered = FilterState.NONE;
+      }
+  }
 
   private boolean appendToFile = false;
   private File appendStreamFile = null;
@@ -810,7 +966,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
           appendStream.close();
           appendStream = null;
         }
-        appendStream = new PrintWriter(new FileWriter(file,true));
+        appendStream = new PrintWriter(Files.newBufferedWriter(file.toPath(), UTF_8, CREATE, APPEND));
         appendStreamFile = file;
         appendToFileWroteHeader = false;
       } catch (Exception ex) {
@@ -829,48 +985,9 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     return true;
   }
 
-  private Action appendAction = new AbstractAction("Append to file") {
-    private static final long serialVersionUID = -3041714249257346688L;
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cb = (JCheckBoxMenuItem) e.getSource();
-      appendToFile = cb.isSelected();
-      if (!appendToFile) {
-        appendToFile(null, null);
-        appendStreamFile = null;
-        return;
-      }
-
-      JFileChooser fc = new JFileChooser();
-      File suggest = new File(Cooja.getExternalToolsSetting("LOG_LISTENER_APPENDFILE", "loglistener_append.txt"));
-      fc.setSelectedFile(suggest);
-      int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
-      if (returnVal != JFileChooser.APPROVE_OPTION) {
-        appendToFile = false;
-        cb.setSelected(appendToFile);
-        return;
-      }
-
-      File saveFile = fc.getSelectedFile();
-      Cooja.setExternalToolsSetting("LOG_LISTENER_APPENDFILE", saveFile.getPath());
-      if (saveFile.exists() && !saveFile.canWrite()) {
-        logger.fatal("No write access to file: " + saveFile);
-        appendToFile = false;
-        cb.setSelected(appendToFile);
-        return;
-      }
-      appendToFile = true;
-      appendStreamFile = saveFile;
-      if (!appendStreamFile.exists()) {
-        try {
-          appendStreamFile.createNewFile();
-        } catch (IOException ex) {
-        }
-      }
-    }
-  };
-
-  private Action timeLineAction = new AbstractAction("Timeline") {
+  private final Action timeLineAction = new AbstractAction("Timeline") {
     private static final long serialVersionUID = -6358463434933029699L;
+    @Override
     public void actionPerformed(ActionEvent e) {
       int view = logTable.getSelectedRow();
       if (view < 0) {
@@ -892,8 +1009,9 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action radioLoggerAction = new AbstractAction("Radio Logger") {
+  private final Action radioLoggerAction = new AbstractAction("Radio Logger") {
     private static final long serialVersionUID = -3041714249257346688L;
+    @Override
     public void actionPerformed(ActionEvent e) {
       int view = logTable.getSelectedRow();
       if (view < 0) {
@@ -915,23 +1033,16 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action showInAllAction = new AbstractAction("All") {
+  private final Action showInAllAction = new AbstractAction("All") {
     private static final long serialVersionUID = -8433490108577001803L;
     {
         putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true));
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       timeLineAction.actionPerformed(null);
       radioLoggerAction.actionPerformed(null);
-    }
-  };
-
-  private Action clearAction = new AbstractAction("Clear all messages") {
-    private static final long serialVersionUID = -2115620313183440224L;
-
-    public void actionPerformed(ActionEvent e) {
-      clear();
     }
   };
 
@@ -943,67 +1054,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
   }
 
-  private Action copyAction = new AbstractAction("Copy selected") {
-    private static final long serialVersionUID = -8433490108577001803L;
-
-    public void actionPerformed(ActionEvent e) {
-      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      int[] selectedRows = logTable.getSelectedRows();
-
-      StringBuilder sb = new StringBuilder();
-      for (int i: selectedRows) {
-        sb.append(logTable.getValueAt(i, COLUMN_TIME));
-        sb.append("\t");
-        sb.append(logTable.getValueAt(i, COLUMN_FROM));
-        sb.append("\t");
-        sb.append(logTable.getValueAt(i, COLUMN_DATA));
-        sb.append("\n");
-      }
-
-      StringSelection stringSelection = new StringSelection(sb.toString());
-      clipboard.setContents(stringSelection, null);
-    }
-  };
-
-  private Action copyAllAction = new AbstractAction("Copy all data") {
-    private static final long serialVersionUID = -5038884975254178373L;
-
-    public void actionPerformed(ActionEvent e) {
-      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      StringBuilder sb = new StringBuilder();
-      for(LogData data : logs) {
-        sb.append(data.getTime());
-        sb.append("\t");
-        sb.append(data.getID());
-        sb.append("\t");
-        sb.append(data.ev.getMessage());
-        sb.append("\n");
-      }
-
-      StringSelection stringSelection = new StringSelection(sb.toString());
-      clipboard.setContents(stringSelection, null);
-    }
-  };
-
-  private Action copyAllMessagesAction = new AbstractAction("Copy all messages") {
-    private static final long serialVersionUID = -5038884975254178373L;
-
-    public void actionPerformed(ActionEvent e) {
-      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      StringBuilder sb = new StringBuilder();
-      for(LogData data : logs) {
-        sb.append(data.ev.getMessage());
-        sb.append("\n");
-      }
-
-      StringSelection stringSelection = new StringSelection(sb.toString());
-      clipboard.setContents(stringSelection, null);
-    }
-  };
-
+  @Override
   public String getQuickHelp() {
     return
         "<b>Log Listener</b>" +
@@ -1029,13 +1080,16 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     }
 
     final LogData ld = new LogData(ev);
-    RowFilter.Entry<? extends TableModel, ? extends Integer> entry = new RowFilter.Entry<TableModel, Integer>() {
+    RowFilter.Entry<? extends TableModel, ? extends Integer> entry = new RowFilter.Entry<>() {
+      @Override
       public TableModel getModel() {
         return model;
       }
+      @Override
       public int getValueCount() {
         return model.getColumnCount();
       }
+      @Override
       public Object getValue(int index) {
         if (index == COLUMN_TIME) {
           return ld.getTime();
@@ -1048,6 +1102,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         }
         return null;
       }
+      @Override
       public Integer getIdentifier() {
         return null;
       }

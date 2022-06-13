@@ -9,7 +9,7 @@ public class MessageListText implements MessageList {
     
     @Override
     public void addMessage(String string, int type) {
-        System.out.println("Message:" + string);
+        System.out.println(string);
     }
 
     @Override

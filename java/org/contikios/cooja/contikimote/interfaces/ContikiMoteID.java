@@ -32,7 +32,8 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import java.util.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.*;
@@ -62,11 +63,11 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
   private VarMemory moteMem = null;
-  private static Logger logger = Logger.getLogger(ContikiMoteID.class);
+  private static final Logger logger = LogManager.getLogger(ContikiMoteID.class);
 
   private int moteID = 0;
 
-  private Mote mote;
+  private final Mote mote;
   
   /**
    * Creates an interface to the mote ID at mote.
@@ -85,10 +86,12 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
     return new String[]{"moteid_interface"};
   }
 
+  @Override
   public int getMoteID() {
     return moteID;
   }
 
+  @Override
   public void setMoteID(int newID) {
     moteID = newID;
     moteMem.setIntValueOf("simMoteID", moteID);
@@ -98,6 +101,7 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
     notifyObservers();
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     final JLabel idLabel = new JLabel();
@@ -108,6 +112,7 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
 
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         idLabel.setText("Mote ID: " + moteID);
       }
@@ -119,6 +124,7 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -129,8 +135,9 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
     this.deleteObserver(observer);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<Element>();
+    Vector<Element> config = new Vector<>();
     Element element;
 
     // Infinite boolean
@@ -141,6 +148,7 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
     return config;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("id")) {

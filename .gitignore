@@ -1,9 +1,9 @@
 *~
 build
 /dist
+/javadoc
 /apps/mspsim/lib
 /apps/mrm/mrm.jar
-/apps/avrora/cooja-avrora.jar
 /apps/serial_socket/serial-socket.jar
 /apps/powertracker/powertracker.jar
 /tools/coffee-manager/coffee.jar

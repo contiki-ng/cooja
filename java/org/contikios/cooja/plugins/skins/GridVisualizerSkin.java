@@ -33,7 +33,8 @@ package org.contikios.cooja.plugins.skins;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -49,21 +50,25 @@ import org.contikios.cooja.plugins.VisualizerSkin;
  */
 @ClassDescription("10m background grid")
 public class GridVisualizerSkin implements VisualizerSkin {
-  private static Logger logger = Logger.getLogger(GridVisualizerSkin.class);
+  private static final Logger logger = LogManager.getLogger(GridVisualizerSkin.class);
 
   private Visualizer visualizer = null;
 
+  @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.visualizer = vis;
   }
 
+  @Override
   public void setInactive() {
   }
 
+  @Override
   public Color[] getColorOf(Mote mote) {
     return null;
   }
 
+  @Override
   public void paintBeforeMotes(Graphics g) {
 
     /* Background grid every 10 meters */
@@ -115,9 +120,11 @@ public class GridVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public void paintAfterMotes(Graphics g) {
   }
 
+  @Override
   public Visualizer getVisualizer() {
     return visualizer;
   }

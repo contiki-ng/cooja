@@ -39,7 +39,8 @@ import java.net.URL;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
@@ -67,7 +68,7 @@ import org.contikios.cooja.mspmote.interfaces.UsciA0Serial;
 @ClassDescription("Tyndall mote")
 @AbstractionLevelDescription("Emulated level")
 public class TyndallMoteType extends MspMoteType {
-  private static Logger logger = Logger.getLogger(TyndallMoteType.class);
+  private static final Logger logger = LogManager.getLogger(TyndallMoteType.class);
 
   protected MspMote createMote(Simulation simulation) {
     return new TyndallMote(this, simulation);

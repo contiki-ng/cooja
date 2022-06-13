@@ -53,7 +53,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.Cooja;
@@ -71,9 +72,9 @@ import org.contikios.cooja.contikimote.ContikiMoteType.NetworkStack;
  */
 public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   private static final long serialVersionUID = -2596048833554777606L;
-  private static Logger logger = Logger.getLogger(ContikiMoteCompileDialog.class);
+  private static final Logger logger = LogManager.getLogger(ContikiMoteCompileDialog.class);
 
-  private JComboBox netStackComboBox = new JComboBox(NetworkStack.values());
+  private final JComboBox netStackComboBox = new JComboBox(NetworkStack.values());
 
   public static boolean showDialog(
       Container parent,
@@ -114,7 +115,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
     
     /* Create variables used for compiling Contiki */
-    ((ContikiMoteType)moteType).setContikiSourceFile(source);
+    moteType.setContikiSourceFile(source);
     ((ContikiMoteType)moteType).libSource = new File(
         source.getParentFile(),
         output_dir + "/" + moteType.getIdentifier() + ".c"
@@ -168,6 +169,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     }
   }
   
+  @Override
   public boolean canLoadFirmware(File file) {
     /* Disallow loading firmwares without compilation */
     /*
@@ -179,6 +181,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     return false;
   }
 
+  @Override
   public String getDefaultCompileCommands(final File source) {
     if (moteType == null) {
       /* Not ready to compile yet */
@@ -194,14 +197,8 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       updateForSource(source);
     } else {
       try {
-        SwingUtilities.invokeAndWait(new Runnable() {
-          public void run() {
-            updateForSource(source);
-          }
-        });
-      } catch (InvocationTargetException e) {
-        logger.fatal("Error when updating for source " + source + ": " + e.getMessage(), e);
-      } catch (InterruptedException e) {
+        SwingUtilities.invokeAndWait(() -> updateForSource(source));
+      } catch (InvocationTargetException | InterruptedException e) {
         logger.fatal("Error when updating for source " + source + ": " + e.getMessage(), e);
       }
     }
@@ -211,19 +208,26 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       defines = " DEFINES=NETSTACK_CONF_H=" + ((ContikiMoteType) moteType).getNetworkStack().getHeaderFile();
     }
 
-    return
-    /*"make clean TARGET=cooja\n" + */
-    Cooja.getExternalToolsSetting("PATH_MAKE") + " " + getExpectedFirmwareFile(source).getName() + " TARGET=cooja" + defines;
+    return Cooja.getExternalToolsSetting("PATH_MAKE") + " " +
+            ContikiMoteType.getMakeTargetName(source).getName() + " TARGET=cooja" + defines;
   }
 
+  @Override
   public File getExpectedFirmwareFile(File source) {
-    return ContikiMoteType.getExpectedFirmwareFile(source);
+    logger.fatal("Called getExpectedFirmwareFile(File)");
+    throw new RuntimeException("This method should not be called on ContikiMotes");
   }
 
+  @Override
+  public File getExpectedFirmwareFile(String moteId, File source) {
+    return ContikiMoteType.getExpectedFirmwareFile(moteId, source);
+  }
+
+  @Override
   public Class<? extends MoteInterface>[] getAllMoteInterfaces() {
 	  ProjectConfig projectConfig = moteType.getConfig();
 	  String[] intfNames = projectConfig.getStringArrayValue(ContikiMoteType.class, "MOTE_INTERFACES");
-	  ArrayList<Class<? extends MoteInterface>> classes = new ArrayList<Class<? extends MoteInterface>>();
+	  ArrayList<Class<? extends MoteInterface>> classes = new ArrayList<>();
 
 	  /* Load mote interface classes */
 	  for (String intfName : intfNames) {
@@ -239,6 +243,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 	  }
 	  return classes.toArray(new Class[0]);
   }
+  @Override
   public Class<? extends MoteInterface>[] getDefaultMoteInterfaces() {
 	  return getAllMoteInterfaces();
   }
@@ -257,12 +262,15 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     final JTextField headerTextField = new JTextField();
     headerTextField.setText(((ContikiMoteType)moteType).getNetworkStack().manualHeader);
     headerTextField.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
       public void insertUpdate(DocumentEvent e) {
         updateHeader();
       }
+      @Override
       public void removeUpdate(DocumentEvent e) {
         updateHeader();
       }
+      @Override
       public void changedUpdate(DocumentEvent e) {
         updateHeader();
       }
@@ -281,9 +289,10 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     netStackComboBox.setSelectedItem(((ContikiMoteType)moteType).getNetworkStack());
     netStackComboBox.setEnabled(true);
     netStackComboBox.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         ((ContikiMoteType)moteType).setNetworkStack((NetworkStack)netStackComboBox.getSelectedItem());
-        netStackHeaderBox.setVisible((NetworkStack)netStackComboBox.getSelectedItem() == NetworkStack.MANUAL);
+        netStackHeaderBox.setVisible(netStackComboBox.getSelectedItem() == NetworkStack.MANUAL);
         setDialogState(DialogState.SELECTED_SOURCE);
       }
     });
@@ -292,7 +301,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     netStackBox.add(label);
     netStackBox.add(Box.createHorizontalStrut(20));
     netStackBox.add(netStackComboBox);
-    netStackHeaderBox.setVisible((NetworkStack)netStackComboBox.getSelectedItem() == NetworkStack.MANUAL);
+    netStackHeaderBox.setVisible(netStackComboBox.getSelectedItem() == NetworkStack.MANUAL);
 
 
     /* Advanced tab */
@@ -318,6 +327,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     /* Create new tab, fill with current environment data */
     String[] columnNames = { "Variable", "Value" };
     JTable table = new JTable(env, columnNames) {
+      @Override
       public boolean isCellEditable(int row, int column) {
         return false;
       }
@@ -326,14 +336,16 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     JPanel panel = new JPanel(new BorderLayout());
     JButton button = new JButton("Change environment variables: Open external tools dialog");
     button.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         /* Show external tools dialog */
         ExternalToolsDialog.showDialog(Cooja.getTopParentContainer());
 
         /* Update and select environment tab */
         SwingUtilities.invokeLater(new Runnable() {
+          @Override
           public void run() {
-            getDefaultCompileCommands(((ContikiMoteType)moteType).getContikiSourceFile());
+            getDefaultCompileCommands(moteType.getContikiSourceFile());
             for (int i=0; i < tabbedPane.getTabCount(); i++) {
               if (tabbedPane.getTitleAt(i).equals("Environment")) {
                 tabbedPane.setSelectedIndex(i);
@@ -352,6 +364,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     parent.addTab("Environment", null, panel, "Environment variables");
   }
 
+  @Override
   public void writeSettingsToMoteType() {
     /* XXX Do not load the generated firmware.
      * Instead, load the copy in output_dir */
@@ -361,11 +374,9 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
         output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.librarySuffix
     );
     moteType.setContikiFirmwareFile(contikiFirmware);
-
-    /* TODO System symbols */
-    ((ContikiMoteType)moteType).setHasSystemSymbols(false);
   }
 
+  @Override
   public void compileContiki()
   throws Exception {
     if (((ContikiMoteType)moteType).libSource == null ||
@@ -387,22 +398,11 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       ContikiMoteType.getRequiredCoreInterfaces(getSelectedMoteInterfaceClasses());
     ((ContikiMoteType)moteType).setCoreInterfaces(coreInterfaces);
 
-    /* Generate Contiki main source */
-    /*try {
-      CompileContiki.generateSourceFile(
-          ((ContikiMoteType)moteType).libSource,
-          ((ContikiMoteType)moteType).javaClassName,
-          ((ContikiMoteType)moteType).getSensors(),
-          ((ContikiMoteType)moteType).getCoreInterfaces()
-      );
-    } catch (Exception e) {
-      throw (Exception) new Exception("Error when generating Contiki main source").initCause(e);
-    }*/
-
     /* Start compiling */
     super.compileContiki();
   }
 
+  @Override
   protected String getTargetName() {
   	return "cooja";
   }

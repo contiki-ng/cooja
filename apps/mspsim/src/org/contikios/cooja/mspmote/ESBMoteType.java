@@ -41,7 +41,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
@@ -69,7 +70,7 @@ import org.contikios.cooja.mspmote.interfaces.TR1001Radio;
 @ClassDescription("ESB mote")
 @AbstractionLevelDescription("Emulated level")
 public class ESBMoteType extends MspMoteType {
-  private static Logger logger = Logger.getLogger(ESBMoteType.class);
+  private static final Logger logger = LogManager.getLogger(ESBMoteType.class);
 
   public Icon getMoteTypeIcon() {
     Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -95,24 +96,6 @@ public class ESBMoteType extends MspMoteType {
 
   public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
   throws MoteTypeCreationException {
-
-    /* SPECIAL CASE: Cooja started in applet.
-     * Use preconfigured Contiki firmware */
-    if (Cooja.isVisualizedInApplet()) {
-      String firmware = Cooja.getExternalToolsSetting("ESB_FIRMWARE", "");
-      if (!firmware.equals("")) {
-        setContikiFirmwareFile(new File(firmware));
-        JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-            "Creating mote type from precompiled firmware: " + firmware,
-            "Compiled firmware file available", JOptionPane.INFORMATION_MESSAGE);
-      } else {
-        JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-            "No precompiled firmware found",
-            "Compiled firmware file not available", JOptionPane.ERROR_MESSAGE);
-        return false;
-      }
-    }
-
     /* If visualized, show compile dialog and let user configure */
     if (visAvailable && !simulation.isQuickSetup()) {
 

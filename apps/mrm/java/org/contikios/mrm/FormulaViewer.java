@@ -54,7 +54,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -74,7 +75,7 @@ import org.contikios.mrm.ChannelModel.Parameter;
 @SupportedArguments(radioMediums = {MRM.class})
 public class FormulaViewer extends org.contikios.cooja.VisPlugin {
   private static final long serialVersionUID = 1L;
-  private static Logger logger = Logger.getLogger(FormulaViewer.class);
+  private static final Logger logger = LogManager.getLogger(FormulaViewer.class);
 
   private Simulation simulation;
   private MRM radioMedium;
@@ -425,7 +426,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     label.setPreferredSize(labelDimension);
     panel.add(Box.createHorizontalGlue());
     panel.add(textField = new JFormattedTextField(doubleFormat));
-    textField.setValue(new Double(initialValue));
+    textField.setValue(initialValue);
     textField.setColumns(4);
     textField.putClientProperty("id", id);
     textField.addPropertyChangeListener("value", new PropertyChangeListener() {
@@ -480,7 +481,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     label.setPreferredSize(labelDimension);
     panel.add(Box.createHorizontalGlue());
     panel.add(textField = new JFormattedTextField(integerFormat));
-    textField.setValue(new Double(initialValue));
+    textField.setValue((double) initialValue);
     textField.setColumns(4);
     textField.putClientProperty("id", id);
     textField.addPropertyChangeListener("value", new PropertyChangeListener() {
@@ -541,7 +542,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
       public void actionPerformed(ActionEvent e) {
         JCheckBox checkBox = (JCheckBox) e.getSource();
         Parameter id = (Parameter) checkBox.getClientProperty("id");
-        Object val = new Boolean(checkBox.isSelected());
+        Object val = checkBox.isSelected();
         channelModel.setParameterValue(id, val);
         if (!Parameter.getDefaultValue(id).equals(val)) {
           checkBox.setText("<");

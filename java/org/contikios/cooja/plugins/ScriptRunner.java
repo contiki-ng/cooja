@@ -29,6 +29,11 @@
 
 package org.contikios.cooja.plugins;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import de.sciss.syntaxpane.DefaultSyntaxKit;
+import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
+import de.sciss.syntaxpane.actions.ScriptRunnerAction;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -43,14 +48,14 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.script.ScriptException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -72,13 +77,8 @@ import javax.swing.JTextArea;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
-
-import jsyntaxpane.DefaultSyntaxKit;
-import jsyntaxpane.actions.DefaultSyntaxAction;
-
-import org.apache.log4j.Logger;
-import org.jdom.Element;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.PluginType;
@@ -87,12 +87,13 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.util.StringUtils;
+import org.jdom.Element;
 
 @ClassDescription("Simulation script editor")
 @PluginType(PluginType.SIM_CONTROL_PLUGIN)
 public class ScriptRunner extends VisPlugin {
   private static final long serialVersionUID = 7614358340336799109L;
-  private static Logger logger = Logger.getLogger(ScriptRunner.class);
+  private static final Logger logger = LogManager.getLogger(ScriptRunner.class);
 
   static boolean headless;
   {
@@ -110,14 +111,13 @@ public class ScriptRunner extends VisPlugin {
       "plugins.js", "Interact with surrounding Cooja plugins",
   };
 
-  private Simulation simulation;
+  private final Simulation simulation;
   private LogScriptEngine engine;
 
   private static BufferedWriter logWriter = null; /* For non-GUI tests */
 
-  private JEditorPane codeEditor;
-  private JTextArea logTextArea;
-  private JSplitPane centerPanel;
+  private final JEditorPane codeEditor;
+  private final JTextArea logTextArea;
 
   private JSyntaxLinkFile actionLinkFile = null;
   private File linkedFile = null;
@@ -145,6 +145,7 @@ public class ScriptRunner extends VisPlugin {
       final String file = EXAMPLE_SCRIPTS[i];
       JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
       exampleItem.addActionListener(new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           String script = loadScript(file);
           if (script == null) {
@@ -161,7 +162,7 @@ public class ScriptRunner extends VisPlugin {
     fileMenu.add(examplesMenu);
 
     {
-      /* XXX Workaround to configure jsyntaxpane */
+      /* XXX Workaround to configure SyntaxPane */
       JEditorPane e = new JEditorPane();
       new JScrollPane(e);
       e.setContentType("text/javascript");
@@ -169,7 +170,7 @@ public class ScriptRunner extends VisPlugin {
         DefaultSyntaxKit kit = (DefaultSyntaxKit) e.getEditorKit();
         kit.setProperty("PopupMenu", "copy-to-clipboard,-,find,find-next,goto-line,-,linkfile");
         kit.setProperty("Action.linkfile", JSyntaxLinkFile.class.getName());
-        kit.setProperty("Action.execute-script", "jsyntaxpane.actions.ScriptRunnerAction");
+        kit.setProperty("Action.execute-script", ScriptRunnerAction.class.getName());
       }
     }
 
@@ -184,6 +185,7 @@ public class ScriptRunner extends VisPlugin {
 
     final JCheckBoxMenuItem activateMenuItem = new JCheckBoxMenuItem("Activate");
     activateMenuItem.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent ev) {
         try {
           setScriptActive(!isActive());
@@ -196,27 +198,26 @@ public class ScriptRunner extends VisPlugin {
 
     final JMenuItem runTestMenuItem = new JMenuItem("Save simulation and run with script");
     runMenu.add(runTestMenuItem);
-    runTestMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        exportAndRun();
-      }
-    });
+    runTestMenuItem.addActionListener(e -> exportAndRun());
 
     doLayout();
-    centerPanel = new JSplitPane(
-        JSplitPane.VERTICAL_SPLIT,
-        new JScrollPane(codeEditor),
-        new JScrollPane(logTextArea)
+    var centerPanel = new JSplitPane(
+            JSplitPane.VERTICAL_SPLIT,
+            new JScrollPane(codeEditor),
+            new JScrollPane(logTextArea)
     );
 
     MenuListener toggleMenuItems = new MenuListener() {
+      @Override
       public void menuSelected(MenuEvent e) {
         activateMenuItem.setSelected(isActive());
         runTestMenuItem.setEnabled(!isActive());
         examplesMenu.setEnabled(!isActive());
       }
+      @Override
       public void menuDeselected(MenuEvent e) {
       }
+      @Override
       public void menuCanceled(MenuEvent e) {
       }
     };
@@ -230,7 +231,7 @@ public class ScriptRunner extends VisPlugin {
       DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
       kit.setProperty("PopupMenu", "copy-to-clipboard,-,find,find-next,goto-line,-,linkfile");
       kit.setProperty("Action.linkfile", JSyntaxLinkFile.class.getName());
-      kit.setProperty("Action.execute-script", "jsyntaxpane.actions.ScriptRunnerAction");
+      kit.setProperty("Action.execute-script", ScriptRunnerAction.class.getName());
     }
 
     JPopupMenu p = codeEditor.getComponentPopupMenu();
@@ -277,6 +278,7 @@ public class ScriptRunner extends VisPlugin {
     }
   }
 
+  @Override
   public void startPlugin() {
 	/* start simulation */
 	if (!Cooja.isVisualized()) {
@@ -333,6 +335,7 @@ public class ScriptRunner extends VisPlugin {
       if (Cooja.isVisualized()) {
         /* Attach visualized log observer */
         engine.setScriptLogObserver(new Observer() {
+          @Override
           public void update(Observable obs, Object obj) {
             logTextArea.append((String) obj);
             logTextArea.setCaretPosition(logTextArea.getText().length());
@@ -343,15 +346,19 @@ public class ScriptRunner extends VisPlugin {
           /* Continously write test output to file */
           if (logWriter == null) {
             /* Warning: static variable, used by all active test editor plugins */
-            File logFile = new File("COOJA.testlog");
-            if (logFile.exists()) {
+            File logFile = new File(gui.logDirectory + "/COOJA.testlog");
+            Path logDirPath = Path.of(gui.logDirectory);
+            if (!Files.exists(logDirPath)) {
+              Files.createDirectory(logDirPath);
+            } else if (logFile.exists()) {
               logFile.delete();
             }
-            logWriter = new BufferedWriter(new FileWriter(logFile));
+            logWriter = Files.newBufferedWriter(logFile.toPath(), UTF_8);
             logWriter.write("Random seed: " + simulation.getRandomSeed() + "\n");
             logWriter.flush();
           }
           engine.setScriptLogObserver(new Observer() {
+            @Override
             public void update(Observable obs, Object obj) {
               try {
                 if (logWriter != null) {
@@ -384,7 +391,7 @@ public class ScriptRunner extends VisPlugin {
           updateTitle();
         }
 
-        logger.info("Test script activated");
+        logger.debug("Test script activated");
 
       } catch (ScriptException e) {
         logger.fatal("Test script error: ", e);
@@ -427,7 +434,7 @@ public class ScriptRunner extends VisPlugin {
         codeEditor.setEnabled(true);
         updateTitle();
       }
-      logger.info("Test script deactivated");
+      logger.debug("Test script deactivated");
     }
   }
 
@@ -500,12 +507,13 @@ public class ScriptRunner extends VisPlugin {
 
       /* Start process */
       final Process process = Runtime.getRuntime().exec(command, null, coojaBuild);
-      final BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-      final BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+      final BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream(), UTF_8));
+      final BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream(), UTF_8));
 
       /* GUI components */
       final MessageListUI testOutput = new MessageListUI();
       final AbstractAction abort = new AbstractAction() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           process.destroy();
           if (progressDialog.isDisplayable()) {
@@ -528,6 +536,7 @@ public class ScriptRunner extends VisPlugin {
       progressDialog.setSize(800, 300);
       progressDialog.setLocationRelativeTo(ScriptRunner.this);
       progressDialog.addWindowListener(new WindowAdapter() {
+        @Override
         public void windowClosed(WindowEvent e) {
           abort.actionPerformed(null);
         }
@@ -535,6 +544,7 @@ public class ScriptRunner extends VisPlugin {
       progressDialog.setVisible(true);
 
       Thread readInput = new Thread(new Runnable() {
+        @Override
         public void run() {
           String line;
           try {
@@ -583,6 +593,7 @@ public class ScriptRunner extends VisPlugin {
       });
 
       Thread readError = new Thread(new Runnable() {
+        @Override
         public void run() {
           String line;
           try {
@@ -620,8 +631,9 @@ public class ScriptRunner extends VisPlugin {
     logTextArea.setText("");
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     if (linkedFile != null) {
@@ -645,6 +657,7 @@ public class ScriptRunner extends VisPlugin {
     return engine != null;
 
   }
+  @Override
   public void closePlugin() {
     try {
       setScriptActive(false);
@@ -652,6 +665,7 @@ public class ScriptRunner extends VisPlugin {
     }
   }
 
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       String name = element.getName();
@@ -690,12 +704,13 @@ public class ScriptRunner extends VisPlugin {
   }
 
   public static class JSyntaxLinkFile extends DefaultSyntaxAction {
-    private static Logger logger = Logger.getLogger(JSyntaxLinkFile.class);
+    private static final Logger logger = LogManager.getLogger(JSyntaxLinkFile.class);
 
     public JSyntaxLinkFile() {
       super("linkfile");
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       JMenuItem menuItem = (JMenuItem) e.getSource();
       Action action = menuItem.getAction();
@@ -717,6 +732,7 @@ public class ScriptRunner extends VisPlugin {
       fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
       fileChooser.setDialogTitle("Select script file");
       fileChooser.setFileFilter(new FileFilter() {
+        @Override
         public boolean accept(File file) {
           if (file.isDirectory()) { return true; }
           if (file.getName().endsWith(".js")) {
@@ -724,6 +740,7 @@ public class ScriptRunner extends VisPlugin {
           }
           return false;
         }
+        @Override
         public String getDescription() {
           return "Javascript";
         }

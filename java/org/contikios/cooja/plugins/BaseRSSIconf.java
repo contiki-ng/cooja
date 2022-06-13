@@ -43,7 +43,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
@@ -68,7 +69,7 @@ import org.contikios.cooja.radiomediums.DirectedGraphMedium;
 
 public class BaseRSSIconf extends VisPlugin {
 	private static final long serialVersionUID = 8955776548892545638L;
-	private static Logger logger = Logger.getLogger(BaseRSSIconf.class);
+	private static final Logger logger = LogManager.getLogger(BaseRSSIconf.class);
 
 	private final static int IDX_Mote = 0;
 	private final static int IDX_BaseRSSI = 1;
@@ -78,9 +79,8 @@ public class BaseRSSIconf extends VisPlugin {
 
 	private Cooja gui = null;
 	private AbstractRadioMedium radioMedium = null;
-	private Observer changeObserver;
-	private JTable motesTable = null;
-	private JComboBox<Number> combo = new JComboBox<Number>();
+	private final Observer changeObserver;
+	private final JComboBox<Number> combo = new JComboBox<>();
 	private Simulation sim = null;
 	
 	
@@ -92,6 +92,7 @@ public class BaseRSSIconf extends VisPlugin {
 		radioMedium = (AbstractRadioMedium) sim.getRadioMedium();
 
 		changeObserver = new Observer() {
+			@Override
 			public void update(Observable obs, Object obj) {
 				logger.debug("Changed");
 				model.fireTableDataChanged();
@@ -104,9 +105,10 @@ public class BaseRSSIconf extends VisPlugin {
 		sim.addObserver(changeObserver);
 
 		/* Represent motes and RSSI by table */
-		motesTable = new JTable(model) {
+		var motesTable = new JTable(model) {
 			private static final long serialVersionUID = -4680013510092815210L;
 
+			@Override
 			public TableCellEditor getCellEditor(int row, int column) {
 				combo.removeAllItems();
 				if (column == IDX_Mote) {
@@ -129,26 +131,26 @@ public class BaseRSSIconf extends VisPlugin {
 				.setCellRenderer(new DefaultTableCellRenderer() { // TODO ????
 							private static final long serialVersionUID = 4470088575039698508L;
 
+							@Override
 							public void setValue(Object value) {
 								if (!(value instanceof Double)) {
 									setText(value.toString());
 									return;
 								}
-								double v = ((Double) value).doubleValue();
-								setText(String.format("%1.1f", v));
+								setText(String.format("%1.1f", (Double) value));
 							}
 						});
 		motesTable.getColumnModel().getColumn(IDX_BaseRSSI)
 				.setCellRenderer(new DefaultTableCellRenderer() {
 					private static final long serialVersionUID = -7170745293267593460L;
 
+					@Override
 					public void setValue(Object value) {
 						if (!(value instanceof Double)) {
 							setText(value.toString());
 							return;
 						}
-						double v = ((Double) value).doubleValue();
-						setText(String.format("%1.1f dBm", v));
+						setText(String.format("%1.1f dBm", (Double) value));
 					}
 				});
 		motesTable.getColumnModel().getColumn(IDX_Mote)
@@ -171,6 +173,7 @@ public class BaseRSSIconf extends VisPlugin {
 	final AbstractTableModel model = new AbstractTableModel() {
 		private static final long serialVersionUID = 9101118401527171218L;
 
+		@Override
 		public String getColumnName(int column) {
 			if (column < 0 || column >= COLUMN_NAMES.length) {
 				return "";
@@ -178,14 +181,17 @@ public class BaseRSSIconf extends VisPlugin {
 			return COLUMN_NAMES[column];
 		}
 
+		@Override
 		public int getRowCount() {
 			return radioMedium.getRegisteredRadios().length;
 		}
 
+		@Override
 		public int getColumnCount() {
 			return COLUMN_NAMES.length;
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 			if (row < 0 || row >= radioMedium.getRegisteredRadios().length) {
 				return "";
@@ -203,6 +209,7 @@ public class BaseRSSIconf extends VisPlugin {
 			return "";
 		}
 
+		@Override
 		public void setValueAt(Object value, int row, int column) {
 			if (row < 0 || row >= radioMedium.getRegisteredRadios().length) {
 				return;
@@ -224,6 +231,7 @@ public class BaseRSSIconf extends VisPlugin {
 			}
 		}
 
+		@Override
 		public boolean isCellEditable(int row, int column) {
 			if (row < 0 || row >= radioMedium.getRegisteredRadios().length) {
 				return false;
@@ -242,11 +250,13 @@ public class BaseRSSIconf extends VisPlugin {
 			return false;
 		}
 
+		@Override
 		public Class<? extends Object> getColumnClass(int c) {
 			return getValueAt(0, c).getClass();
 		}
 	};
 
+	@Override
 	public void closePlugin() {
 		radioMedium.deleteRadioMediumObserver(changeObserver);
 		sim.deleteObserver(changeObserver);
