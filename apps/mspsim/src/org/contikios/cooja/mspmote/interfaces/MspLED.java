@@ -142,8 +142,6 @@ public class MspLED extends LED {
     }
 
     private class LedsPanel extends JPanel implements StateChangeListener {
-
-        private static final long serialVersionUID = 2664611402441057313L;
         private static final int D = 25;
         private static final int S = D + 15;
 

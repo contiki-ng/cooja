@@ -83,7 +83,6 @@ import org.contikios.cooja.util.StringUtils;
 @PluginType(PluginType.SIM_PLUGIN)
 @SupportedArguments(radioMediums = {DirectedGraphMedium.class})
 public class DGRMConfigurator extends VisPlugin {
-	private static final long serialVersionUID = 4769638341635882051L;
 	private static final Logger logger = LogManager.getLogger(DGRMConfigurator.class);
 
   private final static int IDX_SRC = 0;
@@ -119,7 +118,6 @@ public class DGRMConfigurator extends VisPlugin {
 
     /* Represent directed graph by table */
     graphTable = new JTable(model) {
-			private static final long serialVersionUID = -4680013510092815210L;
       @Override
       public TableCellEditor getCellEditor(int row, int column) {
 				combo.removeAllItems();
@@ -147,7 +145,6 @@ public class DGRMConfigurator extends VisPlugin {
     combo.setEditable(true);
 
     graphTable.getColumnModel().getColumn(IDX_RATIO).setCellRenderer(new DefaultTableCellRenderer() {
-			private static final long serialVersionUID = 4470088575039698508L;
       @Override
       public void setValue(Object value) {
         if (!(value instanceof Double)) {
@@ -158,7 +155,6 @@ public class DGRMConfigurator extends VisPlugin {
       }
     });
     graphTable.getColumnModel().getColumn(IDX_SIGNAL).setCellRenderer(new DefaultTableCellRenderer() {
-			private static final long serialVersionUID = -7170745293267593460L;
 			@Override
 			public void setValue(Object value) {
         if (!(value instanceof Long)) {
@@ -169,7 +165,6 @@ public class DGRMConfigurator extends VisPlugin {
       }
     });
     graphTable.getColumnModel().getColumn(IDX_LQI).setCellRenderer(new DefaultTableCellRenderer() {
-		private static final long serialVersionUID = -4669897764928372246L;
       @Override
       public void setValue(Object value) {
 	    if (!(value instanceof Long)) {
@@ -180,7 +175,6 @@ public class DGRMConfigurator extends VisPlugin {
 		}
     });
     graphTable.getColumnModel().getColumn(IDX_DELAY).setCellRenderer(new DefaultTableCellRenderer() {
-			private static final long serialVersionUID = -4669897764928372246L;
       @Override
       public void setValue(Object value) {
         if (!(value instanceof Long)) {
@@ -387,7 +381,6 @@ public class DGRMConfigurator extends VisPlugin {
 	}
 
   final AbstractTableModel model = new AbstractTableModel() {
-		private static final long serialVersionUID = 9101118401527171218L;
     @Override
     public String getColumnName(int column) {
       if (column < 0 || column >= COLUMN_NAMES.length) {

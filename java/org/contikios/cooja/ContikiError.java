@@ -29,8 +29,6 @@
 package org.contikios.cooja;
 
 public class ContikiError extends RuntimeException {
-  private static final long serialVersionUID = -6841448235846874865L;
-
   final String contikiError;
 
   public ContikiError(String message) {

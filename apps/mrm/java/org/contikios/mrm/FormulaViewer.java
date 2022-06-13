@@ -74,7 +74,6 @@ import org.contikios.mrm.ChannelModel.Parameter;
 @PluginType(PluginType.SIM_PLUGIN)
 @SupportedArguments(radioMediums = {MRM.class})
 public class FormulaViewer extends org.contikios.cooja.VisPlugin {
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(FormulaViewer.class);
 
   private Simulation simulation;
@@ -354,7 +353,6 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
   private JPanel createCollapsableArea(String title, Container contentPane) {
     // Create panels
     JPanel holdingPanel = new JPanel() {
-      private static final long serialVersionUID = -7925426641856424500L;
       public Dimension getMaximumSize() {
         return new Dimension(super.getMaximumSize().width, getPreferredSize().height);
       }
@@ -362,7 +360,6 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     holdingPanel.setLayout(new BoxLayout(holdingPanel, BoxLayout.Y_AXIS));
 
     final JPanel collapsableArea = new JPanel() {
-      private static final long serialVersionUID = -1261182973911973773L;
       public Dimension getMaximumSize() {
         return new Dimension(super.getMaximumSize().width, getPreferredSize().height);
       }
@@ -371,7 +368,6 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     collapsableArea.setVisible(false);
 
     JPanel titlePanel = new JPanel(new BorderLayout()) {
-      private static final long serialVersionUID = -9121775806029887815L;
       public Dimension getMaximumSize() {
         return new Dimension(super.getMaximumSize().width, getPreferredSize().height);
       }

@@ -95,7 +95,6 @@ import org.contikios.cooja.ProjectConfig;
  * @author Fredrik Osterlind
  */
 public class ProjectDirectoriesDialog extends JDialog {
-	private static final long serialVersionUID = 1896348946753376556L;
 	private static final Logger logger = LogManager.getLogger(ProjectDirectoriesDialog.class);
 
 	private Cooja gui;
@@ -131,7 +130,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 						(Frame)parent, "Cooja extensions", ModalityType.APPLICATION_MODAL);
 
 		table = new JTable(new AbstractTableModel() {
-			private static final long serialVersionUID = 591599455927509191L;
 			@Override
 			public int getColumnCount() {
 				return 2;
@@ -175,7 +173,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 		table.getColumnModel().getColumn(0).setPreferredWidth(30);
 		table.getColumnModel().getColumn(0).setMaxWidth(30);
 		table.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
-			private static final long serialVersionUID = 7224219223448831880L;
 			@Override
 			public Component getTableCellRendererComponent(JTable table,
 					Object value, boolean isSelected, boolean hasFocus, int row,
@@ -505,7 +502,6 @@ public class ProjectDirectoriesDialog extends JDialog {
  * @author Fredrik Osterlind
  */
 class DirectoryTreePanel extends JPanel {
-	private static final long serialVersionUID = -6852893350326771136L;
 	private static final Logger logger = LogManager.getLogger(DirectoryTreePanel.class);
 
 	private final ProjectDirectoriesDialog parent;
@@ -522,7 +518,6 @@ class DirectoryTreePanel extends JPanel {
 		tree.setShowsRootHandles(true);
 		tree.expandRow(0);
 		tree.setCellRenderer(new DefaultTreeCellRenderer() {
-			private static final long serialVersionUID = 280434957859560569L;
 			private final Icon unselectedIcon = new CheckboxIcon(null);
 			private final Icon selectedIcon = new CheckboxIcon(new Color(0, 255, 0, 128));
 			private final Icon errorIcon = new CheckboxIcon(new Color(255, 0, 0, 128));
@@ -782,8 +777,6 @@ class DirectoryTreePanel extends JPanel {
 		}
 	}
 	private class COOJAProjectTreeModel extends DefaultTreeModel {
-		private static final long serialVersionUID = -4673855124090194313L;
-
 		private final DefaultMutableTreeNode computerNode;
 
 		public COOJAProjectTreeModel(DefaultMutableTreeNode computerNode) {
@@ -935,7 +928,6 @@ class DirectoryTreePanel extends JPanel {
  * @author Fredrik Osterlind
  */
 class ConfigViewer extends JDialog {
-	private static final long serialVersionUID = 6900340477602324582L;
 	public static void showDialog(Frame parentFrame, ProjectConfig config) {
 		ConfigViewer myDialog = new ConfigViewer(parentFrame, config);
 		myDialog.setAlwaysOnTop(true);

@@ -112,7 +112,6 @@ import org.jdom.Element;
 @ClassDescription("Buffer view")
 @PluginType(PluginType.SIM_PLUGIN)
 public class BufferListener extends VisPlugin {
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(BufferListener.class);
 
   private final static int COLUMN_TIME = 0;
@@ -281,7 +280,6 @@ public class BufferListener extends VisPlugin {
     }
 
     model = new AbstractTableModel() {
-      private static final long serialVersionUID = 3065150390849332924L;
       @Override
       public String getColumnName(int col) {
         if (col == COLUMN_TIME && formatTimeString) {
@@ -316,7 +314,6 @@ public class BufferListener extends VisPlugin {
     };
 
     logTable = new JTable(model) {
-      private static final long serialVersionUID = -930616018336483196L;
       @Override
       public String getToolTipText(MouseEvent e) {
         java.awt.Point p = e.getPoint();
@@ -354,7 +351,6 @@ public class BufferListener extends VisPlugin {
       }
     };
     DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
-      private static final long serialVersionUID = -340743275865216182L;
       private final Color[] BG_COLORS = new Color[] {
           new Color(200, 200, 200),
           new Color(200, 200, 255),
@@ -1086,8 +1082,6 @@ public class BufferListener extends VisPlugin {
   }
 
   private final Action saveAction = new AbstractAction("Save to file") {
-    private static final long serialVersionUID = -4140706275748686944L;
-
     @Override
     public void actionPerformed(ActionEvent e) {
       JFileChooser fc = new JFileChooser();
@@ -1149,7 +1143,6 @@ public class BufferListener extends VisPlugin {
   };
 
   private final Action bufferListenerAction = new AbstractAction("in Buffer Listener") {
-    private static final long serialVersionUID = -6358463434933029699L;
     @Override
     public void actionPerformed(ActionEvent e) {
       int view = logTable.getSelectedRow();
@@ -1173,7 +1166,6 @@ public class BufferListener extends VisPlugin {
   };
 
   private final Action timeLineAction = new AbstractAction("in Timeline") {
-    private static final long serialVersionUID = -6358463434933029699L;
     @Override
     public void actionPerformed(ActionEvent e) {
       int view = logTable.getSelectedRow();
@@ -1197,7 +1189,6 @@ public class BufferListener extends VisPlugin {
   };
 
   private final Action radioLoggerAction = new AbstractAction("in Radio Logger") {
-    private static final long serialVersionUID = -3041714249257346688L;
     @Override
     public void actionPerformed(ActionEvent e) {
       int view = logTable.getSelectedRow();
@@ -1221,7 +1212,6 @@ public class BufferListener extends VisPlugin {
   };
 
   private final Action showInAllAction = new AbstractAction("All") {
-    private static final long serialVersionUID = -8433490108577001803L;
     {
       putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true));
     }
@@ -1234,7 +1224,6 @@ public class BufferListener extends VisPlugin {
   };
 
   private final Action clearAction = new AbstractAction("Clear") {
-    private static final long serialVersionUID = -2115620313183440224L;
     @Override
     public void actionPerformed(ActionEvent e) {
       int size = logs.size();
@@ -1246,7 +1235,6 @@ public class BufferListener extends VisPlugin {
   };
 
   private final Action copyAction = new AbstractAction("Selected") {
-    private static final long serialVersionUID = -8433490108577001803L;
     @Override
     public void actionPerformed(ActionEvent e) {
       Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -1278,8 +1266,6 @@ public class BufferListener extends VisPlugin {
   };
 
   private final Action copyAllAction = new AbstractAction("All") {
-    private static final long serialVersionUID = -5038884975254178373L;
-
     @Override
     public void actionPerformed(ActionEvent e) {
       Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -1695,7 +1681,6 @@ public class BufferListener extends VisPlugin {
   }
 
   static class GrapicalParserPanel extends JPanel {
-    private static final long serialVersionUID = -8375160571675638467L;
     static final int XOFFSET = 0;
     static final int HEIGHT = 16;
     private GraphicalParser parser;

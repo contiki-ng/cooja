@@ -64,9 +64,6 @@ import se.sics.mspsim.cli.LineOutputStream;
 @PluginType(PluginType.MOTE_PLUGIN)
 @SupportedArguments(motes = {MspMote.class})
 public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
-
-  private static final long serialVersionUID = 2833218439838209672L;
-
   private MspMote mspMote;
   private JTextArea logArea;
   private JTextField commandField;

@@ -66,8 +66,6 @@ import org.contikios.cooja.VisPlugin;
 @ClassDescription("Mote Interface Viewer")
 @PluginType(PluginType.MOTE_PLUGIN)
 public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, MotePlugin {
-  private static final long serialVersionUID = 1L;
-
   private final Mote mote;
   private MoteInterface selectedMoteInterface = null;
   private JPanel currentInterfaceVisualizer = null;

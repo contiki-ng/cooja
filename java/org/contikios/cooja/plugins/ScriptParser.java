@@ -38,8 +38,6 @@ import javax.script.ScriptException;
 import org.contikios.cooja.Simulation;
 
 public class ScriptParser {
-  private static final long serialVersionUID = 1L;
-
   private long timeoutTime = -1;
   private String timeoutCode = null;
 

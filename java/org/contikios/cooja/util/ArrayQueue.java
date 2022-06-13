@@ -50,9 +50,6 @@ import java.util.RandomAccess;
  * @author  Niclas Finne    (nfi@sics.se)
  */
 public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Cloneable, java.io.Serializable {
-
-  private static final long serialVersionUID = 5791745982858131414L;
-
   private transient E[] queueData;
   private transient int first = 0;
   private transient int last = 0;

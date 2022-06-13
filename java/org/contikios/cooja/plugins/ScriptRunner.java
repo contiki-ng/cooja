@@ -92,7 +92,6 @@ import org.jdom.Element;
 @ClassDescription("Simulation script editor")
 @PluginType(PluginType.SIM_CONTROL_PLUGIN)
 public class ScriptRunner extends VisPlugin {
-  private static final long serialVersionUID = 7614358340336799109L;
   private static final Logger logger = LogManager.getLogger(ScriptRunner.class);
 
   static boolean headless;

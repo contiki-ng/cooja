@@ -43,7 +43,6 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.AbstractCompileDialog;
 
 public class MspCompileDialog extends AbstractCompileDialog {
-  private static final long serialVersionUID = -7273193946433145019L;
   private final String target;
 
   public static boolean showDialog(

@@ -65,8 +65,6 @@ import org.contikios.cooja.motes.ImportAppMoteType;
  * @author Niclas Finne
  */
 public class ImportAppMoteDialog extends JDialog {
-
-  private static final long serialVersionUID = 1323772528826214008L;
   protected final static Dimension LABEL_DIMENSION = new Dimension(170, 25);
 
   private static String lastPath;

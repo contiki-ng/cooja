@@ -71,7 +71,6 @@ import org.contikios.cooja.Simulation;
  * @author Fredrik Osterlind
  */
 public class CreateSimDialog extends JDialog {
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(CreateSimDialog.class);
 
   private final static int LABEL_WIDTH = 170;

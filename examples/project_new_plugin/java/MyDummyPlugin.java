@@ -66,7 +66,6 @@ import org.contikios.cooja.VisPlugin;
 @ClassDescription("Example Plugin") /* Description shown in menu */
 @PluginType(PluginType.SIM_PLUGIN)
 public class MyDummyPlugin extends VisPlugin {
-  private static final long serialVersionUID = 4368807123350830772L;
   private static final Logger logger = LogManager.getLogger(MyDummyPlugin.class);
 
   private Simulation sim;

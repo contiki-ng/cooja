@@ -126,7 +126,6 @@ import org.contikios.mrm.ChannelModel.TxPair;
 @PluginType(PluginType.SIM_PLUGIN)
 @SupportedArguments(radioMediums = {MRM.class})
 public class AreaViewer extends VisPlugin {
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(AreaViewer.class);
 
   private final JPanel canvas;
@@ -278,7 +277,6 @@ public class AreaViewer extends VisPlugin {
 
     // Create canvas
     canvas = new JPanel() {
-      private static final long serialVersionUID = 1L;
       public void paintComponent(Graphics g) {
         super.paintComponent(g);
         repaintCanvas((Graphics2D) g);
@@ -404,8 +402,6 @@ public class AreaViewer extends VisPlugin {
     visualizeChannelPanel.add(fixedVsRelative);
 
     coloringIntervalPanel = new JPanel() {
-      private static final long serialVersionUID = 8247374386307237940L;
-
       public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -579,7 +575,6 @@ public class AreaViewer extends VisPlugin {
 
     JButton recalculateVisibleButton = new JButton("Paint radio channel");
     paintEnvironmentAction = new AbstractAction("Paint radio channel") {
-      private static final long serialVersionUID = 1L;
       public void actionPerformed(ActionEvent e) {
         repaintRadioEnvironment();
       }
@@ -930,8 +925,6 @@ public class AreaViewer extends VisPlugin {
     }
 
     class ImageSettingsDialog extends JDialog {
-      private static final long serialVersionUID = 3026474554976919518L;
-
       private double
       virtualStartX = 0.0,
       virtualStartY = 0.0,
@@ -1290,8 +1283,6 @@ public class AreaViewer extends VisPlugin {
   };
 
   class ObstacleFinderDialog extends JDialog {
-    private static final long serialVersionUID = -8963997923536967296L;
-
     private NumberFormat intFormat = NumberFormat.getIntegerInstance();
     private BufferedImage imageToAnalyze = null;
     private BufferedImage obstacleImage = null;
@@ -1511,7 +1502,6 @@ public class AreaViewer extends VisPlugin {
 
         // Preview image
         tempPanel = new JPanel() {
-          private static final long serialVersionUID = 1L;
           public void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.drawImage(imageToAnalyze, 0, 0, getWidth(), getHeight(), this);

@@ -56,7 +56,6 @@ import org.contikios.cooja.SimEventCentral;
 import org.contikios.cooja.Simulation;
 
 public class BufferSettings extends JDialog {
-  private static final long serialVersionUID = 7086171115472941104L;
   private final static Dimension LABEL_SIZE = new Dimension(150, 25);
 
   private final SimEventCentral central;

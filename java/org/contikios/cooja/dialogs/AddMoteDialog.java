@@ -77,8 +77,6 @@ import org.contikios.cooja.interfaces.Position;
  * @author Fredrik Osterlind
  */
 public class AddMoteDialog extends JDialog {
-
-  private static final long serialVersionUID = 1L;
   private static final Logger logger = LogManager.getLogger(AddMoteDialog.class);
 
   private final AddMotesEventHandler myEventHandler = new AddMotesEventHandler();

@@ -90,8 +90,6 @@ import se.sics.mspsim.util.ELFDebug;
 @PluginType(PluginType.MOTE_PLUGIN)
 @SupportedArguments(motes = {MspMote.class})
 public class MspCodeWatcher extends VisPlugin implements MotePlugin {
-  private static final long serialVersionUID = -8463196456352243367L;
-
   private static final int SOURCECODE = 0;
   private static final int BREAKPOINTS = 2;
 
@@ -178,7 +176,6 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
       }
     });
     fileComboBox.setRenderer(new BasicComboBoxRenderer() {
-      private static final long serialVersionUID = -2135703608960229528L;
       public Component getListCellRendererComponent(JList list, Object value,
           int index, boolean isSelected, boolean cellHasFocus) {
         if (isSelected) {
@@ -751,8 +748,6 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   }
 
   private AbstractAction currentFileAction = new AbstractAction() {
-    private static final long serialVersionUID = -3218306989816724883L;
-
     public void actionPerformed(ActionEvent e) {
       if (currentCodeFile == null) {
         return;
@@ -762,15 +757,12 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   };
 
   private AbstractAction mapAction = new AbstractAction("Locate sources...") {
-    private static final long serialVersionUID = -3929432830596292495L;
-
     public void actionPerformed(ActionEvent e) {
       tryMapDebugInfo();
     }
   };
 
   private AbstractAction stepAction = new AbstractAction("Step instruction") {
-    private static final long serialVersionUID = 3520750710757816575L;
     public void actionPerformed(ActionEvent e) {
       try {
         mspMote.getCPU().stepInstructions(1);

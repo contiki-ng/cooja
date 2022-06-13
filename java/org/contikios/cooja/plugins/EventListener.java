@@ -75,8 +75,6 @@ import org.contikios.cooja.interfaces.Radio;
 @ClassDescription("Breakpoints")
 @PluginType(PluginType.SIM_PLUGIN)
 public class EventListener extends VisPlugin {
-  private static final long serialVersionUID = 1L;
-
   private final Simulation mySimulation;
 
   private final Vector<EventObserver> allObservers = new Vector<>();
