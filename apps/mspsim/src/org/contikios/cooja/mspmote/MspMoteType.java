@@ -60,7 +60,6 @@ import se.sics.mspsim.util.ELF;
  * MSP430-based mote types emulated in MSPSim.
  *
  * @see SkyMoteType
- * @see ESBMoteType
  *
  * @author Fredrik Osterlind, Joakim Eriksson, Niclas Finne
  */
