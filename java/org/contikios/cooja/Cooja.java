@@ -2951,15 +2951,10 @@ public class Cooja extends Observable {
           configureFrame(gui);
         }
       });
-    } else if (options.action.quickstart != null) {
-      String contikiApp = options.action.quickstart;
-      if (quickStartSimulationConfig(new File(contikiApp), true, options.randomSeed, logDirectory) == null) {
-        System.exit(1);
-      }
-    } else if (options.action.nogui != null) {
-      /* Load simulation */
-      String config = options.action.nogui;
-      if (quickStartSimulationConfig(new File(config), false, options.randomSeed, logDirectory) == null) {
+    } else {
+      var vis = options.action.quickstart != null;
+      String file = vis ? options.action.quickstart : options.action.nogui;
+      if (quickStartSimulationConfig(new File(file), vis, options.randomSeed, logDirectory) == null) {
         System.exit(1);
       }
     }
