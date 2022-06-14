@@ -92,7 +92,7 @@ public class ScriptParser {
   private static String stripMultiLineComments(String code) {
     /* TODO Handle strings */
     Pattern pattern =
-      Pattern.compile("/\\*([^*]|[\n]|(\\*+([^*/]|[\n])))*\\*+/");
+      Pattern.compile("/\\*([^*]|\n|(\\*+([^*/]|\n)))*\\*+/");
     Matcher matcher = pattern.matcher(code);
 
     while (matcher.find()) {
@@ -111,7 +111,7 @@ public class ScriptParser {
   private String parseTimeout(String code) throws ScriptSyntaxErrorException {
     Pattern pattern = Pattern.compile(
         "TIMEOUT\\(" +
-        "([0-9]+)" /* timeout */ +
+        "(\\d+)" /* timeout */ +
         "\\)"
     );
     Matcher matcher = pattern.matcher(code);
@@ -140,8 +140,8 @@ public class ScriptParser {
   private String parseTimeoutWithAction(String code) throws ScriptSyntaxErrorException {
     Pattern pattern = Pattern.compile(
         "TIMEOUT\\(" +
-        "([0-9]+)" /* timeout */ +
-        "[\\s]*,[\\s]*" +
+        "(\\d+)" /* timeout */ +
+        "\\s*,\\s*" +
         "(.*)" /* code */ +
         "\\)"
     );
