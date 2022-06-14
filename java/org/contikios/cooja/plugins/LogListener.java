@@ -591,13 +591,9 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     simulation.getEventCentral().addLogOutputListener(logOutputListener = new LogOutputListener() {
       @Override
       public void moteWasAdded(Mote mote) {
-        /* Update title */
-        updateTitle();
       }
       @Override
       public void moteWasRemoved(Mote mote) {
-        /* Update title */
-        updateTitle();
       }
       @Override
       public void newLogOutput(LogOutputEvent ev) {
@@ -647,7 +643,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     getContentPane().add(BorderLayout.CENTER, new JScrollPane(logTable));
     getContentPane().add(BorderLayout.SOUTH, filterPanel);
 
-    updateTitle();
     pack();
 
     /* XXX HACK: here we set the position and size of the window when it appears on a blank simulation screen. */
@@ -682,9 +677,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   			logTable.getModel().getColumnName(COLUMN_TIME));
   	repaint();
 	}
-
-	private void updateTitle() {
-  }
 
   @Override
   public void closePlugin() {
