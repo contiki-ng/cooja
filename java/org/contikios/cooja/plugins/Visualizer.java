@@ -940,8 +940,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     boolean showMenuItem = true;
     if (skinClass.getAnnotation(SupportedArguments.class) != null) {
       showMenuItem = false;
-      Class<? extends RadioMedium>[] radioMediums = skinClass.getAnnotation(SupportedArguments.class).radioMediums();
-      for (Class<? extends Object> o : radioMediums) {
+      for (var o : skinClass.getAnnotation(SupportedArguments.class).radioMediums()) {
         if (o.isAssignableFrom(simulation.getRadioMedium().getClass())) {
           showMenuItem = true;
           break;

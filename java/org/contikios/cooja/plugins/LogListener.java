@@ -779,7 +779,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
     	RowFilter<Object, Integer> wrapped = new RowFilter<Object, Integer>() {
         @Override
-    		public boolean include(RowFilter.Entry<? extends Object, ? extends Integer> entry) {
+    		public boolean include(RowFilter.Entry<?, ? extends Integer> entry) {
     		  if (regexp != null) {
                     boolean pass;
                     if (entry.getIdentifier() != null) {

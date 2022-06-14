@@ -761,7 +761,7 @@ public class RadioLogger extends VisPlugin {
       logFilter.setRowFilter(null);
       RowFilter<Object, Object> filter = new RowFilter<>() {
         @Override
-        public boolean include(RowFilter.Entry<? extends Object, ? extends Object> entry) {
+        public boolean include(RowFilter.Entry<?, ?> entry) {
           int row = (Integer) entry.getIdentifier();
           RadioConnectionLog current = connections.get(row);
           byte[] currentData = current.packet.getPacketData();
