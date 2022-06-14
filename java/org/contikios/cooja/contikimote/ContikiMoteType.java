@@ -273,16 +273,12 @@ public class ContikiMoteType implements MoteType {
       String[][] env;
       try {
         env = CompileContiki.createCompilationEnvironment(
-                getIdentifier(),
+                this,
                 contikiApp,
                 mapFile,
                 libFile,
                 archiveFile,
                 javaClassName);
-        CompileContiki.redefineCOOJASources(
-                this,
-                env
-        );
       } catch (Exception e) {
         throw new MoteTypeCreationException("Error when creating environment: " + e.getMessage(), e);
       }
