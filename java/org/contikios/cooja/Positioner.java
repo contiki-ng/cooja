@@ -74,18 +74,18 @@ public abstract class Positioner {
       double startZ, double endZ) {
     try {
       Constructor<? extends Positioner> constr =
-        positionerClass.getConstructor(new Class[] {
+        positionerClass.getConstructor(
           int.class,
           double.class, double.class,
           double.class, double.class,
           double.class, double.class
-        });
-      return constr.newInstance(new Object[] {
+        );
+      return constr.newInstance(
           totalNumberOfMotes,
           startX, endX,
           startY, endY,
           startZ, endZ
-      });
+      );
     } catch (Exception e) {
 
       if (e instanceof InvocationTargetException) {
