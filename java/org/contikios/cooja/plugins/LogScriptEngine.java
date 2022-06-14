@@ -236,7 +236,6 @@ public class LogScriptEngine {
         scriptThread.join();
       } catch (InterruptedException e) {
         e.printStackTrace();
-      } finally {
       }
     }
     scriptThread = null;
