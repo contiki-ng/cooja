@@ -281,21 +281,13 @@ public class CompileContiki {
    * Generate compiler environment using external tools settings.
    * Used by Contiki Mote Type.
    *
-   * @param mote        Mote type
-   * @param contikiApp Contiki application source, "hello-world.c"
-   * @param mapFile Output map file, "mtype123.map"
-   * @param libFile Output JNI library, "mtype123.cooja"
-   * @param archiveFile Output archive, "mtype123.a"
+   * @param mote      Mote type
    * @param javaClass Java JNI library class, "Lib4"
    * @return Compilation environment
    * @throws Exception At errors
    */
   public static String[][] createCompilationEnvironment(
       ContikiMoteType mote,
-      File contikiApp,
-      File mapFile,
-      File libFile,
-      File archiveFile,
       String javaClass)
   throws Exception {
 

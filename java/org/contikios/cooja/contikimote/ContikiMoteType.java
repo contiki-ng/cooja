@@ -180,12 +180,6 @@ public class ContikiMoteType implements MoteType {
   private File fileFirmware = null;
   private String compileCommands = null;
 
-  public File libSource = null; /* JNI library: build/cooja/mtype1.c */
-
-  public File libFile = null; /* JNI library: build/cooja/mtype1.lib */
-
-  public File archiveFile = null; /* Contiki archive: build/cooja/mtype1.a */
-
   public File mapFile = null; /* Contiki map: build/cooja/mtype1.map */
 
   public String javaClassName = null; /* Loading Java class name: Lib1 */
@@ -249,36 +243,15 @@ public class ContikiMoteType implements MoteType {
       /* Create variables used for compiling Contiki. */
       // Contiki application: hello-world.c
       File contikiApp = getContikiSourceFile();
-      libSource = new File(
-              contikiApp.getParentFile(),
-              output_dir + "/" + getIdentifier() + ".c");
-      libFile = new File(
-              contikiApp.getParentFile(),
-              output_dir + "/" + getIdentifier() + librarySuffix);
-      archiveFile = new File(
-              contikiApp.getParentFile(),
-              output_dir + "/" + getIdentifier() + dependSuffix);
       mapFile = new File(
               contikiApp.getParentFile(),
               output_dir + "/" + getIdentifier() + mapSuffix);
       javaClassName = CoreComm.getAvailableClassName();
 
-      /* Delete output files */
-      libSource.delete();
-      libFile.delete();
-      archiveFile.delete();
-      mapFile.delete();
-
       /* Prepare compiler environment */
       String[][] env;
       try {
-        env = CompileContiki.createCompilationEnvironment(
-                this,
-                contikiApp,
-                mapFile,
-                libFile,
-                archiveFile,
-                javaClassName);
+        env = CompileContiki.createCompilationEnvironment(this, javaClassName);
       } catch (Exception e) {
         throw new MoteTypeCreationException("Error when creating environment: " + e.getMessage(), e);
       }
