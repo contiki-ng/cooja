@@ -172,27 +172,6 @@ public class LogScriptEngine {
     }
   }
 
-  /**
-   * Inject faked mote log output.
-   * Should only be used for debugging!
-   *
-   * @param msg Log message
-   * @param mote Mote
-   */
-  public void fakeMoteLogOutput(final String msg, final Mote mote) {
-    simulation.invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        handleNewMoteOutput(
-            mote,
-            mote.getID(),
-            mote.getSimulation().getSimulationTime(),
-            msg
-        );
-      }
-    });
-  }
-
   public void setScriptLogObserver(Observer observer) {
     scriptLogObserver = observer;
   }
