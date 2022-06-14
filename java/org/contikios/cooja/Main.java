@@ -153,6 +153,11 @@ class Main {
       System.exit(1);
     }
 
+    if (options.action != null && options.action.nogui != null) {
+      // Ensure no UI is used by Java
+      System.setProperty("java.awt.headless", "true");
+    }
+
     if (options.logConfigFile != null && !Files.exists(Path.of(options.logConfigFile))) {
       System.err.println("Configuration file '" + options.logConfigFile + "' does not exist");
       System.exit(1);
