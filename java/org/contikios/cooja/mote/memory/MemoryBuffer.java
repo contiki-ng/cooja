@@ -415,9 +415,7 @@ public class MemoryBuffer {
   public MemoryBuffer putInt(int value) {
     switch (memLayout.intSize) {
       case 2:
-        /**
-         * @TODO: check for size?
-         */
+        // TODO: check for size?
         bbuf.putShort((short) value);
         break;
       case 4:
@@ -458,9 +456,7 @@ public class MemoryBuffer {
    * @return A reference to this object
    */
   public MemoryBuffer putAddr(long value) {
-    /**
-     * @TODO: check for size?
-     */
+    // TODO: check for size?
     switch (memLayout.addrSize) {
       case 2:
         bbuf.putShort((short) value);

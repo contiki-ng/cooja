@@ -51,7 +51,7 @@ import javax.swing.table.TableModel;
 
 /**
  * This code was originally based on a Java tip from Rob Camick at
- * Java Tips Weblog, http://tips4java.wordpress.com.
+ * <a href="http://tips4java.wordpress.com">Java Tips Weblog</a>.
  */
 public class TableColumnAdjuster implements PropertyChangeListener, TableModelListener {
 
