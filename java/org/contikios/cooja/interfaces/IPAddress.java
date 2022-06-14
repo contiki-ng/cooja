@@ -130,12 +130,10 @@ public class IPAddress extends MoteInterface {
               setChanged();
               notifyObservers();
             }
-            /** @TODO: Remove other listeners? */
+            // TODO: Remove other listeners?
           }
         } else {
-
-          /** Note: works when 'isused' bit is set first
-           * and address region is written sequentially */
+          // Works when 'isused' bit is set first and address region is written sequentially
 
           /* check for sequential reading of 16 byte block */
           if (address == lastAccess + 1) {

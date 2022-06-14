@@ -667,7 +667,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     /* Do not override TEXT_NOT_TO_TOUCH */
     @Override
     public DocumentFilter getDocumentFilter() {
-      /** @todo: There seem to be some remaining issues regarding input handling */
+      // TODO: There seem to be some remaining issues regarding input handling
       return new DocumentFilter() {
 
         @Override
