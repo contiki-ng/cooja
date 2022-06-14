@@ -363,8 +363,8 @@ public class ContikiMoteType implements MoteType {
       throw new MoteTypeCreationException("Library file could not be found: " + getContikiFirmwareFile());
     }
 
-    if (this.javaClassName == null) {
-      throw new MoteTypeCreationException("Unknown Java class library: " + this.javaClassName);
+    if (javaClassName == null) {
+      throw new MoteTypeCreationException("Unknown Java class library");
     }
 
     // Allocate core communicator class
