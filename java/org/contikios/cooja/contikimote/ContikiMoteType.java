@@ -379,7 +379,6 @@ public class ContikiMoteType implements MoteType {
     SectionParser dataSecParser;
     SectionParser bssSecParser;
     SectionParser commonSecParser;
-    SectionParser readonlySecParser;
 
     HashMap<String, Symbol> variables = new HashMap<>();
     if (useCommand) {
@@ -401,9 +400,6 @@ public class ContikiMoteType implements MoteType {
               Cooja.getExternalToolsSetting("COMMAND_COMMON_START"),
               Cooja.getExternalToolsSetting("COMMAND_COMMON_END"),
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
-      /* XXX Currently Cooja tries to sync readonly memory */
-      readonlySecParser = null;
-
     } else {
       /* Parse map file */
       if (mapFile == null
@@ -428,8 +424,6 @@ public class ContikiMoteType implements MoteType {
               mapData,
               Cooja.getExternalToolsSetting("MAPFILE_COMMON_START"),
               Cooja.getExternalToolsSetting("MAPFILE_COMMON_SIZE"));
-      readonlySecParser = null;
-
     }
 
     /* We first need the value of Contiki's referenceVar, which tells us the
@@ -467,10 +461,6 @@ public class ContikiMoteType implements MoteType {
     initialMemory.addMemorySection("bss", bssSecParser.parse(offset));
 
     initialMemory.addMemorySection("common", commonSecParser.parse(offset));
-
-    if (readonlySecParser != null) {
-      initialMemory.addMemorySection("readonly", readonlySecParser.parse(offset));
-    }
 
     getCoreMemory(initialMemory);
   }
