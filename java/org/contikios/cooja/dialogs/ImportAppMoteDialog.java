@@ -269,7 +269,7 @@ public class ImportAppMoteDialog extends JDialog {
     return false;
   }
 
-  private Component createPanel(String title, JComponent field1) {
+  private static Component createPanel(String title, JComponent field1) {
     return createPanel(title, field1, null);
   }
 

@@ -2860,7 +2860,7 @@ public class Cooja extends Observable {
     return null;
   }
 
-  private ClassLoader createClassLoader(Collection<COOJAProject> projects)
+  private static ClassLoader createClassLoader(Collection<COOJAProject> projects)
   throws ClassLoaderCreationException {
     return createClassLoader(ClassLoader.getSystemClassLoader(), projects);
   }
@@ -3884,7 +3884,7 @@ public class Cooja extends Observable {
 	  {"[APPS_DIR]","PATH_APPS","apps"}
   };
 
-  private File createContikiRelativePath(File file) {
+  private static File createContikiRelativePath(File file) {
     try {
     	int elem = PATH_IDENTIFIER.length;
     	File path[] = new File [elem];
