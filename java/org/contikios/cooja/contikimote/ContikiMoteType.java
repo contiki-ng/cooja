@@ -572,11 +572,11 @@ public class ContikiMoteType implements MoteType {
                                  getSize()));
 
       if (logger.isDebugEnabled()) {
-        for (String var : variables.keySet()) {
+        for (Map.Entry<String, Symbol> entry : variables.entrySet()) {
           logger.debug(String.format("Found Symbol: %s, 0x%x, %d",
-                                     var,
-                                     variables.get(var).addr,
-                                     variables.get(var).size));
+                  entry.getKey(),
+                  entry.getValue().addr,
+                  entry.getValue().size));
         }
       }
 
