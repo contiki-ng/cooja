@@ -101,7 +101,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 
   private static File lastFile = null;
 
-  public static enum DialogState {
+  public enum DialogState {
     NO_SELECTION,
     SELECTED_SOURCE, AWAITING_COMPILATION, IS_COMPILING, COMPILED_FIRMWARE,
     SELECTED_FIRMWARE,
