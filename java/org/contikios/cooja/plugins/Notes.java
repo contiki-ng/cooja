@@ -138,7 +138,7 @@ public class Notes extends VisPlugin {
     config.add(element);
 
     element = new Element("decorations");
-    element.setText("" + decorationsVisible);
+    element.setText(String.valueOf(decorationsVisible));
     config.add(element);
 
     return config;

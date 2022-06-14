@@ -859,7 +859,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       if (formatTimeString) {
         return getFormattedTime(ev.getTime());
       } else {
-        return "" + ev.getTime() / Simulation.MILLISECOND;
+        return String.valueOf(ev.getTime() / Simulation.MILLISECOND);
       }
     }
 

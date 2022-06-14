@@ -72,23 +72,23 @@ public class DGRMDestinationRadio extends DestinationRadio {
 		Element element;
 
 		element = new Element("ratio");
-		element.setText("" + ratio);
+		element.setText(String.valueOf(ratio));
 		config.add(element);
 
 		element = new Element("signal");
-		element.setText("" + signal);
+		element.setText(String.valueOf(signal));
 		config.add(element);
 
 		element = new Element("lqi");
-		element.setText("" + lqi);
+		element.setText(String.valueOf(lqi));
 		config.add(element);
 		
 		element = new Element("delay");
-		element.setText("" + delay);
+		element.setText(String.valueOf(delay));
 		config.add(element);
 		
 		element = new Element("channel");
-		element.setText("" + channel);
+		element.setText(String.valueOf(channel));
 		config.add(element);
 
 		return config;

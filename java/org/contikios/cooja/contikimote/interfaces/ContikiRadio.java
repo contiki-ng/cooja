@@ -405,7 +405,7 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
 
            /* Radio bitrate */
            element = new Element("bitrate");
-           element.setText("" + RADIO_TRANSMISSION_RATE_kbps);
+           element.setText(String.valueOf(RADIO_TRANSMISSION_RATE_kbps));
            config.add(element);
 
            return config;

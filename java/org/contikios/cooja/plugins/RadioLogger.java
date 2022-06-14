@@ -213,26 +213,26 @@ public class RadioLogger extends VisPlugin {
         RadioConnectionLog conn = connections.get(row);
         if (col == COLUMN_NO) {
           if (!showDuplicates && conn.hides > 0) {
-            return "" + (row + 1) + "+" + conn.hides;
+            return (row + 1) + "+" + conn.hides;
           }
-          return "" + (row + 1);
+          return String.valueOf(row + 1);
         } else if (col == COLUMN_TIME) {
           if (formatTimeString) {
             return LogListener.getFormattedTime(conn.startTime);
           }
           return Long.toString(conn.startTime / Simulation.MILLISECOND);
         } else if (col == COLUMN_FROM) {
-          return "" + conn.connection.getSource().getMote().getID();
+          return String.valueOf(conn.connection.getSource().getMote().getID());
         } else if (col == COLUMN_TO) {
           Radio[] dests = conn.connection.getDestinations();
           if (dests.length == 0) {
             return "-";
           }
           if (dests.length == 1) {
-            return "" + dests[0].getMote().getID();
+            return String.valueOf(dests[0].getMote().getID());
           }
           if (dests.length == 2) {
-            return "" + dests[0].getMote().getID() + ',' + dests[1].getMote().getID();
+            return String.valueOf(dests[0].getMote().getID()) + ',' + dests[1].getMote().getID();
           }
           return "[" + dests.length + " d]";
         } else if (col == COLUMN_DATA) {
@@ -1030,7 +1030,7 @@ public class RadioLogger extends VisPlugin {
       return "-";
     }
     if (dests.length == 1) {
-      return "" + dests[0].getMote().getID();
+      return String.valueOf(dests[0].getMote().getID());
     }
     StringBuilder sb = new StringBuilder();
     for (Radio dest: dests) {

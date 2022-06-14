@@ -587,15 +587,15 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 		Collection<Element> config = new ArrayList<>();
 		for(Entry<Radio, Double> ent: baseRssi.entrySet()){
 			Element element = new Element("BaseRSSIConfig");
-			element.setAttribute("Mote", "" + ent.getKey().getMote().getID());
-			element.addContent("" + ent.getValue());
+			element.setAttribute("Mote", String.valueOf(ent.getKey().getMote().getID()));
+			element.addContent(String.valueOf(ent.getValue()));
 			config.add(element);
 		}
 
 		for(Entry<Radio, Double> ent: sendRssi.entrySet()){
 			Element element = new Element("SendRSSIConfig");
-			element.setAttribute("Mote", "" + ent.getKey().getMote().getID());
-			element.addContent("" + ent.getValue());
+			element.setAttribute("Mote", String.valueOf(ent.getKey().getMote().getID()));
+			element.addContent(String.valueOf(ent.getValue()));
 			config.add(element);
 		}
 

@@ -124,7 +124,7 @@ public class SimInformation extends VisPlugin {
     smallPane.add(Box.createHorizontalGlue());
 
     label = new JLabel();
-    label.setText(""  + simulation.getSimulationTimeMillis());
+    label.setText(String.valueOf(simulation.getSimulationTimeMillis()));
 
     labelSimTime = label;
     smallPane.add(label);
@@ -145,7 +145,7 @@ public class SimInformation extends VisPlugin {
     smallPane.add(Box.createHorizontalGlue());
 
     label = new JLabel();
-    label.setText(""  + simulation.getMotesCount());
+    label.setText(String.valueOf(simulation.getMotesCount()));
 
     labelNrMotes = label;
     smallPane.add(label);
@@ -167,7 +167,7 @@ public class SimInformation extends VisPlugin {
     smallPane.add(Box.createHorizontalGlue());
 
     label = new JLabel();
-    label.setText(""  + simulation.getMoteTypes().length);
+    label.setText(String.valueOf(simulation.getMoteTypes().length));
 
     labelNrMoteTypes = label;
     smallPane.add(label);
@@ -216,8 +216,8 @@ public class SimInformation extends VisPlugin {
         } else {
           labelStatus.setText("STOPPED");
         }
-        labelNrMotes.setText(""  + simulation.getMotesCount());
-        labelNrMoteTypes.setText(""  + simulation.getMoteTypes().length);
+        labelNrMotes.setText(String.valueOf(simulation.getMotesCount()));
+        labelNrMoteTypes.setText(String.valueOf(simulation.getMoteTypes().length));
       }
     });
 
@@ -248,7 +248,7 @@ public class SimInformation extends VisPlugin {
   private final Timer updateLabelTimer = new Timer(LABEL_UPDATE_INTERVAL, new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
-      labelSimTime.setText("" + simulation.getSimulationTimeMillis());
+      labelSimTime.setText(String.valueOf(simulation.getSimulationTimeMillis()));
 
       /* Automatically stop if simulation is no longer running */
       if (!simulation.isRunning()) {

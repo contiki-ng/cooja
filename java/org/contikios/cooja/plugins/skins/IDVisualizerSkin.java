@@ -82,7 +82,7 @@ public class IDVisualizerSkin implements VisualizerSkin {
       Position pos = mote.getInterfaces().getPosition();
       Point pixel = visualizer.transformPositionToPixel(pos);
 
-      String msg = "" + mote.getID();
+      String msg = String.valueOf(mote.getID());
       int msgWidth = fm.stringWidth(msg);
       g.drawString(msg, pixel.x - msgWidth/2, pixel.y + 5);
     }

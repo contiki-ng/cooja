@@ -486,41 +486,41 @@ public class LogisticLoss extends AbstractRadioMedium {
 
         /* Transmission success probability */
         element = new Element("success_ratio_tx");
-        element.setText("" + SUCCESS_RATIO_TX);
+        element.setText(String.valueOf(SUCCESS_RATIO_TX));
         config.add(element);
 
         /* Rx sensitivity */
         element = new Element("rx_sensitivity");
-        element.setText("" + RX_SENSITIVITY_DBM);
+        element.setText(String.valueOf(RX_SENSITIVITY_DBM));
         config.add(element);
 
         /* RSSI inflection point */
         element = new Element("rssi_inflection_point");
-        element.setText("" + RSSI_INFLECTION_POINT_DBM);
+        element.setText(String.valueOf(RSSI_INFLECTION_POINT_DBM));
         config.add(element);
 
         /* Path loss exponent */
         element = new Element("path_loss_exponent");
-        element.setText("" + PATH_LOSS_EXPONENT);
+        element.setText(String.valueOf(PATH_LOSS_EXPONENT));
         config.add(element);
 
         /* AWGN sigma */
         element = new Element("awgn_sigma");
-        element.setText("" + AWGN_SIGMA);
+        element.setText(String.valueOf(AWGN_SIGMA));
         config.add(element);
 
         /* Time variation enabled? */
         element = new Element("enable_time_variation");
-        element.setText("" + ENABLE_TIME_VARIATION);
+        element.setText(String.valueOf(ENABLE_TIME_VARIATION));
         config.add(element);
 
         if(ENABLE_TIME_VARIATION) {
             /* Time-variable path loss bounds */
             element = new Element("time_variation_min_pl_db");
-            element.setText("" + TIME_VARIATION_MIN_PL_DB);
+            element.setText(String.valueOf(TIME_VARIATION_MIN_PL_DB));
             config.add(element);
             element = new Element("time_variation_max_pl_db");
-            element.setText("" + TIME_VARIATION_MAX_PL_DB);
+            element.setText(String.valueOf(TIME_VARIATION_MAX_PL_DB));
             config.add(element);
         }
 

@@ -121,7 +121,7 @@ public class BufferSettings extends JDialog {
           return;
         }
 
-        Cooja.setExternalToolsSetting("BUFFERSIZE_LOGOUTPUT", "" + central.getLogOutputBufferSize());
+        Cooja.setExternalToolsSetting("BUFFERSIZE_LOGOUTPUT", String.valueOf(central.getLogOutputBufferSize()));
       }
     };
     line.add(new JButton(setDefaultAction));
