@@ -149,7 +149,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
       }
 
       var moteClass = loader.loadClass(moteClassName).asSubclass(AbstractApplicationMote.class);
-      moteConstructor = moteClass.getConstructor(new Class[] { MoteType.class, Simulation.class });
+      moteConstructor = moteClass.getConstructor(MoteType.class, Simulation.class);
     } catch (Exception | LinkageError e) {
       throw createError(e);
     }

@@ -321,8 +321,7 @@ public abstract class CoreComm {
     Class newCoreCommClass = loadClassFile(tempDir, className);
 
     try {
-      Constructor constr = newCoreCommClass
-          .getConstructor(new Class[] { File.class });
+      Constructor constr = newCoreCommClass.getConstructor(File.class);
       CoreComm newCoreComm = (CoreComm) constr
           .newInstance(new Object[] { libFile });
 

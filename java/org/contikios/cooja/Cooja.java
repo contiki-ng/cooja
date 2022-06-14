@@ -1325,8 +1325,8 @@ public class Cooja extends Observable {
     // Check that interval constructor exists
     try {
       positionerClass
-      .getConstructor(new Class[] { int.class, double.class, double.class,
-          double.class, double.class, double.class, double.class });
+      .getConstructor(int.class, double.class, double.class,
+          double.class, double.class, double.class, double.class);
     } catch (Exception e) {
       logger.fatal("No interval constructor found of positioner: "
           + positionerClass);
@@ -1362,7 +1362,7 @@ public class Cooja extends Observable {
       Class<? extends RadioMedium> radioMediumClass) {
     // Check that simulation constructor exists
     try {
-      radioMediumClass.getConstructor(new Class[] { Simulation.class });
+      radioMediumClass.getConstructor(Simulation.class);
     } catch (Exception e) {
       logger.fatal("No simulation constructor found of radio medium: "
           + radioMediumClass);
@@ -1816,12 +1816,12 @@ public class Cooja extends Observable {
     /* Check plugin constructor */
     try {
       if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
-        pluginClass.getConstructor(new Class[] { Cooja.class });
+        pluginClass.getConstructor(Cooja.class);
       } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN 
     		  || pluginType == PluginType.SIM_CONTROL_PLUGIN) {
-        pluginClass.getConstructor(new Class[] { Simulation.class, Cooja.class });
+        pluginClass.getConstructor(Simulation.class, Cooja.class);
       } else if (pluginType == PluginType.MOTE_PLUGIN) {
-        pluginClass.getConstructor(new Class[] { Mote.class, Simulation.class, Cooja.class });
+        pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class);
         menuMotePluginClasses.add(pluginClass);
       } else {
         logger.fatal("Could not register plugin, bad plugin type: " + pluginType);
