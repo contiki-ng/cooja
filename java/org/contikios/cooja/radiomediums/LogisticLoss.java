@@ -134,13 +134,13 @@ public class LogisticLoss extends AbstractRadioMedium {
      * This is required to implement the Capture Effect.
      * The co-channel rejection threshold of 802.15.4 radios typically is -3 dB.
      */
-    private final double CO_CHANNEL_REJECTION = -3.0;
+    private static final double CO_CHANNEL_REJECTION = -3.0;
 
     /*
      * The transmission power.
      * TODO: figure out how to getCurrentOutputPowerIndicator() to dBm use that.
      */
-    public final double DEFAULT_TX_POWER_DBM = 0.0;
+    public static final double DEFAULT_TX_POWER_DBM = 0.0;
 
     /* Enable the time-varying component? */
     public boolean ENABLE_TIME_VARIATION = false;
@@ -150,7 +150,7 @@ public class LogisticLoss extends AbstractRadioMedium {
     public double TIME_VARIATION_MAX_PL_DB = +10;
 
     /* How often to update the time-varying path loss value (in simulation time)? */
-    private final double TIME_VARIATION_STEP_SEC = 10.0;
+    private static final double TIME_VARIATION_STEP_SEC = 10.0;
 
     private long lastTimeVariationUpdatePeriod = 0;
 

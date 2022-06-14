@@ -78,7 +78,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
   private boolean isReceiving = false;
   private boolean isInterfered = false;
 
-  private final long transmissionEndTime = 0;
+  private static final long transmissionEndTime = 0;
 
   private RadioEvent lastEvent = RadioEvent.UNKNOWN;
   private long lastEventTime = 0;
