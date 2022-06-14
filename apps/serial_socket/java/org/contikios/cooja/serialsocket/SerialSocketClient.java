@@ -37,6 +37,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
@@ -51,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 
 import javax.swing.BorderFactory;
@@ -113,6 +115,7 @@ public class SerialSocketClient extends VisPlugin implements MotePlugin {
   private Socket socket;
   private DataInputStream in;
   private DataOutputStream out;
+  private Thread incomingDataThread;
 
   private final Mote mote;
   private final Simulation simulation;
@@ -382,7 +385,7 @@ public class SerialSocketClient extends VisPlugin implements MotePlugin {
     } else {
       // disconnect from server
       try {
-        logger.info("Closing connection to serer...");
+        logger.info("Closing connection to server...");
         socket.close();
         notifyClientDisconnected();
       } catch (IOException ex) {
@@ -397,40 +400,55 @@ public class SerialSocketClient extends VisPlugin implements MotePlugin {
 
   private void startSocketReadThread(final DataInputStream in) {
     /* Forward data: virtual port -> mote */
-    Thread incomingDataThread = new Thread(new Runnable() {
+    incomingDataThread = new Thread(new Runnable() {
       @Override
       public void run() {
+        final Semaphore blocker = new Semaphore(20);
         int numRead = 0;
         byte[] data = new byte[16*1024];
         logger.info("Start forwarding: socket -> serial port");
-        while (numRead >= 0) {
-          try {
+        try {
+          do {
             numRead = in.read(data);
-          } catch (IOException e) {
-            logger.info(e.getMessage());
-            numRead = -1;
-            continue;
-          }
 
-          if (numRead >= 0) {
-            final int finalNumRead = numRead;
-            final byte[] finalData = data;
-            /* We are not on the simulation thread */
-            simulation.invokeSimulationThread(new Runnable() {
+            if (numRead > 0) {
+              final int finalNumRead = numRead;
+              final byte[] finalData = data;
 
-              @Override
-              public void run() {
-                for (int i = 0; i < finalNumRead; i++) {
-                  serialPort.writeByte(finalData[i]);
+              /* Block if there are too many pending data writes */
+              blocker.acquire();
+
+              /* Allocate new block for next read */
+              data = new byte[finalData.length];
+
+              /* We are not on the simulation thread */
+              simulation.invokeSimulationThread(new Runnable() {
+
+                @Override
+                public void run() {
+                  try {
+                    for (int i = 0; i < finalNumRead; i++) {
+                      serialPort.writeByte(finalData[i]);
+                    }
+                  } finally {
+                    blocker.release();
+                  }
                 }
-              }
-            });
+              });
 
-            inBytes += numRead;
-            if (Cooja.isVisualized()) {
-              socketToMoteLabel.setText(inBytes + " bytes");
+              inBytes += numRead;
+              if (Cooja.isVisualized()) {
+                EventQueue.invokeLater(new Runnable() {
+                  @Override
+                  public void run() {
+                    socketToMoteLabel.setText(inBytes + " bytes");
+                  }
+                });
+              }
             }
-          }
+          } while (numRead >= 0);
+        } catch (IOException | InterruptedException e) {
+          logger.info(e.getMessage());
         }
 
         logger.info("Incoming data thread shut down");
@@ -440,7 +458,7 @@ public class SerialSocketClient extends VisPlugin implements MotePlugin {
     });
     incomingDataThread.start();
   }
-  
+
   @Override
   public Collection<Element> getConfigXML() {
     List<Element> config = new ArrayList<>();
@@ -530,6 +548,11 @@ public class SerialSocketClient extends VisPlugin implements MotePlugin {
   private void cleanup() {
     serialPort.deleteSerialDataObserver(serialDataObserver);
 
+    if (incomingDataThread != null) {
+      incomingDataThread.interrupt();
+      incomingDataThread = null;
+    }
+
     try {
       if (socket != null) {
         socket.close();
@@ -566,4 +589,3 @@ public class SerialSocketClient extends VisPlugin implements MotePlugin {
     return mote;
   }
 }
-
