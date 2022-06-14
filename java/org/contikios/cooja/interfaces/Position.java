@@ -31,10 +31,10 @@
 package org.contikios.cooja.interfaces;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -179,11 +179,10 @@ public class Position extends MoteInterface {
 
   @Override
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<>();
-    Element element;
+    var config = new ArrayList<Element>();
 
     // X coordinate
-    element = new Element("x");
+    var element = new Element("x");
     element.setText(Double.toString(getXCoordinate()));
     config.add(element);
 

@@ -30,10 +30,10 @@
 
 package org.contikios.cooja.contikimote.interfaces;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.apache.logging.log4j.Logger;
@@ -141,11 +141,10 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
 
   @Override
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<>();
-    Element element;
+    var config = new ArrayList<Element>();
 
     // Infinite boolean
-    element = new Element("id");
+    var element = new Element("id");
     element.setText(Integer.toString(moteID));
     config.add(element);
 

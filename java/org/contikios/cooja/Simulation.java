@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
-import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
@@ -59,10 +58,10 @@ public class Simulation extends Observable implements Runnable {
 
   /*private static long EVENT_COUNTER = 0;*/
 
-  private final Vector<Mote> motes = new Vector<>();
-  private final Vector<Mote> motesUninit = new Vector<>();
+  private final ArrayList<Mote> motes = new ArrayList<>();
+  private final ArrayList<Mote> motesUninit = new ArrayList<>();
   
-  private final Vector<MoteType> moteTypes = new Vector<>();
+  private final ArrayList<MoteType> moteTypes = new ArrayList<>();
 
   /* If true, run simulation at full speed */
   private boolean speedLimitNone = true;
