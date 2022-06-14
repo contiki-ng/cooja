@@ -64,13 +64,13 @@ public class ScriptParser {
     this.code = code;
   }
 
-  private String fixNewlines(String code) {
+  private static String fixNewlines(String code) {
     code = code.replaceAll("\r\n", "\n");
     code = "\n" + code + "\n";
     return code;
   }
 
-  private String stripSingleLineComments(String code) {
+  private static String stripSingleLineComments(String code) {
     /* TODO Handle strings */
     Pattern pattern = Pattern.compile("//.*\n");
     Matcher matcher = pattern.matcher(code);
@@ -78,7 +78,7 @@ public class ScriptParser {
     return code;
   }
 
-  private String stripFirstComment(String code) {
+  private static String stripFirstComment(String code) {
     int first = code.indexOf('"');
     if (first < 0) {
       return code;
@@ -89,7 +89,7 @@ public class ScriptParser {
     return code;
   }
 
-  private String stripMultiLineComments(String code) {
+  private static String stripMultiLineComments(String code) {
     /* TODO Handle strings */
     Pattern pattern =
       Pattern.compile("/\\*([^*]|[\n]|(\\*+([^*/]|[\n])))*\\*+/");
@@ -168,14 +168,14 @@ public class ScriptParser {
     return code;
   }
 
-  private String replaceYields(String code) {
+  private static String replaceYields(String code) {
     Pattern pattern = Pattern.compile(
         "YIELD\\(\\)"
     );
     return pattern.matcher(code).replaceAll("SCRIPT_SWITCH()");
   }
 
-  private String replaceYieldThenWaitUntils(String code) {
+  private static String replaceYieldThenWaitUntils(String code) {
     Pattern pattern = Pattern.compile(
         "YIELD_THEN_WAIT_UNTIL\\(" +
         "(.*)" /* expression */ +
@@ -192,7 +192,7 @@ public class ScriptParser {
     return code;
   }
 
-  private String replaceWaitUntils(String code) {
+  private static String replaceWaitUntils(String code) {
     Pattern pattern = Pattern.compile(
         "WAIT_UNTIL\\(" +
         "(.*)" /* expression */ +

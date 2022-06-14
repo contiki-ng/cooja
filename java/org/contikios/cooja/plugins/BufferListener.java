@@ -781,7 +781,7 @@ public class BufferListener extends VisPlugin {
       oldData = newData;
     }
 
-    void addBufferAccess(BufferListener bl, Mote mote, byte[] oldData, byte[] newData, EventType type, long address) {
+    static void addBufferAccess(BufferListener bl, Mote mote, byte[] oldData, byte[] newData, EventType type, long address) {
       BufferAccess ba = new BufferAccess(
           mote,
           mote.getSimulation().getSimulationTime(),

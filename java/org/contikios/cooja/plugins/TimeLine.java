@@ -428,7 +428,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       showRadioTXRXCheckbox.setSelected(showRadioRXTX);
   }
 
-  private JCheckBox createEventCheckbox(String text, String tooltip) {
+  private static JCheckBox createEventCheckbox(String text, String tooltip) {
     JCheckBox checkBox = new JCheckBox(text, true);
     checkBox.setToolTipText(tooltip);
     return checkBox;
@@ -568,7 +568,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     });
   }
 
-  private int zoomGetLevel (final double zoomDivisor) {
+  private static int zoomGetLevel(final double zoomDivisor) {
     int zoomLevel = 0;
     while (zoomLevel < ZOOM_LEVELS.length) {
       if (zoomDivisor <= ZOOM_LEVELS[zoomLevel]) break;
@@ -580,7 +580,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     return zoomGetLevel(currentPixelDivisor);
   }
 
-  private double zoomLevelToDivisor (int zoomLevel) {
+  private static double zoomLevelToDivisor(int zoomLevel) {
     if (0 > zoomLevel) {
       zoomLevel = 0;
     } else if (ZOOM_LEVELS.length <= zoomLevel) {

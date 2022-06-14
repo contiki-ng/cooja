@@ -164,7 +164,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
     return lastWritten;
   }
 
-  String byteArrayToPrintableCharacters(byte[] data, int offset, int length) {
+  static String byteArrayToPrintableCharacters(byte[] data, int offset, int length) {
       StringBuilder sb = new StringBuilder();
       for (int i = offset; i < offset + length; i++) {
         sb.append(data[i] > 31 && data[i] < 128 ? (char) data[i] : '.');
@@ -172,7 +172,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
       return sb.toString();
   }
   
-  String byteArrayToHexList(byte[] data, int offset, int length) {
+  static String byteArrayToHexList(byte[] data, int offset, int length) {
       StringBuilder sb = new StringBuilder();
             
       for (int i = 0; i < length; i++) {

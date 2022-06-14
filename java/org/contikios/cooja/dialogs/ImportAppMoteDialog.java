@@ -273,7 +273,7 @@ public class ImportAppMoteDialog extends JDialog {
     return createPanel(title, field1, null);
   }
 
-  private Component createPanel(String title, JComponent field1, JComponent field2) {
+  private static Component createPanel(String title, JComponent field1, JComponent field2) {
     Box panel = Box.createHorizontalBox();
     JLabel label = new JLabel(title);
     label.setPreferredSize(LABEL_DIMENSION);

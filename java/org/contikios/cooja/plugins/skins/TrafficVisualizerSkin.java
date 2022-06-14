@@ -172,11 +172,11 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
     g.fillPolygon(arrowPoly);
   }
 
-  private int yCor(int len, double dir) {
+  private static int yCor(int len, double dir) {
     return (int)(0.5 + len * Math.cos(dir));
   }
 
-  private int xCor(int len, double dir) {
+  private static int xCor(int len, double dir) {
     return (int)(0.5 + len * Math.sin(dir));
   }
 

@@ -544,7 +544,7 @@ public class ContikiMoteType implements MoteType {
 
     abstract Map<String, Symbol> parseSymbols(long offset);
 
-    protected long parseFirstHexLong(String regexp, String[] data) {
+    protected static long parseFirstHexLong(String regexp, String[] data) {
       String retString = getFirstMatchGroup(data, regexp, 1);
 
       if (retString == null || retString.equals("")) {
@@ -650,7 +650,7 @@ public class ContikiMoteType implements MoteType {
      * @param varName Name of variable
      * @return Relative memory address of variable or -1 if not found
      */
-    private long getMapFileVarAddress(String[] mapFileData, String varName) {
+    private static long getMapFileVarAddress(String[] mapFileData, String varName) {
 
       String regExp = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_1")
               + varName
@@ -664,7 +664,7 @@ public class ContikiMoteType implements MoteType {
       }
     }
 
-    private int getMapFileVarSize(String[] mapFileData, String varName) {
+    private static int getMapFileVarSize(String[] mapFileData, String varName) {
       Pattern pattern = Pattern.compile(
               Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_1")
               + varName

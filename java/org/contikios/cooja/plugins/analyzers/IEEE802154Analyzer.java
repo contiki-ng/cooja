@@ -182,7 +182,7 @@ public class IEEE802154Analyzer extends PacketAnalyzer {
     return ANALYSIS_OK_CONTINUE;
   }
 
-  private void printAddress(StringBuilder sb, int type, byte[] addr) {
+  private static void printAddress(StringBuilder sb, int type, byte[] addr) {
     if (type == SHORT_ADDRESS) {
       sb.append("0x").append(StringUtils.toHex(addr));
     } else if (type == LONG_ADDRESS) {
