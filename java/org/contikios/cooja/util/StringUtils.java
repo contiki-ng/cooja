@@ -55,7 +55,7 @@ public class StringUtils {
   }
 
   public static String toHex(byte data) {
-      return "" + HEX[(data >> 4) & 0xf] + HEX[data & 0xf];
+      return String.valueOf(HEX[(data >> 4) & 0xf]) + HEX[data & 0xf];
   }
   
   public static String toHex(byte[] data) {

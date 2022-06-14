@@ -371,12 +371,12 @@ public class UDGM extends AbstractRadioMedium {
 
     /* Transmission success probability */
     element = new Element("success_ratio_tx");
-    element.setText("" + SUCCESS_RATIO_TX);
+    element.setText(String.valueOf(SUCCESS_RATIO_TX));
     config.add(element);
 
     /* Reception success probability */
     element = new Element("success_ratio_rx");
-    element.setText("" + SUCCESS_RATIO_RX);
+    element.setText(String.valueOf(SUCCESS_RATIO_RX));
     config.add(element);
 
     return config;

@@ -2527,15 +2527,15 @@ public class Cooja extends Observable {
     /* Store frame size and position */
     if (isVisualized()) {
       setExternalToolsSetting("FRAME_SCREEN", frame.getGraphicsConfiguration().getDevice().getIDstring());
-      setExternalToolsSetting("FRAME_POS_X", "" + frame.getLocationOnScreen().x);
-      setExternalToolsSetting("FRAME_POS_Y", "" + frame.getLocationOnScreen().y);
+      setExternalToolsSetting("FRAME_POS_X", String.valueOf(frame.getLocationOnScreen().x));
+      setExternalToolsSetting("FRAME_POS_Y", String.valueOf(frame.getLocationOnScreen().y));
 
       if (frame.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
         setExternalToolsSetting("FRAME_WIDTH", "" + Integer.MAX_VALUE);
         setExternalToolsSetting("FRAME_HEIGHT", "" + Integer.MAX_VALUE);
       } else {
-        setExternalToolsSetting("FRAME_WIDTH", "" + frame.getWidth());
-        setExternalToolsSetting("FRAME_HEIGHT", "" + frame.getHeight());
+        setExternalToolsSetting("FRAME_WIDTH", String.valueOf(frame.getWidth()));
+        setExternalToolsSetting("FRAME_HEIGHT", String.valueOf(frame.getHeight()));
       }
     }
     saveExternalToolsUserSettings();
@@ -2816,7 +2816,7 @@ public class Cooja extends Observable {
     return null;
   }
 
-  private ClassLoader createClassLoader(Collection<COOJAProject> projects)
+  private static ClassLoader createClassLoader(Collection<COOJAProject> projects)
   throws ClassLoaderCreationException {
     return createClassLoader(ClassLoader.getSystemClassLoader(), projects);
   }
@@ -3222,23 +3222,23 @@ public class Cooja extends Observable {
         JInternalFrame pluginFrame = startedPlugin.getCooja();
 
         pluginSubElement = new Element("width");
-        pluginSubElement.setText("" + pluginFrame.getSize().width);
+        pluginSubElement.setText(String.valueOf(pluginFrame.getSize().width));
         pluginElement.addContent(pluginSubElement);
 
         pluginSubElement = new Element("z");
-        pluginSubElement.setText("" + getDesktopPane().getComponentZOrder(pluginFrame));
+        pluginSubElement.setText(String.valueOf(getDesktopPane().getComponentZOrder(pluginFrame)));
         pluginElement.addContent(pluginSubElement);
 
         pluginSubElement = new Element("height");
-        pluginSubElement.setText("" + pluginFrame.getSize().height);
+        pluginSubElement.setText(String.valueOf(pluginFrame.getSize().height));
         pluginElement.addContent(pluginSubElement);
 
         pluginSubElement = new Element("location_x");
-        pluginSubElement.setText("" + pluginFrame.getLocation().x);
+        pluginSubElement.setText(String.valueOf(pluginFrame.getLocation().x));
         pluginElement.addContent(pluginSubElement);
 
         pluginSubElement = new Element("location_y");
-        pluginSubElement.setText("" + pluginFrame.getLocation().y);
+        pluginSubElement.setText(String.valueOf(pluginFrame.getLocation().y));
         pluginElement.addContent(pluginSubElement);
 
         if (pluginFrame.isIcon()) {
@@ -3602,7 +3602,7 @@ public class Cooja extends Observable {
           @Override
           public void actionPerformed(ActionEvent e) {
             Cooja.setExternalToolsSetting("HIDE_WARNINGS",
-                "" + ((JCheckBox)e.getSource()).isSelected());
+                    String.valueOf(((JCheckBox) e.getSource()).isSelected()));
           }
         });
         buttonBox.add(Box.createHorizontalStrut(10));
@@ -3826,7 +3826,7 @@ public class Cooja extends Observable {
 	  {"[APPS_DIR]","PATH_APPS","apps"}
   };
 
-  private File createContikiRelativePath(File file) {
+  private static File createContikiRelativePath(File file) {
     try {
     	int elem = PATH_IDENTIFIER.length;
     	File path[] = new File [elem];

@@ -1076,7 +1076,7 @@ public class BufferListener extends VisPlugin {
           return String.format("%02d:%02d.%03d", m,s,ms);
         }
       } else {
-        return "" + time / Simulation.MILLISECOND;
+        return String.valueOf(time / Simulation.MILLISECOND);
       }
     }
   }
@@ -1874,8 +1874,8 @@ public class BufferListener extends VisPlugin {
     @Override
     public void writeConfig(Element element) {
       element.setAttribute("variable", variable);
-      element.setAttribute("size", "" + size);
-      element.setAttribute("offset", "" + offset);
+      element.setAttribute("size", String.valueOf(size));
+      element.setAttribute("offset", String.valueOf(offset));
     }
     @Override
     public void applyConfig(Element element) {
@@ -1923,8 +1923,8 @@ public class BufferListener extends VisPlugin {
       }
 
       Cooja.setExternalToolsSetting("BUFFER_LISTENER_VARNAME", variable);
-      Cooja.setExternalToolsSetting("BUFFER_LISTENER_VARSIZE", "" + size);
-      Cooja.setExternalToolsSetting("BUFFER_LISTENER_VAROFFSET", "" + offset);
+      Cooja.setExternalToolsSetting("BUFFER_LISTENER_VARSIZE", String.valueOf(size));
+      Cooja.setExternalToolsSetting("BUFFER_LISTENER_VAROFFSET", String.valueOf(offset));
       return true;
     }
   }
@@ -1961,8 +1961,8 @@ public class BufferListener extends VisPlugin {
     @Override
     public void writeConfig(Element element) {
       element.setAttribute("variable", variable);
-      element.setAttribute("size", "" + size);
-      element.setAttribute("offset", "" + offset);
+      element.setAttribute("size", String.valueOf(size));
+      element.setAttribute("offset", String.valueOf(offset));
     }
     @Override
     public void applyConfig(Element element) {
@@ -2009,8 +2009,8 @@ public class BufferListener extends VisPlugin {
         return false;
       }
       Cooja.setExternalToolsSetting("BUFFER_LISTENER_VARNAME", variable);
-      Cooja.setExternalToolsSetting("BUFFER_LISTENER_VARSIZE", "" + size);
-      Cooja.setExternalToolsSetting("BUFFER_LISTENER_VAROFFSET", "" + offset);
+      Cooja.setExternalToolsSetting("BUFFER_LISTENER_VARSIZE", String.valueOf(size));
+      Cooja.setExternalToolsSetting("BUFFER_LISTENER_VAROFFSET", String.valueOf(offset));
       return true;
     }
   }

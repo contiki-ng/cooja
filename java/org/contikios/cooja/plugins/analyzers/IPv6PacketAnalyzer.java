@@ -44,7 +44,7 @@ public class IPv6PacketAnalyzer extends PacketAnalyzer {
     packet.copy(pos + 8, srcAddress, 0, 16);
     packet.copy(pos + 24, destAddress, 0, 16);
 
-    String protoStr = "" + proto;
+    String protoStr = String.valueOf(proto);
     if (proto == PROTO_ICMP) {
       protoStr = "ICMPv6";
     } else if (proto == PROTO_UDP) {

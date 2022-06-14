@@ -645,7 +645,7 @@ public class ScriptRunner extends VisPlugin {
     }
 
     element = new Element("active");
-    element.setText("" + isActive());
+    element.setText(String.valueOf(isActive()));
     config.add(element);
 
     return config;

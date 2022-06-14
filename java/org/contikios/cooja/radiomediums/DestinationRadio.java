@@ -56,7 +56,7 @@ public class DestinationRadio {
 		Element element;
 
 		element = new Element("radio");
-		element.setText("" + radio.getMote().getID());
+		element.setText(String.valueOf(radio.getMote().getID()));
 		config.add(element);
 		return config;
 	}

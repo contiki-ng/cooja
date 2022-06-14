@@ -458,7 +458,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
       Element element;
 
       element = new Element("source");
-      element.setText("" + source.getMote().getID());
+      element.setText(String.valueOf(source.getMote().getID()));
       config.add(element);
 
       element = new Element("dest");

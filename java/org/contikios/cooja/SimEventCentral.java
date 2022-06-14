@@ -92,7 +92,7 @@ public class SimEventCentral {
 
     @Override
     public String toString() {
-      return "" + ID;
+      return String.valueOf(ID);
     }
   }
   /** Help class for maintaining mote-specific observations */
@@ -348,7 +348,7 @@ public class SimEventCentral {
 
     /* Log output buffer size */
     element = new Element("logoutput");
-    element.setText("" + logOutputBufferSize);
+    element.setText(String.valueOf(logOutputBufferSize));
     config.add(element);
 
     return config;

@@ -87,7 +87,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface, PolledAfterActiveTicks {
   private static final Logger logger = LogManager.getLogger(ContikiEEPROM.class);
 
-  public final int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */
+  public static final int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */
   private Mote mote = null;
   private VarMemory moteMem = null;
 

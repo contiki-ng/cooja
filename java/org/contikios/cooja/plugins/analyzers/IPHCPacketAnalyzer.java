@@ -447,7 +447,7 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
     }
     packet.pos += hc06_ptr;
 
-    String protoStr = "" + proto;
+    String protoStr;
     if (proto == PROTO_ICMP) {
       protoStr = "ICMPv6";
     } else if (proto == PROTO_UDP) {

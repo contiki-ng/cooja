@@ -134,13 +134,13 @@ public class LogisticLoss extends AbstractRadioMedium {
      * This is required to implement the Capture Effect.
      * The co-channel rejection threshold of 802.15.4 radios typically is -3 dB.
      */
-    private final double CO_CHANNEL_REJECTION = -3.0;
+    private static final double CO_CHANNEL_REJECTION = -3.0;
 
     /*
      * The transmission power.
      * TODO: figure out how to getCurrentOutputPowerIndicator() to dBm use that.
      */
-    public final double DEFAULT_TX_POWER_DBM = 0.0;
+    public static final double DEFAULT_TX_POWER_DBM = 0.0;
 
     /* Enable the time-varying component? */
     public boolean ENABLE_TIME_VARIATION = false;
@@ -150,7 +150,7 @@ public class LogisticLoss extends AbstractRadioMedium {
     public double TIME_VARIATION_MAX_PL_DB = +10;
 
     /* How often to update the time-varying path loss value (in simulation time)? */
-    private final double TIME_VARIATION_STEP_SEC = 10.0;
+    private static final double TIME_VARIATION_STEP_SEC = 10.0;
 
     private long lastTimeVariationUpdatePeriod = 0;
 
@@ -486,41 +486,41 @@ public class LogisticLoss extends AbstractRadioMedium {
 
         /* Transmission success probability */
         element = new Element("success_ratio_tx");
-        element.setText("" + SUCCESS_RATIO_TX);
+        element.setText(String.valueOf(SUCCESS_RATIO_TX));
         config.add(element);
 
         /* Rx sensitivity */
         element = new Element("rx_sensitivity");
-        element.setText("" + RX_SENSITIVITY_DBM);
+        element.setText(String.valueOf(RX_SENSITIVITY_DBM));
         config.add(element);
 
         /* RSSI inflection point */
         element = new Element("rssi_inflection_point");
-        element.setText("" + RSSI_INFLECTION_POINT_DBM);
+        element.setText(String.valueOf(RSSI_INFLECTION_POINT_DBM));
         config.add(element);
 
         /* Path loss exponent */
         element = new Element("path_loss_exponent");
-        element.setText("" + PATH_LOSS_EXPONENT);
+        element.setText(String.valueOf(PATH_LOSS_EXPONENT));
         config.add(element);
 
         /* AWGN sigma */
         element = new Element("awgn_sigma");
-        element.setText("" + AWGN_SIGMA);
+        element.setText(String.valueOf(AWGN_SIGMA));
         config.add(element);
 
         /* Time variation enabled? */
         element = new Element("enable_time_variation");
-        element.setText("" + ENABLE_TIME_VARIATION);
+        element.setText(String.valueOf(ENABLE_TIME_VARIATION));
         config.add(element);
 
         if(ENABLE_TIME_VARIATION) {
             /* Time-variable path loss bounds */
             element = new Element("time_variation_min_pl_db");
-            element.setText("" + TIME_VARIATION_MIN_PL_DB);
+            element.setText(String.valueOf(TIME_VARIATION_MIN_PL_DB));
             config.add(element);
             element = new Element("time_variation_max_pl_db");
-            element.setText("" + TIME_VARIATION_MAX_PL_DB);
+            element.setText(String.valueOf(TIME_VARIATION_MAX_PL_DB));
             config.add(element);
         }
 

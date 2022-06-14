@@ -495,7 +495,7 @@ public class Simulation extends Observable implements Runnable {
     /* Max simulation speed */
     if (!speedLimitNone) {
       element = new Element("speedlimit");
-      element.setText("" + getSpeedLimit());
+      element.setText(String.valueOf(getSpeedLimit()));
       config.add(element);
     }
 

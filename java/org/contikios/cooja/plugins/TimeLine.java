@@ -795,7 +795,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public String toString(boolean logs, boolean leds, boolean radioHW, boolean radioRXTX) {
       long duration = simulation.getSimulationTime(); /* XXX */
       StringBuilder sb = new StringBuilder();
-      String moteDesc = (mote!=null?"" + mote.getID():"AVERAGE") + " ";
+      String moteDesc = (mote!=null? String.valueOf(mote.getID()) :"AVERAGE") + " ";
       if (logs) {
         sb.append(moteDesc).append("nr_logs ").append(nrLogs).append("\n");
       }
@@ -1360,7 +1360,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       element = new Element("mote");
       for (int i=0; i < allMotes.length; i++) {
         if (allMotes[i] == moteEvents.mote) {
-          element.setText("" + i);
+          element.setText(String.valueOf(i));
           config.add(element);
           break;
         }
@@ -1398,7 +1398,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
 
     element = new Element("zoomfactor");
-    element.addContent("" + currentPixelDivisor);
+    element.addContent(String.valueOf(currentPixelDivisor));
     config.add(element);
 
     return config;
@@ -1995,7 +1995,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       g.setFont(new Font("SansSerif", Font.PLAIN, paintedMoteHeight));
       int y = FIRST_MOTE_PIXEL_OFFSET-EVENT_PIXEL_HEIGHT/2+paintedMoteHeight;
       for (MoteEvents moteLog: allMoteEvents) {
-        String str = "" + moteLog.mote.getID();
+        String str = String.valueOf(moteLog.mote.getID());
         int w = g.getFontMetrics().stringWidth(str) + 1;
 
         if (highlightedMotes.contains(moteLog.mote)) {
