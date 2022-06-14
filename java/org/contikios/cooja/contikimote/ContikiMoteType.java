@@ -180,12 +180,6 @@ public class ContikiMoteType implements MoteType {
   private File fileFirmware = null;
   private String compileCommands = null;
 
-  public File libSource = null; /* JNI library: build/cooja/mtype1.c */
-
-  public File libFile = null; /* JNI library: build/cooja/mtype1.lib */
-
-  public File archiveFile = null; /* Contiki archive: build/cooja/mtype1.a */
-
   public File mapFile = null; /* Contiki map: build/cooja/mtype1.map */
 
   public String javaClassName = null; /* Loading Java class name: Lib1 */
@@ -249,36 +243,15 @@ public class ContikiMoteType implements MoteType {
       /* Create variables used for compiling Contiki. */
       // Contiki application: hello-world.c
       File contikiApp = getContikiSourceFile();
-      libSource = new File(
-              contikiApp.getParentFile(),
-              output_dir + "/" + getIdentifier() + ".c");
-      libFile = new File(
-              contikiApp.getParentFile(),
-              output_dir + "/" + getIdentifier() + librarySuffix);
-      archiveFile = new File(
-              contikiApp.getParentFile(),
-              output_dir + "/" + getIdentifier() + dependSuffix);
       mapFile = new File(
               contikiApp.getParentFile(),
               output_dir + "/" + getIdentifier() + mapSuffix);
       javaClassName = CoreComm.getAvailableClassName();
 
-      /* Delete output files */
-      libSource.delete();
-      libFile.delete();
-      archiveFile.delete();
-      mapFile.delete();
-
       /* Prepare compiler environment */
       String[][] env;
       try {
-        env = CompileContiki.createCompilationEnvironment(
-                this,
-                contikiApp,
-                mapFile,
-                libFile,
-                archiveFile,
-                javaClassName);
+        env = CompileContiki.createCompilationEnvironment(this, javaClassName);
       } catch (Exception e) {
         throw new MoteTypeCreationException("Error when creating environment: " + e.getMessage(), e);
       }
@@ -390,8 +363,8 @@ public class ContikiMoteType implements MoteType {
       throw new MoteTypeCreationException("Library file could not be found: " + getContikiFirmwareFile());
     }
 
-    if (this.javaClassName == null) {
-      throw new MoteTypeCreationException("Unknown Java class library: " + this.javaClassName);
+    if (javaClassName == null) {
+      throw new MoteTypeCreationException("Unknown Java class library");
     }
 
     // Allocate core communicator class
@@ -406,7 +379,6 @@ public class ContikiMoteType implements MoteType {
     SectionParser dataSecParser;
     SectionParser bssSecParser;
     SectionParser commonSecParser;
-    SectionParser readonlySecParser;
 
     HashMap<String, Symbol> variables = new HashMap<>();
     if (useCommand) {
@@ -428,9 +400,6 @@ public class ContikiMoteType implements MoteType {
               Cooja.getExternalToolsSetting("COMMAND_COMMON_START"),
               Cooja.getExternalToolsSetting("COMMAND_COMMON_END"),
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
-      /* XXX Currently Cooja tries to sync readonly memory */
-      readonlySecParser = null;
-
     } else {
       /* Parse map file */
       if (mapFile == null
@@ -455,8 +424,6 @@ public class ContikiMoteType implements MoteType {
               mapData,
               Cooja.getExternalToolsSetting("MAPFILE_COMMON_START"),
               Cooja.getExternalToolsSetting("MAPFILE_COMMON_SIZE"));
-      readonlySecParser = null;
-
     }
 
     /* We first need the value of Contiki's referenceVar, which tells us the
@@ -494,10 +461,6 @@ public class ContikiMoteType implements MoteType {
     initialMemory.addMemorySection("bss", bssSecParser.parse(offset));
 
     initialMemory.addMemorySection("common", commonSecParser.parse(offset));
-
-    if (readonlySecParser != null) {
-      initialMemory.addMemorySection("readonly", readonlySecParser.parse(offset));
-    }
 
     getCoreMemory(initialMemory);
   }

@@ -115,18 +115,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     
     /* Create variables used for compiling Contiki */
     moteType.setContikiSourceFile(source);
-    ((ContikiMoteType)moteType).libSource = new File(
-        source.getParentFile(),
-        output_dir + "/" + moteType.getIdentifier() + ".c"
-    );
-    ((ContikiMoteType)moteType).libFile = new File(
-        source.getParentFile(),
-        output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.librarySuffix
-    );
-    ((ContikiMoteType)moteType).archiveFile = new File(
-        source.getParentFile(),
-        output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.dependSuffix
-    );
     ((ContikiMoteType)moteType).mapFile = new File(
         source.getParentFile(),
         output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.mapSuffix);
@@ -142,10 +130,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     try {
       env = CompileContiki.createCompilationEnvironment(
           ((ContikiMoteType)moteType),
-          source,
-          ((ContikiMoteType)moteType).mapFile,
-          ((ContikiMoteType)moteType).libFile,
-          ((ContikiMoteType)moteType).archiveFile,
           ((ContikiMoteType)moteType).javaClassName
       );
 
@@ -370,19 +354,10 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   @Override
   public void compileContiki()
   throws Exception {
-    if (((ContikiMoteType)moteType).libSource == null ||
-        ((ContikiMoteType)moteType).libFile == null ||
-        ((ContikiMoteType)moteType).archiveFile == null ||
-        ((ContikiMoteType)moteType).mapFile == null ||
+    if (((ContikiMoteType)moteType).mapFile == null ||
         ((ContikiMoteType)moteType).javaClassName == null) {
       throw new Exception("Library variables not defined");
     }
-
-    /* Delete output files before compiling */
-    ((ContikiMoteType)moteType).libSource.delete();
-    ((ContikiMoteType)moteType).libFile.delete();
-    ((ContikiMoteType)moteType).archiveFile.delete();
-    ((ContikiMoteType)moteType).mapFile.delete();
 
     /* Extract Contiki dependencies from currently selected mote interfaces */
     String[] coreInterfaces =
