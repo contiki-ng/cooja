@@ -1,4 +1,4 @@
-package statistics;
+package org.contikios.mrm.statistics;
 
 //Gaussian CDF Taylor approximation
 //Code borrowed from http://www1.fpl.fs.fed.us/distributions.html 19/9 2006
