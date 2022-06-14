@@ -907,8 +907,7 @@ public class Cooja extends Observable {
         		|| pluginType == PluginType.SIM_CONTROL_PLUGIN) && (getSimulation() != null)) {
           if (newPluginClass.getAnnotation(SupportedArguments.class) != null) {
             boolean active = false;
-            Class<? extends RadioMedium>[] radioMediums = newPluginClass.getAnnotation(SupportedArguments.class).radioMediums();
-            for (Class<? extends Object> o: radioMediums) {
+            for (var o: newPluginClass.getAnnotation(SupportedArguments.class).radioMediums()) {
               if (o.isAssignableFrom(getSimulation().getRadioMedium().getClass())) {
                 active = true;
                 break;
@@ -2835,7 +2834,7 @@ public class Cooja extends Observable {
    * @param className Class name
    * @return Class extending given class type or null if not found
    */
-  public <N extends Object> Class<? extends N> tryLoadClass(
+  public <N> Class<? extends N> tryLoadClass(
       Object callingObject, Class<N> classType, String className) {
 
     if (callingObject != null) {
@@ -2945,7 +2944,7 @@ public class Cooja extends Observable {
    *          Class
    * @return Description
    */
-  public static String getDescriptionOf(Class<? extends Object> clazz) {
+  public static String getDescriptionOf(Class<?> clazz) {
     if (clazz.isAnnotationPresent(ClassDescription.class)) {
       return clazz.getAnnotation(ClassDescription.class).value();
     }

@@ -943,7 +943,7 @@ public class BufferListener extends VisPlugin {
       }
       RowFilter<Object, Object> wrapped = new RowFilter<>() {
         @Override
-        public boolean include(RowFilter.Entry<? extends Object, ? extends Object> entry) {
+        public boolean include(RowFilter.Entry<?, ?> entry) {
           if (hideReads) {
             int row = (Integer) entry.getIdentifier();
             if (logs.get(row).type == SegmentMonitor.EventType.READ) {
