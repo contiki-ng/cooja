@@ -214,7 +214,7 @@ public class Mote2MoteRelations extends MoteInterface {
     notifyObservers();
   }
 
-  private Color decodeColor(String colorString) {
+  private static Color decodeColor(String colorString) {
     if (colorString == null) {
       return null;
     } else if (colorString.equalsIgnoreCase("red")) {

@@ -498,13 +498,13 @@ public class Cooja extends Observable {
     return frame;
   }
 
-  public File getLastOpenedFile() {
+  public static File getLastOpenedFile() {
     // Fetch current history
     String[] historyArray = getExternalToolsSetting("SIMCFG_HISTORY", "").split(";");
     return historyArray.length > 0 ? new File(historyArray[0]) : null;
   }
 
-  public File[] getFileHistory() {
+  public static File[] getFileHistory() {
     // Fetch current history
     String[] historyArray = getExternalToolsSetting("SIMCFG_HISTORY", "").split(";");
     File[] history = new File[historyArray.length];
@@ -1877,7 +1877,7 @@ public class Cooja extends Observable {
     return startedPlugins.toArray(new Plugin[0]);
   }
 
-  private boolean isMotePluginCompatible(Class<? extends Plugin> motePluginClass, Mote mote) {
+  private static boolean isMotePluginCompatible(Class<? extends Plugin> motePluginClass, Mote mote) {
     if (motePluginClass.getAnnotation(SupportedArguments.class) == null) {
       return true;
     }
@@ -2404,7 +2404,7 @@ public class Cooja extends Observable {
     progressDialog.setVisible(true);
   }
 
-  private boolean warnMemory() {
+  private static boolean warnMemory() {
     long max = Runtime.getRuntime().maxMemory();
     long used  = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
     double memRatio = (double) used / (double) max;
@@ -2884,7 +2884,7 @@ public class Cooja extends Observable {
     return fp.exists() ? fp : null;
   }
 
-  private ClassLoader createClassLoader(ClassLoader parent, Collection<COOJAProject> projects)
+  private static ClassLoader createClassLoader(ClassLoader parent, Collection<COOJAProject> projects)
   throws ClassLoaderCreationException {
     if (projects == null || projects.isEmpty()) {
       return parent;
@@ -3932,7 +3932,7 @@ public class Cooja extends Observable {
   }
   
   
-  private File restoreContikiRelativePath(File portable) {
+  private static File restoreContikiRelativePath(File portable) {
   	int elem = PATH_IDENTIFIER.length;
   	File path = null;
 	String canonical = null;

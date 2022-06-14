@@ -286,11 +286,11 @@ public class SectionMoteMemory implements MemoryInterface {
 
     SectionMoteMemory clone = new SectionMoteMemory(symbols);
 
-    for (String secname : sections.keySet()) {
+    for (Map.Entry<String, MemoryInterface> entry : sections.entrySet()) {
       // Copy section memory to new ArrayMemory
-      MemoryInterface section = sections.get(secname);
+      MemoryInterface section = entry.getValue();
       MemoryInterface cpmem = new ArrayMemory(section.getStartAddr(), section.getLayout(), section.getMemory().clone(), section.getSymbolMap());
-      clone.addMemorySection(secname, cpmem);
+      clone.addMemorySection(entry.getKey(), cpmem);
     }
 
     return clone;

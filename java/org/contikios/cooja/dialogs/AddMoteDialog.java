@@ -394,7 +394,7 @@ public class AddMoteDialog extends JDialog {
     return settingsOK;
   }
 
-  private boolean checkSettings(JFormattedTextField start,
+  private static boolean checkSettings(JFormattedTextField start,
 				JFormattedTextField end) {
     try {
       start.commitEdit();

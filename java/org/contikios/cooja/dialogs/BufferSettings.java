@@ -133,7 +133,7 @@ public class BufferSettings extends JDialog {
     pack();
   }
 
-  private JFormattedTextField addEntry(JComponent container, String desc) {
+  private static JFormattedTextField addEntry(JComponent container, String desc) {
     Box box;
     box = Box.createHorizontalBox();
     JLabel label = new JLabel(desc);

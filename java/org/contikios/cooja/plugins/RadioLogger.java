@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -940,10 +941,10 @@ public class RadioLogger extends VisPlugin {
     }
 
     if (aliases != null) {
-      for (Object key : aliases.keySet()) {
+      for (Map.Entry<Object, Object> entry : aliases.entrySet()) {
         element = new Element("alias");
-        element.setAttribute("payload", (String) key);
-        element.setAttribute("alias", (String) aliases.get(key));
+        element.setAttribute("payload", (String) entry.getKey());
+        element.setAttribute("alias", (String) entry.getValue());
         config.add(element);
       }
     }

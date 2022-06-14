@@ -124,7 +124,7 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
     return new Color[] { color };
   }
 
-  private Color parseAttributeColor(String colorString) {
+  private static Color parseAttributeColor(String colorString) {
     if (colorString.equalsIgnoreCase("red")) {
       return Color.RED;
     } else if (colorString.equalsIgnoreCase("green")) {
