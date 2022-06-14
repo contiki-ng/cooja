@@ -3318,6 +3318,9 @@ public class Cooja extends Observable {
     /* Match current extensions against extensions in simulation config */
     for (final Element pluginElement : configXML.toArray(new Element[0])) {
       if (pluginElement.getName().equals("project")) {
+        // Skip check for plugins that are Cooja-internal in v4.8.
+        // FIXME: v4.9: remove these special cases.
+        if ("serial_socket".equals(pluginElement.getText())) continue;
         File projectFile = restorePortablePath(new File(pluginElement.getText()));
         try {
           projectFile = projectFile.getCanonicalFile();
