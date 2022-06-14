@@ -46,7 +46,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Vector;
+import java.util.ArrayList;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageContainer;
@@ -87,9 +87,9 @@ import org.contikios.cooja.dialogs.MessageList;
 public abstract class CoreComm {
 
   // Static pointers to current libraries
-  private final static Vector<CoreComm> coreComms = new Vector<>();
+  private final static ArrayList<CoreComm> coreComms = new ArrayList<>();
 
-  private final static Vector<File> coreCommFiles = new Vector<>();
+  private final static ArrayList<File> coreCommFiles = new ArrayList<>();
 
   private static int fileCounter = 1;
 

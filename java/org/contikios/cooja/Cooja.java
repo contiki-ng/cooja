@@ -76,7 +76,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -309,11 +308,11 @@ public class Cooja extends Observable {
   private JMenu menuOpenSimulation;
   private boolean hasFileHistoryChanged;
 
-  private final Vector<Class<? extends Plugin>> menuMotePluginClasses = new Vector<>();
+  private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
 
   private final JDesktopPane myDesktopPane;
 
-  private final Vector<Plugin> startedPlugins = new Vector<>();
+  private final ArrayList<Plugin> startedPlugins = new ArrayList<>();
 
   private final ArrayList<GUIAction> guiActions = new ArrayList<>();
 
@@ -325,13 +324,13 @@ public class Cooja extends Observable {
 
   public ClassLoader projectDirClassLoader;
 
-  private final Vector<Class<? extends MoteType>> moteTypeClasses = new Vector<>();
+  private final ArrayList<Class<? extends MoteType>> moteTypeClasses = new ArrayList<>();
 
-  private final Vector<Class<? extends Plugin>> pluginClasses = new Vector<>();
+  private final ArrayList<Class<? extends Plugin>> pluginClasses = new ArrayList<>();
 
-  private final Vector<Class<? extends RadioMedium>> radioMediumClasses = new Vector<>();
+  private final ArrayList<Class<? extends RadioMedium>> radioMediumClasses = new ArrayList<>();
 
-  private final Vector<Class<? extends Positioner>> positionerClasses = new Vector<>();
+  private final ArrayList<Class<? extends Positioner>> positionerClasses = new ArrayList<>();
 
 
   private final ScnObservable moteHighlightObservable = new ScnObservable();
@@ -1310,7 +1309,7 @@ public class Cooja extends Observable {
   /**
    * @return All registered mote type classes
    */
-  public Vector<Class<? extends MoteType>> getRegisteredMoteTypes() {
+  public List<Class<? extends MoteType>> getRegisteredMoteTypes() {
     return moteTypeClasses;
   }
 
@@ -1347,7 +1346,7 @@ public class Cooja extends Observable {
   /**
    * @return All registered positioner classes
    */
-  public Vector<Class<? extends Positioner>> getRegisteredPositioners() {
+  public List<Class<? extends Positioner>> getRegisteredPositioners() {
     return positionerClasses;
   }
 
@@ -1383,7 +1382,7 @@ public class Cooja extends Observable {
   /**
    * @return All registered radio medium classes
    */
-  public Vector<Class<? extends RadioMedium>> getRegisteredRadioMediums() {
+  public List<Class<? extends RadioMedium>> getRegisteredRadioMediums() {
     return radioMediumClasses;
   }
 
@@ -2497,7 +2496,7 @@ public class Cooja extends Observable {
     if (mySimulation != null) {
       mySimulation.stopSimulation();
 
-      Vector<Mote> newMotes = AddMoteDialog.showDialog(getTopParentContainer(), mySimulation,
+      var newMotes = AddMoteDialog.showDialog(getTopParentContainer(), mySimulation,
           moteType);
       if (newMotes != null) {
         for (Mote newMote : newMotes) {

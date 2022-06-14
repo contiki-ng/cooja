@@ -31,11 +31,11 @@ package org.contikios.cooja.plugins;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -77,7 +77,7 @@ import org.contikios.cooja.interfaces.Radio;
 public class EventListener extends VisPlugin {
   private final Simulation mySimulation;
 
-  private final Vector<EventObserver> allObservers = new Vector<>();
+  private final ArrayList<EventObserver> allObservers = new ArrayList<>();
 
   private final EventListener myPlugin;
 
@@ -169,8 +169,8 @@ public class EventListener extends VisPlugin {
     myPlugin = this;
 
     /* Create selectable interfaces list (only supports Contiki mote types) */
-    Vector<Class<? extends MoteInterface>> allInterfaces = new Vector<>();
-    Vector<Class<? extends MoteInterface>> allInterfacesDups = new Vector<>();
+    var allInterfaces = new ArrayList<Class<? extends MoteInterface>>();
+    var allInterfacesDups = new ArrayList<Class<? extends MoteInterface>>();
 
     // Add standard interfaces
     allInterfacesDups.add(Button.class);
@@ -331,16 +331,14 @@ public class EventListener extends VisPlugin {
 
   @Override
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<>();
-
-    Element element;
+    var config = new ArrayList<Element>();
 
     /* Save general observers */
     for (Component comp: generalPanel.getComponents()) {
       if (comp instanceof JCheckBox) {
         JCheckBox checkBox = (JCheckBox) comp;
         if (checkBox.isSelected()) {
-          element = new Element("general");
+          var element = new Element("general");
           element.setText(checkBox.getText());
           config.add(element);
         }
@@ -352,7 +350,7 @@ public class EventListener extends VisPlugin {
       if (comp instanceof JCheckBox) {
         JCheckBox checkBox = (JCheckBox) comp;
         if (checkBox.isSelected()) {
-          element = new Element("interface");
+          var element = new Element("interface");
           element.setText(checkBox.getText());
           config.add(element);
         }

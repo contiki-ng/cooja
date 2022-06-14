@@ -38,12 +38,12 @@ import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -295,11 +295,10 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
 
   @Override
   public Collection<Element> getConfigXML() {
-      Vector<Element> config = new Vector<>();
-      Element element;
+      var config = new ArrayList<Element>();
 
       // Infinite boolean
-      element = new Element("eeprom");
+      var element = new Element("eeprom");
       element.setText(Base64.getEncoder().encodeToString(getEEPROMData()));
       config.add(element);
 

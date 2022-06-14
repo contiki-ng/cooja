@@ -36,8 +36,8 @@ import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -186,12 +186,10 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
 
   @Override
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<>();
-
-    Element element;
+    var config = new ArrayList<Element>();
 
     // Selected variable name
-    element = new Element("interface");
+    var element = new Element("interface");
     element.setText((String) selectInterfaceComboBox.getSelectedItem());
     config.add(element);
     Point pos = mainScrollPane.getViewport().getViewPosition();
