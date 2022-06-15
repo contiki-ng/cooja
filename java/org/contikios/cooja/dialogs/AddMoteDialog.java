@@ -82,14 +82,19 @@ public class AddMoteDialog extends JDialog {
 
   private ArrayList<Mote> newMotes = null;
 
-  private JButton addButton;
+  private final JButton addButton;
 
-  private MoteType moteType = null;
-  private Simulation simulation = null;
+  private final MoteType moteType;
+  private final Simulation simulation;
 
-  private JFormattedTextField numberOfMotesField, startX, endX, startY, endY,
-      startZ, endZ;
-  private JComboBox positionDistributionBox;
+  private final JFormattedTextField numberOfMotesField;
+  private final JFormattedTextField startX;
+  private final JFormattedTextField endX;
+  private final JFormattedTextField startY;
+  private final JFormattedTextField endY;
+  private final JFormattedTextField startZ;
+  private final JFormattedTextField endZ;
+  private final JComboBox positionDistributionBox;
 
 
   /**
