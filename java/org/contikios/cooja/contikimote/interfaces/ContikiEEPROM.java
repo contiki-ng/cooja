@@ -296,11 +296,13 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
   @Override
   public Collection<Element> getConfigXML() {
       var config = new ArrayList<Element>();
+      var data = getEEPROMData();
 
-      // Infinite boolean
-      var element = new Element("eeprom");
-      element.setText(Base64.getEncoder().encodeToString(getEEPROMData()));
-      config.add(element);
+      if (!isEmpty(data)) {
+        var element = new Element("eeprom");
+        element.setText(Base64.getEncoder().encodeToString(data));
+        config.add(element);
+      }
 
       return config;
   }
@@ -358,6 +360,15 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
     }
 
     return fileData;
+  }
+
+  private static boolean isEmpty(byte[] data) {
+    for (byte b : data) {
+      if (b != 0) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }
