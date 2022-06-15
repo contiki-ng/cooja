@@ -130,7 +130,6 @@ import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
 import org.contikios.cooja.plugins.MoteTypeInformation;
 import org.contikios.cooja.plugins.SimControl;
 import org.contikios.cooja.plugins.SimInformation;
-import org.contikios.cooja.util.ExecuteJAR;
 import org.contikios.cooja.util.ScnObservable;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -624,7 +623,6 @@ public class Cooja extends Observable {
     guiActions.add(reloadRandomSimulationAction);
     guiActions.add(saveSimulationAction);
     /*    guiActions.add(closePluginsAction);*/
-    guiActions.add(exportExecutableJARAction);
     guiActions.add(exitCoojaAction);
     guiActions.add(startStopSimulationAction);
     guiActions.add(removeAllMotesAction);
@@ -678,8 +676,6 @@ public class Cooja extends Observable {
     hasFileHistoryChanged = true;
 
     fileMenu.add(new JMenuItem(saveSimulationAction));
-
-    fileMenu.add(new JMenuItem(exportExecutableJARAction));
 
     /*    menu.addSeparator();*/
 
@@ -4133,88 +4129,6 @@ public class Cooja extends Observable {
     @Override
     public void actionPerformed(ActionEvent e) {
       cooja.doSaveConfig(true);
-    }
-    @Override
-    public boolean shouldBeEnabled() {
-      return getSimulation() != null;
-    }
-  };
-    final GUIAction exportExecutableJARAction = new GUIAction("Export simulation...") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      getSimulation().stopSimulation();
-
-      /* Info message */
-      String[] options = new String[] { "OK", "Cancel" };
-      int n = JOptionPane.showOptionDialog(
-          Cooja.getTopParentContainer(),
-          "This function attempts to build an executable Cooja JAR from the current simulation.\n" +
-          "The JAR will contain all simulation dependencies, including extension JAR files and mote firmware files.\n" +
-          "\nExecutable simulations can be used to run already prepared simulations on several computers.\n" +
-          "\nThis is an experimental feature.",
-          "Export simulation to executable JAR", JOptionPane.OK_CANCEL_OPTION,
-          JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-      if (n != JOptionPane.OK_OPTION) {
-        return;
-      }
-
-      /* Select output file */
-      JFileChooser fc = new JFileChooser();
-      FileFilter jarFilter = new FileFilter() {
-        @Override
-        public boolean accept(File file) {
-          if (file.isDirectory()) {
-            return true;
-          }
-          if (file.getName().endsWith(".jar")) {
-            return true;
-          }
-          return false;
-        }
-        @Override
-        public String getDescription() {
-          return "Java archive";
-        }
-        @Override
-        public String toString() {
-          return ".jar";
-        }
-      };
-      fc.setFileFilter(jarFilter);
-      File suggest = new File(getExternalToolsSetting("EXECUTE_JAR_LAST", "cooja_simulation.jar"));
-      fc.setSelectedFile(suggest);
-      int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
-      if (returnVal != JFileChooser.APPROVE_OPTION) {
-        return;
-      }
-      File outputFile = fc.getSelectedFile();
-      if (outputFile.exists()) {
-        options = new String[] { "Overwrite", "Cancel" };
-        n = JOptionPane.showOptionDialog(
-            Cooja.getTopParentContainer(),
-            "A file with the same name already exists.\nDo you want to remove it?",
-            "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        if (n != JOptionPane.YES_OPTION) {
-          return;
-        }
-        outputFile.delete();
-      }
-
-      final File finalOutputFile = outputFile;
-      setExternalToolsSetting("EXECUTE_JAR_LAST", outputFile.getPath());
-      new Thread() {
-        @Override
-        public void run() {
-          try {
-            ExecuteJAR.buildExecutableJAR(Cooja.this, finalOutputFile);
-          } catch (RuntimeException ex) {
-            JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-                ex.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
-          }
-        }
-      }.start();
     }
     @Override
     public boolean shouldBeEnabled() {

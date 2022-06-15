@@ -58,23 +58,7 @@ The COOJA Simulator
 
   Build COOJA (dist/cooja.jar) and all default projects (MSPSim et al)
   > ant jar
-  Build executable simulation JAR from mysim.csc
-  > ant export-jar -DCSC="c:/mysim.csc"
-    or
-  > ant export-jar -DCSC="/home/user/sim.csc"
-    The output JAR is saved to exported.jar
     </echo>
-  </target>
-
-  <target name="export-jar" depends="jar">
-    <java fork="yes" dir="${build}" classname="org.contikios.cooja.util.ExecuteJAR"
-          failonerror="true">
-        <sysproperty key="user.language" value="en"/>
-        <arg file="${CSC}"/>
-        <arg file="exported.jar"/>
-        <jvmarg value="-Dnashorn.args=--no-deprecation-warning" />
-        <classpath refid="cooja.classpath"/>
-    </java>
   </target>
 
   <target name="javadoc">
