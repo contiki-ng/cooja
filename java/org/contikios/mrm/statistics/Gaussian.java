@@ -1,4 +1,4 @@
-package statistics;
+package org.contikios.mrm.statistics;
 
 // Gaussian CDF Taylor approximation
 // Code borrowed from http://www.cs.princeton.edu/introcs/21function/Gaussian.java.html 19/9 2006

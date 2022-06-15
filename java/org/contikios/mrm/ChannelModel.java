@@ -56,7 +56,7 @@ import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 import org.contikios.cooja.util.ScnObservable;
 
-import statistics.GaussianWrapper;
+import org.contikios.mrm.statistics.GaussianWrapper;
 
 /**
  * The channel model object in MRM is responsible for calulating propagation

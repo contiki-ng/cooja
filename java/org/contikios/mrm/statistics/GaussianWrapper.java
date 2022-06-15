@@ -1,4 +1,4 @@
-package statistics;
+package org.contikios.mrm.statistics;
 
 public class GaussianWrapper {
 
@@ -21,7 +21,7 @@ public class GaussianWrapper {
    * @return Probability
    */
   public static double cdfErrorAlgo(double value, double mean, double stdDev) {
-    return CDF_Normal.normp((value - mean) / stdDev);      
+    return CDF_Normal.normp((value - mean) / stdDev);
   }
     
   /**
