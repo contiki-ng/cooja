@@ -166,9 +166,7 @@ public class CompileContiki {
           try {
             String readLine;
             while ((readLine = processNormal.readLine()) != null) {
-              if (messageDialog != null) {
-                messageDialog.addMessage(readLine, MessageList.NORMAL);
-              }
+              messageDialog.addMessage(readLine, MessageList.NORMAL);
             }
           } catch (IOException e) {
             logger.warn("Error while reading from process");
@@ -182,9 +180,7 @@ public class CompileContiki {
           try {
             String readLine;
             while ((readLine = processError.readLine()) != null) {
-              if (messageDialog != null) {
-                messageDialog.addMessage(readLine, MessageList.ERROR);
-              }
+              messageDialog.addMessage(readLine, MessageList.ERROR);
             }
           } catch (IOException e) {
             logger.warn("Error while reading from process");
