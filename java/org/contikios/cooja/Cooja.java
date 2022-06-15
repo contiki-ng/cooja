@@ -2443,19 +2443,14 @@ public class Cooja extends Observable {
    * Add new mote to current simulation
    */
   public void doAddMotes(MoteType moteType) {
-    if (mySimulation != null) {
-      mySimulation.stopSimulation();
-
-      var newMotes = AddMoteDialog.showDialog(getTopParentContainer(), mySimulation,
-          moteType);
-      if (newMotes != null) {
-        for (Mote newMote : newMotes) {
-          mySimulation.addMote(newMote);
-        }
-      }
-
-    } else {
+    if (mySimulation == null) {
       logger.warn("No simulation active");
+      return;
+    }
+
+    mySimulation.stopSimulation();
+    for (var mote : AddMoteDialog.showDialog(frame, mySimulation, moteType)) {
+      mySimulation.addMote(mote);
     }
   }
 

@@ -80,7 +80,7 @@ public class AddMoteDialog extends JDialog {
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;
 
-  private ArrayList<Mote> newMotes = null;
+  private ArrayList<Mote> newMotes = new ArrayList<>();
 
   private final JButton addButton;
 
@@ -412,7 +412,7 @@ public class AddMoteDialog extends JDialog {
     @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("cancel")) {
-        newMotes = null;
+        newMotes.clear();
         dispose();
       } else if (e.getActionCommand().equals("add")) {
         try {
@@ -422,7 +422,6 @@ public class AddMoteDialog extends JDialog {
 	  }
 
 	  // Create new motes
-          newMotes = new ArrayList<>();
           int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
           while (newMotes.size() < motesToAdd) {
             Mote newMote = moteType.generateMote(simulation);
@@ -490,7 +489,7 @@ public class AddMoteDialog extends JDialog {
 
           dispose();
         } catch (OutOfMemoryError e2) {
-          newMotes = null;
+          newMotes.clear();
           JOptionPane.showMessageDialog(
               AddMoteDialog.this,
               "Out of memory.\nException message: \"" + e2.getMessage() + "\"\n\n" +
