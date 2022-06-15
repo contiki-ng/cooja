@@ -227,6 +227,9 @@ public class ContikiMoteType implements MoteType {
       if (getContikiSourceFile() == null) {
         throw new MoteTypeCreationException("No Contiki application specified");
       }
+      if (getCompileCommands() == null) {
+        throw new MoteTypeCreationException("No compile commands specified");
+      }
 
       /* Create variables used for compiling Contiki. */
       // Contiki application: hello-world.c
@@ -244,9 +247,6 @@ public class ContikiMoteType implements MoteType {
       }
 
       /* Compile Contiki (may consist of several commands) */
-      if (getCompileCommands() == null) {
-        throw new MoteTypeCreationException("No compile commands specified");
-      }
       final MessageList compilationOutput = MessageContainer.createMessageList(visAvailable);
       String[] arr = getCompileCommands().split("\n");
       for (String cmd : arr) {
