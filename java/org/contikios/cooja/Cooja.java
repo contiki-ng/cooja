@@ -2433,8 +2433,6 @@ public class Cooja extends Observable {
       			JOptionPane.ERROR_MESSAGE);
         logger.fatal("No write access to file: " + saveFile.getAbsolutePath());
       }
-    } else {
-      logger.info("Save command cancelled by user...");
     }
     return null;
   }
