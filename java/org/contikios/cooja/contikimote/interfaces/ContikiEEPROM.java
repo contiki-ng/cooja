@@ -39,6 +39,7 @@ import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -48,6 +49,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -194,7 +196,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
       Formatter fmt = new Formatter(sb);
       byte[] data = getEEPROMData();
       
-      for (int i = 0; i < EEPROM_SIZE; i+= 16) {
+      for (int i = 0; i < EEPROM_SIZE; i += 16) {
           fmt.format("%04d  %s | %s |\n", i, byteArrayToHexList(data, i, 16), byteArrayToPrintableCharacters(data, i, 16));
       }
       
@@ -223,35 +225,41 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
     
     panel.add(dataViewScrollPane);
     
-    uploadButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        byte[] eepromData = readDialogEEPROMBytes(null);
+    uploadButton.addActionListener(e -> {
+      try {
+        byte[] eepromData = readDialogEEPROMBytes(uploadButton);
 
         // Write file data to EEPROM
         if (eepromData != null) {
-          if (setEEPROMData(eepromData)) {
+          if (eepromData.length > EEPROM_SIZE) {
+            JOptionPane.showMessageDialog(uploadButton, "EEPROM data too large. "
+                                                  + eepromData.length + " > " + EEPROM_SIZE + " bytes.",
+                                          "Error uploading EEPROM data", JOptionPane.ERROR_MESSAGE);
+          } else if (setEEPROMData(eepromData)) {
             logger.info("Done! (" + eepromData.length + " bytes written to EEPROM)");
+            redrawDataView(dataViewArea);
+          } else {
+            JOptionPane.showMessageDialog(uploadButton, "Failed to upload EEPROM data to mote",
+                                          "Error uploading EEPROM data", JOptionPane.ERROR_MESSAGE);
           }
-          
-          redrawDataView(dataViewArea);
         }
+      } catch (IOException ex) {
+        logger.warn("Error uploading EEPROM data", ex);
+        JOptionPane.showMessageDialog(uploadButton, "Failed to read EEPROM data: " + ex.getMessage(),
+                                      "Error uploading EEPROM data", JOptionPane.ERROR_MESSAGE);
       }
     });
 
-    clearButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        byte[] eepromData = new byte[EEPROM_SIZE];        
+    clearButton.addActionListener(e -> {
+      byte[] eepromData = new byte[EEPROM_SIZE];
 
-        if (setEEPROMData(eepromData)) {
-            logger.info("Done! (EEPROM reset to zero)");
-        }
-
-        redrawDataView(dataViewArea);
+      if (setEEPROMData(eepromData)) {
+          logger.info("Done! (EEPROM reset to zero)");
       }
+
+      redrawDataView(dataViewArea);
     });
-    
+
     Observer observer = (obs, obj) -> {
       final long currentTime = mote.getSimulation().getSimulationTime();
       EventQueue.invokeLater(() -> {
@@ -322,7 +330,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
    * @param parent Dialog parent, may be null
    * @return Binary contents of user selected file
    */
-  public static byte[] readDialogEEPROMBytes(Component parent) {
+  public static byte[] readDialogEEPROMBytes(Component parent) throws IOException {
     // Choose file
     JFileChooser fileChooser = new JFileChooser();
     fileChooser.setCurrentDirectory(new File("."));
@@ -341,9 +349,8 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
     try (var dataIn = new DataInputStream(new FileInputStream(file))) {
       dataIn.readFully(fileData);
       return fileData;
-    } catch (Exception ex) {
-      logger.debug("Failed to read EEPROM file '" + file + "'", ex);
-      return null;
+    } catch (IOException ex) {
+      throw new IOException("Failed to read file '" + file + "'", ex);
     }
   }
 
