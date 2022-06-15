@@ -111,38 +111,20 @@ public class AddMoteDialog extends JDialog {
   public static ArrayList<Mote> showDialog(Container parentContainer,
       Simulation simulation, MoteType moteType) {
 
-    AddMoteDialog myDialog = null;
-    if (parentContainer instanceof Window) {
-      myDialog = new AddMoteDialog((Window)parentContainer, simulation, moteType);
-    } else if (parentContainer instanceof Dialog) {
-      myDialog = new AddMoteDialog((Dialog)parentContainer, simulation, moteType);
-    } else if (parentContainer instanceof Frame) {
-      myDialog = new AddMoteDialog((Frame)parentContainer, simulation, moteType);
-    } else {
+    if (!(parentContainer instanceof Window)) {
       logger.fatal("Unknown parent container type: " + parentContainer);
       return null;
     }
 
+    var myDialog = new AddMoteDialog((Window)parentContainer, simulation, moteType);
     myDialog.setLocationRelativeTo(parentContainer);
     myDialog.checkSettings();
     myDialog.setVisible(true);
     return myDialog.newMotes;
   }
 
-  private AddMoteDialog(Frame frame, Simulation simulation, MoteType moteType) {
-    super(frame, "Add motes (" + moteType.getDescription() + ")", ModalityType.APPLICATION_MODAL);
-    setupDialog(simulation, moteType);
-  }
   private AddMoteDialog(Window window, Simulation simulation, MoteType moteType) {
     super(window, "Add motes (" + moteType.getDescription() + ")", ModalityType.APPLICATION_MODAL);
-    setupDialog(simulation, moteType);
-  }
-  private AddMoteDialog(Dialog dialog, Simulation simulation, MoteType moteType) {
-    super(dialog, "Add motes (" + moteType.getDescription() + ")", ModalityType.APPLICATION_MODAL);
-    setupDialog(simulation, moteType);
-  }
-
-  private void setupDialog(Simulation simulation, MoteType moteType) {
     this.moteType = moteType;
     this.simulation = simulation;
 
