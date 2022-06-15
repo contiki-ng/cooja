@@ -495,7 +495,7 @@ public class ContikiMoteType implements MoteType {
     abstract Map<String, Symbol> parseSymbols(long offset);
 
     protected static long parseFirstHexLong(String regexp, String[] data) {
-      String retString = getFirstMatchGroup(data, regexp, 1);
+      String retString = getFirstMatchGroup(data, regexp);
 
       if (retString == null || retString.equals("")) {
         return -1;
@@ -605,7 +605,7 @@ public class ContikiMoteType implements MoteType {
       String regExp = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_1")
               + varName
               + Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_2");
-      String retString = getFirstMatchGroup(mapFileData, regExp, 1);
+      String retString = getFirstMatchGroup(mapFileData, regExp);
 
       if (retString != null) {
         return Long.parseUnsignedLong(retString.trim(), 16);
@@ -845,7 +845,7 @@ public class ContikiMoteType implements MoteType {
     return netStack;
   }
 
-  private static String getFirstMatchGroup(String[] lines, String regexp, int groupNr) {
+  private static String getFirstMatchGroup(String[] lines, String regexp) {
     if (regexp == null) {
       return null;
     }
@@ -853,7 +853,7 @@ public class ContikiMoteType implements MoteType {
     for (String line : lines) {
       Matcher matcher = pattern.matcher(line);
       if (matcher.find()) {
-        return matcher.group(groupNr);
+        return matcher.group(1);
       }
     }
     return null;
