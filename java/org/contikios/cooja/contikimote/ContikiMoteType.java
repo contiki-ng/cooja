@@ -996,18 +996,13 @@ public class ContikiMoteType implements MoteType {
    */
   public static String generateUniqueMoteTypeID(MoteType[] existingTypes, Collection reservedIdentifiers) {
     String testID = "";
-    boolean okID = false;
+    boolean available = false;
 
-    while (!okID) {
+    while (!available) {
       testID = "mtype" + new Random().nextInt(1000);
-      okID = true;
+      available = reservedIdentifiers == null || !reservedIdentifiers.contains(testID);
 
-      // Check if identifier is reserved
-      if (reservedIdentifiers != null && reservedIdentifiers.contains(testID)) {
-        okID = false;
-      }
-
-      if (!okID) {
+      if (!available) {
         continue;
       }
 
@@ -1015,23 +1010,22 @@ public class ContikiMoteType implements MoteType {
       if (existingTypes != null) {
         for (MoteType existingMoteType : existingTypes) {
           if (existingMoteType.getIdentifier().equals(testID)) {
-            okID = false;
+            available = false;
             break;
           }
         }
       }
 
-      if (!okID) {
+      if (!available) {
         continue;
       }
 
       // Check if identifier library has been loaded
-      /* XXX Currently only checks the build directory! */
       File libraryFile = new File(
               ContikiMoteType.tempOutputDirectory,
               testID + ContikiMoteType.librarySuffix);
       if (libraryFile.exists() || CoreComm.hasLibraryFileBeenLoaded(libraryFile)) {
-        okID = false;
+        available = false;
       }
     }
 
