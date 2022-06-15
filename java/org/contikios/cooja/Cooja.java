@@ -3247,6 +3247,7 @@ public class Cooja extends Observable {
         // FIXME: v4.9: remove these special cases.
         if ("[APPS_DIR]/mrm".equals(pluginElement.getText())) continue;
         if ("[APPS_DIR]/mspsim".equals(pluginElement.getText())) continue;
+        if ("[APPS_DIR]/powertracker".equals(pluginElement.getText())) continue;
         if ("[APPS_DIR]/serial_socket".equals(pluginElement.getText())) continue;
         File projectFile = restorePortablePath(new File(pluginElement.getText()));
         try {
