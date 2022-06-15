@@ -111,11 +111,6 @@ public class ContikiMoteType implements MoteType {
   final static public String mapSuffix = ".map";
 
   /**
-   * Make archive file suffix
-   */
-  final static public String dependSuffix = ".a";
-
-  /**
    * Temporary output directory
    */
   final static public File tempOutputDirectory = new File(
