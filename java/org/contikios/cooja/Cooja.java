@@ -3246,6 +3246,7 @@ public class Cooja extends Observable {
         // Skip check for plugins that are Cooja-internal in v4.8.
         // FIXME: v4.9: remove these special cases.
         if ("[APPS_DIR]/mrm".equals(pluginElement.getText())) continue;
+        if ("[APPS_DIR]/mspsim".equals(pluginElement.getText())) continue;
         if ("[APPS_DIR]/serial_socket".equals(pluginElement.getText())) continue;
         File projectFile = restorePortablePath(new File(pluginElement.getText()));
         try {
