@@ -1138,18 +1138,12 @@ public class AreaViewer extends VisPlugin {
       }
 
       /* Set virtual size of image */
-      Container topParent = Cooja.getTopParentContainer();
-      ImageSettingsDialog dialog;
-      if (topParent instanceof Frame) {
-        dialog = new ImageSettingsDialog(file, image, (Frame) topParent);
-      } else if (topParent instanceof Dialog) {
-        dialog = new ImageSettingsDialog(file, image, (Dialog) topParent);
-      } else if (topParent instanceof Window) {
-        dialog = new ImageSettingsDialog(file, image, (Window) topParent);
-      } else {
+      var topParent = Cooja.getTopParentContainer();
+      if (topParent == null) {
         logger.fatal("Unknown parent container, aborting");
         return false;
       }
+      var dialog = new ImageSettingsDialog(file, image, topParent);
 
       if (!dialog.terminatedOK()) {
         logger.fatal("User canceled, aborting");
@@ -1174,25 +1168,15 @@ public class AreaViewer extends VisPlugin {
         return false;
       }
 
-      /* Show obstacle finder dialog */
-      ObstacleFinderDialog obstacleFinderDialog;
-      Container parentContainer = Cooja.getTopParentContainer();
-      if (parentContainer instanceof Window) {
-        obstacleFinderDialog = new ObstacleFinderDialog(
-            backgroundImage, currentChannelModel, (Window) Cooja.getTopParentContainer()
-        );
-      } else if (parentContainer instanceof Frame) {
-        obstacleFinderDialog = new ObstacleFinderDialog(
-            backgroundImage, currentChannelModel, (Frame) Cooja.getTopParentContainer()
-        );
-      } else if (parentContainer instanceof Dialog) {
-        obstacleFinderDialog = new ObstacleFinderDialog(
-            backgroundImage, currentChannelModel, (Dialog) Cooja.getTopParentContainer()
-        );
-      } else {
+      var parentContainer = Cooja.getTopParentContainer();
+      if (parentContainer == null) {
         logger.fatal("Unknown parent container");
         return false;
       }
+      /* Show obstacle finder dialog */
+      var obstacleFinderDialog = new ObstacleFinderDialog(
+            backgroundImage, currentChannelModel, parentContainer
+        );
 
       if (!obstacleFinderDialog.exitedOK) {
         return false;
@@ -1359,18 +1343,6 @@ public class AreaViewer extends VisPlugin {
        */
       protected ObstacleFinderDialog(Image currentImage, ChannelModel currentChannelModel, Frame frame) {
         super(frame, "Analyze for obstacles");
-        setupDialog(currentImage, currentChannelModel);
-      }
-      protected ObstacleFinderDialog(Image currentImage, ChannelModel currentChannelModel, Window window) {
-        super(window, "Analyze for obstacles");
-        setupDialog(currentImage, currentChannelModel);
-      }
-      protected ObstacleFinderDialog(Image currentImage, ChannelModel currentChannelModel, Dialog dialog) {
-        super(dialog, "Analyze for obstacles");
-        setupDialog(currentImage, currentChannelModel);
-      }
-
-      private void setupDialog(Image currentImage, ChannelModel currentChannelModel) {
         JPanel mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         JPanel tempPanel;

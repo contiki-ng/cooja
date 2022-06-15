@@ -34,10 +34,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -55,6 +52,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -108,22 +106,16 @@ public class AddMoteDialog extends JDialog {
    *          Mote type
    * @return New motes or null if aborted
    */
-  public static ArrayList<Mote> showDialog(Container parentContainer,
+  public static ArrayList<Mote> showDialog(JFrame parentContainer,
       Simulation simulation, MoteType moteType) {
-
-    if (!(parentContainer instanceof Window)) {
-      logger.fatal("Unknown parent container type: " + parentContainer);
-      return null;
-    }
-
-    var myDialog = new AddMoteDialog((Window)parentContainer, simulation, moteType);
+    var myDialog = new AddMoteDialog(parentContainer, simulation, moteType);
     myDialog.setLocationRelativeTo(parentContainer);
     myDialog.checkSettings();
     myDialog.setVisible(true);
     return myDialog.newMotes;
   }
 
-  private AddMoteDialog(Window window, Simulation simulation, MoteType moteType) {
+  private AddMoteDialog(JFrame window, Simulation simulation, MoteType moteType) {
     super(window, "Add motes (" + moteType.getDescription() + ")", ModalityType.APPLICATION_MODAL);
     this.moteType = moteType;
     this.simulation = simulation;
