@@ -98,8 +98,6 @@ public class ContikiMoteType implements MoteType {
 
   private static final Logger logger = LogManager.getLogger(ContikiMoteType.class);
 
-  public static final String ID_PREFIX = "mtype";
-
   /**
    * Library file suffix
    */
@@ -1001,7 +999,7 @@ public class ContikiMoteType implements MoteType {
     boolean okID = false;
 
     while (!okID) {
-      testID = ID_PREFIX + new Random().nextInt(1000);
+      testID = "mtype" + new Random().nextInt(1000);
       okID = true;
 
       // Check if identifier is reserved
