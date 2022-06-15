@@ -584,7 +584,7 @@ public class NativeIPGateway extends VisPlugin implements MotePlugin {
       File tunContikiApp = new File(tunContikiAppDir, "hello-world." + TUNNEL_APP_TARGET);
       /*logger.info("Creating tap0 via " + tunContikiAppDir + "/" + tunContikiApp);*/
       Process p = CompileContiki.compile(
-          GUI.getExternalToolsSetting("PATH_MAKE") + " " + tunContikiApp.getName()  + " TARGET=" + TUNNEL_APP_TARGET,
+          GUI.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " + tunContikiApp.getName()  + " TARGET=" + TUNNEL_APP_TARGET,
           null,
           null /* Do not observe output firmware file */,
           tunContikiAppDir,

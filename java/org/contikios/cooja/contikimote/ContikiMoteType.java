@@ -1231,7 +1231,7 @@ public class ContikiMoteType implements MoteType {
 
       /* Guess compile commands */
       String compileCommands
-              = "make " + getMakeTargetName(oldVersionSource).getName() + " TARGET=cooja";
+              = "make -j$(CPUS) " + getMakeTargetName(oldVersionSource).getName() + " TARGET=cooja";
       logger.info("Guessing compile commands: " + compileCommands);
       setCompileCommands(compileCommands);
     }
