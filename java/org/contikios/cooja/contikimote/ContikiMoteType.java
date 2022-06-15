@@ -212,18 +212,14 @@ public class ContikiMoteType implements MoteType {
     myConfig = simulation.getCooja().getProjectConfig().clone();
 
     if (visAvailable && !simulation.isQuickSetup()) {
-
       if (getDescription() == null) {
         setDescription("Cooja Mote Type #" + (simulation.getMoteTypes().length + 1));
       }
 
       /* Compile Contiki from dialog */
-      boolean compileOK
-              = ContikiMoteCompileDialog.showDialog(parentContainer, simulation, this);
-      if (!compileOK) {
+      if (!ContikiMoteCompileDialog.showDialog(parentContainer, simulation, this)) {
         return false;
       }
-
     } else {
       if (getIdentifier() == null) {
         throw new MoteTypeCreationException("No identifier specified");
