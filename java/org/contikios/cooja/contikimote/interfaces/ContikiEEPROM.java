@@ -32,6 +32,7 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -252,18 +253,17 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
       }
     });
     
-    Observer observer;
-    this.addObserver(observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        long currentTime = mote.getSimulation().getSimulationTime();
+    Observer observer = (obs, obj) -> {
+      final long currentTime = mote.getSimulation().getSimulationTime();
+      EventQueue.invokeLater(() -> {
         lastTimeLabel.setText("Last change at time: " + currentTime);
         lastReadLabel.setText("Last change read bytes: " + getLastReadCount());
         lastWrittenLabel.setText("Last change wrote bytes: " + getLastWrittenCount());
-        
-        redrawDataView(dataViewArea);        
-      }
-    });
+
+        redrawDataView(dataViewArea);
+      });
+    };
+    this.addObserver(observer);
 
     // Saving observer reference for releaseInterfaceVisualizer
     panel.putClientProperty("intf_obs", observer);
