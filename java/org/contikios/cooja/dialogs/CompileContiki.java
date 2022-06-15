@@ -284,20 +284,10 @@ public class CompileContiki {
    * @param mote      Mote type
    * @param javaClass Java JNI library class, "Lib4"
    * @return Compilation environment
-   * @throws Exception At errors
    */
   public static String[][] createCompilationEnvironment(
       ContikiMoteType mote,
-      String javaClass)
-  throws Exception {
-
-    if (mote == null) {
-      throw new Exception("No mote specified");
-    }
-    if (javaClass == null) {
-      throw new Exception("No Java library class name specified");
-    }
-
+      String javaClass) {
     String sources = "";
     String dirs = "";
     // Check whether Cooja projects include additional sources.

@@ -120,32 +120,16 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
         output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.mapSuffix);
     ((ContikiMoteType)moteType).javaClassName = CoreComm.getAvailableClassName();
 
-    if (((ContikiMoteType)moteType).javaClassName == null) {
-      logger.fatal("Could not allocate a core communicator.");
-      return;
+    var env = CompileContiki.createCompilationEnvironment(
+            ((ContikiMoteType)moteType),
+            ((ContikiMoteType)moteType).javaClassName
+    );
+    String[] envOneDimension = new String[env.length];
+    for (int i=0; i < env.length; i++) {
+      envOneDimension[i] = env[i][0] + "=" + env[i][1];
     }
-
-    /* Prepare compiler environment */
-    String[][] env = null;
-    try {
-      env = CompileContiki.createCompilationEnvironment(
-          ((ContikiMoteType)moteType),
-          ((ContikiMoteType)moteType).javaClassName
-      );
-
-      String[] envOneDimension = new String[env.length];
-      for (int i=0; i < env.length; i++) {
-        envOneDimension[i] = env[i][0] + "=" + env[i][1];
-      }
-      createEnvironmentTab(tabbedPane, env);
-
-      /* Prepare compiler with environment variables */
-      this.compilationEnvironment = envOneDimension;
-    } catch (Exception e) {
-      logger.warn("Error when creating environment: " + e.getMessage());
-      e.printStackTrace();
-      env = null;
-    }
+    createEnvironmentTab(tabbedPane, env);
+    compilationEnvironment = envOneDimension;
   }
   
   @Override
