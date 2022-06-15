@@ -123,13 +123,8 @@ public class AddMoteDialog extends JDialog {
     this.moteType = moteType;
     this.simulation = simulation;
 
-    JLabel label;
     JPanel mainPane = new JPanel();
     mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
-    JPanel smallPane;
-    JFormattedTextField numberField;
-    JButton button;
-    JComboBox comboBox;
     NumberFormat integerFormat = NumberFormat.getIntegerInstance();
     NumberFormat doubleFormat = NumberFormat.getNumberInstance();
 
@@ -140,7 +135,7 @@ public class AddMoteDialog extends JDialog {
 
     buttonPane.add(Box.createHorizontalGlue());
 
-    button = new JButton("Do not add motes");
+    var button = new JButton("Do not add motes");
     button.setActionCommand("cancel");
     var myEventHandler = new AddMotesEventHandler();
     button.addActionListener(myEventHandler);
@@ -157,13 +152,13 @@ public class AddMoteDialog extends JDialog {
     // MAIN PART
 
     // Number of new motes
-    smallPane = new JPanel();
+    var smallPane = new JPanel();
     smallPane.setAlignmentX(Component.LEFT_ALIGNMENT);
     smallPane.setLayout(new BoxLayout(smallPane, BoxLayout.X_AXIS));
-    label = new JLabel("Number of new motes");
+    var label = new JLabel("Number of new motes");
     label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-    numberField = new JFormattedTextField(integerFormat);
+    var numberField = new JFormattedTextField(integerFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
     numberField.setValue(1);
     numberField.setColumns(10);
@@ -191,7 +186,7 @@ public class AddMoteDialog extends JDialog {
       posDistributions[i] = Cooja.getDescriptionOf(positioners.get(i));
     }
 
-    comboBox = new JComboBox(posDistributions);
+    var comboBox = new JComboBox(posDistributions);
 
     comboBox.setSelectedIndex(0);
     comboBox.addActionListener(myEventHandler);

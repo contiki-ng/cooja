@@ -1345,10 +1345,6 @@ public class AreaViewer extends VisPlugin {
         super(frame, "Analyze for obstacles");
         JPanel mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        JPanel tempPanel;
-        JLabel tempLabel;
-        JSlider tempSlider;
-        JButton tempButton;
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         Dimension labelDimension = new Dimension(100, 20);
@@ -1376,9 +1372,10 @@ public class AreaViewer extends VisPlugin {
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
         // Obstacle color
-        tempPanel = new JPanel();
+        var tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Obstacle"));
+        var tempLabel = new JLabel("Obstacle");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         mainPanel.add(tempPanel);
 
@@ -1387,7 +1384,8 @@ public class AreaViewer extends VisPlugin {
         tempPanel.add(tempLabel = new JLabel("Red"));
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        tempPanel.add(tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0));
+        var tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0);
+        tempPanel.add(tempSlider);
         tempSlider.setMajorTickSpacing(50);
         tempSlider.setPaintTicks(true);
         tempSlider.setPaintLabels(true);
@@ -1449,7 +1447,8 @@ public class AreaViewer extends VisPlugin {
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
         tempPanel.add(Box.createHorizontalGlue());
-        tempPanel.add(tempButton = new JButton("Pick color"));
+        var tempButton = new JButton("Pick color");
+        tempPanel.add(tempButton);
         tempButton.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             // Set to color picker mode (if not already there)
