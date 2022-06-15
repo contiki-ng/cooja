@@ -33,7 +33,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
@@ -492,7 +491,7 @@ public class Cooja extends Observable {
     return frame != null;
   }
 
-  public static Container getTopParentContainer() {
+  public static JFrame getTopParentContainer() {
     return frame;
   }
 
