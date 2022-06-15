@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Formatter;
-import java.util.Observable;
 import java.util.Observer;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -89,8 +88,8 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
   private static final Logger logger = LogManager.getLogger(ContikiEEPROM.class);
 
   public static final int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */
-  private Mote mote = null;
-  private VarMemory moteMem = null;
+  private final Mote mote;
+  private final VarMemory moteMem;
 
   private int lastRead = 0;
   private int lastWritten = 0;
@@ -248,7 +247,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
         if (setEEPROMData(eepromData)) {
             logger.info("Done! (EEPROM reset to zero)");
         }
-          
+
         redrawDataView(dataViewArea);
       }
     });
@@ -312,6 +311,7 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
       for (Element element : configXML) {
         if (element.getName().equals("eeprom")) {
           setEEPROMData(Base64.getDecoder().decode(element.getText()));
+          break;
         }
       }
   }
@@ -324,42 +324,27 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
    */
   public static byte[] readDialogEEPROMBytes(Component parent) {
     // Choose file
-    File file = null;
     JFileChooser fileChooser = new JFileChooser();
-    fileChooser.setCurrentDirectory(new java.io.File("."));
+    fileChooser.setCurrentDirectory(new File("."));
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     fileChooser.setDialogTitle("Select binary data");
 
-    if (fileChooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
-      file = fileChooser.getSelectedFile();
-    } else {
+    if (fileChooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION) {
       return null;
     }
 
     // Read file data
+    File file = fileChooser.getSelectedFile();
     long fileSize = file.length();
     byte[] fileData = new byte[(int) fileSize];
 
-    FileInputStream fileIn;
-    DataInputStream dataIn;
-    int offset = 0;
-    int numRead = 0;
-    try {
-      fileIn = new FileInputStream(file);
-      dataIn = new DataInputStream(fileIn);
-      while (offset < fileData.length
-          && (numRead = dataIn.read(fileData, offset, fileData.length - offset)) >= 0) {
-        offset += numRead;
-      }
-
-      dataIn.close();
-      fileIn.close();
+    try (var dataIn = new DataInputStream(new FileInputStream(file))) {
+      dataIn.readFully(fileData);
+      return fileData;
     } catch (Exception ex) {
-      logger.debug("Exception ex: " + ex);
+      logger.debug("Failed to read EEPROM file '" + file + "'", ex);
       return null;
     }
-
-    return fileData;
   }
 
   private static boolean isEmpty(byte[] data) {
