@@ -98,8 +98,6 @@ public class ContikiMoteType implements MoteType {
 
   private static final Logger logger = LogManager.getLogger(ContikiMoteType.class);
 
-  public static final String ID_PREFIX = "mtype";
-
   /**
    * Library file suffix
    */
@@ -111,14 +109,9 @@ public class ContikiMoteType implements MoteType {
   final static public String mapSuffix = ".map";
 
   /**
-   * Make archive file suffix
-   */
-  final static public String dependSuffix = ".a";
-
-  /**
    * Temporary output directory
    */
-  final static public File tempOutputDirectory = new File(
+  private static final File tempOutputDirectory = new File(
       Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja"));
 
   /**
@@ -502,7 +495,7 @@ public class ContikiMoteType implements MoteType {
     abstract Map<String, Symbol> parseSymbols(long offset);
 
     protected static long parseFirstHexLong(String regexp, String[] data) {
-      String retString = getFirstMatchGroup(data, regexp, 1);
+      String retString = getFirstMatchGroup(data, regexp);
 
       if (retString == null || retString.equals("")) {
         return -1;
@@ -612,7 +605,7 @@ public class ContikiMoteType implements MoteType {
       String regExp = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_1")
               + varName
               + Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_2");
-      String retString = getFirstMatchGroup(mapFileData, regExp, 1);
+      String retString = getFirstMatchGroup(mapFileData, regExp);
 
       if (retString != null) {
         return Long.parseUnsignedLong(retString.trim(), 16);
@@ -852,7 +845,7 @@ public class ContikiMoteType implements MoteType {
     return netStack;
   }
 
-  private static String getFirstMatchGroup(String[] lines, String regexp, int groupNr) {
+  private static String getFirstMatchGroup(String[] lines, String regexp) {
     if (regexp == null) {
       return null;
     }
@@ -860,7 +853,7 @@ public class ContikiMoteType implements MoteType {
     for (String line : lines) {
       Matcher matcher = pattern.matcher(line);
       if (matcher.find()) {
-        return matcher.group(groupNr);
+        return matcher.group(1);
       }
     }
     return null;
@@ -1003,18 +996,13 @@ public class ContikiMoteType implements MoteType {
    */
   public static String generateUniqueMoteTypeID(MoteType[] existingTypes, Collection reservedIdentifiers) {
     String testID = "";
-    boolean okID = false;
+    boolean available = false;
 
-    while (!okID) {
-      testID = ID_PREFIX + new Random().nextInt(1000);
-      okID = true;
+    while (!available) {
+      testID = "mtype" + new Random().nextInt(1000);
+      available = reservedIdentifiers == null || !reservedIdentifiers.contains(testID);
 
-      // Check if identifier is reserved
-      if (reservedIdentifiers != null && reservedIdentifiers.contains(testID)) {
-        okID = false;
-      }
-
-      if (!okID) {
+      if (!available) {
         continue;
       }
 
@@ -1022,24 +1010,12 @@ public class ContikiMoteType implements MoteType {
       if (existingTypes != null) {
         for (MoteType existingMoteType : existingTypes) {
           if (existingMoteType.getIdentifier().equals(testID)) {
-            okID = false;
+            available = false;
             break;
           }
         }
       }
-
-      if (!okID) {
-        continue;
-      }
-
-      // Check if identifier library has been loaded
-      /* XXX Currently only checks the build directory! */
-      File libraryFile = new File(
-              ContikiMoteType.tempOutputDirectory,
-              testID + ContikiMoteType.librarySuffix);
-      if (libraryFile.exists() || CoreComm.hasLibraryFileBeenLoaded(libraryFile)) {
-        okID = false;
-      }
+      // FIXME: add check that the library name is not already used.
     }
 
     return testID;
@@ -1238,7 +1214,7 @@ public class ContikiMoteType implements MoteType {
 
       /* Guess compile commands */
       String compileCommands
-              = "make " + getMakeTargetName(oldVersionSource).getName() + " TARGET=cooja";
+              = "make -j$(CPUS) " + getMakeTargetName(oldVersionSource).getName() + " TARGET=cooja";
       logger.info("Guessing compile commands: " + compileCommands);
       setCompileCommands(compileCommands);
     }
