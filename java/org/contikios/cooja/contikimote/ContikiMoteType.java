@@ -111,7 +111,7 @@ public class ContikiMoteType implements MoteType {
   /**
    * Temporary output directory
    */
-  final static public File tempOutputDirectory = new File(
+  private static final File tempOutputDirectory = new File(
       Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja"));
 
   /**
@@ -1015,18 +1015,7 @@ public class ContikiMoteType implements MoteType {
           }
         }
       }
-
-      if (!available) {
-        continue;
-      }
-
-      // Check if identifier library has been loaded
-      File libraryFile = new File(
-              ContikiMoteType.tempOutputDirectory,
-              testID + ContikiMoteType.librarySuffix);
-      if (libraryFile.exists() || CoreComm.hasLibraryFileBeenLoaded(libraryFile)) {
-        available = false;
-      }
+      // FIXME: add check that the library name is not already used.
     }
 
     return testID;
