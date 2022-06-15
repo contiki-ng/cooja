@@ -77,8 +77,6 @@ import org.contikios.cooja.interfaces.Position;
 public class AddMoteDialog extends JDialog {
   private static final Logger logger = LogManager.getLogger(AddMoteDialog.class);
 
-  private final AddMotesEventHandler myEventHandler = new AddMotesEventHandler();
-
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;
 
@@ -139,6 +137,7 @@ public class AddMoteDialog extends JDialog {
 
     button = new JButton("Do not add motes");
     button.setActionCommand("cancel");
+    var myEventHandler = new AddMotesEventHandler();
     button.addActionListener(myEventHandler);
     buttonPane.add(button);
 
