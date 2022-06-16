@@ -33,7 +33,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
@@ -492,7 +491,7 @@ public class Cooja extends Observable {
     return frame != null;
   }
 
-  public static Container getTopParentContainer() {
+  public static JFrame getTopParentContainer() {
     return frame;
   }
 
@@ -2434,8 +2433,6 @@ public class Cooja extends Observable {
       			JOptionPane.ERROR_MESSAGE);
         logger.fatal("No write access to file: " + saveFile.getAbsolutePath());
       }
-    } else {
-      logger.info("Save command cancelled by user...");
     }
     return null;
   }
@@ -2444,19 +2441,14 @@ public class Cooja extends Observable {
    * Add new mote to current simulation
    */
   public void doAddMotes(MoteType moteType) {
-    if (mySimulation != null) {
-      mySimulation.stopSimulation();
-
-      var newMotes = AddMoteDialog.showDialog(getTopParentContainer(), mySimulation,
-          moteType);
-      if (newMotes != null) {
-        for (Mote newMote : newMotes) {
-          mySimulation.addMote(newMote);
-        }
-      }
-
-    } else {
+    if (mySimulation == null) {
       logger.warn("No simulation active");
+      return;
+    }
+
+    mySimulation.stopSimulation();
+    for (var mote : AddMoteDialog.showDialog(frame, mySimulation, moteType)) {
+      mySimulation.addMote(mote);
     }
   }
 

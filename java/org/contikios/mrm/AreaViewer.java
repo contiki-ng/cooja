@@ -1138,18 +1138,12 @@ public class AreaViewer extends VisPlugin {
       }
 
       /* Set virtual size of image */
-      Container topParent = Cooja.getTopParentContainer();
-      ImageSettingsDialog dialog;
-      if (topParent instanceof Frame) {
-        dialog = new ImageSettingsDialog(file, image, (Frame) topParent);
-      } else if (topParent instanceof Dialog) {
-        dialog = new ImageSettingsDialog(file, image, (Dialog) topParent);
-      } else if (topParent instanceof Window) {
-        dialog = new ImageSettingsDialog(file, image, (Window) topParent);
-      } else {
+      var topParent = Cooja.getTopParentContainer();
+      if (topParent == null) {
         logger.fatal("Unknown parent container, aborting");
         return false;
       }
+      var dialog = new ImageSettingsDialog(file, image, topParent);
 
       if (!dialog.terminatedOK()) {
         logger.fatal("User canceled, aborting");
@@ -1174,25 +1168,15 @@ public class AreaViewer extends VisPlugin {
         return false;
       }
 
-      /* Show obstacle finder dialog */
-      ObstacleFinderDialog obstacleFinderDialog;
-      Container parentContainer = Cooja.getTopParentContainer();
-      if (parentContainer instanceof Window) {
-        obstacleFinderDialog = new ObstacleFinderDialog(
-            backgroundImage, currentChannelModel, (Window) Cooja.getTopParentContainer()
-        );
-      } else if (parentContainer instanceof Frame) {
-        obstacleFinderDialog = new ObstacleFinderDialog(
-            backgroundImage, currentChannelModel, (Frame) Cooja.getTopParentContainer()
-        );
-      } else if (parentContainer instanceof Dialog) {
-        obstacleFinderDialog = new ObstacleFinderDialog(
-            backgroundImage, currentChannelModel, (Dialog) Cooja.getTopParentContainer()
-        );
-      } else {
+      var parentContainer = Cooja.getTopParentContainer();
+      if (parentContainer == null) {
         logger.fatal("Unknown parent container");
         return false;
       }
+      /* Show obstacle finder dialog */
+      var obstacleFinderDialog = new ObstacleFinderDialog(
+            backgroundImage, currentChannelModel, parentContainer
+        );
 
       if (!obstacleFinderDialog.exitedOK) {
         return false;
@@ -1359,24 +1343,8 @@ public class AreaViewer extends VisPlugin {
        */
       protected ObstacleFinderDialog(Image currentImage, ChannelModel currentChannelModel, Frame frame) {
         super(frame, "Analyze for obstacles");
-        setupDialog(currentImage, currentChannelModel);
-      }
-      protected ObstacleFinderDialog(Image currentImage, ChannelModel currentChannelModel, Window window) {
-        super(window, "Analyze for obstacles");
-        setupDialog(currentImage, currentChannelModel);
-      }
-      protected ObstacleFinderDialog(Image currentImage, ChannelModel currentChannelModel, Dialog dialog) {
-        super(dialog, "Analyze for obstacles");
-        setupDialog(currentImage, currentChannelModel);
-      }
-
-      private void setupDialog(Image currentImage, ChannelModel currentChannelModel) {
         JPanel mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        JPanel tempPanel;
-        JLabel tempLabel;
-        JSlider tempSlider;
-        JButton tempButton;
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         Dimension labelDimension = new Dimension(100, 20);
@@ -1404,9 +1372,10 @@ public class AreaViewer extends VisPlugin {
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
         // Obstacle color
-        tempPanel = new JPanel();
+        var tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Obstacle"));
+        var tempLabel = new JLabel("Obstacle");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         mainPanel.add(tempPanel);
 
@@ -1415,7 +1384,8 @@ public class AreaViewer extends VisPlugin {
         tempPanel.add(tempLabel = new JLabel("Red"));
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        tempPanel.add(tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0));
+        var tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0);
+        tempPanel.add(tempSlider);
         tempSlider.setMajorTickSpacing(50);
         tempSlider.setPaintTicks(true);
         tempSlider.setPaintLabels(true);
@@ -1477,7 +1447,8 @@ public class AreaViewer extends VisPlugin {
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
         tempPanel.add(Box.createHorizontalGlue());
-        tempPanel.add(tempButton = new JButton("Pick color"));
+        var tempButton = new JButton("Pick color");
+        tempPanel.add(tempButton);
         tempButton.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             // Set to color picker mode (if not already there)

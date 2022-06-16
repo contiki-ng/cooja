@@ -34,10 +34,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -55,6 +52,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -79,21 +77,24 @@ import org.contikios.cooja.interfaces.Position;
 public class AddMoteDialog extends JDialog {
   private static final Logger logger = LogManager.getLogger(AddMoteDialog.class);
 
-  private final AddMotesEventHandler myEventHandler = new AddMotesEventHandler();
-
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;
 
-  private ArrayList<Mote> newMotes = null;
+  private ArrayList<Mote> newMotes = new ArrayList<>();
 
-  private JButton addButton;
+  private final JButton addButton;
 
-  private MoteType moteType = null;
-  private Simulation simulation = null;
+  private final MoteType moteType;
+  private final Simulation simulation;
 
-  private JFormattedTextField numberOfMotesField, startX, endX, startY, endY,
-      startZ, endZ;
-  private JComboBox positionDistributionBox;
+  private final JFormattedTextField numberOfMotesField;
+  private final JFormattedTextField startX;
+  private final JFormattedTextField endX;
+  private final JFormattedTextField startY;
+  private final JFormattedTextField endY;
+  private final JFormattedTextField startZ;
+  private final JFormattedTextField endZ;
+  private final JComboBox positionDistributionBox;
 
 
   /**
@@ -108,51 +109,22 @@ public class AddMoteDialog extends JDialog {
    *          Mote type
    * @return New motes or null if aborted
    */
-  public static ArrayList<Mote> showDialog(Container parentContainer,
+  public static ArrayList<Mote> showDialog(JFrame parentContainer,
       Simulation simulation, MoteType moteType) {
-
-    AddMoteDialog myDialog = null;
-    if (parentContainer instanceof Window) {
-      myDialog = new AddMoteDialog((Window)parentContainer, simulation, moteType);
-    } else if (parentContainer instanceof Dialog) {
-      myDialog = new AddMoteDialog((Dialog)parentContainer, simulation, moteType);
-    } else if (parentContainer instanceof Frame) {
-      myDialog = new AddMoteDialog((Frame)parentContainer, simulation, moteType);
-    } else {
-      logger.fatal("Unknown parent container type: " + parentContainer);
-      return null;
-    }
-
+    var myDialog = new AddMoteDialog(parentContainer, simulation, moteType);
     myDialog.setLocationRelativeTo(parentContainer);
     myDialog.checkSettings();
     myDialog.setVisible(true);
     return myDialog.newMotes;
   }
 
-  private AddMoteDialog(Frame frame, Simulation simulation, MoteType moteType) {
-    super(frame, "Add motes (" + moteType.getDescription() + ")", ModalityType.APPLICATION_MODAL);
-    setupDialog(simulation, moteType);
-  }
-  private AddMoteDialog(Window window, Simulation simulation, MoteType moteType) {
+  private AddMoteDialog(JFrame window, Simulation simulation, MoteType moteType) {
     super(window, "Add motes (" + moteType.getDescription() + ")", ModalityType.APPLICATION_MODAL);
-    setupDialog(simulation, moteType);
-  }
-  private AddMoteDialog(Dialog dialog, Simulation simulation, MoteType moteType) {
-    super(dialog, "Add motes (" + moteType.getDescription() + ")", ModalityType.APPLICATION_MODAL);
-    setupDialog(simulation, moteType);
-  }
-
-  private void setupDialog(Simulation simulation, MoteType moteType) {
     this.moteType = moteType;
     this.simulation = simulation;
 
-    JLabel label;
     JPanel mainPane = new JPanel();
     mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
-    JPanel smallPane;
-    JFormattedTextField numberField;
-    JButton button;
-    JComboBox comboBox;
     NumberFormat integerFormat = NumberFormat.getIntegerInstance();
     NumberFormat doubleFormat = NumberFormat.getNumberInstance();
 
@@ -163,8 +135,9 @@ public class AddMoteDialog extends JDialog {
 
     buttonPane.add(Box.createHorizontalGlue());
 
-    button = new JButton("Do not add motes");
+    var button = new JButton("Do not add motes");
     button.setActionCommand("cancel");
+    var myEventHandler = new AddMotesEventHandler();
     button.addActionListener(myEventHandler);
     buttonPane.add(button);
 
@@ -179,13 +152,13 @@ public class AddMoteDialog extends JDialog {
     // MAIN PART
 
     // Number of new motes
-    smallPane = new JPanel();
+    var smallPane = new JPanel();
     smallPane.setAlignmentX(Component.LEFT_ALIGNMENT);
     smallPane.setLayout(new BoxLayout(smallPane, BoxLayout.X_AXIS));
-    label = new JLabel("Number of new motes");
+    var label = new JLabel("Number of new motes");
     label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-    numberField = new JFormattedTextField(integerFormat);
+    var numberField = new JFormattedTextField(integerFormat);
     numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
     numberField.setValue(1);
     numberField.setColumns(10);
@@ -213,7 +186,7 @@ public class AddMoteDialog extends JDialog {
       posDistributions[i] = Cooja.getDescriptionOf(positioners.get(i));
     }
 
-    comboBox = new JComboBox(posDistributions);
+    var comboBox = new JComboBox(posDistributions);
 
     comboBox.setSelectedIndex(0);
     comboBox.addActionListener(myEventHandler);
@@ -439,7 +412,7 @@ public class AddMoteDialog extends JDialog {
     @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("cancel")) {
-        newMotes = null;
+        newMotes.clear();
         dispose();
       } else if (e.getActionCommand().equals("add")) {
         try {
@@ -449,7 +422,6 @@ public class AddMoteDialog extends JDialog {
 	  }
 
 	  // Create new motes
-          newMotes = new ArrayList<>();
           int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
           while (newMotes.size() < motesToAdd) {
             Mote newMote = moteType.generateMote(simulation);
@@ -517,7 +489,7 @@ public class AddMoteDialog extends JDialog {
 
           dispose();
         } catch (OutOfMemoryError e2) {
-          newMotes = null;
+          newMotes.clear();
           JOptionPane.showMessageDialog(
               AddMoteDialog.this,
               "Out of memory.\nException message: \"" + e2.getMessage() + "\"\n\n" +
