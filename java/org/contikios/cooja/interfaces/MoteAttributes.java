@@ -80,7 +80,7 @@ import org.contikios.cooja.plugins.skins.AttributeVisualizerSkin;
 @ClassDescription("Mote Attributes")
 public class MoteAttributes extends MoteInterface {
   private static final Logger logger = LogManager.getLogger(MoteAttributes.class);
-  private Mote mote = null;
+  private final Mote mote;
 
   private final HashMap<String, Object> attributes = new HashMap<>();
 
