@@ -94,36 +94,6 @@ public abstract class CoreComm {
   private static int fileCounter = 1;
 
   /**
-   * Has any library been loaded? Since libraries can't be unloaded the entire
-   * simulator may have to be restarted.
-   *
-   * @return True if any library has been loaded this session
-   */
-  public static boolean hasLibraryBeenLoaded() {
-    return coreComms.size() > 0;
-  }
-
-  /**
-   * Has given library file already been loaded during this session? A loaded
-   * library can be removed, but not unloaded during one session. And a new
-   * library file, named the same as an earlier loaded and removed file, can't
-   * be loaded either.
-   *
-   * @param libraryFile
-   *          Library file
-   * @return True if a library has already been loaded from the given file's
-   *         filename
-   */
-  public static boolean hasLibraryFileBeenLoaded(File libraryFile) {
-    for (File loadedFile : coreCommFiles) {
-      if (loadedFile.getName().equals(libraryFile.getName())) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Get the class name of next free core communicator class. If null is
    * returned, no classes are available.
    *
