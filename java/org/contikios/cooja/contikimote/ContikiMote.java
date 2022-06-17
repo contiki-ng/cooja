@@ -112,10 +112,6 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     return myType;
   }
 
-  public void setType(MoteType type) {
-    myType = (ContikiMoteType) type;
-  }
-
   /**
    * Ticks mote once. This is done by first polling all interfaces
    * and letting them act on the stored memory before the memory is set. Then
