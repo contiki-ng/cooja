@@ -464,7 +464,7 @@ public class ContikiMoteType implements MoteType {
   /**
    * Abstract base class for concrete section parser class.
    */
-  public static abstract class SectionParser {
+  static abstract class SectionParser {
 
     private final String[] mapFileData;
     protected long startAddr;
@@ -543,9 +543,9 @@ public class ContikiMoteType implements MoteType {
   }
 
   /**
-   * Parses Map file for seciton data.
+   * Parses Map file for section data.
    */
-  public static class MapSectionParser extends SectionParser {
+  static class MapSectionParser extends SectionParser {
 
     private final String startRegExp;
     private final String sizeRegExp;
@@ -644,7 +644,7 @@ public class ContikiMoteType implements MoteType {
   /**
    * Parses command output for section data.
    */
-  public static class CommandSectionParser extends SectionParser {
+  static class CommandSectionParser extends SectionParser {
 
     private final String startRegExp;
     private final String endRegExp;
