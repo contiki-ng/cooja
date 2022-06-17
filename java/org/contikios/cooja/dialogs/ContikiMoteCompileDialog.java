@@ -56,10 +56,8 @@ import javax.swing.event.DocumentListener;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.MoteType;
 import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMoteType;
@@ -73,26 +71,15 @@ import org.contikios.cooja.contikimote.ContikiMoteType.NetworkStack;
 public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   private static final Logger logger = LogManager.getLogger(ContikiMoteCompileDialog.class);
 
-  private final JComboBox netStackComboBox = new JComboBox(NetworkStack.values());
+  private final JComboBox<?> netStackComboBox = new JComboBox<>(NetworkStack.values());
 
-  public static boolean showDialog(
-      Container parent,
-      Simulation simulation,
-      MoteType moteType) {
-
-    final ContikiMoteCompileDialog dialog = new ContikiMoteCompileDialog(parent, simulation, moteType);
-
-    /* Show dialog and wait for user */
-    dialog.setVisible(true); /* BLOCKS */
-    if (!dialog.createdOK()) {
-      return false;
-    }
-
-    /* Assume that if a firmware exists, compilation was ok */
-    return true;
+  public static boolean showDialog(Container parent, Simulation sim, ContikiMoteType mote) {
+    final var dialog = new ContikiMoteCompileDialog(parent, sim, mote);
+    dialog.setVisible(true); // Blocks.
+    return dialog.createdOK();
   }
 
-  private ContikiMoteCompileDialog(Container parent, Simulation simulation, MoteType moteType) {
+  private ContikiMoteCompileDialog(Container parent, Simulation simulation, ContikiMoteType moteType) {
     super(parent, simulation, moteType);
 
     if (contikiSource != null) {
@@ -111,19 +98,9 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
           ContikiMoteType.generateUniqueMoteTypeID(simulation.getMoteTypes(), null));
     }
     
-    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
-    
     /* Create variables used for compiling Contiki */
     moteType.setContikiSourceFile(source);
-    ((ContikiMoteType)moteType).mapFile = new File(
-        source.getParentFile(),
-        output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.mapSuffix);
-    ((ContikiMoteType)moteType).javaClassName = CoreComm.getAvailableClassName();
-
-    var env = CompileContiki.createCompilationEnvironment(
-            ((ContikiMoteType)moteType),
-            ((ContikiMoteType)moteType).javaClassName
-    );
+    var env = ((ContikiMoteType)moteType).configureForCompilation();
     String[] envOneDimension = new String[env.length];
     for (int i=0; i < env.length; i++) {
       envOneDimension[i] = env[i][0] + "=" + env[i][1];
@@ -325,14 +302,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   @Override
   public void writeSettingsToMoteType() {
-    /* XXX Do not load the generated firmware.
-     * Instead, load the copy in output_dir */
-    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja"); 
-    File contikiFirmware = new File(
-        moteType.getContikiSourceFile().getParentFile(),
-        output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.librarySuffix
-    );
-    moteType.setContikiFirmwareFile(contikiFirmware);
+    ((ContikiMoteType)moteType).setContikiFirmwareFile();
   }
 
   @Override
