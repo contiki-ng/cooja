@@ -73,21 +73,10 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   private final JComboBox<?> netStackComboBox = new JComboBox<>(NetworkStack.values());
 
-  public static boolean showDialog(
-      Container parent,
-      Simulation simulation,
-      ContikiMoteType moteType) {
-
-    final ContikiMoteCompileDialog dialog = new ContikiMoteCompileDialog(parent, simulation, moteType);
-
-    /* Show dialog and wait for user */
-    dialog.setVisible(true); /* BLOCKS */
-    if (!dialog.createdOK()) {
-      return false;
-    }
-
-    /* Assume that if a firmware exists, compilation was ok */
-    return true;
+  public static boolean showDialog(Container parent, Simulation sim, ContikiMoteType mote) {
+    final var dialog = new ContikiMoteCompileDialog(parent, sim, mote);
+    dialog.setVisible(true); // Blocks.
+    return dialog.createdOK();
   }
 
   private ContikiMoteCompileDialog(Container parent, Simulation simulation, ContikiMoteType moteType) {
