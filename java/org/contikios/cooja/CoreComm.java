@@ -31,22 +31,19 @@ package org.contikios.cooja;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Objects;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageContainer;
@@ -115,74 +112,39 @@ public abstract class CoreComm {
    */
   private static void generateLibSourceFile(Path tempDir, String className)
       throws MoteTypeCreationException {
-    BufferedWriter sourceFileWriter = null;
-    BufferedReader templateFileReader = null;
-    String destFilename = null;
-
-    try {
-      Reader reader;
-      String mainTemplate = Cooja
-          .getExternalToolsSetting("CORECOMM_TEMPLATE_FILENAME");
-
-      if (new File(mainTemplate).exists()) {
-        reader = Files.newBufferedReader(Paths.get(mainTemplate), UTF_8);
-      } else {
-        InputStream input = CoreComm.class
-            .getResourceAsStream('/' + mainTemplate);
-        if (input == null) {
-          throw new FileNotFoundException(mainTemplate + " not found");
-        }
-        reader = new InputStreamReader(input, UTF_8);
+    // Create the temporary directory and ensure it is deleted on exit.
+    File dir = tempDir.toFile();
+    StringBuilder path = new StringBuilder(tempDir.toString());
+    // Gradually do mkdir() since mkdirs() makes deleteOnExit() leave the
+    // directory when Cooja quits.
+    for (String p : new String[]{"/org", "/contikios", "/cooja", "/corecomm"}) {
+      path.append(p);
+      dir = new File(path.toString());
+      if (!dir.mkdir()) {
+        throw new MoteTypeCreationException("Could not create temporary directory: " + dir);
       }
+      dir.deleteOnExit();
+    }
+    Path dst = Path.of(dir + "/" + className + ".java");
+    dst.toFile().deleteOnExit();
 
-      templateFileReader = new BufferedReader(reader);
-      destFilename = className + ".java";
-
-      File dir = tempDir.toFile();
-      StringBuilder path = new StringBuilder(tempDir.toString());
-      // Gradually do mkdir() since mkdirs() makes deleteOnExit() leave the
-      // directory when Cooja quits.
-      for (String p : new String[] {"/org", "/contikios", "/cooja", "/corecomm"}) {
-        path.append(p);
-        dir = new File(path.toString());
-        dir.mkdir();
-        dir.deleteOnExit();
-      }
-
-      Path dst = Path.of(dir + "/" + destFilename);
-      sourceFileWriter = Files.newBufferedWriter(dst, UTF_8);
-      dst.toFile().deleteOnExit();
-
-      // Replace special fields in template
+    // Instantiate the CoreComm template into the temporary directory.
+    var template = Cooja.getExternalToolsSetting("CORECOMM_TEMPLATE_FILENAME");
+    Path templatePath = Path.of(template);
+    try (var input = CoreComm.class.getResourceAsStream('/' + template);
+         var reader = Files.exists(templatePath)
+                 ? Files.newBufferedReader(templatePath, UTF_8)
+                 : new BufferedReader(new InputStreamReader(Objects.requireNonNull(input), UTF_8));
+         var writer = Files.newBufferedWriter(dst, UTF_8)) {
       String line;
-      while ((line = templateFileReader.readLine()) != null) {
+      while ((line = reader.readLine()) != null) {
         line = line.replace("[CLASSNAME]", className);
-        sourceFileWriter.write(line + "\n");
+        writer.write(line + "\n");
       }
-
-      sourceFileWriter.close();
-      templateFileReader.close();
     } catch (Exception e) {
-      try {
-        if (sourceFileWriter != null) {
-          sourceFileWriter.close();
-        }
-        if (templateFileReader != null) {
-          templateFileReader.close();
-        }
-      } catch (Exception e2) {
-      }
-
       throw new MoteTypeCreationException(
           "Could not generate corecomm source file: " + className + ".java", e);
     }
-
-    if (Files.exists(Path.of(tempDir + "/org/contikios/cooja/corecomm/" + destFilename))) {
-      return;
-    }
-
-    throw new MoteTypeCreationException(
-        "Could not generate corecomm source file: " + className + ".java");
   }
 
   /**
