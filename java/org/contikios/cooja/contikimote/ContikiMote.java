@@ -159,11 +159,10 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
   @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
-    Element element;
 
     /* Mote interfaces */
     for (MoteInterface moteInterface: getInterfaces().getInterfaces()) {
-      element = new Element("interface_config");
+      var element = new Element("interface_config");
       element.setText(moteInterface.getClass().getName());
 
       Collection<Element> interfaceXML = moteInterface.getConfigXML();
