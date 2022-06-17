@@ -1009,7 +1009,7 @@ public class ContikiMoteType implements MoteType {
     boolean available = false;
 
     while (!available) {
-      testID = "mtype" + new Random().nextInt(1000);
+      testID = "mtype" + new Random().nextInt(1000000000);
       available = reservedIdentifiers == null || !reservedIdentifiers.contains(testID);
 
       if (!available) {
