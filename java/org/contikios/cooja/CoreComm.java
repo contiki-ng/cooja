@@ -113,7 +113,7 @@ public abstract class CoreComm {
    * @throws MoteTypeCreationException
    *           If error occurs
    */
-  public static void generateLibSourceFile(Path tempDir, String className)
+  private static void generateLibSourceFile(Path tempDir, String className)
       throws MoteTypeCreationException {
     BufferedWriter sourceFileWriter = null;
     BufferedReader templateFileReader = null;
@@ -194,7 +194,7 @@ public abstract class CoreComm {
    * @throws MoteTypeCreationException
    *           If Java class compilation error occurs
    */
-  public static void compileSourceFile(Path tempDir, String className)
+  private static void compileSourceFile(Path tempDir, String className)
       throws MoteTypeCreationException {
       /* Try to create a message list with support for GUI - will give not UI if headless */
     MessageList compilationOutput = MessageContainer.createMessageList(true);
@@ -249,7 +249,7 @@ public abstract class CoreComm {
    * @return Loaded class
    * @throws MoteTypeCreationException If error occurs
    */
-  public static Class<?> loadClassFile(Path tempDir, String className)
+  private static Class<?> loadClassFile(Path tempDir, String className)
       throws MoteTypeCreationException {
     Class<?> loadedClass = null;
     try {
