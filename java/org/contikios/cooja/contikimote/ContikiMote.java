@@ -63,9 +63,9 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
 public class ContikiMote extends AbstractWakeupMote implements Mote {
   private static final Logger logger = LogManager.getLogger(ContikiMote.class);
 
-  private ContikiMoteType myType = null;
-  private SectionMoteMemory myMemory = null;
-  private MoteInterfaceHandler myInterfaceHandler = null;
+  private ContikiMoteType myType;
+  private SectionMoteMemory myMemory;
+  private MoteInterfaceHandler myInterfaceHandler;
 
   /**
    * Creates a new mote of given type.
