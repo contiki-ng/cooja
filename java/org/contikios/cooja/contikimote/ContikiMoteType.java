@@ -101,7 +101,7 @@ public class ContikiMoteType implements MoteType {
   /**
    * Library file suffix
    */
-  final static public String librarySuffix = ".cooja";
+  private static final String librarySuffix = ".cooja";
 
   /**
    * Map file suffix
@@ -822,6 +822,13 @@ public class ContikiMoteType implements MoteType {
   @Override
   public void setContikiFirmwareFile(File file) {
     fileFirmware = file;
+  }
+
+  /**
+   * Set the Contiki firmware file according to the source file.
+   */
+  public void setContikiFirmwareFile() {
+    fileFirmware = getMoteFile(librarySuffix);
   }
 
   @Override

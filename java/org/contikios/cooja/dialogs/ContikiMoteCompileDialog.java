@@ -314,14 +314,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   @Override
   public void writeSettingsToMoteType() {
-    /* XXX Do not load the generated firmware.
-     * Instead, load the copy in output_dir */
-    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja"); 
-    File contikiFirmware = new File(
-        moteType.getContikiSourceFile().getParentFile(),
-        output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.librarySuffix
-    );
-    moteType.setContikiFirmwareFile(contikiFirmware);
+    ((ContikiMoteType)moteType).setContikiFirmwareFile();
   }
 
   @Override
