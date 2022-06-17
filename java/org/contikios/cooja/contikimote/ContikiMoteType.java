@@ -210,21 +210,16 @@ public class ContikiMoteType implements MoteType {
   public boolean configureAndInit(Container parentContainer, Simulation simulation,
                                   boolean visAvailable) throws MoteTypeCreationException {
     myConfig = simulation.getCooja().getProjectConfig().clone();
-    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
-    
-    if (visAvailable && !simulation.isQuickSetup()) {
 
+    if (visAvailable && !simulation.isQuickSetup()) {
       if (getDescription() == null) {
         setDescription("Cooja Mote Type #" + (simulation.getMoteTypes().length + 1));
       }
 
       /* Compile Contiki from dialog */
-      boolean compileOK
-              = ContikiMoteCompileDialog.showDialog(parentContainer, simulation, this);
-      if (!compileOK) {
+      if (!ContikiMoteCompileDialog.showDialog(parentContainer, simulation, this)) {
         return false;
       }
-
     } else {
       if (getIdentifier() == null) {
         throw new MoteTypeCreationException("No identifier specified");
@@ -232,31 +227,26 @@ public class ContikiMoteType implements MoteType {
       if (getContikiSourceFile() == null) {
         throw new MoteTypeCreationException("No Contiki application specified");
       }
+      if (getCompileCommands() == null) {
+        throw new MoteTypeCreationException("No compile commands specified");
+      }
 
       /* Create variables used for compiling Contiki. */
       // Contiki application: hello-world.c
       File contikiApp = getContikiSourceFile();
+      String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
       mapFile = new File(
               contikiApp.getParentFile(),
               output_dir + "/" + getIdentifier() + mapSuffix);
       javaClassName = CoreComm.getAvailableClassName();
 
-      /* Prepare compiler environment */
-      String[][] env;
-      try {
-        env = CompileContiki.createCompilationEnvironment(this, javaClassName);
-      } catch (Exception e) {
-        throw new MoteTypeCreationException("Error when creating environment: " + e.getMessage(), e);
-      }
+      var env = CompileContiki.createCompilationEnvironment(this, javaClassName);
       String[] envOneDimension = new String[env.length];
       for (int i = 0; i < env.length; i++) {
         envOneDimension[i] = env[i][0] + "=" + env[i][1];
       }
 
       /* Compile Contiki (may consist of several commands) */
-      if (getCompileCommands() == null) {
-        throw new MoteTypeCreationException("No compile commands specified");
-      }
       final MessageList compilationOutput = MessageContainer.createMessageList(visAvailable);
       String[] arr = getCompileCommands().split("\n");
       for (String cmd : arr) {
