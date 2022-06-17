@@ -1128,8 +1128,6 @@ public class ContikiMoteType implements MoteType {
           throws MoteTypeCreationException {
     boolean warnedOldVersion = false;
     File oldVersionSource = null;
-    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
-
     moteInterfacesClasses = new ArrayList<>();
 
     for (Element element : configXML) {
@@ -1146,12 +1144,9 @@ public class ContikiMoteType implements MoteType {
           File file = new File(element.getText());
           if (!file.exists()) {
             file = simulation.getCooja().restorePortablePath(file);
-          } setContikiSourceFile(file);
-          /* XXX Do not load the generated firmware. Instead, load the unique library file directly */
-        File contikiFirmware = new File(
-                getContikiSourceFile().getParentFile(),
-                output_dir + "/" + getIdentifier() + librarySuffix);
-          setContikiFirmwareFile(contikiFirmware);
+          }
+          setContikiSourceFile(file);
+          setContikiFirmwareFile();
           break;
         case "commands":
           compileCommands = element.getText();
