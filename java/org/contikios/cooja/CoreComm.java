@@ -31,22 +31,18 @@ package org.contikios.cooja;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.Reader;
 import java.lang.reflect.Constructor;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Objects;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageContainer;
@@ -94,36 +90,6 @@ public abstract class CoreComm {
   private static int fileCounter = 1;
 
   /**
-   * Has any library been loaded? Since libraries can't be unloaded the entire
-   * simulator may have to be restarted.
-   *
-   * @return True if any library has been loaded this session
-   */
-  public static boolean hasLibraryBeenLoaded() {
-    return coreComms.size() > 0;
-  }
-
-  /**
-   * Has given library file already been loaded during this session? A loaded
-   * library can be removed, but not unloaded during one session. And a new
-   * library file, named the same as an earlier loaded and removed file, can't
-   * be loaded either.
-   *
-   * @param libraryFile
-   *          Library file
-   * @return True if a library has already been loaded from the given file's
-   *         filename
-   */
-  public static boolean hasLibraryFileBeenLoaded(File libraryFile) {
-    for (File loadedFile : coreCommFiles) {
-      if (loadedFile.getName().equals(libraryFile.getName())) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
    * Get the class name of next free core communicator class. If null is
    * returned, no classes are available.
    *
@@ -143,76 +109,41 @@ public abstract class CoreComm {
    * @throws MoteTypeCreationException
    *           If error occurs
    */
-  public static void generateLibSourceFile(Path tempDir, String className)
+  private static void generateLibSourceFile(Path tempDir, String className)
       throws MoteTypeCreationException {
-    BufferedWriter sourceFileWriter = null;
-    BufferedReader templateFileReader = null;
-    String destFilename = null;
-
-    try {
-      Reader reader;
-      String mainTemplate = Cooja
-          .getExternalToolsSetting("CORECOMM_TEMPLATE_FILENAME");
-
-      if (new File(mainTemplate).exists()) {
-        reader = Files.newBufferedReader(Paths.get(mainTemplate), UTF_8);
-      } else {
-        InputStream input = CoreComm.class
-            .getResourceAsStream('/' + mainTemplate);
-        if (input == null) {
-          throw new FileNotFoundException(mainTemplate + " not found");
-        }
-        reader = new InputStreamReader(input, UTF_8);
+    // Create the temporary directory and ensure it is deleted on exit.
+    File dir = tempDir.toFile();
+    StringBuilder path = new StringBuilder(tempDir.toString());
+    // Gradually do mkdir() since mkdirs() makes deleteOnExit() leave the
+    // directory when Cooja quits.
+    for (String p : new String[]{"/org", "/contikios", "/cooja", "/corecomm"}) {
+      path.append(p);
+      dir = new File(path.toString());
+      if (!dir.mkdir()) {
+        throw new MoteTypeCreationException("Could not create temporary directory: " + dir);
       }
+      dir.deleteOnExit();
+    }
+    Path dst = Path.of(dir + "/" + className + ".java");
+    dst.toFile().deleteOnExit();
 
-      templateFileReader = new BufferedReader(reader);
-      destFilename = className + ".java";
-
-      File dir = tempDir.toFile();
-      StringBuilder path = new StringBuilder(tempDir.toString());
-      // Gradually do mkdir() since mkdirs() makes deleteOnExit() leave the
-      // directory when Cooja quits.
-      for (String p : new String[] {"/org", "/contikios", "/cooja", "/corecomm"}) {
-        path.append(p);
-        dir = new File(path.toString());
-        dir.mkdir();
-        dir.deleteOnExit();
-      }
-
-      Path dst = Path.of(dir + "/" + destFilename);
-      sourceFileWriter = Files.newBufferedWriter(dst, UTF_8);
-      dst.toFile().deleteOnExit();
-
-      // Replace special fields in template
+    // Instantiate the CoreComm template into the temporary directory.
+    var template = Cooja.getExternalToolsSetting("CORECOMM_TEMPLATE_FILENAME");
+    Path templatePath = Path.of(template);
+    try (var input = CoreComm.class.getResourceAsStream('/' + template);
+         var reader = Files.exists(templatePath)
+                 ? Files.newBufferedReader(templatePath, UTF_8)
+                 : new BufferedReader(new InputStreamReader(Objects.requireNonNull(input), UTF_8));
+         var writer = Files.newBufferedWriter(dst, UTF_8)) {
       String line;
-      while ((line = templateFileReader.readLine()) != null) {
+      while ((line = reader.readLine()) != null) {
         line = line.replace("[CLASSNAME]", className);
-        sourceFileWriter.write(line + "\n");
+        writer.write(line + "\n");
       }
-
-      sourceFileWriter.close();
-      templateFileReader.close();
     } catch (Exception e) {
-      try {
-        if (sourceFileWriter != null) {
-          sourceFileWriter.close();
-        }
-        if (templateFileReader != null) {
-          templateFileReader.close();
-        }
-      } catch (Exception e2) {
-      }
-
       throw new MoteTypeCreationException(
           "Could not generate corecomm source file: " + className + ".java", e);
     }
-
-    if (Files.exists(Path.of(tempDir + "/org/contikios/cooja/corecomm/" + destFilename))) {
-      return;
-    }
-
-    throw new MoteTypeCreationException(
-        "Could not generate corecomm source file: " + className + ".java");
   }
 
   /**
@@ -224,7 +155,7 @@ public abstract class CoreComm {
    * @throws MoteTypeCreationException
    *           If Java class compilation error occurs
    */
-  public static void compileSourceFile(Path tempDir, String className)
+  private static void compileSourceFile(Path tempDir, String className)
       throws MoteTypeCreationException {
       /* Try to create a message list with support for GUI - will give not UI if headless */
     MessageList compilationOutput = MessageContainer.createMessageList(true);
@@ -272,36 +203,6 @@ public abstract class CoreComm {
   }
 
   /**
-   * Loads given Java class file from disk.
-   *
-   * @param tempDir Directory for temporary files
-   * @param className Java class name
-   * @return Loaded class
-   * @throws MoteTypeCreationException If error occurs
-   */
-  public static Class<?> loadClassFile(Path tempDir, String className)
-      throws MoteTypeCreationException {
-    Class<?> loadedClass = null;
-    try {
-      ClassLoader urlClassLoader = new URLClassLoader(
-          new URL[] { tempDir.toUri().toURL() },
-          CoreComm.class.getClassLoader());
-      loadedClass = urlClassLoader.loadClass("org.contikios.cooja.corecomm."
-          + className);
-
-    } catch (MalformedURLException | ClassNotFoundException e) {
-      throw new MoteTypeCreationException(
-          "Could not load corecomm class file: " + className + ".class", e);
-    }
-    if (loadedClass == null) {
-      throw new MoteTypeCreationException(
-          "Could not load corecomm class file: " + className + ".class");
-    }
-
-    return loadedClass;
-  }
-
-  /**
    * Create and return an instance of the core communicator identified by
    * className. This core communicator will load the native library libFile.
    *
@@ -318,10 +219,20 @@ public abstract class CoreComm {
 
     compileSourceFile(tempDir, className);
 
-    Class newCoreCommClass = loadClassFile(tempDir, className);
+    Class<?> newCoreCommClass;
+    try (var loader = new URLClassLoader(new URL[]{tempDir.toUri().toURL()},
+            CoreComm.class.getClassLoader())) {
+      newCoreCommClass = loader.loadClass("org.contikios.cooja.corecomm." + className);
+    } catch (IOException | ClassNotFoundException e1) {
+      throw new MoteTypeCreationException(
+          "Could not load corecomm class file: " + className + ".class", e1);
+    }
+    if (newCoreCommClass == null) {
+      throw new MoteTypeCreationException("Could not load corecomm class file: " + className + ".class");
+    }
 
     try {
-      Constructor constr = newCoreCommClass.getConstructor(File.class);
+      Constructor<?> constr = newCoreCommClass.getConstructor(File.class);
       CoreComm newCoreComm = (CoreComm) constr
           .newInstance(new Object[] { libFile });
 
