@@ -56,7 +56,6 @@ import javax.swing.event.DocumentListener;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteType;
@@ -111,19 +110,9 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
           ContikiMoteType.generateUniqueMoteTypeID(simulation.getMoteTypes(), null));
     }
     
-    String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
-    
     /* Create variables used for compiling Contiki */
     moteType.setContikiSourceFile(source);
-    ((ContikiMoteType)moteType).mapFile = new File(
-        source.getParentFile(),
-        output_dir + "/" + moteType.getIdentifier() + ContikiMoteType.mapSuffix);
-    ((ContikiMoteType)moteType).javaClassName = CoreComm.getAvailableClassName();
-
-    var env = CompileContiki.createCompilationEnvironment(
-            ((ContikiMoteType)moteType),
-            ((ContikiMoteType)moteType).javaClassName
-    );
+    var env = ((ContikiMoteType)moteType).configureForCompilation();
     String[] envOneDimension = new String[env.length];
     for (int i=0; i < env.length; i++) {
       envOneDimension[i] = env[i][0] + "=" + env[i][1];

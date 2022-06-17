@@ -106,7 +106,7 @@ public class ContikiMoteType implements MoteType {
   /**
    * Map file suffix
    */
-  final static public String mapSuffix = ".map";
+  private static final String mapSuffix = ".map";
 
   /**
    * Temporary output directory
@@ -206,6 +206,28 @@ public class ContikiMoteType implements MoteType {
     return new ContikiMote(this, simulation);
   }
 
+  /**
+   * Get the mote file for the extension.
+   *
+   * @param extension File extension (.map)
+   * @return The mote file for the extension
+   */
+  private File getMoteFile(String extension) {
+    var dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
+    return new File(fileSource.getParentFile(),dir + "/" + identifier + extension);
+  }
+
+  /**
+   * Configure the internal state of the mote, so it can be compiled.
+   *
+   * @return The compilation environment
+   */
+  public String[][] configureForCompilation() {
+    mapFile = getMoteFile(mapSuffix);
+    javaClassName = CoreComm.getAvailableClassName();
+    return CompileContiki.createCompilationEnvironment(this, javaClassName);
+  }
+
   @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation,
                                   boolean visAvailable) throws MoteTypeCreationException {
@@ -231,16 +253,7 @@ public class ContikiMoteType implements MoteType {
         throw new MoteTypeCreationException("No compile commands specified");
       }
 
-      /* Create variables used for compiling Contiki. */
-      // Contiki application: hello-world.c
-      File contikiApp = getContikiSourceFile();
-      String output_dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
-      mapFile = new File(
-              contikiApp.getParentFile(),
-              output_dir + "/" + getIdentifier() + mapSuffix);
-      javaClassName = CoreComm.getAvailableClassName();
-
-      var env = CompileContiki.createCompilationEnvironment(this, javaClassName);
+      var env = configureForCompilation();
       String[] envOneDimension = new String[env.length];
       for (int i = 0; i < env.length; i++) {
         envOneDimension[i] = env[i][0] + "=" + env[i][1];
