@@ -63,7 +63,7 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
 public class ContikiMote extends AbstractWakeupMote implements Mote {
   private static final Logger logger = LogManager.getLogger(ContikiMote.class);
 
-  private ContikiMoteType myType;
+  private final ContikiMoteType myType;
   private SectionMoteMemory myMemory;
   private MoteInterfaceHandler myInterfaceHandler;
 
