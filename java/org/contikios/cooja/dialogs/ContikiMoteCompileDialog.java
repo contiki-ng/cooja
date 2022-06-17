@@ -58,7 +58,6 @@ import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.MoteType;
 import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMoteType;
@@ -77,7 +76,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   public static boolean showDialog(
       Container parent,
       Simulation simulation,
-      MoteType moteType) {
+      ContikiMoteType moteType) {
 
     final ContikiMoteCompileDialog dialog = new ContikiMoteCompileDialog(parent, simulation, moteType);
 
@@ -91,7 +90,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     return true;
   }
 
-  private ContikiMoteCompileDialog(Container parent, Simulation simulation, MoteType moteType) {
+  private ContikiMoteCompileDialog(Container parent, Simulation simulation, ContikiMoteType moteType) {
     super(parent, simulation, moteType);
 
     if (contikiSource != null) {
