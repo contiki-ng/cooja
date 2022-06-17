@@ -37,7 +37,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -204,36 +203,6 @@ public abstract class CoreComm {
   }
 
   /**
-   * Loads given Java class file from disk.
-   *
-   * @param tempDir Directory for temporary files
-   * @param className Java class name
-   * @return Loaded class
-   * @throws MoteTypeCreationException If error occurs
-   */
-  private static Class<?> loadClassFile(Path tempDir, String className)
-      throws MoteTypeCreationException {
-    Class<?> loadedClass = null;
-    try {
-      ClassLoader urlClassLoader = new URLClassLoader(
-          new URL[] { tempDir.toUri().toURL() },
-          CoreComm.class.getClassLoader());
-      loadedClass = urlClassLoader.loadClass("org.contikios.cooja.corecomm."
-          + className);
-
-    } catch (MalformedURLException | ClassNotFoundException e) {
-      throw new MoteTypeCreationException(
-          "Could not load corecomm class file: " + className + ".class", e);
-    }
-    if (loadedClass == null) {
-      throw new MoteTypeCreationException(
-          "Could not load corecomm class file: " + className + ".class");
-    }
-
-    return loadedClass;
-  }
-
-  /**
    * Create and return an instance of the core communicator identified by
    * className. This core communicator will load the native library libFile.
    *
@@ -250,10 +219,20 @@ public abstract class CoreComm {
 
     compileSourceFile(tempDir, className);
 
-    Class newCoreCommClass = loadClassFile(tempDir, className);
+    Class<?> newCoreCommClass;
+    try (var loader = new URLClassLoader(new URL[]{tempDir.toUri().toURL()},
+            CoreComm.class.getClassLoader())) {
+      newCoreCommClass = loader.loadClass("org.contikios.cooja.corecomm." + className);
+    } catch (IOException | ClassNotFoundException e1) {
+      throw new MoteTypeCreationException(
+          "Could not load corecomm class file: " + className + ".class", e1);
+    }
+    if (newCoreCommClass == null) {
+      throw new MoteTypeCreationException("Could not load corecomm class file: " + className + ".class");
+    }
 
     try {
-      Constructor constr = newCoreCommClass.getConstructor(File.class);
+      Constructor<?> constr = newCoreCommClass.getConstructor(File.class);
       CoreComm newCoreComm = (CoreComm) constr
           .newInstance(new Object[] { libFile });
 
