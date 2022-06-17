@@ -161,15 +161,15 @@ public class MoteAttributes extends MoteInterface {
       logger.warn(mote + ": Malformed attribute was ignored: " + att);
     }
   }
-  
+
   public String getText() {
-      StringBuilder sb = new StringBuilder();
-    for (Object key : attributes.keySet().toArray()) {
-      sb.append(key).append("=").append(attributes.get(key)).append("\n");
+    StringBuilder sb = new StringBuilder();
+    for (var e : attributes.entrySet()) {
+      sb.append(e.getKey()).append("=").append(e.getValue()).append("\n");
     }
-      return sb.toString();
+    return sb.toString();
   }
-  
+
   @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
