@@ -495,13 +495,13 @@ public class Cooja extends Observable {
     return frame;
   }
 
-  public static File getLastOpenedFile() {
+  private static File getLastOpenedFile() {
     // Fetch current history
     String[] historyArray = getExternalToolsSetting("SIMCFG_HISTORY", "").split(";");
     return historyArray.length > 0 ? new File(historyArray[0]) : null;
   }
 
-  public static File[] getFileHistory() {
+  private static File[] getFileHistory() {
     // Fetch current history
     String[] historyArray = getExternalToolsSetting("SIMCFG_HISTORY", "").split(";");
     File[] history = new File[historyArray.length];
@@ -511,7 +511,7 @@ public class Cooja extends Observable {
     return history;
   }
 
-  public void addToFileHistory(File file) {
+  private void addToFileHistory(File file) {
     // Fetch current history
     String[] history = getExternalToolsSetting("SIMCFG_HISTORY", "").split(";");
     String newFile = file.getAbsolutePath();
@@ -1943,7 +1943,7 @@ public class Cooja extends Observable {
     return mySimulation;
   }
 
-  public void setSimulation(Simulation sim, boolean startPlugins) {
+  private void setSimulation(Simulation sim, boolean startPlugins) {
     if (sim != null) {
       doRemoveSimulation(false);
     }
@@ -1977,7 +1977,7 @@ public class Cooja extends Observable {
    *
    * @param moteTypeClass Mote type class
    */
-  public void doCreateMoteType(Class<? extends MoteType> moteTypeClass) {
+  private void doCreateMoteType(Class<? extends MoteType> moteTypeClass) {
     doCreateMoteType(moteTypeClass, true);
   }
 
@@ -1988,7 +1988,7 @@ public class Cooja extends Observable {
    * @param moteTypeClass Mote type class
    * @param addMotes Show add motes dialog after successfully adding mote type
    */
-  public void doCreateMoteType(Class<? extends MoteType> moteTypeClass, boolean addMotes) {
+  private void doCreateMoteType(Class<? extends MoteType> moteTypeClass, boolean addMotes) {
     if (mySimulation == null) {
       logger.fatal("Can't create mote type (no simulation)");
       return;
@@ -2024,7 +2024,7 @@ public class Cooja extends Observable {
    *          Should we ask for confirmation if a simulation is already active?
    * @return True if no simulation exists when method returns
    */
-  public boolean doRemoveSimulation(boolean askForConfirmation) {
+  private boolean doRemoveSimulation(boolean askForConfirmation) {
 
     if (mySimulation == null) {
       return true;
@@ -2094,7 +2094,7 @@ public class Cooja extends Observable {
    * @param quick Quick-load simulation
    * @param configFile Configuration file to load, if null a dialog will appear
    */
-  public void doLoadConfig(boolean askForConfirmation, final boolean quick, File configFile, Long manualRandomSeed) {
+  private void doLoadConfig(boolean askForConfirmation, final boolean quick, File configFile, Long manualRandomSeed) {
     /* Warn about memory usage */
     if (warnMemory()) {
       return;
@@ -2440,7 +2440,7 @@ public class Cooja extends Observable {
   /**
    * Add new mote to current simulation
    */
-  public void doAddMotes(MoteType moteType) {
+  private void doAddMotes(MoteType moteType) {
     if (mySimulation == null) {
       logger.warn("No simulation active");
       return;
@@ -2455,7 +2455,7 @@ public class Cooja extends Observable {
   /**
    * Create a new simulation
    */
-  public void doCreateSimulation() {
+  private void doCreateSimulation() {
     /* Remove current simulation */
     if (!doRemoveSimulation(true)) {
       return;
@@ -2669,7 +2669,7 @@ public class Cooja extends Observable {
   /**
    * Load user values from external properties file
    */
-  public static void loadExternalToolsUserSettings() {
+  private static void loadExternalToolsUserSettings() {
     if (externalToolsUserSettingsFile == null) {
       return;
     }
@@ -2961,7 +2961,7 @@ public class Cooja extends Observable {
    * @throws UnsatisfiedLinkError
    *           If associated libraries could not be loaded
    */
-  public Simulation loadSimulationConfig(File file, boolean quick, Long manualRandomSeed)
+  private Simulation loadSimulationConfig(File file, boolean quick, Long manualRandomSeed)
   throws UnsatisfiedLinkError, SimulationCreationException {
     this.currentConfigFile = file; /* Used to generate config relative paths */
     try {
@@ -2987,7 +2987,7 @@ public class Cooja extends Observable {
     }
   }
 
-  public Simulation loadSimulationConfig(Element root, boolean quick, Long manualRandomSeed)
+  private Simulation loadSimulationConfig(Element root, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
     Simulation newSim = null;
 
@@ -3102,7 +3102,7 @@ public class Cooja extends Observable {
    * @param file
    *          File to write
    */
-   public void saveSimulationConfig(File file) {
+   private void saveSimulationConfig(File file) {
     this.currentConfigFile = file; /* Used to generate config relative paths */
     try {
       this.currentConfigFile = this.currentConfigFile.getCanonicalFile();
@@ -3132,7 +3132,7 @@ public class Cooja extends Observable {
     }
   }
 
-  public Element extractSimulationConfig() {
+  private Element extractSimulationConfig() {
     // Create simulation config
     Element root = new Element("simconf");
 
@@ -3162,7 +3162,7 @@ public class Cooja extends Observable {
    *
    * @return Config or null
    */
-  public Collection<Element> getPluginsConfigXML() {
+  private Collection<Element> getPluginsConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
     Element pluginElement, pluginSubElement;
 
@@ -3237,7 +3237,7 @@ public class Cooja extends Observable {
     return config;
   }
 
-  public boolean verifyProjects(Collection<Element> configXML) {
+  private boolean verifyProjects(Collection<Element> configXML) {
     boolean allOk = true;
 
     /* Match current extensions against extensions in simulation config */
@@ -3282,7 +3282,7 @@ public class Cooja extends Observable {
    *          Simulation on which to start plugins
    * @return True if all plugins started, false otherwise
    */
-  public boolean setPluginsConfigXML(Collection<Element> configXML,
+  private boolean setPluginsConfigXML(Collection<Element> configXML,
       Simulation simulation, boolean visAvailable, boolean quick) {
       
     for (final Element pluginElement : configXML.toArray(new Element[0])) {
@@ -3968,7 +3968,7 @@ public class Cooja extends Observable {
   private File restoreConfigRelativePath(File portable) {
     return restoreConfigRelativePath(currentConfigFile, portable);
   }
-  public static File restoreConfigRelativePath(File configFile, File portable) {
+  private static File restoreConfigRelativePath(File configFile, File portable) {
     if (configFile == null) {
       return null;
     }
