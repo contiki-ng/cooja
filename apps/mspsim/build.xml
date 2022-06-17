@@ -69,10 +69,6 @@ Could not find the MSPSim build file. Did you run &quot;git submodule update --i
   </target>
 
   <target name="copy" depends="init">
-    <copy todir="build">
-        <fileset file="exp5438.png"/>
-        <fileset file="tyndall.png"/>
-    </copy>
   </target>
 
   <target name="jar" depends="init, compile, copy">
