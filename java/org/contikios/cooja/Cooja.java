@@ -2160,8 +2160,7 @@ public class Cooja extends Observable {
     addToFileHistory(configFile);
 
     final JDialog progressDialog;
-    final String progressTitle = configFile == null
-    ? "Loading" : ("Loading " + configFile.getAbsolutePath());
+    final String progressTitle = "Loading " + configFile.getAbsolutePath();
 
     if (quick) {
       final Thread loadThread = Thread.currentThread();
