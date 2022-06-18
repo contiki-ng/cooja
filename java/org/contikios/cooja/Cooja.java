@@ -1221,18 +1221,17 @@ public class Cooja extends Observable {
       configureFrame(gui);
       gui.doLoadConfig(false, true, config, manualRandomSeed);
       return gui.getSimulation();
-    } else {
-      try {
-        Simulation newSim = gui.loadSimulationConfig(config, true, manualRandomSeed);
-        if (newSim == null) {
-          return null;
-        }
-        gui.setSimulation(newSim, false);
-        return newSim;
-      } catch (Exception e) {
-        logger.fatal("Exception when loading simulation: ", e);
+    }
+    try {
+      var newSim = gui.loadSimulationConfig(config, true, manualRandomSeed);
+      if (newSim == null) {
         return null;
       }
+      gui.setSimulation(newSim, false);
+      return newSim;
+    } catch (Exception e) {
+      logger.fatal("Exception when loading simulation: ", e);
+      return null;
     }
   }
 
