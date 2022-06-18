@@ -57,14 +57,14 @@ import org.contikios.cooja.plugins.skins.AttributeVisualizerSkin;
  * typically via printf()'s of the serial port.
  *
  * Mote attributes are visualized by {@link AttributeVisualizerSkin}.
- * 
+ *
  * Syntax:
  * "#A <Attribute Name>=<Attribute Value>"
  * "#A <Attribute Name>=<Attribute Value>;<Color>"
  *
  * Example, add an attribute 'sent' with value 41:
  * "#A sent=41"
- * 
+ *
  * Example, add an attribute 'sent' with value 41, visualized in red:
  * "#A sent=41;RED"
  *
@@ -80,7 +80,7 @@ import org.contikios.cooja.plugins.skins.AttributeVisualizerSkin;
 @ClassDescription("Mote Attributes")
 public class MoteAttributes extends MoteInterface {
   private static final Logger logger = LogManager.getLogger(MoteAttributes.class);
-  private Mote mote = null;
+  private final Mote mote;
 
   private final HashMap<String, Object> attributes = new HashMap<>();
 
@@ -91,7 +91,7 @@ public class MoteAttributes extends MoteInterface {
       handleNewLog(msg);
     }
   };
-  
+
   public MoteAttributes(Mote mote) {
     this.mote = mote;
   }
@@ -99,7 +99,7 @@ public class MoteAttributes extends MoteInterface {
   @Override
   public void added() {
     super.added();
-    
+
     /* Observe log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
       if (mi instanceof Log) {
@@ -107,7 +107,7 @@ public class MoteAttributes extends MoteInterface {
       }
     }
   }
-  
+
   @Override
   public void removed() {
     super.removed();
@@ -129,13 +129,13 @@ public class MoteAttributes extends MoteInterface {
     if (msg.startsWith("DEBUG: ")) {
       msg = msg.substring("DEBUG: ".length());
     }
-    
+
     if (!msg.startsWith("#A ")) {
       return;
     }
     /* remove "#A " */
     msg = msg.substring(3);
-    
+
     setAttributes(msg);
 
     setChanged();
@@ -161,15 +161,15 @@ public class MoteAttributes extends MoteInterface {
       logger.warn(mote + ": Malformed attribute was ignored: " + att);
     }
   }
-  
+
   public String getText() {
-      StringBuilder sb = new StringBuilder();
-    for (Object key : attributes.keySet().toArray()) {
-      sb.append(key).append("=").append(attributes.get(key)).append("\n");
+    StringBuilder sb = new StringBuilder();
+    for (var e : attributes.entrySet()) {
+      sb.append(e.getKey()).append("=").append(e.getValue()).append("\n");
     }
-      return sb.toString();
+    return sb.toString();
   }
-  
+
   @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
