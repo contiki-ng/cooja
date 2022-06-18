@@ -180,7 +180,7 @@ public class AreaViewer extends VisPlugin {
   private final MRM currentRadioMedium;
   private final ChannelModel currentChannelModel;
 
-  private final String antennaImageFilename = "antenna.png";
+  private static final String antennaImageFilename = "antenna.png";
   private final Image antennaImage;
 
   private Radio selectedRadio = null;
