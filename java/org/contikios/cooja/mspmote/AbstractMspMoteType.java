@@ -39,13 +39,17 @@ import java.awt.Image;
 import java.io.File;
 import java.net.URL;
 
-import javax.swing.*;
-
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import org.contikios.cooja.*;
-import org.contikios.cooja.dialogs.*;
+import org.contikios.cooja.MoteInterface;
+import org.contikios.cooja.MoteType;
+import org.contikios.cooja.Simulation;
+import org.contikios.cooja.dialogs.CompileContiki;
+import org.contikios.cooja.dialogs.MessageContainer;
+import org.contikios.cooja.dialogs.MessageList;
 
 /**
  *

@@ -38,8 +38,8 @@ import java.util.Vector;
  * @author Fredrik Osterlind
  */
 public class RayPath {
-  private Vector<Point2D> points = new Vector<Point2D>();
-  private Vector<RayData.RayType> types = new Vector<RayData.RayType>();
+  private final Vector<Point2D> points = new Vector<>();
+  private final Vector<RayData.RayType> types = new Vector<>();
   
   public void addPoint(Point2D point, RayData.RayType type) {
     points.insertElementAt(point, 0);

@@ -50,7 +50,6 @@ import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
-import org.contikios.cooja.util.ScnObservable;
 import org.contikios.mrm.ChannelModel.Parameter;
 import org.contikios.mrm.ChannelModel.RadioPair;
 import org.contikios.mrm.ChannelModel.TxPair;
@@ -88,7 +87,7 @@ public class MRM extends AbstractRadioMedium {
   private double CAPTURE_EFFECT_THRESHOLD;
   private double CAPTURE_EFFECT_PREAMBLE_DURATION;
   
-  private Simulation sim;
+  private final Simulation sim;
   private Random random = null;
   private ChannelModel currentChannelModel = null;
 
@@ -134,10 +133,10 @@ public class MRM extends AbstractRadioMedium {
     currentChannelModel.deleteSettingsObserver(channelModelObserver);
   }
   
-  private NoiseLevelListener noiseListener = new NoiseLevelListener() {
+  private final NoiseLevelListener noiseListener = new NoiseLevelListener() {
         public void noiseLevelChanged(NoiseSourceRadio radio, int signal) {
                 updateSignalStrengths();
-        };
+        }
   };
   public void registerRadioInterface(Radio radio, Simulation sim) {
         super.registerRadioInterface(radio, sim);
@@ -304,7 +303,7 @@ public class MRM extends AbstractRadioMedium {
     /* Active radio connections */
     RadioConnection[] conns = getActiveConnections();
     for (RadioConnection conn : conns) {
-      for (Radio dstRadio : ((MRMRadioConnection) conn).getDestinations()) {
+      for (Radio dstRadio : conn.getDestinations()) {
         double signalStrength = ((MRMRadioConnection) conn).getDestinationSignalStrength(dstRadio);
         if (conn.getSource().getChannel() >= 0 &&
             dstRadio.getChannel() >= 0 &&
@@ -319,7 +318,7 @@ public class MRM extends AbstractRadioMedium {
 
     /* Interfering/colliding radio connections */
     for (RadioConnection conn : conns) {
-      for (Radio intfRadio : ((MRMRadioConnection) conn).getInterfered()) {
+      for (Radio intfRadio : conn.getInterfered()) {
         if (conn.getSource().getChannel() >= 0 &&
             intfRadio.getChannel() >= 0 &&
             conn.getSource().getChannel() != intfRadio.getChannel()) {
@@ -437,7 +436,7 @@ public class MRM extends AbstractRadioMedium {
   }
 
   class MRMRadioConnection extends RadioConnection {
-    private Hashtable<Radio, Double> signalStrengths = new Hashtable<Radio, Double>();
+    private final Hashtable<Radio, Double> signalStrengths = new Hashtable<>();
 
     public MRMRadioConnection(Radio sourceRadio) {
       super(sourceRadio);

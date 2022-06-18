@@ -54,13 +54,13 @@ public class MspSerial extends SerialUI implements SerialPort {
   
   private static final Logger logger = LogManager.getLogger(MspSerial.class);
 
-  private Simulation simulation;
+  private final Simulation simulation;
   private final MspMote mote;
-  private USARTSource usart;
+  private final USARTSource usart;
   
-  private Vector<Byte> incomingData = new Vector<Byte>();
+  private final Vector<Byte> incomingData = new Vector<>();
  
-  private TimeEvent writeDataEvent;
+  private final TimeEvent writeDataEvent;
 
   public String ioConfigString() {
 	  return "USART 1";

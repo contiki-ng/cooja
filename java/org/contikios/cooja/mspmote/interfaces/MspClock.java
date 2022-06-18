@@ -30,13 +30,8 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import java.util.Collection;
-
-import javax.swing.JPanel;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -50,7 +45,7 @@ import org.contikios.cooja.interfaces.Clock;
 public class MspClock extends Clock {
   private static final Logger logger = LogManager.getLogger(MspClock.class);
 
-  private Simulation simulation;
+  private final Simulation simulation;
   
   private long timeDrift; /* Microseconds */
   private double deviation;

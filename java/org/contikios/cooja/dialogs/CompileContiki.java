@@ -97,7 +97,7 @@ public class CompileContiki {
   	}
     String cpus = Integer.toString(Runtime.getRuntime().availableProcessors());
     // Perform compile command variable expansions.
-    String command[] = new String[commandList.size()];
+    String[] command = new String[commandList.size()];
     for (int i = 0; i < commandList.size(); i++) {
       command[i] = commandList.get(i).replace("$(CPUS)", cpus);
     }

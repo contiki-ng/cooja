@@ -483,7 +483,7 @@ public class ScriptRunner extends VisPlugin {
 
       final File logFile = new File(coojaBuild, "COOJA.testlog");
 
-      String command[] = {
+      String[] command = {
           "java",
           "-Djava.awt.headless=true",
           "-jar",

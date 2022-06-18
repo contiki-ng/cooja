@@ -46,7 +46,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.apache.logging.log4j.Logger;
@@ -71,7 +70,7 @@ import org.contikios.cooja.dialogs.TableColumnAdjuster;
 public class SkyCoffeeFilesystem extends MoteInterface {
   private static final Logger logger = LogManager.getLogger(SkyCoffeeFilesystem.class);
 
-  private Mote mote;
+  private final Mote mote;
 
   private CoffeeFS coffeeFS = null;
   private CoffeeFile[] files = new CoffeeFile[0];
@@ -86,7 +85,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
     "Save",
     "Remove"
   };
-  private JTable filesTable;
+  private final JTable filesTable;
 
   public SkyCoffeeFilesystem(Mote mote) {
     this.mote = mote;
@@ -198,7 +197,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
-  private AbstractTableModel tableModel = new AbstractTableModel() {
+  private final AbstractTableModel tableModel = new AbstractTableModel() {
     public String getColumnName(int col) {
       return COLUMN_NAMES[col].toString();
     }
@@ -289,7 +288,6 @@ public class SkyCoffeeFilesystem extends MoteInterface {
             updateFS();
           }
         }).start();
-        return;
       }
     }
     public Class<?> getColumnClass(int c) {

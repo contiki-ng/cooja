@@ -60,8 +60,8 @@ import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 @SupportedArguments(radioMediums = {AbstractRadioMedium.class})
 public class TrafficVisualizerSkin implements VisualizerSkin {
   private static final int MAX_HISTORY_SIZE = 200;
-  private final float TRANSMITTED_COLOR_RGB[] = Color.BLUE.getRGBColorComponents(null);
-  private final float UNTRANSMITTED_COLOR_RGB[] = Color.RED.getRGBColorComponents(null);
+  private final float[] TRANSMITTED_COLOR_RGB = Color.BLUE.getRGBColorComponents(null);
+  private final float[] UNTRANSMITTED_COLOR_RGB = Color.RED.getRGBColorComponents(null);
 
   private boolean active = false;
   private Simulation simulation = null;

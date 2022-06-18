@@ -58,7 +58,7 @@ import se.sics.mspsim.platform.ti.Exp5438Node;
 public class Exp5438LED extends LED {
   private static final Logger logger = LogManager.getLogger(Exp5438LED.class);
 
-  private Exp5438Mote mspMote;
+  private final Exp5438Mote mspMote;
 
   private boolean redOn = false;
   private boolean yellowOn = false;

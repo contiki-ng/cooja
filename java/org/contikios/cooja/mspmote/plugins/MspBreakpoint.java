@@ -54,7 +54,7 @@ import se.sics.mspsim.core.MemoryMonitor;
 public class MspBreakpoint implements Watchpoint {
   private static final Logger logger = LogManager.getLogger(MspBreakpoint.class);
 
-  private MspMote mspMote;
+  private final MspMote mspMote;
 
   private int address = -1; /* Binary address */
   private File codeFile = null; /* Source code, may be null*/
@@ -162,7 +162,7 @@ public class MspBreakpoint implements Watchpoint {
   }
 
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     element = new Element("stops");

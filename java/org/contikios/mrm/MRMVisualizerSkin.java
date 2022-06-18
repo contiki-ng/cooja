@@ -71,7 +71,6 @@ public class MRMVisualizerSkin implements VisualizerSkin {
   public void setInactive() {
     if (simulation == null) {
       /* Skin was never activated */
-      return;
     }
   }
 
@@ -135,7 +134,7 @@ public class MRMVisualizerSkin implements VisualizerSkin {
             return dRadio;
           }
         };
-        double probArr[] = radioMedium.getChannelModel().getProbability(
+        double[] probArr = radioMedium.getChannelModel().getProbability(
                 txPair,
                 Double.NEGATIVE_INFINITY
         );

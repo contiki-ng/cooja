@@ -76,23 +76,23 @@ import org.contikios.mrm.ChannelModel.Parameter;
 public class FormulaViewer extends org.contikios.cooja.VisPlugin {
   private static final Logger logger = LogManager.getLogger(FormulaViewer.class);
 
-  private Simulation simulation;
-  private MRM radioMedium;
-  private ChannelModel channelModel;
+  private final Simulation simulation;
+  private final MRM radioMedium;
+  private final ChannelModel channelModel;
 
-  private static Dimension labelDimension = new Dimension(240, 20);
-  private static NumberFormat doubleFormat = NumberFormat.getNumberInstance();
-  private static NumberFormat integerFormat = NumberFormat.getIntegerInstance();
+  private static final Dimension labelDimension = new Dimension(240, 20);
+  private static final NumberFormat doubleFormat = NumberFormat.getNumberInstance();
+  private static final NumberFormat integerFormat = NumberFormat.getIntegerInstance();
 
-  private ArrayList<JFormattedTextField> allIntegerParameters = new ArrayList<JFormattedTextField>();
-  private ArrayList<JFormattedTextField> allDoubleParameters = new ArrayList<JFormattedTextField>();
-  private ArrayList<JCheckBox> allBooleanParameters = new ArrayList<JCheckBox>();
+  private final ArrayList<JFormattedTextField> allIntegerParameters = new ArrayList<>();
+  private final ArrayList<JFormattedTextField> allDoubleParameters = new ArrayList<>();
+  private final ArrayList<JCheckBox> allBooleanParameters = new ArrayList<>();
 
-  private JPanel areaGeneral;
-  private JPanel areaTransmitter;
-  private JPanel areaReceiver;
-  private JPanel areaRayTracer;
-  private JPanel areaShadowing;
+  private final JPanel areaGeneral;
+  private final JPanel areaTransmitter;
+  private final JPanel areaReceiver;
+  private final JPanel areaRayTracer;
+  private final JPanel areaShadowing;
 
   /**
    * Creates a new formula viewer.
@@ -564,7 +564,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
    * Listens to settings changes in the channel model.
    * If it changes, all GUI parameters are updated accordingly.
    */
-  private Observer channelModelSettingsObserver = new Observer() {
+  private final Observer channelModelSettingsObserver = new Observer() {
     public void update(Observable obs, Object obj) {
       // Update all integers
       for (int i=0; i < allIntegerParameters.size(); i++) {
@@ -602,7 +602,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
    * @return XML element collection
    */
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     element = new Element("show_general");

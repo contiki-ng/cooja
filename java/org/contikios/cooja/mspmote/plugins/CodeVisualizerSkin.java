@@ -64,7 +64,7 @@ public class CodeVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private Timer repaintTimer = new Timer(100, new ActionListener() {
+  private final Timer repaintTimer = new Timer(100, new ActionListener() {
     public void actionPerformed(ActionEvent e) {
       if (simulation.isRunning()) {
         visualizer.repaint();
@@ -72,7 +72,7 @@ public class CodeVisualizerSkin implements VisualizerSkin {
     }
   });
 
-  private Observer simulationObserver = new Observer() {
+  private final Observer simulationObserver = new Observer() {
     public void update(Observable obs, Object obj) {
       visualizer.repaint();
     }

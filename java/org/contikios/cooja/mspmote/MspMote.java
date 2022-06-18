@@ -159,7 +159,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       try {
         debuggingInfo = ((MspMoteType)getType()).getFirmwareDebugInfo();
       } catch (IOException e) {
-        throw (RuntimeException) new RuntimeException("Error: " + e.getMessage()).initCause(e);
+        throw new RuntimeException("Error: " + e.getMessage(), e);
       }
     }
   }
@@ -219,7 +219,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     this.myCpu.setTrace(0); /* TODO Enable */
 
     LogListener ll = new LogListener() {
-      private Logger mlogger = LogManager.getLogger("MSPSim");
+      private final Logger mlogger = LogManager.getLogger("MSPSim");
       @Override
       public void log(Loggable source, String message) {
         mlogger.debug("" + getID() + ": " + source.getID() + ": " + message);
@@ -501,7 +501,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     try {
       debuggingInfo = ((MspMoteType)getType()).getFirmwareDebugInfo();
     } catch (IOException e) {
-      throw (RuntimeException) new RuntimeException("Error: " + e.getMessage()).initCause(e);
+      throw new RuntimeException("Error: " + e.getMessage(), e);
     }
 
     for (Element element: configXML) {
@@ -555,7 +555,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     /* Breakpoints */
@@ -636,8 +636,8 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
 
   /* WatchpointMote */
-  private ArrayList<WatchpointListener> watchpointListeners = new ArrayList<WatchpointListener>();
-  private ArrayList<MspBreakpoint> watchpoints = new ArrayList<MspBreakpoint>();
+  private final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<>();
+  private final ArrayList<MspBreakpoint> watchpoints = new ArrayList<>();
   private Hashtable<File, Hashtable<Integer, Integer>> debuggingInfo = null;
 
   public void addWatchpointListener(WatchpointListener listener) {
@@ -721,7 +721,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     Integer address = lineTable.get(lineNr);
     if (address != null) {
       for (Integer l: lineTable.keySet()) {
-        if (l != null && l.intValue() == lineNr) {
+        if (l != null && l == lineNr) {
           /* Found line address */
           return lineTable.get(l);
         }
@@ -751,7 +751,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   public Collection<Element> getWatchpointConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     for (MspBreakpoint breakpoint: watchpoints) {

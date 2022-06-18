@@ -65,8 +65,8 @@ public class MspDebugOutput extends Log {
 
   private final static String CONTIKI_POINTER = "cooja_debug_ptr";
   
-  private MspMote mote;
-  private VarMemory mem;
+  private final MspMote mote;
+  private final VarMemory mem;
   
   private String lastLog = null;
   private MemoryMonitor memoryMonitor = null;

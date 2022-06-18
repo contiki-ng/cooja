@@ -34,13 +34,24 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.Collection;
+import java.util.Observable;
+import java.util.Observer;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
+import org.contikios.cooja.Mote;
+import org.contikios.cooja.MoteInterface;
 import org.jdom.Element;
-import org.contikios.cooja.*;
 import org.contikios.cooja.mspmote.MspMote;
 
 /**
@@ -71,12 +82,8 @@ public class SkyFlash extends MoteInterface {
     idHeader[1] = (byte) 0xde;
     idHeader[2] = (byte) (id >> 8);
     idHeader[3] = (byte) (id & 0xff);
-    try {
-      m24p80.seek(0);
-      m24p80.write(idHeader);
-    } catch (IOException e) {
-      logger.fatal("Exception when writing ID header: " + e);
-    }
+    m24p80.seek(0);
+    m24p80.write(idHeader);
   }
 
   public JPanel getInterfaceVisualizer() {
@@ -96,28 +103,20 @@ public class SkyFlash extends MoteInterface {
             logger.fatal("Too large data file: " + fileData.length + " > " + CoojaM25P80.SIZE);
             return;
           }
-          try {
-            m24p80.seek(0);
-            m24p80.write(fileData);
-            logger.info("Done! (" + fileData.length + " bytes written to Flash)");
-          } catch (IOException ex) {
-            logger.fatal("Exception: " + ex);
-          }
+          m24p80.seek(0);
+          m24p80.write(fileData);
+          logger.info("Done! (" + fileData.length + " bytes written to Flash)");
         }
       }
     });
 
     downloadButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        try {
-          byte[] data = new byte[CoojaM25P80.SIZE];
-          m24p80.seek(0);
-          m24p80.readFully(data);
-          
-          writeDialogFileBytes(Cooja.getTopParentContainer(), data);
-        } catch (IOException ex) {
-          logger.fatal("Data download failed: " + ex.getMessage(), ex);
-        }
+        byte[] data = new byte[CoojaM25P80.SIZE];
+        m24p80.seek(0);
+        m24p80.readFully(data);
+
+        writeDialogFileBytes(Cooja.getTopParentContainer(), data);
       }
     });
 
@@ -183,7 +182,6 @@ public class SkyFlash extends MoteInterface {
       outStream.close();
     } catch (Exception ex) {
       logger.fatal("Could not write to file: " + saveFile);
-      return;
     }
 
   }

@@ -151,7 +151,7 @@ class Interval {
    * @return New intervals
    */
   public Vector<Interval> subtract(Interval interval) {
-    Vector<Interval> returnIntervals = new Vector<Interval>();
+    Vector<Interval> returnIntervals = new Vector<>();
     
     // Given interval higher than this interval
     if (highValue <= interval.getLow()) {
@@ -206,7 +206,7 @@ class Interval {
    * @return New intervals
    */
   static public Vector<Interval> subtract(Vector<Interval> initialIntervals, Interval interval) {
-    Vector<Interval> newIntervals = new Vector<Interval>();
+    Vector<Interval> newIntervals = new Vector<>();
     for (int i=0; i < initialIntervals.size(); i++) {
       Vector<Interval> tempIntervals = initialIntervals.get(i).subtract(interval);
       if (tempIntervals != null)

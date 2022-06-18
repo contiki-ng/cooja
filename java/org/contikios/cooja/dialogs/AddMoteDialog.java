@@ -80,7 +80,7 @@ public class AddMoteDialog extends JDialog {
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;
 
-  private ArrayList<Mote> newMotes = new ArrayList<>();
+  private final ArrayList<Mote> newMotes = new ArrayList<>();
 
   private final JButton addButton;
 

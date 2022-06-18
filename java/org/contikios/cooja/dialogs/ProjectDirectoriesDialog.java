@@ -463,7 +463,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 	}
 	protected void removeProjectDir(File dir) {
-		COOJAProject ps[] = getProjects();
+		COOJAProject[] ps = getProjects();
 		for (COOJAProject p: ps) {
 			if (p.dir.equals(dir)) {
 				removeProjectDir(p);

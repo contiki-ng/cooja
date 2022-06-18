@@ -233,7 +233,7 @@ public class DGRMConfigurator extends VisPlugin {
     }
 
     /* User input */
-    Object description[] = {
+    Object[] description = {
         COLUMN_NAMES[0],
         source,
         COLUMN_NAMES[1],
@@ -242,7 +242,7 @@ public class DGRMConfigurator extends VisPlugin {
     JOptionPane optionPane = new JOptionPane();
     optionPane.setMessage(description);
     optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-    String options[] = new String[] {"Cancel", "Add"};
+    String[] options = new String[] {"Cancel", "Add"};
     optionPane.setOptions(options);
     optionPane.setInitialValue(options[1]);
     JDialog dialog = optionPane.createDialog(this, title);

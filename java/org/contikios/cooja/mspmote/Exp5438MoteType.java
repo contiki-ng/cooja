@@ -49,8 +49,6 @@ import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.CompileContiki;
 import org.contikios.cooja.dialogs.MessageList;
-import org.contikios.cooja.dialogs.MessageListText;
-import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.interfaces.Mote2MoteRelations;
@@ -139,8 +137,7 @@ public class Exp5438MoteType extends MspMoteType {
           );
         } catch (Exception e) {
           MoteTypeCreationException newException =
-            new MoteTypeCreationException("Mote type creation failed: " + e.getMessage());
-          newException = (MoteTypeCreationException) newException.initCause(e);
+            new MoteTypeCreationException("Mote type creation failed: " + e.getMessage(), e);
           newException.setCompilationOutput(compilationOutput);
 
           /* Print last 10 compilation errors to console */

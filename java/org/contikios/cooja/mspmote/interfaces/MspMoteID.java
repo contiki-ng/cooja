@@ -53,7 +53,7 @@ import se.sics.mspsim.core.MemoryMonitor;
 public class MspMoteID extends MoteID {
 	private static final Logger logger = LogManager.getLogger(MspMoteID.class);
 
-	private MspMote mote;
+	private final MspMote mote;
 	private VarMemory moteMem = null;
 
 	private boolean writeFlashHeader = true;
@@ -64,7 +64,7 @@ public class MspMoteID extends MoteID {
 	/**
 	 * Creates an interface to the mote ID at mote.
 	 *
-	 * @param mote ID
+	 * @param m ID
 	 * @see Mote
 	 * @see org.contikios.cooja.MoteInterfaceHandler
 	 */

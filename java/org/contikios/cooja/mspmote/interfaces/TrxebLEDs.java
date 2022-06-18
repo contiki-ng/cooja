@@ -28,7 +28,7 @@ import se.sics.mspsim.core.PortListener;
 public class TrxebLEDs extends LED {
 	private static final Logger logger = LogManager.getLogger(TrxebLEDs.class);
 
-	private Exp5438Mote mspMote;
+	private final Exp5438Mote mspMote;
 
 	private boolean redOn = false;
 	private boolean yellowOn = false;

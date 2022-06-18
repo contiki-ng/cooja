@@ -134,7 +134,7 @@ public class ArrayUtils {
     try {
       int numRead = 0;
       int offset = 0;
-      byte data[] = new byte[input.available()*2];
+      byte[] data = new byte[input.available()*2];
       DataInputStream dataIn = new DataInputStream(input);
       while ((numRead = dataIn.read(data, offset, data.length-offset)) >= 0) {
         offset += numRead;

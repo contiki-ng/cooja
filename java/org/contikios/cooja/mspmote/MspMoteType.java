@@ -183,7 +183,7 @@ public abstract class MspMoteType implements MoteType {
   }
 
   public Collection<Element> getConfigXML(Simulation simulation) {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
 
     Element element;
 
@@ -231,7 +231,7 @@ public abstract class MspMoteType implements MoteType {
       Collection<Element> configXML, boolean visAvailable)
       throws MoteTypeCreationException {
 
-    ArrayList<Class<? extends MoteInterface>> intfClassList = new ArrayList<Class<? extends MoteInterface>>();
+    ArrayList<Class<? extends MoteInterface>> intfClassList = new ArrayList<>();
     for (Element element : configXML) {
       String name = element.getName();
 
@@ -349,7 +349,7 @@ public abstract class MspMoteType implements MoteType {
 
   public static Hashtable<File, Hashtable<Integer, Integer>> getFirmwareDebugInfo(ELF elf) {
     Hashtable<File, Hashtable<Integer, Integer>> fileToLineHash =
-      new Hashtable<File, Hashtable<Integer, Integer>>();
+            new Hashtable<>();
 
     if (elf.getDebug() == null) {
       // No debug information is available
@@ -389,7 +389,7 @@ public abstract class MspMoteType implements MoteType {
 
       Hashtable<Integer, Integer> lineToAddrHash = fileToLineHash.get(file);
       if (lineToAddrHash == null) {
-        lineToAddrHash = new Hashtable<Integer, Integer>();
+        lineToAddrHash = new Hashtable<>();
         fileToLineHash.put(file, lineToAddrHash);
       }
 

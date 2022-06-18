@@ -62,12 +62,12 @@ import se.sics.mspsim.core.MSP430;
 @SupportedArguments(motes = {MspMote.class})
 public class MspCycleWatcher extends VisPlugin implements MotePlugin {
   private static final Logger logger = LogManager.getLogger(MspStackWatcher.class);
-  private MspMote mspMote;
-  private MSP430 cpu;
-  private Simulation simulation;
+  private final MspMote mspMote;
+  private final MSP430 cpu;
+  private final Simulation simulation;
   private Observer simObserver = null;
-  private JTextField cycleTextField = new JTextField("");
-  private JTextField resetTextField = new JTextField("");
+  private final JTextField cycleTextField = new JTextField("");
+  private final JTextField resetTextField = new JTextField("");
   private long cycleReset = 0;
 
   public MspCycleWatcher(Mote mote, Simulation simulationToVisualize, Cooja gui) {
