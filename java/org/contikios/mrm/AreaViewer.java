@@ -902,14 +902,10 @@ public class AreaViewer extends VisPlugin {
           return false;
         }
 
-        if (filename.endsWith(".gif") || filename.endsWith(".GIF") ||
+        return filename.endsWith(".gif") || filename.endsWith(".GIF") ||
             filename.endsWith(".jpg") || filename.endsWith(".JPG") ||
             filename.endsWith(".jpeg") || filename.endsWith(".JPEG") ||
-            filename.endsWith(".png") || filename.endsWith(".PNG")){
-          return true;
-        }
-
-        return false;
+            filename.endsWith(".png") || filename.endsWith(".PNG");
       }
 
       public String getDescription() {
