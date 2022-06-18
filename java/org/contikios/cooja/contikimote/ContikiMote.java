@@ -63,9 +63,9 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
 public class ContikiMote extends AbstractWakeupMote implements Mote {
   private static final Logger logger = LogManager.getLogger(ContikiMote.class);
 
-  private ContikiMoteType myType = null;
-  private SectionMoteMemory myMemory = null;
-  private MoteInterfaceHandler myInterfaceHandler = null;
+  private final ContikiMoteType myType;
+  private SectionMoteMemory myMemory;
+  private MoteInterfaceHandler myInterfaceHandler;
 
   /**
    * Creates a new mote of given type.
@@ -110,10 +110,6 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
   @Override
   public MoteType getType() {
     return myType;
-  }
-
-  public void setType(MoteType type) {
-    myType = (ContikiMoteType) type;
   }
 
   /**
@@ -163,11 +159,10 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
   @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
-    Element element;
 
     /* Mote interfaces */
     for (MoteInterface moteInterface: getInterfaces().getInterfaces()) {
-      element = new Element("interface_config");
+      var element = new Element("interface_config");
       element.setText(moteInterface.getClass().getName());
 
       Collection<Element> interfaceXML = moteInterface.getConfigXML();
@@ -189,9 +184,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     for (Element element: configXML) {
       String name = element.getName();
 
-      if (name.equals("motetype_identifier")) {
-        /* Ignored: handled by simulation */
-      } else if (name.equals("interface_config")) {
+      if (name.equals("interface_config")) {
         String intfClass = element.getText().trim();
 
         /* Backwards compatibility: se.sics -> org.contikios */
