@@ -1614,7 +1614,7 @@ public class ChannelModel {
     return new double[] {receivedPower, accumulatedVariance};
   }
 
-  public class TrackedSignalComponents {
+  public static class TrackedSignalComponents {
     ArrayList<Line2D> components;
     String log;
   }

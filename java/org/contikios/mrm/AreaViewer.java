@@ -1259,7 +1259,7 @@ public class AreaViewer extends VisPlugin {
 
   };
 
-  class ObstacleFinderDialog extends JDialog {
+  static class ObstacleFinderDialog extends JDialog {
     private final NumberFormat intFormat = NumberFormat.getIntegerInstance();
     private BufferedImage imageToAnalyze = null;
     private BufferedImage obstacleImage = null;
