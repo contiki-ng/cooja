@@ -41,6 +41,10 @@
     <pathelement location="lib/picocli-4.6.3.jar"/>
     <pathelement location="lib/syntaxpane-1.2.0.jar"/>
     <pathelement location="lib/swingx-all-1.6.4.jar"/>
+    <!-- Copied into dist/lib by the mspsim rule -->
+    <pathelement location="dist/lib/coffee.jar" />
+    <pathelement location="dist/lib/jipv6.jar" />
+    <pathelement location="dist/lib/mspsim.jar" />
   </path>
 
   <target name="help">
@@ -70,7 +74,25 @@ The COOJA Simulator
     </javadoc>
   </target>
 
-  <target name="compile">
+  <target name="mspsim">
+    <fail>-
+      ----------------
+      Could not find the MSPSim build file. Did you run &quot;git submodule update --init --recursive&quot;?
+      ----------------
+      <condition><not>
+        <available file="mspsim/build.xml" />
+      </not></condition>
+    </fail>
+    <mkdir dir="${dist}/lib"/>
+    <property name="coffee" location="tools/coffee-manager"/>
+    <ant antfile="build.xml" dir="${coffee}" target="jar" inheritAll="false"/>
+    <copy todir="${dist}/lib" file="${coffee}/coffee.jar" />
+    <ant antfile="build.xml" dir="mspsim" target="jar" inheritAll="false"/>
+    <copy todir="${dist}/lib" file="mspsim/mspsim.jar" />
+    <copy todir="${dist}/lib" file="mspsim/lib/jipv6.jar" />
+  </target>
+
+  <target name="compile" depends="mspsim">
     <mkdir dir="${build}"/>
     <javac srcdir="${java}" destdir="${build}" debug="on" release="${languageversion}"
            includeantruntime="false"
@@ -90,7 +112,6 @@ The COOJA Simulator
   <target name="clean">
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
-    <ant antfile="build.xml" dir="apps/mspsim" target="clean" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/powertracker" target="clean" inheritAll="false"/>
   </target>
 
@@ -147,7 +168,6 @@ The COOJA Simulator
   </target>
 
   <target name="jar" depends="jar_cooja">
-    <ant antfile="build.xml" dir="apps/mspsim" target="jar" inheritAll="false"/>
     <ant antfile="build.xml" dir="apps/powertracker" target="jar" inheritAll="false"/>
   </target>
 
@@ -173,5 +193,4 @@ The COOJA Simulator
       <fileset dir="${lib}"/>
     </copy>
   </target>
-
 </project>
