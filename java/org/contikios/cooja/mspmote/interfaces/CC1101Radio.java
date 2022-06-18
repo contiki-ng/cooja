@@ -83,7 +83,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 	public CC1101Radio(Mote m) {
 		this.mote = (MspMote)m;
     Radio802154 r = this.mote.getCPU().getChip(Radio802154.class);
-    if (r == null || !(r instanceof CC1101)) {
+    if (!(r instanceof CC1101)) {
       throw new IllegalStateException("Mote is not equipped with an CC1101 radio");
     }
     this.cc1101 = (CC1101) r;
