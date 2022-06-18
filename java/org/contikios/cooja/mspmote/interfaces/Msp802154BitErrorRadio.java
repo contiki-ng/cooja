@@ -41,7 +41,6 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
-import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
 
 
 /**

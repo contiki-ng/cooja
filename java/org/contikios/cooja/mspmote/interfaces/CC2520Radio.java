@@ -16,7 +16,6 @@ import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
-import org.contikios.cooja.mspmote.interfaces.CC2420RadioPacketConverter;
 import se.sics.mspsim.chip.CC2520;
 import se.sics.mspsim.chip.ChannelListener;
 import se.sics.mspsim.chip.RFListener;
