@@ -83,12 +83,8 @@ public class SkyFlash extends MoteInterface {
     idHeader[1] = (byte) 0xde;
     idHeader[2] = (byte) (id >> 8);
     idHeader[3] = (byte) (id & 0xff);
-    try {
-      m24p80.seek(0);
-      m24p80.write(idHeader);
-    } catch (IOException e) {
-      logger.fatal("Exception when writing ID header: " + e);
-    }
+    m24p80.seek(0);
+    m24p80.write(idHeader);
   }
 
   public JPanel getInterfaceVisualizer() {
@@ -108,28 +104,20 @@ public class SkyFlash extends MoteInterface {
             logger.fatal("Too large data file: " + fileData.length + " > " + CoojaM25P80.SIZE);
             return;
           }
-          try {
-            m24p80.seek(0);
-            m24p80.write(fileData);
-            logger.info("Done! (" + fileData.length + " bytes written to Flash)");
-          } catch (IOException ex) {
-            logger.fatal("Exception: " + ex);
-          }
+          m24p80.seek(0);
+          m24p80.write(fileData);
+          logger.info("Done! (" + fileData.length + " bytes written to Flash)");
         }
       }
     });
 
     downloadButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        try {
-          byte[] data = new byte[CoojaM25P80.SIZE];
-          m24p80.seek(0);
-          m24p80.readFully(data);
-          
-          writeDialogFileBytes(Cooja.getTopParentContainer(), data);
-        } catch (IOException ex) {
-          logger.fatal("Data download failed: " + ex.getMessage(), ex);
-        }
+        byte[] data = new byte[CoojaM25P80.SIZE];
+        m24p80.seek(0);
+        m24p80.readFully(data);
+
+        writeDialogFileBytes(Cooja.getTopParentContainer(), data);
       }
     });
 
