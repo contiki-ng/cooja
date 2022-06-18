@@ -254,7 +254,7 @@ public class BreakpointsUI extends JPanel {
       /* Executable address in hexadecimal */
       if (col == COLUMN_ADDRESS) {
         Integer address = breakpoint.getExecutableAddress();
-        return String.format("0x%04x", address.intValue());
+        return String.format("0x%04x", address);
       }
 
       /* Source file + line number */

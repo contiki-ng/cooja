@@ -721,7 +721,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     Integer address = lineTable.get(lineNr);
     if (address != null) {
       for (Integer l: lineTable.keySet()) {
-        if (l != null && l.intValue() == lineNr) {
+        if (l != null && l == lineNr) {
           /* Found line address */
           return lineTable.get(l);
         }

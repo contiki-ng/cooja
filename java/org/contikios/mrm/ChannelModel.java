@@ -399,7 +399,7 @@ public class ChannelModel {
    * @return Current parameter value
    */
   public double getParameterDoubleValue(Parameter id) {
-    return ((Double) getParameterValue(id)).doubleValue();
+    return (Double) getParameterValue(id);
   }
 
   /**
@@ -409,7 +409,7 @@ public class ChannelModel {
    * @return Current parameter value
    */
   public int getParameterIntegerValue(Parameter id) {
-    return ((Integer) getParameterValue(id)).intValue();
+    return (Integer) getParameterValue(id);
   }
 
   /**
@@ -419,7 +419,7 @@ public class ChannelModel {
    * @return Current parameter value
    */
   public boolean getParameterBooleanValue(Parameter id) {
-    return ((Boolean) getParameterValue(id)).booleanValue();
+    return (Boolean) getParameterValue(id);
   }
 
   /**
