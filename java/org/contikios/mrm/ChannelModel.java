@@ -188,7 +188,7 @@ public class ChannelModel {
       case captureEffect:
         return true;
       case captureEffectPreambleDuration:
-        return (double) (1000*1000*4*0.5*8/250000); /* 2 bytes, 250kbit/s, us */
+        return 1000*1000*4*0.5*8/250000; /* 2 bytes, 250kbit/s, us */
       case captureEffectSignalTreshold:
         return 3.0; /* dB, according to previous 802.15.4 studies */
       }
@@ -1803,7 +1803,7 @@ public class ChannelModel {
 
     Enumeration<Parameter> paramEnum = parameters.keys();
     while (paramEnum.hasMoreElements()) {
-      Parameter p = (Parameter) paramEnum.nextElement();
+      Parameter p = paramEnum.nextElement();
       element = new Element(p.toString());
       if (parametersDefaults.get(p).equals(parameters.get(p))) {
         /* Default value */

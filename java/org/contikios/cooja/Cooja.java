@@ -2171,7 +2171,7 @@ public class Cooja extends Observable {
       progressDialog = new RunnableInEDT<JDialog>() {
         @Override
         public JDialog work() {
-          final JDialog progressDialog = new JDialog((Window) Cooja.getTopParentContainer(), progressTitle, ModalityType.APPLICATION_MODAL);
+          final JDialog progressDialog = new JDialog(Cooja.getTopParentContainer(), progressTitle, ModalityType.APPLICATION_MODAL);
 
           JPanel progressPanel = new JPanel(new BorderLayout());
           JProgressBar progressBar;

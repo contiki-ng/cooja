@@ -458,7 +458,7 @@ public class SerialSocketClient extends VisPlugin implements MotePlugin {
     if (socket == null || !socket.isBound()) {
       try {
         serverPortField.commitEdit();
-        element.setText(String.valueOf((Long) serverPortField.getValue()));
+        element.setText(String.valueOf(serverPortField.getValue()));
       } catch (ParseException ex) {
         logger.error(ex.getMessage());
         serverPortField.setText("null");
