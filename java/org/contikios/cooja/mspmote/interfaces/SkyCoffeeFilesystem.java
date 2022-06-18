@@ -199,7 +199,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
 
   private final AbstractTableModel tableModel = new AbstractTableModel() {
     public String getColumnName(int col) {
-      return COLUMN_NAMES[col].toString();
+      return COLUMN_NAMES[col];
     }
     public int getRowCount() {
       return files.length;
