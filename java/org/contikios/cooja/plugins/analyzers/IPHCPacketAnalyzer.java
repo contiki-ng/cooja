@@ -489,11 +489,10 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
     if (proto == PROTO_UDP || proto == PROTO_ICMP
             || proto == PROTO_TCP) {
       packet.level = APPLICATION_LEVEL;
-      return ANALYSIS_OK_CONTINUE;
     } else {
       packet.level = NETWORK_LEVEL;
-      return ANALYSIS_OK_CONTINUE;
     }
+    return ANALYSIS_OK_CONTINUE;
   }
 
 }

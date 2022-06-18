@@ -72,16 +72,14 @@ class AngleInterval {
       Interval tempInterval;
       if (startAngle < endAngle) {
         tempInterval = new Interval(startAngle, endAngle);
-        if (!tempInterval.isEmpty())
-          subIntervals.add(tempInterval);
       } else {
         tempInterval = new Interval(startAngle, 2*Math.PI);
         if (!tempInterval.isEmpty())
           subIntervals.add(tempInterval);
         tempInterval = new Interval(0, endAngle);
-        if (!tempInterval.isEmpty())
-          subIntervals.add(tempInterval);
       }
+      if (!tempInterval.isEmpty())
+        subIntervals.add(tempInterval);
     }
   }
   
