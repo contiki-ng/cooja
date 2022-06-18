@@ -705,16 +705,13 @@ public class AreaViewer extends VisPlugin {
 
         if (selectedRadio == null || !hitRadios.contains(selectedRadio)) {
           selectedRadio = hitRadios.get(0);
-          trackModeButton.setEnabled(true);
-          paintEnvironmentAction.setEnabled(true);
         } else {
           selectedRadio = hitRadios.get(
               (hitRadios.indexOf(selectedRadio)+1) % hitRadios.size()
           );
-
-          trackModeButton.setEnabled(true);
-          paintEnvironmentAction.setEnabled(true);
         }
+        trackModeButton.setEnabled(true);
+        paintEnvironmentAction.setEnabled(true);
 
         channelImage = null;
         canvas.repaint();
