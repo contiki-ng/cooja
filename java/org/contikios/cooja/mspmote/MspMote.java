@@ -159,7 +159,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       try {
         debuggingInfo = ((MspMoteType)getType()).getFirmwareDebugInfo();
       } catch (IOException e) {
-        throw (RuntimeException) new RuntimeException("Error: " + e.getMessage()).initCause(e);
+        throw new RuntimeException("Error: " + e.getMessage(), e);
       }
     }
   }
@@ -501,7 +501,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     try {
       debuggingInfo = ((MspMoteType)getType()).getFirmwareDebugInfo();
     } catch (IOException e) {
-      throw (RuntimeException) new RuntimeException("Error: " + e.getMessage()).initCause(e);
+      throw new RuntimeException("Error: " + e.getMessage(), e);
     }
 
     for (Element element: configXML) {

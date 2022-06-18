@@ -139,8 +139,7 @@ public class Exp5438MoteType extends MspMoteType {
           );
         } catch (Exception e) {
           MoteTypeCreationException newException =
-            new MoteTypeCreationException("Mote type creation failed: " + e.getMessage());
-          newException = (MoteTypeCreationException) newException.initCause(e);
+            new MoteTypeCreationException("Mote type creation failed: " + e.getMessage(), e);
           newException.setCompilationOutput(compilationOutput);
 
           /* Print last 10 compilation errors to console */
