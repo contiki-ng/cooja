@@ -1221,18 +1221,17 @@ public class Cooja extends Observable {
       configureFrame(gui);
       gui.doLoadConfig(false, true, config, manualRandomSeed);
       return gui.getSimulation();
-    } else {
-      try {
-        Simulation newSim = gui.loadSimulationConfig(config, true, manualRandomSeed);
-        if (newSim == null) {
-          return null;
-        }
-        gui.setSimulation(newSim, false);
-        return newSim;
-      } catch (Exception e) {
-        logger.fatal("Exception when loading simulation: ", e);
+    }
+    try {
+      var newSim = gui.loadSimulationConfig(config, true, manualRandomSeed);
+      if (newSim == null) {
         return null;
       }
+      gui.setSimulation(newSim, false);
+      return newSim;
+    } catch (Exception e) {
+      logger.fatal("Exception when loading simulation: ", e);
+      return null;
     }
   }
 
@@ -3058,7 +3057,7 @@ public class Cooja extends Observable {
       }
 
       // Restart plugins from config
-      setPluginsConfigXML(root.getChildren(), newSim, isVisualized(), quick);
+      setPluginsConfigXML(root.getChildren(), newSim);
 
     } catch (JDOMException e) {
       throw (SimulationCreationException) new SimulationCreationException(
@@ -3276,15 +3275,11 @@ public class Cooja extends Observable {
   /**
    * Starts plugins with arguments in given config.
    *
-   * @param configXML
-   *          Config XML elements
-   * @param simulation
-   *          Simulation on which to start plugins
+   * @param configXML  Config XML elements
+   * @param sim Simulation on which to start plugins
    * @return True if all plugins started, false otherwise
    */
-  private boolean setPluginsConfigXML(Collection<Element> configXML,
-      Simulation simulation, boolean visAvailable, boolean quick) {
-      
+  private boolean setPluginsConfigXML(Collection<Element> configXML, Simulation sim) {
     for (final Element pluginElement : configXML.toArray(new Element[0])) {
       if (pluginElement.getName().equals("plugin")) {
 
@@ -3317,14 +3312,14 @@ public class Cooja extends Observable {
         for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
           if (pluginSubElement.getName().equals("mote_arg")) {
             int moteNr = Integer.parseInt(pluginSubElement.getText());
-            if (moteNr >= 0 && moteNr < simulation.getMotesCount()) {
-              mote = simulation.getMote(moteNr);
+            if (moteNr >= 0 && moteNr < sim.getMotesCount()) {
+              mote = sim.getMote(moteNr);
             }
           }
         }
 
         /* Start plugin */
-        final Plugin startedPlugin = tryStartPlugin(pluginClass, this, simulation, mote, false);
+        final Plugin startedPlugin = tryStartPlugin(pluginClass, this, sim, mote, false);
         if (startedPlugin == null) {
           continue;
         }
@@ -3332,7 +3327,7 @@ public class Cooja extends Observable {
         /* Apply plugin specific configuration */
         for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
           if (pluginSubElement.getName().equals("plugin_config")) {
-            startedPlugin.setConfigXML(pluginSubElement.getChildren(), visAvailable);
+            startedPlugin.setConfigXML(pluginSubElement.getChildren(), isVisualized());
           }
         }
 
