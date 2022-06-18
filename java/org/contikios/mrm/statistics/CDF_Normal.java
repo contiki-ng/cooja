@@ -14,7 +14,7 @@ package org.contikios.mrm.statistics;
 *
 */
 
-public class CDF_Normal extends Object {
+public class CDF_Normal {
 
 /**
 *
