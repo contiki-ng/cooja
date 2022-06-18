@@ -899,7 +899,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     /* Append to file */
     if (!appendToFileWroteHeader) {
-      appendStream.println("-- Log Listener [" + simulation.getTitle() + "]: Started at " + (new Date()).toString());
+      appendStream.println("-- Log Listener [" + simulation.getTitle() + "]: Started at " + (new Date()));
       appendToFileWroteHeader = true;
     }
     appendStream.print(text);

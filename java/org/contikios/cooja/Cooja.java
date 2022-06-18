@@ -3878,7 +3878,7 @@ public class Cooja extends Observable {
     
     	File absolute = new File(portablePath.replace(PATH_IDENTIFIER[i][0], canonical));
 		if(!absolute.exists()){
-			logger.warn("Replaced " + portable  + " with " + absolute.toString() + " (default: "+ defp + PATH_IDENTIFIER[i][2] +"), but could not find it. This does not have to be an error, as the file might be created later.");
+			logger.warn("Replaced " + portable  + " with " + absolute + " (default: "+ defp + PATH_IDENTIFIER[i][2] +"), but could not find it. This does not have to be an error, as the file might be created later.");
 		}
     	     
       
