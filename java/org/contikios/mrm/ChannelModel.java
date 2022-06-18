@@ -1436,7 +1436,7 @@ public class ChannelModel {
       Enumeration<RayPath> pathsEnum = allPaths.elements();
       while (pathsEnum.hasMoreElements()) {
         RayPath currentPath = pathsEnum.nextElement();
-        logInfo.append("* " + currentPath + "\n");
+        logInfo.append("* ").append(currentPath).append("\n");
         for (int i=0; i < currentPath.getSubPathCount(); i++) {
           loggedRays.add(currentPath.getSubPath(i));
         }
@@ -1560,12 +1560,12 @@ public class ChannelModel {
         // Using Rician fading approach, TODO Only one best signal considered - combine these? (need two limits)
         totalPathGain += Math.pow(10, pathGain[i]/10.0)*Math.cos(2*Math.PI * pathModdedLengths[i]/wavelength);
         if (logMode) {
-          logInfo.append("Signal component: " + String.format("%2.3f", pathGain[i]) + " dB, phase " + String.format("%2.3f", (2*/*Math.PI* */ pathModdedLengths[i]/wavelength)) + " pi\n");
+          logInfo.append("Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths[i] / wavelength))).append(" pi\n");
         }
       } else if (logMode) {
         /* TODO Log mode affects result? */
         pathModdedLengths[i] = (pathLengths[i] - pathLengths[bestSignalNr]) % wavelength;
-        logInfo.append("(IGNORED) Signal component: " + String.format("%2.3f", pathGain[i]) + " dB, phase " + String.format("%2.3f", (2*/*Math.PI* */ pathModdedLengths[i]/wavelength)) + " pi\n");
+        logInfo.append("(IGNORED) Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths[i] / wavelength))).append(" pi\n");
       }
 
     }
@@ -1579,9 +1579,9 @@ public class ChannelModel {
     totalPathGain = 10*Math.log10(Math.abs(totalPathGain));
 
     if (logMode) {
-        logInfo.append("\nTotal path gain: " + String.format("%2.3f", totalPathGain) + " dB\n");
-        logInfo.append("Delay spread: " + String.format("%2.3f", delaySpread) + "\n");
-        logInfo.append("RMS delay spread: " + String.format("%2.3f", delaySpreadRMS) + "\n");
+        logInfo.append("\nTotal path gain: ").append(String.format("%2.3f", totalPathGain)).append(" dB\n");
+        logInfo.append("Delay spread: ").append(String.format("%2.3f", delaySpread)).append("\n");
+        logInfo.append("RMS delay spread: ").append(String.format("%2.3f", delaySpreadRMS)).append("\n");
     }
 
     // - Calculate received power -
@@ -1604,7 +1604,7 @@ public class ChannelModel {
 
     double receivedPower = outputPower + systemGain + transmitterGain + totalPathGain;
     if (logMode) {
-        logInfo.append("\nReceived signal strength: " + String.format("%2.3f", receivedPower) + " dB (variance " + accumulatedVariance + ")\n");
+        logInfo.append("\nReceived signal strength: ").append(String.format("%2.3f", receivedPower)).append(" dB (variance ").append(accumulatedVariance).append(")\n");
     }
 
     if (dataType == TransmissionData.DELAY_SPREAD || dataType == TransmissionData.DELAY_SPREAD_RMS) {
@@ -1695,7 +1695,7 @@ public class ChannelModel {
     snrData[1] += noiseVariance;
 
     if (logMode) {
-        logInfo.append("\nReceived SNR: " + String.format("%2.3f", snrData[0]) + " dB (variance " + snrData[1] + ")\n");
+        logInfo.append("\nReceived SNR: ").append(String.format("%2.3f", snrData[0])).append(" dB (variance ").append(snrData[1]).append(")\n");
     }
     return snrData;
   }
@@ -1753,7 +1753,7 @@ public class ChannelModel {
     double probReception = 1 - GaussianWrapper.cdfErrorAlgo(threshold, snrMean, snrStdDev);
 
     if (logMode) {
-      logInfo.append("Reception probability: " + String.format("%1.1f%%", 100*probReception) + "\n");
+      logInfo.append("Reception probability: ").append(String.format("%1.1f%%", 100 * probReception)).append("\n");
     }
 
     // Returns probabilities
