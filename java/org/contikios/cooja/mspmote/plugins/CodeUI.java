@@ -83,7 +83,7 @@ public class CodeUI extends JPanel {
   private static final HighlightPainter BREAKPOINTS_MARKER = new Markers.SimpleMarker(Color.LIGHT_GRAY);
   private final Object currentLineTag;
   private final Object selectedLineTag;
-  private final ArrayList<Object> breakpointsLineTags = new ArrayList<Object>();
+  private final ArrayList<Object> breakpointsLineTags = new ArrayList<>();
 
   private JSyntaxAddBreakpoint actionAddBreakpoint = null;
   private JSyntaxRemoveBreakpoint actionRemoveBreakpoint = null;
@@ -109,7 +109,7 @@ public class CodeUI extends JPanel {
     add(new JScrollPane(codeEditor), BorderLayout.CENTER);
     doLayout();
 
-    codeEditorLines = new HashMap<Integer, Integer>();
+    codeEditorLines = new HashMap<>();
     codeEditor.setContentType("text/c");
     DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
     kit.setProperty("Action.addbreakpoint", JSyntaxAddBreakpoint.class.getName());

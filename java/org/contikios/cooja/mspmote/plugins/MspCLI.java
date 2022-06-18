@@ -192,7 +192,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   }
 
   private static final int UPDATE_INTERVAL = 250;
-  private final UpdateAggregator<String> cliResponseAggregator = new UpdateAggregator<String>(UPDATE_INTERVAL) {
+  private final UpdateAggregator<String> cliResponseAggregator = new UpdateAggregator<>(UPDATE_INTERVAL) {
     protected void handle(List<String> ls) {
       String current = logArea.getText();
       int len = current.length();
@@ -202,7 +202,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
 
       /* Add */
       StringBuilder sb = new StringBuilder(current);
-      for (String l: ls) {
+      for (String l : ls) {
         sb.append(l);
         sb.append('\n');
       }

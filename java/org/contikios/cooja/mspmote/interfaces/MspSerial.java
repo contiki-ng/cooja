@@ -58,7 +58,7 @@ public class MspSerial extends SerialUI implements SerialPort {
   private final MspMote mote;
   private final USARTSource usart;
   
-  private final Vector<Byte> incomingData = new Vector<Byte>();
+  private final Vector<Byte> incomingData = new Vector<>();
  
   private final TimeEvent writeDataEvent;
 

@@ -67,11 +67,11 @@ class ObstacleWorld {
    */
   public ObstacleWorld() {
     // No obstacles present so far
-    allObstacles = new Vector<Rectangle2D>();
+    allObstacles = new Vector<>();
     
     for (int x=0; x < spatialResolution; x++)
       for (int y=0; y < spatialResolution; y++) 
-        allObstaclesSpatial[x][y] = new Vector<Rectangle2D>();
+        allObstaclesSpatial[x][y] = new Vector<>();
     
     outerBounds = new Rectangle2D.Double(0,0,0,0);
   }
@@ -128,7 +128,7 @@ class ObstacleWorld {
     double centerX = (center.getX() - areaStartX)/boxWidth;
     double centerY = (center.getY() - areaStartY)/boxHeight;
 
-    Vector<Rectangle2D> allNearObstacles = new Vector<Rectangle2D>();
+    Vector<Rectangle2D> allNearObstacles = new Vector<>();
 
     Point pointToAdd = new Point((int) centerX, (int) centerY);
     if (pointToAdd.x >= 0 &&
@@ -182,7 +182,7 @@ class ObstacleWorld {
    * @return All obstacles in given angle interval
    */
   public Vector<Rectangle2D> getAllObstaclesInAngleInterval(Point2D center, AngleInterval angleInterval) {
-    Vector<Rectangle2D> obstaclesToReturn = new Vector<Rectangle2D>();
+    Vector<Rectangle2D> obstaclesToReturn = new Vector<>();
     if (!obstaclesOrganized) {
       reorganizeSpatialObstacles();
     }
@@ -197,7 +197,7 @@ class ObstacleWorld {
         (int) ((center.getX() - areaStartX)/boxWidth),
         (int) ((center.getY() - areaStartY)/boxHeight)
     );
-    Vector<Point> pointsToCheck = new Vector<Point>();
+    Vector<Point> pointsToCheck = new Vector<>();
     
     int currentDistance = 0;
     while (currentDistance < 2*spatialResolution) {
@@ -584,7 +584,7 @@ class ObstacleWorld {
     logger.info(". Outer boundary min:\t" + getOuterBounds().getMinX() + ", " + getOuterBounds().getMinY());
     logger.info(". Outer boundary max:\t" + getOuterBounds().getMaxX() + ", " + getOuterBounds().getMaxY());
     
-    Vector<Rectangle2D> uniqueSpatialObstacles = new Vector<Rectangle2D>();
+    Vector<Rectangle2D> uniqueSpatialObstacles = new Vector<>();
     for (int x=0; x < spatialResolution; x++)
       for (int y=0; y < spatialResolution; y++) 
         for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) 
@@ -616,7 +616,7 @@ class ObstacleWorld {
    * @return XML elements representing the obstacles
    */
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<Element>();
+    Vector<Element> config = new Vector<>();
     Element element;
 
     for (Rectangle2D rect: allObstacles) {

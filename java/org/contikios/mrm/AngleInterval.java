@@ -55,7 +55,7 @@ class AngleInterval {
    * @param endAngle End angle (rad) (> start angle)
    */
   public AngleInterval(double startAngle, double endAngle) {
-    subIntervals = new Vector<Interval>();
+    subIntervals = new Vector<>();
     
     if (endAngle < startAngle) {
       
@@ -95,13 +95,13 @@ class AngleInterval {
    * @return New intervals
    */
   public Vector<AngleInterval> subtract(AngleInterval intervalToSubtract) {
-    Vector<Interval> afterSubtractionIntervals = new Vector<Interval>();
+    Vector<Interval> afterSubtractionIntervals = new Vector<>();
     
     // Before subtraction
     afterSubtractionIntervals.addAll(subIntervals);
     
     if (intervalToSubtract == null) {
-      Vector<AngleInterval> ret = new Vector<AngleInterval>();
+      Vector<AngleInterval> ret = new Vector<>();
       ret.add(this);
       return ret;
     }
@@ -109,7 +109,7 @@ class AngleInterval {
     // Subtract every subinterval each
     for (int i=0; i < intervalToSubtract.subIntervals.size(); i++) {
       Interval subIntervalToSubtract = intervalToSubtract.subIntervals.get(i);
-      Vector<Interval> newAfterSubtractionIntervals = new Vector<Interval>();
+      Vector<Interval> newAfterSubtractionIntervals = new Vector<>();
       
       for (int j=0; j < afterSubtractionIntervals.size(); j++) {
         Vector<Interval> tempIntervals = afterSubtractionIntervals.get(j).subtract(subIntervalToSubtract);
@@ -120,7 +120,7 @@ class AngleInterval {
       afterSubtractionIntervals = newAfterSubtractionIntervals;
     }
     
-    Vector<AngleInterval> newAngleIntervals = new Vector<AngleInterval>();
+    Vector<AngleInterval> newAngleIntervals = new Vector<>();
     for (int i=0; i < afterSubtractionIntervals.size(); i++) {
       if (afterSubtractionIntervals.get(i) != null && !afterSubtractionIntervals.get(i).isEmpty())
         newAngleIntervals.add(
@@ -139,7 +139,7 @@ class AngleInterval {
    * @return Intersection
    */
   public AngleInterval intersectWith(AngleInterval interval) {
-    Vector<Interval> afterIntersectionIntervals = new Vector<Interval>();
+    Vector<Interval> afterIntersectionIntervals = new Vector<>();
     
     // Intersect all subintervals, keep all results
     for (int i=0; i < interval.subIntervals.size(); i++) {
@@ -379,7 +379,7 @@ class AngleInterval {
    * @return New intervals
    */
   public static Vector<AngleInterval> subtract(Vector<AngleInterval> initialIntervals, AngleInterval interval) {
-    Vector<AngleInterval> newIntervals = new Vector<AngleInterval>();
+    Vector<AngleInterval> newIntervals = new Vector<>();
     
     for (int i=0; i < initialIntervals.size(); i++) {
       Vector<AngleInterval> tempIntervals = initialIntervals.get(i).subtract(interval);
@@ -400,7 +400,7 @@ class AngleInterval {
    * @return New intervals
    */
   public static Vector<AngleInterval> intersect(Vector<AngleInterval> initialIntervals, AngleInterval interval) {
-    Vector<AngleInterval> newIntervals = new Vector<AngleInterval>();
+    Vector<AngleInterval> newIntervals = new Vector<>();
     
     for (int i=0; i < initialIntervals.size(); i++) {
       AngleInterval tempInterval = initialIntervals.get(i).intersectWith(interval);

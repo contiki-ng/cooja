@@ -76,8 +76,8 @@ public class ChannelModel {
 
   enum TransmissionData { SIGNAL_STRENGTH, SIGNAL_STRENGTH_VAR, SNR, SNR_VAR, PROB_OF_RECEPTION, DELAY_SPREAD, DELAY_SPREAD_RMS}
 
-  private Hashtable<Parameter,Object> parametersDefaults = new Hashtable<Parameter,Object>();
-  private final Hashtable<Parameter,Object> parameters = new Hashtable<Parameter,Object>();
+  private Hashtable<Parameter,Object> parametersDefaults = new Hashtable<>();
+  private final Hashtable<Parameter,Object> parameters = new Hashtable<>();
   private Properties parameterDescriptions = new Properties();
 
   // Parameters used for speeding up calculations
@@ -97,10 +97,10 @@ public class ChannelModel {
 
   
   // Ray tracing components temporary vector
-  private final Vector<Vector<Line2D>> calculatedVisibleSides = new Vector<Vector<Line2D>>();
-  private final Vector<Point2D> calculatedVisibleSidesSources = new Vector<Point2D>();
-  private final Vector<Line2D> calculatedVisibleSidesLines = new Vector<Line2D>();
-  private final Vector<AngleInterval> calculatedVisibleSidesAngleIntervals = new Vector<AngleInterval>();
+  private final Vector<Vector<Line2D>> calculatedVisibleSides = new Vector<>();
+  private final Vector<Point2D> calculatedVisibleSidesSources = new Vector<>();
+  private final Vector<Line2D> calculatedVisibleSidesLines = new Vector<>();
+  private final Vector<AngleInterval> calculatedVisibleSidesAngleIntervals = new Vector<>();
   private static final int maxSavedVisibleSides = 30; // Max size of lists above
 
   /**
@@ -494,7 +494,7 @@ public class ChannelModel {
     Line2D testLine = new Line2D.Double(x1, y1, x2, y2);
 
     // Check which sides of the rectangle the test line passes through
-    Vector<Line2D> intersectedSides = new Vector<Line2D>();
+    Vector<Line2D> intersectedSides = new Vector<>();
 
     if (rectangleLower.intersectsLine(testLine)) {
       intersectedSides.add(rectangleLower);
@@ -518,7 +518,7 @@ public class ChannelModel {
     }
 
     // Calculate all resulting line points (should be 2)
-    Vector<Point2D> intersectingLinePoints = new Vector<Point2D>();
+    Vector<Point2D> intersectingLinePoints = new Vector<>();
 
     for (int i=0; i < intersectedSides.size(); i++) {
       intersectingLinePoints.add(
@@ -733,7 +733,7 @@ public class ChannelModel {
    * @return All ray paths from origin to destnation
    */
   private Vector<RayPath> getConnectingPaths(Point2D origin, Point2D dest, DefaultMutableTreeNode visibleLinesTree) {
-    Vector<RayPath> allPaths = new Vector<RayPath>();
+    Vector<RayPath> allPaths = new Vector<>();
 
     // Analyse the possible paths to find which actually reached destination
     var treeEnum = visibleLinesTree.breadthFirstEnumeration();
@@ -971,7 +971,7 @@ public class ChannelModel {
    * @return All diffraction sources
    */
   private Vector<Point2D> getAllDiffractionSources(Vector<Line2D> allVisibleLines) {
-    Vector<Point2D> allDiffractionSources = new Vector<Point2D>();
+    Vector<Point2D> allDiffractionSources = new Vector<>();
     Enumeration<Line2D> allVisibleLinesEnum = allVisibleLines.elements();
 
     while (allVisibleLinesEnum.hasMoreElements()) {
@@ -1037,8 +1037,8 @@ public class ChannelModel {
       }
     }
 
-    Vector<Line2D> visibleLines = new Vector<Line2D>();
-    Vector<AngleInterval> unhandledAngles = new Vector<AngleInterval>();
+    Vector<Line2D> visibleLines = new Vector<>();
+    Vector<AngleInterval> unhandledAngles = new Vector<>();
 
     if (lookThrough != null) {
       if (angleInterval == null) {
@@ -1081,7 +1081,7 @@ public class ChannelModel {
         }
 
         // <<<< Get visible line candidates of these obstacles >>>>
-        Vector<Line2D> visibleLineCandidates = new Vector<Line2D>();
+        Vector<Line2D> visibleLineCandidates = new Vector<>();
         for (int i=0; i < visibleObstacleCandidates.size(); i++) {
           Rectangle2D obstacle = visibleObstacleCandidates.get(i);
           int outcode = obstacle.outcode(source);
@@ -1114,7 +1114,7 @@ public class ChannelModel {
         }
 
         // <<<< Get cropped visible line candidates of these lines >>>>
-        Vector<Line2D> croppedVisibleLineCandidates = new Vector<Line2D>();
+        Vector<Line2D> croppedVisibleLineCandidates = new Vector<>();
         for (int i=0; i < visibleLineCandidates.size(); i++) {
           Line2D lineCandidate = visibleLineCandidates.get(i);
 
@@ -1297,7 +1297,7 @@ public class ChannelModel {
 
               } else if (visibleLineCandidateAngleInterval.intersects(shadowLineCandidateAngleInterval)) {
                 // Covers us partly, split angle interval
-                Vector<AngleInterval> newIntervalsToAdd = new Vector<AngleInterval>();
+                Vector<AngleInterval> newIntervalsToAdd = new Vector<>();
 
                 // Create angle interval of intersection between shadow and visible candidate
                 AngleInterval intersectedInterval =
@@ -1640,7 +1640,7 @@ public class ChannelModel {
     TrackedSignalComponents tsc = new TrackedSignalComponents();
 
     logInfo = new StringBuilder();
-    loggedRays = new ArrayList<Line2D>();
+    loggedRays = new ArrayList<>();
 
     /* TODO Include background noise? */
     logMode = true;
@@ -1792,7 +1792,7 @@ public class ChannelModel {
    * @return XML element collection
    */
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     Enumeration<Parameter> paramEnum = parameters.keys();

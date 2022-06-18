@@ -84,9 +84,9 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
   private static final NumberFormat doubleFormat = NumberFormat.getNumberInstance();
   private static final NumberFormat integerFormat = NumberFormat.getIntegerInstance();
 
-  private final ArrayList<JFormattedTextField> allIntegerParameters = new ArrayList<JFormattedTextField>();
-  private final ArrayList<JFormattedTextField> allDoubleParameters = new ArrayList<JFormattedTextField>();
-  private final ArrayList<JCheckBox> allBooleanParameters = new ArrayList<JCheckBox>();
+  private final ArrayList<JFormattedTextField> allIntegerParameters = new ArrayList<>();
+  private final ArrayList<JFormattedTextField> allDoubleParameters = new ArrayList<>();
+  private final ArrayList<JCheckBox> allBooleanParameters = new ArrayList<>();
 
   private final JPanel areaGeneral;
   private final JPanel areaTransmitter;
@@ -602,7 +602,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
    * @return XML element collection
    */
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     element = new Element("show_general");

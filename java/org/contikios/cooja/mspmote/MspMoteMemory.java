@@ -55,7 +55,7 @@ public class MspMoteMemory implements MemoryInterface {
   private final MSP430 cpu;
 
   public MspMoteMemory(Mote mote, MapEntry[] allEntries, MSP430 cpu) {
-    this.mapEntries = new ArrayList<MapEntry>();
+    this.mapEntries = new ArrayList<>();
 
     for (MapEntry entry: allEntries) {
       if (entry.getType() == MapEntry.TYPE.variable) {

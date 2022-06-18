@@ -555,7 +555,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     /* Breakpoints */
@@ -636,8 +636,8 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
 
   /* WatchpointMote */
-  private final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<WatchpointListener>();
-  private final ArrayList<MspBreakpoint> watchpoints = new ArrayList<MspBreakpoint>();
+  private final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<>();
+  private final ArrayList<MspBreakpoint> watchpoints = new ArrayList<>();
   private Hashtable<File, Hashtable<Integer, Integer>> debuggingInfo = null;
 
   public void addWatchpointListener(WatchpointListener listener) {
@@ -751,7 +751,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   public Collection<Element> getWatchpointConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     for (MspBreakpoint breakpoint: watchpoints) {

@@ -2256,7 +2256,7 @@ public class AreaViewer extends VisPlugin {
    * @return All hit radios
    */
   protected ArrayList<Radio> trackClickedRadio(Point clickedPoint) {
-    ArrayList<Radio> hitRadios = new ArrayList<Radio>();
+    ArrayList<Radio> hitRadios = new ArrayList<>();
     if (currentRadioMedium.getRegisteredRadioCount() == 0) {
       return null;
     }
@@ -2314,7 +2314,7 @@ public class AreaViewer extends VisPlugin {
    * @return XML element collection
    */
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     /* Selected mote */

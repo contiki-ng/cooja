@@ -145,7 +145,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
 
     /* XXX Temporary workaround: source file removing duplicates awaiting Mspsim update */
     {
-      ArrayList<String> newDebugSourceFiles = new ArrayList<String>();
+      ArrayList<String> newDebugSourceFiles = new ArrayList<>();
       for (String sf: debugSourceFiles) {
         boolean found = false;
         for (String nsf: newDebugSourceFiles) {
@@ -162,7 +162,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     }
 
 
-    rules = new ArrayList<Rule>();
+    rules = new ArrayList<>();
 
     loadDefaultRules();
 
@@ -577,7 +577,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     applyButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         /* Remove trailing empty rules */
-        ArrayList<Rule> trimmedRules = new ArrayList<Rule>();
+        ArrayList<Rule> trimmedRules = new ArrayList<>();
         for (Rule rule: rules) {
           if (rule.from == null || rule.from.trim().isEmpty()) {
             rule.from = "";
@@ -694,7 +694,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     }
 
     /* Verify that files exist */
-    ArrayList<File> existing = new ArrayList<File>();
+    ArrayList<File> existing = new ArrayList<>();
     for (String sourceFile: debugSourceFiles) {
       /* Debug info to source file map */
       File f = applySubstitutionRules(sourceFile, rules);
@@ -705,7 +705,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
 
     /* Sort alphabetically */
     File[] sorted = existing.toArray(new File[0]);
-    Arrays.sort(sorted, new Comparator<File>() {
+    Arrays.sort(sorted, new Comparator<>() {
       public int compare(File o1, File o2) {
         return o1.getName().compareToIgnoreCase(o2.getName());
       }
@@ -714,7 +714,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   }
 
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
     Element element;
 
     element = new Element("tab");

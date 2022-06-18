@@ -436,7 +436,7 @@ public class MRM extends AbstractRadioMedium {
   }
 
   class MRMRadioConnection extends RadioConnection {
-    private final Hashtable<Radio, Double> signalStrengths = new Hashtable<Radio, Double>();
+    private final Hashtable<Radio, Double> signalStrengths = new Hashtable<>();
 
     public MRMRadioConnection(Radio sourceRadio) {
       super(sourceRadio);
