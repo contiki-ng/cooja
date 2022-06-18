@@ -222,12 +222,12 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       private final Logger mlogger = LogManager.getLogger("MSPSim");
       @Override
       public void log(Loggable source, String message) {
-        mlogger.debug("" + getID() + ": " + source.getID() + ": " + message);
+        mlogger.debug(getID() + ": " + source.getID() + ": " + message);
       }
 
       @Override
       public void logw(Loggable source, WarningType type, String message) throws EmulationException {
-        mlogger.warn("" + getID() +": " + "# " + source.getID() + "[" + type + "]: " + message);
+        mlogger.warn(getID() + ": " + "# " + source.getID() + "[" + type + "]: " + message);
       }
     };
 

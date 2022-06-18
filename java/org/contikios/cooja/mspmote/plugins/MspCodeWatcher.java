@@ -720,7 +720,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     Element element;
 
     element = new Element("tab");
-    element.addContent("" + mainPane.getSelectedIndex());
+    element.addContent(String.valueOf(mainPane.getSelectedIndex()));
     config.add(element);
 
     for (Rule rule: rules) {

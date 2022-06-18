@@ -2309,7 +2309,7 @@ public class AreaViewer extends VisPlugin {
     /* Selected mote */
     if (selectedRadio != null) {
       element = new Element("selected");
-      element.setAttribute("mote", "" + selectedRadio.getMote().getID());
+      element.setAttribute("mote", String.valueOf(selectedRadio.getMote().getID()));
       config.add(element);
     }
 

@@ -166,7 +166,7 @@ public class MspBreakpoint implements Watchpoint {
     Element element;
 
     element = new Element("stops");
-    element.setText("" + stopsSimulation);
+    element.setText(String.valueOf(stopsSimulation));
     config.add(element);
 
     element = new Element("codefile");
@@ -175,7 +175,7 @@ public class MspBreakpoint implements Watchpoint {
     config.add(element);
 
     element = new Element("line");
-    element.setText("" + lineNr);
+    element.setText(String.valueOf(lineNr));
     config.add(element);
 
     if (contikiCode != null) {
@@ -192,7 +192,7 @@ public class MspBreakpoint implements Watchpoint {
 
     if (color != null) {
       element = new Element("color");
-      element.setText("" + color.getRGB());
+      element.setText(String.valueOf(color.getRGB()));
       config.add(element);
     }
 

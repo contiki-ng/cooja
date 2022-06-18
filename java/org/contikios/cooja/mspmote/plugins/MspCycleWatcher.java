@@ -126,8 +126,8 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
   }
 
   private void updateLabels() {
-    cycleTextField.setText("" + cpu.cycles);
-    resetTextField.setText("" + (cpu.cycles - cycleReset));
+    cycleTextField.setText(String.valueOf(cpu.cycles));
+    resetTextField.setText(String.valueOf(cpu.cycles - cycleReset));
   }
 
   public void closePlugin() {
