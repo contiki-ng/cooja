@@ -575,10 +575,7 @@ public class ChannelModel {
 
     double mu = ((firstLine.getX1() - secondLine.getX1())*dy1 - (firstLine.getY1() - secondLine.getY1())*dx1)/det;
     if (mu >= 0.0  &&  mu <= 1.0) {
-      Point2D.Double intersectionPoint = new Point2D.Double((secondLine.getX1() + mu*dx2),
-          (secondLine.getY1() + mu*dy2));
-
-      return intersectionPoint;
+      return new Point2D.Double((secondLine.getX1() + mu*dx2), (secondLine.getY1() + mu*dy2));
     }
 
     // Lines not intersecting withing segments
@@ -605,10 +602,7 @@ public class ChannelModel {
     }
 
     double mu = ((firstLine.getX1() - secondLine.getX1())*dy1 - (firstLine.getY1() - secondLine.getY1())*dx1)/det;
-    Point2D.Double intersectionPoint = new Point2D.Double((secondLine.getX1() + mu*dx2),
-        (secondLine.getY1() + mu*dy2));
-
-    return intersectionPoint;
+    return new Point2D.Double((secondLine.getX1() + mu*dx2), (secondLine.getY1() + mu*dy2));
   }
 
   /**
@@ -1950,18 +1944,14 @@ public class ChannelModel {
         return 0;
       }
       DirectionalAntennaRadio r = (DirectionalAntennaRadio)getFromRadio();
-      double txGain = r.getRelativeGain(r.getDirection() + getAngle(), getAngle());
-      //logger.debug("tx gain: " + txGain + " (angle " + String.format("%1.1f", Math.toDegrees(r.getDirection() + getAngle())) + ")");
-      return txGain;
+      return r.getRelativeGain(r.getDirection() + getAngle(), getAngle());
     }
     public double getRxGain() {
       if (!(getToRadio() instanceof DirectionalAntennaRadio)) {
         return 0;
       }
       DirectionalAntennaRadio r = (DirectionalAntennaRadio)getFromRadio();
-      double txGain = r.getRelativeGain(r.getDirection() + getAngle() + Math.PI, getDistance());
-      //logger.debug("rx gain: " + txGain + " (angle " + String.format("%1.1f", Math.toDegrees(r.getDirection() + getAngle() + Math.PI)) + ")");
-      return txGain;
+      return r.getRelativeGain(r.getDirection() + getAngle() + Math.PI, getDistance());
     }
   }
   

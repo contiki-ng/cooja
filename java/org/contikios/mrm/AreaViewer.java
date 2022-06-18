@@ -734,9 +734,7 @@ public class AreaViewer extends VisPlugin {
               return 0;
             }
             DirectionalAntennaRadio r = (DirectionalAntennaRadio)selectedRadio;
-            double txGain = r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
-            //logger.debug("tx gain: " + txGain + " (angle " + String.format("%1.1f", Math.toDegrees(r.getDirection() + getAngle())) + ")");
-            return txGain;
+            return r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
           }
           public double getRxGain() {
             return 0;
@@ -1666,24 +1664,22 @@ public class AreaViewer extends VisPlugin {
    * @return Integer containing standard ARGB color.
    */
   private int getColorOfSignalStrength(double value, double lowBorder, double highBorder) {
-    double upperLimit = highBorder; // Best signal adds green
-    double lowerLimit = lowBorder; // Bad signal adds red
-    double intervalSize = (upperLimit - lowerLimit) / 2;
-    double middleValue = lowerLimit + (upperLimit - lowerLimit) / 2;
+    double intervalSize = (highBorder - lowBorder) / 2;
+    double middleValue = lowBorder + (highBorder - lowBorder) / 2;
 
     if (value > highBorder) {
       return 0xCC00FF00;
     }
 
-    if (value < lowerLimit) {
+    if (value < lowBorder) {
       return 0xCCFF0000;
     }
 
     int red = 0, green = 0, blue = 0, alpha = 0xCC;
 
     // Upper limit (green)
-    if (value > upperLimit - intervalSize) {
-      green = (int) (255 - 255*(upperLimit - value)/intervalSize);
+    if (value > highBorder - intervalSize) {
+      green = (int) (255 - 255*(highBorder - value)/intervalSize);
     }
 
     // Medium signal adds blue
@@ -1692,8 +1688,8 @@ public class AreaViewer extends VisPlugin {
     }
 
     // Bad signal adds red
-    if (value < lowerLimit + intervalSize) {
-      red = (int) (255 - 255*(value - lowerLimit)/intervalSize);
+    if (value < lowBorder + intervalSize) {
+      red = (int) (255 - 255*(value - lowBorder)/intervalSize);
     }
 
     return (alpha << 24) | (red << 16) | (green << 8) | blue;
@@ -1770,9 +1766,7 @@ public class AreaViewer extends VisPlugin {
                         return 0;
                       }
                       DirectionalAntennaRadio r = (DirectionalAntennaRadio)selectedRadio;
-                      double txGain = r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
-                      //logger.debug("tx gain: " + txGain + " (angle " + String.format("%1.1f", Math.toDegrees(r.getDirection() + getAngle())) + ")");
-                      return txGain;
+                      return r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
                     }
                     public double getRxGain() {
                       return 0;
