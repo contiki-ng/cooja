@@ -31,7 +31,9 @@
 package org.contikios.mrm;
 
 import java.awt.Point;
-import java.awt.geom.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Vector;
