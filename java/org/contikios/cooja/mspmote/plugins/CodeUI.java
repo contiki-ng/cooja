@@ -88,7 +88,7 @@ public class CodeUI extends JPanel {
   private JSyntaxAddBreakpoint actionAddBreakpoint = null;
   private JSyntaxRemoveBreakpoint actionRemoveBreakpoint = null;
 
-  private WatchpointMote mote;
+  private final WatchpointMote mote;
 
   public CodeUI(WatchpointMote mote) {
     this.mote = mote;

@@ -294,8 +294,8 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private double jumpError = 0.;
 
-  private long executed = 0;
-  private long skipped = 0;
+  private final long executed = 0;
+  private final long skipped = 0;
 
   public void execute(long time) {
     execute(time, EXECUTE_DURATION_US);

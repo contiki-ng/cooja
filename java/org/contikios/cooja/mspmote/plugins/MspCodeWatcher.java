@@ -100,21 +100,21 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   private File currentCodeFile = null;
   private int currentLineNumber = -1;
 
-  private DebugUI assCodeUI;
-  private CodeUI sourceCodeUI;
-  private BreakpointsUI breakpointsUI;
+  private final DebugUI assCodeUI;
+  private final CodeUI sourceCodeUI;
+  private final BreakpointsUI breakpointsUI;
 
   private final MspMote mspMote; /* currently the only supported mote */
   private final WatchpointMote watchpointMote;
   private WatchpointListener watchpointListener;
 
-  private JComboBox fileComboBox;
+  private final JComboBox fileComboBox;
   private File[] sourceFiles;
 
-  private JTabbedPane mainPane;
+  private final JTabbedPane mainPane;
 
   private ArrayList<Rule> rules;
-  private ELFDebug debug;
+  private final ELFDebug debug;
   private String[] debugSourceFiles;
 
   /**

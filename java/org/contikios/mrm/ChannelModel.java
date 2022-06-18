@@ -77,13 +77,13 @@ public class ChannelModel {
 
   private Hashtable<Parameter,Object> parametersDefaults = new Hashtable<>();
   private final Hashtable<Parameter,Object> parameters = new Hashtable<>();
-  private Properties parameterDescriptions = new Properties();
+  private final Properties parameterDescriptions = new Properties();
 
   // Parameters used for speeding up calculations
   private boolean needToPrecalculateFSPL = true;
   private static double paramFSPL = 0;
   private boolean needToPrecalculateOutputPower = true;
-  private static double paramOutputPower = 0;
+  private static final double paramOutputPower = 0;
 
   private ObstacleWorld myObstacleWorld = new ObstacleWorld();
 
