@@ -153,13 +153,11 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       socketPanel.add(listenPortField, c);
 
       serverStartButton = new JButton("Start") { // Button for label toggeling
-        private final String altString = "Stop";
-        
         @Override
         public Dimension getPreferredSize() {
           String origText = getText();
           Dimension origDim = super.getPreferredSize();
-          setText(altString);
+          setText("Stop");
           Dimension altDim = super.getPreferredSize();
           setText(origText);
           return new Dimension(Math.max(origDim.width, altDim.width), origDim.height);

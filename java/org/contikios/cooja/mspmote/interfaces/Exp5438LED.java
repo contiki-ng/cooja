@@ -58,8 +58,6 @@ import se.sics.mspsim.platform.ti.Exp5438Node;
 public class Exp5438LED extends LED {
   private static final Logger logger = LogManager.getLogger(Exp5438LED.class);
 
-  private final Exp5438Mote mspMote;
-
   private boolean redOn = false;
   private boolean yellowOn = false;
 
@@ -69,8 +67,7 @@ public class Exp5438LED extends LED {
   private static final Color DARK_YELLOW = new Color(184,134,11);
 
   public Exp5438LED(Mote mote) {
-    mspMote = (Exp5438Mote) mote;
-
+    var mspMote = (Exp5438Mote) mote;
     IOUnit unit = mspMote.getCPU().getIOUnit("P1");
     if (unit instanceof IOPort) {
       ((IOPort) unit).addPortListener(new PortListener() {

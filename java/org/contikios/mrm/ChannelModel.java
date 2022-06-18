@@ -92,9 +92,6 @@ public class ChannelModel {
   private StringBuilder logInfo = null;
   private ArrayList<Line2D> loggedRays = null;
 
-  private final Simulation simulation;
-
-  
   // Ray tracing components temporary vector
   private final Vector<Vector<Line2D>> calculatedVisibleSides = new Vector<>();
   private final Vector<Point2D> calculatedVisibleSidesSources = new Vector<>();
@@ -282,8 +279,6 @@ public class ChannelModel {
   }
   
   public ChannelModel(Simulation simulation) {
-    this.simulation = simulation;
-    
     /* Default values */
     for (Parameter p: Parameter.values()) {
       parameters.put(p, Parameter.getDefaultValue(p));

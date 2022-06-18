@@ -39,7 +39,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JColorChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -152,9 +151,35 @@ public class BreakpointsUI extends JPanel {
 
     /* Popup menu: register on all motes */
     final JPopupMenu popupMenu = new JPopupMenu();
+    var gotoCodeAction = new AbstractAction("Show in source code") {
+      public void actionPerformed(ActionEvent e) {
+        if (selectedWatchpoint == null) {
+          return;
+        }
+        codeWatcher.displaySourceFile(selectedWatchpoint.getCodeFile(), selectedWatchpoint.getLineNumber(), false);
+      }
+    };
     popupMenu.add(new JMenuItem(gotoCodeAction));
     popupMenu.add(new JSeparator());
+    var removeWatchpointAction = new AbstractAction("Remove watchpoint") {
+      public void actionPerformed(ActionEvent e) {
+        if (selectedWatchpoint == null) {
+          return;
+        }
+        mote.removeBreakpoint(selectedWatchpoint);
+        table.invalidate();
+        table.repaint();
+      }
+    };
     popupMenu.add(new JMenuItem(removeWatchpointAction));
+    var configureWatchpointAction = new AbstractAction("Configure watchpoint information") {
+      public void actionPerformed(ActionEvent e) {
+        if (selectedWatchpoint == null) {
+          return;
+        }
+        configureWatchpointInfo(selectedWatchpoint);
+      }
+    };
     popupMenu.add(new JMenuItem(configureWatchpointAction));
 
     table.addMouseListener(new MouseAdapter() {
@@ -294,33 +319,6 @@ public class BreakpointsUI extends JPanel {
     }
     public Class<?> getColumnClass(int c) {
       return getValueAt(0, c).getClass();
-    }
-  };
-
-  private final Action gotoCodeAction = new AbstractAction("Show in source code") {
-    public void actionPerformed(ActionEvent e) {
-      if (selectedWatchpoint == null) {
-        return;
-      }
-      codeWatcher.displaySourceFile(selectedWatchpoint.getCodeFile(), selectedWatchpoint.getLineNumber(), false);
-    }
-  };
-  private final Action removeWatchpointAction = new AbstractAction("Remove watchpoint") {
-    public void actionPerformed(ActionEvent e) {
-      if (selectedWatchpoint == null) {
-        return;
-      }
-      mote.removeBreakpoint(selectedWatchpoint);
-      table.invalidate();
-      table.repaint();
-    }
-  };
-  private final Action configureWatchpointAction = new AbstractAction("Configure watchpoint information") {
-    public void actionPerformed(ActionEvent e) {
-      if (selectedWatchpoint == null) {
-        return;
-      }
-      configureWatchpointInfo(selectedWatchpoint);
     }
   };
 }

@@ -204,6 +204,11 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     sourceCodeControl.add(new JLabel("Source files: "));
     sourceCodeControl.add(fileComboBox);
     sourceCodeControl.add(Box.createHorizontalStrut(5));
+    var mapAction = new AbstractAction("Locate sources...") {
+      public void actionPerformed(ActionEvent e) {
+        tryMapDebugInfo();
+      }
+    };
     sourceCodeControl.add(new JButton(mapAction));
     sourceCodeControl.add(Box.createHorizontalStrut(10));
 
@@ -753,12 +758,6 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
         return;
       }
       displaySourceFile(currentCodeFile, currentLineNumber, true);
-    }
-  };
-
-  private final AbstractAction mapAction = new AbstractAction("Locate sources...") {
-    public void actionPerformed(ActionEvent e) {
-      tryMapDebugInfo();
     }
   };
 
