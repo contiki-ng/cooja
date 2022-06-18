@@ -460,7 +460,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
             StringBuilder sb = new StringBuilder();
             sb.append("<html>");
             do {
-              sb.append(t.substring(0, 60)).append("<br>");
+              sb.append(t, 0, 60).append("<br>");
               t = t.substring(60);
             } while (t.length() > 60);
             return sb.append(t).append("</html>").toString();

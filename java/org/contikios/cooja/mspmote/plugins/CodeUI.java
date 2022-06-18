@@ -288,7 +288,7 @@ public class CodeUI extends JPanel {
         codeEditorLines.put(line, length);
         length += lines[line-1].length()+1;
       }
-      codeEditor.setText(data.toString());
+      codeEditor.setText(data);
       displayedFile = codeFile;
       updateBreakpoints();
     }

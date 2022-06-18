@@ -617,7 +617,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     file = file==null?"?":file;
     if (file.contains("/")) {
       /* strip path */
-      file = file.substring(file.lastIndexOf('/')+1, file.length());
+      file = file.substring(file.lastIndexOf('/')+1);
     }
 
     String function = di.getFunction();

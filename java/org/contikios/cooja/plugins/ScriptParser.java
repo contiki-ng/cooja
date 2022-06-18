@@ -85,7 +85,7 @@ public class ScriptParser {
     }
     int second = code.indexOf('"', first+1);
 
-    code = code.substring(0, first) + code.substring(second+1, code.length());
+    code = code.substring(0, first) + code.substring(second+1);
     return code;
   }
 

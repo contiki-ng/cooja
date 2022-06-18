@@ -604,7 +604,7 @@ class ObstacleWorld {
       for (int x=0; x < spatialResolution; x++) {
         System.out.print(allObstaclesSpatial[x][y].size() + " ");
       }
-      System.out.println("");
+      System.out.println();
     }
     
   }
