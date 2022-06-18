@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class ArrayMemory implements MemoryInterface {
 
-  private final byte memory[];
+  private final byte[] memory;
   private final long startAddress;
   private final MemoryLayout layout;
   private final boolean readonly;

@@ -509,13 +509,13 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       for (Mote m: simulation.getMotes()) {
         source.addItem(m);
       }
-      Object description[] = {
+      Object[] description = {
           source
       };
       JOptionPane optionPane = new JOptionPane();
       optionPane.setMessage(description);
       optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-      String options[] = new String[] {"Cancel", "Show"};
+      String[] options = new String[] {"Cancel", "Show"};
       optionPane.setOptions(options);
       optionPane.setInitialValue(options[1]);
       JDialog dialog = optionPane.createDialog(Cooja.getTopParentContainer(), "Show mote in timeline");

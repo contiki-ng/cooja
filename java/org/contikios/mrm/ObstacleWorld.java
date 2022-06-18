@@ -636,7 +636,7 @@ class ObstacleWorld {
   public boolean setConfigXML(Collection<Element> configXML) {
     for (Element element : configXML) {
       if (element.getName().equals("obst")) {
-        String rectValues[] = element.getText().split(";");
+        String[] rectValues = element.getText().split(";");
         Rectangle2D newObst = new Rectangle2D.Double(
             Double.parseDouble(rectValues[0]),
             Double.parseDouble(rectValues[1]),

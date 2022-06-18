@@ -72,7 +72,7 @@ public class ExternalToolsDialog extends JDialog {
 
   private ExternalToolsDialog myDialog;
 
-  private JTextField textFields[];
+  private JTextField[] textFields;
 
   /**
    * Creates a dialog for viewing/editing external tools settings.

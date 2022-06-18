@@ -135,7 +135,7 @@ public class MRMVisualizerSkin implements VisualizerSkin {
             return dRadio;
           }
         };
-        double probArr[] = radioMedium.getChannelModel().getProbability(
+        double[] probArr = radioMedium.getChannelModel().getProbability(
                 txPair,
                 Double.NEGATIVE_INFINITY
         );

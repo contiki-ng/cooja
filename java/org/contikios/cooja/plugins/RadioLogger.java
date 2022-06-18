@@ -261,7 +261,7 @@ public class RadioLogger extends VisPlugin {
 
         if (col == COLUMN_TO) {
           /* Highlight all destinations */
-          Radio dests[] = connections.get(row).connection.getDestinations();
+          Radio[] dests = connections.get(row).connection.getDestinations();
           for (Radio dest: dests) {
             gui.signalMoteHighlight(dest.getMote());
           }

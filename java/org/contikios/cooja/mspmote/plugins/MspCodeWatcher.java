@@ -360,7 +360,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   }
 
   private int getLocatedSourcesCount() {
-    File files[] = getSourceFiles(mspMote, rules);
+    File[] files = getSourceFiles(mspMote, rules);
     if (files == null) {
       return 0;
     }

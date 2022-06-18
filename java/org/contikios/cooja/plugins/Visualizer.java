@@ -470,7 +470,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         if (mouseActionState == MotesActionState.MOVING) {
           /* Reset positions to those of move start */
           for (Mote m : Visualizer.this.getSelectedMotes()) {
-            double rstPos[] = Visualizer.this.moveStartPositions.get(m);
+            double[] rstPos = Visualizer.this.moveStartPositions.get(m);
             m.getInterfaces().getPosition().setCoordinates(rstPos[0], rstPos[1], rstPos[2]);
           }
           mouseActionState = MotesActionState.NONE;
@@ -1249,7 +1249,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     for (Mote mote : allMotes) {
 
       /* Use the first skin's non-null mote colors */
-      Color moteColors[] = null;
+      Color[] moteColors = null;
       for (VisualizerSkin skin : currentSkins) {
         moteColors = skin.getColorOf(mote);
         if (moteColors != null) {

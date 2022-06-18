@@ -245,7 +245,7 @@ public class Cooja extends Observable {
    */
   public final String logDirectory;
 
-  private static final String externalToolsSettingNames[] = new String[] {
+  private static final String[] externalToolsSettingNames = new String[] {
     "PATH_COOJA",
     "PATH_CONTIKI", "PATH_COOJA_CORE_RELATIVE","PATH_APPS",
     "PATH_APPSEARCH",
@@ -1086,7 +1086,7 @@ public class Cooja extends Observable {
 
     /* Restore position to the same graphics device */
     GraphicsDevice device = null;
-    GraphicsDevice all[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+    GraphicsDevice[] all = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
     for (GraphicsDevice gd : all) {
       if (gd.getIDstring().equals(frameScreen)) {
         device = gd;
@@ -2068,7 +2068,7 @@ public class Cooja extends Observable {
     mySimulation.removed();
 
     /* Clear current mote relations */
-    MoteRelation relations[] = getMoteRelations();
+    MoteRelation[] relations = getMoteRelations();
     for (MoteRelation r: relations) {
       removeMoteRelation(r.source, r.dest);
     }
@@ -3814,8 +3814,8 @@ public class Cooja extends Observable {
   private static File createContikiRelativePath(File file) {
     try {
     	int elem = PATH_IDENTIFIER.length;
-    	File path[] = new File [elem];
-    	String canonicals[] = new String[elem];
+    	File[] path = new File [elem];
+    	String[] canonicals = new String[elem];
     	int match = -1;
     	int mlength = 0;
     	String fileCanonical = file.getCanonicalPath();

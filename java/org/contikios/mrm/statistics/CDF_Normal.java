@@ -43,11 +43,11 @@ public class CDF_Normal extends Object {
 
       double arg,t,t2,t3,xnum,xden,qinvp,x,pc;
 
-      final double c[] = {2.515517, 
+      final double[] c = {2.515517,
       .802853,
       .010328};
 
-      final double d[] = {1.432788,
+      final double[] d = {1.432788,
       .189269,
       .001308};
 
