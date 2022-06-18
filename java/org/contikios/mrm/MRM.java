@@ -137,7 +137,7 @@ public class MRM extends AbstractRadioMedium {
   private NoiseLevelListener noiseListener = new NoiseLevelListener() {
         public void noiseLevelChanged(NoiseSourceRadio radio, int signal) {
                 updateSignalStrengths();
-        };
+        }
   };
   public void registerRadioInterface(Radio radio, Simulation sim) {
         super.registerRadioInterface(radio, sim);

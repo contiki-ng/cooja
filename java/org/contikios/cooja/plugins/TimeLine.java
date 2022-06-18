@@ -2285,7 +2285,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   }
 
-  private enum FilterState { NONE, PASS, REJECTED };
+  private enum FilterState { NONE, PASS, REJECTED }
+
   class LogEvent extends MoteEvent {
     final LogOutputEvent logEvent;
     // filter result cache
