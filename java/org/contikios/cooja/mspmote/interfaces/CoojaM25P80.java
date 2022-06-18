@@ -30,7 +30,6 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import org.contikios.coffee.CoffeeConfiguration;
