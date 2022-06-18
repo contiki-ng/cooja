@@ -42,9 +42,7 @@ import java.util.regex.Pattern;
 import javax.swing.Action;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
-import org.contikios.cooja.contikimote.ContikiMoteType;
 
 /**
  * Contiki compiler library.
@@ -245,64 +243,5 @@ public class CompileContiki {
     }
 
     return compileProcess;
-  }
-
-  /**
-   * Generate compiler environment using external tools settings.
-   * Used by Contiki Mote Type.
-   *
-   * @param mote      Mote type
-   * @param javaClass Java JNI library class, "Lib4"
-   * @return Compilation environment
-   */
-  public static String[][] createCompilationEnvironment(
-      ContikiMoteType mote,
-      String javaClass) {
-    String sources = "";
-    String dirs = "";
-    // Check whether Cooja projects include additional sources.
-    String[] coojaSources = mote.getConfig().getStringArrayValue(ContikiMoteType.class, "C_SOURCES");
-    if (coojaSources != null) {
-      for (String s : coojaSources) {
-        if (s.trim().isEmpty()) {
-          continue;
-        }
-        File p = mote.getConfig().getUserProjectDefining(ContikiMoteType.class, "C_SOURCES", s);
-        if (p == null) {
-          logger.warn("Project defining C_SOURCES$" + s + " not found");
-          continue;
-        }
-        sources += s + " ";
-        dirs += p.getPath() + " ";
-      }
-    }
-    /* Fetch configuration from external tools */
-    String ccFlags = Cooja.getExternalToolsSetting("COMPILER_ARGS", "");
-
-    /* Create environment */
-    ArrayList<String[]> env = new ArrayList<>();
-    env.add(new String[] { "LIBNAME", "$(BUILD_DIR_BOARD)/" + mote.getIdentifier() + ".cooja" });
-    // COOJA_VERSION is used to detect incompatibility with the Contiki-NG
-    // build system. The format is <YYYY><MM><DD><2 digit sequence number>.
-    env.add(new String[] { "COOJA_VERSION", "2022052601" });
-    env.add(new String[] { "CLASSNAME", javaClass });
-    env.add(new String[] { "COOJA_SOURCEDIRS", dirs.replace("\\", "/") });
-    env.add(new String[] { "COOJA_SOURCEFILES", sources });
-    env.add(new String[] { "CC", Cooja.getExternalToolsSetting("PATH_C_COMPILER") });
-    env.add(new String[] { "OBJCOPY", Cooja.getExternalToolsSetting("PATH_OBJCOPY") });
-    env.add(new String[] { "EXTRA_CC_ARGS", ccFlags });
-    env.add(new String[] { "LD", Cooja.getExternalToolsSetting("PATH_LINKER") });
-    env.add(new String[] { "AR", Cooja.getExternalToolsSetting("PATH_AR") });
-    env.add(new String[] { "PATH", System.getenv("PATH") });
-    // Pass through environment variables for the Contiki-NG CI.
-    String ci = System.getenv("CI");
-    if (ci != null) {
-      env.add(new String[] { "CI", ci });
-    }
-    String relstr = System.getenv("RELSTR");
-    if (relstr != null) {
-      env.add(new String[] { "RELSTR", relstr });
-    }
-    return env.toArray(new String[0][0]);
   }
 }
