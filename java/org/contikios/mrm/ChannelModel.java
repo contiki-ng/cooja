@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
 import java.util.Random;

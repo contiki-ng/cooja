@@ -39,7 +39,6 @@ import java.net.URL;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
