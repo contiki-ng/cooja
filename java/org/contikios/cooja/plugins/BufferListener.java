@@ -1132,7 +1132,7 @@ public class BufferListener extends VisPlugin {
           sb.append(logTable.getValueAt(i, COLUMN_SOURCE));
           sb.append("\n");
         }
-        outStream.print(sb.toString());
+        outStream.print(sb);
         outStream.close();
       } catch (Exception ex) {
         logger.fatal("Could not write to file: " + saveFile);
