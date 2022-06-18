@@ -162,7 +162,7 @@ public abstract class RadioMedium {
 
     // Generating radio medium
     var constr = radioMediumClass.getConstructor(Simulation.class);
-    return (RadioMedium) constr.newInstance(new Object[] { simulation });
+    return constr.newInstance(new Object[] { simulation });
   }
   
   /**
