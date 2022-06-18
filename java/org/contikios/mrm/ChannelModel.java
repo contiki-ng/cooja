@@ -76,7 +76,7 @@ public class ChannelModel {
   enum TransmissionData { SIGNAL_STRENGTH, SIGNAL_STRENGTH_VAR, SNR, SNR_VAR, PROB_OF_RECEPTION, DELAY_SPREAD, DELAY_SPREAD_RMS}
 
   private Hashtable<Parameter,Object> parametersDefaults = new Hashtable<Parameter,Object>();
-  private Hashtable<Parameter,Object> parameters = new Hashtable<Parameter,Object>();
+  private final Hashtable<Parameter,Object> parameters = new Hashtable<Parameter,Object>();
   private Properties parameterDescriptions = new Properties();
 
   // Parameters used for speeding up calculations
@@ -92,20 +92,20 @@ public class ChannelModel {
   private StringBuilder logInfo = null;
   private ArrayList<Line2D> loggedRays = null;
 
-  private Simulation simulation;
+  private final Simulation simulation;
 
   
   // Ray tracing components temporary vector
-  private Vector<Vector<Line2D>> calculatedVisibleSides = new Vector<Vector<Line2D>>();
-  private Vector<Point2D> calculatedVisibleSidesSources = new Vector<Point2D>();
-  private Vector<Line2D> calculatedVisibleSidesLines = new Vector<Line2D>();
-  private Vector<AngleInterval> calculatedVisibleSidesAngleIntervals = new Vector<AngleInterval>();
-  private static int maxSavedVisibleSides = 30; // Max size of lists above
+  private final Vector<Vector<Line2D>> calculatedVisibleSides = new Vector<Vector<Line2D>>();
+  private final Vector<Point2D> calculatedVisibleSidesSources = new Vector<Point2D>();
+  private final Vector<Line2D> calculatedVisibleSidesLines = new Vector<Line2D>();
+  private final Vector<AngleInterval> calculatedVisibleSidesAngleIntervals = new Vector<AngleInterval>();
+  private static final int maxSavedVisibleSides = 30; // Max size of lists above
 
   /**
    * Notifies observers when this channel model has changed settings.
    */
-  private ScnObservable settingsObservable = new ScnObservable();
+  private final ScnObservable settingsObservable = new ScnObservable();
   public enum Parameter {
     apply_random,
     snr_threshold,

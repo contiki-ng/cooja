@@ -39,7 +39,7 @@ import java.awt.geom.Point2D;
 class RayData {
   
   enum RayType { ORIGIN, REFRACTION, REFLECTION, DIFFRACTION, DESTINATION }
-  RayType type;
+  final RayType type;
   
   private Point2D sourcePoint = null;
   private Line2D line = null;

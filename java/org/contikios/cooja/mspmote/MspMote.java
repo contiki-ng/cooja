@@ -219,7 +219,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     this.myCpu.setTrace(0); /* TODO Enable */
 
     LogListener ll = new LogListener() {
-      private Logger mlogger = LogManager.getLogger("MSPSim");
+      private final Logger mlogger = LogManager.getLogger("MSPSim");
       @Override
       public void log(Loggable source, String message) {
         mlogger.debug("" + getID() + ": " + source.getID() + ": " + message);
@@ -636,8 +636,8 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
 
   /* WatchpointMote */
-  private ArrayList<WatchpointListener> watchpointListeners = new ArrayList<WatchpointListener>();
-  private ArrayList<MspBreakpoint> watchpoints = new ArrayList<MspBreakpoint>();
+  private final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<WatchpointListener>();
+  private final ArrayList<MspBreakpoint> watchpoints = new ArrayList<MspBreakpoint>();
   private Hashtable<File, Hashtable<Integer, Integer>> debuggingInfo = null;
 
   public void addWatchpointListener(WatchpointListener listener) {

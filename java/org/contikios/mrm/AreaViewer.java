@@ -130,7 +130,7 @@ public class AreaViewer extends VisPlugin {
   private final JPanel canvas;
 
   ChannelModel.TransmissionData dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH;
-  ButtonGroup visTypeSelectionGroup;
+  final ButtonGroup visTypeSelectionGroup;
 
   // General drawing parameters
   private Point lastHandledPosition = new Point(0,0);
@@ -172,13 +172,13 @@ public class AreaViewer extends VisPlugin {
   private double channelHeight = 0.0;
   private Image channelImage = null;
 
-  private JSlider resolutionSlider;
-  private Box controlPanel;
-  private JScrollPane scrollControlPanel;
+  private final JSlider resolutionSlider;
+  private final Box controlPanel;
+  private final JScrollPane scrollControlPanel;
 
-  private Simulation currentSimulation;
-  private MRM currentRadioMedium;
-  private ChannelModel currentChannelModel;
+  private final Simulation currentSimulation;
+  private final MRM currentRadioMedium;
+  private final ChannelModel currentChannelModel;
 
   private final String antennaImageFilename = "antenna.png";
   private final Image antennaImage;
@@ -197,22 +197,22 @@ public class AreaViewer extends VisPlugin {
 
   private Thread attenuatorThread = null;
 
-  private JCheckBox showSettingsBox;
-  private JCheckBox backgroundCheckBox;
-  private JCheckBox obstaclesCheckBox;
-  private JCheckBox channelCheckBox;
-  private JCheckBox radiosCheckBox;
+  private final JCheckBox showSettingsBox;
+  private final JCheckBox backgroundCheckBox;
+  private final JCheckBox obstaclesCheckBox;
+  private final JCheckBox channelCheckBox;
+  private final JCheckBox radiosCheckBox;
 //  private JCheckBox radioActivityCheckBox;
-  private JCheckBox arrowCheckBox;
+  private final JCheckBox arrowCheckBox;
 
   private JRadioButton noneButton = null;
 
-  private JRadioButton selectModeButton;
-  private JRadioButton panModeButton;
-  private JRadioButton zoomModeButton;
-  private JRadioButton trackModeButton;
+  private final JRadioButton selectModeButton;
+  private final JRadioButton panModeButton;
+  private final JRadioButton zoomModeButton;
+  private final JRadioButton trackModeButton;
 
-  private Action paintEnvironmentAction;
+  private final Action paintEnvironmentAction;
 
   /**
    * Initializes an AreaViewer.
@@ -627,7 +627,7 @@ public class AreaViewer extends VisPlugin {
   /**
    * Listens to mouse event on canvas
    */
-  private MouseAdapter canvasMouseHandler = new MouseAdapter() {
+  private final MouseAdapter canvasMouseHandler = new MouseAdapter() {
     private Popup popUpToolTip = null;
     private boolean temporaryZoom = false;
     private boolean temporaryPan = false;
@@ -765,7 +765,7 @@ public class AreaViewer extends VisPlugin {
   /**
    * Listens to mouse movements when in pan mode
    */
-  private MouseMotionListener canvasPanModeHandler = new MouseMotionListener() {
+  private final MouseMotionListener canvasPanModeHandler = new MouseMotionListener() {
     public void mouseMoved(MouseEvent e) {
     }
     public void mouseDragged(MouseEvent e) {
@@ -787,7 +787,7 @@ public class AreaViewer extends VisPlugin {
   /**
    * Listens to mouse movements when in zoom mode
    */
-  private MouseMotionListener canvasZoomModeHandler = new MouseMotionListener() {
+  private final MouseMotionListener canvasZoomModeHandler = new MouseMotionListener() {
     public void mouseMoved(MouseEvent e) {
     }
     public void mouseDragged(MouseEvent e) {
@@ -814,7 +814,7 @@ public class AreaViewer extends VisPlugin {
   /**
    * Selects which mouse mode the canvas should be in (select/pan/zoom)
    */
-  private ActionListener canvasModeHandler = new ActionListener() {
+  private final ActionListener canvasModeHandler = new ActionListener() {
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("set select mode")) {
         // Select mode, no mouse motion listener needed
@@ -867,7 +867,7 @@ public class AreaViewer extends VisPlugin {
   /**
    * Selects which graphical parts should be painted
    */
-  private ActionListener selectGraphicsHandler = new ActionListener() {
+  private final ActionListener selectGraphicsHandler = new ActionListener() {
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("toggle background")) {
         drawBackgroundImage = ((JCheckBox) e.getSource()).isSelected();
@@ -890,7 +890,7 @@ public class AreaViewer extends VisPlugin {
   /**
    * Helps user set a background image which can be analysed for obstacles/freespace.
    */
-  private ActionListener obstacleHandler = new ActionListener() {
+  private final ActionListener obstacleHandler = new ActionListener() {
 
     /**
      * Choosable file filter that supports tif, gif, jpg, png, bmp.
@@ -936,7 +936,7 @@ public class AreaViewer extends VisPlugin {
 
       private boolean terminatedOK = false;
 
-      private NumberFormat doubleFormat = NumberFormat.getNumberInstance();
+      private final NumberFormat doubleFormat = NumberFormat.getNumberInstance();
 
       /**
        * Creates a new dialog for settings background parameters
@@ -1264,19 +1264,23 @@ public class AreaViewer extends VisPlugin {
   };
 
   class ObstacleFinderDialog extends JDialog {
-    private NumberFormat intFormat = NumberFormat.getIntegerInstance();
+    private final NumberFormat intFormat = NumberFormat.getIntegerInstance();
     private BufferedImage imageToAnalyze = null;
     private BufferedImage obstacleImage = null;
     private JPanel canvasPanel = null;
     private boolean[][] obstacleArray = null;
     private boolean exitedOK = false;
 
-    private JSlider redSlider, greenSlider, blueSlider, toleranceSlider, sizeSlider;
+    private final JSlider redSlider;
+    private final JSlider greenSlider;
+    private final JSlider blueSlider;
+    private final JSlider toleranceSlider;
+    private final JSlider sizeSlider;
 
     /**
      * Listens to preview mouse motion event (when picking color)
      */
-    private MouseMotionListener myMouseMotionListener = new MouseMotionListener() {
+    private final MouseMotionListener myMouseMotionListener = new MouseMotionListener() {
       public void mouseDragged(MouseEvent e) {
 
       }
@@ -1306,7 +1310,7 @@ public class AreaViewer extends VisPlugin {
     /**
      * Listens to preview mouse event (when picking color)
      */
-    private MouseListener myMouseListener = new MouseListener() {
+    private final MouseListener myMouseListener = new MouseListener() {
       public void mouseClicked(MouseEvent e) {
 
       }
@@ -1624,7 +1628,7 @@ public class AreaViewer extends VisPlugin {
   /**
    * Listens to settings changes in the radio medium.
    */
-  private Observer radioMediumSettingsObserver = new Observer() {
+  private final Observer radioMediumSettingsObserver = new Observer() {
     public void update(Observable obs, Object obj) {
       // Clear selected radio (if any selected) and radio medium coverage
       selectedRadio = null;
@@ -1638,7 +1642,7 @@ public class AreaViewer extends VisPlugin {
   /**
    * Listens to settings changes in the radio medium.
    */
-  private Observer radioMediumActivityObserver = new Observer() {
+  private final Observer radioMediumActivityObserver = new Observer() {
     public void update(Observable obs, Object obj) {
       // Just remove any selected radio (it may have been removed)
       canvas.repaint();
@@ -1648,7 +1652,7 @@ public class AreaViewer extends VisPlugin {
   /**
    * Listens to settings changes in the channel model.
    */
-  private Observer channelModelSettingsObserver = new Observer() {
+  private final Observer channelModelSettingsObserver = new Observer() {
     public void update(Observable obs, Object obj) {
       needToRepaintObstacleImage = true;
       canvas.repaint();

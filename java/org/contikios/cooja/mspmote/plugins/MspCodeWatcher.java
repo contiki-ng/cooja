@@ -94,7 +94,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   private static final int BREAKPOINTS = 2;
 
   private static final Logger logger = LogManager.getLogger(MspCodeWatcher.class);
-  private Simulation simulation;
+  private final Simulation simulation;
   private Observer simObserver;
 
   private File currentCodeFile = null;
@@ -104,8 +104,8 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   private CodeUI sourceCodeUI;
   private BreakpointsUI breakpointsUI;
 
-  private MspMote mspMote; /* currently the only supported mote */
-  private WatchpointMote watchpointMote;
+  private final MspMote mspMote; /* currently the only supported mote */
+  private final WatchpointMote watchpointMote;
   private WatchpointListener watchpointListener;
 
   private JComboBox fileComboBox;
@@ -467,7 +467,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     }
   }
 
-  private MessageListUI rulesDebuggingOutput = new MessageListUI();
+  private final MessageListUI rulesDebuggingOutput = new MessageListUI();
   private boolean rulesWithDebuggingOutput = false;
   private int[] rulesMatched = null;
   private int[] rulesOK = null;
@@ -747,7 +747,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     return true;
   }
 
-  private AbstractAction currentFileAction = new AbstractAction() {
+  private final AbstractAction currentFileAction = new AbstractAction() {
     public void actionPerformed(ActionEvent e) {
       if (currentCodeFile == null) {
         return;
@@ -756,13 +756,13 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     }
   };
 
-  private AbstractAction mapAction = new AbstractAction("Locate sources...") {
+  private final AbstractAction mapAction = new AbstractAction("Locate sources...") {
     public void actionPerformed(ActionEvent e) {
       tryMapDebugInfo();
     }
   };
 
-  private AbstractAction stepAction = new AbstractAction("Step instruction") {
+  private final AbstractAction stepAction = new AbstractAction("Step instruction") {
     public void actionPerformed(ActionEvent e) {
       try {
         mspMote.getCPU().stepInstructions(1);

@@ -92,7 +92,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		cc1120.addRFListener(new RFListener() {
 			int len = 0;
 			int expLen = 0;
-			byte[] buffer = new byte[256 + 15];
+			final byte[] buffer = new byte[256 + 15];
 			private boolean gotSynchbyte = false;
 			public void receivedByte(byte data) {
 				if (!isTransmitting()) {
@@ -355,7 +355,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 	 * Last 8 received signal strengths
 	 */
 	double currentSignalStrength = 0;
-	private double[] rssiLast = new double[8];
+	private final double[] rssiLast = new double[8];
 	private int rssiLastCounter = 0;
 
 	public double getCurrentSignalStrength() {

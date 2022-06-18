@@ -330,7 +330,7 @@ public class SerialSocketClient extends VisPlugin implements MotePlugin {
     pack();
   }
   
-  private List<ClientListener> listeners = new LinkedList<>();
+  private final List<ClientListener> listeners = new LinkedList<>();
   
   public interface ClientListener {
     void onError(String msg);

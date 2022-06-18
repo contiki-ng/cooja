@@ -78,8 +78,8 @@ public class BreakpointsUI extends JPanel {
     "Stops simulation"
   };
 
-  private WatchpointMote mote;
-  private MspCodeWatcher codeWatcher;
+  private final WatchpointMote mote;
+  private final MspCodeWatcher codeWatcher;
   private JTable table = null;
 
   private Watchpoint selectedWatchpoint = null;
@@ -238,7 +238,7 @@ public class BreakpointsUI extends JPanel {
     });
   }
 
-  private AbstractTableModel tableModel = new AbstractTableModel() {
+  private final AbstractTableModel tableModel = new AbstractTableModel() {
     public String getColumnName(int col) {
       return COLUMN_NAMES[col].toString();
     }
@@ -297,7 +297,7 @@ public class BreakpointsUI extends JPanel {
     }
   };
 
-  private Action gotoCodeAction = new AbstractAction("Show in source code") {
+  private final Action gotoCodeAction = new AbstractAction("Show in source code") {
     public void actionPerformed(ActionEvent e) {
       if (selectedWatchpoint == null) {
         return;
@@ -305,7 +305,7 @@ public class BreakpointsUI extends JPanel {
       codeWatcher.displaySourceFile(selectedWatchpoint.getCodeFile(), selectedWatchpoint.getLineNumber(), false);
     }
   };
-  private Action removeWatchpointAction = new AbstractAction("Remove watchpoint") {
+  private final Action removeWatchpointAction = new AbstractAction("Remove watchpoint") {
     public void actionPerformed(ActionEvent e) {
       if (selectedWatchpoint == null) {
         return;
@@ -315,7 +315,7 @@ public class BreakpointsUI extends JPanel {
       table.repaint();
     }
   };
-  private Action configureWatchpointAction = new AbstractAction("Configure watchpoint information") {
+  private final Action configureWatchpointAction = new AbstractAction("Configure watchpoint information") {
     public void actionPerformed(ActionEvent e) {
       if (selectedWatchpoint == null) {
         return;

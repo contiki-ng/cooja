@@ -87,7 +87,7 @@ public class MRM extends AbstractRadioMedium {
   private double CAPTURE_EFFECT_THRESHOLD;
   private double CAPTURE_EFFECT_PREAMBLE_DURATION;
   
-  private Simulation sim;
+  private final Simulation sim;
   private Random random = null;
   private ChannelModel currentChannelModel = null;
 
@@ -133,7 +133,7 @@ public class MRM extends AbstractRadioMedium {
     currentChannelModel.deleteSettingsObserver(channelModelObserver);
   }
   
-  private NoiseLevelListener noiseListener = new NoiseLevelListener() {
+  private final NoiseLevelListener noiseListener = new NoiseLevelListener() {
         public void noiseLevelChanged(NoiseSourceRadio radio, int signal) {
                 updateSignalStrengths();
         }
@@ -436,7 +436,7 @@ public class MRM extends AbstractRadioMedium {
   }
 
   class MRMRadioConnection extends RadioConnection {
-    private Hashtable<Radio, Double> signalStrengths = new Hashtable<Radio, Double>();
+    private final Hashtable<Radio, Double> signalStrengths = new Hashtable<Radio, Double>();
 
     public MRMRadioConnection(Radio sourceRadio) {
       super(sourceRadio);

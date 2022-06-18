@@ -46,7 +46,7 @@ class AngleInterval {
   private static final Logger logger = LogManager.getLogger(AngleInterval.class);
   
   // Sub intervals all between 0 and 2*PI
-  Vector<Interval> subIntervals;
+  final Vector<Interval> subIntervals;
   
   /**
    * Creates a new angle interval.

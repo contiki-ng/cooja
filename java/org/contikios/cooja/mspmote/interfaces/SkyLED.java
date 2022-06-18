@@ -57,7 +57,7 @@ import se.sics.mspsim.platform.sky.SkyNode;
 public class SkyLED extends LED {
   private static final Logger logger = LogManager.getLogger(SkyLED.class);
 
-  private SkyMote mspMote;
+  private final SkyMote mspMote;
   private boolean blueOn = false;
   private boolean greenOn = false;
   private boolean redOn = false;

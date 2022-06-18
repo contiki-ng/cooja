@@ -69,20 +69,20 @@ import se.sics.mspsim.ui.StackUI;
 public class MspStackWatcher extends VisPlugin implements MotePlugin {
   private static final Logger logger = LogManager.getLogger(MspStackWatcher.class);
 
-  private Simulation simulation;
-  private MSP430 cpu;
-  private MspMote mspMote;
+  private final Simulation simulation;
+  private final MSP430 cpu;
+  private final MspMote mspMote;
 
-  private StackUI stackUI;
+  private final StackUI stackUI;
   private RegisterMonitor.Adapter registerMonitor = null;
 
-  private JToggleButton toggleButton;
+  private final JToggleButton toggleButton;
 
-  private MoteTimeEvent increasePosTimeEvent;
+  private final MoteTimeEvent increasePosTimeEvent;
 
   private Integer userOverriddenStack = null;
 
-  private JLabel memLabel = new JLabel("");
+  private final JLabel memLabel = new JLabel("");
   
   public MspStackWatcher(Mote mote, Simulation simulationToVisualize, Cooja gui) {
     super("Msp Stack Watcher: " + mote, gui);

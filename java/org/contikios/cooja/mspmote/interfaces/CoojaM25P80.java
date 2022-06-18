@@ -41,10 +41,10 @@ import se.sics.mspsim.core.MSP430Core;
 
 public class CoojaM25P80 extends M25P80 implements CoffeeImage {
 
-  public static int SIZE = 1024*1024;
-  private byte[] data = new byte[SIZE];
+  public static final int SIZE = 1024*1024;
+  private final byte[] data = new byte[SIZE];
   private long pos;
-  private Storage storage = new Storage() {
+  private final Storage storage = new Storage() {
 
     @Override
     public int read(long pos, byte[] buffer) {
@@ -90,7 +90,7 @@ public class CoojaM25P80 extends M25P80 implements CoffeeImage {
 
   };
 
-  private static CoffeeConfiguration COFFEE_CONF;
+  private static final CoffeeConfiguration COFFEE_CONF;
   static {
     /* XXX Current implementation only allows for a single coffee configuration */
     try {

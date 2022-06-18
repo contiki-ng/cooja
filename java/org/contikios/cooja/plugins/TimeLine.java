@@ -683,7 +683,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
 
   private class ChangeMinEventWidthAction extends AbstractAction {
-      private int minWidth;
+      private final int minWidth;
       public ChangeMinEventWidthAction(String name, int minWidth) {
         super(name);
         this.minWidth = minWidth;
@@ -1043,7 +1043,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private Action logEventMoteColorAction = new AbstractAction("use Mote colors") {
+  private final Action logEventMoteColorAction = new AbstractAction("use Mote colors") {
       private static final long serialVersionUID = -8626118368774023257L;
       
       @Override

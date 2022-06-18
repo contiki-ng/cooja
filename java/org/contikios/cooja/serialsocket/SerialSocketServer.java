@@ -112,8 +112,8 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
   private ServerSocket serverSocket;
   private Socket clientSocket;
 
-  private Mote mote;
-  private Simulation simulation;
+  private final Mote mote;
+  private final Simulation simulation;
 
   public SerialSocketServer(Mote mote, Simulation simulation, final Cooja gui) {
     super("Serial Socket (SERVER) (" + mote + ")", gui, false);
@@ -335,7 +335,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
 
   }
 
-  private List<ServerListener> listeners = new LinkedList<>();
+  private final List<ServerListener> listeners = new LinkedList<>();
   
   public interface ServerListener {
     void onServerStarted(int port);
@@ -641,7 +641,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
   }
 
   private static final int UPDATE_INTERVAL = 150;
-  private Timer updateTimer = new Timer(UPDATE_INTERVAL, new ActionListener() {
+  private final Timer updateTimer = new Timer(UPDATE_INTERVAL, new ActionListener() {
     @Override
 	  public void actionPerformed(ActionEvent e) {
 	  	if (Cooja.isVisualized()) {
