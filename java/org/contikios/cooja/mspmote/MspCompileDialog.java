@@ -74,7 +74,7 @@ public class MspCompileDialog extends AbstractCompileDialog {
 	  return ((MspMoteType)moteType).getDefaultMoteInterfaceClasses();
   }
 
-  private void addCompilationTipsTab(JTabbedPane parent) {
+  private static void addCompilationTipsTab(JTabbedPane parent) {
     JTextArea textArea = new JTextArea();
     textArea.setEditable(false);
     textArea.append("# Without low-power radio:\n" +

@@ -1656,7 +1656,7 @@ public class AreaViewer extends VisPlugin {
    * @param highBorder
    * @return Integer containing standard ARGB color.
    */
-  private int getColorOfSignalStrength(double value, double lowBorder, double highBorder) {
+  private static int getColorOfSignalStrength(double value, double lowBorder, double highBorder) {
     double intervalSize = (highBorder - lowBorder) / 2;
     double middleValue = lowBorder + (highBorder - lowBorder) / 2;
 

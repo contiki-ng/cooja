@@ -555,7 +555,7 @@ public class ChannelModel {
    * @param secondLine Second line
    * @return Intersection point of the two lines or null
    */
-  private Point2D getIntersectionPoint(Line2D firstLine, Line2D secondLine) {
+  private static Point2D getIntersectionPoint(Line2D firstLine, Line2D secondLine) {
     double dx1 = firstLine.getX2() - firstLine.getX1();
     double dy1 = firstLine.getY2() - firstLine.getY1();
     double dx2 = secondLine.getX2() - secondLine.getX1();
@@ -583,7 +583,7 @@ public class ChannelModel {
    * @param secondLine Second line
    * @return Intersection point of the two infinite lines or null if parallell
    */
-  private Point2D getIntersectionPointInfinite(Line2D firstLine, Line2D secondLine) {
+  private static Point2D getIntersectionPointInfinite(Line2D firstLine, Line2D secondLine) {
     double dx1 = firstLine.getX2() - firstLine.getX1();
     double dy1 = firstLine.getY2() - firstLine.getY1();
     double dx2 = secondLine.getX2() - secondLine.getX1();

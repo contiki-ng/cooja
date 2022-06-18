@@ -93,7 +93,7 @@ public class MspDebugOutput extends Log {
     });
   }
 
-  private String extractString(MemoryInterface mem, int address) {
+  private static String extractString(MemoryInterface mem, int address) {
     StringBuilder sb = new StringBuilder();
     while (true) {
       byte[] data = mem.getMemorySegment(address, 8);

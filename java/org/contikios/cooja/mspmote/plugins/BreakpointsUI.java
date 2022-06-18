@@ -219,7 +219,7 @@ public class BreakpointsUI extends JPanel {
     add(BorderLayout.CENTER, table);
   }
 
-  private void configureWatchpointInfo(Watchpoint breakpoint) {
+  private static void configureWatchpointInfo(Watchpoint breakpoint) {
     String msg = (String) JOptionPane.showInputDialog(
         Cooja.getTopParentContainer(),
         "Enter description;",
