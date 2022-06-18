@@ -191,9 +191,6 @@ public class CC2420RadioPacketConverter {
       len -= 2;
     }
 
-    /*logger.info("Payload pos: " + pos);
-    logger.info("Payload length: " + len);*/
-
     byte[] originalData = new byte[originalLen];
     System.arraycopy(data, 6 /* skipping preamble+synch+len */, originalData, 0, originalLen);
     if (len < 0) {

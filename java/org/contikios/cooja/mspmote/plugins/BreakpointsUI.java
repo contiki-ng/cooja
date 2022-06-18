@@ -211,11 +211,6 @@ public class BreakpointsUI extends JPanel {
           configureWatchpointInfo(breakpoint);
         }
 
-        /*File file = allBreakpoints[rowIndex].getCodeFile();
-        int line = allBreakpoints[rowIndex].getLineNumber();
-        if (file == null) {
-          return;
-        }*/
       }
     });
 

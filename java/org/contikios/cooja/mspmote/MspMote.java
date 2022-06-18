@@ -359,19 +359,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     /* XXX TODO Reimplement stack monitoring using MSPSim internals */
-    /*if (monitorStackUsage) {
-      int newStack = cpu.reg[MSP430.SP];
-      if (newStack < stackPointerLow && newStack > 0) {
-        stackPointerLow = cpu.reg[MSP430.SP];
-
-        // Check if stack is writing in memory
-        if (stackPointerLow < heapStartAddress) {
-          stackOverflowObservable.signalStackOverflow();
-          stopNextInstruction = true;
-          getSimulation().stopSimulation();
-        }
-      }
-    }*/
   }
 
   private void driftExecute(MspClock clock, long t, int duration) {
@@ -442,19 +429,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     /* XXX TODO Reimplement stack monitoring using MSPSim internals */
-    /*if (monitorStackUsage) {
-      int newStack = cpu.reg[MSP430.SP];
-      if (newStack < stackPointerLow && newStack > 0) {
-        stackPointerLow = cpu.reg[MSP430.SP];
-
-        // Check if stack is writing in memory
-        if (stackPointerLow < heapStartAddress) {
-          stackOverflowObservable.signalStackOverflow();
-          stopNextInstruction = true;
-          getSimulation().stopSimulation();
-        }
-      }
-    }*/
   }
 
   public String getStackTrace() {
