@@ -680,9 +680,10 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     /* Match file */
     Hashtable<Integer, Integer> lineTable = debuggingInfo.get(file);
     if (lineTable == null) {
-      for (File f: debuggingInfo.keySet()) {
+      for (var entry : debuggingInfo.entrySet()) {
+        File f = entry.getKey();
         if (f != null && f.getName().equals(file.getName())) {
-          lineTable = debuggingInfo.get(f);
+          lineTable = entry.getValue();
           break;
         }
       }
@@ -694,10 +695,11 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     /* Match line number */
     Integer address = lineTable.get(lineNr);
     if (address != null) {
-      for (Integer l: lineTable.keySet()) {
+      for (var entry : lineTable.entrySet()) {
+        Integer l = entry.getKey();
         if (l != null && l == lineNr) {
           /* Found line address */
-          return lineTable.get(l);
+          return entry.getValue();
         }
       }
     }
