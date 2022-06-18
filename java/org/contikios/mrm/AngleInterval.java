@@ -93,10 +93,8 @@ class AngleInterval {
    * @return New intervals
    */
   public Vector<AngleInterval> subtract(AngleInterval intervalToSubtract) {
-    Vector<Interval> afterSubtractionIntervals = new Vector<>();
-    
     // Before subtraction
-    afterSubtractionIntervals.addAll(subIntervals);
+    var afterSubtractionIntervals = new Vector<Interval>(subIntervals);
     
     if (intervalToSubtract == null) {
       Vector<AngleInterval> ret = new Vector<>();
