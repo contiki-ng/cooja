@@ -64,7 +64,7 @@ public class MspMoteID extends MoteID {
 	/**
 	 * Creates an interface to the mote ID at mote.
 	 *
-	 * @param mote ID
+	 * @param m ID
 	 * @see Mote
 	 * @see org.contikios.cooja.MoteInterfaceHandler
 	 */

@@ -315,8 +315,7 @@ public class ChannelModel {
   /**
    * Deletes an earlier registered setting observer.
    *
-   * @param osb
-   *          Earlier registered observer
+   * @param obs Earlier registered observer
    */
   public void deleteSettingsObserver(Observer obs) {
     settingsObservable.deleteObserver(obs);
@@ -380,7 +379,7 @@ public class ChannelModel {
   /**
    * Returns a parameter value
    *
-   * @param identifier Parameter identifier
+   * @param id Parameter identifier
    * @return Current parameter value
    */
   public Object getParameterValue(Parameter id) {
@@ -395,7 +394,7 @@ public class ChannelModel {
   /**
    * Returns a double parameter value
    *
-   * @param identifier Parameter identifier
+   * @param id Parameter identifier
    * @return Current parameter value
    */
   public double getParameterDoubleValue(Parameter id) {
@@ -405,7 +404,7 @@ public class ChannelModel {
   /**
    * Returns an integer parameter value
    *
-   * @param identifier Parameter identifier
+   * @param id Parameter identifier
    * @return Current parameter value
    */
   public int getParameterIntegerValue(Parameter id) {
@@ -415,7 +414,7 @@ public class ChannelModel {
   /**
    * Returns a boolean parameter value
    *
-   * @param identifier Parameter identifier
+   * @param id Parameter identifier
    * @return Current parameter value
    */
   public boolean getParameterBooleanValue(Parameter id) {
