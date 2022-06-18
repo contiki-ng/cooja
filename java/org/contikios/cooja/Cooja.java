@@ -2214,15 +2214,13 @@ public class Cooja extends Observable {
     }
 
     // Load simulation in this thread, while showing progress monitor
-    final File fileToLoad = configFile;
-    Simulation newSim = null;
-    boolean shouldRetry = false;
+    boolean shouldRetry;
     do {
       try {
         shouldRetry = false;
         cooja.doRemoveSimulation(false);
         PROGRESS_WARNINGS.clear();
-        newSim = loadSimulationConfig(fileToLoad, quick, manualRandomSeed);
+        var newSim = loadSimulationConfig(configFile, quick, manualRandomSeed);
         cooja.setSimulation(newSim, false);
 
         /* Optionally show compilation warnings */
