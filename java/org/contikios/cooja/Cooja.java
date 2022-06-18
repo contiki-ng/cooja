@@ -3058,7 +3058,7 @@ public class Cooja extends Observable {
       }
 
       // Restart plugins from config
-      setPluginsConfigXML(root.getChildren(), newSim, isVisualized());
+      setPluginsConfigXML(root.getChildren(), newSim);
 
     } catch (JDOMException e) {
       throw (SimulationCreationException) new SimulationCreationException(
@@ -3281,7 +3281,7 @@ public class Cooja extends Observable {
    * @return True if all plugins started, false otherwise
    */
   private boolean setPluginsConfigXML(Collection<Element> configXML,
-      Simulation simulation, boolean visAvailable) {
+      Simulation simulation) {
       
     for (final Element pluginElement : configXML.toArray(new Element[0])) {
       if (pluginElement.getName().equals("plugin")) {
@@ -3330,7 +3330,7 @@ public class Cooja extends Observable {
         /* Apply plugin specific configuration */
         for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
           if (pluginSubElement.getName().equals("plugin_config")) {
-            startedPlugin.setConfigXML(pluginSubElement.getChildren(), visAvailable);
+            startedPlugin.setConfigXML(pluginSubElement.getChildren(), isVisualized());
           }
         }
 
