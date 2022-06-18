@@ -1015,7 +1015,7 @@ public class RadioLogger extends VisPlugin {
       if (data == null) {
         RadioLogger.this.prepareDataString(this);
       }
-      return Long.toString(startTime / Simulation.MILLISECOND) + "\t"
+      return startTime / Simulation.MILLISECOND + "\t"
               + connection.getSource().getMote().getID() + "\t"
               + getDestString(this) + "\t"
               + data;

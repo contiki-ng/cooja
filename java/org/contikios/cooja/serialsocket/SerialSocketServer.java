@@ -266,7 +266,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
             public void run() {
               System.out.println("onServerStarted");
               socketStatusLabel.setForeground(COLOR_NEUTRAL);
-              socketStatusLabel.setText("Listening on port " + String.valueOf(port));
+              socketStatusLabel.setText("Listening on port " + port);
               listenPortField.setEnabled(false);
               serverStartButton.setText("Stop");
             }
@@ -296,7 +296,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
               // XXX check why needed
               if (serverSocket != null) {
                 socketStatusLabel.setForeground(COLOR_NEUTRAL);
-                socketStatusLabel.setText("Listening on port " + String.valueOf(serverSocket.getLocalPort()));
+                socketStatusLabel.setText("Listening on port " + serverSocket.getLocalPort());
               }
             }
           });
