@@ -55,12 +55,9 @@ public class MspCompileDialog extends AbstractCompileDialog {
 
     /* Show dialog and wait for user */
     dialog.setVisible(true); /* BLOCKS */
-    if (!dialog.createdOK()) {
-      return false;
-    }
+    return dialog.createdOK();
 
     /* Assume that if a firmware exists, compilation was ok */
-    return true;
   }
 
   private MspCompileDialog(Container parent, Simulation simulation, MspMoteType moteType, String target) {
@@ -92,10 +89,7 @@ public class MspCompileDialog extends AbstractCompileDialog {
     if (file.getName().endsWith("." + target)) {
       return true;
     }
-    if (file.getName().equals("main.exe")) {
-      return true;
-    }
-    return false;
+    return file.getName().equals("main.exe");
   }
 
   public String getDefaultCompileCommands(File source) {

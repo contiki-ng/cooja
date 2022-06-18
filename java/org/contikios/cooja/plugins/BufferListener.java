@@ -955,9 +955,7 @@ public class BufferListener extends VisPlugin {
 
             if (inverseFilter && pass) {
               return false;
-            } else if (!inverseFilter && !pass) {
-              return false;
-            }
+            } else return inverseFilter || pass;
           }
           return true;
         }
@@ -1720,10 +1718,7 @@ public class BufferListener extends VisPlugin {
       g.setColor(Color.GRAY);
       boolean[] diff = ba.getAccessedBitpattern();
       for (int x=0; x < ba.mem.length; x++) {
-        boolean red = false;
-        if (diff != null && diff[x]) {
-          red = true;
-        }
+        boolean red = diff != null && diff[x];
         int v = 0xff&ba.mem[x];
         int h = Math.min(v/16, 15); /* crop */
         if (red) {
@@ -1747,10 +1742,7 @@ public class BufferListener extends VisPlugin {
     public void paintComponent(Graphics g, JComponent c) {
       boolean[] diff = ba.getAccessedBitpattern();
       for (int x=0; x < ba.mem.length; x++) {
-        boolean red = false;
-        if (diff != null && diff[x]) {
-          red = true;
-        }
+        boolean red = diff != null && diff[x];
         int color = 255-(0xff&ba.mem[x]);
         if (red) {
           g.setColor(Color.RED);

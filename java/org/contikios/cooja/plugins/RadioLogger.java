@@ -785,9 +785,7 @@ public class RadioLogger extends VisPlugin {
           }
 
           if (hideNoDestinationPackets) {
-            if (current.connection.getDestinations().length == 0) {
-              return false;
-            }
+            return current.connection.getDestinations().length != 0;
           }
 
           return true;

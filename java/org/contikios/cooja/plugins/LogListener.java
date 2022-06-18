@@ -793,9 +793,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
             }
           }
           if (hideDebug) {
-            if (entry.getStringValue(COLUMN_DATA).startsWith("DEBUG: ")) {
-              return false;
-            }
+            return !entry.getStringValue(COLUMN_DATA).startsWith("DEBUG: ");
           }
           return true;
         }

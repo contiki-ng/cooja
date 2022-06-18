@@ -219,9 +219,7 @@ class Interval {
    * @return True if interval does not have a length.
    */
   public boolean isEmpty() {
-    if (highValue <= lowValue) 
-      return true;
-    return false;
+    return highValue <= lowValue;
   }
   
   public String toString() {

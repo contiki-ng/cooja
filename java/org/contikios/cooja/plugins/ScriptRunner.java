@@ -731,10 +731,7 @@ public class ScriptRunner extends VisPlugin {
         @Override
         public boolean accept(File file) {
           if (file.isDirectory()) { return true; }
-          if (file.getName().endsWith(".js")) {
-            return true;
-          }
-          return false;
+          return file.getName().endsWith(".js");
         }
         @Override
         public String getDescription() {

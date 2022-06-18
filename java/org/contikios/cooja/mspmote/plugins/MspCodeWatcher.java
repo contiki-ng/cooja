@@ -545,10 +545,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
         if (column == 0) {
           return true;
         }
-        if (column == 1) {
-          return true;
-        }
-        return false;
+        return column == 1;
       }
       public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         Rule rule;

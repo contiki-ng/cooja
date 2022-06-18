@@ -374,11 +374,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     JCheckBox collapseCheckBox = new JCheckBox("show settings", false);
     collapseCheckBox.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        if (((JCheckBox) e.getSource()).isSelected()) {
-          collapsableArea.setVisible(true);
-        } else {
-          collapsableArea.setVisible(false);
-        }
+        collapsableArea.setVisible(((JCheckBox) e.getSource()).isSelected());
       }
     });
     collapsableArea.putClientProperty("my_checkbox", collapseCheckBox);

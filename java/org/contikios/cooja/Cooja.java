@@ -219,11 +219,7 @@ public class Cooja extends Observable {
       if (file.getName().endsWith(".csc")) {
         return true;
       }
-      if (file.getName().endsWith(".csc.gz")) {
-        return true;
-      }
-
-      return false;
+      return file.getName().endsWith(".csc.gz");
     }
     @Override
     public String getDescription() {
@@ -2040,10 +2036,7 @@ public class Cooja extends Observable {
               "You have an active simulation.\nDo you want to remove it?",
               "Remove current simulation?", JOptionPane.YES_NO_OPTION,
               JOptionPane.QUESTION_MESSAGE, null, options, s2);
-          if (n != JOptionPane.YES_OPTION) {
-            return false;
-          }
-          return true;
+          return n == JOptionPane.YES_OPTION;
         }
       }.invokeAndWait();
 
@@ -2371,9 +2364,7 @@ public class Cooja extends Observable {
           JOptionPane.YES_NO_OPTION,
           JOptionPane.WARNING_MESSAGE, null,
           new String[] { "Continue", "Abort"}, "Abort");
-      if (n != JOptionPane.YES_OPTION) {
-        return true;
-      }
+      return n != JOptionPane.YES_OPTION;
     }
 
     return false;
@@ -3555,10 +3546,7 @@ public class Cooja extends Observable {
         errorDialog.setLocationRelativeTo(parentComponent);
         errorDialog.setVisible(true); /* BLOCKS */
 
-        if (errorDialog.getTitle().equals("-RETRY-")) {
-          return true;
-        }
-        return false;
+        return errorDialog.getTitle().equals("-RETRY-");
 
       }
     }.invokeAndWait();

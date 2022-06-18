@@ -292,9 +292,7 @@ class AngleInterval {
   public boolean isEmpty() {
     if (subIntervals.isEmpty())
       return true;
-    if (getSize() <= 0.001)
-      return true;
-    return false;
+    return getSize() <= 0.001;
   }
   
   public String toString() {

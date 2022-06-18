@@ -363,16 +363,10 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
     if (radio.getMode() == CC2520.MODE_POWER_OFF) {
       return false;
     }
-    if (radio.getMode() == CC2520.MODE_TXRX_OFF) {
-      return false;
-    }
-    return true;
+    return radio.getMode() != CC2520.MODE_TXRX_OFF;
   }
 
   public boolean canReceiveFrom(CustomDataRadio radio) {
-    if (radio.getClass().equals(this.getClass())) {
-      return true;
-    }
-    return false;
+    return radio.getClass().equals(this.getClass());
   }
 }

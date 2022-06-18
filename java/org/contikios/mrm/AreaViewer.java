@@ -853,11 +853,7 @@ public class AreaViewer extends VisPlugin {
         inTrackMode = true;
 
       } else if (e.getActionCommand().equals("toggle show settings")) {
-        if (((JCheckBox) e.getSource()).isSelected()) {
-          scrollControlPanel.setVisible(true);
-        } else {
-          scrollControlPanel.setVisible(false);
-        }
+        scrollControlPanel.setVisible(((JCheckBox) e.getSource()).isSelected());
         AreaViewer.this.invalidate();
         AreaViewer.this.revalidate();
       }
