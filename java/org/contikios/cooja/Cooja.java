@@ -565,7 +565,7 @@ public class Cooja extends Observable {
   }
 
   private void doLoadConfigAsync(final boolean quick, final File file) {
-    new Thread(() -> cooja.doLoadConfig(true, quick, file, null)).start();
+    new Thread(() -> cooja.doLoadConfig(quick, file, null)).start();
   }
   private void updateOpenHistoryMenuItems(File[] openFilesHistory) {
   	menuOpenSimulation.removeAll();
@@ -1219,7 +1219,7 @@ public class Cooja extends Observable {
     Cooja gui = new Cooja(logDirectory, createDesktopPane(vis));
     if (vis) {
       configureFrame(gui);
-      gui.doLoadConfig(false, true, config, manualRandomSeed);
+      gui.doLoadConfig(true, config, manualRandomSeed);
       return gui.getSimulation();
     } else {
       try {
@@ -2089,11 +2089,10 @@ public class Cooja extends Observable {
   /**
    * Load a simulation configuration file from disk
    *
-   * @param askForConfirmation Ask for confirmation before removing any current simulation
    * @param quick Quick-load simulation
    * @param configFile Configuration file to load, if null a dialog will appear
    */
-  private void doLoadConfig(boolean askForConfirmation, final boolean quick, File configFile, Long manualRandomSeed) {
+  private void doLoadConfig(final boolean quick, File configFile, Long manualRandomSeed) {
     /* Warn about memory usage */
     if (warnMemory()) {
       return;
@@ -2109,7 +2108,7 @@ public class Cooja extends Observable {
       if (!configFile.exists() || !configFile.canRead()) {
         logger.fatal("No read access to file: " + configFile.getAbsolutePath());
         /* File does not exist, open dialog */
-        doLoadConfig(askForConfirmation, quick, null, manualRandomSeed);
+        doLoadConfig(quick, null, manualRandomSeed);
         return;
       }
     } else {
@@ -4093,7 +4092,7 @@ public class Cooja extends Observable {
       if (getSimulation() == null) {
         /* Reload last opened simulation */
         final File file = getLastOpenedFile();
-        new Thread(() -> cooja.doLoadConfig(true, true, file, null)).start();
+        new Thread(() -> cooja.doLoadConfig(true, file, null)).start();
         return;
       }
       reloadCurrentSimulation();
