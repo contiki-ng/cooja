@@ -3277,12 +3277,10 @@ public class Cooja extends Observable {
    * Starts plugins with arguments in given config.
    *
    * @param configXML  Config XML elements
-   * @param simulation Simulation on which to start plugins
+   * @param sim Simulation on which to start plugins
    * @return True if all plugins started, false otherwise
    */
-  private boolean setPluginsConfigXML(Collection<Element> configXML,
-      Simulation simulation) {
-      
+  private boolean setPluginsConfigXML(Collection<Element> configXML, Simulation sim) {
     for (final Element pluginElement : configXML.toArray(new Element[0])) {
       if (pluginElement.getName().equals("plugin")) {
 
@@ -3315,14 +3313,14 @@ public class Cooja extends Observable {
         for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
           if (pluginSubElement.getName().equals("mote_arg")) {
             int moteNr = Integer.parseInt(pluginSubElement.getText());
-            if (moteNr >= 0 && moteNr < simulation.getMotesCount()) {
-              mote = simulation.getMote(moteNr);
+            if (moteNr >= 0 && moteNr < sim.getMotesCount()) {
+              mote = sim.getMote(moteNr);
             }
           }
         }
 
         /* Start plugin */
-        final Plugin startedPlugin = tryStartPlugin(pluginClass, this, simulation, mote, false);
+        final Plugin startedPlugin = tryStartPlugin(pluginClass, this, sim, mote, false);
         if (startedPlugin == null) {
           continue;
         }
