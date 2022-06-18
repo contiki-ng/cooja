@@ -1359,22 +1359,20 @@ public class Cooja extends Observable {
       projectConfig = new ProjectConfig(true);
     } catch (FileNotFoundException e) {
       logger.fatal("Could not find default extension config file: " + PROJECT_DEFAULT_CONFIG_FILENAME);
-      throw (ParseProjectsException) new ParseProjectsException(
-          "Could not find default extension config file: " + PROJECT_DEFAULT_CONFIG_FILENAME).initCause(e);
+      throw new ParseProjectsException(
+          "Could not find default extension config file: " + PROJECT_DEFAULT_CONFIG_FILENAME, e);
     } catch (IOException e) {
       logger.fatal("Error when reading default extension config file: " + PROJECT_DEFAULT_CONFIG_FILENAME);
-      throw (ParseProjectsException) new ParseProjectsException(
-          "Error when reading default extension config file: " + PROJECT_DEFAULT_CONFIG_FILENAME).initCause(e);
+      throw new ParseProjectsException(
+          "Error when reading default extension config file: " + PROJECT_DEFAULT_CONFIG_FILENAME, e);
     }
     for (COOJAProject project: currentProjects) {
       try {
         projectConfig.appendProjectDir(project.dir);
       } catch (FileNotFoundException e) {
-        throw (ParseProjectsException) new ParseProjectsException(
-            "Error when loading extension: " + e.getMessage()).initCause(e);
+        throw new ParseProjectsException("Error when loading extension: " + e.getMessage(), e);
       } catch (IOException e) {
-        throw (ParseProjectsException) new ParseProjectsException(
-            "Error when reading extension config: " + e.getMessage()).initCause(e);
+        throw new ParseProjectsException("Error when reading extension config: " + e.getMessage(), e);
       }
     }
 
@@ -1382,8 +1380,7 @@ public class Cooja extends Observable {
     try {
       projectDirClassLoader = createClassLoader(currentProjects);
     } catch (ClassLoaderCreationException e) {
-      throw (ParseProjectsException) new ParseProjectsException(
-          "Error when creating class loader").initCause(e);
+      throw new ParseProjectsException("Error when creating class loader", e);
     }
 
     // Register mote types
@@ -1709,13 +1706,9 @@ public class Cooja extends Observable {
         throw new PluginConstructionException("Bad plugin type: " + pluginType);
       }
     } catch (PluginRequiresVisualizationException e) {
-      PluginConstructionException ex = new PluginConstructionException("Tool class requires visualization: " + pluginClass.getName());
-      ex.initCause(e);
-      throw ex;
+      throw new PluginConstructionException("Tool class requires visualization: " + pluginClass.getName(), e);
     } catch (Exception e) {
-      PluginConstructionException ex = new PluginConstructionException("Construction error for tool of class: " + pluginClass.getName());
-      ex.initCause(e);
-      throw ex;
+      throw new PluginConstructionException("Construction error for tool of class: " + pluginClass.getName(), e);
     }
 
     if (activate) {
@@ -2856,8 +2849,7 @@ public class Cooja extends Observable {
       } catch (Exception e) {
         logger.fatal("Error when trying to read JAR-file in " + projectDir
             + ": " + e);
-        throw (ClassLoaderCreationException) new ClassLoaderCreationException(
-            "Error when trying to read JAR-file in " + projectDir).initCause(e);
+        throw new ClassLoaderCreationException("Error when trying to read JAR-file in " + projectDir, e);
       }
     }
 
@@ -2980,9 +2972,9 @@ public class Cooja extends Observable {
 
       return loadSimulationConfig(root, quick, manualRandomSeed);
     } catch (JDOMException e) {
-      throw (SimulationCreationException) new SimulationCreationException("Config not wellformed").initCause(e);
+      throw new SimulationCreationException("Config not wellformed", e);
     } catch (IOException e) {
-      throw (SimulationCreationException) new SimulationCreationException("Load simulation error").initCause(e);
+      throw new SimulationCreationException("Load simulation error", e);
     }
   }
 
@@ -3061,17 +3053,13 @@ public class Cooja extends Observable {
       setPluginsConfigXML(root.getChildren(), newSim, isVisualized(), quick);
 
     } catch (JDOMException e) {
-      throw (SimulationCreationException) new SimulationCreationException(
-          "Configuration file not wellformed: " + e.getMessage()).initCause(e);
+      throw new SimulationCreationException("Configuration file not wellformed: " + e.getMessage(), e);
     } catch (IOException e) {
-      throw (SimulationCreationException) new SimulationCreationException(
-          "No access to configuration file: " + e.getMessage()).initCause(e);
+      throw new SimulationCreationException("No access to configuration file: " + e.getMessage(), e);
     } catch (MoteTypeCreationException e) {
-      throw (SimulationCreationException) new SimulationCreationException(
-          "Mote type creation error: " + e.getMessage()).initCause(e);
+      throw new SimulationCreationException("Mote type creation error: " + e.getMessage(), e);
     } catch (Exception e) {
-      throw (SimulationCreationException) new SimulationCreationException(
-          "Unknown error: " + e.getMessage()).initCause(e);
+      throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }
 
     // Non-GUI Cooja requires a simulation controller, ensure one is started.
@@ -3418,26 +3406,29 @@ public class Cooja extends Observable {
   }
 
   public static class ParseProjectsException extends Exception {
-		public ParseProjectsException(String message) {
-      super(message);
+    public ParseProjectsException(String message, Throwable cause) {
+      super(message, cause);
     }
   }
 
   public static class ClassLoaderCreationException extends Exception {
-		public ClassLoaderCreationException(String message) {
-      super(message);
+    public ClassLoaderCreationException(String message, Throwable cause) {
+      super(message, cause);
     }
   }
 
   public static class SimulationCreationException extends Exception {
-		public SimulationCreationException(String message) {
-      super(message);
+    public SimulationCreationException(String message, Throwable cause) {
+      super(message, cause);
     }
   }
 
   public static class PluginConstructionException extends Exception {
 		public PluginConstructionException(String message) {
       super(message);
+    }
+    public PluginConstructionException(String message, Throwable cause) {
+      super(message, cause);
     }
   }
 
