@@ -280,7 +280,7 @@ public class ProjectConfig {
     configFileStream.close();
 
     // Read new properties
-    Enumeration en = newProps.keys();
+    var en = newProps.keys();
     while (en.hasMoreElements()) {
       String key = (String) en.nextElement();
       String property = newProps.getProperty(key);

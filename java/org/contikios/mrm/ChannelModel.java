@@ -45,6 +45,7 @@ import java.util.Vector;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import javax.swing.tree.TreeNode;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
@@ -736,7 +737,7 @@ public class ChannelModel {
     Vector<RayPath> allPaths = new Vector<RayPath>();
 
     // Analyse the possible paths to find which actually reached destination
-    Enumeration treeEnum = visibleLinesTree.breadthFirstEnumeration();
+    var treeEnum = visibleLinesTree.breadthFirstEnumeration();
     while (treeEnum.hasMoreElements()) {
       // For every element,
       //  check if it is the origin, a diffraction, refraction or a reflection source

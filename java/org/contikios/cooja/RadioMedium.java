@@ -162,7 +162,7 @@ public abstract class RadioMedium {
       IllegalAccessException, InstantiationException {
 
     // Generating radio medium
-    Constructor constr = radioMediumClass.getConstructor(Simulation.class);
+    var constr = radioMediumClass.getConstructor(Simulation.class);
     return (RadioMedium) constr.newInstance(new Object[] { simulation });
   }
   

@@ -42,7 +42,6 @@ import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -2703,7 +2702,7 @@ public class Cooja extends Observable {
       FileOutputStream out = new FileOutputStream(externalToolsUserSettingsFile);
 
       Properties differingSettings = new Properties();
-      Enumeration keyEnum = currentExternalToolsSettings.keys();
+      var keyEnum = currentExternalToolsSettings.keys();
       while (keyEnum.hasMoreElements()) {
         String key = (String) keyEnum.nextElement();
         String defaultSetting = getExternalToolsDefaultSetting(key, "");
