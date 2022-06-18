@@ -184,7 +184,6 @@ public class BreakpointsUI extends JPanel {
 
         if (realColumnIndex == COLUMN_INFO) {
           configureWatchpointInfo(breakpoint);
-          return;
         }
 
         /*File file = allBreakpoints[rowIndex].getCodeFile();
@@ -291,7 +290,6 @@ public class BreakpointsUI extends JPanel {
         /* Toggle stop state */
         breakpoint.setStopsSimulation(!breakpoint.stopsSimulation());
         fireTableCellUpdated(row, col);
-        return;
       }
     }
     public Class<?> getColumnClass(int c) {

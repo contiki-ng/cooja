@@ -288,7 +288,6 @@ public class SkyCoffeeFilesystem extends MoteInterface {
             updateFS();
           }
         }).start();
-        return;
       }
     }
     public Class<?> getColumnClass(int c) {

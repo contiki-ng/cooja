@@ -195,7 +195,6 @@ public class SkyFlash extends MoteInterface {
       outStream.close();
     } catch (Exception ex) {
       logger.fatal("Could not write to file: " + saveFile);
-      return;
     }
 
   }
