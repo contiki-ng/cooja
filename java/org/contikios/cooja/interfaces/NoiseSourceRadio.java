@@ -46,12 +46,12 @@ package org.contikios.cooja.interfaces;
  * @author Fredrik Osterlind
  */
 public interface NoiseSourceRadio {
-	public int getNoiseLevel();
+	int getNoiseLevel();
 
-	public void addNoiseLevelListener(NoiseLevelListener l);
-	public void removeNoiseLevelListener(NoiseLevelListener l);
+	void addNoiseLevelListener(NoiseLevelListener l);
+	void removeNoiseLevelListener(NoiseLevelListener l);
 
-	public interface NoiseLevelListener {
-		public void noiseLevelChanged(NoiseSourceRadio radio, int signal);
+	interface NoiseLevelListener {
+		void noiseLevelChanged(NoiseSourceRadio radio, int signal);
 	}
 }

@@ -40,5 +40,5 @@ import org.contikios.cooja.contikimote.interfaces.ContikiClock;
  * @author Fredrik Osterlind
  */
 public interface PolledBeforeActiveTicks {
-  public void doActionsBeforeTick();
+  void doActionsBeforeTick();
 }

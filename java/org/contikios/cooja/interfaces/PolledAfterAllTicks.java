@@ -38,5 +38,5 @@ package org.contikios.cooja.interfaces;
  * @author Fredrik Osterlind
  */
 public interface PolledAfterAllTicks {
-  public void doActionsAfterTick();
+  void doActionsAfterTick();
 }

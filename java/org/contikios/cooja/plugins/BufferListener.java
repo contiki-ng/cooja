@@ -1431,12 +1431,12 @@ public class BufferListener extends VisPlugin {
     repaint();
   }
 
-  public static interface Parser {
+  public interface Parser {
     /**
      * @param ba Buffer Access object
      * @return String or custom graphical object
      */
-    public Object parse(BufferAccess ba);
+    Object parse(BufferAccess ba);
   }
   public static abstract class GraphicalParser implements Parser {
     BufferAccess ba = null;
@@ -1458,26 +1458,26 @@ public class BufferListener extends VisPlugin {
     public abstract String parseString(BufferAccess ba);
   }
 
-  public static interface Buffer {
-    public long getAddress(Mote mote);
-    public int getSize(Mote mote);
+  public interface Buffer {
+    long getAddress(Mote mote);
+    int getSize(Mote mote);
 
-    public String getStatusString();
+    String getStatusString();
 
-    public SegmentMemoryMonitor createMemoryMonitor(BufferListener bl, Mote mote)
+    SegmentMemoryMonitor createMemoryMonitor(BufferListener bl, Mote mote)
     throws Exception;
 
     /*
      * Called when buffer is created by user to allow user input (AWT thread)
      */
-    public boolean configure(BufferListener bl);
+    boolean configure(BufferListener bl);
 
     /*
      * Called when buffer is created from config
      */
-    public void applyConfig(Element element);
+    void applyConfig(Element element);
 
-    public void writeConfig(Element element);
+    void writeConfig(Element element);
   }
   public static abstract class AbstractBuffer implements Buffer {
     @Override

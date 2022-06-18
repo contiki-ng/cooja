@@ -38,19 +38,19 @@ import java.io.File;
  */
 public interface Watchpoint {
 
-  public WatchpointMote getMote();
+  WatchpointMote getMote();
 
-  public Color getColor();
-  public void setColor(Color newColor);
+  Color getColor();
+  void setColor(Color newColor);
 
-  public String getDescription();
-  public void setUserMessage(String msg);
-  public String getUserMessage();
+  String getDescription();
+  void setUserMessage(String msg);
+  String getUserMessage();
 
-  public File getCodeFile();
-  public int getLineNumber();
-  public int getExecutableAddress();
+  File getCodeFile();
+  int getLineNumber();
+  int getExecutableAddress();
 
-  public void setStopsSimulation(boolean b);
-  public boolean stopsSimulation();
+  void setStopsSimulation(boolean b);
+  boolean stopsSimulation();
 }
