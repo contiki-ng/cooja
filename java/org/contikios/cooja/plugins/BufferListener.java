@@ -1605,7 +1605,10 @@ public class BufferListener extends VisPlugin {
 
         boolean red = false;
         for (boolean changed: diff) {
-          if (changed) red = true;
+          if (changed) {
+            red = true;
+            break;
+          }
         }
 
         if (red) {

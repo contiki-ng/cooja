@@ -186,6 +186,7 @@ public class ProjectConfig {
       for (String element : array) {
         if (element.equals(arrayElement)) {
           foundValue = true;
+          break;
         }
       }
       if (!foundValue) {
