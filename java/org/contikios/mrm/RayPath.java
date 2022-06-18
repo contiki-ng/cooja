@@ -78,23 +78,23 @@ public class RayPath {
     if (types.firstElement() == types.lastElement())
       return "Malformed ray path (last == first element)";
 
-    String retVal = "";
+    var retVal = new StringBuilder();
     for (int i=0; i < types.size(); i++) {
       RayData.RayType currentType = types.get(i);
       if (currentType == RayData.RayType.DESTINATION)
-        retVal = retVal + " DEST ";
+        retVal.append(" DEST ");
       else if (currentType == RayData.RayType.DIFFRACTION)
-        retVal = retVal + " DIFF ";
+        retVal.append(" DIFF ");
       else if (currentType == RayData.RayType.ORIGIN)
-        retVal = retVal + " ORIG ";
+        retVal.append(" ORIG ");
       else if (currentType == RayData.RayType.REFLECTION)
-        retVal = retVal + " REFL ";
+        retVal.append(" REFL ");
       else if (currentType == RayData.RayType.REFRACTION)
-        retVal = retVal + " REFR ";
+        retVal.append(" REFR ");
       else
-        retVal = retVal + " ???? ";
+        retVal.append(" ???? ");
     }
-    return retVal;
+    return retVal.toString();
     
   }
   

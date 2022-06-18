@@ -91,13 +91,13 @@ public class RimeAddress extends MoteInterface {
       return null;
     }
 
-    String addrString = "";
+    var addrString = new StringBuilder();
     byte[] addr = moteMem.getByteArray("linkaddr_node_addr", RIME_ADDR_LENGTH);
     for (int i=0; i < RIME_ADDR_LENGTH-1; i++) {
-      addrString += (0xFF & addr[i]) + ".";
+      addrString.append(0xFF & addr[i]).append(".");
     }
-    addrString += (0xFF & addr[RIME_ADDR_LENGTH-1]);
-    return addrString;
+    addrString.append(0xFF & addr[RIME_ADDR_LENGTH - 1]);
+    return addrString.toString();
   }
 
   @Override

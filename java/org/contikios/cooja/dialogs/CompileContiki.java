@@ -102,9 +102,9 @@ public class CompileContiki {
       command[i] = commandList.get(i).replace("$(CPUS)", cpus);
     }
     {
-      String cmd = "";
+      var cmd = new StringBuilder();
       for (String c: command) {
-      	cmd += c + " ";
+      	cmd.append(c).append(" ");
       }
       messageDialog.addMessage("", MessageList.NORMAL);
       messageDialog.addMessage("> " + cmd, MessageList.NORMAL);

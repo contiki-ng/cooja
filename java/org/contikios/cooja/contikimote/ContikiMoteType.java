@@ -225,8 +225,8 @@ public class ContikiMoteType implements MoteType {
   public String[][] configureForCompilation() {
     mapFile = getMoteFile(mapSuffix);
     javaClassName = CoreComm.getAvailableClassName();
-    String sources = "";
-    String dirs = "";
+    var sources = new StringBuilder();
+    var dirs = new StringBuilder();
     // Check whether Cooja projects include additional sources.
     String[] coojaSources = getConfig().getStringArrayValue(ContikiMoteType.class, "C_SOURCES");
     if (coojaSources != null) {
@@ -239,8 +239,8 @@ public class ContikiMoteType implements MoteType {
           logger.warn("Project defining C_SOURCES$" + s + " not found");
           continue;
         }
-        sources += s + " ";
-        dirs += p.getPath() + " ";
+        sources.append(s).append(" ");
+        dirs.append(p.getPath()).append(" ");
       }
     }
 
@@ -252,8 +252,8 @@ public class ContikiMoteType implements MoteType {
     // build system. The format is <YYYY><MM><DD><2 digit sequence number>.
     env.add(new String[] { "COOJA_VERSION", "2022052601" });
     env.add(new String[] { "CLASSNAME", javaClassName});
-    env.add(new String[] { "COOJA_SOURCEDIRS", dirs.replace("\\", "/") });
-    env.add(new String[] { "COOJA_SOURCEFILES", sources });
+    env.add(new String[] { "COOJA_SOURCEDIRS", dirs.toString().replace("\\", "/") });
+    env.add(new String[] { "COOJA_SOURCEFILES", sources.toString() });
     env.add(new String[] { "CC", Cooja.getExternalToolsSetting("PATH_C_COMPILER") });
     env.add(new String[] { "OBJCOPY", Cooja.getExternalToolsSetting("PATH_OBJCOPY") });
     env.add(new String[] { "EXTRA_CC_ARGS", ccFlags });
