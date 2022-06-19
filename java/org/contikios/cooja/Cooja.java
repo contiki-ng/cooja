@@ -2898,26 +2898,24 @@ public class Cooja extends Observable {
       });
     } else {
       var vis = options.action.quickstart != null;
-      String file = vis ? options.action.quickstart : options.action.nogui;
-      Simulation result = null;
-      File config = new File(file);
+      var config = new File(vis ? options.action.quickstart : options.action.nogui);
       Cooja gui = new Cooja(logDirectory, vis);
+      Simulation sim = null;
       if (vis) {
         configureFrame(gui);
         gui.doLoadConfig(true, config, options.randomSeed);
-        result = gui.getSimulation();
+        sim = gui.getSimulation();
       } else {
         try {
-          var newSim = gui.loadSimulationConfig(config, true, options.randomSeed);
-          if (newSim != null) {
-            gui.setSimulation(newSim, false);
-            result = newSim;
+          sim = gui.loadSimulationConfig(config, true, options.randomSeed);
+          if (sim != null) {
+            gui.setSimulation(sim, false);
           }
         } catch (Exception e) {
           logger.fatal("Exception when loading simulation: ", e);
         }
       }
-      if (result == null) {
+      if (sim == null) {
         System.exit(1);
       }
     }
