@@ -1377,7 +1377,7 @@ public class Cooja extends Observable {
 
     /* Create extension class loader */
     try {
-      projectDirClassLoader = createClassLoader(currentProjects);
+      projectDirClassLoader = createClassLoader(ClassLoader.getSystemClassLoader(), currentProjects);
     } catch (ClassLoaderCreationException e) {
       throw new ParseProjectsException("Error when creating class loader", e);
     }
@@ -2789,11 +2789,6 @@ public class Cooja extends Observable {
     }
 
     return null;
-  }
-
-  private static ClassLoader createClassLoader(Collection<COOJAProject> projects)
-  throws ClassLoaderCreationException {
-    return createClassLoader(ClassLoader.getSystemClassLoader(), projects);
   }
 
   public static File findJarFile(File projectDir, String jarfile) {
