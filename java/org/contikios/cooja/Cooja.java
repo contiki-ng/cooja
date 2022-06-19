@@ -2416,23 +2416,6 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Create a new simulation
-   */
-  private void doCreateSimulation() {
-    /* Remove current simulation */
-    if (!doRemoveSimulation(true)) {
-      return;
-    }
-
-    // Create new simulation
-    Simulation newSim = new Simulation(this);
-    boolean createdOK = CreateSimDialog.showDialog(Cooja.getTopParentContainer(), newSim);
-    if (createdOK) {
-      cooja.setSimulation(newSim, true);
-    }
-  }
-
-  /**
    * Quit program
    *
    * @param askForConfirmation Should we ask for confirmation before quitting?
@@ -4039,7 +4022,14 @@ public class Cooja extends Observable {
   final GUIAction newSimulationAction = new GUIAction("New simulation...", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK)) {
     @Override
     public void actionPerformed(ActionEvent e) {
-      cooja.doCreateSimulation();
+      if (!cooja.doRemoveSimulation(true)) {
+        return;
+      }
+
+      var sim = new Simulation(cooja);
+      if (CreateSimDialog.showDialog(Cooja.getTopParentContainer(), sim)) {
+        cooja.setSimulation(sim, true);
+      }
     }
     @Override
     public boolean shouldBeEnabled() {
