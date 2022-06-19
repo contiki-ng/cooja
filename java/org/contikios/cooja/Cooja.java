@@ -4065,10 +4065,9 @@ public class Cooja extends Observable {
   final GUIAction reloadRandomSimulationAction = new GUIAction("Reload with new random seed", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) {
     @Override
     public void actionPerformed(ActionEvent e) {
-      /* Replace seed before reloading */
       if (getSimulation() != null) {
         getSimulation().setRandomSeed(getSimulation().getRandomSeed()+1);
-        reloadSimulationAction.actionPerformed(null);
+        reloadCurrentSimulation();
       }
     }
     @Override
