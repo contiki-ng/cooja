@@ -3746,7 +3746,7 @@ public class Cooja extends Observable {
       return absolute;
     }
 
-    absolute = restoreConfigRelativePath(file);
+    absolute = restoreConfigRelativePath(currentConfigFile, file);
     if (absolute != null) {
       /*logger.info("Restored config relative path '" + file.getPath() + "' to '" + absolute.getPath() + "'");*/
       return absolute;
@@ -3905,7 +3905,7 @@ public class Cooja extends Observable {
       File portable = new File(portablePath);
 
       /* Verify conversion */
-      File verify = restoreConfigRelativePath(portable);
+      File verify = restoreConfigRelativePath(currentConfigFile, portable);
       if (verify == null || !verify.exists()) {
         /* Error: did file even exist pre-conversion? */
         return null;
@@ -3917,9 +3917,7 @@ public class Cooja extends Observable {
       return null;
     }
   }
-  private File restoreConfigRelativePath(File portable) {
-    return restoreConfigRelativePath(currentConfigFile, portable);
-  }
+
   private static File restoreConfigRelativePath(File configFile, File portable) {
     if (configFile == null) {
       return null;
