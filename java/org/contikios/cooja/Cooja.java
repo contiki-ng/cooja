@@ -1211,26 +1211,6 @@ public class Cooja extends Observable {
     desktop.revalidate();
   }
 
-  public static Simulation quickStartSimulationConfig(File config, boolean vis, Long manualRandomSeed, String logDirectory) {
-    Cooja gui = new Cooja(logDirectory, vis);
-    if (vis) {
-      configureFrame(gui);
-      gui.doLoadConfig(true, config, manualRandomSeed);
-      return gui.getSimulation();
-    }
-    try {
-      var newSim = gui.loadSimulationConfig(config, true, manualRandomSeed);
-      if (newSim == null) {
-        return null;
-      }
-      gui.setSimulation(newSim, false);
-      return newSim;
-    } catch (Exception e) {
-      logger.fatal("Exception when loading simulation: ", e);
-      return null;
-    }
-  }
-
   //// PROJECT CONFIG AND EXTENDABLE PARTS METHODS ////
 
   /**
@@ -2919,7 +2899,25 @@ public class Cooja extends Observable {
     } else {
       var vis = options.action.quickstart != null;
       String file = vis ? options.action.quickstart : options.action.nogui;
-      if (quickStartSimulationConfig(new File(file), vis, options.randomSeed, logDirectory) == null) {
+      Simulation result = null;
+      File config = new File(file);
+      Cooja gui = new Cooja(logDirectory, vis);
+      if (vis) {
+        configureFrame(gui);
+        gui.doLoadConfig(true, config, options.randomSeed);
+        result = gui.getSimulation();
+      } else {
+        try {
+          var newSim = gui.loadSimulationConfig(config, true, options.randomSeed);
+          if (newSim != null) {
+            gui.setSimulation(newSim, false);
+            result = newSim;
+          }
+        } catch (Exception e) {
+          logger.fatal("Exception when loading simulation: ", e);
+        }
+      }
+      if (result == null) {
         System.exit(1);
       }
     }
