@@ -3710,14 +3710,12 @@ public class Cooja extends Observable {
   public File createPortablePath(File file, boolean allowConfigRelativePaths) {
     File portable = createContikiRelativePath(file);
     if (portable != null) {
-      /*logger.info("Generated Contiki relative path '" + file.getPath() + "' to '" + portable.getPath() + "'");*/
       return portable;
     }
 
     if (allowConfigRelativePaths) {
       portable = createConfigRelativePath(file);
       if (portable != null) {
-        /*logger.info("Generated config relative path '" + file.getPath() + "' to '" + portable.getPath() + "'");*/
         return portable;
       }
     }
@@ -3742,17 +3740,14 @@ public class Cooja extends Observable {
 
     File absolute = restoreContikiRelativePath(file);
     if (absolute != null) {
-      /*logger.info("Restored Contiki relative path '" + file.getPath() + "' to '" + absolute.getPath() + "'");*/
       return absolute;
     }
 
     absolute = restoreConfigRelativePath(currentConfigFile, file);
     if (absolute != null) {
-      /*logger.info("Restored config relative path '" + file.getPath() + "' to '" + absolute.getPath() + "'");*/
       return absolute;
     }
 
-    /*logger.info("Portable path was not restored: '" + file.getPath());*/
     return file;
   }
 
@@ -3770,11 +3765,8 @@ public class Cooja extends Observable {
     	int match = -1;
     	int mlength = 0;
     	String fileCanonical = file.getCanonicalPath();
-      
-    	//No so nice, but goes along with GUI.getExternalToolsSetting
+      // Not so nice, but goes along with GUI.getExternalToolsSetting
 			String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
-    	
-    	
 		for(int i = 0; i < elem; i++){
 			path[i] = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));			
 			canonicals[i] = path[i].getCanonicalPath();
@@ -3783,12 +3775,10 @@ public class Cooja extends Observable {
 					mlength = canonicals[i].length();
 					match = i;
 				}
- 
 	    	}
 		}
       
 	    if(match == -1) return null;
-
 
 	    /* Replace Contiki's canonical path with Contiki identifier */
         String portablePath = fileCanonical.replaceFirst(
@@ -3805,7 +3795,6 @@ public class Cooja extends Observable {
 
         return portable;
     } catch (IOException e1) {
-      /*logger.warn("Error when converting to Contiki relative path: " + e1.getMessage());*/
       return null;
     }
   }
@@ -3817,35 +3806,22 @@ public class Cooja extends Observable {
 	String canonical = null;
 	
     try {
-    	    	
     	String portablePath = portable.getPath();
-    	
         int i = 0;
-        //logger.info("PPATH: " + portablePath);
-        
     	for(; i < elem; i++){
     		if (portablePath.startsWith(PATH_IDENTIFIER[i][0])) break;
-    		
     	}
-    	
-    	
     	if(i == elem) return null;
-       //logger.info("Found: " + PATH_IDENTIFIER[i][0]);
-    	
-    	//No so nice, but goes along with GUI.getExternalToolsSetting
+
+      // Not so nice, but goes along with GUI.getExternalToolsSetting
 			String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
     	path = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));
     	
-    	//logger.info("Config: " + PATH_IDENTIFIER[i][1] + ", " + defp + PATH_IDENTIFIER[i][2] + " = " + path.toString());
 		canonical = path.getCanonicalPath();
-    	
-    
     	File absolute = new File(portablePath.replace(PATH_IDENTIFIER[i][0], canonical));
 		if(!absolute.exists()){
 			logger.warn("Replaced " + portable  + " with " + absolute.toString() + " (default: "+ defp + PATH_IDENTIFIER[i][2] +"), but could not find it. This does not have to be an error, as the file might be created later.");
 		}
-    	     
-      
     	return absolute;
     } catch (IOException e) {
     	return null;
@@ -3894,7 +3870,6 @@ public class Cooja extends Observable {
       }
       if (!fileCanonical.startsWith(configCanonical)) {
         /* File is not in a config subdirectory */
-        /*logger.info("File is not in a config subdirectory: " + file.getAbsolutePath());*/
         return null;
       }
 
@@ -3910,10 +3885,8 @@ public class Cooja extends Observable {
         /* Error: did file even exist pre-conversion? */
         return null;
       }
-
       return portable;
     } catch (IOException e1) {
-      /*logger.warn("Error when converting to config relative path: " + e1.getMessage());*/
       return null;
     }
   }
