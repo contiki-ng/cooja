@@ -357,12 +357,46 @@ public class Cooja extends Observable {
    * Creates a new COOJA Simulator GUI.
    *
    * @param logDirectory Directory for log files
-   * @param desktop      Desktop pane
+   * @param vis          True if running in visual mode
    */
-  public Cooja(String logDirectory, JDesktopPane desktop) {
+  public Cooja(String logDirectory, boolean vis) {
     cooja = this;
     this.logDirectory = logDirectory;
     mySimulation = null;
+    final var desktop = new JDesktopPane() {
+      @Override
+      public void setBounds(int x, int y, int w, int h) {
+        super.setBounds(x, y, w, h);
+        updateDesktopSize(this);
+      }
+      @Override
+      public void remove(Component c) {
+        super.remove(c);
+        updateDesktopSize(this);
+      }
+      @Override
+      public Component add(Component comp) {
+        Component c = super.add(comp);
+        updateDesktopSize(this);
+        return c;
+      }
+    };
+    desktop.setDesktopManager(new DefaultDesktopManager() {
+      @Override
+      public void endResizingFrame(JComponent f) {
+        super.endResizingFrame(f);
+        updateDesktopSize(desktop);
+      }
+      @Override
+      public void endDraggingFrame(JComponent f) {
+        super.endDraggingFrame(f);
+        updateDesktopSize(desktop);
+      }
+    });
+    desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+    if (vis) {
+      frame = new JFrame(WINDOW_TITLE);
+    }
     myDesktopPane = desktop;
 
     /* Help panel */
@@ -1177,46 +1211,8 @@ public class Cooja extends Observable {
     desktop.revalidate();
   }
 
-  private static JDesktopPane createDesktopPane(boolean vis) {
-    final JDesktopPane desktop = new JDesktopPane() {
-      @Override
-      public void setBounds(int x, int y, int w, int h) {
-        super.setBounds(x, y, w, h);
-        updateDesktopSize(this);
-      }
-      @Override
-      public void remove(Component c) {
-        super.remove(c);
-        updateDesktopSize(this);
-      }
-      @Override
-      public Component add(Component comp) {
-        Component c = super.add(comp);
-        updateDesktopSize(this);
-        return c;
-      }
-    };
-    desktop.setDesktopManager(new DefaultDesktopManager() {
-      @Override
-      public void endResizingFrame(JComponent f) {
-        super.endResizingFrame(f);
-        updateDesktopSize(desktop);
-      }
-      @Override
-      public void endDraggingFrame(JComponent f) {
-        super.endDraggingFrame(f);
-        updateDesktopSize(desktop);
-      }
-    });
-    desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-    if (vis) {
-      frame = new JFrame(WINDOW_TITLE);
-    }
-    return desktop;
-  }
-
   public static Simulation quickStartSimulationConfig(File config, boolean vis, Long manualRandomSeed, String logDirectory) {
-    Cooja gui = new Cooja(logDirectory, createDesktopPane(vis));
+    Cooja gui = new Cooja(logDirectory, vis);
     if (vis) {
       configureFrame(gui);
       gui.doLoadConfig(true, config, manualRandomSeed);
@@ -2916,7 +2912,7 @@ public class Cooja extends Observable {
       javax.swing.SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          Cooja gui = new Cooja(logDirectory, createDesktopPane(true));
+          Cooja gui = new Cooja(logDirectory, true);
           configureFrame(gui);
         }
       });
