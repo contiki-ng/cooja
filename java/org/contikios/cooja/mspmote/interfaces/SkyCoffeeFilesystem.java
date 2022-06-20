@@ -299,10 +299,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
     try {
       updateFS();
       return coffeeFS.extractFile(coffeeFile, new File(diskFilename));
-    } catch (RuntimeException e) {
-      logger.fatal("Error: " + e.getMessage(), e);
-      return false;
-    } catch (IOException e) {
+    } catch (RuntimeException | IOException e) {
       logger.fatal("Error: " + e.getMessage(), e);
       return false;
     }
@@ -312,10 +309,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
     try {
       updateFS();
       return coffeeFS.insertFile(diskFilename) != null;
-    } catch (RuntimeException e) {
-      logger.fatal("Error: " + e.getMessage(), e);
-      return false;
-    } catch (IOException e) {
+    } catch (RuntimeException | IOException e) {
       logger.fatal("Error: " + e.getMessage(), e);
       return false;
     }
