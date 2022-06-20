@@ -1707,7 +1707,7 @@ public class ChannelModel {
       threshold = rxSensitivity + snrMean - signalStrength;
     }
 
-    // If not random varianble, probability is either 1 or 0
+    // If not random variable, probability is either 1 or 0
     if (snrVariance == 0) {
       return new double[] {
         threshold - snrMean > 0 ? 0:1, signalStrength
