@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Observer;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Vector;
 
@@ -75,7 +74,7 @@ public class ChannelModel {
 
   enum TransmissionData { SIGNAL_STRENGTH, SIGNAL_STRENGTH_VAR, SNR, SNR_VAR, PROB_OF_RECEPTION, DELAY_SPREAD, DELAY_SPREAD_RMS}
 
-  private Hashtable<Parameter,Object> parametersDefaults = new Hashtable<>();
+  private final Hashtable<Parameter,Object> parametersDefaults;
   private final Hashtable<Parameter,Object> parameters = new Hashtable<>();
 
   // Parameters used for speeding up calculations
@@ -802,9 +801,6 @@ public class ChannelModel {
         DefaultMutableTreeNode currentlyTracedNode = treeNode;
         RayData currentlyTracedRayData = (RayData) currentlyTracedNode.getUserObject();
         RayData.RayType currentlyTracedNodeType = currentlyTracedRayData.getType();
-        Point2D currentlyTracedSource = currentlyTracedRayData.getSourcePoint();
-        Line2D currentlyTracedLine = currentlyTracedRayData.getLine();
-
 
         // Traverse upwards until origin found
         while (!pathBroken && currentlyTracedNodeType != RayData.RayType.ORIGIN) {
@@ -813,8 +809,8 @@ public class ChannelModel {
           currentlyTracedNode = (DefaultMutableTreeNode) currentlyTracedNode.getParent();
           currentlyTracedRayData = (RayData) currentlyTracedNode.getUserObject();
           currentlyTracedNodeType = currentlyTracedRayData.getType();
-          currentlyTracedSource = currentlyTracedRayData.getSourcePoint();
-          currentlyTracedLine = currentlyTracedRayData.getLine();
+          Point2D currentlyTracedSource = currentlyTracedRayData.getSourcePoint();
+          Line2D currentlyTracedLine = currentlyTracedRayData.getLine();
 
           if (currentlyTracedNodeType == RayData.RayType.ORIGIN) {
             // We finally found the path origin, path ends here
@@ -1105,7 +1101,7 @@ public class ChannelModel {
           // Create angle interval of this line
           AngleInterval lineAngleInterval = AngleInterval.getAngleIntervalOfLine(source, lineCandidate);
 
-          AngleInterval intersectionInterval = null;
+          AngleInterval intersectionInterval;
 
           // Add entire line if it is fully inside our visible angle interval
           if (angleIntervalToCheck.contains(lineAngleInterval)) {
@@ -1793,7 +1789,7 @@ public class ChannelModel {
       } else /* Parameter values */ {
         String name = element.getName();
         String value;
-        Parameter param = null;
+        Parameter param;
     
         if (name.equals("wavelength")) {
           /* Backwards compatability: ignored parameters */
