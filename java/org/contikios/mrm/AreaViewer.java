@@ -180,7 +180,7 @@ public class AreaViewer extends VisPlugin {
   private final MRM currentRadioMedium;
   private final ChannelModel currentChannelModel;
 
-  private final String antennaImageFilename = "antenna.png";
+  private static final String antennaImageFilename = "antenna.png";
   private final Image antennaImage;
 
   private Radio selectedRadio = null;
@@ -705,16 +705,13 @@ public class AreaViewer extends VisPlugin {
 
         if (selectedRadio == null || !hitRadios.contains(selectedRadio)) {
           selectedRadio = hitRadios.get(0);
-          trackModeButton.setEnabled(true);
-          paintEnvironmentAction.setEnabled(true);
         } else {
           selectedRadio = hitRadios.get(
               (hitRadios.indexOf(selectedRadio)+1) % hitRadios.size()
           );
-
-          trackModeButton.setEnabled(true);
-          paintEnvironmentAction.setEnabled(true);
         }
+        trackModeButton.setEnabled(true);
+        paintEnvironmentAction.setEnabled(true);
 
         channelImage = null;
         canvas.repaint();
@@ -853,11 +850,7 @@ public class AreaViewer extends VisPlugin {
         inTrackMode = true;
 
       } else if (e.getActionCommand().equals("toggle show settings")) {
-        if (((JCheckBox) e.getSource()).isSelected()) {
-          scrollControlPanel.setVisible(true);
-        } else {
-          scrollControlPanel.setVisible(false);
-        }
+        scrollControlPanel.setVisible(((JCheckBox) e.getSource()).isSelected());
         AreaViewer.this.invalidate();
         AreaViewer.this.revalidate();
       }
@@ -906,14 +899,10 @@ public class AreaViewer extends VisPlugin {
           return false;
         }
 
-        if (filename.endsWith(".gif") || filename.endsWith(".GIF") ||
+        return filename.endsWith(".gif") || filename.endsWith(".GIF") ||
             filename.endsWith(".jpg") || filename.endsWith(".JPG") ||
             filename.endsWith(".jpeg") || filename.endsWith(".JPEG") ||
-            filename.endsWith(".png") || filename.endsWith(".PNG")){
-          return true;
-        }
-
-        return false;
+            filename.endsWith(".png") || filename.endsWith(".PNG");
       }
 
       public String getDescription() {
@@ -1263,7 +1252,7 @@ public class AreaViewer extends VisPlugin {
 
   };
 
-  class ObstacleFinderDialog extends JDialog {
+  static class ObstacleFinderDialog extends JDialog {
     private final NumberFormat intFormat = NumberFormat.getIntegerInstance();
     private BufferedImage imageToAnalyze = null;
     private BufferedImage obstacleImage = null;
@@ -1667,7 +1656,7 @@ public class AreaViewer extends VisPlugin {
    * @param highBorder
    * @return Integer containing standard ARGB color.
    */
-  private int getColorOfSignalStrength(double value, double lowBorder, double highBorder) {
+  private static int getColorOfSignalStrength(double value, double lowBorder, double highBorder) {
     double intervalSize = (highBorder - lowBorder) / 2;
     double middleValue = lowBorder + (highBorder - lowBorder) / 2;
 
@@ -2320,7 +2309,7 @@ public class AreaViewer extends VisPlugin {
     /* Selected mote */
     if (selectedRadio != null) {
       element = new Element("selected");
-      element.setAttribute("mote", "" + selectedRadio.getMote().getID());
+      element.setAttribute("mote", String.valueOf(selectedRadio.getMote().getID()));
       config.add(element);
     }
 

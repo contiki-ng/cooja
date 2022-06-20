@@ -38,7 +38,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PluginType {
-  public static final int UNDEFINED_PLUGIN = 0;
+  int UNDEFINED_PLUGIN = 0;
 
   /**
    * Mote Plugin
@@ -57,7 +57,7 @@ public @interface PluginType {
    * 
    * If the current simulation is removed, so are all instances of this plugin.
    */
-  public static final int MOTE_PLUGIN = 1;
+  int MOTE_PLUGIN = 1;
 
   /**
    * Simulation Plugin
@@ -74,7 +74,7 @@ public @interface PluginType {
    * 
    * If the current simulation is removed, so are all instances of this plugin.
    */
-  public static final int SIM_PLUGIN = 2;
+  int SIM_PLUGIN = 2;
 
   /**
    * COOJA Plugin
@@ -88,7 +88,7 @@ public @interface PluginType {
    * 
    * When constructed, a COOJA plugin is given the current GUI.
    */
-  public static final int COOJA_PLUGIN = 3;
+  int COOJA_PLUGIN = 3;
 
   /**
    * Simulation Standard Plugin
@@ -98,7 +98,7 @@ public @interface PluginType {
    * 
    * @see #SIM_PLUGIN
    */
-  public static final int SIM_STANDARD_PLUGIN = 4;
+  int SIM_STANDARD_PLUGIN = 4;
 
   /**
    * COOJA Standard Plugin
@@ -108,7 +108,7 @@ public @interface PluginType {
    * 
    * @see #COOJA_PLUGIN
    */
-  public static final int COOJA_STANDARD_PLUGIN = 5;
+  int COOJA_STANDARD_PLUGIN = 5;
   
   /**
    * Simulation Control Plugin
@@ -120,7 +120,7 @@ public @interface PluginType {
    * 
    * When constructed, a COOJA plugin is given the current GUI.  
    */
-  public static final int SIM_CONTROL_PLUGIN = 6;
+  int SIM_CONTROL_PLUGIN = 6;
 
   int value();
 }

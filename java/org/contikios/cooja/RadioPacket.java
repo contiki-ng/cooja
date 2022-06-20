@@ -47,6 +47,6 @@ public interface RadioPacket {
   /**
    * @return Packet data
    */
-  public byte[] getPacketData();
+  byte[] getPacketData();
 
 }

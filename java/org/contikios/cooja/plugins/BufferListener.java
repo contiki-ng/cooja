@@ -955,9 +955,7 @@ public class BufferListener extends VisPlugin {
 
             if (inverseFilter && pass) {
               return false;
-            } else if (!inverseFilter && !pass) {
-              return false;
-            }
+            } else return inverseFilter || pass;
           }
           return true;
         }
@@ -1134,7 +1132,7 @@ public class BufferListener extends VisPlugin {
           sb.append(logTable.getValueAt(i, COLUMN_SOURCE));
           sb.append("\n");
         }
-        outStream.print(sb.toString());
+        outStream.print(sb);
         outStream.close();
       } catch (Exception ex) {
         logger.fatal("Could not write to file: " + saveFile);
@@ -1433,12 +1431,12 @@ public class BufferListener extends VisPlugin {
     repaint();
   }
 
-  public static interface Parser {
+  public interface Parser {
     /**
      * @param ba Buffer Access object
      * @return String or custom graphical object
      */
-    public Object parse(BufferAccess ba);
+    Object parse(BufferAccess ba);
   }
   public static abstract class GraphicalParser implements Parser {
     BufferAccess ba = null;
@@ -1460,26 +1458,26 @@ public class BufferListener extends VisPlugin {
     public abstract String parseString(BufferAccess ba);
   }
 
-  public static interface Buffer {
-    public long getAddress(Mote mote);
-    public int getSize(Mote mote);
+  public interface Buffer {
+    long getAddress(Mote mote);
+    int getSize(Mote mote);
 
-    public String getStatusString();
+    String getStatusString();
 
-    public SegmentMemoryMonitor createMemoryMonitor(BufferListener bl, Mote mote)
+    SegmentMemoryMonitor createMemoryMonitor(BufferListener bl, Mote mote)
     throws Exception;
 
     /*
      * Called when buffer is created by user to allow user input (AWT thread)
      */
-    public boolean configure(BufferListener bl);
+    boolean configure(BufferListener bl);
 
     /*
      * Called when buffer is created from config
      */
-    public void applyConfig(Element element);
+    void applyConfig(Element element);
 
-    public void writeConfig(Element element);
+    void writeConfig(Element element);
   }
   public static abstract class AbstractBuffer implements Buffer {
     @Override
@@ -1607,7 +1605,10 @@ public class BufferListener extends VisPlugin {
 
         boolean red = false;
         for (boolean changed: diff) {
-          if (changed) red = true;
+          if (changed) {
+            red = true;
+            break;
+          }
         }
 
         if (red) {
@@ -1720,10 +1721,7 @@ public class BufferListener extends VisPlugin {
       g.setColor(Color.GRAY);
       boolean[] diff = ba.getAccessedBitpattern();
       for (int x=0; x < ba.mem.length; x++) {
-        boolean red = false;
-        if (diff != null && diff[x]) {
-          red = true;
-        }
+        boolean red = diff != null && diff[x];
         int v = 0xff&ba.mem[x];
         int h = Math.min(v/16, 15); /* crop */
         if (red) {
@@ -1747,10 +1745,7 @@ public class BufferListener extends VisPlugin {
     public void paintComponent(Graphics g, JComponent c) {
       boolean[] diff = ba.getAccessedBitpattern();
       for (int x=0; x < ba.mem.length; x++) {
-        boolean red = false;
-        if (diff != null && diff[x]) {
-          red = true;
-        }
+        boolean red = diff != null && diff[x];
         int color = 255-(0xff&ba.mem[x]);
         if (red) {
           g.setColor(Color.RED);

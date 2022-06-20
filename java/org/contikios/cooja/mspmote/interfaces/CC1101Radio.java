@@ -415,9 +415,6 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
     if (radio.getClass().equals(this.getClass())) {
       return true;
     }
-    if (radio.getClass().equals(CC430Radio.class)) {
-      return true;
-    }
-    return false;
-  }
+		return radio.getClass().equals(CC430Radio.class);
+	}
 }

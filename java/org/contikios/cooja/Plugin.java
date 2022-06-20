@@ -51,7 +51,7 @@ public interface Plugin {
   /**
    * Graphical component of plugin (if any)
    */
-  public JInternalFrame getCooja();
+  JInternalFrame getCooja();
 
 
   /**
@@ -61,14 +61,14 @@ public interface Plugin {
    * @see #setConfigXML(Collection, boolean)
    * @see #closePlugin()
    */
-  public void startPlugin();
+  void startPlugin();
 
   /**
    * This method is called when an opened plugin is about to close.
    * It should release any resources such as registered observers or
    * opened interface visualizers.
    */
-  public void closePlugin();
+  void closePlugin();
 
   /**
    * Returns XML elements representing the current config of this plugin. This
@@ -81,7 +81,7 @@ public interface Plugin {
    * @see #setConfigXML(Collection, boolean)
    * @return XML elements representing the current radio medium config
    */
-  public Collection<Element> getConfigXML();
+  Collection<Element> getConfigXML();
 
   /**
    * Sets the current plugin config depending on the given XML elements.
@@ -91,7 +91,7 @@ public interface Plugin {
    *          Config XML elements
    * @return True if config was set successfully, false otherwise
    */
-  public boolean setConfigXML(Collection<Element> configXML,
+  boolean setConfigXML(Collection<Element> configXML,
       boolean visAvailable);
 
 }

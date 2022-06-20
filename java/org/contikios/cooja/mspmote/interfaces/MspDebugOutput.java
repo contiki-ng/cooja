@@ -93,7 +93,7 @@ public class MspDebugOutput extends Log {
     });
   }
 
-  private String extractString(MemoryInterface mem, int address) {
+  private static String extractString(MemoryInterface mem, int address) {
     StringBuilder sb = new StringBuilder();
     while (true) {
       byte[] data = mem.getMemorySegment(address, 8);
@@ -105,7 +105,7 @@ public class MspDebugOutput extends Log {
         sb.append((char)b);
         if (sb.length() > 128) {
           /* Maximum size */
-          return sb.toString() + "...";
+          return sb + "...";
         }
       }
     }

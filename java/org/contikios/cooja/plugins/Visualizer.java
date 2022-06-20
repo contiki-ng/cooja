@@ -216,22 +216,22 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   private Observer moteRelationsObserver = null;
 
   /* Popup menu */
-  public static interface SimulationMenuAction {
+  public interface SimulationMenuAction {
 
-    public boolean isEnabled(Visualizer visualizer, Simulation simulation);
+    boolean isEnabled(Visualizer visualizer, Simulation simulation);
 
-    public String getDescription(Visualizer visualizer, Simulation simulation);
+    String getDescription(Visualizer visualizer, Simulation simulation);
 
-    public void doAction(Visualizer visualizer, Simulation simulation);
+    void doAction(Visualizer visualizer, Simulation simulation);
   }
 
-  public static interface MoteMenuAction {
+  public interface MoteMenuAction {
 
-    public boolean isEnabled(Visualizer visualizer, Mote mote);
+    boolean isEnabled(Visualizer visualizer, Mote mote);
 
-    public String getDescription(Visualizer visualizer, Mote mote);
+    String getDescription(Visualizer visualizer, Mote mote);
 
-    public void doAction(Visualizer visualizer, Mote mote);
+    void doAction(Visualizer visualizer, Mote mote);
   }
 
   private final ArrayList<Class<? extends SimulationMenuAction>> simulationMenuActions

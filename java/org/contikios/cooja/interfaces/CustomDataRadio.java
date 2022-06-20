@@ -39,12 +39,12 @@ package org.contikios.cooja.interfaces;
  */
 public interface CustomDataRadio {
 
-  public boolean canReceiveFrom(CustomDataRadio radio);
+  boolean canReceiveFrom(CustomDataRadio radio);
   
-  public void receiveCustomData(Object data);
+  void receiveCustomData(Object data);
 
-  public Object getLastCustomDataTransmitted();
+  Object getLastCustomDataTransmitted();
 
-  public Object getLastCustomDataReceived();
+  Object getLastCustomDataReceived();
 
 }

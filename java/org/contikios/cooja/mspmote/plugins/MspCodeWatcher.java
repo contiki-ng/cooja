@@ -100,21 +100,21 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   private File currentCodeFile = null;
   private int currentLineNumber = -1;
 
-  private DebugUI assCodeUI;
-  private CodeUI sourceCodeUI;
-  private BreakpointsUI breakpointsUI;
+  private final DebugUI assCodeUI;
+  private final CodeUI sourceCodeUI;
+  private final BreakpointsUI breakpointsUI;
 
   private final MspMote mspMote; /* currently the only supported mote */
   private final WatchpointMote watchpointMote;
   private WatchpointListener watchpointListener;
 
-  private JComboBox fileComboBox;
+  private final JComboBox fileComboBox;
   private File[] sourceFiles;
 
-  private JTabbedPane mainPane;
+  private final JTabbedPane mainPane;
 
   private ArrayList<Rule> rules;
-  private ELFDebug debug;
+  private final ELFDebug debug;
   private String[] debugSourceFiles;
 
   /**
@@ -204,6 +204,11 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     sourceCodeControl.add(new JLabel("Source files: "));
     sourceCodeControl.add(fileComboBox);
     sourceCodeControl.add(Box.createHorizontalStrut(5));
+    var mapAction = new AbstractAction("Locate sources...") {
+      public void actionPerformed(ActionEvent e) {
+        tryMapDebugInfo();
+      }
+    };
     sourceCodeControl.add(new JButton(mapAction));
     sourceCodeControl.add(Box.createHorizontalStrut(10));
 
@@ -540,10 +545,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
         if (column == 0) {
           return true;
         }
-        if (column == 1) {
-          return true;
-        }
-        return false;
+        return column == 1;
       }
       public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         Rule rule;
@@ -718,7 +720,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     Element element;
 
     element = new Element("tab");
-    element.addContent("" + mainPane.getSelectedIndex());
+    element.addContent(String.valueOf(mainPane.getSelectedIndex()));
     config.add(element);
 
     for (Rule rule: rules) {
@@ -753,12 +755,6 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
         return;
       }
       displaySourceFile(currentCodeFile, currentLineNumber, true);
-    }
-  };
-
-  private final AbstractAction mapAction = new AbstractAction("Locate sources...") {
-    public void actionPerformed(ActionEvent e) {
-      tryMapDebugInfo();
     }
   };
 

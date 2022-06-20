@@ -163,11 +163,8 @@ public class CreateSimDialog extends JDialog {
 
     dialog.setVisible(true);
 
-    if (dialog.mySimulation != null) {
-      // Simulation configured correctly
-      return true;
-    }
-    return false;
+    // Simulation configured correctly
+    return dialog.mySimulation != null;
   }
 
   private CreateSimDialog(Window window, Cooja gui) {

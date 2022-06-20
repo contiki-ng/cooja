@@ -735,22 +735,22 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         /* Output all events (sorted per mote) */
         for (MoteEvents events: allMoteEvents) {
           for (MoteEvent ev: events.ledEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
           }
           for (MoteEvent ev: events.logEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
           }
           for (MoteEvent ev: events.radioChannelEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
           }
           for (MoteEvent ev: events.radioHWEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
           }
           for (MoteEvent ev: events.radioRXTXEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
           }
           for (MoteEvent ev: events.watchpointEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev.toString() + "\n");
+            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
           }
         }
 

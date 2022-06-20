@@ -153,13 +153,11 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       socketPanel.add(listenPortField, c);
 
       serverStartButton = new JButton("Start") { // Button for label toggeling
-        private final String altString = "Stop";
-        
         @Override
         public Dimension getPreferredSize() {
           String origText = getText();
           Dimension origDim = super.getPreferredSize();
-          setText(altString);
+          setText("Stop");
           Dimension altDim = super.getPreferredSize();
           setText(origText);
           return new Dimension(Math.max(origDim.width, altDim.width), origDim.height);
@@ -268,7 +266,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
             public void run() {
               System.out.println("onServerStarted");
               socketStatusLabel.setForeground(COLOR_NEUTRAL);
-              socketStatusLabel.setText("Listening on port " + String.valueOf(port));
+              socketStatusLabel.setText("Listening on port " + port);
               listenPortField.setEnabled(false);
               serverStartButton.setText("Stop");
             }
@@ -298,7 +296,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
               // XXX check why needed
               if (serverSocket != null) {
                 socketStatusLabel.setForeground(COLOR_NEUTRAL);
-                socketStatusLabel.setText("Listening on port " + String.valueOf(serverSocket.getLocalPort()));
+                socketStatusLabel.setText("Listening on port " + serverSocket.getLocalPort());
               }
             }
           });

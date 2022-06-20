@@ -122,8 +122,8 @@ public class SimEventCentral {
   
   /* ADDED/REMOVED MOTES */
   public interface MoteCountListener {
-    public void moteWasAdded(Mote mote);
-    public void moteWasRemoved(Mote mote);
+    void moteWasAdded(Mote mote);
+    void moteWasRemoved(Mote mote);
   }
   private MoteCountListener[] moteCountListeners;
   private final Observer moteCountObserver = new Observer() {
@@ -195,8 +195,8 @@ public class SimEventCentral {
   private int logOutputBufferSize;
   private final ArrayDeque<LogOutputEvent> logOutputEvents;
   public interface LogOutputListener extends MoteCountListener {
-    public void removedLogOutput(LogOutputEvent ev);
-    public void newLogOutput(LogOutputEvent ev);
+    void removedLogOutput(LogOutputEvent ev);
+    void newLogOutput(LogOutputEvent ev);
   }
   private LogOutputListener[] logOutputListeners;
   private final Observer logOutputObserver = new Observer() {

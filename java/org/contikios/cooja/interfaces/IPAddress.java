@@ -327,7 +327,7 @@ public class IPAddress extends MoteInterface {
                     .append(" IPv6 address(#")
                     .append(ipc.getAddID())
                     .append("): ")
-                    .append(ipc.toString())
+                    .append(ipc)
                     .append("<br>");
           }
           else {

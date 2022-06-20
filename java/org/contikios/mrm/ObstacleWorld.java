@@ -54,7 +54,7 @@ class ObstacleWorld {
   private Vector<Rectangle2D> allObstacles = null;
   
   // All registered obstacles, with spatial information
-  private final int spatialResolution = 10;
+  private static final int spatialResolution = 10;
   private final Vector<Rectangle2D>[][] allObstaclesSpatial = new Vector[spatialResolution][spatialResolution];
   private boolean obstaclesOrganized = false;
   
@@ -604,7 +604,7 @@ class ObstacleWorld {
       for (int x=0; x < spatialResolution; x++) {
         System.out.print(allObstaclesSpatial[x][y].size() + " ");
       }
-      System.out.println("");
+      System.out.println();
     }
     
   }

@@ -31,5 +31,5 @@
 package org.contikios.cooja;
 
 public interface MotePlugin {
-  public Mote getMote();
+  Mote getMote();
 }

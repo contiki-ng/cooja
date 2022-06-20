@@ -66,7 +66,7 @@ import se.sics.mspsim.cli.LineOutputStream;
 public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   private final MspMote mspMote;
   private final JTextArea logArea;
-  private JTextField commandField;
+  private final JTextField commandField;
   private final String[] history = new String[50];
   private int historyPos = 0;
   private int historyCount = 0;
@@ -211,7 +211,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
     }
   };
 
-  private String trim(String text) {
+  private static String trim(String text) {
     return (text != null) && ((text = text.trim()).length() > 0) ? text : null;
   }
 

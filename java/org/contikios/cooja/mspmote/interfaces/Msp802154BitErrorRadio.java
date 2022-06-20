@@ -89,7 +89,7 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
   };
 
   /* Calculates the Hamming distance between two words */
-  private int hammingDistance(int x1, int x2) {
+  private static int hammingDistance(int x1, int x2) {
     return Integer.bitCount(x1 ^ x2);
   }
 
@@ -317,7 +317,7 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
     0.0022756787254125
   };
 
-  private double getBitErrorRate(double signal) {
+  private static double getBitErrorRate(double signal) {
     if (signal <= NOISE_FLOOR) {
       return 0.5;
     } else if (signal >= GOOD_SIGNAL) {

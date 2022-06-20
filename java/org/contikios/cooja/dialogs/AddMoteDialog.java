@@ -335,11 +335,8 @@ public class AddMoteDialog extends JDialog {
 
   private boolean checkSettings() {
     // Check settings
-    boolean settingsOK = true;
+    boolean settingsOK = checkSettings(startX, endX);
 
-    if (!checkSettings(startX, endX)) {
-      settingsOK = false;
-    }
     if (!checkSettings(startY, endY)) {
       settingsOK = false;
     }

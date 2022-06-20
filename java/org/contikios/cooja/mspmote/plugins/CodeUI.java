@@ -88,7 +88,7 @@ public class CodeUI extends JPanel {
   private JSyntaxAddBreakpoint actionAddBreakpoint = null;
   private JSyntaxRemoveBreakpoint actionRemoveBreakpoint = null;
 
-  private WatchpointMote mote;
+  private final WatchpointMote mote;
 
   public CodeUI(WatchpointMote mote) {
     this.mote = mote;
@@ -288,7 +288,7 @@ public class CodeUI extends JPanel {
         codeEditorLines.put(line, length);
         length += lines[line-1].length()+1;
       }
-      codeEditor.setText(data.toString());
+      codeEditor.setText(data);
       displayedFile = codeFile;
       updateBreakpoints();
     }

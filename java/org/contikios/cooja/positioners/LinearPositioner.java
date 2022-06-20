@@ -44,7 +44,8 @@ public class LinearPositioner extends Positioner {
   private final double startY;
   private final double startZ;
   private int addedInX, addedInY, addedInZ;
-  private int numberInX, numberInY, numberInZ;
+  private int numberInY;
+  private int numberInZ;
   private double xInterval, yInterval, zInterval;
 
   /**
@@ -94,7 +95,7 @@ public class LinearPositioner extends Positioner {
 
     double sideLengthOfEachMote = Math.pow(spaceOfEachMote, 1.0/(double) noDimensions);
 
-    this.numberInX = 0;
+    int numberInX = 0;
     this.numberInY = 0;
     this.numberInZ = 0;
 

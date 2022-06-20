@@ -76,8 +76,6 @@ import org.contikios.mrm.ChannelModel.Parameter;
 public class FormulaViewer extends org.contikios.cooja.VisPlugin {
   private static final Logger logger = LogManager.getLogger(FormulaViewer.class);
 
-  private final Simulation simulation;
-  private final MRM radioMedium;
   private final ChannelModel channelModel;
 
   private static final Dimension labelDimension = new Dimension(240, 20);
@@ -102,8 +100,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
   public FormulaViewer(Simulation simulationToVisualize, Cooja gui) {
     super("MRM Settings", gui);
 
-    simulation = simulationToVisualize;
-    radioMedium = (MRM) simulation.getRadioMedium();
+    var radioMedium = (MRM) simulationToVisualize.getRadioMedium();
     channelModel = radioMedium.getChannelModel();
 
     // -- Create and add GUI components --
@@ -377,11 +374,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     JCheckBox collapseCheckBox = new JCheckBox("show settings", false);
     collapseCheckBox.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        if (((JCheckBox) e.getSource()).isSelected()) {
-          collapsableArea.setVisible(true);
-        } else {
-          collapsableArea.setVisible(false);
-        }
+        collapsableArea.setVisible(((JCheckBox) e.getSource()).isSelected());
       }
     });
     collapsableArea.putClientProperty("my_checkbox", collapseCheckBox);

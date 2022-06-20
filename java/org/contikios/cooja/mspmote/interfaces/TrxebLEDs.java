@@ -28,8 +28,6 @@ import se.sics.mspsim.core.PortListener;
 public class TrxebLEDs extends LED {
 	private static final Logger logger = LogManager.getLogger(TrxebLEDs.class);
 
-	private final Exp5438Mote mspMote;
-
 	private boolean redOn = false;
 	private boolean yellowOn = false;
 	private boolean greenOn = false;
@@ -45,7 +43,7 @@ public class TrxebLEDs extends LED {
 	private static final Color DARK_BLUE = new Color(0, 0, 100);
 
 	public TrxebLEDs(Mote mote) {
-		mspMote = (Exp5438Mote) mote;
+		var mspMote = (Exp5438Mote) mote;
 
 		IOUnit unit = mspMote.getCPU().getIOUnit("P4");
 		if (unit instanceof IOPort) {

@@ -106,6 +106,12 @@ public class SimControl extends VisPlugin implements HasQuickHelp {
     runMenu.add(new JMenuItem(startAction));
     runMenu.add(new JMenuItem(stopAction));
     runMenu.add(new JMenuItem(stepAction));
+    var reloadAction = new AbstractAction("Reload") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        simulation.getCooja().reloadCurrentSimulation();
+      }
+    };
     runMenu.add(new JMenuItem(reloadAction));
 
     ButtonGroup speedlimitButtonGroup = new ButtonGroup();
@@ -324,12 +330,6 @@ public class SimControl extends VisPlugin implements HasQuickHelp {
     @Override
     public void actionPerformed(ActionEvent e) {
       simulation.stepMillisecondSimulation();
-    }
-  };
-  private final Action reloadAction = new AbstractAction("Reload") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      simulation.getCooja().reloadCurrentSimulation();
     }
   };
 

@@ -85,7 +85,7 @@ public class ScriptParser {
     }
     int second = code.indexOf('"', first+1);
 
-    code = code.substring(0, first) + code.substring(second+1, code.length());
+    code = code.substring(0, first) + code.substring(second+1);
     return code;
   }
 
@@ -98,11 +98,11 @@ public class ScriptParser {
     while (matcher.find()) {
       String match = matcher.group();
       int newLines = match.split("\n").length;
-      String replacement = "";
+      var replacement = new StringBuilder();
       for (int i=0; i < newLines; i++) {
-        replacement += "\n";
+        replacement.append("\n");
       }
-      code = matcher.replaceFirst(replacement);
+      code = matcher.replaceFirst(replacement.toString());
       matcher.reset(code);
     }
     return code;

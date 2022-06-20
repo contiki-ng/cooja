@@ -206,7 +206,6 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
       // Add to the end of the queue
       queueData[last] = element;
       last = (last + 1) % queueData.length;
-      size++;
     } else {
       // This will make sure the index is valid (0 <= index < size)
       index = getPos(index);
@@ -233,8 +232,8 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
         first--;
       }
       queueData[index] = element;
-      size++;
     }
+    size++;
   }
 
   @Override

@@ -34,5 +34,5 @@ public interface HasQuickHelp {
    * @return Quick help. May be HTML formatted, but must not include the
    *         document html-tags.
    */
-  public String getQuickHelp();
+  String getQuickHelp();
 }

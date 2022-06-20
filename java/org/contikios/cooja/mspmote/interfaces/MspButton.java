@@ -30,7 +30,6 @@
 package org.contikios.cooja.mspmote.interfaces;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Button;
 import org.contikios.cooja.mspmote.MspMote;
 
@@ -39,14 +38,11 @@ import org.contikios.cooja.mspmote.MspMote;
  */
 @ClassDescription("Button")
 public class MspButton extends Button {
-
-    private final Simulation sim;
     private final se.sics.mspsim.chip.Button button;
 
     public MspButton(Mote mote) {
         super(mote);
         final MspMote mspMote = (MspMote) mote;
-        sim = mote.getSimulation();
         button = mspMote.getCPU().getChip(se.sics.mspsim.chip.Button.class);
         if (button == null) {
             throw new IllegalStateException("Mote is not equipped with a button");

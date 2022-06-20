@@ -57,7 +57,7 @@ public interface MoteType {
    *
    * @return Description
    */
-  public String getDescription();
+  String getDescription();
 
   /**
    * Sets the mote type description.
@@ -65,14 +65,14 @@ public interface MoteType {
    * @param description
    *          New description
    */
-  public void setDescription(String description);
+  void setDescription(String description);
 
   /**
    * Returns the mote type identifier.
    *
    * @return Mote type identifier
    */
-  public String getIdentifier();
+  String getIdentifier();
 
   /**
    * Sets the mote type identifier.
@@ -80,7 +80,7 @@ public interface MoteType {
    * @param identifier
    *          New identifier
    */
-  public void setIdentifier(String identifier);
+  void setIdentifier(String identifier);
 
   /**
    * Main Contiki source file of mote type.
@@ -89,13 +89,13 @@ public interface MoteType {
    * @return Contiki main process source file.
    * @see #setContikiSourceFile(File)
    */
-  public File getContikiSourceFile();
+  File getContikiSourceFile();
 
   /**
    * @param file Contiki main process source file.
    * @see #getContikiSourceFile()
    */
-  public void setContikiSourceFile(File file);
+  void setContikiSourceFile(File file);
 
   /**
    * Compiled Contiki firmware file or library.
@@ -104,13 +104,13 @@ public interface MoteType {
    * @return Contiki firmware file or library.
    * @see #setContikiFirmwareFile(File)
    */
-  public File getContikiFirmwareFile();
+  File getContikiFirmwareFile();
 
   /**
    * @param file Contiki firmware file or library.
    * @see #getContikiFirmwareFile()
    */
-  public void setContikiFirmwareFile(File file);
+  void setContikiFirmwareFile(File file);
 
   /**
    * Commands used to build the Contiki firmware from the Contiki source.
@@ -121,26 +121,26 @@ public interface MoteType {
    * @see #getContikiFirmwareFile()
    * @see #getContikiSourceFile()
    */
-  public String getCompileCommands();
+  String getCompileCommands();
 
   /**
    * @param commands Compile commands
    * @see #getCompileCommands()
    */
-  public void setCompileCommands(String commands);
+  void setCompileCommands(String commands);
 
   /**
    * @return Mote interface classes of mote type.
    * @see #setMoteInterfaceClasses(Class[])
    */
-  public Class<? extends MoteInterface>[] getMoteInterfaceClasses();
+  Class<? extends MoteInterface>[] getMoteInterfaceClasses();
 
   /**
    * Sets mote interface Java classes of mote type.
    *
    * @param classes Mote interface classes
    */
-  public void setMoteInterfaceClasses(Class<? extends MoteInterface>[] classes);
+  void setMoteInterfaceClasses(Class<? extends MoteInterface>[] classes);
 
   /**
    * Returns a panel with mote type specific data.
@@ -148,14 +148,14 @@ public interface MoteType {
    *
    * @return Mote type visualizer
    */
-  public JComponent getTypeVisualizer();
+  JComponent getTypeVisualizer();
 
   /**
    * Returns this mote type's project configuration.
    *
    * @return Project configuration
    */
-  public ProjectConfig getConfig();
+  ProjectConfig getConfig();
 
   /**
    * Generates a mote of this mote type.
@@ -164,7 +164,7 @@ public interface MoteType {
    *          Simulation that will contain mote
    * @return New mote
    */
-  public Mote generateMote(Simulation simulation);
+  Mote generateMote(Simulation simulation);
 
   /**
    * This method configures and initializes a mote type ready to be used. It is
@@ -182,7 +182,7 @@ public interface MoteType {
    *          True if this method is allowed to show a visualizer
    * @return True if mote type has valid settings and is ready to be used
    */
-  public boolean configureAndInit(Container parentContainer, Simulation simulation,
+  boolean configureAndInit(Container parentContainer, Simulation simulation,
       boolean visAvailable) throws MoteTypeCreationException;
 
   /**
@@ -195,7 +195,7 @@ public interface MoteType {
    *          Current simulation
    * @return XML elements representing the current mote type's config
    */
-  public Collection<Element> getConfigXML(Simulation simulation);
+  Collection<Element> getConfigXML(Simulation simulation);
 
   /**
    * Sets the current mote type config depending on the given XML elements.
@@ -212,11 +212,11 @@ public interface MoteType {
    *          True if this method is allowed to show a visualizer
    * @return True if config was set successfully, false otherwise
    */
-  public boolean setConfigXML(
+  boolean setConfigXML(
       Simulation simulation, Collection<Element> configXML, boolean visAvailable)
   throws MoteTypeCreationException;
 
-  public static class MoteTypeCreationException extends Exception {
+  class MoteTypeCreationException extends Exception {
     private MessageList compilationOutput;
 
     public MoteTypeCreationException(String message) {

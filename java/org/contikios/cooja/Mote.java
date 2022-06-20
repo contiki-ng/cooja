@@ -48,7 +48,7 @@ public interface Mote {
   /**
    * @return Unique mote ID
    */
-  public int getID();
+  int getID();
 
   /**
    * Returns the interface handler of this mote.
@@ -56,7 +56,7 @@ public interface Mote {
    * @see org.contikios.cooja.contikimote.ContikiMote#setInterfaces(MoteInterfaceHandler)
    * @return Mote interface handler
    */
-  public MoteInterfaceHandler getInterfaces();
+  MoteInterfaceHandler getInterfaces();
 
   /**
    * Returns the memory of this mote.
@@ -64,7 +64,7 @@ public interface Mote {
    * @see org.contikios.cooja.contikimote.ContikiMote#setMemory(SectionMoteMemory)
    * @return Mote memory
    */
-  public MemoryInterface getMemory();
+  MemoryInterface getMemory();
 
   /**
    * Returns mote type.
@@ -72,7 +72,7 @@ public interface Mote {
    * @see org.contikios.cooja.contikimote.ContikiMote#setType(MoteType)
    * @return Mote type
    */
-  public MoteType getType();
+  MoteType getType();
 
   /**
    * Returns simulation which holds this mote.
@@ -80,7 +80,7 @@ public interface Mote {
    * @see org.contikios.cooja.contikimote.ContikiMote#setSimulation(Simulation)
    * @return Simulation
    */
-  public Simulation getSimulation();
+  Simulation getSimulation();
 
   /**
    * Returns XML elements representing the current config of this mote. This is
@@ -92,7 +92,7 @@ public interface Mote {
    * @see #setConfigXML(Simulation, Collection, boolean)
    * @return XML elements representing the current mote config
    */
-  public abstract Collection<Element> getConfigXML();
+  Collection<Element> getConfigXML();
 
   /**
    * Sets the current mote config depending on the given XML elements.
@@ -104,14 +104,14 @@ public interface Mote {
    *
    * @see #getConfigXML()
    */
-  public abstract boolean setConfigXML(Simulation simulation,
+  boolean setConfigXML(Simulation simulation,
       Collection<Element> configXML, boolean visAvailable);
 
   /**
    * Called when mote is removed from simulation
    */
-  public void removed();
+  void removed();
 
-  public void setProperty(String key, Object obj);
-  public Object getProperty(String key);
+  void setProperty(String key, Object obj);
+  Object getProperty(String key);
 }

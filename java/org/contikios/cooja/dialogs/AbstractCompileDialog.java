@@ -240,11 +240,7 @@ public abstract class AbstractCompileDialog extends JDialog {
               return true;
             }
 
-            if (canLoadFirmware(f)) {
-              return true;
-            }
-
-            return false;
+            return canLoadFirmware(f);
           }
 
           @Override
@@ -455,10 +451,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     if (contikiFirmware == null) {
       return false;
     }
-    if (!contikiFirmware.exists()) {
-      return false;
-    }
-    return true;
+    return contikiFirmware.exists();
   }
 
   /**

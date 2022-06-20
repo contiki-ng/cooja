@@ -57,7 +57,6 @@ import se.sics.mspsim.platform.sky.SkyNode;
 public class SkyLED extends LED {
   private static final Logger logger = LogManager.getLogger(SkyLED.class);
 
-  private final SkyMote mspMote;
   private boolean blueOn = false;
   private boolean greenOn = false;
   private boolean redOn = false;
@@ -70,7 +69,7 @@ public class SkyLED extends LED {
   private static final Color RED = new Color(255, 0, 0);
 
   public SkyLED(Mote mote) {
-    mspMote = (SkyMote) mote;
+    var mspMote = (SkyMote) mote;
 
     IOUnit unit = mspMote.getCPU().getIOUnit("Port 5");
     if (unit instanceof IOPort) {

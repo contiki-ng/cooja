@@ -785,9 +785,7 @@ public class RadioLogger extends VisPlugin {
           }
 
           if (hideNoDestinationPackets) {
-            if (current.connection.getDestinations().length == 0) {
-              return false;
-            }
+            return current.connection.getDestinations().length != 0;
           }
 
           return true;
@@ -1017,7 +1015,7 @@ public class RadioLogger extends VisPlugin {
       if (data == null) {
         RadioLogger.this.prepareDataString(this);
       }
-      return Long.toString(startTime / Simulation.MILLISECOND) + "\t"
+      return startTime / Simulation.MILLISECOND + "\t"
               + connection.getSource().getMote().getID() + "\t"
               + getDestString(this) + "\t"
               + data;

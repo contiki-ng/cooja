@@ -460,7 +460,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
             StringBuilder sb = new StringBuilder();
             sb.append("<html>");
             do {
-              sb.append(t.substring(0, 60)).append("<br>");
+              sb.append(t, 0, 60).append("<br>");
               t = t.substring(60);
             } while (t.length() > 60);
             return sb.append(t).append("</html>").toString();
@@ -793,9 +793,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
             }
           }
           if (hideDebug) {
-            if (entry.getStringValue(COLUMN_DATA).startsWith("DEBUG: ")) {
-              return false;
-            }
+            return !entry.getStringValue(COLUMN_DATA).startsWith("DEBUG: ");
           }
           return true;
         }
@@ -901,7 +899,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     /* Append to file */
     if (!appendToFileWroteHeader) {
-      appendStream.println("-- Log Listener [" + simulation.getTitle() + "]: Started at " + (new Date()).toString());
+      appendStream.println("-- Log Listener [" + simulation.getTitle() + "]: Started at " + (new Date()));
       appendToFileWroteHeader = true;
     }
     appendStream.print(text);

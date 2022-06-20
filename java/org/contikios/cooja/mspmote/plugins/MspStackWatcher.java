@@ -235,7 +235,7 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
     }
 
     element = new Element("monitoring");
-    element.setText("" + toggleButton.isSelected());
+    element.setText(String.valueOf(toggleButton.isSelected()));
     config.add(element);
 
     return config;

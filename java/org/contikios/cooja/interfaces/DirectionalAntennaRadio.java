@@ -43,7 +43,7 @@ public interface DirectionalAntennaRadio {
    *
    * @see #getRelativeGain(double, double)
    */
-  public double getDirection();
+  double getDirection();
 
   /**
    * Relative gain (dB) as compared to an omnidirectional antenna.
@@ -54,13 +54,13 @@ public interface DirectionalAntennaRadio {
    * @param distance Distance from antenna
    * @return
    */
-  public double getRelativeGain(double radians, double distance);
+  double getRelativeGain(double radians, double distance);
 
-  public void addDirectionChangeListener(DirectionChangeListener l);
-  public void removeDirectionChangeListener(DirectionChangeListener l);
+  void addDirectionChangeListener(DirectionChangeListener l);
+  void removeDirectionChangeListener(DirectionChangeListener l);
 
-  public interface DirectionChangeListener {
-    public void newDirection(DirectionalAntennaRadio radio, double direction);
+  interface DirectionChangeListener {
+    void newDirection(DirectionalAntennaRadio radio, double direction);
   }
 
 }

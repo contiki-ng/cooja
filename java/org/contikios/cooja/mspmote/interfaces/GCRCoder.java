@@ -106,10 +106,8 @@ public class GCRCoder {
   boolean gcr_valid() {
     if (gcr_bits >= 10) {
       int val = gcr_val & 0x3ff;
-      if ((GCR_decode[val >> 5] << 4) == 0xff
-          || (GCR_decode[val & 0x1f]) == 0xff) {
-        return false;
-      }
+      return (GCR_decode[val >> 5] << 4) != 0xff
+              && (GCR_decode[val & 0x1f]) != 0xff;
     }
     return true;
   }

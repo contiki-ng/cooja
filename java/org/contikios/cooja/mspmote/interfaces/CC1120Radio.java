@@ -413,10 +413,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 	}
 
   public boolean canReceiveFrom(CustomDataRadio radio) {
-    if (radio.getClass().equals(this.getClass())) {
-      return true;
-    }
-    return false;
+    return radio.getClass().equals(this.getClass());
   }
 
 }

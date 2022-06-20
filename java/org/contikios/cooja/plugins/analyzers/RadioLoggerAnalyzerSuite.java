@@ -33,6 +33,6 @@ package org.contikios.cooja.plugins.analyzers;
 import java.util.ArrayList;
 
 public interface RadioLoggerAnalyzerSuite {
-  public String getDescription();
-  public ArrayList<PacketAnalyzer> getAnalyzers();
+  String getDescription();
+  ArrayList<PacketAnalyzer> getAnalyzers();
 }

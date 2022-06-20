@@ -222,12 +222,12 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       private final Logger mlogger = LogManager.getLogger("MSPSim");
       @Override
       public void log(Loggable source, String message) {
-        mlogger.debug("" + getID() + ": " + source.getID() + ": " + message);
+        mlogger.debug(getID() + ": " + source.getID() + ": " + message);
       }
 
       @Override
       public void logw(Loggable source, WarningType type, String message) throws EmulationException {
-        mlogger.warn("" + getID() +": " + "# " + source.getID() + "[" + type + "]: " + message);
+        mlogger.warn(getID() + ": " + "# " + source.getID() + "[" + type + "]: " + message);
       }
     };
 
@@ -294,8 +294,8 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private double jumpError = 0.;
 
-  private long executed = 0;
-  private long skipped = 0;
+  private final long executed = 0;
+  private final long skipped = 0;
 
   public void execute(long time) {
     execute(time, EXECUTE_DURATION_US);
@@ -359,19 +359,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     /* XXX TODO Reimplement stack monitoring using MSPSim internals */
-    /*if (monitorStackUsage) {
-      int newStack = cpu.reg[MSP430.SP];
-      if (newStack < stackPointerLow && newStack > 0) {
-        stackPointerLow = cpu.reg[MSP430.SP];
-
-        // Check if stack is writing in memory
-        if (stackPointerLow < heapStartAddress) {
-          stackOverflowObservable.signalStackOverflow();
-          stopNextInstruction = true;
-          getSimulation().stopSimulation();
-        }
-      }
-    }*/
   }
 
   private void driftExecute(MspClock clock, long t, int duration) {
@@ -442,19 +429,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     /* XXX TODO Reimplement stack monitoring using MSPSim internals */
-    /*if (monitorStackUsage) {
-      int newStack = cpu.reg[MSP430.SP];
-      if (newStack < stackPointerLow && newStack > 0) {
-        stackPointerLow = cpu.reg[MSP430.SP];
-
-        // Check if stack is writing in memory
-        if (stackPointerLow < heapStartAddress) {
-          stackOverflowObservable.signalStackOverflow();
-          stopNextInstruction = true;
-          getSimulation().stopSimulation();
-        }
-      }
-    }*/
   }
 
   public String getStackTrace() {
@@ -617,7 +591,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     file = file==null?"?":file;
     if (file.contains("/")) {
       /* strip path */
-      file = file.substring(file.lastIndexOf('/')+1, file.length());
+      file = file.substring(file.lastIndexOf('/')+1);
     }
 
     String function = di.getFunction();
@@ -706,9 +680,10 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     /* Match file */
     Hashtable<Integer, Integer> lineTable = debuggingInfo.get(file);
     if (lineTable == null) {
-      for (File f: debuggingInfo.keySet()) {
+      for (var entry : debuggingInfo.entrySet()) {
+        File f = entry.getKey();
         if (f != null && f.getName().equals(file.getName())) {
-          lineTable = debuggingInfo.get(f);
+          lineTable = entry.getValue();
           break;
         }
       }
@@ -720,10 +695,11 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     /* Match line number */
     Integer address = lineTable.get(lineNr);
     if (address != null) {
-      for (Integer l: lineTable.keySet()) {
+      for (var entry : lineTable.entrySet()) {
+        Integer l = entry.getKey();
         if (l != null && l == lineNr) {
           /* Found line address */
-          return lineTable.get(l);
+          return entry.getValue();
         }
       }
     }

@@ -72,16 +72,14 @@ class AngleInterval {
       Interval tempInterval;
       if (startAngle < endAngle) {
         tempInterval = new Interval(startAngle, endAngle);
-        if (!tempInterval.isEmpty())
-          subIntervals.add(tempInterval);
       } else {
         tempInterval = new Interval(startAngle, 2*Math.PI);
         if (!tempInterval.isEmpty())
           subIntervals.add(tempInterval);
         tempInterval = new Interval(0, endAngle);
-        if (!tempInterval.isEmpty())
-          subIntervals.add(tempInterval);
       }
+      if (!tempInterval.isEmpty())
+        subIntervals.add(tempInterval);
     }
   }
   
@@ -95,10 +93,8 @@ class AngleInterval {
    * @return New intervals
    */
   public Vector<AngleInterval> subtract(AngleInterval intervalToSubtract) {
-    Vector<Interval> afterSubtractionIntervals = new Vector<>();
-    
     // Before subtraction
-    afterSubtractionIntervals.addAll(subIntervals);
+    var afterSubtractionIntervals = new Vector<Interval>(subIntervals);
     
     if (intervalToSubtract == null) {
       Vector<AngleInterval> ret = new Vector<>();
@@ -294,9 +290,7 @@ class AngleInterval {
   public boolean isEmpty() {
     if (subIntervals.isEmpty())
       return true;
-    if (getSize() <= 0.001)
-      return true;
-    return false;
+    return getSize() <= 0.001;
   }
   
   public String toString() {

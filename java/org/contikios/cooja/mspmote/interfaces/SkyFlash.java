@@ -65,7 +65,7 @@ public class SkyFlash extends MoteInterface {
 
   public SkyFlash(Mote mote) {
     MspMote mspMote = (MspMote) mote;
-    m24p80 = (CoojaM25P80) mspMote.getCPU().getChip(CoojaM25P80.class);
+    m24p80 = mspMote.getCPU().getChip(CoojaM25P80.class);
     if (m24p80 == null) {
       throw new IllegalStateException("Mote is not equipped with an M25P80");
     }

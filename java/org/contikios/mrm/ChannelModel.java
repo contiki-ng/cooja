@@ -77,13 +77,13 @@ public class ChannelModel {
 
   private Hashtable<Parameter,Object> parametersDefaults = new Hashtable<>();
   private final Hashtable<Parameter,Object> parameters = new Hashtable<>();
-  private Properties parameterDescriptions = new Properties();
+  private final Properties parameterDescriptions = new Properties();
 
   // Parameters used for speeding up calculations
   private boolean needToPrecalculateFSPL = true;
   private static double paramFSPL = 0;
   private boolean needToPrecalculateOutputPower = true;
-  private static double paramOutputPower = 0;
+  private static final double paramOutputPower = 0;
 
   private ObstacleWorld myObstacleWorld = new ObstacleWorld();
 
@@ -92,9 +92,6 @@ public class ChannelModel {
   private StringBuilder logInfo = null;
   private ArrayList<Line2D> loggedRays = null;
 
-  private final Simulation simulation;
-
-  
   // Ray tracing components temporary vector
   private final Vector<Vector<Line2D>> calculatedVisibleSides = new Vector<>();
   private final Vector<Point2D> calculatedVisibleSidesSources = new Vector<>();
@@ -282,8 +279,6 @@ public class ChannelModel {
   }
   
   public ChannelModel(Simulation simulation) {
-    this.simulation = simulation;
-    
     /* Default values */
     for (Parameter p: Parameter.values()) {
       parameters.put(p, Parameter.getDefaultValue(p));
@@ -560,7 +555,7 @@ public class ChannelModel {
    * @param secondLine Second line
    * @return Intersection point of the two lines or null
    */
-  private Point2D getIntersectionPoint(Line2D firstLine, Line2D secondLine) {
+  private static Point2D getIntersectionPoint(Line2D firstLine, Line2D secondLine) {
     double dx1 = firstLine.getX2() - firstLine.getX1();
     double dy1 = firstLine.getY2() - firstLine.getY1();
     double dx2 = secondLine.getX2() - secondLine.getX1();
@@ -588,7 +583,7 @@ public class ChannelModel {
    * @param secondLine Second line
    * @return Intersection point of the two infinite lines or null if parallell
    */
-  private Point2D getIntersectionPointInfinite(Line2D firstLine, Line2D secondLine) {
+  private static Point2D getIntersectionPointInfinite(Line2D firstLine, Line2D secondLine) {
     double dx1 = firstLine.getX2() - firstLine.getX1();
     double dy1 = firstLine.getY2() - firstLine.getY1();
     double dx2 = secondLine.getX2() - secondLine.getX1();
@@ -1441,7 +1436,7 @@ public class ChannelModel {
       Enumeration<RayPath> pathsEnum = allPaths.elements();
       while (pathsEnum.hasMoreElements()) {
         RayPath currentPath = pathsEnum.nextElement();
-        logInfo.append("* " + currentPath + "\n");
+        logInfo.append("* ").append(currentPath).append("\n");
         for (int i=0; i < currentPath.getSubPathCount(); i++) {
           loggedRays.add(currentPath.getSubPath(i));
         }
@@ -1565,12 +1560,12 @@ public class ChannelModel {
         // Using Rician fading approach, TODO Only one best signal considered - combine these? (need two limits)
         totalPathGain += Math.pow(10, pathGain[i]/10.0)*Math.cos(2*Math.PI * pathModdedLengths[i]/wavelength);
         if (logMode) {
-          logInfo.append("Signal component: " + String.format("%2.3f", pathGain[i]) + " dB, phase " + String.format("%2.3f", (2*/*Math.PI* */ pathModdedLengths[i]/wavelength)) + " pi\n");
+          logInfo.append("Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths[i] / wavelength))).append(" pi\n");
         }
       } else if (logMode) {
         /* TODO Log mode affects result? */
         pathModdedLengths[i] = (pathLengths[i] - pathLengths[bestSignalNr]) % wavelength;
-        logInfo.append("(IGNORED) Signal component: " + String.format("%2.3f", pathGain[i]) + " dB, phase " + String.format("%2.3f", (2*/*Math.PI* */ pathModdedLengths[i]/wavelength)) + " pi\n");
+        logInfo.append("(IGNORED) Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths[i] / wavelength))).append(" pi\n");
       }
 
     }
@@ -1584,9 +1579,9 @@ public class ChannelModel {
     totalPathGain = 10*Math.log10(Math.abs(totalPathGain));
 
     if (logMode) {
-        logInfo.append("\nTotal path gain: " + String.format("%2.3f", totalPathGain) + " dB\n");
-        logInfo.append("Delay spread: " + String.format("%2.3f", delaySpread) + "\n");
-        logInfo.append("RMS delay spread: " + String.format("%2.3f", delaySpreadRMS) + "\n");
+        logInfo.append("\nTotal path gain: ").append(String.format("%2.3f", totalPathGain)).append(" dB\n");
+        logInfo.append("Delay spread: ").append(String.format("%2.3f", delaySpread)).append("\n");
+        logInfo.append("RMS delay spread: ").append(String.format("%2.3f", delaySpreadRMS)).append("\n");
     }
 
     // - Calculate received power -
@@ -1609,7 +1604,7 @@ public class ChannelModel {
 
     double receivedPower = outputPower + systemGain + transmitterGain + totalPathGain;
     if (logMode) {
-        logInfo.append("\nReceived signal strength: " + String.format("%2.3f", receivedPower) + " dB (variance " + accumulatedVariance + ")\n");
+        logInfo.append("\nReceived signal strength: ").append(String.format("%2.3f", receivedPower)).append(" dB (variance ").append(accumulatedVariance).append(")\n");
     }
 
     if (dataType == TransmissionData.DELAY_SPREAD || dataType == TransmissionData.DELAY_SPREAD_RMS) {
@@ -1619,7 +1614,7 @@ public class ChannelModel {
     return new double[] {receivedPower, accumulatedVariance};
   }
 
-  public class TrackedSignalComponents {
+  public static class TrackedSignalComponents {
     ArrayList<Line2D> components;
     String log;
   }
@@ -1700,7 +1695,7 @@ public class ChannelModel {
     snrData[1] += noiseVariance;
 
     if (logMode) {
-        logInfo.append("\nReceived SNR: " + String.format("%2.3f", snrData[0]) + " dB (variance " + snrData[1] + ")\n");
+        logInfo.append("\nReceived SNR: ").append(String.format("%2.3f", snrData[0])).append(" dB (variance ").append(snrData[1]).append(")\n");
     }
     return snrData;
   }
@@ -1758,7 +1753,7 @@ public class ChannelModel {
     double probReception = 1 - GaussianWrapper.cdfErrorAlgo(threshold, snrMean, snrStdDev);
 
     if (logMode) {
-      logInfo.append("Reception probability: " + String.format("%1.1f%%", 100*probReception) + "\n");
+      logInfo.append("Reception probability: ").append(String.format("%1.1f%%", 100 * probReception)).append("\n");
     }
 
     // Returns probabilities

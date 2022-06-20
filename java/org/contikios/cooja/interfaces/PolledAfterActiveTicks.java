@@ -40,5 +40,5 @@ import org.contikios.cooja.contikimote.interfaces.ContikiRS232;
  * @author Fredrik Osterlind
  */
 public interface PolledAfterActiveTicks {
-  public void doActionsAfterTick();
+  void doActionsAfterTick();
 }

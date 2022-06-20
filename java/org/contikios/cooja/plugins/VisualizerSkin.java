@@ -55,7 +55,7 @@ public interface VisualizerSkin {
    * @see #paintAfterMotes(Graphics)
    * @see #setInactive()
    */
-  public void setActive(Simulation sim, Visualizer visualizer);
+  void setActive(Simulation sim, Visualizer visualizer);
 
   /**
    * Deactivates skin.
@@ -63,7 +63,7 @@ public interface VisualizerSkin {
    *
    * @see #setActive(Simulation, Visualizer)
    */
-  public void setInactive();
+  void setInactive();
 
   /**
    * Returns mote colors.
@@ -75,7 +75,7 @@ public interface VisualizerSkin {
    * @param mote Mote
    * @return Color[] { Inner color, Outer color }
    */
-  public Color[] getColorOf(Mote mote);
+  Color[] getColorOf(Mote mote);
 
   /**
    * Called every time the visualizer plugin is repainted.
@@ -83,7 +83,7 @@ public interface VisualizerSkin {
    *
    * @param g Graphics
    */
-  public void paintBeforeMotes(Graphics g);
+  void paintBeforeMotes(Graphics g);
 
   /**
    * Called every time the visualizer plugin is repainted.
@@ -91,11 +91,11 @@ public interface VisualizerSkin {
    *
    * @param g Graphics
    */
-  public void paintAfterMotes(Graphics g);
+  void paintAfterMotes(Graphics g);
 
   /**
    * @return Visualizer plugin where this skin is showing
    */
-  public Visualizer getVisualizer();
+  Visualizer getVisualizer();
 
 }
