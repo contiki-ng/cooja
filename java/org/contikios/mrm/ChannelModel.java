@@ -81,7 +81,7 @@ public class ChannelModel {
 
   // Parameters used for speeding up calculations
   private boolean needToPrecalculateFSPL = true;
-  private static double paramFSPL = 0;
+  private double paramFSPL = 0;
   private boolean needToPrecalculateOutputPower = true;
   private static final double paramOutputPower = 0;
 
