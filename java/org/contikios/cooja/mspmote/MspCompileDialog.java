@@ -56,8 +56,6 @@ public class MspCompileDialog extends AbstractCompileDialog {
     /* Show dialog and wait for user */
     dialog.setVisible(true); /* BLOCKS */
     return dialog.createdOK();
-
-    /* Assume that if a firmware exists, compilation was ok */
   }
 
   private MspCompileDialog(Container parent, Simulation simulation, MspMoteType moteType, String target) {
