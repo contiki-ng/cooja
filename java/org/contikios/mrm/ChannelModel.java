@@ -77,13 +77,10 @@ public class ChannelModel {
 
   private Hashtable<Parameter,Object> parametersDefaults = new Hashtable<>();
   private final Hashtable<Parameter,Object> parameters = new Hashtable<>();
-  private final Properties parameterDescriptions = new Properties();
 
   // Parameters used for speeding up calculations
   private boolean needToPrecalculateFSPL = true;
   private double paramFSPL = 0;
-  private boolean needToPrecalculateOutputPower = true;
-  private static final double paramOutputPower = 0;
 
   private ObstacleWorld myObstacleWorld = new ObstacleWorld();
 
@@ -430,7 +427,6 @@ public class ChannelModel {
 
     // Guessing we need to recalculate input to FSPL+Output power
     needToPrecalculateFSPL = true;
-    needToPrecalculateOutputPower = true;
 
     settingsObservable.setChangedAndNotify();
   }
@@ -940,7 +936,6 @@ public class ChannelModel {
    */
   protected double getFastFading(double sourceX, double sourceY, double destX, double destY) {
     Point2D dest = new Point2D.Double(destX, destY);
-    Point2D source = new Point2D.Double(sourceX, sourceY);
 
     // Destination inside an obstacle? => no reflection factor
     for (int i=0; i < myObstacleWorld.getNrObstacles(); i++) {
@@ -1842,7 +1837,6 @@ public class ChannelModel {
       }
     }
     needToPrecalculateFSPL = true;
-    needToPrecalculateOutputPower = true;
     settingsObservable.setChangedAndNotify();
     return true;
   }
