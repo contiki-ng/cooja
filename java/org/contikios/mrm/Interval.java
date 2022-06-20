@@ -207,8 +207,8 @@ class Interval {
    */
   static public Vector<Interval> subtract(Vector<Interval> initialIntervals, Interval interval) {
     Vector<Interval> newIntervals = new Vector<>();
-    for (int i=0; i < initialIntervals.size(); i++) {
-      Vector<Interval> tempIntervals = initialIntervals.get(i).subtract(interval);
+    for (var initialInterval : initialIntervals) {
+      Vector<Interval> tempIntervals = initialInterval.subtract(interval);
       if (tempIntervals != null)
         newIntervals.addAll(tempIntervals);
     }

@@ -560,22 +560,19 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
   private final Observer channelModelSettingsObserver = new Observer() {
     public void update(Observable obs, Object obj) {
       // Update all integers
-      for (int i=0; i < allIntegerParameters.size(); i++) {
-        JFormattedTextField textField = allIntegerParameters.get(i);
+      for (var textField : allIntegerParameters) {
         Parameter id = (Parameter) textField.getClientProperty("id");
         textField.setValue(channelModel.getParameterValue(id));
       }
 
       // Update all doubles
-      for (int i=0; i < allDoubleParameters.size(); i++) {
-        JFormattedTextField textField = allDoubleParameters.get(i);
+      for (var textField : allDoubleParameters) {
         Parameter id = (Parameter) textField.getClientProperty("id");
         textField.setValue(channelModel.getParameterValue(id));
       }
 
       // Update all booleans
-      for (int i=0; i < allBooleanParameters.size(); i++) {
-        JCheckBox checkBox = allBooleanParameters.get(i);
+      for (var checkBox : allBooleanParameters) {
         Parameter id = (Parameter) checkBox.getClientProperty("id");
         checkBox.setSelected(channelModel.getParameterBooleanValue(id));
       }

@@ -79,8 +79,7 @@ public class RayPath {
       return "Malformed ray path (last == first element)";
 
     var retVal = new StringBuilder();
-    for (int i=0; i < types.size(); i++) {
-      RayData.RayType currentType = types.get(i);
+    for (var currentType : types) {
       if (currentType == RayData.RayType.DESTINATION)
         retVal.append(" DEST ");
       else if (currentType == RayData.RayType.DIFFRACTION)

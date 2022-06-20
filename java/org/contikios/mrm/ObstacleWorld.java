@@ -256,19 +256,19 @@ class ObstacleWorld {
       }
       currentDistance++;  
     }
-      
-    for (int pointNr=0; pointNr < pointsToCheck.size(); pointNr++) {
+
+    for (var point : pointsToCheck) {
       // Check which obstacles should be in this box
       boolean hit = false;
-      int x = pointsToCheck.get(pointNr).x;
-      int y = pointsToCheck.get(pointNr).y;
-      
+      int x = point.x;
+      int y = point.y;
+
       // Test if we are inside test box
       if (!hit) {
         if (new Rectangle2D.Double(
             areaStartX + x*boxWidth, 
             areaStartY + y*boxHeight, 
-            boxWidth, 
+            boxWidth,
             boxHeight).contains(center)) {
           hit = true;
           for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) {
@@ -536,8 +536,8 @@ class ObstacleWorld {
    */
   public void recreateOuterBounds() {
     outerBounds = new Rectangle2D.Double(0,0,0,0);
-    for (int i=0; i < allObstacles.size(); i++) {
-      outerBounds = outerBounds.createUnion(allObstacles.get(i));
+    for (var allObstacle : allObstacles) {
+      outerBounds = outerBounds.createUnion(allObstacle);
     }
     obstaclesOrganized = false;
   }
@@ -563,9 +563,9 @@ class ObstacleWorld {
       for (int y=0; y < spatialResolution; y++) {
         // Check which obstacles should be in this box
         Rectangle2D boxToCheck = new Rectangle2D.Double(currentBoxMinX + x*boxWidth, currentBoxMinY + y*boxHeight, boxWidth, boxHeight);
-        for (int i=0; i < allObstacles.size(); i++) {
-          if (allObstacles.get(i).intersects(boxToCheck)) {
-            allObstaclesSpatial[x][y].add(allObstacles.get(i));
+        for (var allObstacle : allObstacles) {
+          if (allObstacle.intersects(boxToCheck)) {
+            allObstaclesSpatial[x][y].add(allObstacle);
           }
         }
       }
