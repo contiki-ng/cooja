@@ -82,11 +82,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
     logArea.setEditable(false);
     panel.add(new JScrollPane(logArea), BorderLayout.CENTER);
 
-    LineListener lineListener = new LineListener() {
-      public void lineRead(String line) {
-        addCLIData(line);
-      }
-    };
+    LineListener lineListener = this::addCLIData;
     PrintStream po = new PrintStream(new LineOutputStream(lineListener));
     final CommandContext commandContext = new CommandContext(mspMote.getCLICommandHandler(), null, "", new String[0], 1, null);
     commandContext.out = po;
