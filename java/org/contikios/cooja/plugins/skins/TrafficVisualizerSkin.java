@@ -93,15 +93,8 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
       if (historyList.size() > 0) {
 
         synchronized (historyList) {
-          /* Increase age and remove too old arrows */
-          Iterator<RadioConnectionArrow> iter = historyList.iterator();
-          while (iter.hasNext()) {
-            RadioConnectionArrow rca = iter.next();
-            /* Try to increase age and remove if max age was reached */
-            if (!rca.increaseAge()) {
-              iter.remove();
-            }
-          }
+          /* Try to increase age and remove if max age was reached */
+          historyList.removeIf(rca -> !rca.increaseAge());
         }
 
         visualizer.repaint(500);

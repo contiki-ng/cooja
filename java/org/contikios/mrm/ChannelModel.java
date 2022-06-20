@@ -514,10 +514,8 @@ public class ChannelModel {
     // Calculate all resulting line points (should be 2)
     Vector<Point2D> intersectingLinePoints = new Vector<>();
 
-    for (int i=0; i < intersectedSides.size(); i++) {
-      intersectingLinePoints.add(
-          getIntersectionPoint(testLine, intersectedSides.get(i))
-      );
+    for (var intersectedSide : intersectedSides) {
+      intersectingLinePoints.add(getIntersectionPoint(testLine, intersectedSide));
     }
 
     // If only one side was intersected, one point must be inside rectangle
@@ -914,10 +912,10 @@ public class ChannelModel {
 
     // Check for intersections
     if (visibleSides != null) {
-      for (int i=0; i < visibleSides.size(); i++) {
-        if (visibleSides.get(i).intersectsLine(sourceToDest)) {
+      for (var visibleSide : visibleSides) {
+        if (visibleSide.intersectsLine(sourceToDest)) {
           // Check that intersection point is not destination
-          Point2D intersectionPoint = getIntersectionPointInfinite(visibleSides.get(i), sourceToDest);
+          var intersectionPoint = getIntersectionPointInfinite(visibleSide, sourceToDest);
           if (dest.distance(intersectionPoint) > 0.01) {
             return false;
           }
@@ -1076,8 +1074,7 @@ public class ChannelModel {
 
         // <<<< Get visible line candidates of these obstacles >>>>
         Vector<Line2D> visibleLineCandidates = new Vector<>();
-        for (int i=0; i < visibleObstacleCandidates.size(); i++) {
-          Rectangle2D obstacle = visibleObstacleCandidates.get(i);
+        for (var obstacle : visibleObstacleCandidates) {
           int outcode = obstacle.outcode(source);
 
           if ((outcode & Rectangle2D.OUT_BOTTOM) != 0) {
@@ -1109,9 +1106,7 @@ public class ChannelModel {
 
         // <<<< Get cropped visible line candidates of these lines >>>>
         Vector<Line2D> croppedVisibleLineCandidates = new Vector<>();
-        for (int i=0; i < visibleLineCandidates.size(); i++) {
-          Line2D lineCandidate = visibleLineCandidates.get(i);
-
+        for (var lineCandidate : visibleLineCandidates) {
           // Create angle interval of this line
           AngleInterval lineAngleInterval = AngleInterval.getAngleIntervalOfLine(source, lineCandidate);
 
@@ -1232,12 +1227,11 @@ public class ChannelModel {
           // Does any other line shadow this line?
           boolean unshadowed = true;
           boolean unhandledAnglesChanged = false;
-          for (int j=0; j < croppedVisibleLineCandidates.size(); j++) {
+          for (var shadowLineCandidate : croppedVisibleLineCandidates) {
 
             // Create shadow rectangle
-            Line2D shadowLineCandidate = croppedVisibleLineCandidates.get(j);
             Rectangle2D shadowRectangleCandidate = shadowLineCandidate.getBounds2D();
-            double minDelta = 0.01*Math.max(
+            double minDelta = 0.01 * Math.max(
                 shadowRectangleCandidate.getWidth(),
                 shadowRectangleCandidate.getHeight()
             );
@@ -1301,9 +1295,9 @@ public class ChannelModel {
                     AngleInterval.intersect(unhandledAngles, intersectedInterval);
 
                   if (tempVector1 != null) {
-                    for (int k=0; k < tempVector1.size(); k++) {
-                      if (tempVector1.get(k) != null && !tempVector1.get(k).isEmpty()) {
-                        newIntervalsToAdd.add(tempVector1.get(k));
+                    for (var interval : tempVector1) {
+                      if (interval != null && !interval.isEmpty()) {
+                        newIntervalsToAdd.add(interval);
                       }
                     }
                   }
@@ -1313,9 +1307,9 @@ public class ChannelModel {
                 Vector<AngleInterval> tempVector2 =
                   visibleLineCandidateAngleInterval.subtract(shadowLineCandidateAngleInterval);
                 if (tempVector2 != null) {
-                  for (int k=0; k < tempVector2.size(); k++) {
-                    if (tempVector2.get(k) != null && !tempVector2.get(k).isEmpty()) {
-                      newIntervalsToAdd.addAll(AngleInterval.intersect(unhandledAngles, tempVector2.get(k)));
+                  for (var interval : tempVector2) {
+                    if (interval != null && !interval.isEmpty()) {
+                      newIntervalsToAdd.addAll(AngleInterval.intersect(unhandledAngles, interval));
                     }
                   }
                 }
@@ -1326,10 +1320,10 @@ public class ChannelModel {
 
                 // Add new angle intervals
                 //logger.info("Split angle interval: " + visibleLineCandidateAngleInterval);
-                for (int k=0; k < newIntervalsToAdd.size(); k++) {
-                  if (newIntervalsToAdd.get(k) != null && !newIntervalsToAdd.get(k).isEmpty()) {
+                for (var interval : newIntervalsToAdd) {
+                  if (interval != null && !interval.isEmpty()) {
                     //logger.info("> into: " + newIntervalsToAdd.get(k));
-                    unhandledAngles.add(newIntervalsToAdd.get(k));
+                    unhandledAngles.add(interval);
                     unhandledAnglesChanged = true;
                   }
                 }
@@ -1489,9 +1483,7 @@ public class ChannelModel {
 
           Vector<Rectangle2D> allPossibleObstacles = myObstacleWorld.getAllObstaclesNear(subPath.getP1());
 
-          for (int k=0; k < allPossibleObstacles.size(); k++) {
-            Rectangle2D obstacle = allPossibleObstacles.get(k);
-
+          for (var obstacle : allPossibleObstacles) {
             // Calculate the intersection distance
             Line2D line = getIntersectionLine(
                 subPath.getP1().getX(),

@@ -99,9 +99,7 @@ public class ScriptParser {
       String match = matcher.group();
       int newLines = match.split("\n").length;
       var replacement = new StringBuilder();
-      for (int i=0; i < newLines; i++) {
-        replacement.append("\n");
-      }
+      replacement.append("\n".repeat(newLines));
       code = matcher.replaceFirst(replacement.toString());
       matcher.reset(code);
     }

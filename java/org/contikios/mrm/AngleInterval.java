@@ -94,7 +94,7 @@ class AngleInterval {
    */
   public Vector<AngleInterval> subtract(AngleInterval intervalToSubtract) {
     // Before subtraction
-    var afterSubtractionIntervals = new Vector<Interval>(subIntervals);
+    var afterSubtractionIntervals = new Vector<>(subIntervals);
     
     if (intervalToSubtract == null) {
       Vector<AngleInterval> ret = new Vector<>();
@@ -106,9 +106,8 @@ class AngleInterval {
     for (int i=0; i < intervalToSubtract.subIntervals.size(); i++) {
       Interval subIntervalToSubtract = intervalToSubtract.subIntervals.get(i);
       Vector<Interval> newAfterSubtractionIntervals = new Vector<>();
-      
-      for (int j=0; j < afterSubtractionIntervals.size(); j++) {
-        Vector<Interval> tempIntervals = afterSubtractionIntervals.get(j).subtract(subIntervalToSubtract);
+      for (var afterSubtractionInterval : afterSubtractionIntervals) {
+        Vector<Interval> tempIntervals = afterSubtractionInterval.subtract(subIntervalToSubtract);
         if (tempIntervals != null)
           newAfterSubtractionIntervals.addAll(tempIntervals);
       }
@@ -117,10 +116,10 @@ class AngleInterval {
     }
     
     Vector<AngleInterval> newAngleIntervals = new Vector<>();
-    for (int i=0; i < afterSubtractionIntervals.size(); i++) {
-      if (afterSubtractionIntervals.get(i) != null && !afterSubtractionIntervals.get(i).isEmpty())
+    for (var afterSubtractionInterval : afterSubtractionIntervals) {
+      if (afterSubtractionInterval != null && !afterSubtractionInterval.isEmpty())
         newAngleIntervals.add(
-            new AngleInterval(afterSubtractionIntervals.get(i).getLow(), afterSubtractionIntervals.get(i).getHigh())
+            new AngleInterval(afterSubtractionInterval.getLow(), afterSubtractionInterval.getHigh())
         );
     }
     
@@ -246,9 +245,7 @@ class AngleInterval {
    */
   public double getSize() {
     double size = 0;
-    for (int i=0; i < subIntervals.size(); i++)
-      size += subIntervals.get(i).getSize();
-    
+    for (var subInterval : subIntervals) size += subInterval.getSize();
     return size;
   }
   
@@ -295,12 +292,12 @@ class AngleInterval {
   
   public String toString() {
     String retString = "";
-    for (int i=0; i < subIntervals.size(); i++) {
+    for (var subInterval : subIntervals) {
       if (!retString.equals(""))
         retString = retString.concat(" && ");
-      
+
       retString = retString.concat("(");
-      retString = retString.concat(Math.toDegrees(subIntervals.get(i).getLow()) + " -> " + Math.toDegrees(subIntervals.get(i).getHigh()));
+      retString = retString.concat(Math.toDegrees(subInterval.getLow()) + " -> " + Math.toDegrees(subInterval.getHigh()));
       retString = retString.concat(")");
     }
     
@@ -374,9 +371,8 @@ class AngleInterval {
    */
   public static Vector<AngleInterval> subtract(Vector<AngleInterval> initialIntervals, AngleInterval interval) {
     Vector<AngleInterval> newIntervals = new Vector<>();
-    
-    for (int i=0; i < initialIntervals.size(); i++) {
-      Vector<AngleInterval> tempIntervals = initialIntervals.get(i).subtract(interval);
+    for (var initialInterval : initialIntervals) {
+      Vector<AngleInterval> tempIntervals = initialInterval.subtract(interval);
       if (tempIntervals != null) {
         newIntervals.addAll(tempIntervals);
       }
@@ -395,9 +391,8 @@ class AngleInterval {
    */
   public static Vector<AngleInterval> intersect(Vector<AngleInterval> initialIntervals, AngleInterval interval) {
     Vector<AngleInterval> newIntervals = new Vector<>();
-    
-    for (int i=0; i < initialIntervals.size(); i++) {
-      AngleInterval tempInterval = initialIntervals.get(i).intersectWith(interval);
+    for (var initialInterval : initialIntervals) {
+      AngleInterval tempInterval = initialInterval.intersectWith(interval);
       if (tempInterval != null) {
         newIntervals.add(tempInterval);
       }

@@ -31,6 +31,7 @@ package org.contikios.cooja.mspmote;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -383,8 +384,7 @@ public abstract class MspMoteType implements MoteType {
       }
       try {
         file = file.getCanonicalFile();
-      } catch (IOException e) {
-      } catch (java.security.AccessControlException e) {
+      } catch (IOException | AccessControlException e) {
       }
 
       Hashtable<Integer, Integer> lineToAddrHash = fileToLineHash.get(file);
