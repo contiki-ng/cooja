@@ -488,6 +488,72 @@ public class Cooja extends Observable {
     }
 
     Runtime.getRuntime().addShutdownHook(new ShutdownHandler(this));
+
+    if (!vis) {
+      return;
+    }
+    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+    // Menu bar.
+    frame.setJMenuBar(createMenuBar());
+
+    // Scrollable desktop.
+    myDesktopPane.setOpaque(true);
+
+    var container = new JPanel(new BorderLayout());
+    var scroll = new JScrollPane(myDesktopPane);
+    scroll.setBorder(null);
+    container.add(BorderLayout.CENTER, scroll);
+    container.add(BorderLayout.EAST, quickHelpScroll);
+    frame.setContentPane(container);
+
+    frame.setSize(700, 700);
+    frame.setLocationRelativeTo(null);
+    frame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosing(WindowEvent e) {
+        doQuit(true);
+      }
+    });
+    frame.addComponentListener(new ComponentAdapter() {
+      @Override
+      public void componentResized(ComponentEvent e) {
+        updateDesktopSize(getDesktopPane());
+      }
+    });
+
+    int framePosX = Integer.parseInt(getExternalToolsSetting("FRAME_POS_X", "0"));
+    int framePosY = Integer.parseInt(getExternalToolsSetting("FRAME_POS_Y", "0"));
+    int frameWidth = Integer.parseInt(getExternalToolsSetting("FRAME_WIDTH", "0"));
+    int frameHeight = Integer.parseInt(getExternalToolsSetting("FRAME_HEIGHT", "0"));
+    String frameScreen = getExternalToolsSetting("FRAME_SCREEN", "");
+
+    // Restore position to the same graphics device.
+    GraphicsDevice device = null;
+    for (var gd : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
+      if (gd.getIDstring().equals(frameScreen)) {
+        device = gd;
+        break;
+      }
+    }
+
+    // Restore frame size and position.
+    if (device != null) {
+      if (frameWidth == Integer.MAX_VALUE && frameHeight == Integer.MAX_VALUE) {
+        frame.setLocation(device.getDefaultConfiguration().getBounds().getLocation());
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+      } else if (frameWidth > 0 && frameHeight > 0) {
+        // Ensure Cooja is visible on screen.
+        boolean intersects =
+                device.getDefaultConfiguration().getBounds().intersects(
+                        new Rectangle(framePosX, framePosY, frameWidth, frameHeight));
+        if (intersects) {
+          frame.setLocation(framePosX, framePosY);
+          frame.setSize(frameWidth, frameHeight);
+        }
+      }
+    }
+    frame.setVisible(true);
   }
 
 
@@ -1071,78 +1137,6 @@ public class Cooja extends Observable {
     helpMenu.add(menuItem);
 
     return menuBar;
-  }
-
-  private static void configureFrame(final Cooja gui) {
-    frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
-    /* Menu bar */
-    frame.setJMenuBar(gui.createMenuBar());
-
-    /* Scrollable desktop */
-    JComponent desktop = gui.getDesktopPane();
-    desktop.setOpaque(true);
-
-    JScrollPane scroll = new JScrollPane(desktop);
-    scroll.setBorder(null);
-
-    JPanel container = new JPanel(new BorderLayout());
-    container.add(BorderLayout.CENTER, scroll);
-    container.add(BorderLayout.EAST, gui.quickHelpScroll);
-    frame.setContentPane(container);
-
-    frame.setSize(700, 700);
-    frame.setLocationRelativeTo(null);
-    frame.addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosing(WindowEvent e) {
-        gui.doQuit(true);
-      }
-    });
-    frame.addComponentListener(new ComponentAdapter() {
-      @Override
-      public void componentResized(ComponentEvent e) {
-        updateDesktopSize(gui.getDesktopPane());
-      }
-    });
-
-    /* Restore frame size and position */
-    int framePosX = Integer.parseInt(getExternalToolsSetting("FRAME_POS_X", "0"));
-    int framePosY = Integer.parseInt(getExternalToolsSetting("FRAME_POS_Y", "0"));
-    int frameWidth = Integer.parseInt(getExternalToolsSetting("FRAME_WIDTH", "0"));
-    int frameHeight = Integer.parseInt(getExternalToolsSetting("FRAME_HEIGHT", "0"));
-    String frameScreen = getExternalToolsSetting("FRAME_SCREEN", "");
-
-    /* Restore position to the same graphics device */
-    GraphicsDevice device = null;
-    GraphicsDevice[] all = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-    for (GraphicsDevice gd : all) {
-      if (gd.getIDstring().equals(frameScreen)) {
-        device = gd;
-      }
-    }
-
-    /* Check if frame should be maximized */
-    if (device != null) {
-      if (frameWidth == Integer.MAX_VALUE && frameHeight == Integer.MAX_VALUE) {
-        frame.setLocation(device.getDefaultConfiguration().getBounds().getLocation());
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-      } else if (frameWidth > 0 && frameHeight > 0) {
-
-        /* Sanity-check: will Cooja be visible on screen? */
-        boolean intersects =
-          device.getDefaultConfiguration().getBounds().intersects(
-              new Rectangle(framePosX, framePosY, frameWidth, frameHeight));
-
-        if (intersects) {
-          frame.setLocation(framePosX, framePosY);
-          frame.setSize(frameWidth, frameHeight);
-        }
-
-      }
-    }
-
-    frame.setVisible(true);
   }
 
   /**
@@ -2869,7 +2863,6 @@ public class Cooja extends Observable {
         @Override
         public void run() {
           Cooja gui = new Cooja(logDirectory, vis);
-          configureFrame(gui);
         }
       });
     } else {
@@ -2877,7 +2870,6 @@ public class Cooja extends Observable {
       var config = new File(vis ? options.action.quickstart : options.action.nogui);
       Simulation sim = null;
       if (vis) {
-        configureFrame(gui);
         sim = gui.doLoadConfig(config, true, options.randomSeed);
       } else {
         try {
