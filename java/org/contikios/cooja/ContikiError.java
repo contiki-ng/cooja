@@ -29,12 +29,12 @@
 package org.contikios.cooja;
 
 public class ContikiError extends RuntimeException {
-  final String contikiError;
 
-  public ContikiError(String message) {
-    super();
+  private final String contikiError;
 
-    this.contikiError = message;
+  public ContikiError(String message, String contikiError, Throwable cause) {
+    super(message, cause);
+    this.contikiError = contikiError;
   }
 
   public String getContikiError() {

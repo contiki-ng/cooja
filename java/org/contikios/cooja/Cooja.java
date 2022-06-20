@@ -3370,6 +3370,9 @@ public class Cooja extends Observable {
           if (exception instanceof ContikiError) {
             String contikiError = ((ContikiError) exception).getContikiError();
             MessageListUI list = new MessageListUI();
+            list.addMessage(exception.getMessage());
+            list.addMessage("");
+            list.addMessage("");
             for (String l: contikiError.split("\n")) {
               list.addMessage(l);
             }
