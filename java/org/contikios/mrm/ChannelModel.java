@@ -1386,14 +1386,8 @@ public class ChannelModel {
    * random variable. This method uses current parameters such as transmitted
    * power, obstacles, overall system loss etc.
    *
-   * @param sourceX
-   *          Source position X
-   * @param sourceY
-   *          Source position Y
-   * @param destX
-   *          Destination position X
-   * @param destY
-   *          Destination position Y
+   * @param txPair Information about the source and destination coordinates
+   *               and transmission power.
    * @return Received signal strength (dBm) random variable. The first value is
    *         the random variable mean, and the second is the variance.
    */
@@ -1616,10 +1610,8 @@ public class ChannelModel {
    * were to be made. The resulting rays depend on the current settings and may
    * include rays through obstacles, reflected rays or scattered rays.
    *
-   * @param sourceX Source position X
-   * @param sourceY Source position Y
-   * @param destX Destination position X
-   * @param destY Destination position Y
+   * @param txPair Information about the source and destination coordinates
+   *               and transmission power.
    * @return Signal components and printable description
    */
   public TrackedSignalComponents getRaysOfTransmission(TxPair txPair) {
@@ -1643,15 +1635,13 @@ public class ChannelModel {
   }
 
   /**
-   * Calculates and returns the signal to noise ratio (dB) of a signal sent from
+   * Calculates and returns the signal-to-noise ratio (dB) of a signal sent from
    * the given source position to the given destination position as a random
    * variable. This method uses current parameters such as transmitted power,
    * obstacles, overall system loss etc.
    *
-   * @param sourceX Source position X
-   * @param sourceY Source position Y
-   * @param destX Destination position X
-   * @param destY Destination position Y
+   * @param txPair Information about the source and destination coordinates
+   *               and transmission power.
    * @return Received SNR (dB) random variable:
    * The first value in the array is the random variable mean.
    * The second is the variance.
@@ -1702,10 +1692,8 @@ public class ChannelModel {
    * TODO Packet size
    * TODO External interference/Background noise
    *
-   * @param sourceX Source position X
-   * @param sourceY Source position Y
-   * @param destX Destination position X
-   * @param destY Destination position Y
+   * @param txPair Information about the source and destination coordinates
+   *               and transmission power.
    * @param interference Current interference at destination (dBm)
    * @return [Probability of reception, signal strength at destination]
    */
@@ -1757,18 +1745,12 @@ public class ChannelModel {
    * This method uses current parameters such as transmitted power,
    * obstacles, overall system loss, packet size etc. TODO Packet size?!
    *
-   * @param sourceX
-   *          Source position X
-   * @param sourceY
-   *          Source position Y
-   * @param destX
-   *          Destination position X
-   * @param destY
-   *          Destination position Y
+   * @param txPair Information about the source and destination coordinates
+   *               and transmission power.
    * @return RMS delay spread
    */
-  public double getRMSDelaySpread(TxPair tx) {
-    return getTransmissionData(tx, TransmissionData.DELAY_SPREAD)[1];
+  public double getRMSDelaySpread(TxPair txPair) {
+    return getTransmissionData(txPair, TransmissionData.DELAY_SPREAD)[1];
   }
 
   /**
