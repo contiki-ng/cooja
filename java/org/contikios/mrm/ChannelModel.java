@@ -680,7 +680,7 @@ public class ChannelModel {
 
     // Get possible diffraction sources
     Vector<Point2D> diffractionSources = null;
-    if (rayData.getDiffractedSubRaysLimit() > 0) {
+    if (rayData.getDiffractedSubRaysLimit() > 0 && visibleSides != null) {
       diffractionSources = getAllDiffractionSources(visibleSides);
     }
 
