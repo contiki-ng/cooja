@@ -2182,7 +2182,6 @@ public class Cooja extends Observable {
         cooja.doRemoveSimulation(false);
         PROGRESS_WARNINGS.clear();
         newSim = loadSimulationConfig(configFile, quick, manualRandomSeed);
-        cooja.setSimulation(newSim, false);
 
         /* Optionally show compilation warnings */
         boolean hideWarn = Boolean.parseBoolean(
@@ -2246,7 +2245,6 @@ public class Cooja extends Observable {
             cooja.doRemoveSimulation(false);
             PROGRESS_WARNINGS.clear();
             Simulation newSim = loadSimulationConfig(root, true, randomSeed);
-            cooja.setSimulation(newSim, false);
 
             if (autoStart) {
               newSim.startSimulation();
@@ -2884,9 +2882,6 @@ public class Cooja extends Observable {
       } else {
         try {
           sim = gui.loadSimulationConfig(config, true, options.randomSeed);
-          if (sim != null) {
-            gui.setSimulation(sim, false);
-          }
         } catch (Exception e) {
           logger.fatal("Exception when loading simulation: ", e);
         }
@@ -3035,7 +3030,7 @@ public class Cooja extends Observable {
         return null;
       }
     }
-
+    setSimulation(newSim, false);
     return newSim;
   }
 
