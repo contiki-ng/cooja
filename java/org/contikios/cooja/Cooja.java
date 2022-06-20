@@ -353,12 +353,46 @@ public class Cooja extends Observable {
    * Creates a new COOJA Simulator GUI.
    *
    * @param logDirectory Directory for log files
-   * @param desktop      Desktop pane
+   * @param vis          True if running in visual mode
    */
-  public Cooja(String logDirectory, JDesktopPane desktop) {
+  public Cooja(String logDirectory, boolean vis) {
     cooja = this;
     this.logDirectory = logDirectory;
     mySimulation = null;
+    final var desktop = new JDesktopPane() {
+      @Override
+      public void setBounds(int x, int y, int w, int h) {
+        super.setBounds(x, y, w, h);
+        updateDesktopSize(this);
+      }
+      @Override
+      public void remove(Component c) {
+        super.remove(c);
+        updateDesktopSize(this);
+      }
+      @Override
+      public Component add(Component comp) {
+        Component c = super.add(comp);
+        updateDesktopSize(this);
+        return c;
+      }
+    };
+    desktop.setDesktopManager(new DefaultDesktopManager() {
+      @Override
+      public void endResizingFrame(JComponent f) {
+        super.endResizingFrame(f);
+        updateDesktopSize(desktop);
+      }
+      @Override
+      public void endDraggingFrame(JComponent f) {
+        super.endDraggingFrame(f);
+        updateDesktopSize(desktop);
+      }
+    });
+    desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+    if (vis) {
+      frame = new JFrame(WINDOW_TITLE);
+    }
     myDesktopPane = desktop;
 
     /* Help panel */
@@ -1173,64 +1207,6 @@ public class Cooja extends Observable {
     desktop.revalidate();
   }
 
-  private static JDesktopPane createDesktopPane(boolean vis) {
-    final JDesktopPane desktop = new JDesktopPane() {
-      @Override
-      public void setBounds(int x, int y, int w, int h) {
-        super.setBounds(x, y, w, h);
-        updateDesktopSize(this);
-      }
-      @Override
-      public void remove(Component c) {
-        super.remove(c);
-        updateDesktopSize(this);
-      }
-      @Override
-      public Component add(Component comp) {
-        Component c = super.add(comp);
-        updateDesktopSize(this);
-        return c;
-      }
-    };
-    desktop.setDesktopManager(new DefaultDesktopManager() {
-      @Override
-      public void endResizingFrame(JComponent f) {
-        super.endResizingFrame(f);
-        updateDesktopSize(desktop);
-      }
-      @Override
-      public void endDraggingFrame(JComponent f) {
-        super.endDraggingFrame(f);
-        updateDesktopSize(desktop);
-      }
-    });
-    desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-    if (vis) {
-      frame = new JFrame(WINDOW_TITLE);
-    }
-    return desktop;
-  }
-
-  public static Simulation quickStartSimulationConfig(File config, boolean vis, Long manualRandomSeed, String logDirectory) {
-    Cooja gui = new Cooja(logDirectory, createDesktopPane(vis));
-    if (vis) {
-      configureFrame(gui);
-      gui.doLoadConfig(true, config, manualRandomSeed);
-      return gui.getSimulation();
-    }
-    try {
-      var newSim = gui.loadSimulationConfig(config, true, manualRandomSeed);
-      if (newSim == null) {
-        return null;
-      }
-      gui.setSimulation(newSim, false);
-      return newSim;
-    } catch (Exception e) {
-      logger.fatal("Exception when loading simulation: ", e);
-      return null;
-    }
-  }
-
   //// PROJECT CONFIG AND EXTENDABLE PARTS METHODS ////
 
   /**
@@ -1373,7 +1349,7 @@ public class Cooja extends Observable {
 
     /* Create extension class loader */
     try {
-      projectDirClassLoader = createClassLoader(currentProjects);
+      projectDirClassLoader = createClassLoader(ClassLoader.getSystemClassLoader(), currentProjects);
     } catch (ClassLoaderCreationException e) {
       throw new ParseProjectsException("Error when creating class loader", e);
     }
@@ -2431,23 +2407,6 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Create a new simulation
-   */
-  private void doCreateSimulation() {
-    /* Remove current simulation */
-    if (!doRemoveSimulation(true)) {
-      return;
-    }
-
-    // Create new simulation
-    Simulation newSim = new Simulation(this);
-    boolean createdOK = CreateSimDialog.showDialog(Cooja.getTopParentContainer(), newSim);
-    if (createdOK) {
-      cooja.setSimulation(newSim, true);
-    }
-  }
-
-  /**
    * Quit program
    *
    * @param askForConfirmation Should we ask for confirmation before quitting?
@@ -2782,11 +2741,6 @@ public class Cooja extends Observable {
     return null;
   }
 
-  private static ClassLoader createClassLoader(Collection<COOJAProject> projects)
-  throws ClassLoaderCreationException {
-    return createClassLoader(ClassLoader.getSystemClassLoader(), projects);
-  }
-
   public static File findJarFile(File projectDir, String jarfile) {
     File fp = new File(jarfile);
     if (!fp.exists()) {
@@ -2912,14 +2866,30 @@ public class Cooja extends Observable {
       javax.swing.SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          Cooja gui = new Cooja(logDirectory, createDesktopPane(true));
+          Cooja gui = new Cooja(logDirectory, true);
           configureFrame(gui);
         }
       });
     } else {
       var vis = options.action.quickstart != null;
-      String file = vis ? options.action.quickstart : options.action.nogui;
-      if (quickStartSimulationConfig(new File(file), vis, options.randomSeed, logDirectory) == null) {
+      var config = new File(vis ? options.action.quickstart : options.action.nogui);
+      Cooja gui = new Cooja(logDirectory, vis);
+      Simulation sim = null;
+      if (vis) {
+        configureFrame(gui);
+        gui.doLoadConfig(true, config, options.randomSeed);
+        sim = gui.getSimulation();
+      } else {
+        try {
+          sim = gui.loadSimulationConfig(config, true, options.randomSeed);
+          if (sim != null) {
+            gui.setSimulation(sim, false);
+          }
+        } catch (Exception e) {
+          logger.fatal("Exception when loading simulation: ", e);
+        }
+      }
+      if (sim == null) {
         System.exit(1);
       }
     }
@@ -3728,14 +3698,12 @@ public class Cooja extends Observable {
   public File createPortablePath(File file, boolean allowConfigRelativePaths) {
     File portable = createContikiRelativePath(file);
     if (portable != null) {
-      /*logger.info("Generated Contiki relative path '" + file.getPath() + "' to '" + portable.getPath() + "'");*/
       return portable;
     }
 
     if (allowConfigRelativePaths) {
       portable = createConfigRelativePath(file);
       if (portable != null) {
-        /*logger.info("Generated config relative path '" + file.getPath() + "' to '" + portable.getPath() + "'");*/
         return portable;
       }
     }
@@ -3760,17 +3728,14 @@ public class Cooja extends Observable {
 
     File absolute = restoreContikiRelativePath(file);
     if (absolute != null) {
-      /*logger.info("Restored Contiki relative path '" + file.getPath() + "' to '" + absolute.getPath() + "'");*/
       return absolute;
     }
 
-    absolute = restoreConfigRelativePath(file);
+    absolute = restoreConfigRelativePath(currentConfigFile, file);
     if (absolute != null) {
-      /*logger.info("Restored config relative path '" + file.getPath() + "' to '" + absolute.getPath() + "'");*/
       return absolute;
     }
 
-    /*logger.info("Portable path was not restored: '" + file.getPath());*/
     return file;
   }
 
@@ -3788,11 +3753,8 @@ public class Cooja extends Observable {
     	int match = -1;
     	int mlength = 0;
     	String fileCanonical = file.getCanonicalPath();
-      
-    	//No so nice, but goes along with GUI.getExternalToolsSetting
+      // Not so nice, but goes along with GUI.getExternalToolsSetting
 			String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
-    	
-    	
 		for(int i = 0; i < elem; i++){
 			path[i] = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));			
 			canonicals[i] = path[i].getCanonicalPath();
@@ -3801,12 +3763,10 @@ public class Cooja extends Observable {
 					mlength = canonicals[i].length();
 					match = i;
 				}
- 
 	    	}
 		}
       
 	    if(match == -1) return null;
-
 
 	    /* Replace Contiki's canonical path with Contiki identifier */
         String portablePath = fileCanonical.replaceFirst(
@@ -3823,7 +3783,6 @@ public class Cooja extends Observable {
 
         return portable;
     } catch (IOException e1) {
-      /*logger.warn("Error when converting to Contiki relative path: " + e1.getMessage());*/
       return null;
     }
   }
@@ -3835,35 +3794,22 @@ public class Cooja extends Observable {
 	String canonical = null;
 	
     try {
-    	    	
     	String portablePath = portable.getPath();
-    	
         int i = 0;
-        //logger.info("PPATH: " + portablePath);
-        
     	for(; i < elem; i++){
     		if (portablePath.startsWith(PATH_IDENTIFIER[i][0])) break;
-    		
     	}
-    	
-    	
     	if(i == elem) return null;
-       //logger.info("Found: " + PATH_IDENTIFIER[i][0]);
-    	
-    	//No so nice, but goes along with GUI.getExternalToolsSetting
+
+      // Not so nice, but goes along with GUI.getExternalToolsSetting
 			String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
     	path = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));
     	
-    	//logger.info("Config: " + PATH_IDENTIFIER[i][1] + ", " + defp + PATH_IDENTIFIER[i][2] + " = " + path.toString());
 		canonical = path.getCanonicalPath();
-    	
-    
     	File absolute = new File(portablePath.replace(PATH_IDENTIFIER[i][0], canonical));
 		if(!absolute.exists()){
 			logger.warn("Replaced " + portable  + " with " + absolute + " (default: "+ defp + PATH_IDENTIFIER[i][2] +"), but could not find it. This does not have to be an error, as the file might be created later.");
 		}
-    	     
-      
     	return absolute;
     } catch (IOException e) {
     	return null;
@@ -3912,7 +3858,6 @@ public class Cooja extends Observable {
       }
       if (!fileCanonical.startsWith(configCanonical)) {
         /* File is not in a config subdirectory */
-        /*logger.info("File is not in a config subdirectory: " + file.getAbsolutePath());*/
         return null;
       }
 
@@ -3923,21 +3868,17 @@ public class Cooja extends Observable {
       File portable = new File(portablePath);
 
       /* Verify conversion */
-      File verify = restoreConfigRelativePath(portable);
+      File verify = restoreConfigRelativePath(currentConfigFile, portable);
       if (verify == null || !verify.exists()) {
         /* Error: did file even exist pre-conversion? */
         return null;
       }
-
       return portable;
     } catch (IOException e1) {
-      /*logger.warn("Error when converting to config relative path: " + e1.getMessage());*/
       return null;
     }
   }
-  private File restoreConfigRelativePath(File portable) {
-    return restoreConfigRelativePath(currentConfigFile, portable);
-  }
+
   private static File restoreConfigRelativePath(File configFile, File portable) {
     if (configFile == null) {
       return null;
@@ -4040,7 +3981,14 @@ public class Cooja extends Observable {
   final GUIAction newSimulationAction = new GUIAction("New simulation...", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK)) {
     @Override
     public void actionPerformed(ActionEvent e) {
-      cooja.doCreateSimulation();
+      if (!cooja.doRemoveSimulation(true)) {
+        return;
+      }
+
+      var sim = new Simulation(cooja);
+      if (CreateSimDialog.showDialog(Cooja.getTopParentContainer(), sim)) {
+        cooja.setSimulation(sim, true);
+      }
     }
     @Override
     public boolean shouldBeEnabled() {
@@ -4076,10 +4024,9 @@ public class Cooja extends Observable {
   final GUIAction reloadRandomSimulationAction = new GUIAction("Reload with new random seed", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK)) {
     @Override
     public void actionPerformed(ActionEvent e) {
-      /* Replace seed before reloading */
       if (getSimulation() != null) {
         getSimulation().setRandomSeed(getSimulation().getRandomSeed()+1);
-        reloadSimulationAction.actionPerformed(null);
+        reloadCurrentSimulation();
       }
     }
     @Override
