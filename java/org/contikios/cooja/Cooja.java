@@ -2856,6 +2856,9 @@ public class Cooja extends Observable {
     specifiedContikiPath = options.contikiPath;
     specifiedCoojaPath = options.coojaPath;
 
+    // Is Cooja started in GUI mode?
+    var vis = options.action == null || options.action.quickstart != null;
+
     /* Look and Feel: Nimbus */
     setLookAndFeel();
 
@@ -2866,14 +2869,13 @@ public class Cooja extends Observable {
       javax.swing.SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          Cooja gui = new Cooja(logDirectory, true);
+          Cooja gui = new Cooja(logDirectory, vis);
           configureFrame(gui);
         }
       });
     } else {
-      var vis = options.action.quickstart != null;
-      var config = new File(vis ? options.action.quickstart : options.action.nogui);
       Cooja gui = new Cooja(logDirectory, vis);
+      var config = new File(vis ? options.action.quickstart : options.action.nogui);
       Simulation sim = null;
       if (vis) {
         configureFrame(gui);
