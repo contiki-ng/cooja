@@ -2993,9 +2993,8 @@ public class Cooja extends Observable {
           Collection<Element> config = ((Element) element).getChildren();
           newSim = new Simulation(this);
           System.gc();
-          
-          boolean createdOK = newSim.setConfigXML(config, isVisualized(), quick, manualRandomSeed);
-          if (!createdOK) {
+
+          if (!newSim.setConfigXML(config, isVisualized(), quick, manualRandomSeed)) {
             logger.info("Simulation not loaded");
             return null;
           }
