@@ -595,7 +595,7 @@ public class Cooja extends Observable {
   }
 
   private void doLoadConfigAsync(final boolean quick, final File file) {
-    new Thread(() -> cooja.doLoadConfig(quick, file, null)).start();
+    new Thread(() -> cooja.doLoadConfig(file, quick, null)).start();
   }
   private void updateOpenHistoryMenuItems(File[] openFilesHistory) {
   	menuOpenSimulation.removeAll();
@@ -2050,27 +2050,26 @@ public class Cooja extends Observable {
   /**
    * Load a simulation configuration file from disk
    *
-   * @param quick Quick-load simulation
    * @param configFile Configuration file to load, if null a dialog will appear
+   * @param quick      Quick-load simulation
+   * @param manualRandomSeed The random seed to use for the simulation
    */
-  private void doLoadConfig(final boolean quick, File configFile, Long manualRandomSeed) {
+  private Simulation doLoadConfig(File configFile, final boolean quick, Long manualRandomSeed) {
     /* Warn about memory usage */
     if (warnMemory()) {
-      return;
+      return null;
     }
 
     /* Remove current simulation */
     if (!doRemoveSimulation(true)) {
-      return;
+      return null;
     }
 
     /* Use provided configuration, or open File Chooser */
     if (configFile != null && !configFile.isDirectory()) {
       if (!configFile.exists() || !configFile.canRead()) {
         logger.fatal("No read access to file: " + configFile.getAbsolutePath());
-        /* File does not exist, open dialog */
-        doLoadConfig(quick, null, manualRandomSeed);
-        return;
+        return doLoadConfig(null, quick, manualRandomSeed);
       }
     } else {
       final File suggestedFile = configFile;
@@ -2114,7 +2113,7 @@ public class Cooja extends Observable {
       }.invokeAndWait();
 
       if (configFile == null) {
-        return;
+        return null;
       }
     }
 
@@ -2176,13 +2175,13 @@ public class Cooja extends Observable {
 
     // Load simulation in this thread, while showing progress monitor
     boolean shouldRetry;
+    Simulation newSim = null;
     do {
       try {
         shouldRetry = false;
         cooja.doRemoveSimulation(false);
         PROGRESS_WARNINGS.clear();
-        var newSim = loadSimulationConfig(configFile, quick, manualRandomSeed);
-        cooja.setSimulation(newSim, false);
+        newSim = loadSimulationConfig(configFile, quick, manualRandomSeed);
 
         /* Optionally show compilation warnings */
         boolean hideWarn = Boolean.parseBoolean(
@@ -2201,6 +2200,7 @@ public class Cooja extends Observable {
     if (progressDialog != null && progressDialog.isDisplayable()) {
       progressDialog.dispose();
     }
+    return newSim;
   }
 
   /**
@@ -2245,7 +2245,6 @@ public class Cooja extends Observable {
             cooja.doRemoveSimulation(false);
             PROGRESS_WARNINGS.clear();
             Simulation newSim = loadSimulationConfig(root, true, randomSeed);
-            cooja.setSimulation(newSim, false);
 
             if (autoStart) {
               newSim.startSimulation();
@@ -2856,6 +2855,9 @@ public class Cooja extends Observable {
     specifiedContikiPath = options.contikiPath;
     specifiedCoojaPath = options.coojaPath;
 
+    // Is Cooja started in GUI mode?
+    var vis = options.action == null || options.action.quickstart != null;
+
     /* Look and Feel: Nimbus */
     setLookAndFeel();
 
@@ -2866,25 +2868,20 @@ public class Cooja extends Observable {
       javax.swing.SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          Cooja gui = new Cooja(logDirectory, true);
+          Cooja gui = new Cooja(logDirectory, vis);
           configureFrame(gui);
         }
       });
     } else {
-      var vis = options.action.quickstart != null;
-      var config = new File(vis ? options.action.quickstart : options.action.nogui);
       Cooja gui = new Cooja(logDirectory, vis);
+      var config = new File(vis ? options.action.quickstart : options.action.nogui);
       Simulation sim = null;
       if (vis) {
         configureFrame(gui);
-        gui.doLoadConfig(true, config, options.randomSeed);
-        sim = gui.getSimulation();
+        sim = gui.doLoadConfig(config, true, options.randomSeed);
       } else {
         try {
           sim = gui.loadSimulationConfig(config, true, options.randomSeed);
-          if (sim != null) {
-            gui.setSimulation(sim, false);
-          }
         } catch (Exception e) {
           logger.fatal("Exception when loading simulation: ", e);
         }
@@ -2996,9 +2993,8 @@ public class Cooja extends Observable {
           Collection<Element> config = ((Element) element).getChildren();
           newSim = new Simulation(this);
           System.gc();
-          
-          boolean createdOK = newSim.setConfigXML(config, isVisualized(), quick, manualRandomSeed);
-          if (!createdOK) {
+
+          if (!newSim.setConfigXML(config, isVisualized(), quick, manualRandomSeed)) {
             logger.info("Simulation not loaded");
             return null;
           }
@@ -3033,7 +3029,7 @@ public class Cooja extends Observable {
         return null;
       }
     }
-
+    setSimulation(newSim, false);
     return newSim;
   }
 
@@ -4011,7 +4007,7 @@ public class Cooja extends Observable {
       if (getSimulation() == null) {
         /* Reload last opened simulation */
         final File file = getLastOpenedFile();
-        new Thread(() -> cooja.doLoadConfig(true, file, null)).start();
+        new Thread(() -> cooja.doLoadConfig(file, true, null)).start();
         return;
       }
       reloadCurrentSimulation();
