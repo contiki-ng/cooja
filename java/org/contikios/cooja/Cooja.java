@@ -2815,8 +2815,9 @@ public class Cooja extends Observable {
     // Is Cooja started in GUI mode?
     var vis = options.action == null || options.action.quickstart != null;
 
-    /* Look and Feel: Nimbus */
-    setLookAndFeel();
+    if (vis) {
+      setLookAndFeel();
+    }
 
     // Check if simulator should be quick-started
     final String logDirectory = options.logDir;
