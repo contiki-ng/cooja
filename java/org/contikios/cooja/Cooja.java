@@ -468,7 +468,7 @@ public class Cooja extends Observable {
 
     /* Parse current extension configuration */
     try {
-      reparseProjectConfig();
+      parseProjectConfig();
     } catch (ParseProjectsException e) {
       logger.fatal("Error when loading extensions: " + e.getMessage(), e);
       if (isVisualized()) {
@@ -1314,7 +1314,10 @@ public class Cooja extends Observable {
     unregisterPositioners();
     unregisterRadioMediums();
     projectDirClassLoader = null;
+    parseProjectConfig();
+  }
 
+  private void parseProjectConfig() throws ParseProjectsException {
     /* Build cooja configuration */
     try {
       projectConfig = new ProjectConfig(true);
