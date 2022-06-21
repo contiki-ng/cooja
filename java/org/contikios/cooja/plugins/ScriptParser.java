@@ -41,7 +41,7 @@ public class ScriptParser {
   private long timeoutTime = -1;
   private String timeoutCode = null;
 
-  private String code = null;
+  private final String code;
 
   public ScriptParser(String code) throws ScriptSyntaxErrorException {
 
@@ -78,17 +78,6 @@ public class ScriptParser {
     return code;
   }
 
-  private static String stripFirstComment(String code) {
-    int first = code.indexOf('"');
-    if (first < 0) {
-      return code;
-    }
-    int second = code.indexOf('"', first+1);
-
-    code = code.substring(0, first) + code.substring(second+1);
-    return code;
-  }
-
   private static String stripMultiLineComments(String code) {
     /* TODO Handle strings */
     Pattern pattern =
@@ -98,9 +87,7 @@ public class ScriptParser {
     while (matcher.find()) {
       String match = matcher.group();
       int newLines = match.split("\n").length;
-      var replacement = new StringBuilder();
-      replacement.append("\n".repeat(newLines));
-      code = matcher.replaceFirst(replacement.toString());
+      code = matcher.replaceFirst("\n".repeat(newLines));
       matcher.reset(code);
     }
     return code;
