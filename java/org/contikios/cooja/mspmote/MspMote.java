@@ -294,9 +294,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private double jumpError = 0.;
 
-  private final long executed = 0;
-  private final long skipped = 0;
-
   public void execute(long time) {
     execute(time, EXECUTE_DURATION_US);
   }
@@ -340,9 +337,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       nextExecute = myCpu.stepMicros(Math.max(0, t - lastExecute), duration) + duration + t;
       lastExecute = t;
     } catch (EmulationException e) {
-      String trace = e.getMessage() + "\n\n" + getStackTrace();
-      throw (ContikiError)
-      new ContikiError(trace).initCause(e);
+      throw new ContikiError(e.getMessage(), getStackTrace(), e);
     }
 
     /* Schedule wakeup */
@@ -405,9 +400,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       executeDelta = myCpu.stepMicros(jump, duration) + duration;
       lastExecute = t;
     } catch (EmulationException e) {
-      String trace = e.getMessage() + "\n\n" + getStackTrace();
-      throw (ContikiError)
-      new ContikiError(trace).initCause(e);
+      throw new ContikiError(e.getMessage(), getStackTrace(), e);
     }
 
     exactExecuteDelta = executeDelta * invDeviation;
