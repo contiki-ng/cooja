@@ -2,5 +2,4 @@
 build
 /dist
 /javadoc
-/apps/powertracker/powertracker.jar
 /tools/coffee-manager/coffee.jar

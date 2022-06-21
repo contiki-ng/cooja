@@ -112,7 +112,6 @@ The COOJA Simulator
   <target name="clean">
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
-    <ant antfile="build.xml" dir="apps/powertracker" target="clean" inheritAll="false"/>
   </target>
 
   <target name="run" depends="jar">
@@ -167,10 +166,6 @@ The COOJA Simulator
     </java>
   </target>
 
-  <target name="jar" depends="jar_cooja">
-    <ant antfile="build.xml" dir="apps/powertracker" target="jar" inheritAll="false"/>
-  </target>
-
   <pathconvert property="manifest.classpath" pathsep=" ">
     <path refid="cooja.classpath"/>
     <mapper>
@@ -181,7 +176,7 @@ The COOJA Simulator
     </mapper>
   </pathconvert>
 
-  <target name="jar_cooja" depends="compile, copy configs">
+  <target name="jar" depends="compile, copy configs">
     <mkdir dir="${dist}/lib"/>
     <jar destfile="${dist}/cooja.jar" basedir="${build}">
       <manifest>
