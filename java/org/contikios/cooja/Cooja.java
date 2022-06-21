@@ -390,6 +390,19 @@ public class Cooja extends Observable {
       }
     }
 
+    if (!vis) {
+      myDesktopPane = null;
+      quickHelpTextPane = null;
+      quickHelpScroll = null;
+      try {
+        parseProjectConfig();
+      } catch (ParseProjectsException e) {
+        logger.fatal("Error when loading extensions: " + e.getMessage(), e);
+      }
+      return;
+    }
+
+    // Visualization enabled past this point.
     myDesktopPane = new JDesktopPane() {
       @Override
       public void setBounds(int x, int y, int w, int h) {
@@ -421,9 +434,7 @@ public class Cooja extends Observable {
       }
     });
     myDesktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-    if (vis) {
-      frame = new JFrame(WINDOW_TITLE);
-    }
+    frame = new JFrame(WINDOW_TITLE);
 
     /* Help panel */
     quickHelpTextPane = new JTextPane();
@@ -471,14 +482,12 @@ public class Cooja extends Observable {
       parseProjectConfig();
     } catch (ParseProjectsException e) {
       logger.fatal("Error when loading extensions: " + e.getMessage(), e);
-      if (isVisualized()) {
-      	JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-      			"All Cooja extensions could not load.\n\n" +
-      			"To manage Cooja extensions:\n" +
-      			"Menu->Settings->Cooja extensions",
-      			"Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
-      	showErrorDialog(getTopParentContainer(), "Cooja extensions load error", e, false);
-      }
+      JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
+              "All Cooja extensions could not load.\n\n" +
+                      "To manage Cooja extensions:\n" +
+                      "Menu->Settings->Cooja extensions",
+              "Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
+      showErrorDialog(frame, "Cooja extensions load error", e, false);
     }
 
     // Start all standard GUI plugins
@@ -489,9 +498,6 @@ public class Cooja extends Observable {
       }
     }
 
-    if (!vis) {
-      return;
-    }
     frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
     // Menu bar.
@@ -3231,7 +3237,7 @@ public class Cooja extends Observable {
         startedPlugin.startPlugin();
 
         /* If Cooja not visualized, ignore window configuration */
-        if (startedPlugin.getCooja() == null) {
+        if (startedPlugin.getCooja() == null || !Cooja.isVisualized()) {
           continue;
         }
 

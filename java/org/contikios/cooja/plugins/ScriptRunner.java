@@ -115,6 +115,8 @@ public class ScriptRunner extends VisPlugin {
 
   private static BufferedWriter logWriter = null; /* For non-GUI tests */
 
+  /** The script text when running in headless mode. */
+  private String headlessScript = null;
   private final JEditorPane codeEditor;
   private final JTextArea logTextArea;
 
@@ -125,6 +127,12 @@ public class ScriptRunner extends VisPlugin {
     super("Simulation script editor", gui, false);
     this.simulation = simulation;
     this.engine = null;
+
+    if (!Cooja.isVisualized()) {
+      codeEditor = null;
+      logTextArea = null;
+      return;
+    }
 
     /* Menus */
     JMenuBar menuBar = new JMenuBar();
@@ -295,7 +303,9 @@ public class ScriptRunner extends VisPlugin {
         actionLinkFile.setMenuText("Link script to disk file");
         actionLinkFile.putValue("JavascriptSource", null);
       }
-
+      if (!Cooja.isVisualized()) {
+        return;
+      }
       codeEditor.setEditable(true);
     } else {
       updateScript(linkedFile);
@@ -305,7 +315,9 @@ public class ScriptRunner extends VisPlugin {
         actionLinkFile.setMenuText("Unlink script: " + source.getName());
         actionLinkFile.putValue("JavascriptSource", source);
       }
-
+      if (!Cooja.isVisualized()) {
+        return;
+      }
       codeEditor.setEditable(false);
     }
     updateTitle();
@@ -378,9 +390,10 @@ public class ScriptRunner extends VisPlugin {
 
       /* Activate engine */
       try {
-        engine.activateScript(codeEditor.getText());
-
-        if (!headless) {
+        if (!Cooja.isVisualized()) {
+          engine.activateScript(headlessScript);
+        } else {
+          engine.activateScript(codeEditor.getText());
           if (actionLinkFile != null) {
             actionLinkFile.setEnabled(false);
           }
@@ -625,8 +638,12 @@ public class ScriptRunner extends VisPlugin {
       return;
     }
 
-    codeEditor.setText(script);
-    logTextArea.setText("");
+    if (Cooja.isVisualized()) {
+      codeEditor.setText(script);
+      logTextArea.setText("");
+    } else {
+      headlessScript = script;
+    }
   }
 
   @Override
