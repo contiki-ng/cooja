@@ -1361,7 +1361,6 @@ public class Cooja extends Observable {
 
         if (moteTypeClass != null) {
           registerMoteType(moteTypeClass);
-          // logger.info("Loaded mote type class: " + moteTypeClassName);
         } else {
           logger.warn("Could not load mote type class: " + moteTypeClassName);
         }
@@ -1381,7 +1380,6 @@ public class Cooja extends Observable {
 
         if (pluginClass != null) {
           registerPlugin(pluginClass);
-          // logger.info("Loaded plugin class: " + pluginClassName);
         } else {
           logger.warn("Could not load plugin class: " + pluginClassName);
         }
@@ -1398,7 +1396,6 @@ public class Cooja extends Observable {
 
         if (positionerClass != null) {
           registerPositioner(positionerClass);
-          // logger.info("Loaded positioner class: " + positionerClassName);
         } else {
           logger
           .warn("Could not load positioner class: " + positionerClassName);
@@ -1416,14 +1413,12 @@ public class Cooja extends Observable {
 
         if (radioMediumClass != null) {
           registerRadioMedium(radioMediumClass);
-          // logger.info("Loaded radio medium class: " + radioMediumClassName);
         } else {
           logger.warn("Could not load radio medium class: "
               + radioMediumClassName);
         }
       }
     }
-
   }
 
   /**
