@@ -359,7 +359,7 @@ public class Cooja extends Observable {
     cooja = this;
     this.logDirectory = logDirectory;
     mySimulation = null;
-    final var desktop = new JDesktopPane() {
+    myDesktopPane = new JDesktopPane() {
       @Override
       public void setBounds(int x, int y, int w, int h) {
         super.setBounds(x, y, w, h);
@@ -377,23 +377,22 @@ public class Cooja extends Observable {
         return c;
       }
     };
-    desktop.setDesktopManager(new DefaultDesktopManager() {
+    myDesktopPane.setDesktopManager(new DefaultDesktopManager() {
       @Override
       public void endResizingFrame(JComponent f) {
         super.endResizingFrame(f);
-        updateDesktopSize(desktop);
+        updateDesktopSize(myDesktopPane);
       }
       @Override
       public void endDraggingFrame(JComponent f) {
         super.endDraggingFrame(f);
-        updateDesktopSize(desktop);
+        updateDesktopSize(myDesktopPane);
       }
     });
-    desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+    myDesktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
     if (vis) {
       frame = new JFrame(WINDOW_TITLE);
     }
-    myDesktopPane = desktop;
 
     /* Help panel */
     quickHelpTextPane = new JTextPane();
