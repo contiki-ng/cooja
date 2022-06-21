@@ -199,7 +199,7 @@ public class Cooja extends Observable {
   /**
    * Default extension configuration filename.
    */
-  public static String PROJECT_DEFAULT_CONFIG_FILENAME = null;
+  public static final String PROJECT_DEFAULT_CONFIG_FILENAME = "/cooja_default.config";
 
   /**
    * User extension configuration filename.
@@ -359,7 +359,38 @@ public class Cooja extends Observable {
     cooja = this;
     this.logDirectory = logDirectory;
     mySimulation = null;
-    final var desktop = new JDesktopPane() {
+    // Load default and overwrite with user settings (if any).
+    loadExternalToolsDefaultSettings();
+    loadExternalToolsUserSettings();
+
+    // Shutdown hook to close running simulations.
+    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(this));
+
+    // Register default extension directories.
+    String defaultProjectDirs = getExternalToolsSetting("DEFAULT_PROJECTDIRS", null);
+    if (defaultProjectDirs != null && defaultProjectDirs.length() > 0) {
+      String[] arr = defaultProjectDirs.split(";");
+      for (String p : arr) {
+        File projectDir = restorePortablePath(new File(p));
+        currentProjects.add(new COOJAProject(projectDir));
+      }
+    }
+
+    // Scan for projects.
+    String searchProjectDirs = getExternalToolsSetting("PATH_APPSEARCH", null);
+    if (searchProjectDirs != null && searchProjectDirs.length() > 0) {
+      String[] arr = searchProjectDirs.split(";");
+      for (String d : arr) {
+        File searchDir = restorePortablePath(new File(d));
+        File[] projects = COOJAProject.sarchProjects(searchDir, 3);
+        if(projects == null) continue;
+        for(File p : projects){
+          currentProjects.add(new COOJAProject(p));
+        }
+      }
+    }
+
+    myDesktopPane = new JDesktopPane() {
       @Override
       public void setBounds(int x, int y, int w, int h) {
         super.setBounds(x, y, w, h);
@@ -377,23 +408,22 @@ public class Cooja extends Observable {
         return c;
       }
     };
-    desktop.setDesktopManager(new DefaultDesktopManager() {
+    myDesktopPane.setDesktopManager(new DefaultDesktopManager() {
       @Override
       public void endResizingFrame(JComponent f) {
         super.endResizingFrame(f);
-        updateDesktopSize(desktop);
+        updateDesktopSize(myDesktopPane);
       }
       @Override
       public void endDraggingFrame(JComponent f) {
         super.endDraggingFrame(f);
-        updateDesktopSize(desktop);
+        updateDesktopSize(myDesktopPane);
       }
     });
-    desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+    myDesktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
     if (vis) {
       frame = new JFrame(WINDOW_TITLE);
     }
-    myDesktopPane = desktop;
 
     /* Help panel */
     quickHelpTextPane = new JTextPane();
@@ -408,10 +438,6 @@ public class Cooja extends Observable {
     ));
     quickHelpScroll.setVisible(false);
     loadQuickHelp("GETTING_STARTED");
-
-    // Load default and overwrite with user settings (if any)
-    loadExternalToolsDefaultSettings();
-    loadExternalToolsUserSettings();
 
     final boolean showQuickhelp = getExternalToolsSetting("SHOW_QUICKHELP", "true").equalsIgnoreCase("true");
     if (showQuickhelp) {
@@ -440,33 +466,9 @@ public class Cooja extends Observable {
       }
     });*/
 
-    // Register default extension directories
-    String defaultProjectDirs = getExternalToolsSetting("DEFAULT_PROJECTDIRS", null);
-    if (defaultProjectDirs != null && defaultProjectDirs.length() > 0) {
-      String[] arr = defaultProjectDirs.split(";");
-      for (String p : arr) {
-        File projectDir = restorePortablePath(new File(p));
-        currentProjects.add(new COOJAProject(projectDir));
-      }
-    }
-    
-    //Scan for projects
-    String searchProjectDirs = getExternalToolsSetting("PATH_APPSEARCH", null);
-    if (searchProjectDirs != null && searchProjectDirs.length() > 0) {
-      String[] arr = searchProjectDirs.split(";");
-      for (String d : arr) {
-    	  File searchDir = restorePortablePath(new File(d));
-    	  File[] projects = COOJAProject.sarchProjects(searchDir, 3);
-    	  if(projects == null) continue;
-    	  for(File p : projects){
-    		  currentProjects.add(new COOJAProject(p));
-    	  }
-      }
-    }
-
     /* Parse current extension configuration */
     try {
-      reparseProjectConfig();
+      parseProjectConfig();
     } catch (ParseProjectsException e) {
       logger.fatal("Error when loading extensions: " + e.getMessage(), e);
       if (isVisualized()) {
@@ -486,8 +488,6 @@ public class Cooja extends Observable {
         tryStartPlugin(pluginClass, this, null, null);
       }
     }
-
-    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(this));
 
     if (!vis) {
       return;
@@ -1214,13 +1214,6 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Unregister all mote type classes.
-   */
-  public void unregisterMoteTypes() {
-    moteTypeClasses.clear();
-  }
-
-  /**
    * @return All registered mote type classes
    */
   public List<Class<? extends MoteType>> getRegisteredMoteTypes() {
@@ -1248,13 +1241,6 @@ public class Cooja extends Observable {
 
     positionerClasses.add(positionerClass);
     return true;
-  }
-
-  /**
-   * Unregister all positioner classes.
-   */
-  public void unregisterPositioners() {
-    positionerClasses.clear();
   }
 
   /**
@@ -1287,13 +1273,6 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Unregister all radio medium classes.
-   */
-  public void unregisterRadioMediums() {
-    radioMediumClasses.clear();
-  }
-
-  /**
    * @return All registered radio medium classes
    */
   public List<Class<? extends RadioMedium>> getRegisteredRadioMediums() {
@@ -1302,23 +1281,20 @@ public class Cooja extends Observable {
 
   /**
    * Builds new extension configuration using current extension directories settings.
-   * Reregisters mote types, plugins, positioners and radio
-   * mediums. This method may still return true even if all classes could not be
-   * registered, but always returns false if all extension directory configuration
-   * files were not parsed correctly.
+   * Re-registers mote types, plugins, positioners and radio mediums.
    */
   public void reparseProjectConfig() throws ParseProjectsException {
-    if (PROJECT_DEFAULT_CONFIG_FILENAME == null) {
-      PROJECT_DEFAULT_CONFIG_FILENAME = "/cooja_default.config";
-    }
-
     /* Remove current dependencies */
-    unregisterMoteTypes();
-    unregisterPlugins();
-    unregisterPositioners();
-    unregisterRadioMediums();
+    moteTypeClasses.clear();
+    menuMotePluginClasses.clear();
+    pluginClasses.clear();
+    positionerClasses.clear();
+    radioMediumClasses.clear();
     projectDirClassLoader = null;
+    parseProjectConfig();
+  }
 
+  private void parseProjectConfig() throws ParseProjectsException {
     /* Build cooja configuration */
     try {
       projectConfig = new ProjectConfig(true);
@@ -1361,7 +1337,6 @@ public class Cooja extends Observable {
 
         if (moteTypeClass != null) {
           registerMoteType(moteTypeClass);
-          // logger.info("Loaded mote type class: " + moteTypeClassName);
         } else {
           logger.warn("Could not load mote type class: " + moteTypeClassName);
         }
@@ -1381,7 +1356,6 @@ public class Cooja extends Observable {
 
         if (pluginClass != null) {
           registerPlugin(pluginClass);
-          // logger.info("Loaded plugin class: " + pluginClassName);
         } else {
           logger.warn("Could not load plugin class: " + pluginClassName);
         }
@@ -1398,7 +1372,6 @@ public class Cooja extends Observable {
 
         if (positionerClass != null) {
           registerPositioner(positionerClass);
-          // logger.info("Loaded positioner class: " + positionerClassName);
         } else {
           logger
           .warn("Could not load positioner class: " + positionerClassName);
@@ -1416,14 +1389,12 @@ public class Cooja extends Observable {
 
         if (radioMediumClass != null) {
           registerRadioMedium(radioMediumClass);
-          // logger.info("Loaded radio medium class: " + radioMediumClassName);
         } else {
           logger.warn("Could not load radio medium class: "
               + radioMediumClassName);
         }
       }
     }
-
   }
 
   /**
@@ -1742,14 +1713,6 @@ public class Cooja extends Observable {
       return false;
     }
     return true;
-  }
-
-  /**
-   * Unregister all plugin classes
-   */
-  public void unregisterPlugins() {
-    menuMotePluginClasses.clear();
-    pluginClasses.clear();
   }
 
   /**
