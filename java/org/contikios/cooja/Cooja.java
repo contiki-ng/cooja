@@ -1281,10 +1281,7 @@ public class Cooja extends Observable {
 
   /**
    * Builds new extension configuration using current extension directories settings.
-   * Reregisters mote types, plugins, positioners and radio
-   * mediums. This method may still return true even if all classes could not be
-   * registered, but always returns false if all extension directory configuration
-   * files were not parsed correctly.
+   * Re-registers mote types, plugins, positioners and radio mediums.
    */
   public void reparseProjectConfig() throws ParseProjectsException {
     /* Remove current dependencies */
