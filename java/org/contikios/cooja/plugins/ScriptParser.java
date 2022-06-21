@@ -78,17 +78,6 @@ public class ScriptParser {
     return code;
   }
 
-  private static String stripFirstComment(String code) {
-    int first = code.indexOf('"');
-    if (first < 0) {
-      return code;
-    }
-    int second = code.indexOf('"', first+1);
-
-    code = code.substring(0, first) + code.substring(second+1);
-    return code;
-  }
-
   private static String stripMultiLineComments(String code) {
     /* TODO Handle strings */
     Pattern pattern =
