@@ -1146,7 +1146,7 @@ public class Cooja extends Observable {
     return myDesktopPane;
   }
 
-  public static void setLookAndFeel() {
+  private static void setLookAndFeel() {
 
     JFrame.setDefaultLookAndFeelDecorated(true);
     JDialog.setDefaultLookAndFeelDecorated(true);
