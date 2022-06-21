@@ -359,6 +359,37 @@ public class Cooja extends Observable {
     cooja = this;
     this.logDirectory = logDirectory;
     mySimulation = null;
+    // Load default and overwrite with user settings (if any).
+    loadExternalToolsDefaultSettings();
+    loadExternalToolsUserSettings();
+
+    // Shutdown hook to close running simulations.
+    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(this));
+
+    // Register default extension directories.
+    String defaultProjectDirs = getExternalToolsSetting("DEFAULT_PROJECTDIRS", null);
+    if (defaultProjectDirs != null && defaultProjectDirs.length() > 0) {
+      String[] arr = defaultProjectDirs.split(";");
+      for (String p : arr) {
+        File projectDir = restorePortablePath(new File(p));
+        currentProjects.add(new COOJAProject(projectDir));
+      }
+    }
+
+    // Scan for projects.
+    String searchProjectDirs = getExternalToolsSetting("PATH_APPSEARCH", null);
+    if (searchProjectDirs != null && searchProjectDirs.length() > 0) {
+      String[] arr = searchProjectDirs.split(";");
+      for (String d : arr) {
+        File searchDir = restorePortablePath(new File(d));
+        File[] projects = COOJAProject.sarchProjects(searchDir, 3);
+        if(projects == null) continue;
+        for(File p : projects){
+          currentProjects.add(new COOJAProject(p));
+        }
+      }
+    }
+
     myDesktopPane = new JDesktopPane() {
       @Override
       public void setBounds(int x, int y, int w, int h) {
@@ -408,10 +439,6 @@ public class Cooja extends Observable {
     quickHelpScroll.setVisible(false);
     loadQuickHelp("GETTING_STARTED");
 
-    // Load default and overwrite with user settings (if any)
-    loadExternalToolsDefaultSettings();
-    loadExternalToolsUserSettings();
-
     final boolean showQuickhelp = getExternalToolsSetting("SHOW_QUICKHELP", "true").equalsIgnoreCase("true");
     if (showQuickhelp) {
       SwingUtilities.invokeLater(new Runnable() {
@@ -439,30 +466,6 @@ public class Cooja extends Observable {
       }
     });*/
 
-    // Register default extension directories
-    String defaultProjectDirs = getExternalToolsSetting("DEFAULT_PROJECTDIRS", null);
-    if (defaultProjectDirs != null && defaultProjectDirs.length() > 0) {
-      String[] arr = defaultProjectDirs.split(";");
-      for (String p : arr) {
-        File projectDir = restorePortablePath(new File(p));
-        currentProjects.add(new COOJAProject(projectDir));
-      }
-    }
-    
-    //Scan for projects
-    String searchProjectDirs = getExternalToolsSetting("PATH_APPSEARCH", null);
-    if (searchProjectDirs != null && searchProjectDirs.length() > 0) {
-      String[] arr = searchProjectDirs.split(";");
-      for (String d : arr) {
-    	  File searchDir = restorePortablePath(new File(d));
-    	  File[] projects = COOJAProject.sarchProjects(searchDir, 3);
-    	  if(projects == null) continue;
-    	  for(File p : projects){
-    		  currentProjects.add(new COOJAProject(p));
-    	  }
-      }
-    }
-
     /* Parse current extension configuration */
     try {
       reparseProjectConfig();
@@ -485,8 +488,6 @@ public class Cooja extends Observable {
         tryStartPlugin(pluginClass, this, null, null);
       }
     }
-
-    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(this));
 
     if (!vis) {
       return;
