@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Observer;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Vector;
 
@@ -75,15 +74,12 @@ public class ChannelModel {
 
   enum TransmissionData { SIGNAL_STRENGTH, SIGNAL_STRENGTH_VAR, SNR, SNR_VAR, PROB_OF_RECEPTION, DELAY_SPREAD, DELAY_SPREAD_RMS}
 
-  private Hashtable<Parameter,Object> parametersDefaults = new Hashtable<>();
+  private final Hashtable<Parameter,Object> parametersDefaults;
   private final Hashtable<Parameter,Object> parameters = new Hashtable<>();
-  private final Properties parameterDescriptions = new Properties();
 
   // Parameters used for speeding up calculations
   private boolean needToPrecalculateFSPL = true;
-  private static double paramFSPL = 0;
-  private boolean needToPrecalculateOutputPower = true;
-  private static final double paramOutputPower = 0;
+  private double paramFSPL = 0;
 
   private ObstacleWorld myObstacleWorld = new ObstacleWorld();
 
@@ -430,7 +426,6 @@ public class ChannelModel {
 
     // Guessing we need to recalculate input to FSPL+Output power
     needToPrecalculateFSPL = true;
-    needToPrecalculateOutputPower = true;
 
     settingsObservable.setChangedAndNotify();
   }
@@ -685,7 +680,7 @@ public class ChannelModel {
 
     // Get possible diffraction sources
     Vector<Point2D> diffractionSources = null;
-    if (rayData.getDiffractedSubRaysLimit() > 0) {
+    if (rayData.getDiffractedSubRaysLimit() > 0 && visibleSides != null) {
       diffractionSources = getAllDiffractionSources(visibleSides);
     }
 
@@ -806,9 +801,6 @@ public class ChannelModel {
         DefaultMutableTreeNode currentlyTracedNode = treeNode;
         RayData currentlyTracedRayData = (RayData) currentlyTracedNode.getUserObject();
         RayData.RayType currentlyTracedNodeType = currentlyTracedRayData.getType();
-        Point2D currentlyTracedSource = currentlyTracedRayData.getSourcePoint();
-        Line2D currentlyTracedLine = currentlyTracedRayData.getLine();
-
 
         // Traverse upwards until origin found
         while (!pathBroken && currentlyTracedNodeType != RayData.RayType.ORIGIN) {
@@ -817,8 +809,8 @@ public class ChannelModel {
           currentlyTracedNode = (DefaultMutableTreeNode) currentlyTracedNode.getParent();
           currentlyTracedRayData = (RayData) currentlyTracedNode.getUserObject();
           currentlyTracedNodeType = currentlyTracedRayData.getType();
-          currentlyTracedSource = currentlyTracedRayData.getSourcePoint();
-          currentlyTracedLine = currentlyTracedRayData.getLine();
+          Point2D currentlyTracedSource = currentlyTracedRayData.getSourcePoint();
+          Line2D currentlyTracedLine = currentlyTracedRayData.getLine();
 
           if (currentlyTracedNodeType == RayData.RayType.ORIGIN) {
             // We finally found the path origin, path ends here
@@ -940,7 +932,6 @@ public class ChannelModel {
    */
   protected double getFastFading(double sourceX, double sourceY, double destX, double destY) {
     Point2D dest = new Point2D.Double(destX, destY);
-    Point2D source = new Point2D.Double(sourceX, sourceY);
 
     // Destination inside an obstacle? => no reflection factor
     for (int i=0; i < myObstacleWorld.getNrObstacles(); i++) {
@@ -1110,7 +1101,7 @@ public class ChannelModel {
           // Create angle interval of this line
           AngleInterval lineAngleInterval = AngleInterval.getAngleIntervalOfLine(source, lineCandidate);
 
-          AngleInterval intersectionInterval = null;
+          AngleInterval intersectionInterval;
 
           // Add entire line if it is fully inside our visible angle interval
           if (angleIntervalToCheck.contains(lineAngleInterval)) {
@@ -1209,8 +1200,7 @@ public class ChannelModel {
         }
 
         // <<<< Get visible lines from these line candidates >>>>
-        for (int i=0; i < croppedVisibleLineCandidates.size(); i++) {
-          Line2D visibleLineCandidate = croppedVisibleLineCandidates.get(i);
+        for (Line2D visibleLineCandidate : croppedVisibleLineCandidates) {
           AngleInterval visibleLineCandidateAngleInterval =
             AngleInterval.getAngleIntervalOfLine(source, visibleLineCandidate).intersectWith(angleIntervalToCheck);
 
@@ -1386,14 +1376,8 @@ public class ChannelModel {
    * random variable. This method uses current parameters such as transmitted
    * power, obstacles, overall system loss etc.
    *
-   * @param sourceX
-   *          Source position X
-   * @param sourceY
-   *          Source position Y
-   * @param destX
-   *          Destination position X
-   * @param destY
-   *          Destination position Y
+   * @param txPair Information about the source and destination coordinates
+   *               and transmission power.
    * @return Received signal strength (dBm) random variable. The first value is
    *         the random variable mean, and the second is the variance.
    */
@@ -1616,10 +1600,8 @@ public class ChannelModel {
    * were to be made. The resulting rays depend on the current settings and may
    * include rays through obstacles, reflected rays or scattered rays.
    *
-   * @param sourceX Source position X
-   * @param sourceY Source position Y
-   * @param destX Destination position X
-   * @param destY Destination position Y
+   * @param txPair Information about the source and destination coordinates
+   *               and transmission power.
    * @return Signal components and printable description
    */
   public TrackedSignalComponents getRaysOfTransmission(TxPair txPair) {
@@ -1643,15 +1625,13 @@ public class ChannelModel {
   }
 
   /**
-   * Calculates and returns the signal to noise ratio (dB) of a signal sent from
+   * Calculates and returns the signal-to-noise ratio (dB) of a signal sent from
    * the given source position to the given destination position as a random
    * variable. This method uses current parameters such as transmitted power,
    * obstacles, overall system loss etc.
    *
-   * @param sourceX Source position X
-   * @param sourceY Source position Y
-   * @param destX Destination position X
-   * @param destY Destination position Y
+   * @param txPair Information about the source and destination coordinates
+   *               and transmission power.
    * @return Received SNR (dB) random variable:
    * The first value in the array is the random variable mean.
    * The second is the variance.
@@ -1702,10 +1682,8 @@ public class ChannelModel {
    * TODO Packet size
    * TODO External interference/Background noise
    *
-   * @param sourceX Source position X
-   * @param sourceY Source position Y
-   * @param destX Destination position X
-   * @param destY Destination position Y
+   * @param txPair Information about the source and destination coordinates
+   *               and transmission power.
    * @param interference Current interference at destination (dBm)
    * @return [Probability of reception, signal strength at destination]
    */
@@ -1728,7 +1706,7 @@ public class ChannelModel {
       threshold = rxSensitivity + snrMean - signalStrength;
     }
 
-    // If not random varianble, probability is either 1 or 0
+    // If not random variable, probability is either 1 or 0
     if (snrVariance == 0) {
       return new double[] {
         threshold - snrMean > 0 ? 0:1, signalStrength
@@ -1757,18 +1735,12 @@ public class ChannelModel {
    * This method uses current parameters such as transmitted power,
    * obstacles, overall system loss, packet size etc. TODO Packet size?!
    *
-   * @param sourceX
-   *          Source position X
-   * @param sourceY
-   *          Source position Y
-   * @param destX
-   *          Destination position X
-   * @param destY
-   *          Destination position Y
+   * @param txPair Information about the source and destination coordinates
+   *               and transmission power.
    * @return RMS delay spread
    */
-  public double getRMSDelaySpread(TxPair tx) {
-    return getTransmissionData(tx, TransmissionData.DELAY_SPREAD)[1];
+  public double getRMSDelaySpread(TxPair txPair) {
+    return getTransmissionData(txPair, TransmissionData.DELAY_SPREAD)[1];
   }
 
   /**
@@ -1816,7 +1788,7 @@ public class ChannelModel {
       } else /* Parameter values */ {
         String name = element.getName();
         String value;
-        Parameter param = null;
+        Parameter param;
     
         if (name.equals("wavelength")) {
           /* Backwards compatability: ignored parameters */
@@ -1860,7 +1832,6 @@ public class ChannelModel {
       }
     }
     needToPrecalculateFSPL = true;
-    needToPrecalculateOutputPower = true;
     settingsObservable.setChangedAndNotify();
     return true;
   }
