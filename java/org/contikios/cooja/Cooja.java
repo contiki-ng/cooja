@@ -1214,13 +1214,6 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Unregister all mote type classes.
-   */
-  public void unregisterMoteTypes() {
-    moteTypeClasses.clear();
-  }
-
-  /**
    * @return All registered mote type classes
    */
   public List<Class<? extends MoteType>> getRegisteredMoteTypes() {
@@ -1248,13 +1241,6 @@ public class Cooja extends Observable {
 
     positionerClasses.add(positionerClass);
     return true;
-  }
-
-  /**
-   * Unregister all positioner classes.
-   */
-  public void unregisterPositioners() {
-    positionerClasses.clear();
   }
 
   /**
@@ -1287,13 +1273,6 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Unregister all radio medium classes.
-   */
-  public void unregisterRadioMediums() {
-    radioMediumClasses.clear();
-  }
-
-  /**
    * @return All registered radio medium classes
    */
   public List<Class<? extends RadioMedium>> getRegisteredRadioMediums() {
@@ -1309,10 +1288,11 @@ public class Cooja extends Observable {
    */
   public void reparseProjectConfig() throws ParseProjectsException {
     /* Remove current dependencies */
-    unregisterMoteTypes();
-    unregisterPlugins();
-    unregisterPositioners();
-    unregisterRadioMediums();
+    moteTypeClasses.clear();
+    menuMotePluginClasses.clear();
+    pluginClasses.clear();
+    positionerClasses.clear();
+    radioMediumClasses.clear();
     projectDirClassLoader = null;
     parseProjectConfig();
   }
@@ -1736,14 +1716,6 @@ public class Cooja extends Observable {
       return false;
     }
     return true;
-  }
-
-  /**
-   * Unregister all plugin classes
-   */
-  public void unregisterPlugins() {
-    menuMotePluginClasses.clear();
-    pluginClasses.clear();
   }
 
   /**
