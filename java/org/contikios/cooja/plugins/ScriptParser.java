@@ -41,7 +41,7 @@ public class ScriptParser {
   private long timeoutTime = -1;
   private String timeoutCode = null;
 
-  private String code = null;
+  private final String code;
 
   public ScriptParser(String code) throws ScriptSyntaxErrorException {
 
