@@ -1200,8 +1200,7 @@ public class ChannelModel {
         }
 
         // <<<< Get visible lines from these line candidates >>>>
-        for (int i=0; i < croppedVisibleLineCandidates.size(); i++) {
-          Line2D visibleLineCandidate = croppedVisibleLineCandidates.get(i);
+        for (Line2D visibleLineCandidate : croppedVisibleLineCandidates) {
           AngleInterval visibleLineCandidateAngleInterval =
             AngleInterval.getAngleIntervalOfLine(source, visibleLineCandidate).intersectWith(angleIntervalToCheck);
 
