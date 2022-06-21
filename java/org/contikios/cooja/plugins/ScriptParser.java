@@ -87,9 +87,7 @@ public class ScriptParser {
     while (matcher.find()) {
       String match = matcher.group();
       int newLines = match.split("\n").length;
-      var replacement = new StringBuilder();
-      replacement.append("\n".repeat(newLines));
-      code = matcher.replaceFirst(replacement.toString());
+      code = matcher.replaceFirst("\n".repeat(newLines));
       matcher.reset(code);
     }
     return code;
