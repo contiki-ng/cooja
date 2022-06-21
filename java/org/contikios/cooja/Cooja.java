@@ -199,7 +199,7 @@ public class Cooja extends Observable {
   /**
    * Default extension configuration filename.
    */
-  public static String PROJECT_DEFAULT_CONFIG_FILENAME = null;
+  public static final String PROJECT_DEFAULT_CONFIG_FILENAME = "/cooja_default.config";
 
   /**
    * User extension configuration filename.
@@ -1308,10 +1308,6 @@ public class Cooja extends Observable {
    * files were not parsed correctly.
    */
   public void reparseProjectConfig() throws ParseProjectsException {
-    if (PROJECT_DEFAULT_CONFIG_FILENAME == null) {
-      PROJECT_DEFAULT_CONFIG_FILENAME = "/cooja_default.config";
-    }
-
     /* Remove current dependencies */
     unregisterMoteTypes();
     unregisterPlugins();
