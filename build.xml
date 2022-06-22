@@ -42,7 +42,6 @@
     <pathelement location="lib/syntaxpane-1.2.0.jar"/>
     <pathelement location="lib/swingx-all-1.6.4.jar"/>
     <!-- Copied into dist/lib by the mspsim rule -->
-    <pathelement location="dist/lib/coffee.jar" />
     <pathelement location="dist/lib/jipv6.jar" />
     <pathelement location="dist/lib/mspsim.jar" />
   </path>

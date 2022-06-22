@@ -4,7 +4,7 @@ file system images and to extract information from existing images.
 Building:
 ---------
 
-    ./build.sh
+    ant jar
 
 Usage:
 ------
