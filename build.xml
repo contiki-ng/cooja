@@ -84,9 +84,6 @@ The COOJA Simulator
       </not></condition>
     </fail>
     <mkdir dir="${dist}/lib"/>
-    <property name="coffee" location="tools/coffee-manager"/>
-    <ant antfile="build.xml" dir="${coffee}" target="jar" inheritAll="false"/>
-    <copy todir="${dist}/lib" file="${coffee}/coffee.jar" />
     <ant antfile="build.xml" dir="mspsim" target="jar" inheritAll="false"/>
     <copy todir="${dist}/lib" file="mspsim/mspsim.jar" />
     <copy todir="${dist}/lib" file="mspsim/lib/jipv6.jar" />
@@ -94,6 +91,10 @@ The COOJA Simulator
 
   <target name="compile" depends="mspsim">
     <mkdir dir="${build}"/>
+    <javac srcdir="tools/coffee-manager" destdir="${build}" debug="on" release="${languageversion}"
+           includeantruntime="false"
+           encoding="utf-8">
+    </javac>
     <javac srcdir="${java}" destdir="${build}" debug="on" release="${languageversion}"
            includeantruntime="false"
            encoding="utf-8">
@@ -106,6 +107,8 @@ The COOJA Simulator
     <copy todir="${build}">
       <fileset dir="${config}"/>
       <fileset dir="images"/>
+      <fileset file="tools/coffee-manager/sky.properties"/>
+      <fileset file="tools/coffee-manager/esb.properties"/>
     </copy>
   </target>
 
