@@ -152,6 +152,13 @@ public class Cooja extends Observable {
    * Version of Cooja.
    */
   public static final String VERSION = "4.8";
+
+  /**
+   *  Version used to detect incompatibility with the Contiki-NG
+   *  build system. The format is <YYYY><MM><DD><2 digit sequence number>.
+   */
+  public static final String CONTIKI_NG_BUILD_VERSION = "2022052601";
+
   private static JFrame frame = null;
   private static final Logger logger = LogManager.getLogger(Cooja.class);
 
