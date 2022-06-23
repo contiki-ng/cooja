@@ -248,9 +248,7 @@ public class ContikiMoteType implements MoteType {
     String ccFlags = Cooja.getExternalToolsSetting("COMPILER_ARGS", "");
     ArrayList<String[]> env = new ArrayList<>();
     env.add(new String[] { "LIBNAME", "$(BUILD_DIR_BOARD)/" + getIdentifier() + ".cooja" });
-    // COOJA_VERSION is used to detect incompatibility with the Contiki-NG
-    // build system. The format is <YYYY><MM><DD><2 digit sequence number>.
-    env.add(new String[] { "COOJA_VERSION", "2022052601" });
+    env.add(new String[] { "COOJA_VERSION",  Cooja.CONTIKI_NG_BUILD_VERSION });
     env.add(new String[] { "CLASSNAME", javaClassName});
     env.add(new String[] { "COOJA_SOURCEDIRS", dirs.toString().replace("\\", "/") });
     env.add(new String[] { "COOJA_SOURCEFILES", sources.toString() });

@@ -52,7 +52,7 @@ import java.nio.file.Paths;
  * Contains the command line parameters and is the main entry point for Cooja.
  */
 @Command(version = {
-        "Cooja " + Cooja.VERSION,
+        "Cooja " + Cooja.VERSION + ", Contiki-NG build interface version " + Cooja.CONTIKI_NG_BUILD_VERSION,
         "JVM: ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})",
         "OS: ${os.name} ${os.version} ${os.arch}"})
 class Main {
