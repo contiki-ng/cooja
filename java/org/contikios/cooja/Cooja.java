@@ -2051,7 +2051,6 @@ public class Cooja extends Observable {
 
           int returnVal = fc.showOpenDialog(Cooja.getTopParentContainer());
           if (returnVal != JFileChooser.APPROVE_OPTION) {
-            logger.info("Load command cancelled by user...");
             return null;
           }
 
