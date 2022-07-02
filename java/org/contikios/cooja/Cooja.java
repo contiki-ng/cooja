@@ -2029,13 +2029,8 @@ public class Cooja extends Observable {
       return null;
     }
 
-    /* Use provided configuration, or open File Chooser */
-    if (configFile != null && !configFile.isDirectory()) {
-      if (!configFile.exists() || !configFile.canRead()) {
-        logger.fatal("No read access to file: " + configFile.getAbsolutePath());
-        return doLoadConfig(null, quick, manualRandomSeed);
-      }
-    } else {
+    // Open File Chooser if config is not useful.
+    if (configFile == null || !configFile.canRead()) {
       final File suggestedFile = configFile;
       configFile = new RunnableInEDT<File>() {
         @Override
