@@ -626,9 +626,7 @@ public class Cooja extends Observable {
     newHistory.append(newFile);
     for (int i = 0, count = 1; i < history.length && count < 10; i++) {
       String historyFile = history[i];
-      if (newFile.equals(historyFile) || historyFile.length() == 0) {
-        // File already added or empty file name
-      } else {
+      if (!newFile.equals(historyFile) && historyFile.length() != 0) {
         newHistory.append(';').append(historyFile);
         count++;
       }
