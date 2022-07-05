@@ -1235,17 +1235,6 @@ public class Cooja extends Observable {
    * @return True if class was registered
    */
   public boolean registerPositioner(Class<? extends Positioner> positionerClass) {
-    // Check that interval constructor exists
-    try {
-      positionerClass
-      .getConstructor(int.class, double.class, double.class,
-          double.class, double.class, double.class, double.class);
-    } catch (Exception e) {
-      logger.fatal("No interval constructor found of positioner: "
-          + positionerClass);
-      return false;
-    }
-
     positionerClasses.add(positionerClass);
     return true;
   }
@@ -1264,17 +1253,7 @@ public class Cooja extends Observable {
    *          Class to register
    * @return True if class was registered
    */
-  public boolean registerRadioMedium(
-      Class<? extends RadioMedium> radioMediumClass) {
-    // Check that simulation constructor exists
-    try {
-      radioMediumClass.getConstructor(Simulation.class);
-    } catch (Exception e) {
-      logger.fatal("No simulation constructor found of radio medium: "
-          + radioMediumClass);
-      return false;
-    }
-
+  public boolean registerRadioMedium(Class<? extends RadioMedium> radioMediumClass) {
     radioMediumClasses.add(radioMediumClass);
     return true;
   }
@@ -1687,39 +1666,24 @@ public class Cooja extends Observable {
    * @return True if this plugin was registered ok, false otherwise
    */
   public boolean registerPlugin(final Class<? extends Plugin> pluginClass) {
-
-    /* Check plugin type */
-    final int pluginType;
-    if (pluginClass.isAnnotationPresent(PluginType.class)) {
-      pluginType = pluginClass.getAnnotation(PluginType.class).value();
-    } else {
+    if (!pluginClass.isAnnotationPresent(PluginType.class)) {
       logger.fatal("Could not register plugin, no plugin type found: " + pluginClass);
       return false;
     }
 
-    /* Check plugin constructor */
-    try {
-      if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
-        pluginClass.getConstructor(Cooja.class);
-      } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN 
-    		  || pluginType == PluginType.SIM_CONTROL_PLUGIN) {
-        pluginClass.getConstructor(Simulation.class, Cooja.class);
-      } else if (pluginType == PluginType.MOTE_PLUGIN) {
-        pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class);
+    switch (pluginClass.getAnnotation(PluginType.class).value()) {
+      case PluginType.MOTE_PLUGIN:
         menuMotePluginClasses.add(pluginClass);
-      } else {
-        logger.fatal("Could not register plugin, bad plugin type: " + pluginType);
-        return false;
-      }
-      pluginClasses.add(pluginClass);
-    } catch (NoClassDefFoundError e) {
-      logger.fatal("No plugin class: " + pluginClass + ": " + e.getMessage());
-      return false;
-    } catch (NoSuchMethodException e) {
-      logger.fatal("No plugin class constructor: " + pluginClass + ": " + e.getMessage());
-      return false;
+      case PluginType.COOJA_PLUGIN:
+      case PluginType.COOJA_STANDARD_PLUGIN:
+      case PluginType.SIM_PLUGIN:
+      case PluginType.SIM_STANDARD_PLUGIN:
+      case PluginType.SIM_CONTROL_PLUGIN:
+        pluginClasses.add(pluginClass);
+        return true;
     }
-    return true;
+    logger.fatal("Could not register plugin, " + pluginClass + " has unknown plugin type");
+    return false;
   }
 
   /**
