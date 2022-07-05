@@ -104,20 +104,18 @@ public class CDF_Normal {
 Here is a copy of the documentation in the FORTRAN code:
 
 	SUBROUTINE NORMP(Z, P, Q, PDF)
-C
-C	Normal distribution probabilities accurate to 1.e-15.
-C	Z = no. of standard deviations from the mean.
-C	P, Q = probabilities to the left & right of Z.   P + Q = 1.
-C       PDF = the probability density.
-C
-C       Based upon algorithm 5666 for the error function, from:
-C       Hart, J.F. et al, 'Computer Approximations', Wiley 1968
-C
-C       Programmer: Alan Miller
-C
-C	Latest revision - 30 March 1986
-C
 
+	Normal distribution probabilities accurate to 1.e-15.
+	Z = no. of standard deviations from the mean.
+	P, Q = probabilities to the left & right of Z.   P + Q = 1.
+       PDF = the probability density.
+
+       Based upon algorithm 5666 for the error function, from:
+       Hart, J.F. et al, 'Computer Approximations', Wiley 1968
+
+       Programmer: Alan Miller
+
+	Latest revision - 30 March 1986
 */
 
    public static double normp(double z) {

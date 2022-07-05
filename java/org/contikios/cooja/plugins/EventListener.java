@@ -67,7 +67,7 @@ import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 
 /**
- * Allows a user to observe several different parts of the simulator, stopping a
+ * Allows a user to observe several parts of the simulator, stopping a
  * simulation whenever an object changes.
  *
  * @author Fredrik Osterlind

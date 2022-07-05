@@ -116,7 +116,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
    * Ticks mote once. This is done by first polling all interfaces
    * and letting them act on the stored memory before the memory is set. Then
    * the mote is ticked, and the new memory is received.
-   * Finally all interfaces are allowing to act on the new memory in order to
+   * Finally, all interfaces are allowing to act on the new memory in order to
    * discover relevant changes. This method also schedules the next mote tick time
    * depending on Contiki specifics; pending timers and polled processes.
    *

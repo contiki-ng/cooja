@@ -33,7 +33,7 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Positioner;
 
 /**
- * Generates positions in a ellipse in the XY plane.
+ * Generates positions in an ellipse in the XY plane.
  * (z position will always be start value of interval)
  *
  * @author Fredrik Osterlind

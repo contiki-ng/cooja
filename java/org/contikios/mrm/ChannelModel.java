@@ -948,7 +948,7 @@ public class ChannelModel {
   /**
    * Returns all possible diffraction sources, by checking which
    * of the endpoints of the given visible lines that are on a corner
-   * of a obstacle structure.
+   * of an obstacle structure.
    *
    * @param allVisibleLines Lines which may hold diffraction sources
    * @return All diffraction sources

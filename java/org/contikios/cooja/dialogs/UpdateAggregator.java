@@ -39,7 +39,7 @@ import org.contikios.cooja.plugins.LogListener;
 /**
  * Help class to avoid EventQueue flooding by aggregating several update events.
  * 
- * To be used by plugins et. al. that receive updates at a high rate 
+ * To be used by plugins et al. that receive updates at a high rate
  * (such as new Log Output messages), and must handle them from the Event thread.
  * 
  * @author Fredrik Osterlind, Niclas Finne

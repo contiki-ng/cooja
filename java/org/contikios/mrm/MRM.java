@@ -59,7 +59,7 @@ import org.contikios.mrm.ChannelModel.TxPair;
  *
  * MRM is an alternative to the simpler radio mediums available in
  * COOJA. It is packet based and uses a 2D ray-tracing approach to approximate
- * signal strength attenuation between simulated radios. Currently the
+ * signal strength attenuation between simulated radios. Currently, the
  * ray-tracing only supports reflections and refractions through homogeneous
  * obstacles.
  *

@@ -449,7 +449,7 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
       visualizer.getDesktopPane().add(rrFrame);
     }
     rrFrame.pack();
-    /* Place frame at the upper right corner of the visualizer canvas */
+    /* Place frame in the upper right corner of the visualizer canvas */
     Point visCanvasPos = SwingUtilities.convertPoint(
             visualizer.getCurrentCanvas(),
             visualizer.getCurrentCanvas().getLocation(),

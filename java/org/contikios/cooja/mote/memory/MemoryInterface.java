@@ -31,10 +31,10 @@ package org.contikios.cooja.mote.memory;
 import java.util.Map;
 
 /**
- * A minimal interface to a motes memory.
+ * A minimal interface to a mote memory.
  * 
  * Allows reading and writing memory, obtaining symbol information
- * and provides some basic inforation about size, layout, etc.
+ * and provides some basic information about size, layout, etc.
  *
  * @author Enrico Jorns
  */

@@ -86,7 +86,7 @@ import org.jdom.Element;
  * Variable Watcher enables a user to watch mote variables during a simulation.
  * Variables can be read or written either as bytes, integers or byte arrays.
  *
- * User can also see which variables seems to be available on the selected node.
+ * User can also see which variables seem to be available on the selected node.
  *
  * @author Fredrik Osterlind
  * @author Enrico Jorns
@@ -236,7 +236,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     varNameCombo.setEditable(true);
     varNameCombo.setSelectedItem("");
  
-    // use longest variable name as prototye for width
+    // use the longest variable name as prototype for width
     String longestVarname = "";
     int maxLength = 0;
     for (String w : allPotentialVarNames) {
@@ -260,7 +260,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
         String currentItem = (String)varNameCombo.getSelectedItem();
 
-        /* If item did not changed, skip! */
+        /* If item did not change, skip! */
         if (currentItem == null || currentItem.equals(lastItem)) {
           return;
         }
@@ -517,7 +517,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
                 Integer.decode(varSizeField.getText()),
                 memMonitor);
 
-        /* During monitoring we neither allow writes nor to change variable */
+        /* During monitoring, we neither allow writes nor to change variable */
         varAddrCheckBox.setEnabled(false);
         readButton.setEnabled(false);
         writeButton.setEnabled(false);
@@ -722,7 +722,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     for (int i = 0; i < elements; i += 1) {
       int val = 0;
       for (int j = 0; j < typeSize; j++) {
-        /* skip if we do note have more bytes do consume.
+        /* skip if there are more bytes do consume.
         This may happen e.g. if we display long (4 bytes) but have only 3 bytes */
         if (i * typeSize + j > bufferedBytes.length - 1) {
           break;
@@ -791,7 +791,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
 
     pack();
     
-    /* Assure we do not loose the window due to placement outside desktop */
+    /* Assure we do not lose the window due to placement outside desktop */
     if (getX() < 0) {
       setLocation(0, getY());
     }

@@ -53,7 +53,7 @@ import org.apache.logging.log4j.LogManager;
  * Values can be fetched as String, Boolean, Integer, Double or String array.
  *
  * Several configurations can be merged, together forming a final overall
- * configuration. The order of the how configurations are merged matter - later
+ * configuration. The merge order of configurations matter - later
  * values will overwrite earlier. For example merging two configurations with
  * the key 'SOMEKEY' in the following order:
  *

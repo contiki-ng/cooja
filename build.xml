@@ -59,7 +59,7 @@ The COOJA Simulator
   Start COOJA with more memory allocated (for large simulations)
   > ant run_bigmem
 
-  Build COOJA (dist/cooja.jar) and all default projects (MSPSim et al)
+  Build COOJA (dist/cooja.jar) and all default projects (MSPSim et al.)
   > ant jar
     </echo>
   </target>

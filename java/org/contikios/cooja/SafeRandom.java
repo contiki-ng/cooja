@@ -34,7 +34,7 @@ import java.util.Random;
 
 /**
  * This ensures that the functions of the random number generator are
- * only called by the the thread initializing a simulation or the
+ * only called by the thread initializing a simulation or the
  * simulation thread itself.
  * Rationale: By allowing another thread to use the random number
  * generator concurrency is introduced, thus it can not be guaranteed

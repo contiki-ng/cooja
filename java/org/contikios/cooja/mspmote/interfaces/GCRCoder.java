@@ -96,7 +96,7 @@ public class GCRCoder {
     return false;
   }
 
-  /* Decode one char - result can be get from get_decoded */
+  /* Decode one char - result can be gotten from get_decoded */
   void gcr_decode(int gcr_data) {
     gcr_val |= gcr_data << gcr_bits;
     gcr_bits += 8;
@@ -148,7 +148,7 @@ public class GCRCoder {
 
     for (int i = 0; i < dataLength; i++) {
 
-      // Try decode byte
+      // Try to decode byte
       gcr_decode(0xff & data[i]);
       if (!gcr_valid()) {
         logger.fatal("GCR decoding failed, dropping packet");
@@ -193,7 +193,7 @@ public class GCRCoder {
 
     for (int i = 0; i < dataLength; i++) {
 
-      // Try encode byte
+      // Try to encode byte
       gcr_encode(0xff & data[i]);
 
       // Store encoded bytes

@@ -46,7 +46,7 @@ import org.contikios.cooja.mspmote.MspMoteTimeEvent;
  * Extension of MSPSim 802.15.4 radio wrapper with bit-level errors.
  *
  * Only errors due to signal fading are supported (as opposed to errors to interference).
- * Interesting modelling effects can obtained if this is used together with a dynamic
+ * Interesting modelling effects can be obtained if this is used together with a dynamic
  * channel fading model.
  *
  * @author Atis Elsts
@@ -127,7 +127,7 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
     return bestRxSymbol;
   }
 
-  /* This is the probability that a bit will received incorrectly, for
+  /* This is the probability that a bit will be received incorrectly, for
    * -95.0, -94.9, -94.8, ..., -80.0 dBm signal levels.
    * It is modelled as Additive White Gaussian Noise (AWGN) channel
    * with constellation size = 4, and log2(4) = 2 bits per over-the-air symbol.

@@ -71,7 +71,7 @@ import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
  *   PRR(rssi) =  1.0 / (1 + exp(-(rssi - rssi_50%))),
  * 
  * where:
- * - `rssi` is the transmit power minus the path loss.
+ * - `rssi` is the transmit-power minus the path loss.
  * - `rssi_50%` is the signal level at which 50% packets are received;
  * 
  * To model the path loss PL_{dBm}(d) this plugin uses the log-distance path loss model:
