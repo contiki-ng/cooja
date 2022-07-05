@@ -197,7 +197,7 @@ class Main {
           // Get the directory where the JAR file is placed
           path = path.getParent();
         }
-        // Cooja JAR/classes are either in the dist or build directories and we want the installation directory
+        // Cooja JAR/classes are either in the dist or build directories, and we want the installation directory
         options.coojaPath = path.getParent().normalize().toString();
       } catch (Exception e) {
         System.err.println("Failed to detect Cooja path: " + e);

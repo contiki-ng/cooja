@@ -32,19 +32,19 @@ package org.contikios.cooja.mote.memory;
 import java.nio.ByteOrder;
 
 /**
- * Holds memory layout informations such as endianess, wordsize, C int size.
+ * Holds memory layout information such as endianess, wordsize, C int size.
  * 
  * @author Enrico Jorns
  */
 public class MemoryLayout {
 
-  /** 8 bit memory architecture */
+  /** 8-bit memory architecture */
   public static final int ARCH_8BIT = 1;
-  /** 16 bit memory architecture */
+  /** 16-bit memory architecture */
   public static final int ARCH_16BIT = 2;
-  /** 32 bit memory architecture */
+  /** 32-bit memory architecture */
   public static final int ARCH_32BIT = 4;
-  /** 64 bit memory architecture */
+  /** 64-bit memory architecture */
   public static final int ARCH_64BIT = 8;
 
   /**

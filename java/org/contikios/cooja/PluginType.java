@@ -49,7 +49,7 @@ public @interface PluginType {
    * frame.
    * 
    * Mote plugins can not be instantiated from the regular menu bar, but are
-   * instead started from other plugins, for example a visualizer that let's a
+   * instead started from other plugins, for example a visualizer that lets a
    * user select a mote.
    * 
    * When constructed, a mote plugin is given a mote, the current active

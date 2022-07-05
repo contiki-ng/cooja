@@ -171,7 +171,7 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
       /* Wake up in one millisecond to handle a missed Etimer task
        * which may be blocked by busy waiting such as one in
        * radio_send(). Scheduling it in a shorter time than one
-       * millisecond, e.g., one microsecond, seems to be worthless and
+       * millisecond, e.g., one microsecond, seems to be worthless, and
        * it would cause unnecessary CPU usage. */
       mote.scheduleNextWakeup(currentSimulationTime + Simulation.MILLISECOND);
     } else {

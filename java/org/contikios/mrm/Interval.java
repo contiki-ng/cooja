@@ -35,8 +35,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * This class represents a interval. Some operations on these intervals exist,
- * such as intersecting a interval with another and subtracting an interval from
+ * This class represents an interval. Some operations on these intervals exist,
+ * such as intersecting an interval with another and subtracting an interval from
  * another.
  * 
  * @author Fredrik Osterlind

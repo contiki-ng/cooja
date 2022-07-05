@@ -137,7 +137,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 /**
- * Main file of COOJA Simulator. Typically contains a visualizer for the
+ * Main file of COOJA Simulator. Typically, contains a visualizer for the
  * simulator, but can also be started without visualizer.
  *
  * This class loads external Java classes (in extension directories), and handles the
@@ -188,7 +188,7 @@ public class Cooja extends Observable {
   public static final String EXTERNAL_TOOLS_LINUX_SETTINGS_FILENAME = "/external_tools_linux.config";
 
   /**
-   * External tools default Linux/Unix settings filename for 64 bit architectures.
+   * External tools default Linux/Unix settings filename for 64-bit architectures.
    * Tested on Intel 64-bit Gentoo Linux.
    */
   public static final String EXTERNAL_TOOLS_LINUX_64_SETTINGS_FILENAME = "/external_tools_linux_64.config";
@@ -1016,7 +1016,7 @@ public class Cooja extends Observable {
           }
         }
 
-        /* Check if plugin was imported by a extension directory */
+        /* Check if plugin was imported by an extension directory */
         File project =
           getProjectConfig().getUserProjectDefining(Cooja.class, "PLUGINS", newPluginClass.getName());
         if (project != null) {
@@ -2762,7 +2762,7 @@ public class Cooja extends Observable {
 
   /**
    * Help method that returns the description for given object. This method
-   * reads from the object's class annotations if existing. Otherwise it returns
+   * reads from the object's class annotations if existing. Otherwise, it returns
    * the simple class name of object's class.
    *
    * @param object
@@ -2775,7 +2775,7 @@ public class Cooja extends Observable {
 
   /**
    * Help method that returns the description for given class. This method reads
-   * from class annotations if existing. Otherwise it returns the simple class
+   * from class annotations if existing. Otherwise, it returns the simple class
    * name.
    *
    * @param clazz
@@ -3627,7 +3627,7 @@ public class Cooja extends Observable {
 
   /**
    * Adds mote relation observer.
-   * Typically used by visualizer plugins.
+   * Typically, used by visualizer plugins.
    *
    * @param newObserver Observer
    */
@@ -3637,7 +3637,7 @@ public class Cooja extends Observable {
 
   /**
    * Removes mote relation observer.
-   * Typically used by visualizer plugins.
+   * Typically, used by visualizer plugins.
    *
    * @param observer Observer
    */

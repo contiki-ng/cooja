@@ -660,7 +660,7 @@ class DirectoryTreePanel extends JPanel {
 			}
 		});
 
-		/* Try expand current COOJA projects */
+		/* Try to expand current COOJA projects */
 		for (COOJAProject project: parent.getProjects()) {
 			if (!project.dir.exists()) {
 				logger.fatal("Project directory not found: " + project.dir);

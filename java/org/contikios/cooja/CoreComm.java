@@ -54,7 +54,7 @@ import org.contikios.cooja.dialogs.MessageList;
  * using Java Native Interface (JNI). Each implemented class (named
  * Lib[number]), loads a shared library which belongs to one mote type. The
  * reason for this somewhat strange design is that once loaded, a native library
- * cannot be unloaded in Java (in the current versions available). Therefore if
+ * cannot be unloaded in Java (in the current versions available). Therefore, if
  * we wish to load several libraries, the names and associated native functions
  * must have unique names. And those names are defined via the calling class in
  * JNI. For example, the corresponding function for a native tick method in
@@ -65,7 +65,7 @@ import org.contikios.cooja.dialogs.MessageList;
  * same corecomm class without restarting the JVM and thus the entire
  * simulation.
  *
- * Each implemented CoreComm class needs read access to the following core
+ * Each implemented CoreComm class needs read-access to the following core
  * variables:
  * <ul>
  * <li>referenceVar
@@ -268,7 +268,7 @@ public abstract class CoreComm {
   public abstract void setReferenceAddress(long addr);
 
   /**
-   * Fills an byte array with memory segment identified by start and length.
+   * Fills a byte array with memory segment identified by start and length.
    *
    * @param relAddr Relative memory start address
    * @param length Length of segment

@@ -87,7 +87,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	
 	private Simulation simulation = null;
 	
-	/* Book-keeping */
+	/* Bookkeeping */
 	public int COUNTER_TX = 0;
 	public int COUNTER_RX = 0;
 	public int COUNTER_INTERFERED = 0;
@@ -509,8 +509,8 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	* Get the minimum RSSI value that is set when the radio is sending
 	* 
 	* @param radio
-	*          The radio to get the send RSSI for
-	* @return The send RSSI value; Default: SS_STRONG
+	*          The radio to get the send-RSSI for
+	* @return The send-RSSI value; Default: SS_STRONG
 	*/
 	public double getSendRssi(Radio radio) {
 		Double rssi = sendRssi.get(radio);
@@ -521,7 +521,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	}
 
 	/**
-	* Set the send RSSI for a radio. This is the minimum value when the radio is
+	* Set the send-RSSI for a radio. This is the minimum value when the radio is
 	* sending
 	* 
 	* @param radio
@@ -558,7 +558,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	/**
 	 * Register an observer that gets notified when the radio medium changed.
 	 * This includes changes in the settings and (de-)registration of radios. 
-	 * This does not include transmissions, etc as these are part of the radio
+	 * This does not include transmissions, etc. as these are part of the radio
 	 * and not the radio medium itself.
 	 * @see #addRadioTransmissionObserver
 	 * @param observer the Observer to register

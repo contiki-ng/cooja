@@ -53,7 +53,7 @@ import org.contikios.cooja.interfaces.Radio;
  * Can be used both stand-alone as a radio medium, and 
  * as a basis for other radio medium implementations.
  * 
- * The stand-alone radio medium supports propagation delays and
+ * The stand-alone radio medium supports propagation delays
  * and per-link transmission success ratio/RSSI.
  * 
  * @see AbstractRadioMedium

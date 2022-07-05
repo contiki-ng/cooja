@@ -108,7 +108,7 @@ public abstract class MoteInterface extends Observable {
    *
    * @see #getInterfaceVisualizer()
    * @param panel
-   *          A interface visualizer panel fetched earlier for this mote
+   *          An interface visualizer panel fetched earlier for this mote
    *          interface.
    */
   public abstract void releaseInterfaceVisualizer(JPanel panel);

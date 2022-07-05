@@ -47,7 +47,7 @@ import org.contikios.cooja.dialogs.CreateSimDialog;
  * A simulation consists of a number of motes and mote types.
  *
  * A simulation is observable:
- * changed simulation state, added or deleted motes etc are observed.
+ * changed simulation state, added or deleted motes etc. are observed.
  * To track mote changes, observe the mote (interfaces) itself.
  *
  * @author Fredrik Osterlind
@@ -894,7 +894,7 @@ public class Simulation extends Observable implements Runnable {
   }
 
   /**
-   * Returns simulation with with given ID.
+   * Returns simulation with given ID.
    *
    * @param id ID
    * @return Mote or null
@@ -910,7 +910,7 @@ public class Simulation extends Observable implements Runnable {
   }
 
   /**
-   * Returns uninitialised simulation mote with with given ID.
+   * Returns uninitialised simulation mote with given ID.
    * 
    * @param id ID
    * @return Mote or null

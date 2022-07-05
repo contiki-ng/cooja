@@ -1185,7 +1185,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   /**
    * Returns all motes at given position.
    *
-   * If multiple motes were found on at a position the motes are returned
+   * If multiple motes were found at a position, the motes are returned
    * in the order they are painted on screen.
    * First mote in array is the bottom mote, last mote is the top mote.
    *

@@ -34,7 +34,7 @@ import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor.EventType;
 import org.contikios.cooja.mote.memory.MemoryLayout.DataType;
 
 /**
- * Represents memory that can be accessed with address and size informations.
+ * Represents memory that can be accessed with address and size information.
  *
  * @author Enrico Jorns
  */
@@ -53,7 +53,7 @@ public abstract class Memory {
 
   // -- Get fixed size types
   /**
-   * Read 8 bit integer from address.
+   * Read 8-bit integer from address.
    *
    * @param addr Address to read from
    * @return 8 bit value read from address
@@ -63,7 +63,7 @@ public abstract class Memory {
   }
 
   /**
-   * Read 16 bit integer from address.
+   * Read 16-bit integer from address.
    *
    * @param addr Address to read from
    * @return 16 bit value read from address
@@ -75,7 +75,7 @@ public abstract class Memory {
   }
 
   /**
-   * Read 32 bit integer from address.
+   * Read 32-bit integer from address.
    *
    * @param addr Address to read from
    * @return 32 bit value read from address
@@ -87,7 +87,7 @@ public abstract class Memory {
   }
 
   /**
-   * Read 64 bit integer from address.
+   * Read 64-bit integer from address.
    *
    * @param addr Address to read from
    * @return 64 bit value read from address
@@ -167,7 +167,7 @@ public abstract class Memory {
 
   // -- Set fixed size types
   /**
-   * Write 8 bit integer to address.
+   * Write 8-bit integer to address.
    *
    * @param addr Address to write to
    * @param value 8 bit value to write
@@ -177,7 +177,7 @@ public abstract class Memory {
   }
 
   /**
-   * Write 16 bit integer to address.
+   * Write 16-bit integer to address.
    *
    * @param addr Address to write to
    * @param value 16 bit value to write
@@ -189,7 +189,7 @@ public abstract class Memory {
   }
 
   /**
-   * Write 32 bit integer to address.
+   * Write 32-bit integer to address.
    *
    * @param addr Address to write to
    * @param value 32 bit value to write
@@ -201,7 +201,7 @@ public abstract class Memory {
   }
 
   /**
-   * Write 64 bit integer to address.
+   * Write 64-bit integer to address.
    *
    * @param addr Address to write to
    * @param value 64 bit value to write

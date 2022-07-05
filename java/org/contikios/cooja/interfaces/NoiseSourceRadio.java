@@ -41,7 +41,7 @@ package org.contikios.cooja.interfaces;
  *
  * COOJA's radio mediums may or may not choose to respect noise source radios.
  *
- * See MRM in the apps directory.
+ * @see org.contikios.mrm.MRM
  *
  * @author Fredrik Osterlind
  */

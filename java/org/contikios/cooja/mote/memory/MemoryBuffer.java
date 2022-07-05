@@ -141,13 +141,13 @@ public class MemoryBuffer {
   // --- fixed size types
 
   /**
-   * Reads 8 bit integer from current buffer position,
+   * Reads 8-bit integer from current buffer position,
    * and then increments position.
    * <p>
    * Note: If structured reading is enabled,
    * additional padding bytes may be skipped automatically.
    *
-   * @return 8 bit integer at the buffer's current position
+   * @return 8-bit integer at the buffer's current position
    */
   public byte getInt8() {
     byte value = bbuf.get();
@@ -156,13 +156,13 @@ public class MemoryBuffer {
   }
 
   /**
-   * Reads 16 bit integer from current buffer position,
+   * Reads 16-bit integer from current buffer position,
    * and then increments position.
    * <p>
    * Note: If structured reading is enabled,
    * additional padding bytes may be skipped automatically.
    *
-   * @return 16 bit integer at the buffer's current position
+   * @return 16-bit integer at the buffer's current position
    */
   public short getInt16() {
     short value = bbuf.getShort();
@@ -171,13 +171,13 @@ public class MemoryBuffer {
   }
 
   /**
-   * Reads 32 bit integer from current buffer position,
+   * Reads 32-bit integer from current buffer position,
    * and then increments position.
    * <p>
    * Note: If structured reading is enabled,
    * additional padding bytes may be skipped automatically.
    *
-   * @return 32 bit integer at the buffer's current position
+   * @return 32-bit integer at the buffer's current position
    */
   public int getInt32() {
     int value = bbuf.getInt();
@@ -186,13 +186,13 @@ public class MemoryBuffer {
   }
 
   /**
-   * Reads 64 bit integer from current buffer position,
+   * Reads 64-bit integer from current buffer position,
    * and then increments position.
    * <p>
    * Note: If structured reading is enabled,
    * additional padding bytes may be skipped automatically.
    *
-   * @return 64 bit integer at the buffer's current position
+   * @return 64-bit integer at the buffer's current position
    */
   public long getInt64() {
     long value = bbuf.getLong();
@@ -303,13 +303,13 @@ public class MemoryBuffer {
   // --- fixed size types
   
   /**
-   * Writes 8 bit integer to current buffer position,
+   * Writes 8-bit integer to current buffer position,
    * and then increments position.
    * <p>
    * Note: If structured writing is enabled,
    * additional padding bytes may be skipped automatically.
    *
-   * @param value 8 bit integer to write
+   * @param value 8-bit integer to write
    * @return A reference to this object
    */
   public MemoryBuffer putInt8(byte value) {
@@ -319,13 +319,13 @@ public class MemoryBuffer {
   }
 
   /**
-   * Writes 16 bit integer to current buffer position,
+   * Writes 16-bit integer to current buffer position,
    * and then increments position.
    * <p>
    * Note: If structured writing is enabled,
    * additional padding bytes may be skipped automatically.
    *
-   * @param value 16 bit integer to write
+   * @param value 16-bit integer to write
    * @return A reference to this object
    */
   public MemoryBuffer putInt16(short value) {
@@ -335,13 +335,13 @@ public class MemoryBuffer {
   }
 
   /**
-   * Writes 32 bit integer to current buffer position,
+   * Writes 32-bit integer to current buffer position,
    * and then increments position.
    * <p>
    * Note: If structured writing is enabled,
    * additional padding bytes may be skipped automatically.
    *
-   * @param value 32 bit integer to write
+   * @param value 32-bit integer to write
    * @return A reference to this object
    */
   public MemoryBuffer putInt32(int value) {
@@ -351,13 +351,13 @@ public class MemoryBuffer {
   }
 
   /**
-   * Writes 64 bit integer to current buffer position,
+   * Writes 64-bit integer to current buffer position,
    * and then increments position.
    * <p>
    * Note: If structured writing is enabled,
    * additional padding bytes may be skipped automatically.
    *
-   * @param value 64 bit integer to write
+   * @param value 64-bit integer to write
    * @return A reference to this object
    */
   public MemoryBuffer putInt64(long value) {

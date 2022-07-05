@@ -50,7 +50,7 @@ public class IEEE802154Analyzer extends PacketAnalyzer {
     return packet.level == MAC_LEVEL;
   }
 
-  /* this protocol always have network level packets as payload */
+  /* this protocol always has network level packets as payload */
   public int nextLevel(byte[] packet, int level) {
     return NETWORK_LEVEL;
   }

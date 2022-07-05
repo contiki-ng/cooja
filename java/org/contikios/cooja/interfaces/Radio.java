@@ -181,7 +181,7 @@ public abstract class Radio extends MoteInterface {
   }
 
   /**
-   * Sets the LQI. This in not supported by all platforms. Also results may differ
+   * Sets the LQI. This in not supported by all platforms. Also, results may differ
    * from platform to platform. 
    *
    * @param lqi The current LQI

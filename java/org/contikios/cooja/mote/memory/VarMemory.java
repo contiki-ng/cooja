@@ -129,10 +129,10 @@ public class VarMemory extends Memory {
   }
 
   /**
-   * Read 8 bit integer from location associated with this variable name.
+   * Read 8-bit integer from location associated with this variable name.
    *
    * @param varName Variable name
-   * @return 8 bit integer value read from location assigned to variable name
+   * @return 8-bit integer value read from location assigned to variable name
    */
   public byte getInt8ValueOf(String varName)
           throws UnknownVariableException {
@@ -140,10 +140,10 @@ public class VarMemory extends Memory {
   }
 
   /**
-   * Read 16 bit integer from location associated with this variable name.
+   * Read 16-bit integer from location associated with this variable name.
    *
    * @param varName Variable name
-   * @return 16 bit integer value read from location assigned to variable name
+   * @return 16-bit integer value read from location assigned to variable name
    */
   public short getInt16ValueOf(String varName)
           throws UnknownVariableException {
@@ -151,10 +151,10 @@ public class VarMemory extends Memory {
   }
 
   /**
-   * Read 32 bit integer from location associated with this variable name.
+   * Read 32-bit integer from location associated with this variable name.
    *
    * @param varName Variable name
-   * @return 32 bit integer value read from location assigned to variable name
+   * @return 32-bit integer value read from location assigned to variable name
    */
   public int getInt32ValueOf(String varName)
           throws UnknownVariableException {
@@ -162,10 +162,10 @@ public class VarMemory extends Memory {
   }
 
   /**
-   * Read 64 bit integer from location associated with this variable name.
+   * Read 64-bit integer from location associated with this variable name.
    *
    * @param varName Variable name
-   * @return 64 bit integer value read from location assigned to variable name
+   * @return 64-bit integer value read from location assigned to variable name
    */
   public long getInt64ValueOf(String varName)
           throws UnknownVariableException {
@@ -243,10 +243,10 @@ public class VarMemory extends Memory {
   }
 
   /**
-   * Write 8 bit integer value to location associated with this variable name.
+   * Write 8-bit integer value to location associated with this variable name.
    *
    * @param varName Variable name
-   * @param value 8 bit integer value to write
+   * @param value 8-bit integer value to write
    */
   public void setInt8ValueOf(String varName, byte value)
           throws UnknownVariableException {
@@ -254,10 +254,10 @@ public class VarMemory extends Memory {
   }
 
   /**
-   * Write 16 bit integer value to location associated with this variable name.
+   * Write 16-bit integer value to location associated with this variable name.
    *
    * @param varName Variable name
-   * @param value 16 bit integer value to write
+   * @param value 16-bit integer value to write
    */
   public void setInt16ValueOf(String varName, short value)
           throws UnknownVariableException {
@@ -265,10 +265,10 @@ public class VarMemory extends Memory {
   }
 
   /**
-   * Write 32 bit integer value to location associated with this variable name.
+   * Write 32-bit integer value to location associated with this variable name.
    *
    * @param varName Variable name
-   * @param value 32 bit integer value to write
+   * @param value 32-bit integer value to write
    */
   public void setInt32ValueOf(String varName, int value)
           throws UnknownVariableException {
@@ -276,10 +276,10 @@ public class VarMemory extends Memory {
   }
 
   /**
-   * Write 64 bit integer value to location associated with this variable name.
+   * Write 64-bit integer value to location associated with this variable name.
    *
    * @param varName Variable name
-   * @param value 64 bit integer value to write
+   * @param value 64-bit integer value to write
    */
   public void setInt64ValueOf(String varName, long value)
           throws UnknownVariableException {

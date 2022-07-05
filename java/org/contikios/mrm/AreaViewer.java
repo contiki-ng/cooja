@@ -226,7 +226,7 @@ public class AreaViewer extends VisPlugin {
     currentRadioMedium = (MRM) currentSimulation.getRadioMedium();
     currentChannelModel = currentRadioMedium.getChannelModel();
 
-    // We want to listen to changes both in the channel model as well as in the radio medium
+    // We want to listen to changes both in the channel model and the radio medium
     currentChannelModel.addSettingsObserver(channelModelSettingsObserver);
     currentRadioMedium.addRadioMediumObserver(radioMediumSettingsObserver);
     currentRadioMedium.addRadioTransmissionObserver(radioMediumActivityObserver);
@@ -1795,13 +1795,13 @@ public class AreaViewer extends VisPlugin {
                     imageValues[x][y] = signalStrength[1];
 
                   } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR) {
-                    // Get signal to noise ratio
+                    // Get signal-to-noise ratio
                     double[] snr = currentChannelModel.getSINR(
                         txPair,
                         -Double.MAX_VALUE
                     );
 
-                    // Collecting signal to noise ratio
+                    // Collecting signal-to-noise ratio
                     if (snr[0] < lowestImageValue) {
                       lowestImageValue = snr[0];
                     }
@@ -1812,7 +1812,7 @@ public class AreaViewer extends VisPlugin {
                     imageValues[x][y] = snr[0];
 
                   } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR_VAR) {
-                    // Get signal to noise ratio
+                    // Get signal-to-noise ratio
                     double[] snr = currentChannelModel.getSINR(
                         txPair,
                         -Double.MAX_VALUE
@@ -2299,7 +2299,7 @@ public class AreaViewer extends VisPlugin {
   /**
    * Returns XML elements representing the current configuration.
    *
-   * @see #setConfigXML(Collection)
+   * @see #setConfigXML(Collection, boolean) 
    * @return XML element collection
    */
   public Collection<Element> getConfigXML() {
