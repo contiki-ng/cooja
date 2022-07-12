@@ -126,7 +126,7 @@ public abstract class MspMoteType implements MoteType {
     moteInterfaceClasses = classes;
   }
 
-  public final Mote generateMote(Simulation simulation) {
+  public final Mote generateMote(Simulation simulation) throws MoteTypeCreationException {
     MspMote mote = createMote(simulation);
     mote.initMote();
     return mote;

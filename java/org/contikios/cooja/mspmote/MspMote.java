@@ -113,7 +113,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     requestImmediateWakeup();
   }
 
-  protected void initMote() {
+  protected void initMote() throws MoteType.MoteTypeCreationException {
     if (myMoteType != null) {
       initEmulator(myMoteType.getContikiFirmwareFile());
       myMoteInterfaceHandler = createMoteInterfaceHandler();
@@ -173,7 +173,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     getCPU().stop();
   }
 
-  protected MoteInterfaceHandler createMoteInterfaceHandler() {
+  protected MoteInterfaceHandler createMoteInterfaceHandler() throws MoteType.MoteTypeCreationException {
     return new MoteInterfaceHandler(this, getType().getMoteInterfaceClasses());
   }
 
@@ -459,7 +459,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return getInterfaces().getMoteID().getMoteID();
   }
 
-  public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException {
     setSimulation(simulation);
     if (myMoteInterfaceHandler == null) {
       myMoteInterfaceHandler = createMoteInterfaceHandler();

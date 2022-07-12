@@ -97,15 +97,9 @@ public class MoteInterfaceHandler {
    * @param mote Mote
    * @param interfaceClasses Mote interface classes
    */
-  public MoteInterfaceHandler(Mote mote, Class<? extends MoteInterface>[] interfaceClasses) {
+  public MoteInterfaceHandler(Mote mote, Class<? extends MoteInterface>[] interfaceClasses) throws MoteType.MoteTypeCreationException {
     for (Class<? extends MoteInterface> interfaceClass : interfaceClasses) {
-      MoteInterface intf = MoteInterface.generateInterface(interfaceClass, mote);
-
-      if (intf != null) {
-        addInterface(intf);
-      } else {
-        logger.fatal("Could not load interface: " + interfaceClass);
-      }
+      addInterface(MoteInterface.generateInterface(interfaceClass, mote));
     }
   }
 

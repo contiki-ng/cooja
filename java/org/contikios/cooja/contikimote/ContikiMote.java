@@ -75,7 +75,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
    * @param moteType Mote type
    * @param sim Mote's simulation
    */
-  public ContikiMote(ContikiMoteType moteType, Simulation sim) {
+  public ContikiMote(ContikiMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
     setSimulation(sim);
     this.myType = moteType;
     this.myMemory = moteType.createInitialMemory();
@@ -179,7 +179,12 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
   public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) {
     setSimulation(simulation);
     myMemory = myType.createInitialMemory();
-    myInterfaceHandler = new MoteInterfaceHandler(this, myType.getMoteInterfaceClasses());
+    try {
+      myInterfaceHandler = new MoteInterfaceHandler(this, myType.getMoteInterfaceClasses());
+    } catch (Exception e) {
+      logger.fatal("Failed to create mote: " + e);
+      return false;
+    }
 
     for (Element element: configXML) {
       String name = element.getName();

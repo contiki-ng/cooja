@@ -202,7 +202,7 @@ public class ContikiMoteType implements MoteType {
   }
 
   @Override
-  public Mote generateMote(Simulation simulation) {
+  public Mote generateMote(Simulation simulation) throws MoteTypeCreationException {
     return new ContikiMote(this, simulation);
   }
 

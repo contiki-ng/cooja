@@ -105,7 +105,7 @@ public interface Mote {
    * @see #getConfigXML()
    */
   boolean setConfigXML(Simulation simulation,
-      Collection<Element> configXML, boolean visAvailable);
+      Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException;
 
   /**
    * Called when mote is removed from simulation
