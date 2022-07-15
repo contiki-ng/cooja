@@ -493,6 +493,13 @@ public class AddMoteDialog extends JDialog {
               "Reduce number of nodes or start Cooja with more memory (\">ant run_bigmem\").",
               "Not enough heap memory.", JOptionPane.ERROR_MESSAGE
           );
+        } catch (MoteType.MoteTypeCreationException e2) {
+          newMotes.clear();
+          JOptionPane.showMessageDialog(
+                  AddMoteDialog.this,
+                  "Could not create mote.\nException message: \"" + e2.getMessage() + "\"\n\n",
+                  "Mote creation failed", JOptionPane.ERROR_MESSAGE
+          );
         }
       }
     }

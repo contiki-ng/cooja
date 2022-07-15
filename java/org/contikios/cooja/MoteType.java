@@ -164,7 +164,7 @@ public interface MoteType {
    *          Simulation that will contain mote
    * @return New mote
    */
-  Mote generateMote(Simulation simulation);
+  Mote generateMote(Simulation simulation) throws MoteTypeCreationException;
 
   /**
    * This method configures and initializes a mote type ready to be used. It is

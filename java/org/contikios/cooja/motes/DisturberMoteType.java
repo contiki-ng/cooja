@@ -83,7 +83,7 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
   }
   
   @Override
-  public Mote generateMote(Simulation simulation) {
+  public Mote generateMote(Simulation simulation) throws MoteTypeCreationException {
     return new DisturberMote(this, simulation);
   }
 
@@ -96,10 +96,10 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
     private final static long DELAY = Simulation.MILLISECOND/5;
     private final static long DURATION = 10*Simulation.MILLISECOND;
     
-    public DisturberMote() {
+    public DisturberMote() throws MoteTypeCreationException {
       super();
     }
-    public DisturberMote(MoteType moteType, Simulation simulation) {
+    public DisturberMote(MoteType moteType, Simulation simulation) throws MoteTypeCreationException {
       super(moteType, simulation);
     }
     
