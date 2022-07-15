@@ -632,9 +632,7 @@ public class Cooja extends Observable {
     newHistory.append(newFile);
     for (int i = 0, count = 1; i < history.length && count < 10; i++) {
       String historyFile = history[i];
-      if (newFile.equals(historyFile) || historyFile.length() == 0) {
-        // File already added or empty file name
-      } else {
+      if (!newFile.equals(historyFile) && historyFile.length() != 0) {
         newHistory.append(';').append(historyFile);
         count++;
       }
@@ -1999,13 +1997,8 @@ public class Cooja extends Observable {
       return null;
     }
 
-    /* Use provided configuration, or open File Chooser */
-    if (configFile != null && !configFile.isDirectory()) {
-      if (!configFile.exists() || !configFile.canRead()) {
-        logger.fatal("No read access to file: " + configFile.getAbsolutePath());
-        return doLoadConfig(null, quick, manualRandomSeed);
-      }
-    } else {
+    // Open File Chooser if config is not useful.
+    if (configFile == null || !configFile.canRead()) {
       final File suggestedFile = configFile;
       configFile = new RunnableInEDT<File>() {
         @Override
@@ -2026,7 +2019,6 @@ public class Cooja extends Observable {
 
           int returnVal = fc.showOpenDialog(Cooja.getTopParentContainer());
           if (returnVal != JFileChooser.APPROVE_OPTION) {
-            logger.info("Load command cancelled by user...");
             return null;
           }
 
@@ -2054,10 +2046,9 @@ public class Cooja extends Observable {
     addToFileHistory(configFile);
 
     final JDialog progressDialog;
-    final String progressTitle = "Loading " + configFile.getAbsolutePath();
-
     if (quick) {
       final Thread loadThread = Thread.currentThread();
+      final String progressTitle = "Loading " + configFile.getAbsolutePath();
 
       progressDialog = new RunnableInEDT<JDialog>() {
         @Override
