@@ -124,26 +124,4 @@ public class IPUtils {
     }
     builder.append(String.format("%02x%02x", 0xFF & ip[14], 0xFF & ip[15]));
   }
-
-  /**
-   * Convert IPv4 Byte-array to IPv4-Address String.
-   *
-   * @param ip byte array holding IPv4 address information
-   * @return IPv4 representation string
-   */
-  public static String getIPv4AddressString(byte[] ip) {
-
-    if (ip.length != 4) {
-      throw new IllegalArgumentException("Invalid array length: " + ip.length);
-    }
-
-    StringBuilder ipBuilder = new StringBuilder();
-    for (int i = 0; i < 3; i++) {
-      ipBuilder.append(0xFF & ip[i]);
-      ipBuilder.append('.');
-    }
-    ipBuilder.append(0xFF & ip[3]);
-    return ipBuilder.toString();
-  }
-
 }
