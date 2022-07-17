@@ -414,7 +414,6 @@ public class ContikiMoteType implements MoteType {
     SectionParser bssSecParser;
     SectionParser commonSecParser;
 
-    HashMap<String, Symbol> variables = new HashMap<>();
     if (useCommand) {
       /* Parse command output */
       String[] output = loadCommandData(getContikiFirmwareFile(), withUI);
@@ -466,6 +465,7 @@ public class ContikiMoteType implements MoteType {
      *
      * This offset will be used in Cooja in the memory abstraction to match
      * Contiki's and Cooja's address spaces */
+    HashMap<String, Symbol> variables = new HashMap<>();
     {
       SectionMoteMemory tmp = new SectionMoteMemory(variables);
       VarMemory varMem = new VarMemory(tmp);
