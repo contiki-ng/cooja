@@ -202,7 +202,7 @@ public class Cooja extends Observable {
    *  Version used to detect incompatibility with the Contiki-NG
    *  build system. The format is &lt;YYYY&gt;&lt;MM&gt;&lt;DD&gt;&lt;2 digit sequence number&gt;.
    */
-  public static final String CONTIKI_NG_BUILD_VERSION = "2022052601";
+  public static final String CONTIKI_NG_BUILD_VERSION = "2022071901";
 
   private static JFrame frame = null;
   private static final Logger logger = LogManager.getLogger(Cooja.class);
@@ -235,8 +235,6 @@ public class Cooja extends Observable {
 
     "PARSE_WITH_COMMAND",
 
-    "MAPFILE_DATA_START", "MAPFILE_DATA_SIZE",
-    "MAPFILE_BSS_START", "MAPFILE_BSS_SIZE",
     "READELF_COMMAND",
 
     "PARSE_COMMAND",

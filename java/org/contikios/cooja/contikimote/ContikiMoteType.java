@@ -341,27 +341,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
               Cooja.getExternalToolsSetting("COMMAND_COMMON_END"),
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
     } else {
-      // Parse map file (build/cooja/mtype1.map).
-      var mapFile = getMoteFile(".map");
-      if (!mapFile.exists()) {
-        throw new MoteTypeCreationException("Map file " + mapFile + " could not be found");
-      }
-      // The map file for 02-ringbufindex.csc is 2779 lines long, add some margin beyond that.
-      var lines = new ArrayList<String>(4000);
-      try (var reader = Files.newBufferedReader(mapFile.toPath(), UTF_8)) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-          lines.add(line);
-        }
-      } catch (IOException e) {
-        logger.fatal("No map data could be loaded");
-        lines.clear();
-      }
-
-      if (lines.isEmpty()) {
-        throw new MoteTypeCreationException("No map data could be loaded: " + mapFile);
-      }
-      String[] mapData = lines.toArray(new String[0]);
       String command = Cooja.getExternalToolsSetting("READELF_COMMAND");
       if (command != null) {
         command = Cooja.resolvePathIdentifiers(command);
@@ -371,14 +350,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
       }
       command = command.replace("$(LIBFILE)", firmwareFile.getName().replace(File.separatorChar, '/'));
       var symbols = String.join("\n", loadCommandData(command, firmwareFile, vis));
-      dataSecParser = new MapSectionParser(
-              mapData, symbols,
-              Cooja.getExternalToolsSetting("MAPFILE_DATA_START"),
-              Cooja.getExternalToolsSetting("MAPFILE_DATA_SIZE"));
-      bssSecParser = new MapSectionParser(
-              mapData, symbols,
-              Cooja.getExternalToolsSetting("MAPFILE_BSS_START"),
-              Cooja.getExternalToolsSetting("MAPFILE_BSS_SIZE"));
+      dataSecParser = new MapSectionParser(symbols, "cooja_dataStart", "cooja_dataSize");
+      bssSecParser = new MapSectionParser(symbols, "cooja_bssStart", "cooja_bssSize");
     }
 
     /* We first need the value of Contiki's referenceVar, which tells us the
@@ -468,19 +441,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * Abstract base class for concrete section parser class.
    */
   static abstract class SectionParser {
-
-    private final String[] mapFileData;
     protected long startAddr;
     protected int size;
-    protected Map<String, Symbol> variables;
-
-    public SectionParser(String[] mapFileData) {
-      this.mapFileData = mapFileData;
-    }
-
-    public String[] getData() {
-      return mapFileData;
-    }
 
     public long getStartAddr() {
       return startAddr;
@@ -499,7 +461,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
         return null;
       }
 
-      variables = parseSymbols(offset);
+      var variables = parseSymbols(offset);
 
       if (logger.isDebugEnabled()) {
         logger.debug(String.format("Parsed section at 0x%x ( %d == 0x%x bytes)",
@@ -527,40 +489,21 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * Parses Map file for section data.
    */
   static class MapSectionParser extends SectionParser {
-
-    private final String startRegExp;
-    private final String sizeRegExp;
     private final String readelfData;
+    private final String startName;
+    private final String sizeName;
 
-    public MapSectionParser(String[] mapFileData, String readelfData, String startRegExp, String sizeRegExp) {
-      super(mapFileData);
-      assert startRegExp != null : "Section start regexp must be specified";
-      assert !startRegExp.isEmpty() : "Section start regexp must contain characters";
-      assert sizeRegExp != null : "Section size regexp must be specified";
-      assert !sizeRegExp.isEmpty() : "Section size regexp must contain characters";
-      this.startRegExp = startRegExp;
-      this.sizeRegExp = sizeRegExp;
+    public MapSectionParser(String readelfData, String startName, String sizeName) {
       this.readelfData = readelfData;
+      this.startName = startName;
+      this.sizeName = sizeName;
+      this.startAddr = 0;
+      this.size = 0;
     }
 
     @Override
     protected boolean parseStartAddrAndSize() {
-      startAddr = -1;
-      size = -1;
-      Pattern varPattern = Pattern.compile(startRegExp);
-      for (var line : getData()) {
-        Matcher varMatcher = varPattern.matcher(line);
-        if (varMatcher.find()) {
-          startAddr = Long.parseUnsignedLong(varMatcher.group(1).trim(), 16);
-          Pattern sizePattern = Pattern.compile(sizeRegExp);
-          Matcher sizeMatcher = sizePattern.matcher(line);
-          if (sizeMatcher.find()) {
-            size = (int) Long.parseUnsignedLong(sizeMatcher.group(1).trim(), 16);
-          }
-          break;
-        }
-      }
-      return startAddr >= 0 && size > 0;
+      return true; // Both startAddr and size are updated in parseSymbols() instead.
     }
 
     @Override
@@ -581,7 +524,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
         var hex = sizeString.startsWith("0x");
         var size = Integer.parseInt(hex ? sizeString.substring(2) : sizeString, hex ? 16 : 10);
         var type = s.next();
-        if (!"OBJECT".equals(type)) {
+        if (!"OBJECT".equals(type) && !"NOTYPE".equals(type)) {
           s.nextLine(); // Skip lines that do not define variables.
           continue;
         }
@@ -590,7 +533,13 @@ public class ContikiMoteType extends BaseContikiMoteType {
         s.next();
         s.next();
         var name = s.next();
-        varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr + offset, size));
+        if ("OBJECT".equals(type)) {
+          varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr + offset, size));
+        } else if (startName.equals(name)) {
+          startAddr = addr;
+        } else if (sizeName.equals(name)) {
+          this.size = (int) addr;
+        }
       }
       return varNames;
     }
@@ -601,6 +550,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * Parses command output for section data.
    */
   static class CommandSectionParser extends SectionParser {
+    private final String[] mapFileData;
 
     private final String startRegExp;
     private final String endRegExp;
@@ -608,7 +558,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     /**
      * Creates SectionParser based on output of configurable command.
-     * 
+     *
      * @param mapFileData Map file lines as array of String
      * @param startRegExp Regular expression for parsing start of section
      * @param endRegExp Regular expression for parsing end of section
@@ -616,10 +566,14 @@ public class ContikiMoteType extends BaseContikiMoteType {
      *        Will be used to replaced '<SECTION>'in 'COMMAND_VAR_NAME_ADDRESS_SIZE'
      */
     public CommandSectionParser(String[] mapFileData, String startRegExp, String endRegExp, String sectionRegExp) {
-      super(mapFileData);
+      this.mapFileData = mapFileData;
       this.startRegExp = startRegExp;
       this.endRegExp = endRegExp;
       this.sectionRegExp = sectionRegExp;
+    }
+
+    public String[] getData() {
+      return mapFileData;
     }
 
     @Override
