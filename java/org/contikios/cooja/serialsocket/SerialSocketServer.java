@@ -52,7 +52,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -239,7 +238,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
             try {
               listenPortField.commitEdit();
             } catch (ParseException ex) {
-              java.util.logging.Logger.getLogger(SerialSocketClient.class.getName()).log(Level.SEVERE, null, ex);
+              logger.error(ex);
             }
             startServer(((Long) listenPortField.getValue()).intValue());
           } else {
