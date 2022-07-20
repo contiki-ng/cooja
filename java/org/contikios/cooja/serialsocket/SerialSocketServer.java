@@ -120,13 +120,11 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
     this.mote = mote;
     this.simulation = simulation;
 
-    updateTimer.start();
-
     SERVER_DEFAULT_PORT = 60000 + mote.getID();
 
     /* GUI components */
     if (Cooja.isVisualized()) {
-
+      updateTimer.start();
       setResizable(false);
       setLayout(new BorderLayout());
 
