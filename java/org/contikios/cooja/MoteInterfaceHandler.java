@@ -32,8 +32,6 @@ package org.contikios.cooja;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.interfaces.Battery;
 import org.contikios.cooja.interfaces.Beeper;
 import org.contikios.cooja.interfaces.Button;
@@ -63,8 +61,6 @@ import org.contikios.cooja.interfaces.RimeAddress;
  * @author Fredrik Osterlind
  */
 public class MoteInterfaceHandler {
-  private static final Logger logger = LogManager.getLogger(MoteInterfaceHandler.class);
-
   private final ArrayList<MoteInterface> moteInterfaces = new ArrayList<>();
 
   /* Cached interfaces */
