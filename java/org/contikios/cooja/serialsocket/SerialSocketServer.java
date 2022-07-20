@@ -155,7 +155,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       c.weightx = 0.0;
       socketPanel.add(listenPortField, c);
 
-      serverStartButton = new JButton("Start") { // Button for label toggeling
+      serverStartButton = new JButton("Start") { // Button for label toggling
         @Override
         public Dimension getPreferredSize() {
           String origText = getText();
@@ -574,7 +574,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
           bound = Boolean.parseBoolean(element.getText());
           break;
         default:
-          logger.warn("Unknwon config element: " + element.getName());
+          logger.warn("Unknown config element: " + element.getName());
           break;
       }
     }
