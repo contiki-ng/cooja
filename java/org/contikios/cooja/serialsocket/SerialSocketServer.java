@@ -590,6 +590,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
         startServer(port);
       } else {
         logger.error("Server not started due to incomplete configuration");
+        return false;
       }
     }
 
