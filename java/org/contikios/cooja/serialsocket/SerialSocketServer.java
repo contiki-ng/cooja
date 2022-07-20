@@ -122,6 +122,11 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
 
     SERVER_DEFAULT_PORT = 60000 + mote.getID();
 
+    serialPort = (SerialPort) mote.getInterfaces().getLog();
+    if (serialPort == null) {
+      throw new RuntimeException("No mote serial port");
+    }
+
     /* GUI components */
     if (Cooja.isVisualized()) {
       updateTimer.start();
@@ -244,15 +249,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       });
       
       pack();
-    }
 
-    /* Mote serial port */
-    serialPort = (SerialPort) mote.getInterfaces().getLog();
-    if (serialPort == null) {
-      throw new RuntimeException("No mote serial port");
-    }
-
-    if (Cooja.isVisualized()) {
       // gui updates for server status updates
       addServerListener(new ServerListener() {
 
@@ -328,7 +325,6 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
 
       });
     }
-
   }
 
   private final List<ServerListener> listeners = new LinkedList<>();
