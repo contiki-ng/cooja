@@ -52,7 +52,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.Level;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -120,13 +119,16 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
     this.mote = mote;
     this.simulation = simulation;
 
-    updateTimer.start();
-
     SERVER_DEFAULT_PORT = 60000 + mote.getID();
+
+    serialPort = (SerialPort) mote.getInterfaces().getLog();
+    if (serialPort == null) {
+      throw new RuntimeException("No mote serial port");
+    }
 
     /* GUI components */
     if (Cooja.isVisualized()) {
-
+      updateTimer.start();
       setResizable(false);
       setLayout(new BorderLayout());
 
@@ -152,7 +154,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       c.weightx = 0.0;
       socketPanel.add(listenPortField, c);
 
-      serverStartButton = new JButton("Start") { // Button for label toggeling
+      serverStartButton = new JButton("Start") { // Button for label toggling
         @Override
         public Dimension getPreferredSize() {
           String origText = getText();
@@ -236,7 +238,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
             try {
               listenPortField.commitEdit();
             } catch (ParseException ex) {
-              java.util.logging.Logger.getLogger(SerialSocketClient.class.getName()).log(Level.SEVERE, null, ex);
+              logger.error(ex);
             }
             startServer(((Long) listenPortField.getValue()).intValue());
           } else {
@@ -246,15 +248,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       });
       
       pack();
-    }
 
-    /* Mote serial port */
-    serialPort = (SerialPort) mote.getInterfaces().getLog();
-    if (serialPort == null) {
-      throw new RuntimeException("No mote serial port");
-    }
-
-    if (Cooja.isVisualized()) {
       // gui updates for server status updates
       addServerListener(new ServerListener() {
 
@@ -330,7 +324,6 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
 
       });
     }
-
   }
 
   private final List<ServerListener> listeners = new LinkedList<>();
@@ -378,10 +371,12 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
   }
   
   /**
-   * Start server ..
-   * @param port 
+   * Start listening with server
+   *
+   * @param port Port to listen on.
+   * @return Returns true on success.
    */
-  public void startServer(int port) {
+  public boolean startServer(int port) {
     try {
       serverSocket = new ServerSocket(port);
       logger.info("Listening on port: " + port);
@@ -389,7 +384,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
     } catch (IOException ex) {
       logger.error(ex.getMessage());
       notifyServerError(ex.getMessage());
-      return;
+      return false;
     }
 
     new Thread() {
@@ -444,6 +439,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
         notifyServerStopped();
       }
     }.start();
+    return true;
   }
 
   /**
@@ -580,7 +576,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
           bound = Boolean.parseBoolean(element.getText());
           break;
         default:
-          logger.warn("Unknwon config element: " + element.getName());
+          logger.warn("Unknown config element: " + element.getName());
           break;
       }
     }
@@ -593,11 +589,11 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       }
     } else {
       // if bound and all set up, start client
-      if (port != null) {
-        startServer(port);
-      } else {
+      if (port == null) {
         logger.error("Server not started due to incomplete configuration");
+        return false;
       }
+      return startServer(port);
     }
 
     return true;
