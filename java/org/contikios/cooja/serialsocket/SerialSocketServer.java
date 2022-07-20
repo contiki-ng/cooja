@@ -371,10 +371,12 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
   }
   
   /**
-   * Start server ..
-   * @param port 
+   * Start listening with server
+   *
+   * @param port Port to listen on.
+   * @return Returns true on success.
    */
-  public void startServer(int port) {
+  public boolean startServer(int port) {
     try {
       serverSocket = new ServerSocket(port);
       logger.info("Listening on port: " + port);
@@ -382,7 +384,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
     } catch (IOException ex) {
       logger.error(ex.getMessage());
       notifyServerError(ex.getMessage());
-      return;
+      return false;
     }
 
     new Thread() {
@@ -437,6 +439,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
         notifyServerStopped();
       }
     }.start();
+    return true;
   }
 
   /**
@@ -586,12 +589,11 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       }
     } else {
       // if bound and all set up, start client
-      if (port != null) {
-        startServer(port);
-      } else {
+      if (port == null) {
         logger.error("Server not started due to incomplete configuration");
         return false;
       }
+      return startServer(port);
     }
 
     return true;
