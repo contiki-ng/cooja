@@ -3742,6 +3742,26 @@ public class Cooja extends Observable {
 
   private final static String PATH_CONFIG_IDENTIFIER = "[CONFIG_DIR]";
   public File currentConfigFile = null; /* Used to generate config relative paths */
+
+  /**
+   * Returns the config dir.
+   */
+  public String getConfigDir() {
+    if (currentConfigFile == null) {
+      return null;
+    }
+    var parent = currentConfigFile.getParentFile();
+    return parent == null ? null : parent.toString();
+  }
+
+  /**
+   * Replaces all occurrences of [CONFIG_DIR] in s with the config dir.
+   */
+  public String resolveConfigDir(String s) {
+    var cfgDir = getConfigDir();
+    return s.replace(PATH_CONFIG_IDENTIFIER, cfgDir == null ? "." : cfgDir);
+  }
+
   private File createConfigRelativePath(File file) {
     String id = PATH_CONFIG_IDENTIFIER;
     if (currentConfigFile == null) {
