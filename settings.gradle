@@ -1,0 +1,2 @@
+rootProject.name = 'cooja'
+include('cooja')

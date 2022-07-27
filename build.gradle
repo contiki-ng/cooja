@@ -1,0 +1,99 @@
+plugins {
+    id 'application'
+}
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(11)
+  }
+}
+
+dependencies {
+  implementation files('lib/jcommon-1.0.14.jar',
+                       'lib/jdom.jar',
+                       'lib/jfreechart-1.0.11.jar',
+                       'lib/jipv6.jar',
+                       'lib/json-simple-1.1.1.jar',
+                       'lib/log4j-core-2.17.2.jar',
+                       'lib/log4j-api-2.17.2.jar',
+                       'lib/picocli-4.6.3.jar',
+                       'lib/syntaxpane-1.2.0.jar',
+                       'lib/swingx-all-1.6.4.jar')
+}
+
+
+// FIXME: add test resources.
+sourceSets {
+  data {
+    resources {
+      srcDirs = ['tools/coffee-manager']
+      include '*.properties'
+    }
+  }
+  main {
+    java {
+      srcDirs = ['java', 'tools/coffee-manager']
+    }
+    resources {
+      srcDirs = [data.resources, 'config', 'images']
+    }
+  }
+}
+
+application {
+  mainClass = 'org.contikios.cooja.Main'
+  applicationDefaultJvmArgs = ['-Dnashorn.args=--no-deprecation-warning',
+                               '-Xms400M', '-Xmx2048M']
+}
+
+jar {
+  reproducibleFileOrder = true
+  manifest {
+    // Set Multi-Release to true to ensure the JVM uses the right class from log4j.
+    attributes 'Main-Class': 'org.contikios.cooja.Main',
+      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' '),
+      'Multi-Release': 'true'
+  }
+//  copy {
+//    from file("lib")
+//    into file("build/libs")
+//    include('*.jar')
+//  }
+}
+
+task fullJar(type: Jar) {
+  archiveClassifier = 'full'
+  reproducibleFileOrder = true
+  manifest {
+    attributes 'Main-Class': 'org.contikios.cooja.Main',
+      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' '),
+      'Multi-Release': 'true'
+  }
+
+  from sourceSets.main.output
+
+  duplicatesStrategy = 'exclude'
+  dependsOn configurations.runtimeClasspath
+  from {
+    configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+  }
+  // Workaround for javac call in CoreComm.java.
+  doLast {
+    copy {
+      from file('build/libs/cooja-full.jar')
+      into file('dist')
+    }
+    file('dist/cooja-full.jar').renameTo(file('dist/cooja.jar'));
+  }
+}
+
+run {
+  // Workaround for javac call in CoreComm.java.
+  dependsOn fullJar
+  // Workaround for make call in CompileContiki.java.
+  workingDir = file('build')
+  // Bad Cooja location detected with gradle run, explicitly pass -cooja.
+  doFirst {
+    args += ['-cooja', "$projectDir"]
+  }
+}
