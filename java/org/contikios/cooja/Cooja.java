@@ -2837,17 +2837,11 @@ public class Cooja extends Observable {
     } catch (IOException e) {
     }
 
-    try {
-      SAXBuilder builder = new SAXBuilder();
-    	InputStream in = new FileInputStream(file);
-      if (file.getName().endsWith(".gz")) {
-      	in = new GZIPInputStream(in);
-      }
-      Document doc = builder.build(in);
-      Element root = doc.getRootElement();
-      in.close();
+    try (InputStream in = file.getName().endsWith(".gz")
+            ? new GZIPInputStream(new FileInputStream(file)) : new FileInputStream(file)) {
+      final var doc = new SAXBuilder().build(in);
 
-      return loadSimulationConfig(root, quick, manualRandomSeed);
+      return loadSimulationConfig(doc.getRootElement(), quick, manualRandomSeed);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not wellformed", e);
     } catch (IOException e) {
