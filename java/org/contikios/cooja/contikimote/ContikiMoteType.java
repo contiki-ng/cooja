@@ -253,10 +253,7 @@ public class ContikiMoteType implements MoteType {
     env.add(new String[] { "COOJA_SOURCEDIRS", dirs.toString().replace("\\", "/") });
     env.add(new String[] { "COOJA_SOURCEFILES", sources.toString() });
     env.add(new String[] { "CC", Cooja.getExternalToolsSetting("PATH_C_COMPILER") });
-    env.add(new String[] { "OBJCOPY", Cooja.getExternalToolsSetting("PATH_OBJCOPY") });
     env.add(new String[] { "EXTRA_CC_ARGS", ccFlags });
-    env.add(new String[] { "LD", Cooja.getExternalToolsSetting("PATH_LINKER") });
-    env.add(new String[] { "AR", Cooja.getExternalToolsSetting("PATH_AR") });
     env.add(new String[] { "PATH", System.getenv("PATH") });
     // Pass through environment variables for the Contiki-NG CI.
     String ci = System.getenv("CI");
