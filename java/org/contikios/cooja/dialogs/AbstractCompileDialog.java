@@ -289,7 +289,6 @@ public abstract class AbstractCompileDialog extends JDialog {
 					currentCompilationProcess = CompileContiki.compile(
 							"make clean TARGET=" + getTargetName(),
 							compilationEnvironment,
-							null /* Do not observe output firmware file */,
 							new File(contikiField.getText()).getParentFile(),
 							null,
 							null,
@@ -555,7 +554,6 @@ public abstract class AbstractCompileDialog extends JDialog {
             currentCompilationProcess = CompileContiki.compile(
                 command,
                 compilationEnvironment,
-                null /* Do not observe output firmware file */,
                 new File(contikiField.getText()).getParentFile(),
                 nextSuccessAction,
                 compilationFailureAction,
