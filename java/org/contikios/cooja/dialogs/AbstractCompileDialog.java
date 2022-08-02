@@ -547,25 +547,21 @@ public abstract class AbstractCompileDialog extends JDialog {
         }
 
         String command = commands.remove(0);
-        if (command.trim().isEmpty()) {
-          nextSuccessAction.actionPerformed(null);
-        } else {
-          try {
-            currentCompilationProcess = CompileContiki.compile(
-                command,
-                compilationEnvironment,
-                new File(contikiField.getText()).getParentFile(),
-                nextSuccessAction,
-                compilationFailureAction,
-                taskOutput,
-                false
-            );
-          } catch (Exception ex) {
-            logger.fatal("Exception when compiling: " + ex.getMessage());
-            taskOutput.addMessage(ex.getMessage(), MessageList.ERROR);
-            ex.printStackTrace();
-            compilationFailureAction.actionPerformed(null);
-          }
+        try {
+          currentCompilationProcess = CompileContiki.compile(
+              command,
+              compilationEnvironment,
+              new File(contikiField.getText()).getParentFile(),
+              nextSuccessAction,
+              compilationFailureAction,
+              taskOutput,
+              false
+          );
+        } catch (Exception ex) {
+          logger.fatal("Exception when compiling: " + ex.getMessage());
+          taskOutput.addMessage(ex.getMessage(), MessageList.ERROR);
+          ex.printStackTrace();
+          compilationFailureAction.actionPerformed(null);
         }
       }
     };
