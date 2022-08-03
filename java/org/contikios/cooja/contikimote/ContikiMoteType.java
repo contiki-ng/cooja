@@ -804,16 +804,9 @@ public class ContikiMoteType implements MoteType {
    *          Memory to set
    */
   public void getCoreMemory(SectionMoteMemory mem) {
-    for (MemoryInterface section : mem.getSections().values()) {
-      getCoreMemory(
-              section.getStartAddr() - offset,
-              section.getTotalSize(),
-              section.getMemory());
+    for (var sec : mem.getSections().values()) {
+      myCoreComm.getMemory(sec.getStartAddr() - offset, sec.getTotalSize(), sec.getMemory());
     }
-  }
-
-  private void getCoreMemory(long relAddr, int length, byte[] data) {
-    myCoreComm.getMemory(relAddr, length, data);
   }
 
   /**
@@ -824,16 +817,9 @@ public class ContikiMoteType implements MoteType {
    * New memory
    */
   public void setCoreMemory(SectionMoteMemory mem) {
-    for (MemoryInterface section : mem.getSections().values()) {
-      setCoreMemory(
-              section.getStartAddr() - offset,
-              section.getTotalSize(),
-              section.getMemory());
+    for (var sec : mem.getSections().values()) {
+      myCoreComm.setMemory(sec.getStartAddr() - offset, sec.getTotalSize(), sec.getMemory());
     }
-  }
-
-  private void setCoreMemory(long relAddr, int length, byte[] mem) {
-    myCoreComm.setMemory(relAddr, length, mem);
   }
 
   @Override
