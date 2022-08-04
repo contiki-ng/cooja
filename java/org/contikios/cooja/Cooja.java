@@ -3176,12 +3176,10 @@ public class Cooja extends Observable {
 
       // Parse plugin mote argument (if any)
       Mote mote = null;
-      for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
-        if (pluginSubElement.getName().equals("mote_arg")) {
-          int moteNr = Integer.parseInt(pluginSubElement.getText());
-          if (moteNr >= 0 && moteNr < sim.getMotesCount()) {
-            mote = sim.getMote(moteNr);
-          }
+      for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
+        int moteNr = Integer.parseInt(((Element)pluginSubElement).getText());
+        if (moteNr >= 0 && moteNr < sim.getMotesCount()) {
+          mote = sim.getMote(moteNr);
         }
       }
 
@@ -3192,10 +3190,8 @@ public class Cooja extends Observable {
       }
 
       /* Apply plugin specific configuration */
-      for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
-        if (pluginSubElement.getName().equals("plugin_config")) {
-          startedPlugin.setConfigXML(pluginSubElement.getChildren(), isVisualized());
-        }
+      for (var pluginSubElement : pluginElement.getChildren("plugin_config")) {
+        startedPlugin.setConfigXML(((Element)pluginSubElement).getChildren(), isVisualized());
       }
 
       /* Activate plugin */
