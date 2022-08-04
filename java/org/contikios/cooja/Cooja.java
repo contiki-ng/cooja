@@ -2873,27 +2873,26 @@ public class Cooja extends Observable {
       root.detach();
 
       /* Locate Contiki mote types in config */
-      var moteTypeIDMappings = new HashMap<String, String>();
+      var readNames = new ArrayList<String>();
       var motetypes = root.getDescendants(new ElementFilter("motetype"));
       while (motetypes.hasNext()) {
         var e = (Element)motetypes.next();
         if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
-          moteTypeIDMappings.put(e.getChild("identifier").getValue(), "");
+          readNames.add(e.getChild("identifier").getValue());
         }
       }
 
       /* Create old to new identifier mappings */
-      var existingIdentifiers = moteTypeIDMappings.keySet();
-      for (var existingIdentifier : existingIdentifiers) {
+      var moteTypeIDMappings = new HashMap<String, String>();
+      ArrayList<Object> reserved = new ArrayList<>(readNames);
+      for (var existingIdentifier : readNames) {
         MoteType[] existingMoteTypes = null;
         if (mySimulation != null) {
           existingMoteTypes = mySimulation.getMoteTypes();
         }
-        ArrayList<Object> reserved = new ArrayList<>();
-        reserved.addAll(moteTypeIDMappings.keySet());
-        reserved.addAll(moteTypeIDMappings.values());
         String newID = ContikiMoteType.generateUniqueMoteTypeID(existingMoteTypes, reserved);
         moteTypeIDMappings.put(existingIdentifier, newID);
+        reserved.add(newID);
       }
 
       /* Create new config */
