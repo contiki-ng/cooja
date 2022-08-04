@@ -3837,16 +3837,16 @@ public class Cooja extends Observable {
 		public GUIAction(String name) {
       super(name);
     }
-    public GUIAction(String name, int nmenomic) {
+    public GUIAction(String name, int mnemonic) {
       this(name);
-      putValue(Action.MNEMONIC_KEY, nmenomic);
+      putValue(Action.MNEMONIC_KEY, mnemonic);
     }
     public GUIAction(String name, KeyStroke accelerator) {
       this(name);
       putValue(Action.ACCELERATOR_KEY, accelerator);
     }
-    public GUIAction(String name, int nmenomic, KeyStroke accelerator) {
-      this(name, nmenomic);
+    public GUIAction(String name, int mnemonic, KeyStroke accelerator) {
+      this(name, mnemonic);
       putValue(Action.ACCELERATOR_KEY, accelerator);
     }
     public abstract boolean shouldBeEnabled();
