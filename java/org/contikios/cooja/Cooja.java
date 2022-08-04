@@ -2857,15 +2857,14 @@ public class Cooja extends Observable {
 
   private Simulation loadSimulationConfig(Element root, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
+    // Check that config file version is correct
+    if (!root.getName().equals("simconf")) {
+      logger.fatal("Not a valid Cooja simulation config.");
+      return null;
+    }
+
     Simulation newSim = null;
-
     try {
-      // Check that config file version is correct
-      if (!root.getName().equals("simconf")) {
-        logger.fatal("Not a valid Cooja simulation config.");
-        return null;
-      }
-
       /* Verify extension directories */
       boolean projectsOk = verifyProjects(root.getChildren());
 
