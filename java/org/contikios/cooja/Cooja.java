@@ -988,47 +988,6 @@ public class Cooja extends Observable {
         JMenuItem menuItem = new JMenuItem(description + "...");
         menuItem.putClientProperty("class", newPluginClass);
         menuItem.addActionListener(menuItemListener);
-
-        String tooltip = "<html><pre>";
-        if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
-          tooltip += "Cooja plugin: ";
-        } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN
-        		|| pluginType == PluginType.SIM_CONTROL_PLUGIN) {
-          tooltip += "Simulation plugin: ";
-          if (getSimulation() == null) {
-            menuItem.setEnabled(false);
-          }
-        } else if (pluginType == PluginType.MOTE_PLUGIN) {
-          tooltip += "Mote plugin: ";
-        }
-        tooltip += description + " (" + newPluginClass.getName() + ")";
-
-        /* Check if simulation plugin depends on any particular radio medium */
-        if ((pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN
-        		|| pluginType == PluginType.SIM_CONTROL_PLUGIN) && (getSimulation() != null)) {
-          if (newPluginClass.getAnnotation(SupportedArguments.class) != null) {
-            boolean active = false;
-            for (var o: newPluginClass.getAnnotation(SupportedArguments.class).radioMediums()) {
-              if (o.isAssignableFrom(getSimulation().getRadioMedium().getClass())) {
-                active = true;
-                break;
-              }
-            }
-            if (!active) {
-              menuItem.setVisible(false);
-            }
-          }
-        }
-
-        /* Check if plugin was imported by an extension directory */
-        File project =
-          getProjectConfig().getUserProjectDefining(Cooja.class, "PLUGINS", newPluginClass.getName());
-        if (project != null) {
-          tooltip += "\nLoaded by extension: " + project.getPath();
-        }
-
-        tooltip += "</html>";
-        /*menuItem.setToolTipText(tooltip);*/
         return menuItem;
       }
 
