@@ -3468,7 +3468,7 @@ public class Cooja extends Observable {
   /**
    * This method can be used by various different modules in the simulator to
    * indicate for example that a mote has been selected. All mote highlight
-   * listeners will be notified. An example application of mote highlightinh is
+   * listeners will be notified. An example application of mote highlighting is
    * a simulator visualizer that highlights the mote.
    *
    * @see #addMoteHighlightObserver(Observer)
