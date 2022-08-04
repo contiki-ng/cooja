@@ -74,8 +74,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.swing.AbstractAction;
@@ -132,6 +130,7 @@ import org.contikios.cooja.util.ScnObservable;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.filter.ElementFilter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -2870,14 +2869,15 @@ public class Cooja extends Observable {
 
       /* GENERATE UNIQUE MOTE TYPE IDENTIFIERS */
       root.detach();
-      String configString = new XMLOutputter().outputString(new Document(root));
 
       /* Locate Contiki mote types in config */
       Properties moteTypeIDMappings = new Properties();
-      String identifierExtraction = ContikiMoteType.class.getName() + "[\\s\\n]*<identifier>([^<]*)</identifier>";
-      Matcher matcher = Pattern.compile(identifierExtraction).matcher(configString);
-      while (matcher.find()) {
-        moteTypeIDMappings.setProperty(matcher.group(1), "");
+      var motetypes = root.getDescendants(new ElementFilter("motetype"));
+      while (motetypes.hasNext()) {
+        var e = (Element)motetypes.next();
+        if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
+          moteTypeIDMappings.setProperty(e.getChild("identifier").getValue(), "");
+        }
       }
 
       /* Create old to new identifier mappings */
@@ -2896,6 +2896,7 @@ public class Cooja extends Observable {
       }
 
       /* Create new config */
+      String configString = new XMLOutputter().outputString(new Document(root));
       existingIdentifiers = moteTypeIDMappings.keys();
       while (existingIdentifiers.hasMoreElements()) {
         String existingIdentifier = (String) existingIdentifiers.nextElement();
