@@ -70,7 +70,9 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -2871,19 +2873,18 @@ public class Cooja extends Observable {
       root.detach();
 
       /* Locate Contiki mote types in config */
-      Properties moteTypeIDMappings = new Properties();
+      var moteTypeIDMappings = new HashMap<String, String>();
       var motetypes = root.getDescendants(new ElementFilter("motetype"));
       while (motetypes.hasNext()) {
         var e = (Element)motetypes.next();
         if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
-          moteTypeIDMappings.setProperty(e.getChild("identifier").getValue(), "");
+          moteTypeIDMappings.put(e.getChild("identifier").getValue(), "");
         }
       }
 
       /* Create old to new identifier mappings */
-      Enumeration<Object> existingIdentifiers = moteTypeIDMappings.keys();
-      while (existingIdentifiers.hasMoreElements()) {
-        String existingIdentifier = (String) existingIdentifiers.nextElement();
+      var existingIdentifiers = moteTypeIDMappings.keySet();
+      for (var existingIdentifier : existingIdentifiers) {
         MoteType[] existingMoteTypes = null;
         if (mySimulation != null) {
           existingMoteTypes = mySimulation.getMoteTypes();
@@ -2892,20 +2893,18 @@ public class Cooja extends Observable {
         reserved.addAll(moteTypeIDMappings.keySet());
         reserved.addAll(moteTypeIDMappings.values());
         String newID = ContikiMoteType.generateUniqueMoteTypeID(existingMoteTypes, reserved);
-        moteTypeIDMappings.setProperty(existingIdentifier, newID);
+        moteTypeIDMappings.put(existingIdentifier, newID);
       }
 
       /* Create new config */
       String configString = new XMLOutputter().outputString(new Document(root));
-      existingIdentifiers = moteTypeIDMappings.keys();
-      while (existingIdentifiers.hasMoreElements()) {
-        String existingIdentifier = (String) existingIdentifiers.nextElement();
+      for (var entry : moteTypeIDMappings.entrySet()) {
         configString = configString.replaceAll(
-            "<identifier>" + existingIdentifier + "</identifier>",
-            "<identifier>" + moteTypeIDMappings.get(existingIdentifier) + "</identifier>");
+            "<identifier>" + entry.getKey() + "</identifier>",
+            "<identifier>" + entry.getValue() + "</identifier>");
         configString = configString.replaceAll(
-            "<motetype_identifier>" + existingIdentifier + "</motetype_identifier>",
-            "<motetype_identifier>" + moteTypeIDMappings.get(existingIdentifier) + "</motetype_identifier>");
+            "<motetype_identifier>" + entry.getKey() + "</motetype_identifier>",
+            "<motetype_identifier>" + entry.getValue() + "</motetype_identifier>");
       }
 
       /* Replace existing config */
