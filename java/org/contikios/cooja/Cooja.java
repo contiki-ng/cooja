@@ -59,7 +59,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -72,7 +71,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -2870,7 +2868,6 @@ public class Cooja extends Observable {
       boolean projectsOk = verifyProjects(root.getChildren());
 
       /* GENERATE UNIQUE MOTE TYPE IDENTIFIERS */
-      root.detach();
 
       /* Locate Contiki mote types in config */
       var readNames = new ArrayList<String>();
@@ -2892,19 +2889,31 @@ public class Cooja extends Observable {
         reserved.add(newID);
       }
 
-      /* Create new config */
-      String configString = new XMLOutputter().outputString(new Document(root));
-      for (var entry : moteTypeIDMappings.entrySet()) {
-        configString = configString.replaceAll(
-            "<identifier>" + entry.getKey() + "</identifier>",
-            "<identifier>" + entry.getValue() + "</identifier>");
-        configString = configString.replaceAll(
-            "<motetype_identifier>" + entry.getKey() + "</motetype_identifier>",
-            "<motetype_identifier>" + entry.getValue() + "</motetype_identifier>");
+      // Replace all <motetype>..ContikiMoteType.class<identifier>mtypeXXX</identifier>...
+      // in the config with the new identifiers.
+      motetypes = root.getDescendants(new ElementFilter("motetype"));
+      while (motetypes.hasNext()) {
+        var e = (Element)motetypes.next();
+        if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
+          var idNode = e.getChild("identifier");
+          var newName = moteTypeIDMappings.get(idNode.getValue());
+          idNode.setText(newName);
+        }
       }
-
-      /* Replace existing config */
-      root = new SAXBuilder().build(new StringReader(configString)).getRootElement();
+      // Replace all <mote>...<motetype_identifier>mtypeXXX</motetype_identifier>...
+      // in the config with the new identifiers.
+      var motes = root.getDescendants(new ElementFilter("mote"));
+      while (motes.hasNext()) {
+        var e = (Element) motes.next();
+        var idNode = e.getChild("motetype_identifier");
+        if (idNode == null) {
+          continue;
+        }
+        var newName = moteTypeIDMappings.get(idNode.getValue());
+        if (newName != null) {
+            idNode.setText(newName);
+        }
+      }
 
       // Create new simulation from config
       for (Object element : root.getChildren()) {
