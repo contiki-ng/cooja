@@ -1686,12 +1686,11 @@ public class Cooja extends Observable {
     }
 
     /* Check mote interfaces */
-    boolean moteInterfacesOK = true;
     Class<? extends MoteInterface>[] moteInterfaces =
       motePluginClass.getAnnotation(SupportedArguments.class).moteInterfaces();
     for (Class<? extends MoteInterface> requiredMoteInterface: moteInterfaces) {
       if (mote.getInterfaces().getInterfaceOfType(requiredMoteInterface) == null) {
-        moteInterfacesOK = false;
+        return false;
       }
     }
 
@@ -1705,7 +1704,7 @@ public class Cooja extends Observable {
       }
     }
 
-    return moteInterfacesOK && moteTypeOK;
+    return moteTypeOK;
   }
 
   public JMenu createMotePluginsSubmenu(Class<? extends Plugin> pluginClass) {
