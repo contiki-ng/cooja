@@ -2885,11 +2885,8 @@ public class Cooja extends Observable {
       /* Create old to new identifier mappings */
       var moteTypeIDMappings = new HashMap<String, String>();
       ArrayList<Object> reserved = new ArrayList<>(readNames);
+      var existingMoteTypes = mySimulation == null ? null : mySimulation.getMoteTypes();
       for (var existingIdentifier : readNames) {
-        MoteType[] existingMoteTypes = null;
-        if (mySimulation != null) {
-          existingMoteTypes = mySimulation.getMoteTypes();
-        }
         String newID = ContikiMoteType.generateUniqueMoteTypeID(existingMoteTypes, reserved);
         moteTypeIDMappings.put(existingIdentifier, newID);
         reserved.add(newID);
