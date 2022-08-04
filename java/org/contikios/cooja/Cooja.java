@@ -2928,7 +2928,7 @@ public class Cooja extends Observable {
       }
 
       // Restart plugins from config
-      setPluginsConfigXML(root.getChildren(), newSim);
+      setPluginsConfigXML(root, newSim);
 
     } catch (JDOMException e) {
       throw new SimulationCreationException("Configuration file not wellformed: " + e.getMessage(), e);
@@ -3143,116 +3143,113 @@ public class Cooja extends Observable {
   /**
    * Starts plugins with arguments in given config.
    *
-   * @param configXML  Config XML elements
+   * @param root XML config root element
    * @param sim Simulation on which to start plugins
    * @return True if all plugins started, false otherwise
    */
-  private boolean setPluginsConfigXML(Collection<Element> configXML, Simulation sim) {
-    for (final Element pluginElement : configXML.toArray(new Element[0])) {
-      if (pluginElement.getName().equals("plugin")) {
+  private boolean setPluginsConfigXML(Element root, Simulation sim) {
+    for (var e : root.getChildren("plugin")) {
+      final Element pluginElement = (Element)e;
+      // Read plugin class
+      String pluginClassName = pluginElement.getText().trim();
 
-        // Read plugin class
-        String pluginClassName = pluginElement.getText().trim();
+      /* Backwards compatibility: se.sics -> org.contikios */
+      if (pluginClassName.startsWith("se.sics")) {
+        pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
+      }
 
-        /* Backwards compatibility: se.sics -> org.contikios */
-        if (pluginClassName.startsWith("se.sics")) {
-        	pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
-        }
+      /* Backwards compatibility: old visualizers were replaced */
+      if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
+              pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
+              pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
+              pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
+        logger.warn("Old simulation config detected: visualizers have been remade");
+        pluginClassName = "org.contikios.cooja.plugins.Visualizer";
+      }
 
-        /* Backwards compatibility: old visualizers were replaced */
-        if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
-        		pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
-        		pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
-        		pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
-        	logger.warn("Old simulation config detected: visualizers have been remade");
-        	pluginClassName = "org.contikios.cooja.plugins.Visualizer";
-        }
+      Class<? extends Plugin> pluginClass =
+              tryLoadClass(this, Plugin.class, pluginClassName);
+      if (pluginClass == null) {
+        logger.fatal("Could not load plugin class: " + pluginClassName);
+        return false;
+      }
 
-        Class<? extends Plugin> pluginClass =
-          tryLoadClass(this, Plugin.class, pluginClassName);
-        if (pluginClass == null) {
-          logger.fatal("Could not load plugin class: " + pluginClassName);
-          return false;
-        }
-
-        // Parse plugin mote argument (if any)
-        Mote mote = null;
-        for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
-          if (pluginSubElement.getName().equals("mote_arg")) {
-            int moteNr = Integer.parseInt(pluginSubElement.getText());
-            if (moteNr >= 0 && moteNr < sim.getMotesCount()) {
-              mote = sim.getMote(moteNr);
-            }
+      // Parse plugin mote argument (if any)
+      Mote mote = null;
+      for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
+        if (pluginSubElement.getName().equals("mote_arg")) {
+          int moteNr = Integer.parseInt(pluginSubElement.getText());
+          if (moteNr >= 0 && moteNr < sim.getMotesCount()) {
+            mote = sim.getMote(moteNr);
           }
         }
+      }
 
-        /* Start plugin */
-        final Plugin startedPlugin = tryStartPlugin(pluginClass, this, sim, mote, false);
-        if (startedPlugin == null) {
-          continue;
+      /* Start plugin */
+      final Plugin startedPlugin = tryStartPlugin(pluginClass, this, sim, mote, false);
+      if (startedPlugin == null) {
+        continue;
+      }
+
+      /* Apply plugin specific configuration */
+      for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
+        if (pluginSubElement.getName().equals("plugin_config")) {
+          startedPlugin.setConfigXML(pluginSubElement.getChildren(), isVisualized());
         }
+      }
 
-        /* Apply plugin specific configuration */
-        for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
-          if (pluginSubElement.getName().equals("plugin_config")) {
-            startedPlugin.setConfigXML(pluginSubElement.getChildren(), isVisualized());
-          }
-        }
+      /* Activate plugin */
+      startedPlugin.startPlugin();
 
-        /* Activate plugin */
-        startedPlugin.startPlugin();
+      /* If Cooja not visualized, ignore window configuration */
+      if (startedPlugin.getCooja() == null || !Cooja.isVisualized()) {
+        continue;
+      }
 
-        /* If Cooja not visualized, ignore window configuration */
-        if (startedPlugin.getCooja() == null || !Cooja.isVisualized()) {
-          continue;
-        }
+      // If plugin is visualizer plugin, parse visualization arguments
+      new RunnableInEDT<Boolean>() {
+        @Override
+        public Boolean work() {
+          Dimension size = new Dimension(100, 100);
+          Point location = new Point(100, 100);
 
-        // If plugin is visualizer plugin, parse visualization arguments
-        new RunnableInEDT<Boolean>() {
-          @Override
-          public Boolean work() {
-            Dimension size = new Dimension(100, 100);
-            Point location = new Point(100, 100);
-
-            for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
-              if (pluginSubElement.getName().equals("width")) {
-                size.width = Integer.parseInt(pluginSubElement.getText());
-                startedPlugin.getCooja().setSize(size);
-              } else if (pluginSubElement.getName().equals("height")) {
-                size.height = Integer.parseInt(pluginSubElement.getText());
-                startedPlugin.getCooja().setSize(size);
-              } else if (pluginSubElement.getName().equals("z")) {
-                int zOrder = Integer.parseInt(pluginSubElement.getText());
-                startedPlugin.getCooja().putClientProperty("zorder", zOrder);
-              } else if (pluginSubElement.getName().equals("location_x")) {
-                location.x = Integer.parseInt(pluginSubElement.getText());
-                startedPlugin.getCooja().setLocation(location);
-              } else if (pluginSubElement.getName().equals("location_y")) {
-                location.y = Integer.parseInt(pluginSubElement.getText());
-                startedPlugin.getCooja().setLocation(location);
-              } else if (pluginSubElement.getName().equals("minimized")) {
-                boolean minimized = Boolean.parseBoolean(pluginSubElement.getText());
-                final JInternalFrame pluginGUI = startedPlugin.getCooja();
-                if (minimized && pluginGUI != null) {
-                  SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                      try {
-                        pluginGUI.setIcon(true);
-                      } catch (PropertyVetoException e) {
-                      }
+          for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
+            if (pluginSubElement.getName().equals("width")) {
+              size.width = Integer.parseInt(pluginSubElement.getText());
+              startedPlugin.getCooja().setSize(size);
+            } else if (pluginSubElement.getName().equals("height")) {
+              size.height = Integer.parseInt(pluginSubElement.getText());
+              startedPlugin.getCooja().setSize(size);
+            } else if (pluginSubElement.getName().equals("z")) {
+              int zOrder = Integer.parseInt(pluginSubElement.getText());
+              startedPlugin.getCooja().putClientProperty("zorder", zOrder);
+            } else if (pluginSubElement.getName().equals("location_x")) {
+              location.x = Integer.parseInt(pluginSubElement.getText());
+              startedPlugin.getCooja().setLocation(location);
+            } else if (pluginSubElement.getName().equals("location_y")) {
+              location.y = Integer.parseInt(pluginSubElement.getText());
+              startedPlugin.getCooja().setLocation(location);
+            } else if (pluginSubElement.getName().equals("minimized")) {
+              boolean minimized = Boolean.parseBoolean(pluginSubElement.getText());
+              final JInternalFrame pluginGUI = startedPlugin.getCooja();
+              if (minimized && pluginGUI != null) {
+                SwingUtilities.invokeLater(new Runnable() {
+                  @Override
+                  public void run() {
+                    try {
+                      pluginGUI.setIcon(true);
+                    } catch (PropertyVetoException e) {
                     }
-                  });
-                }
+                  }
+                });
               }
             }
-
-            showPlugin(startedPlugin);
-            return true;
           }
-        }.invokeAndWait();
 
-      }
+          showPlugin(startedPlugin);
+          return true;
+        }
+      }.invokeAndWait();
     }
 
     /* Z order visualized plugins */
