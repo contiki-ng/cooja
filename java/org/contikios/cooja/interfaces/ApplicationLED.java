@@ -11,11 +11,10 @@ import javax.swing.JPanel;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.contikimote.interfaces.ContikiLED;
 import org.jdom.Element;
 
 public class ApplicationLED extends LED {
-    private static final Logger logger = LogManager.getLogger(ContikiLED.class);
+    private static final Logger logger = LogManager.getLogger(ApplicationLED.class);
 
     private Mote mote = null;
     private byte currentLedValue = 0;
