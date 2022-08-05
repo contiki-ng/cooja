@@ -152,16 +152,13 @@ public class StringUtils {
     if (url == null) {
       return null;
     }
-    try {
-      InputStreamReader reader = new InputStreamReader(url.openStream(), UTF_8);
+    try (var reader = new InputStreamReader(url.openStream(), UTF_8)) {
       StringBuilder sb = new StringBuilder();
       char[] buf = new char[4096];
       int read;
       while ((read = reader.read(buf)) > 0) {
         sb.append(buf, 0, read);
       }
-
-      reader.close();
       return sb.toString();
     } catch (IOException e) {
       return null;
@@ -173,38 +170,23 @@ public class StringUtils {
       return null;
     }
     StringBuilder sb = new StringBuilder();
-    InputStreamReader reader = null;
-    
-    try {
-      if (file.getName().endsWith(".gz")) {
-        reader = new InputStreamReader(new GZIPInputStream(new FileInputStream(file)), UTF_8);
-      } else {
-        reader = new InputStreamReader(new FileInputStream(file), UTF_8);
-      }
 
+    try (var reader = new InputStreamReader(file.getName().endsWith(".gz")
+            ? new GZIPInputStream(new FileInputStream(file))
+            : new FileInputStream(file), UTF_8)) {
       char[] buf = new char[4096];
       int read;
       while ((read = reader.read(buf)) > 0) {
         sb.append(buf, 0, read);
       }
-
-      reader.close();
       return sb.toString();
     } catch (IOException e) {
       e.printStackTrace();
-      
-      if (reader != null) {
-        try {
-          reader.close();
-        } catch (IOException e1) {
-        }
-      }
-      
       if (sb.length() > 0) {
         return sb.toString();
       }
-      return null;
     }
+    return null;
   }
   
   public static boolean saveToFile(File file, String text) {
