@@ -168,22 +168,17 @@ public class ScriptRunner extends VisPlugin {
     }
     fileMenu.add(examplesMenu);
 
-    {
-      /* XXX Workaround to configure SyntaxPane */
-      JEditorPane e = new JEditorPane();
-      new JScrollPane(e);
-      e.setContentType("text/javascript");
-      if (e.getEditorKit() instanceof DefaultSyntaxKit) {
-        DefaultSyntaxKit kit = (DefaultSyntaxKit) e.getEditorKit();
-        kit.setProperty("PopupMenu", "copy-to-clipboard,-,find,find-next,goto-line,-,linkfile");
-        kit.setProperty("Action.linkfile", JSyntaxLinkFile.class.getName());
-        kit.setProperty("Action.execute-script", ScriptRunnerAction.class.getName());
-      }
-    }
-
     /* Script area */
     setLayout(new BorderLayout());
     codeEditor = new JEditorPane();
+    codeEditor.setContentType("text/javascript");
+    if (codeEditor.getEditorKit() instanceof DefaultSyntaxKit) {
+      DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
+      kit.setProperty("PopupMenu", "copy-to-clipboard,-,find,find-next,goto-line,-,linkfile");
+      kit.setProperty("Action.linkfile", JSyntaxLinkFile.class.getName());
+      kit.setProperty("Action.execute-script", ScriptRunnerAction.class.getName());
+      kit.install(codeEditor);
+    }
 
     logTextArea = new JTextArea(12,50);
     logTextArea.setMargin(new Insets(5,5,5,5));
@@ -231,15 +226,6 @@ public class ScriptRunner extends VisPlugin {
     fileMenu.addMenuListener(toggleMenuItems);
     editMenu.addMenuListener(toggleMenuItems);
     runMenu.addMenuListener(toggleMenuItems);
-
-
-    codeEditor.setContentType("text/javascript");
-    if (codeEditor.getEditorKit() instanceof DefaultSyntaxKit) {
-      DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
-      kit.setProperty("PopupMenu", "copy-to-clipboard,-,find,find-next,goto-line,-,linkfile");
-      kit.setProperty("Action.linkfile", JSyntaxLinkFile.class.getName());
-      kit.setProperty("Action.execute-script", ScriptRunnerAction.class.getName());
-    }
 
     JPopupMenu p = codeEditor.getComponentPopupMenu();
     if (p != null) {
