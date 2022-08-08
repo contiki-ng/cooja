@@ -308,7 +308,10 @@ public class ScriptRunner extends VisPlugin {
       }
       codeEditor.setEditable(true);
     } else {
-      updateScript(linkedFile);
+      String script = StringUtils.loadFromFile(linkedFile);
+      if (script != null) {
+        updateScript(script);
+      }
       Cooja.setExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", source.getAbsolutePath());
 
       if (actionLinkFile != null) {
@@ -622,15 +625,6 @@ public class ScriptRunner extends VisPlugin {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-  public boolean updateScript(File scriptFile) {
-    String script = StringUtils.loadFromFile(scriptFile);
-    if (script == null) {
-      return false;
-    }
-    updateScript(script);
-    return true;
   }
 
   private void updateScript(String script) {
