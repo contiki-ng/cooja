@@ -137,11 +137,9 @@ public class ScriptRunner extends VisPlugin {
     /* Menus */
     JMenuBar menuBar = new JMenuBar();
     JMenu fileMenu = new JMenu("File");
-    JMenu editMenu = new JMenu("Edit");
     JMenu runMenu = new JMenu("Run");
 
     menuBar.add(fileMenu);
-    menuBar.add(editMenu);
     menuBar.add(runMenu);
 
     this.setJMenuBar(menuBar);
@@ -229,7 +227,6 @@ public class ScriptRunner extends VisPlugin {
       }
     };
     fileMenu.addMenuListener(toggleMenuItems);
-    editMenu.addMenuListener(toggleMenuItems);
     runMenu.addMenuListener(toggleMenuItems);
 
 
