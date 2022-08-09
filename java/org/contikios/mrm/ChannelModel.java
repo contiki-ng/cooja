@@ -37,7 +37,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Observer;
 import java.util.Random;
 import java.util.Vector;
@@ -74,8 +74,8 @@ public class ChannelModel {
 
   enum TransmissionData { SIGNAL_STRENGTH, SIGNAL_STRENGTH_VAR, SNR, SNR_VAR, PROB_OF_RECEPTION, DELAY_SPREAD, DELAY_SPREAD_RMS}
 
-  private final Hashtable<Parameter,Object> parametersDefaults;
-  private final Hashtable<Parameter,Object> parameters = new Hashtable<>();
+  private final HashMap<Parameter,Object> parametersDefaults;
+  private final HashMap<Parameter,Object> parameters = new HashMap<>();
 
   // Parameters used for speeding up calculations
   private boolean needToPrecalculateFSPL = true;
@@ -280,7 +280,7 @@ public class ChannelModel {
       parameters.put(p, Parameter.getDefaultValue(p));
     }
 
-    parametersDefaults = (Hashtable<Parameter,Object>) parameters.clone();
+    parametersDefaults = (HashMap<Parameter,Object>) parameters.clone();
 
     // Ray Tracer - Use scattering
     //parameters.put(Parameters.rt_use_scattering, Parameter.getDefaultValue(Parameters.rt_use_scattering)); // TODO Not used yet
@@ -1753,9 +1753,7 @@ public class ChannelModel {
     ArrayList<Element> config = new ArrayList<>();
     Element element;
 
-    Enumeration<Parameter> paramEnum = parameters.keys();
-    while (paramEnum.hasMoreElements()) {
-      Parameter p = paramEnum.nextElement();
+    for (var p : parameters.keySet()) {
       element = new Element(p.toString());
       if (parametersDefaults.get(p).equals(parameters.get(p))) {
         /* Default value */

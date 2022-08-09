@@ -32,8 +32,7 @@ package org.contikios.cooja.radiomediums;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -70,7 +69,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
   private boolean edgesDirty = true;
 
   /* Used for optimizing lookup time */
-  private Hashtable<Radio,DGRMDestinationRadio[]> edgesTable = new Hashtable<>();
+  private HashMap<Radio,DGRMDestinationRadio[]> edgesTable = new HashMap<>();
 
   public DirectedGraphMedium() {
     /* Do not initialize radio medium: use only for hash table */
@@ -198,8 +197,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
    * Generates hash table using current edges for efficient lookup.
    */
   protected void analyzeEdges() {
-    Hashtable<Radio,ArrayList<DGRMDestinationRadio>> listTable =
-            new Hashtable<>();
+    HashMap<Radio,ArrayList<DGRMDestinationRadio>> listTable = new HashMap<>();
 
     /* Fill edge hash table with all edges */
     for (Edge edge: getEdges()) {
@@ -215,10 +213,8 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     }
 
     /* Convert to arrays */
-    Hashtable<Radio,DGRMDestinationRadio[]> arrTable = new Hashtable<>();
-    Enumeration<Radio> sources = listTable.keys();
-    while (sources.hasMoreElements()) {
-      Radio source = sources.nextElement();
+    HashMap<Radio,DGRMDestinationRadio[]> arrTable = new HashMap<>();
+    for (var source : listTable.keySet()) {
       DGRMDestinationRadio[] arr = listTable.get(source).toArray(new DGRMDestinationRadio[0]);
       arrTable.put(source, arr);
     }

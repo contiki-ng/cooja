@@ -38,7 +38,7 @@ import java.io.BufferedWriter;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Observer;
 import java.util.concurrent.Semaphore;
 import javax.script.Invocable;
@@ -326,8 +326,7 @@ public class LogScriptEngine {
     /* Create script output logger */
     engine.put("log", scriptLog);
 
-    Hashtable<Object, Object> hash = new Hashtable<>();
-    engine.put("global", hash);
+    engine.put("global", new HashMap<>());
     engine.put("sim", simulation);
     engine.put("gui", simulation.getCooja());
     engine.put("msg", "");
