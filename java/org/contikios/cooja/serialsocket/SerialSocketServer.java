@@ -77,6 +77,7 @@ import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.interfaces.SerialPort;
+import org.contikios.cooja.util.CmdUtils;
 
 /**
  * Socket to simulated serial port forwarder. Server version.
@@ -110,6 +111,8 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
 
   private ServerSocket serverSocket;
   private Socket clientSocket;
+
+  private String commands = null;
 
   private final Mote mote;
   private final Simulation simulation;
@@ -439,6 +442,28 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
         notifyServerStopped();
       }
     }.start();
+
+    if (commands != null) {
+      // Run commands in a separate thread since Cooja cannot start the simulation before this method returns.
+      // The simulation is required to run before tunslip6 can be started.
+      new Thread(() -> {
+        int rv = 0;
+        for (var cmd : commands.split("\n")) {
+          if (cmd.trim().isEmpty()) {
+            continue;
+          }
+          try {
+            // Must not be synchronous, tunslip6 hangs in 17-tun-rpl-br because SerialSocket does not disconnect.
+            CmdUtils.run(cmd, simulation.getCooja(), false);
+          } catch (Exception e) {
+            rv = 1;
+            break;
+          }
+        }
+        // No reasonable way to communicate results with Cooja, so just exit upon completion for now.
+        simulation.getCooja().doQuit(false, rv);
+      }).start();
+    }
     return true;
   }
 
@@ -559,6 +584,12 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
     }
     config.add(element);
 
+    if (commands != null) {
+      element = new Element("commands");
+      element.setText(commands);
+      config.add(element);
+    }
+
     return config;
   }
 
@@ -574,6 +605,9 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
           break;
         case "bound":
           bound = Boolean.parseBoolean(element.getText());
+          break;
+        case "commands":
+          commands = element.getText();
           break;
         default:
           logger.warn("Unknown config element: " + element.getName());
