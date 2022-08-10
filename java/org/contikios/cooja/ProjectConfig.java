@@ -35,9 +35,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.Vector;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -92,8 +92,8 @@ import org.apache.logging.log4j.LogManager;
 public class ProjectConfig {
   private static final Logger logger = LogManager.getLogger(ProjectConfig.class);
 
-  private Properties myConfig = null;
-  private Vector<File> myProjectDirHistory = null;
+  private Properties myConfig = new Properties();
+  private ArrayList<File> myProjectDirHistory = new ArrayList<>();
 
   /**
    * Creates new project configuration.
@@ -107,11 +107,6 @@ public class ProjectConfig {
    */
   public ProjectConfig(boolean useDefault) throws IOException,
       FileNotFoundException {
-    // Create empty configuration
-    myConfig = new Properties();
-    myProjectDirHistory = new Vector<>();
-
-
     if (useDefault) {
       InputStream input = Cooja.class
           .getResourceAsStream(Cooja.PROJECT_DEFAULT_CONFIG_FILENAME);
@@ -535,7 +530,7 @@ public class ProjectConfig {
     try {
       ProjectConfig clone = new ProjectConfig(false);
       clone.myConfig = (Properties) this.myConfig.clone();
-      clone.myProjectDirHistory = (Vector<File>) this.myProjectDirHistory.clone();
+      clone.myProjectDirHistory = (ArrayList<File>) this.myProjectDirHistory.clone();
       return clone;
     } catch (Exception e) {
       return null;
