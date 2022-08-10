@@ -30,6 +30,7 @@
 package org.contikios.cooja.plugins;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
 
 import de.sciss.syntaxpane.DefaultSyntaxKit;
 import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
@@ -65,6 +66,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -74,6 +76,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
@@ -81,9 +85,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
+import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.util.StringUtils;
@@ -91,9 +95,10 @@ import org.jdom.Element;
 
 @ClassDescription("Simulation script editor")
 @PluginType(PluginType.SIM_CONTROL_PLUGIN)
-public class ScriptRunner extends VisPlugin {
+public class ScriptRunner implements Plugin {
   private static final Logger logger = LogManager.getLogger(ScriptRunner.class);
 
+  private final Cooja gui;
   static boolean headless;
   {
     headless = GraphicsEnvironment.isHeadless();
@@ -122,17 +127,34 @@ public class ScriptRunner extends VisPlugin {
 
   private JSyntaxLinkFile actionLinkFile = null;
   private File linkedFile = null;
+  private final JInternalFrame frame;
 
   public ScriptRunner(Simulation simulation, Cooja gui) {
-    super("Simulation script editor", gui, false);
+    this.gui = gui;
     this.simulation = simulation;
     this.engine = null;
 
     if (!Cooja.isVisualized()) {
+      frame = null;
       codeEditor = null;
       logTextArea = null;
       return;
     }
+
+    frame = new JInternalFrame("Simulation script editor", true, true, true, true);
+    frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+    frame.addInternalFrameListener(new InternalFrameAdapter() {
+      @Override
+      public void internalFrameClosing(InternalFrameEvent e) {
+        gui.removePlugin(ScriptRunner.this, true);
+      }
+
+      @Override
+      public void internalFrameActivated(InternalFrameEvent e) {
+        gui.loadQuickHelp(ScriptRunner.this);
+      }
+    });
 
     /* Menus */
     JMenuBar menuBar = new JMenuBar();
@@ -142,7 +164,7 @@ public class ScriptRunner extends VisPlugin {
     menuBar.add(fileMenu);
     menuBar.add(runMenu);
 
-    this.setJMenuBar(menuBar);
+    frame.setJMenuBar(menuBar);
 
     /* Example scripts */
     final JMenu examplesMenu = new JMenu("Load example script");
@@ -167,7 +189,7 @@ public class ScriptRunner extends VisPlugin {
     fileMenu.add(examplesMenu);
 
     /* Script area */
-    setLayout(new BorderLayout());
+    frame.setLayout(new BorderLayout());
     codeEditor = new JEditorPane();
     codeEditor.setContentType("text/javascript");
     if (codeEditor.getEditorKit() instanceof DefaultSyntaxKit) {
@@ -200,7 +222,7 @@ public class ScriptRunner extends VisPlugin {
     runMenu.add(runTestMenuItem);
     runTestMenuItem.addActionListener(e -> exportAndRun());
 
-    doLayout();
+    frame.doLayout();
     var centerPanel = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT,
             new JScrollPane(codeEditor),
@@ -249,16 +271,16 @@ public class ScriptRunner extends VisPlugin {
     JPanel southPanel = new JPanel(new BorderLayout());
     southPanel.add(BorderLayout.EAST, buttonPanel);
 
-    getContentPane().add(BorderLayout.CENTER, centerPanel);
-    getContentPane().add(BorderLayout.SOUTH, southPanel);
+    frame.getContentPane().add(BorderLayout.CENTER, centerPanel);
+    frame.getContentPane().add(BorderLayout.SOUTH, southPanel);
 
-    setSize(600, 700);
+    frame.setSize(600, 700);
     Dimension maxSize = gui.getDesktopPane().getSize();
-    if (getWidth() > maxSize.getWidth()) {
-      setSize((int)maxSize.getWidth(), getHeight());
+    if (frame.getWidth() > maxSize.getWidth()) {
+      frame.setSize((int)maxSize.getWidth(), frame.getHeight());
     }
-    if (getHeight() > maxSize.getHeight()) {
-      setSize(getWidth(), (int)maxSize.getHeight());
+    if (frame.getHeight() > maxSize.getHeight()) {
+      frame.setSize(frame.getWidth(), (int)maxSize.getHeight());
     }
 
     /* Set default script */
@@ -266,6 +288,11 @@ public class ScriptRunner extends VisPlugin {
     if (script != null) {
       updateScript(script);
     }
+  }
+
+  @Override
+  public JInternalFrame getCooja() {
+    return frame;
   }
 
   @Override
@@ -443,7 +470,7 @@ public class ScriptRunner extends VisPlugin {
     if (isActive()) {
       title += "*active*";
     }
-    setTitle(title);
+    frame.setTitle(title);
   }
 
   private void exportAndRun() {
@@ -531,7 +558,7 @@ public class ScriptRunner extends VisPlugin {
 
       progressDialog.getRootPane().setDefaultButton(button);
       progressDialog.setSize(800, 300);
-      progressDialog.setLocationRelativeTo(ScriptRunner.this);
+      progressDialog.setLocationRelativeTo(ScriptRunner.this.frame);
       progressDialog.addWindowListener(new WindowAdapter() {
         @Override
         public void windowClosed(WindowEvent e) {
@@ -732,7 +759,7 @@ public class ScriptRunner extends VisPlugin {
           return "Javascript";
         }
       });
-      if (fileChooser.showOpenDialog(scriptRunner) != JFileChooser.APPROVE_OPTION) {
+      if (fileChooser.showOpenDialog(scriptRunner.frame) != JFileChooser.APPROVE_OPTION) {
         return;
       }
       scriptRunner.setLinkFile(fileChooser.getSelectedFile());
