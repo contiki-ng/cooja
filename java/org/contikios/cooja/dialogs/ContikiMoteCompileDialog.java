@@ -91,24 +91,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     addAdvancedTab(tabbedPane);
   }
 
-  private void updateForSource(File source) {
-    if (moteType.getIdentifier() == null) {
-      /* Generate mote type identifier */
-      moteType.setIdentifier(
-          ContikiMoteType.generateUniqueMoteTypeID(simulation.getMoteTypes(), null));
-    }
-    
-    /* Create variables used for compiling Contiki */
-    moteType.setContikiSourceFile(source);
-    var env = ((ContikiMoteType)moteType).configureForCompilation();
-    String[] envOneDimension = new String[env.length];
-    for (int i=0; i < env.length; i++) {
-      envOneDimension[i] = env[i][0] + "=" + env[i][1];
-    }
-    createEnvironmentTab(tabbedPane, env);
-    compilationEnvironment = envOneDimension;
-  }
-  
   @Override
   public boolean canLoadFirmware(File file) {
     /* Disallow loading firmwares without compilation */
@@ -133,11 +115,23 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       return "";
     }
 
+    if (moteType.getIdentifier() == null) {
+      moteType.setIdentifier(
+          ContikiMoteType.generateUniqueMoteTypeID(simulation.getMoteTypes(), null));
+    }
+
+    moteType.setContikiSourceFile(source);
+    var env = ((ContikiMoteType)moteType).configureForCompilation();
+    String[] envOneDimension = new String[env.length];
+    for (int i=0; i < env.length; i++) {
+      envOneDimension[i] = env[i][0] + "=" + env[i][1];
+    }
+    compilationEnvironment = envOneDimension;
     if (SwingUtilities.isEventDispatchThread()) {
-      updateForSource(source);
+      createEnvironmentTab(tabbedPane, env);
     } else {
       try {
-        SwingUtilities.invokeAndWait(() -> updateForSource(source));
+        SwingUtilities.invokeAndWait(() -> createEnvironmentTab(tabbedPane, env));
       } catch (InvocationTargetException | InterruptedException e) {
         logger.fatal("Error when updating for source " + source + ": " + e.getMessage(), e);
       }
