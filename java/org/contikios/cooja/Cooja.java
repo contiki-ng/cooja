@@ -256,10 +256,6 @@ public class Cooja extends Observable {
     "PATH_MAKE",
     "PATH_SHELL",
     "PATH_C_COMPILER", "COMPILER_ARGS",
-    "PATH_LINKER",
-    "PATH_AR",
-    "PATH_OBJDUMP", "OBJDUMP_ARGS",
-    "PATH_OBJCOPY",
     "PATH_JAVAC",
 
     "CONTIKI_STANDARD_PROCESSES",
