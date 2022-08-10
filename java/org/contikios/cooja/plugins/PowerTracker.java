@@ -47,6 +47,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.Timer;
@@ -60,6 +61,7 @@ import org.jdom.Element;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
+import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.Simulation;
@@ -74,7 +76,7 @@ import org.contikios.cooja.interfaces.Radio;
  */
 @ClassDescription("Mote radio duty cycle")
 @PluginType(PluginType.SIM_PLUGIN)
-public class PowerTracker extends VisPlugin {
+public class PowerTracker implements Plugin {
   private static final Logger logger = LogManager.getLogger(PowerTracker.class);
 
   private static final int POWERTRACKER_UPDATE_INTERVAL = 100; /* ms */
@@ -91,8 +93,9 @@ public class PowerTracker extends VisPlugin {
   private JTable table;
   private int tableMaxRadioOnIndex = -1;
 
+  private final VisPlugin frame;
+
   public PowerTracker(final Simulation simulation, final Cooja gui) {
-    super("PowerTracker", gui, false);
     this.simulation = simulation;
 
     /* Automatically add/delete motes */
@@ -108,6 +111,7 @@ public class PowerTracker extends VisPlugin {
         table.repaint();
       }
     });
+    frame = Cooja.isVisualized() ? new VisPlugin("PowerTracker", gui, this) : null;
     for (Mote m: simulation.getMotes()) {
       addMote(m);
     }
@@ -218,9 +222,9 @@ public class PowerTracker extends VisPlugin {
     control.add(new JButton(printAction));
     control.add(new JButton(resetAction));
 
-    this.getContentPane().add(BorderLayout.CENTER, new JScrollPane(table));
-    this.getContentPane().add(BorderLayout.SOUTH, control);
-    setSize(400, 400);
+    frame.getContentPane().add(BorderLayout.CENTER, new JScrollPane(table));
+    frame.getContentPane().add(BorderLayout.SOUTH, control);
+    frame.setSize(400, 400);
 
     repaintTimer.start();
   }
@@ -468,7 +472,10 @@ public class PowerTracker extends VisPlugin {
       moteTrackers.add(t);
     }
 
-    setTitle("PowerTracker: " + moteTrackers.size() + " motes");
+    if (!Cooja.isVisualized()) {
+      return;
+    }
+    frame.setTitle("PowerTracker: " + moteTrackers.size() + " motes");
   }
 
   private void removeMote(Mote mote) {
@@ -481,7 +488,19 @@ public class PowerTracker extends VisPlugin {
       }
     }
 
-    setTitle("PowerTracker: " + moteTrackers.size() + " motes");
+    if (!Cooja.isVisualized()) {
+      return;
+    }
+    frame.setTitle("PowerTracker: " + moteTrackers.size() + " motes");
+  }
+
+  @Override
+  public JInternalFrame getCooja() {
+    return frame;
+  }
+
+  @Override
+  public void startPlugin() {
   }
 
   public void closePlugin() {
