@@ -59,7 +59,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -70,12 +69,11 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.swing.AbstractAction;
@@ -132,6 +130,7 @@ import org.contikios.cooja.util.ScnObservable;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.filter.ElementFilter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -2795,76 +2794,79 @@ public class Cooja extends Observable {
 
   private Simulation loadSimulationConfig(Element root, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
+    // Check that config file version is correct
+    if (!root.getName().equals("simconf")) {
+      logger.fatal("Not a valid Cooja simulation config.");
+      return null;
+    }
+
     Simulation newSim = null;
-
     try {
-      // Check that config file version is correct
-      if (!root.getName().equals("simconf")) {
-        logger.fatal("Not a valid Cooja simulation config.");
-        return null;
-      }
-
       /* Verify extension directories */
       boolean projectsOk = verifyProjects(root.getChildren());
 
       /* GENERATE UNIQUE MOTE TYPE IDENTIFIERS */
-      root.detach();
-      String configString = new XMLOutputter().outputString(new Document(root));
 
       /* Locate Contiki mote types in config */
-      Properties moteTypeIDMappings = new Properties();
-      String identifierExtraction = ContikiMoteType.class.getName() + "[\\s\\n]*<identifier>([^<]*)</identifier>";
-      Matcher matcher = Pattern.compile(identifierExtraction).matcher(configString);
-      while (matcher.find()) {
-        moteTypeIDMappings.setProperty(matcher.group(1), "");
+      var readNames = new ArrayList<String>();
+      var motetypes = root.getDescendants(new ElementFilter("motetype"));
+      while (motetypes.hasNext()) {
+        var e = (Element)motetypes.next();
+        if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
+          readNames.add(e.getChild("identifier").getValue());
+        }
       }
 
       /* Create old to new identifier mappings */
-      Enumeration<Object> existingIdentifiers = moteTypeIDMappings.keys();
-      while (existingIdentifiers.hasMoreElements()) {
-        String existingIdentifier = (String) existingIdentifiers.nextElement();
-        MoteType[] existingMoteTypes = null;
-        if (mySimulation != null) {
-          existingMoteTypes = mySimulation.getMoteTypes();
-        }
-        ArrayList<Object> reserved = new ArrayList<>();
-        reserved.addAll(moteTypeIDMappings.keySet());
-        reserved.addAll(moteTypeIDMappings.values());
+      var moteTypeIDMappings = new HashMap<String, String>();
+      ArrayList<Object> reserved = new ArrayList<>(readNames);
+      var existingMoteTypes = mySimulation == null ? null : mySimulation.getMoteTypes();
+      for (var existingIdentifier : readNames) {
         String newID = ContikiMoteType.generateUniqueMoteTypeID(existingMoteTypes, reserved);
-        moteTypeIDMappings.setProperty(existingIdentifier, newID);
+        moteTypeIDMappings.put(existingIdentifier, newID);
+        reserved.add(newID);
       }
 
-      /* Create new config */
-      existingIdentifiers = moteTypeIDMappings.keys();
-      while (existingIdentifiers.hasMoreElements()) {
-        String existingIdentifier = (String) existingIdentifiers.nextElement();
-        configString = configString.replaceAll(
-            "<identifier>" + existingIdentifier + "</identifier>",
-            "<identifier>" + moteTypeIDMappings.get(existingIdentifier) + "</identifier>");
-        configString = configString.replaceAll(
-            "<motetype_identifier>" + existingIdentifier + "</motetype_identifier>",
-            "<motetype_identifier>" + moteTypeIDMappings.get(existingIdentifier) + "</motetype_identifier>");
+      // Replace all <motetype>..ContikiMoteType.class<identifier>mtypeXXX</identifier>...
+      // in the config with the new identifiers.
+      motetypes = root.getDescendants(new ElementFilter("motetype"));
+      while (motetypes.hasNext()) {
+        var e = (Element)motetypes.next();
+        if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
+          var idNode = e.getChild("identifier");
+          var newName = moteTypeIDMappings.get(idNode.getValue());
+          idNode.setText(newName);
+        }
       }
-
-      /* Replace existing config */
-      root = new SAXBuilder().build(new StringReader(configString)).getRootElement();
+      // Replace all <mote>...<motetype_identifier>mtypeXXX</motetype_identifier>...
+      // in the config with the new identifiers.
+      var motes = root.getDescendants(new ElementFilter("mote"));
+      while (motes.hasNext()) {
+        var e = (Element) motes.next();
+        var idNode = e.getChild("motetype_identifier");
+        if (idNode == null) {
+          continue;
+        }
+        var newName = moteTypeIDMappings.get(idNode.getValue());
+        if (newName != null) {
+            idNode.setText(newName);
+        }
+      }
 
       // Create new simulation from config
-      for (Object element : root.getChildren()) {
-        if (((Element) element).getName().equals("simulation")) {
-          Collection<Element> config = ((Element) element).getChildren();
-          newSim = new Simulation(this);
-          System.gc();
+      for (var element : root.getChildren("simulation")) {
+        Collection<Element> config = ((Element) element).getChildren();
+        newSim = new Simulation(this);
+        System.gc();
 
-          if (!newSim.setConfigXML(config, isVisualized(), quick, manualRandomSeed)) {
-            logger.info("Simulation not loaded");
-            return null;
-          }
+        if (!newSim.setConfigXML(config, isVisualized(), quick, manualRandomSeed)) {
+          logger.info("Simulation not loaded");
+          return null;
         }
       }
 
       // Restart plugins from config
-      setPluginsConfigXML(root.getChildren(), newSim);
+      setPluginsConfigXML(root, newSim);
 
     } catch (JDOMException e) {
       throw new SimulationCreationException("Configuration file not wellformed: " + e.getMessage(), e);
@@ -3079,116 +3081,109 @@ public class Cooja extends Observable {
   /**
    * Starts plugins with arguments in given config.
    *
-   * @param configXML  Config XML elements
+   * @param root XML config root element
    * @param sim Simulation on which to start plugins
    * @return True if all plugins started, false otherwise
    */
-  private boolean setPluginsConfigXML(Collection<Element> configXML, Simulation sim) {
-    for (final Element pluginElement : configXML.toArray(new Element[0])) {
-      if (pluginElement.getName().equals("plugin")) {
+  private boolean setPluginsConfigXML(Element root, Simulation sim) {
+    for (var e : root.getChildren("plugin")) {
+      final Element pluginElement = (Element)e;
+      // Read plugin class
+      String pluginClassName = pluginElement.getText().trim();
 
-        // Read plugin class
-        String pluginClassName = pluginElement.getText().trim();
+      /* Backwards compatibility: se.sics -> org.contikios */
+      if (pluginClassName.startsWith("se.sics")) {
+        pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
+      }
 
-        /* Backwards compatibility: se.sics -> org.contikios */
-        if (pluginClassName.startsWith("se.sics")) {
-        	pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
+      /* Backwards compatibility: old visualizers were replaced */
+      if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
+              pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
+              pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
+              pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
+        logger.warn("Old simulation config detected: visualizers have been remade");
+        pluginClassName = "org.contikios.cooja.plugins.Visualizer";
+      }
+
+      Class<? extends Plugin> pluginClass =
+              tryLoadClass(this, Plugin.class, pluginClassName);
+      if (pluginClass == null) {
+        logger.fatal("Could not load plugin class: " + pluginClassName);
+        return false;
+      }
+
+      // Parse plugin mote argument (if any)
+      Mote mote = null;
+      for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
+        int moteNr = Integer.parseInt(((Element)pluginSubElement).getText());
+        if (moteNr >= 0 && moteNr < sim.getMotesCount()) {
+          mote = sim.getMote(moteNr);
         }
+      }
 
-        /* Backwards compatibility: old visualizers were replaced */
-        if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
-        		pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
-        		pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
-        		pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
-        	logger.warn("Old simulation config detected: visualizers have been remade");
-        	pluginClassName = "org.contikios.cooja.plugins.Visualizer";
-        }
+      /* Start plugin */
+      final Plugin startedPlugin = tryStartPlugin(pluginClass, this, sim, mote, false);
+      if (startedPlugin == null) {
+        continue;
+      }
 
-        Class<? extends Plugin> pluginClass =
-          tryLoadClass(this, Plugin.class, pluginClassName);
-        if (pluginClass == null) {
-          logger.fatal("Could not load plugin class: " + pluginClassName);
-          return false;
-        }
+      /* Apply plugin specific configuration */
+      for (var pluginSubElement : pluginElement.getChildren("plugin_config")) {
+        startedPlugin.setConfigXML(((Element)pluginSubElement).getChildren(), isVisualized());
+      }
 
-        // Parse plugin mote argument (if any)
-        Mote mote = null;
-        for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
-          if (pluginSubElement.getName().equals("mote_arg")) {
-            int moteNr = Integer.parseInt(pluginSubElement.getText());
-            if (moteNr >= 0 && moteNr < sim.getMotesCount()) {
-              mote = sim.getMote(moteNr);
-            }
-          }
-        }
+      /* Activate plugin */
+      startedPlugin.startPlugin();
 
-        /* Start plugin */
-        final Plugin startedPlugin = tryStartPlugin(pluginClass, this, sim, mote, false);
-        if (startedPlugin == null) {
-          continue;
-        }
+      /* If Cooja not visualized, ignore window configuration */
+      if (startedPlugin.getCooja() == null || !Cooja.isVisualized()) {
+        continue;
+      }
 
-        /* Apply plugin specific configuration */
-        for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
-          if (pluginSubElement.getName().equals("plugin_config")) {
-            startedPlugin.setConfigXML(pluginSubElement.getChildren(), isVisualized());
-          }
-        }
+      // If plugin is visualizer plugin, parse visualization arguments
+      new RunnableInEDT<Boolean>() {
+        @Override
+        public Boolean work() {
+          Dimension size = new Dimension(100, 100);
+          Point location = new Point(100, 100);
 
-        /* Activate plugin */
-        startedPlugin.startPlugin();
-
-        /* If Cooja not visualized, ignore window configuration */
-        if (startedPlugin.getCooja() == null || !Cooja.isVisualized()) {
-          continue;
-        }
-
-        // If plugin is visualizer plugin, parse visualization arguments
-        new RunnableInEDT<Boolean>() {
-          @Override
-          public Boolean work() {
-            Dimension size = new Dimension(100, 100);
-            Point location = new Point(100, 100);
-
-            for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
-              if (pluginSubElement.getName().equals("width")) {
-                size.width = Integer.parseInt(pluginSubElement.getText());
-                startedPlugin.getCooja().setSize(size);
-              } else if (pluginSubElement.getName().equals("height")) {
-                size.height = Integer.parseInt(pluginSubElement.getText());
-                startedPlugin.getCooja().setSize(size);
-              } else if (pluginSubElement.getName().equals("z")) {
-                int zOrder = Integer.parseInt(pluginSubElement.getText());
-                startedPlugin.getCooja().putClientProperty("zorder", zOrder);
-              } else if (pluginSubElement.getName().equals("location_x")) {
-                location.x = Integer.parseInt(pluginSubElement.getText());
-                startedPlugin.getCooja().setLocation(location);
-              } else if (pluginSubElement.getName().equals("location_y")) {
-                location.y = Integer.parseInt(pluginSubElement.getText());
-                startedPlugin.getCooja().setLocation(location);
-              } else if (pluginSubElement.getName().equals("minimized")) {
-                boolean minimized = Boolean.parseBoolean(pluginSubElement.getText());
-                final JInternalFrame pluginGUI = startedPlugin.getCooja();
-                if (minimized && pluginGUI != null) {
-                  SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                      try {
-                        pluginGUI.setIcon(true);
-                      } catch (PropertyVetoException e) {
-                      }
+          for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
+            if (pluginSubElement.getName().equals("width")) {
+              size.width = Integer.parseInt(pluginSubElement.getText());
+              startedPlugin.getCooja().setSize(size);
+            } else if (pluginSubElement.getName().equals("height")) {
+              size.height = Integer.parseInt(pluginSubElement.getText());
+              startedPlugin.getCooja().setSize(size);
+            } else if (pluginSubElement.getName().equals("z")) {
+              int zOrder = Integer.parseInt(pluginSubElement.getText());
+              startedPlugin.getCooja().putClientProperty("zorder", zOrder);
+            } else if (pluginSubElement.getName().equals("location_x")) {
+              location.x = Integer.parseInt(pluginSubElement.getText());
+              startedPlugin.getCooja().setLocation(location);
+            } else if (pluginSubElement.getName().equals("location_y")) {
+              location.y = Integer.parseInt(pluginSubElement.getText());
+              startedPlugin.getCooja().setLocation(location);
+            } else if (pluginSubElement.getName().equals("minimized")) {
+              boolean minimized = Boolean.parseBoolean(pluginSubElement.getText());
+              final JInternalFrame pluginGUI = startedPlugin.getCooja();
+              if (minimized && pluginGUI != null) {
+                SwingUtilities.invokeLater(new Runnable() {
+                  @Override
+                  public void run() {
+                    try {
+                      pluginGUI.setIcon(true);
+                    } catch (PropertyVetoException e) {
                     }
-                  });
-                }
+                  }
+                });
               }
             }
-
-            showPlugin(startedPlugin);
-            return true;
           }
-        }.invokeAndWait();
 
-      }
+          showPlugin(startedPlugin);
+          return true;
+        }
+      }.invokeAndWait();
     }
 
     /* Z order visualized plugins */
