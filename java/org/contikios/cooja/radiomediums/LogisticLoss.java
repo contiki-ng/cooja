@@ -31,10 +31,10 @@
 package org.contikios.cooja.radiomediums;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
-import java.util.Hashtable;
 import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
@@ -158,7 +158,7 @@ public class LogisticLoss extends AbstractRadioMedium {
 
     private Random random = null;
 
-    private final Hashtable<Index, TimeVaryingEdge> edgesTable = new Hashtable<>();
+    private final HashMap<Index, TimeVaryingEdge> edgesTable = new HashMap<>();
 
     public LogisticLoss(Simulation simulation) {
         super(simulation);

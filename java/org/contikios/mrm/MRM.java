@@ -31,7 +31,7 @@
 package org.contikios.mrm;
 
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
@@ -436,7 +436,7 @@ public class MRM extends AbstractRadioMedium {
   }
 
   static class MRMRadioConnection extends RadioConnection {
-    private final Hashtable<Radio, Double> signalStrengths = new Hashtable<>();
+    private final HashMap<Radio, Double> signalStrengths = new HashMap<>();
 
     public MRMRadioConnection(Radio sourceRadio) {
       super(sourceRadio);

@@ -36,7 +36,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -605,7 +605,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   /* WatchpointMote */
   private final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<>();
   private final ArrayList<MspBreakpoint> watchpoints = new ArrayList<>();
-  private Hashtable<File, Hashtable<Integer, Integer>> debuggingInfo = null;
+  private HashMap<File, HashMap<Integer, Integer>> debuggingInfo = null;
 
   public void addWatchpointListener(WatchpointListener listener) {
     watchpointListeners.add(listener);
@@ -671,7 +671,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     /* Match file */
-    Hashtable<Integer, Integer> lineTable = debuggingInfo.get(file);
+    HashMap<Integer, Integer> lineTable = debuggingInfo.get(file);
     if (lineTable == null) {
       for (var entry : debuggingInfo.entrySet()) {
         File f = entry.getKey();

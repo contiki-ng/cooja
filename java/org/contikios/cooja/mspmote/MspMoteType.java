@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -339,8 +339,8 @@ public abstract class MspMoteType implements MoteType {
     return elf;
   }
 
-  private Hashtable<File, Hashtable<Integer, Integer>> debuggingInfo = null; /* cached */
-  public Hashtable<File, Hashtable<Integer, Integer>> getFirmwareDebugInfo()
+  private HashMap<File, HashMap<Integer, Integer>> debuggingInfo = null; /* cached */
+  public HashMap<File, HashMap<Integer, Integer>> getFirmwareDebugInfo()
   throws IOException {
     if (debuggingInfo == null) {
       debuggingInfo = getFirmwareDebugInfo(getELF());
@@ -348,9 +348,8 @@ public abstract class MspMoteType implements MoteType {
     return debuggingInfo;
   }
 
-  public static Hashtable<File, Hashtable<Integer, Integer>> getFirmwareDebugInfo(ELF elf) {
-    Hashtable<File, Hashtable<Integer, Integer>> fileToLineHash =
-            new Hashtable<>();
+  public static HashMap<File, HashMap<Integer, Integer>> getFirmwareDebugInfo(ELF elf) {
+    HashMap<File, HashMap<Integer, Integer>> fileToLineHash = new HashMap<>();
 
     if (elf.getDebug() == null) {
       // No debug information is available
@@ -387,9 +386,9 @@ public abstract class MspMoteType implements MoteType {
       } catch (IOException | AccessControlException e) {
       }
 
-      Hashtable<Integer, Integer> lineToAddrHash = fileToLineHash.get(file);
+      HashMap<Integer, Integer> lineToAddrHash = fileToLineHash.get(file);
       if (lineToAddrHash == null) {
-        lineToAddrHash = new Hashtable<>();
+        lineToAddrHash = new HashMap<>();
         fileToLineHash.put(file, lineToAddrHash);
       }
 
