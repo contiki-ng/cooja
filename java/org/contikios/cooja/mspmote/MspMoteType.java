@@ -316,8 +316,8 @@ public abstract class MspMoteType implements MoteType {
       }
 
       /* Backwards compatibility: Generate expected firmware file name from source */
-      logger.warn("Old simulation config detected: no firmware file specified, generating expected");
       fileFirmware = getExpectedFirmwareFile(fileSource);
+      logger.warn("Old simulation config detected: no firmware file specified, using '{}'", fileFirmware);
     }
 
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
