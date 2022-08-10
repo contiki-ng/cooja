@@ -2479,11 +2479,9 @@ public class Cooja extends Observable {
       return;
     }
 
-    try {
-      FileInputStream in = new FileInputStream(externalToolsUserSettingsFile);
+    try (var in = new FileInputStream(externalToolsUserSettingsFile)) {
       Properties settings = new Properties();
       settings.load(in);
-      in.close();
 
       Enumeration<Object> en = settings.keys();
       while (en.hasMoreElements()) {
@@ -2504,9 +2502,7 @@ public class Cooja extends Observable {
       return;
     }
 
-    try {
-      FileOutputStream out = new FileOutputStream(externalToolsUserSettingsFile);
-
+    try (var out = new FileOutputStream(externalToolsUserSettingsFile)) {
       Properties differingSettings = new Properties();
       var keyEnum = currentExternalToolsSettings.keys();
       while (keyEnum.hasMoreElements()) {
@@ -2519,7 +2515,6 @@ public class Cooja extends Observable {
       }
 
       differingSettings.store(out, "Cooja External Tools (User specific)");
-      out.close();
     } catch (FileNotFoundException ex) {
       // Could not open settings file for writing, aborting
       logger.warn("Could not save external tools user settings to "

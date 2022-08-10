@@ -419,20 +419,16 @@ public class LogScriptEngine {
     }
     @Override
     public void append(String filename, String msg) {
-      try{
-        BufferedWriter out = Files.newBufferedWriter(Paths.get(filename), UTF_8, CREATE, APPEND);
+      try (var out = Files.newBufferedWriter(Paths.get(filename), UTF_8, CREATE, APPEND)) {
         out.write(msg);
-        out.close();
       } catch (Exception e) {
         logger.warn("Test append failed: " + filename + ": " + e.getMessage());
       }
     }
     @Override
     public void writeFile(String filename, String msg) {
-      try{
-        BufferedWriter out = Files.newBufferedWriter(Paths.get(filename), UTF_8);
+      try (var out = Files.newBufferedWriter(Paths.get(filename), UTF_8)) {
         out.write(msg);
-        out.close();
       } catch (Exception e) {
         logger.warn("Write file failed: " + filename + ": " + e.getMessage());
       }
