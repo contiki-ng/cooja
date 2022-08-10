@@ -70,6 +70,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -2814,10 +2815,15 @@ public class Cooja extends Observable {
 
       /* Create old to new identifier mappings */
       var moteTypeIDMappings = new HashMap<String, String>();
-      ArrayList<Object> reserved = new ArrayList<>(readNames);
+      var reserved = new HashSet<>(readNames);
       var existingMoteTypes = mySimulation == null ? null : mySimulation.getMoteTypes();
+      if (existingMoteTypes != null) {
+        for (var mote : existingMoteTypes) {
+          reserved.add(mote.getIdentifier());
+        }
+      }
       for (var existingIdentifier : readNames) {
-        String newID = ContikiMoteType.generateUniqueMoteTypeID(existingMoteTypes, reserved);
+        String newID = ContikiMoteType.generateUniqueMoteTypeID(reserved);
         moteTypeIDMappings.put(existingIdentifier, newID);
         reserved.add(newID);
       }
