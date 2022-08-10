@@ -984,47 +984,6 @@ public class Cooja extends Observable {
         JMenuItem menuItem = new JMenuItem(description + "...");
         menuItem.putClientProperty("class", newPluginClass);
         menuItem.addActionListener(menuItemListener);
-
-        String tooltip = "<html><pre>";
-        if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
-          tooltip += "Cooja plugin: ";
-        } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN
-        		|| pluginType == PluginType.SIM_CONTROL_PLUGIN) {
-          tooltip += "Simulation plugin: ";
-          if (getSimulation() == null) {
-            menuItem.setEnabled(false);
-          }
-        } else if (pluginType == PluginType.MOTE_PLUGIN) {
-          tooltip += "Mote plugin: ";
-        }
-        tooltip += description + " (" + newPluginClass.getName() + ")";
-
-        /* Check if simulation plugin depends on any particular radio medium */
-        if ((pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN
-        		|| pluginType == PluginType.SIM_CONTROL_PLUGIN) && (getSimulation() != null)) {
-          if (newPluginClass.getAnnotation(SupportedArguments.class) != null) {
-            boolean active = false;
-            for (var o: newPluginClass.getAnnotation(SupportedArguments.class).radioMediums()) {
-              if (o.isAssignableFrom(getSimulation().getRadioMedium().getClass())) {
-                active = true;
-                break;
-              }
-            }
-            if (!active) {
-              menuItem.setVisible(false);
-            }
-          }
-        }
-
-        /* Check if plugin was imported by an extension directory */
-        File project =
-          getProjectConfig().getUserProjectDefining(Cooja.class, "PLUGINS", newPluginClass.getName());
-        if (project != null) {
-          tooltip += "\nLoaded by extension: " + project.getPath();
-        }
-
-        tooltip += "</html>";
-        /*menuItem.setToolTipText(tooltip);*/
         return menuItem;
       }
 
@@ -1723,16 +1682,11 @@ public class Cooja extends Observable {
     }
 
     /* Check mote interfaces */
-    boolean moteInterfacesOK = true;
     Class<? extends MoteInterface>[] moteInterfaces =
       motePluginClass.getAnnotation(SupportedArguments.class).moteInterfaces();
-    StringBuilder moteTypeInterfacesError = new StringBuilder();
-    moteTypeInterfacesError.append("The plugin:\n").append(getDescriptionOf(motePluginClass))
-            .append("\nrequires the following mote interfaces:\n");
     for (Class<? extends MoteInterface> requiredMoteInterface: moteInterfaces) {
-      moteTypeInterfacesError.append(getDescriptionOf(requiredMoteInterface)).append("\n");
       if (mote.getInterfaces().getInterfaceOfType(requiredMoteInterface) == null) {
-        moteInterfacesOK = false;
+        return false;
       }
     }
 
@@ -1740,18 +1694,13 @@ public class Cooja extends Observable {
     boolean moteTypeOK = false;
     Class<? extends Mote>[] motes =
       motePluginClass.getAnnotation(SupportedArguments.class).motes();
-    StringBuilder moteTypeError = new StringBuilder();
-    moteTypeError.append("The plugin:\n").append(getDescriptionOf(motePluginClass))
-            .append("\ndoes not support motes of type:\n").append(getDescriptionOf(mote))
-            .append("\n\nIt only supports motes of types:\n");
     for (Class<? extends Mote> supportedMote: motes) {
-      moteTypeError.append(getDescriptionOf(supportedMote)).append("\n");
       if (supportedMote.isAssignableFrom(mote.getClass())) {
         moteTypeOK = true;
       }
     }
 
-    return moteInterfacesOK && moteTypeOK;
+    return moteTypeOK;
   }
 
   public JMenu createMotePluginsSubmenu(Class<? extends Plugin> pluginClass) {
@@ -3508,7 +3457,7 @@ public class Cooja extends Observable {
   /**
    * This method can be used by various different modules in the simulator to
    * indicate for example that a mote has been selected. All mote highlight
-   * listeners will be notified. An example application of mote highlightinh is
+   * listeners will be notified. An example application of mote highlighting is
    * a simulator visualizer that highlights the mote.
    *
    * @see #addMoteHighlightObserver(Observer)
@@ -3897,16 +3846,16 @@ public class Cooja extends Observable {
 		public GUIAction(String name) {
       super(name);
     }
-    public GUIAction(String name, int nmenomic) {
+    public GUIAction(String name, int mnemonic) {
       this(name);
-      putValue(Action.MNEMONIC_KEY, nmenomic);
+      putValue(Action.MNEMONIC_KEY, mnemonic);
     }
     public GUIAction(String name, KeyStroke accelerator) {
       this(name);
       putValue(Action.ACCELERATOR_KEY, accelerator);
     }
-    public GUIAction(String name, int nmenomic, KeyStroke accelerator) {
-      this(name, nmenomic);
+    public GUIAction(String name, int mnemonic, KeyStroke accelerator) {
+      this(name, mnemonic);
       putValue(Action.ACCELERATOR_KEY, accelerator);
     }
     public abstract boolean shouldBeEnabled();
