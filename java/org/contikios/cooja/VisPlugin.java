@@ -65,15 +65,7 @@ public class VisPlugin extends JInternalFrame implements Plugin {
   }
 
   public VisPlugin(String title, final Cooja gui) {
-    this(title, gui, true);
-  }
-
-  public VisPlugin(String title, final Cooja gui, boolean requiresVis) {
     super(title, true, true, true, true);
-
-    if (requiresVis && !Cooja.isVisualized()) {
-      throw new PluginRequiresVisualizationException();
-    }
     parent = this;
     this.gui = gui;
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
