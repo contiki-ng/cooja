@@ -120,7 +120,6 @@ public abstract class AbstractMspMoteType extends MspMoteType {
                     CompileContiki.compile(
                             cmd,
                             null,
-                            null /* Do not observe output firmware file */,
                             getContikiSourceFile().getParentFile(),
                             null,
                             null,

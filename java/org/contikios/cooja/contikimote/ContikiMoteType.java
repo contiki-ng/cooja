@@ -310,7 +310,6 @@ public class ContikiMoteType implements MoteType {
           CompileContiki.compile(
                   cmd,
                   envOneDimension,
-                  null /* Do not observe output firmware file */,
                   getContikiSourceFile().getParentFile(),
                   null,
                   null,
