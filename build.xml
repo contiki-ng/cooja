@@ -101,7 +101,7 @@ The COOJA Simulator
     </javac>
   </target>
 
-  <target name="copy configs">
+  <target name="copy_configs">
     <mkdir dir="${build}"/>
     <copy todir="${build}">
       <fileset dir="${config}"/>
@@ -178,7 +178,7 @@ The COOJA Simulator
     </mapper>
   </pathconvert>
 
-  <target name="jar" depends="compile, copy configs">
+  <target name="jar" depends="compile, copy_configs">
     <mkdir dir="${dist}/lib"/>
     <jar destfile="${dist}/cooja.jar" basedir="${build}">
       <manifest>
