@@ -2330,9 +2330,8 @@ public class Cooja extends Observable {
         setExternalToolsSetting("FRAME_WIDTH", String.valueOf(frame.getWidth()));
         setExternalToolsSetting("FRAME_HEIGHT", String.valueOf(frame.getHeight()));
       }
+      saveExternalToolsUserSettings();
     }
-    saveExternalToolsUserSettings();
-
     System.exit(exitCode);
   }
 
