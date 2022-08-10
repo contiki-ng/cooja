@@ -112,17 +112,12 @@ public class CompileContiki {
     try {
       compileProcess = Runtime.getRuntime().exec(command, env, directory);
 
-      final BufferedReader processNormal = new BufferedReader(
-          new InputStreamReader(compileProcess.getInputStream(), UTF_8));
-      final BufferedReader processError = new BufferedReader(
-          new InputStreamReader(compileProcess.getErrorStream(), UTF_8));
-
       Thread readInput = new Thread(new Runnable() {
         @Override
         public void run() {
-          try {
+          try (var stdout = new BufferedReader(new InputStreamReader(compileProcess.getInputStream(), UTF_8))) {
             String readLine;
-            while ((readLine = processNormal.readLine()) != null) {
+            while ((readLine = stdout.readLine()) != null) {
               messageDialog.addMessage(readLine, MessageList.NORMAL);
             }
           } catch (IOException e) {
@@ -134,9 +129,9 @@ public class CompileContiki {
       Thread readError = new Thread(new Runnable() {
         @Override
         public void run() {
-          try {
+          try (var stderr = new BufferedReader(new InputStreamReader(compileProcess.getErrorStream(), UTF_8))) {
             String readLine;
-            while ((readLine = processError.readLine()) != null) {
+            while ((readLine = stderr.readLine()) != null) {
               messageDialog.addMessage(readLine, MessageList.ERROR);
             }
           } catch (IOException e) {
