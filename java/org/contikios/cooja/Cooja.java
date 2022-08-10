@@ -2113,7 +2113,7 @@ public class Cooja extends Observable {
         }
         PROGRESS_WARNINGS.clear();
 
-      } catch (UnsatisfiedLinkError | SimulationCreationException e) {
+      } catch (SimulationCreationException e) {
         shouldRetry = showErrorDialog(Cooja.getTopParentContainer(), "Simulation load error", e, true);
       }
     } while (shouldRetry);
@@ -2180,7 +2180,7 @@ public class Cooja extends Observable {
             }
             PROGRESS_WARNINGS.clear();
 
-          } catch (UnsatisfiedLinkError | SimulationCreationException e) {
+          } catch (SimulationCreationException e) {
             shouldRetry = showErrorDialog(frame, "Simulation reload error", e, true);
 
             cooja.doRemoveSimulation(false);
@@ -2822,28 +2822,21 @@ public class Cooja extends Observable {
    * @param file
    *          File to read
    * @return New simulation or null if recompiling failed or aborted
-   * @throws UnsatisfiedLinkError
-   *           If associated libraries could not be loaded
+   * @throws SimulationCreationException If loading fails.
    */
   private Simulation loadSimulationConfig(File file, boolean quick, Long manualRandomSeed)
-  throws UnsatisfiedLinkError, SimulationCreationException {
+  throws SimulationCreationException {
     this.currentConfigFile = file; /* Used to generate config relative paths */
     try {
       this.currentConfigFile = this.currentConfigFile.getCanonicalFile();
     } catch (IOException e) {
     }
 
-    try {
-      SAXBuilder builder = new SAXBuilder();
-    	InputStream in = new FileInputStream(file);
-      if (file.getName().endsWith(".gz")) {
-      	in = new GZIPInputStream(in);
-      }
-      Document doc = builder.build(in);
-      Element root = doc.getRootElement();
-      in.close();
+    try (InputStream in = file.getName().endsWith(".gz")
+            ? new GZIPInputStream(new FileInputStream(file)) : new FileInputStream(file)) {
+      final var doc = new SAXBuilder().build(in);
 
-      return loadSimulationConfig(root, quick, manualRandomSeed);
+      return loadSimulationConfig(doc.getRootElement(), quick, manualRandomSeed);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not wellformed", e);
     } catch (IOException e) {
