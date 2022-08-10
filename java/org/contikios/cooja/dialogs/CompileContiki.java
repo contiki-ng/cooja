@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.Action;
@@ -87,12 +88,8 @@ public class CompileContiki {
     }
 
   	/* TODO Fix me */
-    final MessageList messageDialog;
-  	if (compilationOutput == null) {
-            messageDialog = MessageContainer.createMessageList(true);
-  	} else {
-  		messageDialog = compilationOutput;
-  	}
+    final MessageList messageDialog =
+        Objects.requireNonNullElseGet(compilationOutput, () -> MessageContainer.createMessageList(true));
     String cpus = Integer.toString(Runtime.getRuntime().availableProcessors());
     // Perform compile command variable expansions.
     String[] command = new String[commandList.size()];
