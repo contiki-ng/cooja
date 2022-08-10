@@ -100,10 +100,8 @@ public class SectionMoteMemory implements MemoryInterface {
 
     sections.put(name, section);
     if (section.getSymbolMap() != null) {
-      for (String s : section.getSymbolMap().keySet()) {
-        // XXX how to handle double names here?
-        symbols.put(s, section.getSymbolMap().get(s));
-      }
+      // XXX how to handle double names here?
+      symbols.putAll(section.getSymbolMap());
     }
 
     if (DEBUG) {
@@ -131,14 +129,7 @@ public class SectionMoteMemory implements MemoryInterface {
    * @return memory section
    */
   public MemoryInterface getSection(String name) {
-    for (String memsec : sections.keySet()) {
-      if (memsec.equals(name)) {
-        return sections.get(name);
-      }
-    }
-
-    logger.warn("Section '" + name + "' not found");
-    return null;
+    return sections.getOrDefault(name, null);
   }
 
   /**
