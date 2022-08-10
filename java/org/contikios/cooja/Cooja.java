@@ -1687,7 +1687,7 @@ public class Cooja extends Observable {
             logger.debug("Visualized plugin was not started: " + pluginClass);
             return null;
           }
-        } while (cause != null && (cause=cause.getCause()) != null);
+        } while ((cause = cause.getCause()) != null);
 
         logger.fatal("Error when starting plugin", ex);
       }
