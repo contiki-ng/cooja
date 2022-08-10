@@ -2287,10 +2287,7 @@ public class Cooja extends Observable {
 
         simulationElement.addContent(getSimulation().getConfigXML());
         root.addContent(simulationElement);
-        Collection<Element> pluginsConfig = getPluginsConfigXML();
-        if (pluginsConfig != null) {
-          root.addContent(pluginsConfig);
-        }
+        root.addContent(getPluginsConfigXML());
 
         /* Remove current simulation, and load config */
         boolean shouldRetry = false;
