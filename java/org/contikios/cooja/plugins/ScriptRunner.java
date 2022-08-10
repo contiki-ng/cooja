@@ -220,9 +220,6 @@ public class ScriptRunner implements Plugin {
         if (!(c instanceof JMenuItem)) {
           continue;
         }
-        if (((JMenuItem) c).getAction() == null) {
-          continue;
-        }
         Action a = ((JMenuItem) c).getAction();
         if (a instanceof JSyntaxLinkFile) {
           actionLinkFile = (JSyntaxLinkFile) a;
