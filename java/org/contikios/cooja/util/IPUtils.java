@@ -95,7 +95,7 @@ public class IPUtils {
         else if (i > 0) {
           builder.append(':');
         }
-        builder.append(String.format("%x", a));
+        builder.append(Integer.toHexString(a & 0xFFFF));
       }
     }
   }
