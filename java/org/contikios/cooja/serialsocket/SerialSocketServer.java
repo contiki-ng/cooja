@@ -57,6 +57,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
@@ -73,6 +74,7 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MotePlugin;
+import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
@@ -87,7 +89,7 @@ import org.contikios.cooja.util.CmdUtils;
  */
 @ClassDescription("Serial Socket (SERVER)")
 @PluginType(PluginType.MOTE_PLUGIN)
-public class SerialSocketServer extends VisPlugin implements MotePlugin {
+public class SerialSocketServer implements Plugin, MotePlugin {
   private static final Logger logger = LogManager.getLogger(SerialSocketServer.class);
 
   private final static int STATUSBAR_WIDTH = 350;
@@ -117,8 +119,9 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
   private final Mote mote;
   private final Simulation simulation;
 
+  private final VisPlugin frame;
+
   public SerialSocketServer(Mote mote, Simulation simulation, final Cooja gui) {
-    super("Serial Socket (SERVER) (" + mote + ")", gui, false);
     this.mote = mote;
     this.simulation = simulation;
 
@@ -129,11 +132,16 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       throw new RuntimeException("No mote serial port");
     }
 
-    /* GUI components */
+    if (!Cooja.isVisualized()) {
+      frame = null;
+      return;
+    }
+    frame = new VisPlugin("Serial Socket (SERVER) (" + mote + ")", gui, this);
+
     if (Cooja.isVisualized()) {
       updateTimer.start();
-      setResizable(false);
-      setLayout(new BorderLayout());
+      frame.setResizable(false);
+      frame.setLayout(new BorderLayout());
 
       // --- Server Port setup
       
@@ -179,7 +187,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       c.fill = GridBagConstraints.HORIZONTAL;
       socketPanel.add(new JSeparator(JSeparator.HORIZONTAL), c);
       
-      add(BorderLayout.NORTH, socketPanel);
+      frame.add(BorderLayout.NORTH, socketPanel);
       
       // --- Incoming / outgoing info
 
@@ -211,7 +219,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       c.anchor = GridBagConstraints.WEST;
       connectionInfoPanel.add(moteToSocketLabel);
 
-      add(BorderLayout.CENTER, connectionInfoPanel);
+      frame.add(BorderLayout.CENTER, connectionInfoPanel);
 
       // --- Status bar
       
@@ -231,7 +239,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
       socketStatusLabel.setForeground(Color.DARK_GRAY);
       statusBarPanel.add(socketStatusLabel);
       
-      add(BorderLayout.SOUTH, statusBarPanel);
+      frame.add(BorderLayout.SOUTH, statusBarPanel);
 
       serverStartButton.addActionListener(new ActionListener() {
 
@@ -250,7 +258,7 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
         }
       });
       
-      pack();
+      frame.pack();
 
       // gui updates for server status updates
       addServerListener(new ServerListener() {
@@ -649,6 +657,15 @@ public class SerialSocketServer extends VisPlugin implements MotePlugin {
   }
 
   private boolean closed = false;
+
+  @Override
+  public JInternalFrame getCooja() {
+    return frame;
+  }
+
+  @Override
+  public void startPlugin() {
+  }
 
   @Override
   public void closePlugin() {
