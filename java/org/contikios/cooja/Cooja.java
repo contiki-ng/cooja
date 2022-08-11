@@ -296,7 +296,7 @@ public class Cooja extends Observable {
 
   private Simulation mySimulation;
 
-  protected final GUIEventHandler guiEventHandler = new GUIEventHandler();
+  protected final GUIEventHandler guiEventHandler;
 
   private JMenu menuMoteTypeClasses, menuMoteTypes;
 
@@ -396,6 +396,7 @@ public class Cooja extends Observable {
       myDesktopPane = null;
       quickHelpTextPane = null;
       quickHelpScroll = null;
+      guiEventHandler = null;
       try {
         parseProjectConfig();
       } catch (ParseProjectsException e) {
@@ -405,6 +406,7 @@ public class Cooja extends Observable {
     }
 
     // Visualization enabled past this point.
+    guiEventHandler = new GUIEventHandler();
     myDesktopPane = new JDesktopPane() {
       @Override
       public void setBounds(int x, int y, int w, int h) {
