@@ -52,7 +52,7 @@ import org.contikios.cooja.plugins.SimControl;
  * @see PluginRequiresVisualizationException
  * @author Fredrik Osterlind
  */
-public abstract class VisPlugin extends JInternalFrame implements Plugin {
+public class VisPlugin extends JInternalFrame implements Plugin {
   /**
    * Reference to Cooja so public variables can be accessed.
    */
