@@ -30,7 +30,6 @@
 package org.contikios.cooja.plugins;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
 
 import de.sciss.syntaxpane.DefaultSyntaxKit;
 import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
@@ -66,8 +65,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
@@ -78,6 +75,7 @@ import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
+import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.util.StringUtils;
 import org.jdom.Element;
 
@@ -115,7 +113,7 @@ public class ScriptRunner implements Plugin {
 
   private JSyntaxLinkFile actionLinkFile = null;
   private File linkedFile = null;
-  private final JInternalFrame frame;
+  private final VisPlugin frame;
 
   public ScriptRunner(Simulation simulation, Cooja gui) {
     this.gui = gui;
@@ -129,20 +127,7 @@ public class ScriptRunner implements Plugin {
       return;
     }
 
-    frame = new JInternalFrame("Simulation script editor", true, true, true, true);
-    frame.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-
-    frame.addInternalFrameListener(new InternalFrameAdapter() {
-      @Override
-      public void internalFrameClosing(InternalFrameEvent e) {
-        gui.removePlugin(ScriptRunner.this, true);
-      }
-
-      @Override
-      public void internalFrameActivated(InternalFrameEvent e) {
-        gui.loadQuickHelp(ScriptRunner.this);
-      }
-    });
+    frame = new VisPlugin("Simulation script editor", gui, this);
 
     /* Menus */
     JMenuBar menuBar = new JMenuBar();
