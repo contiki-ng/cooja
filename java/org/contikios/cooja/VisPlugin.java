@@ -57,6 +57,13 @@ public class VisPlugin extends JInternalFrame implements Plugin {
    * Reference to Cooja so public variables can be accessed.
    */
   protected final Cooja gui;
+  protected Plugin parent;
+
+  public VisPlugin(String title, final Cooja gui, Plugin parent) {
+    this(title, gui);
+    this.parent = parent;
+  }
+
   public VisPlugin(String title, final Cooja gui) {
     this(title, gui, true);
   }
@@ -67,23 +74,22 @@ public class VisPlugin extends JInternalFrame implements Plugin {
     if (requiresVis && !Cooja.isVisualized()) {
       throw new PluginRequiresVisualizationException();
     }
-
+    parent = this;
     this.gui = gui;
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
     addInternalFrameListener(new InternalFrameAdapter() {
       @Override
       public void internalFrameClosing(InternalFrameEvent e) {
-        gui.removePlugin(VisPlugin.this, true);
+        gui.removePlugin(parent, true);
       }
       @Override
       public void internalFrameActivated(InternalFrameEvent e) {
         /* Highlight mote in COOJA */
-        Plugin p = VisPlugin.this;
-        if (p instanceof MotePlugin) {
-          gui.signalMoteHighlight(((MotePlugin)p).getMote());
+        if (parent instanceof MotePlugin) {
+          gui.signalMoteHighlight(((MotePlugin)parent).getMote());
         }
-        gui.loadQuickHelp(VisPlugin.this);
+        gui.loadQuickHelp(parent);
       }
     }
     );
