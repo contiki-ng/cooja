@@ -39,6 +39,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import java.util.HashSet;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -58,6 +59,7 @@ import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
+import org.contikios.cooja.MoteType;
 import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMoteType;
@@ -116,8 +118,11 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     }
 
     if (moteType.getIdentifier() == null) {
-      moteType.setIdentifier(
-          ContikiMoteType.generateUniqueMoteTypeID(simulation.getMoteTypes(), null));
+      var usedNames = new HashSet<String>();
+      for (var mote : simulation.getMoteTypes()) {
+        usedNames.add(mote.getIdentifier());
+      }
+      moteType.setIdentifier(ContikiMoteType.generateUniqueMoteTypeID(usedNames));
     }
 
     moteType.setContikiSourceFile(source);
