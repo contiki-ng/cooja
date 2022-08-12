@@ -140,7 +140,6 @@ public class BufferListener extends VisPlugin {
     registerBufferParser(IntegerParser.class);
     registerBufferParser(TerminatedStringParser.class);
     registerBufferParser(PrintableCharactersParser.class);
-    registerBufferParser(IPv4AddressParser.class);
     registerBufferParser(IPv6AddressParser.class);
     /* TODO Add parsers: ValueToWidth, AccessHeatmap, .. */
     registerBufferParser(GraphicalHeight4BitsParser.class);
@@ -1666,18 +1665,6 @@ public class BufferListener extends VisPlugin {
         mem = ba.mem;
       }
       return IPUtils.getCompressedIPv6AddressString(mem);
-    }
-  }
-
-  @ClassDescription("IPv4 address")
-  public static class IPv4AddressParser extends StringParser {
-    @Override
-    public String parseString(BufferAccess ba) {
-      /* TODO Diff? */
-      if (ba.mem.length < 4) {
-        return "[must monitor at least 4 bytes]";
-      }
-      return IPUtils.getIPv4AddressString(ba.mem);
     }
   }
 
