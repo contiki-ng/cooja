@@ -127,7 +127,7 @@ public class Simulation extends Observable implements Runnable {
     }
   }
 
-  private void popSimulationInvokes() {
+  private void runSimulationInvokes() {
     boolean more;
     synchronized (pollRequests) {
       more = hasPollRequests;
@@ -279,7 +279,7 @@ public class Simulation extends Observable implements Runnable {
     EventQueue.Pair nextEvent = null;
     try {
       while (isRunning) {
-        popSimulationInvokes();
+        runSimulationInvokes();
 
         /* Handle one simulation event, and update simulation time */
         nextEvent = eventQueue.popFirst();
@@ -767,7 +767,7 @@ public class Simulation extends Observable implements Runnable {
     notifyObservers(this);
 
     /* Execute simulation thread events now, before simulation starts */
-    popSimulationInvokes();
+    runSimulationInvokes();
 
     return true;
   }
