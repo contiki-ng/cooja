@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.Action;
@@ -87,12 +88,8 @@ public class CompileContiki {
     }
 
   	/* TODO Fix me */
-    final MessageList messageDialog;
-  	if (compilationOutput == null) {
-            messageDialog = MessageContainer.createMessageList(true);
-  	} else {
-  		messageDialog = compilationOutput;
-  	}
+    final MessageList messageDialog =
+        Objects.requireNonNullElseGet(compilationOutput, () -> MessageContainer.createMessageList(true));
     String cpus = Integer.toString(Runtime.getRuntime().availableProcessors());
     // Perform compile command variable expansions.
     String[] command = new String[commandList.size()];
@@ -112,17 +109,12 @@ public class CompileContiki {
     try {
       compileProcess = Runtime.getRuntime().exec(command, env, directory);
 
-      final BufferedReader processNormal = new BufferedReader(
-          new InputStreamReader(compileProcess.getInputStream(), UTF_8));
-      final BufferedReader processError = new BufferedReader(
-          new InputStreamReader(compileProcess.getErrorStream(), UTF_8));
-
       Thread readInput = new Thread(new Runnable() {
         @Override
         public void run() {
-          try {
+          try (var stdout = new BufferedReader(new InputStreamReader(compileProcess.getInputStream(), UTF_8))) {
             String readLine;
-            while ((readLine = processNormal.readLine()) != null) {
+            while ((readLine = stdout.readLine()) != null) {
               messageDialog.addMessage(readLine, MessageList.NORMAL);
             }
           } catch (IOException e) {
@@ -134,9 +126,9 @@ public class CompileContiki {
       Thread readError = new Thread(new Runnable() {
         @Override
         public void run() {
-          try {
+          try (var stderr = new BufferedReader(new InputStreamReader(compileProcess.getErrorStream(), UTF_8))) {
             String readLine;
-            while ((readLine = processError.readLine()) != null) {
+            while ((readLine = stderr.readLine()) != null) {
               messageDialog.addMessage(readLine, MessageList.ERROR);
             }
           } catch (IOException e) {
