@@ -306,30 +306,25 @@ public class ScriptRunner implements Plugin {
 
   public void setLinkFile(File source) {
     linkedFile = source;
-    if (source == null) {
-      updateScript("");
+    String script = source == null ? "" : StringUtils.loadFromFile(linkedFile);
+    if (script != null) {
+      updateScript(script);
+    }
+    if (!Cooja.isVisualized()) {
+      return;
+    }
 
+    if (source == null) {
       if (actionLinkFile != null) {
         actionLinkFile.setMenuText("Link script to disk file");
         actionLinkFile.putValue("JavascriptSource", null);
       }
-      if (!Cooja.isVisualized()) {
-        return;
-      }
       codeEditor.setEditable(true);
     } else {
-      String script = StringUtils.loadFromFile(linkedFile);
-      if (script != null) {
-        updateScript(script);
-      }
       Cooja.setExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", source.getAbsolutePath());
-
       if (actionLinkFile != null) {
         actionLinkFile.setMenuText("Unlink script: " + source.getName());
         actionLinkFile.putValue("JavascriptSource", source);
-      }
-      if (!Cooja.isVisualized()) {
-        return;
       }
       codeEditor.setEditable(false);
     }
