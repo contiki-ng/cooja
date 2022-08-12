@@ -40,17 +40,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Insets;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -58,12 +52,8 @@ import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 import javax.script.ScriptException;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
@@ -88,8 +78,6 @@ import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.dialogs.MessageList;
-import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.util.StringUtils;
 import org.jdom.Element;
 
@@ -218,10 +206,6 @@ public class ScriptRunner implements Plugin {
     });
     runMenu.add(activateMenuItem);
 
-    final JMenuItem runTestMenuItem = new JMenuItem("Save simulation and run with script");
-    runMenu.add(runTestMenuItem);
-    runTestMenuItem.addActionListener(e -> exportAndRun());
-
     frame.doLayout();
     var centerPanel = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT,
@@ -233,7 +217,6 @@ public class ScriptRunner implements Plugin {
       @Override
       public void menuSelected(MenuEvent e) {
         activateMenuItem.setSelected(isActive());
-        runTestMenuItem.setEnabled(!isActive());
         examplesMenu.setEnabled(!isActive());
       }
       @Override
@@ -466,170 +449,6 @@ public class ScriptRunner implements Plugin {
       title += "*active*";
     }
     frame.setTitle(title);
-  }
-
-  private void exportAndRun() {
-    /* Save simulation config */
-    File configFile = simulation.getCooja().doSaveConfig(true);
-    if (configFile == null) {
-      return;
-    }
-
-    /* Start test in external process */
-    try {
-      JPanel progressPanel = new JPanel(new BorderLayout());
-      final JDialog progressDialog = new JDialog((Window)Cooja.getTopParentContainer(), (String) null);
-      progressDialog.setTitle("Running test...");
-
-      File coojaBuild;
-      File coojaJAR;
-      try {
-        coojaBuild = new File(Cooja.getExternalToolsSetting("PATH_CONTIKI"), "tools/cooja/build");
-        coojaJAR = new File(Cooja.getExternalToolsSetting("PATH_CONTIKI"), "tools/cooja/dist/cooja.jar");
-        coojaBuild = coojaBuild.getCanonicalFile();
-        coojaJAR = coojaJAR.getCanonicalFile();
-      } catch (IOException e) {
-        coojaBuild = new File(Cooja.getExternalToolsSetting("PATH_CONTIKI"), "tools/cooja/build");
-        coojaJAR = new File(Cooja.getExternalToolsSetting("PATH_CONTIKI"), "tools/cooja/dist/cooja.jar");
-      }
-
-      if (!coojaJAR.exists()) {
-        JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-            "Can't start Cooja, cooja.jar not found:" +
-            "\n" + coojaJAR.getAbsolutePath()
-            + "\n\nVerify that PATH_CONTIKI is correct in external tools settings.",
-            "cooja.jar not found", JOptionPane.ERROR_MESSAGE);
-        return;
-      }
-
-      final File logFile = new File(coojaBuild, "COOJA.testlog");
-
-      String[] command = {
-          "java",
-          "-Djava.awt.headless=true",
-          "-jar",
-          "../dist/cooja.jar",
-          "-nogui=" + configFile.getAbsolutePath()
-      };
-
-      /* User confirmation */
-      String s1 = "Start";
-      String s2 = "Cancel";
-      int n = JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
-          "Starting Cooja in " + coojaBuild.getPath() + ":\n" +
-          " " + command[0] + " " + command[1] + " " + command[2] + " " + command[3] + "\n",
-          "Starting Cooja without GUI", JOptionPane.YES_NO_OPTION,
-          JOptionPane.QUESTION_MESSAGE, null, new Object[] { s1, s2 }, s1);
-      if (n != JOptionPane.YES_OPTION) {
-        return;
-      }
-
-      /* Start process */
-      final Process process = Runtime.getRuntime().exec(command, null, coojaBuild);
-      final BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream(), UTF_8));
-      final BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream(), UTF_8));
-
-      /* GUI components */
-      final MessageListUI testOutput = new MessageListUI();
-      final AbstractAction abort = new AbstractAction() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          process.destroy();
-          if (progressDialog.isDisplayable()) {
-            progressDialog.dispose();
-          }
-        }
-      };
-      abort.putValue(AbstractAction.NAME, "Abort test");
-      final JButton button = new JButton(abort);
-
-      progressPanel.add(BorderLayout.CENTER, new JScrollPane(testOutput));
-      progressPanel.add(BorderLayout.SOUTH, button);
-      progressPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-      progressPanel.setVisible(true);
-
-      progressDialog.getContentPane().add(progressPanel);
-      progressDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-      progressDialog.getRootPane().setDefaultButton(button);
-      progressDialog.setSize(800, 300);
-      progressDialog.setLocationRelativeTo(ScriptRunner.this.frame);
-      progressDialog.addWindowListener(new WindowAdapter() {
-        @Override
-        public void windowClosed(WindowEvent e) {
-          abort.actionPerformed(null);
-        }
-      });
-      progressDialog.setVisible(true);
-
-      Thread readInput = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          String line;
-          try {
-            while ((line = input.readLine()) != null) {
-              testOutput.addMessage(line, MessageListUI.NORMAL);
-            }
-          } catch (IOException e) {
-          }
-
-          testOutput.addMessage("", MessageListUI.NORMAL);
-          testOutput.addMessage("", MessageListUI.NORMAL);
-          testOutput.addMessage("", MessageListUI.NORMAL);
-
-          /* Parse log file, check if test succeeded  */
-          try {
-            String log = StringUtils.loadFromFile(logFile);
-            if (log == null) {
-              throw new FileNotFoundException(logFile.getPath());
-            }
-            String[] lines = log.split("\n");
-            boolean testSucceeded = false;
-            for (String l: lines) {
-              if (l == null) {
-                line = "";
-              }
-              testOutput.addMessage(l, MessageListUI.NORMAL);
-              if (l.contains("TEST OK")) {
-                testSucceeded = true;
-                break;
-              }
-            }
-            if (testSucceeded) {
-              progressDialog.setTitle("Test run completed. Test succeeded.");
-              button.setText("Test OK");
-            } else {
-              progressDialog.setTitle("Test run completed. Test failed.");
-              button.setText("Test failed");
-            }
-          } catch (FileNotFoundException e) {
-            logger.fatal("No test output : " + logFile);
-            progressDialog.setTitle("Test run completed. Test failed! (no logfile)");
-            button.setText("Test failed");
-          }
-
-        }
-      });
-
-      Thread readError = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          String line;
-          try {
-            while ((line = err.readLine()) != null) {
-              testOutput.addMessage(line, MessageList.ERROR);
-            }
-          } catch (IOException e) {
-          }
-        }
-      });
-
-      readInput.start();
-      readError.start();
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
   private void updateScript(String script) {
