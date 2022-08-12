@@ -191,7 +191,7 @@ public class SectionMoteMemory implements MemoryInterface {
       if (address >= secStart &&
           address < secStart + secSize &&
           address + size - 1 >= secStart &&
-          address + size - 1 < secStart + secSize) {
+          address + size <= secStart + secSize) {
         return section.getMemorySegment(address, size);
       }
     }
