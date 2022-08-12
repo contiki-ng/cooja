@@ -188,10 +188,7 @@ public class SectionMoteMemory implements MemoryInterface {
     for (MemoryInterface section : sections.values()) {
       final var secStart = section.getStartAddr();
       final var secSize = section.getTotalSize();
-      if (address >= secStart &&
-          address < secStart + secSize &&
-          address + size - 1 >= secStart &&
-          address + size <= secStart + secSize) {
+      if (address >= secStart && address + size <= secStart + secSize) {
         return section.getMemorySegment(address, size);
       }
     }
