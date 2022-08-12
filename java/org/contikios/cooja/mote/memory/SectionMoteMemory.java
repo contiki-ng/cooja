@@ -141,19 +141,6 @@ public class SectionMoteMemory implements MemoryInterface {
   }
 
   /**
-   * True if given address is part of this memory section.
-   *
-   * @param intf
-   * @param addr
-   * Address
-   * @return True if given address is part of this memory section, false
-   * otherwise
-   */
-  public static boolean includesAddr(MemoryInterface intf, long addr) {
-    return addr >= intf.getStartAddr() && addr < (intf.getStartAddr() + intf.getTotalSize());
-  }
-
-  /**
    * True if the whole address range specified by address and size
    * lies inside this memory section.
    *
@@ -199,7 +186,8 @@ public class SectionMoteMemory implements MemoryInterface {
   public byte[] getMemorySegment(long address, int size) throws MoteMemoryException {
 
     for (MemoryInterface section : sections.values()) {
-      if (includesAddr(section, address) && includesAddr(section, address + size - 1)) {
+      final var secStart = section.getStartAddr();
+      if (address >= secStart && address + size <= secStart + section.getTotalSize()) {
         return section.getMemorySegment(address, size);
       }
     }
