@@ -127,13 +127,19 @@ public class Simulation extends Observable implements Runnable {
     }
   }
 
-  private Runnable popSimulationInvokes() {
-    Runnable r;
+  private void popSimulationInvokes() {
+    boolean more;
     synchronized (pollRequests) {
-      r = pollRequests.pop();
-      hasPollRequests = !pollRequests.isEmpty();
+      more = hasPollRequests;
     }
-    return r;
+    while (more) {
+      Runnable r;
+      synchronized (pollRequests) {
+        r = pollRequests.pop();
+        more = hasPollRequests = !pollRequests.isEmpty();
+      }
+      r.run();
+    }
   }
 
   /**
@@ -273,11 +279,7 @@ public class Simulation extends Observable implements Runnable {
     EventQueue.Pair nextEvent = null;
     try {
       while (isRunning) {
-
-        /* Handle all poll requests */
-        while (hasPollRequests) {
-          popSimulationInvokes().run();
-        }
+        popSimulationInvokes();
 
         /* Handle one simulation event, and update simulation time */
         nextEvent = eventQueue.popFirst();
@@ -765,9 +767,7 @@ public class Simulation extends Observable implements Runnable {
     notifyObservers(this);
 
     /* Execute simulation thread events now, before simulation starts */
-    while (hasPollRequests) {
-      popSimulationInvokes().run();
-    }
+    popSimulationInvokes();
 
     return true;
   }
