@@ -116,6 +116,11 @@ public class ContikiMoteType implements MoteType {
       Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja"));
 
   /**
+   * Random generator for generating a unique mote ID.
+   */
+  private static final Random rnd = new Random();
+
+  /**
    * Communication stacks in Contiki.
    */
   public enum NetworkStack {
@@ -1033,7 +1038,7 @@ public class ContikiMoteType implements MoteType {
     boolean available = false;
 
     while (!available) {
-      testID = "mtype" + new Random().nextInt(1000000000);
+      testID = "mtype" + rnd.nextInt(1000000000);
       available = !reservedIdentifiers.contains(testID);
       // FIXME: add check that the library name is not already used.
     }
