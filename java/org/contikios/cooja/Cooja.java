@@ -1155,6 +1155,8 @@ public class Cooja extends Observable {
         JMenuItem menuItem = new JMenuItem(description + "...");
         menuItem.putClientProperty("class", newPluginClass);
         menuItem.addActionListener(menuItemListener);
+        // Only enable items when there is a simulation, otherwise the user gets a dialog with a backtrace.
+        menuItem.setEnabled(getSimulation() != null);
         return menuItem;
       }
 
