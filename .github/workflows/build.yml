@@ -8,8 +8,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: true
       - name: Setup Java 11
         uses: actions/setup-java@v3
         with:
@@ -17,3 +15,5 @@ jobs:
           distribution: 'zulu'
       - name: Build Cooja and Documentation
         run: ant -noinput jar javadoc
+      - name: Test MSPSim
+        run: ant test
