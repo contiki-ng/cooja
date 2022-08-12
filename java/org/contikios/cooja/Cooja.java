@@ -1716,6 +1716,10 @@ public class Cooja extends Observable {
     Plugin plugin;
 
     try {
+      if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
+        throw new PluginRequiresVisualizationException();
+      }
+
       if (pluginType == PluginType.MOTE_PLUGIN) {
         if (argGUI == null) {
           throw new PluginConstructionException("No GUI argument for mote plugin");
