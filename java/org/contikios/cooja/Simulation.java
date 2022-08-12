@@ -646,16 +646,11 @@ public class Simulation extends Observable implements Runnable {
         }
 
         // Show configure simulation dialog
-        boolean createdOK = false;
         if (visAvailable && !quick) {
-          createdOK = CreateSimDialog.showDialog(Cooja.getTopParentContainer(), this);
-        } else {
-          createdOK = true;
-        }
-
-        if (!createdOK) {
-          logger.debug("Simulation not created, aborting");
-          throw new Exception("Load aborted by user");
+          if (!CreateSimDialog.showDialog(Cooja.getTopParentContainer(), this)) {
+            logger.debug("Simulation not created, aborting");
+            throw new Exception("Load aborted by user");
+          }
         }
 
         // Check if radio medium specific config should be applied
