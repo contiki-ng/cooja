@@ -2652,7 +2652,7 @@ public class Cooja extends Observable {
    * Load user values from external properties file
    */
   private static void loadExternalToolsUserSettings() {
-    if (externalToolsUserSettingsFile == null) {
+    if (externalToolsUserSettingsFile == null || !externalToolsUserSettingsFile.exists()) {
       return;
     }
 
@@ -2675,7 +2675,7 @@ public class Cooja extends Observable {
    * Save external tools user settings to file.
    */
   public static void saveExternalToolsUserSettings() {
-    if (externalToolsUserSettingsFileReadOnly) {
+    if (externalToolsUserSettingsFileReadOnly || externalToolsUserSettingsFile == null) {
       return;
     }
 
