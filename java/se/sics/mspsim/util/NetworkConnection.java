@@ -82,7 +82,7 @@ public class NetworkConnection implements Runnable {
     try {
       serverSocket = new ServerSocket(port);
       if (DEBUG) System.out.println("NetworkConnection: setup of server socket finished... ");
-      new Thread(this).start();
+      new Thread(this, "NetworkConnection.setupServer").start();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -165,7 +165,7 @@ public class NetworkConnection implements Runnable {
     private ArrayList<SendEvent> queue = new ArrayList<SendEvent>();
 
     public SendThread() {
-      new Thread(this).start();
+      new Thread(this, "NetworkConnection.SendThread").start();
     }
 
     public synchronized void send(byte[] receivedData, ConnectionThread source) {
@@ -228,7 +228,7 @@ public class NetworkConnection implements Runnable {
       this.socket = socket;
       input = new DataInputStream(socket.getInputStream());
       output = socket.getOutputStream();
-      new Thread(this).start();
+      new Thread(this, "NetworkConnection.ConnectionThread").start();
     }
 
     public void close() {

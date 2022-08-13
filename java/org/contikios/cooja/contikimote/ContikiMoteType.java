@@ -947,7 +947,7 @@ public class ContikiMoteType implements MoteType {
           commandOutput.addMessage("Error reading from command stderr: "
                                            + e.getMessage(), MessageList.ERROR);
         }
-      });
+      }, "read command output");
       readThread.setDaemon(true);
       readThread.start();
 

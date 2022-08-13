@@ -63,7 +63,7 @@ public class GDBStubs implements Runnable {
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("GDBStubs open server socket port: " + port);
-            new Thread(this).start();
+            new Thread(this, "GDBStubs.setupServer").start();
         } catch (IOException e) {
             e.printStackTrace();
         }

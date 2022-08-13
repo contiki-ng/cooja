@@ -623,6 +623,6 @@ public class ConsoleUI extends JComponent {
           }
         }
       }
-    }).start();
+    }, "setCommandHandler").start();
   }
 }

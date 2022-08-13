@@ -1244,7 +1244,7 @@ public class AreaViewer extends VisPlugin {
       };
 
       /* Start thread */
-      Thread thread = new Thread(runnable);
+      Thread thread = new Thread(runnable, "analyzeBitmapForObstacles");
       thread.start();
 
       return true;
@@ -1933,7 +1933,7 @@ public class AreaViewer extends VisPlugin {
         };
 
         // Start thread
-        attenuatorThread = new Thread(runnable);
+        attenuatorThread = new Thread(runnable, "repaintRadioEnvironment");
         attenuatorThread.start();
   }
 

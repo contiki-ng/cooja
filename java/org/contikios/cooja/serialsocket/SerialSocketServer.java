@@ -398,7 +398,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
       return false;
     }
 
-    new Thread() {
+    new Thread(new Runnable() {
       private Thread incomingDataHandler;
       @Override
       public void run() {
@@ -417,7 +417,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
             clientSocket = candidateSocket;
 
             /* Start handler for data input from socket */
-            incomingDataHandler = new Thread(new IncomingDataHandler());
+            incomingDataHandler = new Thread(new IncomingDataHandler(), "incomingDataHandler");
             incomingDataHandler.start();
 
             /* Observe serial port for outgoing data */
@@ -449,7 +449,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
         }
         notifyServerStopped();
       }
-    }.start();
+    }, "SerialSocketServer").start();
 
     if (commands != null) {
       // Run commands in a separate thread since Cooja cannot start the simulation before this method returns.
@@ -470,7 +470,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
         }
         // No reasonable way to communicate results with Cooja, so just exit upon completion for now.
         simulation.getCooja().doQuit(false, rv);
-      }).start();
+      }, "SerialSocketServer commands").start();
     }
     return true;
   }

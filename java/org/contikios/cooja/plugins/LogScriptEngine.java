@@ -310,7 +310,7 @@ public class LogScriptEngine {
           }
         }
       }
-    });
+    }, "scriptThread");
     scriptThread.start(); /* Starts by acquiring semaphore (blocks) */
     while (!semaphoreScript.hasQueuedThreads()) {
       try {
@@ -391,21 +391,15 @@ public class LogScriptEngine {
     @Override
     public void run() {
       simulation.stopSimulation();
-      new Thread() {
-        @Override
-        public void run() {
-          try { Thread.sleep(500); } catch (InterruptedException e) { }
-          simulation.getCooja().doQuit(false, exitCode);
-        }
-      }.start();
-      new Thread() {
-        @Override
-        public void run() {
-          try { Thread.sleep(2000); } catch (InterruptedException e) { }
-          logger.warn("Killing Cooja");
-          System.exit(exitCode);
-        }
-      }.start();
+      new Thread(() -> {
+        try { Thread.sleep(500); } catch (InterruptedException e) { }
+        simulation.getCooja().doQuit(false, exitCode);
+      }, "Cooja.doQuit").start();
+      new Thread(() -> {
+        try { Thread.sleep(2000); } catch (InterruptedException e) { }
+        logger.warn("Killing Cooja");
+        System.exit(exitCode);
+      }, "System.exit").start();
     }
   };
 

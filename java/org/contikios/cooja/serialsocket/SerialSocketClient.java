@@ -450,7 +450,7 @@ public class SerialSocketClient implements Plugin, MotePlugin {
         cleanup();
         notifyClientDisconnected();
       }
-    });
+    }, "SerialSocketClient");
     incomingDataThread.start();
   }
   
