@@ -1637,27 +1637,28 @@ public class Cooja extends Observable {
    *          simulation also?
    */
   public void removePlugin(final Plugin plugin, final boolean askUser) {
-    new RunnableInEDT<Boolean>() {
-      @Override
-      public Boolean work() {
-        /* Free resources */
-        plugin.closePlugin();
-        startedPlugins.remove(plugin);
-        updateGUIComponentState();
+    plugin.closePlugin();
+    startedPlugins.remove(plugin);
 
-        /* Dispose visualized components */
-        if (plugin.getCooja() != null) {
-          plugin.getCooja().dispose();
+    if (isVisualized()) {
+      new RunnableInEDT<Boolean>() {
+        @Override
+        public Boolean work() {
+          updateGUIComponentState();
+
+          // Dispose visualized components.
+          if (plugin.getCooja() != null) {
+            plugin.getCooja().dispose();
+          }
+
+          return true;
         }
-
-        /* (OPTIONAL) Remove simulation if all plugins are closed */
-        if (getSimulation() != null && askUser && startedPlugins.isEmpty()) {
-          doRemoveSimulation(true);
-        }
-
-        return true;
-      }
-    }.invokeAndWait();
+      }.invokeAndWait();
+    }
+    // Remove simulation if requested (and all plugins are closed).
+    if (askUser && getSimulation() != null && startedPlugins.isEmpty()) {
+      doRemoveSimulation(true);
+    }
   }
 
   /**
