@@ -403,13 +403,9 @@ public class ContikiMoteType implements MoteType {
       throw new MoteTypeCreationException("Library file could not be found: " + getContikiFirmwareFile());
     }
 
-    if (javaClassName == null) {
-      throw new MoteTypeCreationException("Unknown Java class library");
-    }
-
     // Allocate core communicator class
     logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + getContikiFirmwareFile().getPath() + "'");
-    myCoreComm = CoreComm.createCoreComm(tempDir, this.javaClassName, getContikiFirmwareFile());
+    myCoreComm = CoreComm.createCoreComm(tempDir, javaClassName, getContikiFirmwareFile());
 
     /* Parse addresses using map file
      * or output of command specified in external tools settings (e.g. nm -a )
