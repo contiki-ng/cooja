@@ -563,12 +563,11 @@ public class ContikiMoteType implements MoteType {
 
       variables = parseSymbols(offset);
 
-      logger.debug(String.format("Parsed section at 0x%x ( %d == 0x%x bytes)",
+      if (logger.isDebugEnabled()) {
+        logger.debug(String.format("Parsed section at 0x%x ( %d == 0x%x bytes)",
                                  getStartAddr() + offset,
                                  getSize(),
                                  getSize()));
-
-      if (logger.isDebugEnabled()) {
         for (Map.Entry<String, Symbol> entry : variables.entrySet()) {
           logger.debug(String.format("Found Symbol: %s, 0x%x, %d",
                   entry.getKey(),
