@@ -443,7 +443,8 @@ public class ContikiMoteType implements MoteType {
       if (mapFile == null || !mapFile.exists()) {
         throw new MoteTypeCreationException("Map file " + mapFile + " could not be found");
       }
-      var lines = new ArrayList<String>();
+      // The map file for 02-ringbufindex.csc is 2779 lines long, add some margin beyond that.
+      var lines = new ArrayList<String>(4000);
       try (var reader = Files.newBufferedReader(mapFile.toPath(), UTF_8)) {
         String line;
         while ((line = reader.readLine()) != null) {
