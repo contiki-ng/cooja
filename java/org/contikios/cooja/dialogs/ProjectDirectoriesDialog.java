@@ -429,12 +429,27 @@ public class ProjectDirectoriesDialog extends JDialog {
 				}
 			}
 		}
-		if (project.getConfigMoteTypes() != null) {
-			projectInfo.append("Mote types: " + Arrays.toString(project.getConfigMoteTypes()) + "\n");
-		}
-		if (project.getConfigRadioMediums() != null) {
-			projectInfo.append("Radio mediums: " + Arrays.toString(project.getConfigRadioMediums()) + "\n");
-		}
+    var sb = new StringBuilder();
+    var moteTypes = gui.getRegisteredMoteTypes();
+    if (moteTypes != null) {
+      sb.append("Mote types:");
+      for (var moteType : moteTypes) {
+        sb.append(' ').append(moteType.toString());
+      }
+      sb.append("\n");
+      projectInfo.append(sb.toString());
+      sb.setLength(0);
+    }
+    var radioMediums = gui.getRegisteredRadioMediums();
+    if (radioMediums != null) {
+      sb.append("Radio mediums:");
+      for (var medium : radioMediums) {
+        sb.append(' ').append(medium.toString());
+      }
+      sb.append("\n");
+      projectInfo.append(sb.toString());
+      sb.setLength(0);
+    }
 		if (project.getConfigMoteInterfaces() != null) {
 			projectInfo.append("Cooja mote interfaces: " + Arrays.toString(project.getConfigMoteInterfaces()) + "\n");
 		}
