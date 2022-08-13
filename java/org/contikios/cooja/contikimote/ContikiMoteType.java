@@ -398,14 +398,14 @@ public class ContikiMoteType implements MoteType {
               "Core communicator already used: " + myCoreComm.getClass().getName());
     }
 
-    if (getContikiFirmwareFile() == null
-            || !getContikiFirmwareFile().exists()) {
-      throw new MoteTypeCreationException("Library file could not be found: " + getContikiFirmwareFile());
+    final var firmwareFile = getContikiFirmwareFile();
+    if (firmwareFile == null || !firmwareFile.exists()) {
+      throw new MoteTypeCreationException("Library file could not be found: " + firmwareFile);
     }
 
     // Allocate core communicator class
-    logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + getContikiFirmwareFile().getPath() + "'");
-    myCoreComm = CoreComm.createCoreComm(tempDir, javaClassName, getContikiFirmwareFile());
+    logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + firmwareFile.getPath() + "'");
+    myCoreComm = CoreComm.createCoreComm(tempDir, javaClassName, firmwareFile);
 
     /* Parse addresses using map file
      * or output of command specified in external tools settings (e.g. nm -a )
@@ -485,7 +485,7 @@ public class ContikiMoteType implements MoteType {
       getCoreMemory(tmp);
 
       offset = varMem.getAddrValueOf("referenceVar");
-      logger.debug(getContikiFirmwareFile().getName()
+      logger.debug(firmwareFile.getName()
               + ": offsetting Cooja mote address space: 0x" + Long.toHexString(offset));
     }
 
