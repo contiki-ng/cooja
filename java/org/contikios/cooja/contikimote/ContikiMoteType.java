@@ -623,12 +623,13 @@ public class ContikiMoteType implements MoteType {
       Map<String, Symbol> varNames = new HashMap<>();
 
       Pattern pattern = Pattern.compile(Cooja.getExternalToolsSetting("MAPFILE_VAR_NAME"));
-
+      final var secStart = getStartAddr();
+      final var secSize = getSize();
       for (String line : getData()) {
         Matcher matcher = pattern.matcher(line);
         if (matcher.find()) {
-          if (Long.decode(matcher.group(1)) >= getStartAddr() &&
-              Long.decode(matcher.group(1)) <= getStartAddr() + getSize()) {
+          final var varAddr = Long.decode(matcher.group(1));
+          if (varAddr >= secStart && varAddr <= secStart + secSize) {
             String varName = matcher.group(2);
             varNames.put(varName, new Symbol(
                     Symbol.Type.VARIABLE,
