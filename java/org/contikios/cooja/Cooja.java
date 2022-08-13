@@ -124,6 +124,10 @@ import org.contikios.cooja.dialogs.ExternalToolsDialog;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
+import org.contikios.cooja.motes.DisturberMoteType;
+import org.contikios.cooja.motes.ImportAppMoteType;
+import org.contikios.cooja.mspmote.SkyMoteType;
+import org.contikios.cooja.mspmote.Z1MoteType;
 import org.contikios.cooja.plugins.MoteTypeInformation;
 import org.contikios.cooja.plugins.SimControl;
 import org.contikios.cooja.plugins.SimInformation;
@@ -1447,6 +1451,11 @@ public class Cooja extends Observable {
     }
 
     // Register mote types
+    registerMoteType(ImportAppMoteType.class);
+    registerMoteType(DisturberMoteType.class);
+    registerMoteType(ContikiMoteType.class);
+    registerMoteType(SkyMoteType.class);
+    registerMoteType(Z1MoteType.class);
     String[] moteTypeClassNames = projectConfig.getStringArrayValue(Cooja.class,
     "MOTETYPES");
     if (moteTypeClassNames != null) {
