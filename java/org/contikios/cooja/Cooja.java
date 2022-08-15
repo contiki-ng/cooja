@@ -127,6 +127,10 @@ import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
 import org.contikios.cooja.plugins.MoteTypeInformation;
 import org.contikios.cooja.plugins.SimControl;
 import org.contikios.cooja.plugins.SimInformation;
+import org.contikios.cooja.positioners.EllipsePositioner;
+import org.contikios.cooja.positioners.LinearPositioner;
+import org.contikios.cooja.positioners.ManualPositioner;
+import org.contikios.cooja.positioners.RandomPositioner;
 import org.contikios.cooja.util.ScnObservable;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -1481,6 +1485,10 @@ public class Cooja extends Observable {
     }
 
     // Register positioners
+    registerPositioner(RandomPositioner.class);
+    registerPositioner(LinearPositioner.class);
+    registerPositioner(EllipsePositioner.class);
+    registerPositioner(ManualPositioner.class);
     String[] positionerClassNames = projectConfig.getStringArrayValue(
         Cooja.class, "POSITIONERS");
     if (positionerClassNames != null) {
