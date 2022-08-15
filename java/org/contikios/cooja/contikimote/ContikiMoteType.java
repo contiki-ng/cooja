@@ -71,7 +71,6 @@ import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.mote.memory.MemoryLayout;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.mote.memory.VarMemory;
-import org.contikios.cooja.util.StringUtils;
 import org.jdom.Element;
 
 /**
@@ -441,16 +440,25 @@ public class ContikiMoteType implements MoteType {
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
     } else {
       /* Parse map file */
-      if (mapFile == null
-              || !mapFile.exists()) {
+      if (mapFile == null || !mapFile.exists()) {
         throw new MoteTypeCreationException("Map file " + mapFile + " could not be found");
       }
-      String[] mapData = loadMapFile(mapFile);
-      if (mapData == null) {
+      // The map file for 02-ringbufindex.csc is 2779 lines long, add some margin beyond that.
+      var lines = new ArrayList<String>(4000);
+      try (var reader = Files.newBufferedReader(mapFile.toPath(), UTF_8)) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+          lines.add(line);
+        }
+      } catch (IOException e) {
         logger.fatal("No map data could be loaded");
-        throw new MoteTypeCreationException("No map data could be loaded: " + mapFile);
+        lines.clear();
       }
 
+      if (lines.isEmpty()) {
+        throw new MoteTypeCreationException("No map data could be loaded: " + mapFile);
+      }
+      String[] mapData = lines.toArray(new String[0]);
       dataSecParser = new MapSectionParser(
               mapData,
               Cooja.getExternalToolsSetting("MAPFILE_DATA_START"),
@@ -563,12 +571,11 @@ public class ContikiMoteType implements MoteType {
 
       variables = parseSymbols(offset);
 
-      logger.debug(String.format("Parsed section at 0x%x ( %d == 0x%x bytes)",
+      if (logger.isDebugEnabled()) {
+        logger.debug(String.format("Parsed section at 0x%x ( %d == 0x%x bytes)",
                                  getStartAddr() + offset,
                                  getSize(),
                                  getSize()));
-
-      if (logger.isDebugEnabled()) {
         for (Map.Entry<String, Symbol> entry : variables.entrySet()) {
           logger.debug(String.format("Found Symbol: %s, 0x%x, %d",
                   entry.getKey(),
@@ -623,12 +630,13 @@ public class ContikiMoteType implements MoteType {
       Map<String, Symbol> varNames = new HashMap<>();
 
       Pattern pattern = Pattern.compile(Cooja.getExternalToolsSetting("MAPFILE_VAR_NAME"));
-
+      final var secStart = getStartAddr();
+      final var secSize = getSize();
       for (String line : getData()) {
         Matcher matcher = pattern.matcher(line);
         if (matcher.find()) {
-          if (Long.decode(matcher.group(1)) >= getStartAddr() &&
-              Long.decode(matcher.group(1)) <= getStartAddr() + getSize()) {
+          final var varAddr = Long.decode(matcher.group(1));
+          if (varAddr >= secStart && varAddr <= secStart + secSize) {
             String varName = matcher.group(2);
             varNames.put(varName, new Symbol(
                     Symbol.Type.VARIABLE,
@@ -897,14 +905,6 @@ public class ContikiMoteType implements MoteType {
       }
     }
     return null;
-  }
-
-  private static String[] loadMapFile(File mapFile) {
-    String contents = StringUtils.loadFromFile(mapFile);
-    if (contents == null) {
-      return null;
-    }
-    return contents.split("\n");
   }
 
   /**
