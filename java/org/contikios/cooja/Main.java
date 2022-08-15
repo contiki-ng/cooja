@@ -121,6 +121,12 @@ class Main {
     String nogui;
   }
 
+  /**
+   * Option for instructing Cooja to update the simulation file (.csc).
+   */
+  @Option(names = "-update-simulation", description = "write an updated simulation file (.csc) and exit")
+  boolean updateSimulation;
+
   @Option(names = "--version", versionHelp = true,
           description = "print version information and exit")
   boolean versionRequested;
@@ -150,6 +156,11 @@ class Main {
     if ((options.action == null || options.action.nogui == null) &&
         GraphicsEnvironment.isHeadless()) {
       System.err.println("Trying to start GUI in headless environment, aborting");
+      System.exit(1);
+    }
+
+    if (options.updateSimulation && (options.action == null || options.action.quickstart == null)) {
+      System.err.println("Can only update simulation with -quickstart");
       System.exit(1);
     }
 
