@@ -1687,7 +1687,7 @@ public class Cooja extends Observable {
             logger.debug("Visualized plugin was not started: " + pluginClass);
             return null;
           }
-        } while (cause != null && (cause=cause.getCause()) != null);
+        } while ((cause = cause.getCause()) != null);
 
         logger.fatal("Error when starting plugin", ex);
       }
@@ -2287,10 +2287,7 @@ public class Cooja extends Observable {
 
         simulationElement.addContent(getSimulation().getConfigXML());
         root.addContent(simulationElement);
-        Collection<Element> pluginsConfig = getPluginsConfigXML();
-        if (pluginsConfig != null) {
-          root.addContent(pluginsConfig);
-        }
+        root.addContent(getPluginsConfigXML());
 
         /* Remove current simulation, and load config */
         boolean shouldRetry = false;
