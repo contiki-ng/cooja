@@ -3719,6 +3719,8 @@ public class Cooja extends Observable {
   /**
    * Tries to convert given file to be "portable".
    * The portable path is either relative to Contiki, or to the configuration (.csc) file.
+   * The config relative path is preferred if the two paths are the same length, otherwise
+   * the shorter relative path is preferred.
    *
    * If this method fails, it returns the original file.
    *
@@ -3730,16 +3732,17 @@ public class Cooja extends Observable {
   }
 
   public File createPortablePath(File file, boolean allowConfigRelativePaths) {
-    File portable = createContikiRelativePath(file);
-    if (portable != null) {
-      return portable;
+    File contikiBase = createContikiRelativePath(file);
+    if (allowConfigRelativePaths) {
+      var configBase = createConfigRelativePath(file);
+      if (configBase != null &&
+          (contikiBase == null || configBase.toString().length() <= contikiBase.toString().length())) {
+        return configBase;
+      }
     }
 
-    if (allowConfigRelativePaths) {
-      portable = createConfigRelativePath(file);
-      if (portable != null) {
-        return portable;
-      }
+    if (contikiBase != null) {
+      return contikiBase;
     }
 
     logger.warn("Path is not portable: '" + file.getPath());
