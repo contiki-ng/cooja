@@ -675,9 +675,14 @@ public class Simulation extends Observable implements Runnable {
         	moteTypeClassName = moteTypeClassName.replaceFirst("se\\.sics", "org.contikios");
         }
 
+        var availableMoteTypesObjs = getCooja().getRegisteredMoteTypes();
+        String[] availableMoteTypes = new String[availableMoteTypesObjs.size()];
+        for (int i = 0; i < availableMoteTypes.length; i++) {
+          availableMoteTypes[i] = availableMoteTypesObjs.get(i).getName();
+        }
+
         /* Try to recreate simulation using a different mote type */
         if (visAvailable && !quick) {
-          String[] availableMoteTypes = getCooja().getProjectConfig().getStringArrayValue("org.contikios.cooja.Cooja.MOTETYPES");
           String newClass = (String) JOptionPane.showInputDialog(
               Cooja.getTopParentContainer(),
               "The simulation is about to load '" + moteTypeClassName + "'\n" +
@@ -697,23 +702,23 @@ public class Simulation extends Observable implements Runnable {
           }
         }
 
-        Class<? extends MoteType> moteTypeClass = cooja.tryLoadClass(this,
-            MoteType.class, moteTypeClassName);
-
-        if (moteTypeClass == null) {
-          logger.fatal("Could not load mote type class: " + moteTypeClassName);
-          throw new MoteType.MoteTypeCreationException("Could not load mote type class: " + moteTypeClassName);
+        Class<? extends MoteType> moteTypeClass = null;
+        for (int i = 0; i < availableMoteTypes.length; i++) {
+          if (moteTypeClassName.equals(availableMoteTypes[i])) {
+            moteTypeClass = availableMoteTypesObjs.get(i);
+            break;
+          }
         }
 
-        MoteType moteType = moteTypeClass.getConstructor((Class[]) null).newInstance();
+        assert moteTypeClass != null : "Selected MoteType class is null";
+        MoteType moteType = moteTypeClass.getConstructor((Class<? extends MoteType>[]) null).newInstance();
 
         boolean createdOK = moteType.setConfigXML(this, element.getChildren(),
             visAvailable);
         if (createdOK) {
           addMoteType(moteType);
         } else {
-          logger
-              .fatal("Mote type was not created: " + element.getText().trim());
+          logger.fatal("Mote type was not created: " + element.getText().trim());
           return false;
         }
       }
