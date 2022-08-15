@@ -670,7 +670,7 @@ public class Cooja extends Observable {
   }
 
   private void doLoadConfigAsync(final boolean quick, final File file) {
-    new Thread(() -> cooja.doLoadConfig(file, quick, null)).start();
+    new Thread(() -> cooja.doLoadConfig(file, quick, null), "doLoadConfigAsync").start();
   }
   private void updateOpenHistoryMenuItems(File[] openFilesHistory) {
   	menuOpenSimulation.removeAll();
@@ -749,7 +749,7 @@ public class Cooja extends Observable {
         if (getSimulation() == null) {
           // Reload last opened simulation.
           final File file = getLastOpenedFile();
-          new Thread(() -> cooja.doLoadConfig(file, true, null)).start();
+          cooja.doLoadConfigAsync(true, file);
           return;
         }
         reloadCurrentSimulation();
@@ -2317,7 +2317,7 @@ public class Cooja extends Observable {
           progressDialog.dispose();
         }
       }
-    });
+    }, "reloadCurrentSimulation");
 
     // Display progress dialog while reloading
     JProgressBar progressBar = new JProgressBar(0, 100);
@@ -4046,7 +4046,7 @@ public class Cooja extends Observable {
           Mote mote = (Mote) ((JMenuItem) e.getSource()).getClientProperty("mote");
           tryStartPlugin(pluginClass, cooja, mySimulation, mote);
         }
-      }).start();
+      }, "StartPluginGUIAction").start();
     }
     @Override
     public boolean shouldBeEnabled() {

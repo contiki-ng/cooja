@@ -345,7 +345,7 @@ public class Simulation extends Observable implements Runnable {
   public void startSimulation() {
     if (!isRunning()) {
       isRunning = true;
-      simulationThread = new Thread(this);
+      simulationThread = new Thread(this, "simulationThread");
       simulationThread.start();
     }
   }

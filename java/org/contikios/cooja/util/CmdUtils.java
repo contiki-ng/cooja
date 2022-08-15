@@ -69,7 +69,7 @@ public class CmdUtils {
         } catch (IOException e) {
           cmdIO.addMessage("Error reading from stderr: " + e.getMessage(), MessageList.ERROR);
         }
-      });
+      }, "CmdUtils.stderr");
       stderr.setDaemon(true);
       stderr.start();
       var stdout = new Thread(() -> {
@@ -82,7 +82,7 @@ public class CmdUtils {
         } catch (IOException e) {
           cmdIO.addMessage("Error reading from stdout: " + e.getMessage(), MessageList.ERROR);
         }
-      });
+      }, "CmdUtils.stdout");
       stdout.setDaemon(true);
       stdout.start();
 

@@ -184,7 +184,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
             }
             updateFS();
           }
-        }).start();
+        }, "coffeeFS.insertFile").start();
       }
     });
     box.add(insert);
@@ -264,7 +264,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
             }
             updateFS();
           }
-        }).start();
+        }, "coffeeFS.extractFile").start();
         return;
       }
       
@@ -287,7 +287,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
             }
             updateFS();
           }
-        }).start();
+        }, "coffeeFS.removeFile").start();
       }
     }
     public Class<?> getColumnClass(int c) {

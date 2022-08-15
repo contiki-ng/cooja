@@ -22,8 +22,7 @@ public class TSPTest extends AbstractPacketHandler implements Runnable {
     TSPClient tunnel = TSPClient.startTSPTunnel(ipStack, "anon.freenet6.net", null, null);
     ipStack.setTunnel(tunnel);
 
-    new Thread(testLink).start();
-
+    new Thread(testLink, "TSPTest.main").start();
   }
 
   public void run() {
