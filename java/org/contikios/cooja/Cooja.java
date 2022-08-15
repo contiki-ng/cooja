@@ -674,7 +674,7 @@ public class Cooja extends Observable {
   }
 
   private void doLoadConfigAsync(final boolean quick, final File file) {
-    new Thread(() -> cooja.doLoadConfig(file, quick, null), "doLoadConfigAsync").start();
+    new Thread(() -> cooja.doLoadConfig(file, quick, false, null), "doLoadConfigAsync").start();
   }
   private void updateOpenHistoryMenuItems(File[] openFilesHistory) {
   	menuOpenSimulation.removeAll();
@@ -2114,9 +2114,10 @@ public class Cooja extends Observable {
    *
    * @param configFile Configuration file to load, if null a dialog will appear
    * @param quick      Quick-load simulation
+   * @param rewriteCsc Rewrite simulation config
    * @param manualRandomSeed The random seed to use for the simulation
    */
-  private Simulation doLoadConfig(File configFile, final boolean quick, Long manualRandomSeed) {
+  private Simulation doLoadConfig(File configFile, final boolean quick, boolean rewriteCsc, Long manualRandomSeed) {
     /* Warn about memory usage */
     if (warnMemory()) {
       return null;
@@ -2236,7 +2237,7 @@ public class Cooja extends Observable {
         shouldRetry = false;
         cooja.doRemoveSimulation(false);
         PROGRESS_WARNINGS.clear();
-        newSim = loadSimulationConfig(configFile, quick, manualRandomSeed);
+        newSim = loadSimulationConfig(configFile, quick, rewriteCsc, manualRandomSeed);
 
         /* Optionally show compilation warnings */
         boolean hideWarn = Boolean.parseBoolean(
@@ -2296,7 +2297,7 @@ public class Cooja extends Observable {
             shouldRetry = false;
             cooja.doRemoveSimulation(false);
             PROGRESS_WARNINGS.clear();
-            Simulation newSim = loadSimulationConfig(root, true, randomSeed);
+            Simulation newSim = loadSimulationConfig(root, true, false, randomSeed);
 
             if (autoStart) {
               newSim.startSimulation();
@@ -2923,10 +2924,10 @@ public class Cooja extends Observable {
       var config = new File(vis ? options.action.quickstart : options.action.nogui);
       Simulation sim = null;
       if (vis) {
-        sim = gui.doLoadConfig(config, true, options.randomSeed);
+        sim = gui.doLoadConfig(config, true, options.updateSimulation, options.randomSeed);
       } else {
         try {
-          sim = gui.loadSimulationConfig(config, true, options.randomSeed);
+          sim = gui.loadSimulationConfig(config, true, false, options.randomSeed);
         } catch (Exception e) {
           logger.fatal("Exception when loading simulation: ", e);
         }
@@ -2943,13 +2944,13 @@ public class Cooja extends Observable {
    * When loading Contiki mote types, the libraries must be recompiled. User may
    * change mote type settings at this point.
    *
-   * @see #saveSimulationConfig(File)
-   * @param file
-   *          File to read
+   * @param file       File to read
+   * @param rewriteCsc Should Cooja update the .csc file.
    * @return New simulation or null if recompiling failed or aborted
    * @throws SimulationCreationException If loading fails.
+   * @see #saveSimulationConfig(File)
    */
-  private Simulation loadSimulationConfig(File file, boolean quick, Long manualRandomSeed)
+  private Simulation loadSimulationConfig(File file, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
   throws SimulationCreationException {
     this.currentConfigFile = file; /* Used to generate config relative paths */
     try {
@@ -2957,19 +2958,26 @@ public class Cooja extends Observable {
     } catch (IOException e) {
     }
 
+    Simulation sim;
     try (InputStream in = file.getName().endsWith(".gz")
             ? new GZIPInputStream(new FileInputStream(file)) : new FileInputStream(file)) {
       final var doc = new SAXBuilder().build(in);
 
-      return loadSimulationConfig(doc.getRootElement(), quick, manualRandomSeed);
+      sim = loadSimulationConfig(doc.getRootElement(), quick, rewriteCsc, manualRandomSeed);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not wellformed", e);
     } catch (IOException e) {
       throw new SimulationCreationException("Load simulation error", e);
     }
+    // Rewrite simulation config after the InputStream is closed.
+    if (rewriteCsc) {
+      saveSimulationConfig(file);
+      System.exit(0);
+    }
+    return sim;
   }
 
-  private Simulation loadSimulationConfig(Element root, boolean quick, Long manualRandomSeed)
+  private Simulation loadSimulationConfig(Element root, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
   throws SimulationCreationException {
     // Check that config file version is correct
     if (!root.getName().equals("simconf")) {
@@ -2994,47 +3002,49 @@ public class Cooja extends Observable {
         }
       }
 
-      /* Create old to new identifier mappings */
-      var moteTypeIDMappings = new HashMap<String, String>();
-      var reserved = new HashSet<>(readNames);
-      var existingMoteTypes = mySimulation == null ? null : mySimulation.getMoteTypes();
-      if (existingMoteTypes != null) {
-        for (var mote : existingMoteTypes) {
-          reserved.add(mote.getIdentifier());
+      // Only renumber motes if their names can collide with existing motes.
+      if (!rewriteCsc) {
+        // Create old to new identifier mappings.
+        var moteTypeIDMappings = new HashMap<String, String>();
+        var reserved = new HashSet<>(readNames);
+        var existingMoteTypes = mySimulation == null ? null : mySimulation.getMoteTypes();
+        if (existingMoteTypes != null) {
+          for (var mote : existingMoteTypes) {
+            reserved.add(mote.getIdentifier());
+          }
         }
-      }
-      for (var existingIdentifier : readNames) {
-        String newID = ContikiMoteType.generateUniqueMoteTypeID(reserved);
-        moteTypeIDMappings.put(existingIdentifier, newID);
-        reserved.add(newID);
-      }
+        for (var existingIdentifier : readNames) {
+          String newID = ContikiMoteType.generateUniqueMoteTypeID(reserved);
+          moteTypeIDMappings.put(existingIdentifier, newID);
+          reserved.add(newID);
+        }
 
-      // Replace all <motetype>..ContikiMoteType.class<identifier>mtypeXXX</identifier>...
-      // in the config with the new identifiers.
-      motetypes = root.getDescendants(new ElementFilter("motetype"));
-      while (motetypes.hasNext()) {
-        var e = (Element)motetypes.next();
-        if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
-          var idNode = e.getChild("identifier");
-          var newName = moteTypeIDMappings.get(idNode.getValue());
-          idNode.setText(newName);
-        }
-      }
-      // Replace all <mote>...<motetype_identifier>mtypeXXX</motetype_identifier>...
-      // in the config with the new identifiers.
-      var motes = root.getDescendants(new ElementFilter("mote"));
-      while (motes.hasNext()) {
-        var e = (Element) motes.next();
-        var idNode = e.getChild("motetype_identifier");
-        if (idNode == null) {
-          continue;
-        }
-        var newName = moteTypeIDMappings.get(idNode.getValue());
-        if (newName != null) {
+        // Replace all <motetype>..ContikiMoteType.class<identifier>mtypeXXX</identifier>...
+        // in the config with the new identifiers.
+        motetypes = root.getDescendants(new ElementFilter("motetype"));
+        while (motetypes.hasNext()) {
+          var e = (Element) motetypes.next();
+          if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
+            var idNode = e.getChild("identifier");
+            var newName = moteTypeIDMappings.get(idNode.getValue());
             idNode.setText(newName);
+          }
+        }
+        // Replace all <mote>...<motetype_identifier>mtypeXXX</motetype_identifier>...
+        // in the config with the new identifiers.
+        var motes = root.getDescendants(new ElementFilter("mote"));
+        while (motes.hasNext()) {
+          var e = (Element) motes.next();
+          var idNode = e.getChild("motetype_identifier");
+          if (idNode == null) {
+            continue;
+          }
+          var newName = moteTypeIDMappings.get(idNode.getValue());
+          if (newName != null) {
+            idNode.setText(newName);
+          }
         }
       }
-
       // Create new simulation from config
       for (var element : root.getChildren("simulation")) {
         Collection<Element> config = ((Element) element).getChildren();
@@ -3083,7 +3093,7 @@ public class Cooja extends Observable {
    * Saves current simulation configuration to given file and notifies
    * observers.
    *
-   * @see #loadSimulationConfig(File, boolean, Long)
+   * @see #loadSimulationConfig(File, boolean, boolean, Long)
    * @param file
    *          File to write
    */
