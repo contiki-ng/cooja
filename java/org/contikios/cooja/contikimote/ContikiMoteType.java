@@ -624,11 +624,13 @@ public class ContikiMoteType implements MoteType {
           final long varAddr = Long.decode(matcher.group(1));
           if (varAddr >= secStart && varAddr <= secStart + secSize) {
             String varName = matcher.group(2);
+            long mapFileVarAddress = getMapFileVarAddress(getData(), varName);
+            int mapFileVarSize = getMapFileVarSize(getData(), varName);
             varNames.put(varName, new Symbol(
                     Symbol.Type.VARIABLE,
                     varName,
-                    getMapFileVarAddress(getData(), varName) + offset,
-                    getMapFileVarSize(getData(), varName)));
+                    mapFileVarAddress + offset,
+                    mapFileVarSize));
           }
         }
       }
