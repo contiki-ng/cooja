@@ -257,8 +257,7 @@ public class IOPort extends IOUnit {
             return v;
         }
         case IV_H: {
-            int v = iv >> 8;
-            return v;
+            return iv >> 8;
         }
         }
         /* default is zero ??? */

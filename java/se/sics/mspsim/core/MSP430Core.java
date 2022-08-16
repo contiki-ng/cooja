@@ -609,9 +609,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
   // Converts a virtual time to a cycles time according to the current
   // cycle speed
   private long convertVTime(long vTime) {
-    long tmpTime = lastCyclesTime + (long) ((vTime - lastVTime) / currentDCOFactor);
-//    System.out.println("ConvertVTime: vTime=" + vTime + " => " + tmpTime);
-    return tmpTime;
+    //    System.out.println("ConvertVTime: vTime=" + vTime + " => " + tmpTime);
+    return lastCyclesTime + (long) ((vTime - lastVTime) / currentDCOFactor);
   }
 
   // get elapsed time in seconds

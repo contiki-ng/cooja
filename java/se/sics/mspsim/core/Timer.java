@@ -441,7 +441,7 @@ public class Timer extends IOUnit {
   public void reset(int type) {
 
       /* reset the capture and compare registers */
-      for (int i = 0, n = noCompare; i < n; i++) {
+      for (int i = 0; i < noCompare; i++) {
           CCR reg = ccr[i];
           reg.expCompare = -1;
           reg.expCaptureTime = -1;
