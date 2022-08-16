@@ -539,9 +539,7 @@ public class ContikiMoteType implements MoteType {
       return variables;
     }
 
-    protected abstract void parseStartAddr();
-
-    protected abstract void parseSize();
+    protected abstract boolean parseStartAddrAndSize();
 
     abstract Map<String, Symbol> parseSymbols(long offset);
 
@@ -556,12 +554,7 @@ public class ContikiMoteType implements MoteType {
     }
 
     public MemoryInterface parse(long offset) {
-
-      /* Parse start address and size of section */
-      parseStartAddr();
-      parseSize();
-
-      if (getStartAddr() < 0 || getSize() <= 0) {
+      if (!parseStartAddrAndSize()) {
         return null;
       }
 
@@ -604,21 +597,18 @@ public class ContikiMoteType implements MoteType {
     }
 
     @Override
-    protected void parseStartAddr() {
+    protected boolean parseStartAddrAndSize() {
       if (startRegExp == null || startRegExp.equals("")) {
         startAddr = -1;
-        return;
+      } else {
+        startAddr = parseFirstHexLong(startRegExp, getData());
       }
-      startAddr = parseFirstHexLong(startRegExp, getData());
-    }
-
-    @Override
-    protected void parseSize() {
       if (sizeRegExp == null || sizeRegExp.equals("")) {
         size = -1;
-        return;
+        return false;
       }
       size = (int) parseFirstHexLong(sizeRegExp, getData());
+      return startAddr >= 0 && size > 0;
     }
 
     @Override
@@ -628,65 +618,50 @@ public class ContikiMoteType implements MoteType {
       Pattern pattern = Pattern.compile(Cooja.getExternalToolsSetting("MAPFILE_VAR_NAME"));
       final var secStart = getStartAddr();
       final var secSize = getSize();
-      for (String line : getData()) {
+      final var varAddrRegexp1 = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_1");
+      final var varAddrRegexp2 = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_2");
+      final var varSizeRegexp1 = Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_1");
+      final var varSizeRegexp2 = Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_2");
+      final String[] mapFileData = getData();
+      for (String line : mapFileData) {
         Matcher matcher = pattern.matcher(line);
         if (matcher.find()) {
-          final var varAddr = Long.decode(matcher.group(1));
+          final long varAddr = Long.decode(matcher.group(1));
           if (varAddr >= secStart && varAddr <= secStart + secSize) {
             String varName = matcher.group(2);
+            String regExp = varAddrRegexp1 + varName + varAddrRegexp2;
+            String retString = getFirstMatchGroup(mapFileData, regExp);
+            long mapFileVarAddress = retString == null ? -1 : Long.parseUnsignedLong(retString.trim(), 16);
+            int mapFileVarSize = -1;
+            Pattern pattern1 = Pattern.compile(varSizeRegexp1 + varName + varSizeRegexp2);
+            for (int idx = 0; idx < mapFileData.length; idx++) {
+              String parseString = mapFileData[idx];
+              Matcher matcher1 = pattern1.matcher(parseString);
+              if (matcher1.find()) {
+                mapFileVarSize = Integer.decode(matcher1.group(1));
+                break;
+              }
+              // second approach with lines joined
+              if (idx < mapFileData.length - 1) {
+                parseString += mapFileData[idx + 1];
+              }
+              matcher1 = pattern1.matcher(parseString);
+              if (matcher1.find()) {
+                mapFileVarSize = Integer.decode(matcher1.group(1));
+                break;
+              }
+            }
             varNames.put(varName, new Symbol(
                     Symbol.Type.VARIABLE,
                     varName,
-                    getMapFileVarAddress(getData(), varName) + offset,
-                    getMapFileVarSize(getData(), varName)));
+                    mapFileVarAddress + offset,
+                    mapFileVarSize));
           }
         }
       }
       return varNames;
     }
 
-    /**
-     * Get relative address of variable with given name.
-     *
-     * @param varName Name of variable
-     * @return Relative memory address of variable or -1 if not found
-     */
-    private static long getMapFileVarAddress(String[] mapFileData, String varName) {
-
-      String regExp = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_1")
-              + varName
-              + Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_2");
-      String retString = getFirstMatchGroup(mapFileData, regExp);
-
-      if (retString != null) {
-        return Long.parseUnsignedLong(retString.trim(), 16);
-      } else {
-        return -1;
-      }
-    }
-
-    private static int getMapFileVarSize(String[] mapFileData, String varName) {
-      Pattern pattern = Pattern.compile(
-              Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_1")
-              + varName
-              + Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_2"));
-      for (int idx = 0; idx < mapFileData.length; idx++) {
-        String parseString = mapFileData[idx];
-        Matcher matcher = pattern.matcher(parseString);
-        if (matcher.find()) {
-          return Integer.decode(matcher.group(1));
-        }
-        // second approach with lines joined
-        if (idx < mapFileData.length - 1) {
-          parseString += mapFileData[idx + 1];
-        }
-        matcher = pattern.matcher(parseString);
-        if (matcher.find()) {
-          return Integer.decode(matcher.group(1));
-        }
-      }
-      return -1;
-    }
   }
 
   /**
@@ -715,32 +690,25 @@ public class ContikiMoteType implements MoteType {
     }
 
     @Override
-    protected void parseStartAddr() {
+    protected boolean parseStartAddrAndSize() {
       if (startRegExp == null || startRegExp.equals("")) {
         startAddr = -1;
-        return;
-      }
-      startAddr = parseFirstHexLong(startRegExp, getData());
-    }
-
-    @Override
-    public void parseSize() {
-      if (endRegExp == null || endRegExp.equals("")) {
-        size = -1;
-        return;
+      } else {
+        startAddr = parseFirstHexLong(startRegExp, getData());
       }
 
-      if (getStartAddr() < 0) {
+      if (startAddr < 0 || endRegExp == null || endRegExp.equals("")) {
         size = -1;
-        return;
+        return false;
       }
 
       long end = parseFirstHexLong(endRegExp, getData());
       if (end < 0) {
         size = -1;
-        return;
+        return false;
       }
       size = (int) (end - getStartAddr());
+      return startAddr >= 0 && size > 0;
     }
 
     @Override
