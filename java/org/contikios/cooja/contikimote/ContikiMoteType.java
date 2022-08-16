@@ -624,7 +624,16 @@ public class ContikiMoteType implements MoteType {
           final long varAddr = Long.decode(matcher.group(1));
           if (varAddr >= secStart && varAddr <= secStart + secSize) {
             String varName = matcher.group(2);
-            long mapFileVarAddress = getMapFileVarAddress(getData(), varName);
+            String regExp = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_1")
+                    + varName
+                    + Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_2");
+            String retString = getFirstMatchGroup(getData(), regExp);
+            long mapFileVarAddress;
+            if (retString != null) {
+              mapFileVarAddress = Long.parseUnsignedLong(retString.trim(), 16);
+            } else {
+              mapFileVarAddress = -1;
+            }
             int mapFileVarSize = getMapFileVarSize(getData(), varName);
             varNames.put(varName, new Symbol(
                     Symbol.Type.VARIABLE,
@@ -635,26 +644,6 @@ public class ContikiMoteType implements MoteType {
         }
       }
       return varNames;
-    }
-
-    /**
-     * Get relative address of variable with given name.
-     *
-     * @param varName Name of variable
-     * @return Relative memory address of variable or -1 if not found
-     */
-    private static long getMapFileVarAddress(String[] mapFileData, String varName) {
-
-      String regExp = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_1")
-              + varName
-              + Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_2");
-      String retString = getFirstMatchGroup(mapFileData, regExp);
-
-      if (retString != null) {
-        return Long.parseUnsignedLong(retString.trim(), 16);
-      } else {
-        return -1;
-      }
     }
 
     private static int getMapFileVarSize(String[] mapFileData, String varName) {
