@@ -43,8 +43,13 @@ package se.sics.mspsim.chip;
 import java.io.IOException;
 import java.util.Arrays;
 
-import se.sics.mspsim.core.*;
 import se.sics.mspsim.core.EmulationLogger.WarningType;
+import se.sics.mspsim.core.IOPort;
+import se.sics.mspsim.core.MSP430Core;
+import se.sics.mspsim.core.PortListener;
+import se.sics.mspsim.core.TimeEvent;
+import se.sics.mspsim.core.USARTListener;
+import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.util.Utils;
 
 public class M25P80 extends ExternalFlash implements USARTListener, PortListener, Memory {

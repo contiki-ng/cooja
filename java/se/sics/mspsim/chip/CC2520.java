@@ -35,8 +35,12 @@
  */
 
 package se.sics.mspsim.chip;
-import se.sics.mspsim.core.*;
 import se.sics.mspsim.core.EmulationLogger.WarningType;
+import se.sics.mspsim.core.IOPort;
+import se.sics.mspsim.core.MSP430Core;
+import se.sics.mspsim.core.TimeEvent;
+import se.sics.mspsim.core.USARTListener;
+import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.util.ArrayFIFO;
 import se.sics.mspsim.util.CCITT_CRC;
 import se.sics.mspsim.util.Utils;
