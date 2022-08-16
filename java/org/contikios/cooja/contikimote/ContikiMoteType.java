@@ -631,12 +631,7 @@ public class ContikiMoteType implements MoteType {
             String varName = matcher.group(2);
             String regExp = varAddrRegexp1 + varName + varAddrRegexp2;
             String retString = getFirstMatchGroup(mapFileData, regExp);
-            long mapFileVarAddress;
-            if (retString != null) {
-              mapFileVarAddress = Long.parseUnsignedLong(retString.trim(), 16);
-            } else {
-              mapFileVarAddress = -1;
-            }
+            long mapFileVarAddress = retString == null ? -1 : Long.parseUnsignedLong(retString.trim(), 16);
             int mapFileVarSize = -1;
             Pattern pattern1 = Pattern.compile(varSizeRegexp1 + varName + varSizeRegexp2);
             for (int idx = 0; idx < mapFileData.length; idx++) {
