@@ -618,16 +618,19 @@ public class ContikiMoteType implements MoteType {
       Pattern pattern = Pattern.compile(Cooja.getExternalToolsSetting("MAPFILE_VAR_NAME"));
       final var secStart = getStartAddr();
       final var secSize = getSize();
-      for (String line : getData()) {
+      final var varAddrRegexp1 = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_1");
+      final var varAddrRegexp2 = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_2");
+      final var varSizeRegexp1 = Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_1");
+      final var varSizeRegexp2 = Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_2");
+      final String[] mapFileData = getData();
+      for (String line : mapFileData) {
         Matcher matcher = pattern.matcher(line);
         if (matcher.find()) {
           final long varAddr = Long.decode(matcher.group(1));
           if (varAddr >= secStart && varAddr <= secStart + secSize) {
             String varName = matcher.group(2);
-            String regExp = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_1")
-                    + varName
-                    + Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_2");
-            String retString = getFirstMatchGroup(getData(), regExp);
+            String regExp = varAddrRegexp1 + varName + varAddrRegexp2;
+            String retString = getFirstMatchGroup(mapFileData, regExp);
             long mapFileVarAddress;
             if (retString != null) {
               mapFileVarAddress = Long.parseUnsignedLong(retString.trim(), 16);
@@ -635,11 +638,7 @@ public class ContikiMoteType implements MoteType {
               mapFileVarAddress = -1;
             }
             int mapFileVarSize = -1;
-            String[] mapFileData = getData();
-            Pattern pattern1 = Pattern.compile(
-                    Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_1")
-                    + varName
-                    + Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_2"));
+            Pattern pattern1 = Pattern.compile(varSizeRegexp1 + varName + varSizeRegexp2);
             for (int idx = 0; idx < mapFileData.length; idx++) {
               String parseString = mapFileData[idx];
               Matcher matcher1 = pattern1.matcher(parseString);
