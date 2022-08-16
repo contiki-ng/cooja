@@ -310,7 +310,7 @@ public class LogScriptEngine {
           }
         }
       }
-    }, "scriptThread");
+    }, "script");
     scriptThread.start(); /* Starts by acquiring semaphore (blocks) */
     while (!semaphoreScript.hasQueuedThreads()) {
       try {
