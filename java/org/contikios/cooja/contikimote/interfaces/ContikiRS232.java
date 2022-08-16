@@ -32,7 +32,7 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.util.Vector;
+import java.util.ArrayDeque;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
@@ -147,7 +147,7 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
   }
 
   private TimeEvent pendingBytesEvent = null;
-  private final Vector<Byte> pendingBytes = new Vector<>();
+  private final ArrayDeque<Byte> pendingBytes = new ArrayDeque<>();
   @Override
   public void writeArray(byte[] s) {
     for (byte b: s) {
@@ -167,12 +167,11 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
           return;
         }
 
-        /* Move bytes from synchronized vector to Contiki buffer */
+        // Move bytes from Cooja buffer into Contiki-NG buffer.
         int nrBytes = pendingBytes.size();
         byte[] dataToAppend = new byte[nrBytes];
         for (int i=0; i < nrBytes; i++) {
-          dataToAppend[i] = pendingBytes.firstElement();
-          pendingBytes.remove(0);
+          dataToAppend[i] = pendingBytes.pop();
         }
 
         /* Append to existing buffer */
@@ -228,12 +227,11 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
           return;
         }
 
-        /* Move bytes from synchronized vector to Contiki buffer */
+        // Move bytes from Cooja buffer to Contiki-NG buffer.
         int nrBytes = pendingBytes.size();
         byte[] dataToAppend = new byte[nrBytes];
         for (int i=0; i < nrBytes; i++) {
-          dataToAppend[i] = pendingBytes.firstElement();
-          pendingBytes.remove(0);
+          dataToAppend[i] = pendingBytes.pop();
         }
 
         /* Append to existing buffer */
