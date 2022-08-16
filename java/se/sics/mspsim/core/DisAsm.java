@@ -466,8 +466,6 @@ public class DisAsm implements MSP430Constants {
           srcadr = "#$" + Utils.hex16(memory[pc] + (memory[pc + 1] << 8));
           pc += 2;
           size += 2;
-        } else if (srcRegister == CG2) {
-          srcadr = "#$ffff";
         } else {
           srcadr = "@" + getRegName(srcRegister) + "+";
           srcAddress = reg[srcRegister];
