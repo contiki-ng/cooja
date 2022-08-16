@@ -69,7 +69,6 @@ public interface Mote {
   /**
    * Returns mote type.
    *
-   * @see org.contikios.cooja.contikimote.ContikiMote#setType(MoteType)
    * @return Mote type
    */
   MoteType getType();

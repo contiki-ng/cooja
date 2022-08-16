@@ -201,7 +201,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
    * Prepares CPU, memory and ELF module.
    *
    * @param fileELF ELF file
-   * @param cpu MSP430 cpu
+   * @param node MSP430 cpu
    * @throws IOException Preparing mote failed
    */
   protected void prepareMote(File fileELF, GenericNode node) throws IOException {
