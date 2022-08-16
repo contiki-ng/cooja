@@ -539,9 +539,7 @@ public class ContikiMoteType implements MoteType {
       return variables;
     }
 
-    protected abstract void parseStartAddr();
-
-    protected abstract void parseSize();
+    protected abstract void parseStartAddrAndSize();
 
     abstract Map<String, Symbol> parseSymbols(long offset);
 
@@ -557,9 +555,7 @@ public class ContikiMoteType implements MoteType {
 
     public MemoryInterface parse(long offset) {
 
-      /* Parse start address and size of section */
-      parseStartAddr();
-      parseSize();
+      parseStartAddrAndSize();
 
       if (getStartAddr() < 0 || getSize() <= 0) {
         return null;
@@ -604,16 +600,12 @@ public class ContikiMoteType implements MoteType {
     }
 
     @Override
-    protected void parseStartAddr() {
+    protected void parseStartAddrAndSize() {
       if (startRegExp == null || startRegExp.equals("")) {
         startAddr = -1;
-        return;
+      } else {
+        startAddr = parseFirstHexLong(startRegExp, getData());
       }
-      startAddr = parseFirstHexLong(startRegExp, getData());
-    }
-
-    @Override
-    protected void parseSize() {
       if (sizeRegExp == null || sizeRegExp.equals("")) {
         size = -1;
         return;
@@ -715,22 +707,14 @@ public class ContikiMoteType implements MoteType {
     }
 
     @Override
-    protected void parseStartAddr() {
+    protected void parseStartAddrAndSize() {
       if (startRegExp == null || startRegExp.equals("")) {
         startAddr = -1;
-        return;
-      }
-      startAddr = parseFirstHexLong(startRegExp, getData());
-    }
-
-    @Override
-    public void parseSize() {
-      if (endRegExp == null || endRegExp.equals("")) {
-        size = -1;
-        return;
+      } else {
+        startAddr = parseFirstHexLong(startRegExp, getData());
       }
 
-      if (getStartAddr() < 0) {
+      if (startAddr < 0 || endRegExp == null || endRegExp.equals("")) {
         size = -1;
         return;
       }
