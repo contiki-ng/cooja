@@ -32,7 +32,8 @@
 
 package org.contikios.coffee;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.contikios.coffee.CoffeeFS.CoffeeException;

@@ -32,7 +32,9 @@
 
 package org.contikios.coffee;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -99,9 +101,8 @@ public class CoffeeFS {
 		byte[] bytes = new byte[conf.nameLength + conf.pageTypeSize * 2 + 6];
 
 		image.read(bytes, bytes.length, page * conf.pageSize);
-		CoffeeHeader header = new CoffeeHeader(this, page, bytes);
 
-		return header;
+		return new CoffeeHeader(this, page, bytes);
 	}
 
 	public void writeHeader(CoffeeHeader header) throws IOException {

@@ -593,7 +593,7 @@ public class ConsoleUI extends JComponent {
 
   public OutputStream getOutputStream() {
     return new OutputStream() {
-      public void write(int c) throws IOException {
+      public void write(int c) {
         output(c);
       }
     };

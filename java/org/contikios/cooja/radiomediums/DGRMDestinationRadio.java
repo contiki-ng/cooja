@@ -56,7 +56,7 @@ public class DGRMDestinationRadio extends DestinationRadio {
 	}
 
 	@Override
-	protected Object clone() {
+	protected Object clone() throws CloneNotSupportedException {
 		DGRMDestinationRadio clone = new DGRMDestinationRadio(this.radio);
 		clone.ratio = this.ratio;
 		clone.delay = this.delay;

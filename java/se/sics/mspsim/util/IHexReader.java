@@ -87,7 +87,7 @@ public class IHexReader {
           terminate = true;
         } else {
           int index = 9;
-          for (int i = 0, n = size; i < n; i++) {
+          for (int i = 0; i < size; i++) {
             tmpMemory[adr + i] = (hexToInt(line.charAt(index++)) * 0x10 +
                                   hexToInt(line.charAt(index++)));
           }
@@ -126,7 +126,7 @@ public class IHexReader {
     }
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     IHexReader reader = new IHexReader();
     int data = 0x84;
     System.out.println("RRA: " + hex((data & 0x80) + (data >> 1)));

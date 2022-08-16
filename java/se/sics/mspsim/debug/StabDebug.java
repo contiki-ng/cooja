@@ -76,7 +76,7 @@ public class StabDebug implements ELFDebug {
       System.out.println("Number of stabs:" + count);
     }
     stabs = new Stab[count];
-    for (int i = 0, n = count; i < n; i++) {
+    for (int i = 0; i < count; i++) {
       elf.setPos(addr);
       int nI = elf.readElf32();
       String stabData = elf.dbgStabStr.getName(nI);

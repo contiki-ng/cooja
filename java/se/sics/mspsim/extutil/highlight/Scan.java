@@ -2,7 +2,10 @@ package se.sics.mspsim.extutil.highlight;
 // Illustrate the use of the scanner by reading in a file and displaying its
 // tokens. Public domain, no restrictions, Ian Holyer, University of Bristol.
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 
 public class Scan {
   // Get the filename from the command line

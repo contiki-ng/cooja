@@ -41,8 +41,11 @@
 
 package se.sics.mspsim.chip;
 import java.io.IOException;
-import se.sics.mspsim.core.*;
 import se.sics.mspsim.core.EmulationLogger.WarningType;
+import se.sics.mspsim.core.MSP430Core;
+import se.sics.mspsim.core.TimeEvent;
+import se.sics.mspsim.core.USARTListener;
+import se.sics.mspsim.core.USARTSource;
 
 public class AT45DB extends ExternalFlash implements USARTListener {
 
