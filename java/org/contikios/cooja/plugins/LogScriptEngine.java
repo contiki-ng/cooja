@@ -78,14 +78,14 @@ public class LogScriptEngine {
     }
     @Override
     public void newLogOutput(LogOutputEvent ev) {
+      if (scriptThread == null || !scriptThread.isAlive()) {
+        logger.warn("No script thread, deactivate script.");
+        return;
+      }
+
       // Only called from the simulation loop.
       final var mote = ev.getMote();
       try {
-        if (scriptThread == null || !scriptThread.isAlive()) {
-          logger.warn("No script thread, deactivate script.");
-          return;
-        }
-
         // Update script variables.
         engine.put("mote", mote);
         engine.put("id", mote.getID());
