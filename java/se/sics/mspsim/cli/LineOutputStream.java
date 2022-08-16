@@ -60,7 +60,7 @@ public class LineOutputStream extends OutputStream {
    * @see java.io.OutputStream#write(int)
    */
   @Override
-  public void write(int c) throws IOException {
+  public void write(int c) {
     if (c == '\n') {
       listener.lineRead(line.toString());
       line.setLength(0);

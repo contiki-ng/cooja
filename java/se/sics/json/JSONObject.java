@@ -322,17 +322,17 @@ public class JSONObject extends HashMap<String,Object> implements JSONAware, JSO
         }
 
         @Override
-        public boolean endArray() throws IOException {
+        public boolean endArray() {
             trackBack();
             return true;
         }
 
         @Override
-        public void endJSON() throws IOException {
+        public void endJSON() {
         }
 
         @Override
-        public boolean endObject() throws IOException {
+        public boolean endObject() {
             trackBack();
             // System.out.println("End JSON Object: " + getResult() + " Stack: "
             // + valueStack.size());
@@ -341,7 +341,7 @@ public class JSONObject extends HashMap<String,Object> implements JSONAware, JSO
         }
 
         @Override
-        public boolean endObjectEntry() throws IOException {
+        public boolean endObjectEntry() {
             Object value = this.valueStack.pop();
             Object key = this.valueStack.pop();
             JSONObject parent = (JSONObject) this.valueStack.peek();
@@ -374,13 +374,13 @@ public class JSONObject extends HashMap<String,Object> implements JSONAware, JSO
         }
 
         @Override
-        public boolean primitive(Object value) throws IOException {
+        public boolean primitive(Object value) {
             consumeValue(value);
             return true;
         }
 
         @Override
-        public boolean startArray() throws IOException {
+        public boolean startArray() {
             JSONArray array = new JSONArray();
             consumeValue(array);
             this.valueStack.push(array);
@@ -388,12 +388,12 @@ public class JSONObject extends HashMap<String,Object> implements JSONAware, JSO
         }
 
         @Override
-        public void startJSON() throws IOException {
+        public void startJSON() {
             this.valueStack.clear();
         }
 
         @Override
-        public boolean startObject() throws IOException {
+        public boolean startObject() {
             JSONObject object = new JSONObject();
             consumeValue(object);
             this.valueStack.push(object);
@@ -401,7 +401,7 @@ public class JSONObject extends HashMap<String,Object> implements JSONAware, JSO
         }
 
         @Override
-        public boolean startObjectEntry(String key) throws IOException {
+        public boolean startObjectEntry(String key) {
             this.valueStack.push(key);
             return true;
         }
