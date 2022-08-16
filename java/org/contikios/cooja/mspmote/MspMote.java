@@ -260,10 +260,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return myMoteType;
   }
 
-  public void setType(MoteType type) {
-    myMoteType = (MspMoteType) type;
-  }
-
   public MoteInterfaceHandler getInterfaces() {
     return myMoteInterfaceHandler;
   }

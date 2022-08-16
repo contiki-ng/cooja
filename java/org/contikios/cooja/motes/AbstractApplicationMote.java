@@ -126,10 +126,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
     return moteType;
   }
 
-  public void setType(MoteType type) {
-    moteType = type;
-  }
-
   @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
