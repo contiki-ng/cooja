@@ -2032,7 +2032,7 @@ public class Cooja extends Observable {
     // Create mote type
     MoteType newMoteType = null;
     try {
-      newMoteType = moteTypeClass.newInstance();
+      newMoteType = moteTypeClass.getDeclaredConstructor().newInstance();
       if (!newMoteType.configureAndInit(Cooja.getTopParentContainer(), mySimulation, isVisualized())) {
         return;
       }
