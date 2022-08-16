@@ -78,9 +78,10 @@ public class LogScriptEngine {
     }
     @Override
     public void newLogOutput(LogOutputEvent ev) {
+      final var mote = ev.getMote();
       handleNewMoteOutput(
-          ev.getMote(),
-          ev.getMote().getID(),
+          mote,
+          mote.getID(),
           ev.getTime(),
           ev.msg
       );
