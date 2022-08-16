@@ -634,7 +634,29 @@ public class ContikiMoteType implements MoteType {
             } else {
               mapFileVarAddress = -1;
             }
-            int mapFileVarSize = getMapFileVarSize(getData(), varName);
+            int mapFileVarSize = -1;
+            String[] mapFileData = getData();
+            Pattern pattern1 = Pattern.compile(
+                    Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_1")
+                    + varName
+                    + Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_2"));
+            for (int idx = 0; idx < mapFileData.length; idx++) {
+              String parseString = mapFileData[idx];
+              Matcher matcher1 = pattern1.matcher(parseString);
+              if (matcher1.find()) {
+                mapFileVarSize = Integer.decode(matcher1.group(1));
+                break;
+              }
+              // second approach with lines joined
+              if (idx < mapFileData.length - 1) {
+                parseString += mapFileData[idx + 1];
+              }
+              matcher1 = pattern1.matcher(parseString);
+              if (matcher1.find()) {
+                mapFileVarSize = Integer.decode(matcher1.group(1));
+                break;
+              }
+            }
             varNames.put(varName, new Symbol(
                     Symbol.Type.VARIABLE,
                     varName,
@@ -646,28 +668,6 @@ public class ContikiMoteType implements MoteType {
       return varNames;
     }
 
-    private static int getMapFileVarSize(String[] mapFileData, String varName) {
-      Pattern pattern = Pattern.compile(
-              Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_1")
-              + varName
-              + Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_2"));
-      for (int idx = 0; idx < mapFileData.length; idx++) {
-        String parseString = mapFileData[idx];
-        Matcher matcher = pattern.matcher(parseString);
-        if (matcher.find()) {
-          return Integer.decode(matcher.group(1));
-        }
-        // second approach with lines joined
-        if (idx < mapFileData.length - 1) {
-          parseString += mapFileData[idx + 1];
-        }
-        matcher = pattern.matcher(parseString);
-        if (matcher.find()) {
-          return Integer.decode(matcher.group(1));
-        }
-      }
-      return -1;
-    }
   }
 
   /**
