@@ -58,7 +58,7 @@ public class CoffeeManager {
 			System.exit(1);
 		}
 
-		Pattern optionArg = Pattern.compile("-(p|i|e|r)");
+		Pattern optionArg = Pattern.compile("-([pier])");
 
 		for(int i = 0; i < args.length - 1; i++) {
 			if (optionArg.matcher(args[i]).matches()) {
