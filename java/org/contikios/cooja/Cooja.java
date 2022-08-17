@@ -28,8 +28,6 @@
 
 package org.contikios.cooja;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -62,8 +60,6 @@ import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -4015,19 +4011,22 @@ public class Cooja extends Observable {
       help = ((HasQuickHelp) obj).getQuickHelp();
     } else {
       if (quickHelpProperties == null) {
-        /* Load quickhelp.txt */
-        try {
-          quickHelpProperties = new Properties();
-          quickHelpProperties.load(Files.newBufferedReader(Paths.get("quickhelp.txt"), UTF_8));
-        } catch (Exception e) {
-          quickHelpProperties = null;
-          help = "<html><b>Failed to read quickhelp.txt:</b><p>" + e.getMessage() + "</html>";
-        }
+        quickHelpProperties = new Properties();
+        quickHelpProperties.put("KEYBOARD_SHORTCUTS",
+           "<b>Keyboard shortcuts</b><br>" +
+           "<br><i>Ctrl+N:</i> New simulation" +
+           "<br><i>Ctrl+S:</i> Start/pause simulation" +
+           "<br><i>Ctrl+R:</i> Reload current simulation. If no simulation exists, the last used simulation config is loaded" +
+"<br><i>Ctrl+Shift+R:</i> Reload current simulation with another random seed" +
+           "<br>" +
+           "<br><i>F1:</i> Toggle quick help");
+        quickHelpProperties.put("GETTING_STARTED",
+           "<b>Getting started</b><br>" +
+           "<br>" +
+           "<br><i>F1:</i> Toggle quick help</i>");
       }
 
-      if (quickHelpProperties != null) {
-        help = quickHelpProperties.getProperty(key);
-      }
+      help = quickHelpProperties.getProperty(key);
     }
 
     if (help != null) {
