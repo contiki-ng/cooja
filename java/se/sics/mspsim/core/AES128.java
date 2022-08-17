@@ -32,6 +32,7 @@
  */
 package se.sics.mspsim.core;
 
+import java.util.Arrays;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -305,7 +306,7 @@ public class AES128 extends IOUnit {
                         outData.put(bytes);
                         outData.resetPos();
                 } catch (Exception e) {
-                        log(e.getStackTrace().toString());
+                        log(Arrays.toString(e.getStackTrace()));
                 }
         }
 
@@ -327,7 +328,7 @@ public class AES128 extends IOUnit {
                         outData.put(bytes);
                         outData.resetPos();
                 } catch (Exception e) {
-                        log(e.getStackTrace().toString());
+                        log(Arrays.toString(e.getStackTrace()));
                 }
         }
 
