@@ -55,7 +55,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -3109,22 +3108,16 @@ public class Cooja extends Observable {
     } catch (IOException e) {
     }
 
-    try {
+    try (var out = file.getName().endsWith(".gz")
+            ? new GZIPOutputStream(new FileOutputStream(file)) : new FileOutputStream(file)) {
       // Create and write to document
       Document doc = new Document(extractSimulationConfig());
-      OutputStream out = new FileOutputStream(file);
-
-      if (file.getName().endsWith(".gz")) {
-      	out = new GZIPOutputStream(out);
-      }
 
       XMLOutputter outputter = new XMLOutputter();
       Format fmt = Format.getPrettyFormat();
       fmt.setLineSeparator("\n");
       outputter.setFormat(fmt);
       outputter.output(doc, out);
-      out.close();
-
       logger.info("Saved to file: " + file.getAbsolutePath());
     } catch (Exception e) {
       logger.warn("Exception while saving simulation config: " + e);
