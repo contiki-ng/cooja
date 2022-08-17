@@ -94,6 +94,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 			int expLen = 0;
 			final byte[] buffer = new byte[256 + 15];
 			private boolean gotSynchbyte = false;
+			@Override
 			public void receivedByte(byte data) {
 				if (!isTransmitting()) {
 					/* Start transmission */
@@ -138,6 +139,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 					final byte[] buf = new byte[expLen];
 					System.arraycopy(buffer, 0, buf, 0, expLen);
 					lastOutgoingPacket = new RadioPacket() {
+						@Override
 						public byte[] getPacketData() {
 							return buf;
 						}
@@ -159,6 +161,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		});
 
 		cc1120.setReceiverListener(new ReceiverListener() {
+		  @Override
 		  public void newState(boolean on) {
 		    if (cc1120.isReadyToReceive()) {
 		      lastEvent = RadioEvent.HW_ON;
@@ -171,6 +174,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		});
 
 		cc1120.addChannelListener(new ChannelListener() {
+			@Override
 			public void channelChanged(int channel) {
 				/* XXX Currently assumes zero channel switch time */
 				lastEvent = RadioEvent.UNKNOWN;
@@ -188,6 +192,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 
 			/* Simulate end of packet */
 			lastOutgoingPacket = new RadioPacket() {
+				@Override
 				public byte[] getPacketData() {
 					return new byte[0];
 				}
@@ -212,14 +217,17 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 	}
 
 	/* Packet radio support */
+	@Override
 	public RadioPacket getLastPacketTransmitted() {
 		return lastOutgoingPacket;
 	}
 
+	@Override
 	public RadioPacket getLastPacketReceived() {
 		return lastIncomingPacket;
 	}
 
+	@Override
 	public void setReceivedPacket(RadioPacket packet) {
 		lastIncomingPacket = packet;
 
@@ -239,6 +247,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 
 			final byte byteToDeliver = b;
 			getMote().getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
+				@Override
 				public void execute(long t) {
 					super.execute(t);
 					cc1120.receivedByte(byteToDeliver);
@@ -250,14 +259,17 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 	}
 
 	/* Custom data radio support */
+	@Override
 	public Object getLastCustomDataTransmitted() {
 		return lastOutgoingByte;
 	}
 
+	@Override
 	public Object getLastCustomDataReceived() {
 		return lastIncomingByte;
 	}
 
+	@Override
 	public void receiveCustomData(Object data) {
 		if (!(data instanceof Byte)) {
 			logger.fatal("Bad custom data: " + data);
@@ -272,6 +284,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 			inputByte = lastIncomingByte;
 		}
 		mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
+			@Override
 			public void execute(long t) {
 				super.execute(t);
 				cc1120.receivedByte(inputByte);
@@ -282,18 +295,22 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 	}
 
 	/* General radio support */
+	@Override
 	public boolean isTransmitting() {
 		return isTransmitting;
 	}
 
+	@Override
 	public boolean isReceiving() {
 		return isReceiving;
 	}
 
+	@Override
 	public boolean isInterfered() {
 		return isInterfered;
 	}
 
+	@Override
 	public int getChannel() {
 		return cc1120.getActiveChannel()+1000;
 	}
@@ -302,6 +319,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		return cc1120.getActiveFrequency();
 	}
 
+	@Override
 	public void signalReceptionStart() {
 		isReceiving = true;
 
@@ -311,6 +329,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		notifyObservers();
 	}
 
+	@Override
 	public void signalReceptionEnd() {
 		/* Deliver packet data */
 		isReceiving = false;
@@ -322,10 +341,12 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		notifyObservers();
 	}
 
+	@Override
 	public RadioEvent getLastEvent() {
 		return lastEvent;
 	}
 
+	@Override
 	public void interfereAnyReception() {
 		isInterfered = true;
 		isReceiving = false;
@@ -337,14 +358,17 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		notifyObservers();
 	}
 
+	@Override
 	public double getCurrentOutputPower() {
 		/* TODO XXX Need support in CCC1120.java */
 		return 1;
 	}
+	@Override
 	public int getCurrentOutputPowerIndicator() {
 		/* TODO XXX Need support in CCC1120.java */
 		return 10;
 	}
+	@Override
 	public int getOutputPowerIndicatorMax() {
 		/* TODO XXX Need support in CCC1120.java */
 		return 10;
@@ -358,10 +382,12 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 	private final double[] rssiLast = new double[8];
 	private int rssiLastCounter = 0;
 
+	@Override
 	public double getCurrentSignalStrength() {
 		return currentSignalStrength;
 	}
 
+	@Override
 	public void setCurrentSignalStrength(final double signalStrength) {
 		if (signalStrength == currentSignalStrength) {
 			return; /* ignored */
@@ -369,6 +395,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		currentSignalStrength = signalStrength;
 		if (rssiLastCounter == 0) {
 			getMote().getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
+				@Override
 				public void execute(long t) {
 					super.execute(t);
 
@@ -393,25 +420,31 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		rssiLastCounter = 8;
 	}
 
+	@Override
 	public Mote getMote() {
 		return mote;
 	}
 
+	@Override
 	public Position getPosition() {
 		return mote.getInterfaces().getPosition();
 	}
 
+	@Override
 	public Collection<Element> getConfigXML() {
 		return null;
 	}
 
+	@Override
 	public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
 	}
 
+	@Override
 	public boolean isRadioOn() {
 	    return cc1120.isReadyToReceive();
 	}
 
+  @Override
   public boolean canReceiveFrom(CustomDataRadio radio) {
     return radio.getClass().equals(this.getClass());
   }

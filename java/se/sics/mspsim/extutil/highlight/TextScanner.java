@@ -41,6 +41,7 @@ public class TextScanner extends Scanner {
   // Now all we have to do is to override read(), using the parent variables
   // buffer, start, end, state.
 
+  @Override
   protected int read() {
     state = 0;
     int kind = kinds[buffer[start]];

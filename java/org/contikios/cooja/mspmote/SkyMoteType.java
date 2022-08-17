@@ -73,10 +73,12 @@ import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
 public class SkyMoteType extends MspMoteType {
   private static final Logger logger = LogManager.getLogger(SkyMoteType.class);
 
+  @Override
   protected MspMote createMote(Simulation simulation) {
     return new SkyMote(this, simulation);
   }
 
+  @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
   throws MoteTypeCreationException {
     /* If visualized, show compile dialog and let user configure */
@@ -160,6 +162,7 @@ public class SkyMoteType extends MspMoteType {
     return true;
   }
 
+  @Override
   public Icon getMoteTypeIcon() {
     Toolkit toolkit = Toolkit.getDefaultToolkit();
     URL imageURL = this.getClass().getClassLoader().getResource("images/sky.jpg");
@@ -178,9 +181,11 @@ public class SkyMoteType extends MspMoteType {
     return null;
   }
 
+  @Override
   public Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses() {
 	  return getAllMoteInterfaceClasses();
   }
+  @Override
   public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
     return new Class[] {
         Position.class,
@@ -201,6 +206,7 @@ public class SkyMoteType extends MspMoteType {
     };
   }
 
+  @Override
   public File getExpectedFirmwareFile(File source) {
     File parentDir = source.getParentFile();
     String sourceNoExtension = source.getName().substring(0, source.getName().length()-2);

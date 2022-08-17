@@ -45,6 +45,7 @@ package se.sics.mspsim.cli;
  */
 public abstract class AbstractWindowDataHandler implements WindowDataHandler {
 
+  @Override
   public void handleCommand(String[] parts) {
     String cmd = parts[0];
     if ("set".equals(cmd)) {

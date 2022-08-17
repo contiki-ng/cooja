@@ -28,6 +28,7 @@ public class Symbol {
   /**
    * Return the name of the symbol.
    */
+  @Override
   public String toString() {
     return name;
   }
@@ -35,6 +36,7 @@ public class Symbol {
   /**
    * Form a hash value from the type and name.
    */
+  @Override
   public int hashCode() {
     return name.hashCode() + type;
   }
@@ -42,6 +44,7 @@ public class Symbol {
   /**
    * Compare the type and name with some other symbol.
    */
+  @Override
   public boolean equals(Object obj) {
     if (!(obj instanceof Symbol))
       return false;

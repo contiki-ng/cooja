@@ -64,12 +64,14 @@ import se.sics.mspsim.util.Utils;
  */
 public class MiscCommands implements CommandBundle {
 
+  @Override
   public void setupCommands(final ComponentRegistry registry, CommandHandler handler) {
     handler.registerCommand("grep", new BasicLineCommand("print lines matching the specified pattern", "[-i] [-v] <regexp>") {
       private PrintStream out;
       private Pattern pattern;
       private boolean isInverted = false;
 
+      @Override
       public int executeCommand(CommandContext context) {
         int index = 0;
         int flags = 0;
@@ -88,6 +90,7 @@ public class MiscCommands implements CommandBundle {
         pattern = Pattern.compile(context.getArgument(index), flags);
         return 0;
       }
+      @Override
       public void lineRead(String line) {
         boolean isMatch = pattern.matcher(line).find();
         if(isMatch ^ isInverted) {
@@ -102,6 +105,7 @@ public class MiscCommands implements CommandBundle {
       boolean useCycles;
       long startTime;
 
+      @Override
       public int executeCommand(CommandContext context) {
         cpu = registry.getComponent(MSP430.class);
         if (cpu == null) {
@@ -120,6 +124,7 @@ public class MiscCommands implements CommandBundle {
         startTime = System.currentTimeMillis() - (long)cpu.getTimeMillis();
         return 0;
       }
+      @Override
       public void lineRead(String line) {
           if (useCycles) {
               out.println(Long.toString(cpu.cycles) + ' ' + line);
@@ -130,6 +135,7 @@ public class MiscCommands implements CommandBundle {
     });
 
     handler.registerCommand("speed", new BasicCommand("set the speed factor for the CPU", "[factor]") {
+      @Override
       public int executeCommand(CommandContext context) {
         MSP430 cpu = registry.getComponent(MSP430.class);
         if (cpu == null) {
@@ -153,6 +159,7 @@ public class MiscCommands implements CommandBundle {
     });
 
     handler.registerCommand("echo", new BasicCommand("echo arguments", "") {
+      @Override
       public int executeCommand(CommandContext context) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0, n = context.getArgumentCount(); i < n; i++) {
@@ -166,6 +173,7 @@ public class MiscCommands implements CommandBundle {
 
 
     handler.registerCommand("source", new BasicCommand("run script", "[-v] <filename>") {
+      @Override
       public int executeCommand(CommandContext context) {
           boolean verbose = false;
           if (context.getArgumentCount() > 1) {
@@ -199,6 +207,7 @@ public class MiscCommands implements CommandBundle {
       private String commandLine;
       private boolean isRunning = true;
 
+      @Override
       public int executeCommand(final CommandContext context) {
         int index = 0;
         do {
@@ -249,6 +258,7 @@ public class MiscCommands implements CommandBundle {
         return 0;
       }
 
+      @Override
       public void stopCommand(CommandContext context) {
         isRunning = false;
         context.err.println("[repeat exit: " + commandLine + ']');
@@ -261,6 +271,7 @@ public class MiscCommands implements CommandBundle {
     handler.registerCommand("trig", new BasicLineCommand("trigg command when getting input", "<command>") {
       String command = null;
       CommandContext context;
+      @Override
       public int executeCommand(CommandContext context) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0, n = context.getArgumentCount(); i < n; i++) {
@@ -271,6 +282,7 @@ public class MiscCommands implements CommandBundle {
         this.context = context;
         return 0;
       }
+      @Override
       public void lineRead(String line) {
         context.executeCommand(command);
       }
@@ -371,6 +383,7 @@ public class MiscCommands implements CommandBundle {
       RFSource source;
       RFListener listener;
       final MSP430 cpu = registry.getComponent(MSP430.class);
+      @Override
       public int executeCommand(CommandContext ctx) {
         this.context = ctx;
         String inout = context.getArgument(0);
@@ -383,6 +396,7 @@ public class MiscCommands implements CommandBundle {
           if (chip instanceof RFSource) {
             source = (RFSource) chip;
             listener = new RFListener() {
+                @Override
                 public void receivedByte(byte data) {
                     context.out.println(Utils.hex8(data));
                 }
@@ -427,6 +441,7 @@ public class MiscCommands implements CommandBundle {
     });
 
     handler.registerCommand("sysinfo", new BasicCommand("show info about the MSPSim system", "[-registry] [-config]") {
+        @Override
         public int executeCommand(CommandContext context) {
             ConfigManager config = registry.getComponent(ConfigManager.class, "config");
             context.out.println("--------- System info ----------\n");
@@ -449,6 +464,7 @@ public class MiscCommands implements CommandBundle {
     });
 
     handler.registerCommand("quit", new BasicCommand("exit MSPSim", "") {
+        @Override
         public int executeCommand(CommandContext context) {
           /* TODO: flush all files, etc.... */
           System.exit(0);
@@ -457,6 +473,7 @@ public class MiscCommands implements CommandBundle {
       });
 
     handler.registerCommand("exit", new BasicCommand("exit MSPSim", "") {
+        @Override
         public int executeCommand(CommandContext context) {
             System.exit(0);
             return 0;
@@ -464,6 +481,7 @@ public class MiscCommands implements CommandBundle {
     });
 
     handler.registerCommand("set", new BasicCommand("set a config parameter", "<parameter> <value>") {
+        @Override
         public int executeCommand(CommandContext context) {
             ConfigManager config = registry.getComponent(ConfigManager.class, "config");
             config.setProperty(context.getArgument(0), context.getArgument(1));

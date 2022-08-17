@@ -328,6 +328,7 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
     }
   }
 
+  @Override
   public void receiveCustomData(Object data) {
     if (!(data instanceof Byte)) {
       logger.fatal("Bad custom data: " + data);
@@ -358,6 +359,7 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
     }
 
     mote.getSimulation().scheduleEvent(new MspMoteTimeEvent(mote) {
+      @Override
       public void execute(long t) {
         super.execute(t);
         radio.receivedByte(inputByte);

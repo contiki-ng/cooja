@@ -55,10 +55,12 @@ public class LineSampleChart extends JFreeWindowDataHandler {
     dataset.addSeries(dataSeries);
   }
 
+  @Override
   public JComponent getComponent() {
     return panel;
   }
 
+  @Override
   public void lineRead(String line) {
     String parts[] = line.trim().split(" ");
     dataSeries.clear();
@@ -68,16 +70,19 @@ public class LineSampleChart extends JFreeWindowDataHandler {
     panel.repaint();
   }
 
+  @Override
   public void setProperty(String param, String[] args) {
     if ("title".equals(param)) {
       chart.setTitle(args[0]);
     }
   }
 
+  @Override
   public int getDataSeriesCount() {
     return 1;
   }
 
+  @Override
   public Series getDataSeries(int index) {
     return dataSeries;
   }

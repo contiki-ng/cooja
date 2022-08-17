@@ -166,6 +166,7 @@ public abstract class I2CUnit implements USARTListener {
          * Tx Event Handler
          */
         private TimeEvent txTrigger = new TimeEvent(0) {
+                @Override
                 public void execute(long t) {
                         /* Transmit the next pending byte to the uC */
                         if (numBytesTotal > numBytesRxTx) {

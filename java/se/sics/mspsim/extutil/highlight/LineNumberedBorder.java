@@ -57,6 +57,7 @@ public class LineNumberedBorder extends AbstractBorder {
     setLineNumberJustification(justify);
   }
 
+  @Override
   public Insets getBorderInsets(Component c) {
     return getBorderInsets(c, new Insets(0, 0, 0, 0));
   }
@@ -71,6 +72,7 @@ public class LineNumberedBorder extends AbstractBorder {
    *                Description of the Parameter
    * @return The borderInsets value
    */
+  @Override
   public Insets getBorderInsets(Component c, Insets insets) {
     // if c is not a SyntaxHighlighter...nothing is done...
     if (c instanceof SyntaxHighlighter) {
@@ -135,6 +137,7 @@ public class LineNumberedBorder extends AbstractBorder {
   // NOTE: This method is called every time the cursor blinks...
   // so...optimize (later and if possible) for speed...
   //
+  @Override
   public void paintBorder(Component c, Graphics g, int x, int y, int width,
       int height) {
 

@@ -56,6 +56,7 @@ public class FileTarget extends Target {
         this.out = out;
     }
 
+    @Override
     protected void handleLine(CommandContext context, String line) {
         try {
             out.write(line);
@@ -66,6 +67,7 @@ public class FileTarget extends Target {
         }
     }
 
+    @Override
     protected void closeTarget() {
         try {
             out.close();

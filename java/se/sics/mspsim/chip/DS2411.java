@@ -66,6 +66,7 @@ public class DS2411 extends Chip {
   private int[] macID = new int[]{1, 2, 3, 4, 5, 6};
 
   private TimeEvent stateEvent = new TimeEvent(0) {
+    @Override
     public void execute(long t) {
       switch (state) {
       case WAIT_FOR_RESET:
@@ -149,6 +150,7 @@ public class DS2411 extends Chip {
     }
   }
 
+  @Override
   public int getModeMax() {
     return 0;
   }
@@ -239,6 +241,7 @@ public class DS2411 extends Chip {
     macID[5] = n;
   }
 
+  @Override
   public int getConfiguration(int parameter) {
       return 0;
   }

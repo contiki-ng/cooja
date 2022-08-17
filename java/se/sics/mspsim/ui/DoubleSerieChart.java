@@ -53,6 +53,7 @@ public abstract class DoubleSerieChart extends AbstractChart {
     updateMinMax();
   }
 
+  @Override
   protected void updateMinMax() {
     this.minx = 0;
     this.maxx = data == null ? 0 : data.length;

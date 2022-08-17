@@ -76,6 +76,7 @@ public class Multiplier extends IOUnit {
     super("Multiplier", "Hardware Multiplier", cpu, memory, offset);
   }
 
+  @Override
   public int read(int address, boolean word, long cycles) {
     switch (address) {
     case MPY:
@@ -103,6 +104,7 @@ public class Multiplier extends IOUnit {
     }
   }
 
+  @Override
   public void write(int address, int data, boolean word, long cycles) {
     if (DEBUG) {
       log("write to: $" + Utils.hex(address, 4) + " data = " + data + " word = " + word);

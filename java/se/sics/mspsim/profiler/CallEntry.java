@@ -7,6 +7,7 @@ public class CallEntry {
     static class CallCounter implements Comparable<CallCounter> {
         public int count = 0;
 
+        @Override
         public int compareTo(CallCounter o) {
             return (count < o.count ? -1 : (count == o.count ? 0 : 1));
         }

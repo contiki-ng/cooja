@@ -90,18 +90,22 @@ public class BasicClockModule extends ClockSystem {
     //    reset(0);
   }
 
+  @Override
   public int getMaxDCOFrequency() {
     return MAX_DCO_FRQ;
   }
 
+  @Override
   public int getAddressRangeMin() {
     return DCOCTL;
   }
 
+  @Override
   public int getAddressRangeMax() {
     return BCSCTL2;
   }
 
+  @Override
   public void reset(int type) {
     write(DCOCTL, 0x60, false, cpu.cycles);
     write(BCSCTL1, 0x84, false, cpu.cycles);
@@ -109,6 +113,7 @@ public class BasicClockModule extends ClockSystem {
   }
 
   // do nothing?
+  @Override
   public int read(int address, boolean word, long cycles) {
     int val = memory[address];
     if (word) {
@@ -117,6 +122,7 @@ public class BasicClockModule extends ClockSystem {
     return val;
   }
 
+  @Override
   public void write(int address, int data, boolean word, long cycles) {
     // Currently ignores the word flag...
     if (DEBUG) log("Write to BasicClockModule: " +
@@ -177,6 +183,7 @@ public class BasicClockModule extends ClockSystem {
     }
   }
 
+  @Override
   public void interruptServiced(int vector) {
   }
 }

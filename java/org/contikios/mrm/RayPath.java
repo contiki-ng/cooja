@@ -62,6 +62,7 @@ public class RayPath {
     return types.get(i);
   }
   
+  @Override
   public String toString() {
     if (points.size() != types.size())
       return "Malformed ray path (differing sizes)";

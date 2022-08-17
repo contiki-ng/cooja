@@ -55,6 +55,7 @@ public class LineChart extends IntSerieChart {
     setName(name);
   }
 
+  @Override
   public void drawChart(Graphics2D g, double xfac, double yfac, int width, int height) {
     int[] lastData = this.data;
     if (lastData != null) {

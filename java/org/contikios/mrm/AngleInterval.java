@@ -290,6 +290,7 @@ class AngleInterval {
     return getSize() <= 0.001;
   }
   
+  @Override
   public String toString() {
     String retString = "";
     for (var subInterval : subIntervals) {
@@ -353,6 +354,7 @@ class AngleInterval {
     );
   }
   
+  @Override
   public boolean equals(Object object) {
     if (object == null)
       return false;

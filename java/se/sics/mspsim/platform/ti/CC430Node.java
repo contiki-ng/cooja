@@ -26,9 +26,11 @@ public class CC430Node extends GenericNode implements PortListener, USARTListene
         super("CC430", new CC430f5137Config());
     }
 
+    @Override
     public void dataReceived(USARTSource source, int data) {
     }
 
+    @Override
     public void portWrite(IOPort source, int data) {
 
     }
@@ -58,6 +60,7 @@ public class CC430Node extends GenericNode implements PortListener, USARTListene
         }
     }
 
+    @Override
     public void setupNode() {
         setupNodePorts();
 
@@ -71,6 +74,7 @@ public class CC430Node extends GenericNode implements PortListener, USARTListene
         }
     }
 
+    @Override
     public int getModeMax() {
         return 0;
     }

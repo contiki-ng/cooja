@@ -229,6 +229,7 @@ public class Timer extends IOUnit {
           return "CCR " + index;
       }
 
+      @Override
       public void execute(long t) {
           if (mode == STOP) {
               //System.out.println("**** IGNORING EXECUTION OF CCR - timer stopped!!!");
@@ -385,6 +386,7 @@ public class Timer extends IOUnit {
   }
 
   private TimeEvent counterTrigger = new TimeEvent(0, "Timer Counter Trigger") {
+      @Override
       public void execute(long t) {
           interruptPending = true;
           /* and can be something else if mode is another... */
@@ -438,6 +440,7 @@ public class Timer extends IOUnit {
     reset(0);
   }
 
+  @Override
   public void reset(int type) {
 
       /* reset the capture and compare registers */
@@ -471,6 +474,7 @@ public class Timer extends IOUnit {
   }
 
   // Should handle read of byte also (currently ignores that...)
+  @Override
   public int read(int address, boolean word, long cycles) {
 
 //      if (DEBUG) log("read from: $" + Utils.hex(address, 4));
@@ -598,6 +602,7 @@ public class Timer extends IOUnit {
     }
   }
 
+  @Override
   public void write(int address, int data, boolean word, long cycles) {
     // This does not handle word/byte difference yet... assumes it gets
     // all 16 bits when called!!!
@@ -939,6 +944,7 @@ public class Timer extends IOUnit {
 
   // The interrupt has been serviced...
   // Some flags should be cleared (the highest priority flags)?
+  @Override
   public void interruptServiced(int vector) {
     if (vector == ccr0Vector) {
       // Reset the interrupt trigger in "core".

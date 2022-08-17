@@ -211,6 +211,7 @@ public class CommandContext {
     return commandHandler.executeCommand(command, this);
   }
 
+  @Override
   public String toString() {
     return (pid >= 0 ? ("" + pid) : "?") + '\t' + (commandLine == null ? getCommandName() : commandLine);
   }

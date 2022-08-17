@@ -6,23 +6,28 @@ import javax.swing.JFrame;
 
 public class JFrameWindowManager implements WindowManager {
 
+    @Override
     public ManagedWindow createWindow(final String name) {
         ManagedWindow w = new ManagedWindow() {
             private JFrame window = new JFrame(name);
             private boolean restored = false;
 
+            @Override
             public void setSize(int width, int height) {
                 window.setSize(width, height);
             }
 
+            @Override
             public void setBounds(int x, int y, int width, int height) {
                 window.setBounds(x, y, width, height);
             }
 
+            @Override
             public void pack() {
                 window.pack();
             }
 
+            @Override
             public void add(Component component) {
                 window.add(component);
                 if (!restored) {
@@ -31,14 +36,17 @@ public class JFrameWindowManager implements WindowManager {
                 }
             }
 
+            @Override
             public void removeAll() {
                 window.removeAll();
             }
 
+            @Override
             public boolean isVisible() {
                 return window.isVisible();
             }
 
+            @Override
             public void setVisible(boolean b) {
                 if (b != window.isVisible()) {
                     if (b) {
@@ -51,10 +59,12 @@ public class JFrameWindowManager implements WindowManager {
                 window.setVisible(b);
             }
 
+            @Override
             public String getTitle() {
                 return window.getTitle();
             }
 
+            @Override
             public void setTitle(String name) {
                 window.setTitle(name);
             }

@@ -65,6 +65,7 @@ public class Test implements USARTListener {
     }
   }
 
+  @Override
   public void dataReceived(USARTSource source, int data) {
     if (data == '\n') {
       String line = lineBuffer.toString();

@@ -37,6 +37,7 @@ public class Exp1101Node extends GenericNode implements PortListener, USARTListe
         super("Exp1101", new MSP430f5437Config());
     }
 
+    @Override
     public void dataReceived(USARTSource source, int data) {
         radio.dataReceived(source, data);
 
@@ -46,6 +47,7 @@ public class Exp1101Node extends GenericNode implements PortListener, USARTListe
         }
     }
 
+    @Override
     public void portWrite(IOPort source, int data) {
                 if (source == port3) {
                         // Chip select = active low...
@@ -83,6 +85,7 @@ public class Exp1101Node extends GenericNode implements PortListener, USARTListe
         }
     }
 
+    @Override
     public void setupNode() {
         setupNodePorts();
 
@@ -96,6 +99,7 @@ public class Exp1101Node extends GenericNode implements PortListener, USARTListe
         }
     }
 
+    @Override
     public int getModeMax() {
         return 0;
     }

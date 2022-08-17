@@ -50,6 +50,7 @@ public abstract class BasicAsyncCommand extends BasicCommand implements AsyncCom
     super(cmdHelp, argHelp);
   }
 
+  @Override
   public Command getInstance() {
       try {
           return (Command) this.clone();

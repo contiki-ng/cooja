@@ -96,6 +96,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     servicedInterrupt = -1;
   }
 
+  @Override
   public void setCPU(MSP430Core cpu) {
     this.cpu = cpu;
   }
@@ -112,6 +113,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     ignoreFunctions.put(function, function);
   }
 
+  @Override
   public void profileCall(MapEntry entry, long cycles, int from) {
     if (cSP == callStack.length) {
       CallEntry[] tmp = new CallEntry[cSP + 64];
@@ -168,6 +170,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     }
   }
 
+  @Override
   public void profileReturn(long cycles) {
     if (cSP <= 0) {
       /* the stack pointer might have been messed with? */
@@ -244,6 +247,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     newIRQ = false;
   }
 
+  @Override
   public void profileInterrupt(int vector, long cycles) {
     servicedInterrupt = vector;
     interruptFrom = cpu.getPC();
@@ -257,6 +261,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     }
   }
 
+  @Override
   public void profileRETI(long cycles) {
     if (servicedInterrupt > -1) {
       interruptTime[servicedInterrupt] += cycles - lastInterruptTime[servicedInterrupt];
@@ -275,12 +280,14 @@ public class SimpleProfiler implements Profiler, EventListener {
     servicedInterrupt = -1;
   }
 
+  @Override
   public void resetProfile() {
     clearProfile();
     cSP = 0;
     servicedInterrupt = -1;
   }
 
+  @Override
   public void clearProfile() {
     if (profileData != null) {
       CallEntry[] entries =
@@ -298,10 +305,12 @@ public class SimpleProfiler implements Profiler, EventListener {
     }
   }
 
+  @Override
   public void printProfile(PrintStream out) {
     printProfile(out, new Properties());
   }
 
+  @Override
   public void printProfile(PrintStream out, Properties parameters) {
     String functionNameRegexp = parameters.getProperty(PARAM_FUNCTION_NAME_REGEXP);
     String profSort = parameters.getProperty(PARAM_SORT_MODE);
@@ -359,6 +368,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     HashMap<MapEntry,CallCounter> callers = callEntry.callers;
     List<Entry<MapEntry,CallCounter>> list = new ArrayList<Entry<MapEntry,CallCounter>>(callers.entrySet());
     Collections.sort(list, new Comparator<Entry<MapEntry,CallCounter>>() {
+        @Override
         public int compare(Entry<MapEntry,CallCounter> o1, Entry<MapEntry,CallCounter> o2) {
           return o2.getValue().compareTo(o1.getValue());
         }
@@ -380,6 +390,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     }
   }
 
+  @Override
   public void printStackTrace(PrintStream out) {
     int stackCount = cSP;
     out.println("Stack Trace: number of calls: " + stackCount
@@ -412,6 +423,7 @@ public class SimpleProfiler implements Profiler, EventListener {
       }
     }
 
+    @Override
     public int compare(CallEntry o1, CallEntry o2) {
       long diff;
       switch (mode) {
@@ -447,6 +459,7 @@ public class SimpleProfiler implements Profiler, EventListener {
         this.tag = tag;
     }
 
+    @Override
     public int compareTo(TagEntry o) {
       long diff = o.cycles - cycles;
       if (diff > 0) return 1;
@@ -457,6 +470,7 @@ public class SimpleProfiler implements Profiler, EventListener {
 
 
 
+  @Override
   public void setLogger(PrintStream out) {
     logger = out;
   }
@@ -507,6 +521,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     chip2.addEventListener(this);
   }
 
+  @Override
   public void event(EventSource source, String event, Object data) {
     TagEntry tagEntry = null;
     if ((tagEntry = startTags.get(event)) != null) {
@@ -523,14 +538,17 @@ public class SimpleProfiler implements Profiler, EventListener {
     }
   }
 
+  @Override
   public synchronized void addCallListener(CallListener listener) {
     callListeners = ArrayUtils.add(CallListener.class, callListeners, listener);
   }
 
+  @Override
   public synchronized void removeCallListener(CallListener listener) {
     callListeners = ArrayUtils.remove(callListeners, listener);
   }
 
+  @Override
   public String getCall(int i) {
     return callStack[cSP - i - 1].function.getInfo();
   }

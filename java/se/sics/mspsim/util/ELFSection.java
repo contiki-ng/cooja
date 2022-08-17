@@ -211,6 +211,7 @@ public class ELFSection {
   }
 
 
+  @Override
   public String toString() {
     String nameStr = getSectionName();
     return "name: " + nameStr +

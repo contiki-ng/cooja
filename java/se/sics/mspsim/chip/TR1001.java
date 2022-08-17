@@ -63,6 +63,7 @@ public class TR1001 extends Chip implements RFListener, RFSource {
     setMode(MODE_TXRX_OFF);
     usart.addUSARTListener(new USARTListener() {
 
+      @Override
       public void dataReceived(USARTSource source, int data) {
         RFListener listener = rfListener;
         if (getMode() != MODE_TXRX_ON) {
@@ -77,6 +78,7 @@ public class TR1001 extends Chip implements RFListener, RFSource {
     });
   }
 
+  @Override
   public void setMode(int mode) {
     super.setMode(mode);
   }
@@ -86,6 +88,7 @@ public class TR1001 extends Chip implements RFListener, RFSource {
     return MODE_MAX;
   }
 
+  @Override
   public String info() {
       return "Radio State: " + getModeName(getMode());
   }
@@ -103,6 +106,7 @@ public class TR1001 extends Chip implements RFListener, RFSource {
   /* Receive a byte from the radio medium
    * @see se.sics.mspsim.chip.RFListener#receivedByte(byte)
    */
+  @Override
   public void receivedByte(byte data) {
     if (getMode() == MODE_TXRX_OFF) {
       // Radio turned off
@@ -121,6 +125,7 @@ public class TR1001 extends Chip implements RFListener, RFSource {
     }
   }
 
+  @Override
   public int getConfiguration(int parameter) {
       return 0;
   }

@@ -65,6 +65,7 @@ public class CodeVisualizerSkin implements VisualizerSkin {
   private Visualizer visualizer = null;
 
   private final Timer repaintTimer = new Timer(100, new ActionListener() {
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (simulation.isRunning()) {
         visualizer.repaint();
@@ -73,11 +74,13 @@ public class CodeVisualizerSkin implements VisualizerSkin {
   });
 
   private final Observer simulationObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       visualizer.repaint();
     }
   };
 
+  @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
@@ -85,15 +88,18 @@ public class CodeVisualizerSkin implements VisualizerSkin {
     repaintTimer.start();
   }
 
+  @Override
   public void setInactive() {
     simulation.deleteObserver(simulationObserver);
     repaintTimer.stop();
   }
 
+  @Override
   public Color[] getColorOf(Mote mote) {
     return null;
   }
 
+  @Override
   public void paintBeforeMotes(Graphics g) {
   }
 
@@ -113,6 +119,7 @@ public class CodeVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public void paintAfterMotes(Graphics g) {
     FontMetrics fm = g.getFontMetrics();
     g.setColor(Color.BLACK);
@@ -130,6 +137,7 @@ public class CodeVisualizerSkin implements VisualizerSkin {
     }
   }
 
+  @Override
   public Visualizer getVisualizer() {
     return visualizer;
   }

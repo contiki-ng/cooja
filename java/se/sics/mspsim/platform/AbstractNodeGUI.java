@@ -78,10 +78,12 @@ public abstract class AbstractNodeGUI extends JComponent implements ServiceCompo
         setOpaque(true);
     }
 
+    @Override
     public Status getStatus() {
         return status;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -94,11 +96,13 @@ public abstract class AbstractNodeGUI extends JComponent implements ServiceCompo
         return registry;
     }
 
+    @Override
     public final void init(String name, ComponentRegistry registry) {
         this.name = name;
         this.registry = registry;
     }
 
+    @Override
     public final void start() {
         File fp = new File(nodeImageName);
         if (!fp.canRead()) {
@@ -142,6 +146,7 @@ public abstract class AbstractNodeGUI extends JComponent implements ServiceCompo
         return imageURL;
     }
 
+    @Override
     public final void stop() {
         status = Status.STOPPED;
         stopGUI();
@@ -155,6 +160,7 @@ public abstract class AbstractNodeGUI extends JComponent implements ServiceCompo
 
     protected abstract void stopGUI();
 
+    @Override
     protected void paintComponent(Graphics g) {
         Color old = g.getColor();
         g.setColor(getBackground());

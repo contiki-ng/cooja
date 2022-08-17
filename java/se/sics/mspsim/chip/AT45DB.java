@@ -130,6 +130,7 @@ public class AT45DB extends ExternalFlash implements USARTListener {
   private byte[] buffer2 = new byte[PAGE_SIZE];
 
   private TimeEvent writeEvent = new TimeEvent(0) {
+    @Override
     public void execute(long t) {
       setReady(true);
     }};
@@ -145,6 +146,7 @@ public class AT45DB extends ExternalFlash implements USARTListener {
         status &= ~STATUS_RDY;
     }
 
+    @Override
     public void dataReceived(USARTSource source, int data) {
       int buf_num = 1;
 
@@ -361,6 +363,7 @@ public class AT45DB extends ExternalFlash implements USARTListener {
       }
     }
 
+    @Override
     public int getModeMax() {
       return 0;
     }

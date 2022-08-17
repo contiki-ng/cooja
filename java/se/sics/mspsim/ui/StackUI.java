@@ -163,6 +163,7 @@ public class StackUI extends JPanel implements ServiceComponent {
 
       registerMonitor = new RegisterMonitor.Adapter() {
           private int m = 0;
+          @Override
           public void notifyWriteBefore(int register, int data, AccessMode mode) {
               int size = stackStartAddress - data;
               if (minData[pos] > size) {
@@ -194,6 +195,7 @@ public class StackUI extends JPanel implements ServiceComponent {
       };
   }
 
+  @Override
   public void paint(Graphics g) {
     if (update) {
       update = false;
@@ -219,19 +221,23 @@ public class StackUI extends JPanel implements ServiceComponent {
     }
   }
 
+  @Override
   public Status getStatus() {
     return status;
   }
 
+  @Override
   public void init(String name, ComponentRegistry registry) {
     this.registry = registry;
     this.name = name;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public void start() {
     setup();
     status = Status.STARTED;
@@ -239,6 +245,7 @@ public class StackUI extends JPanel implements ServiceComponent {
     window.setVisible(true);
   }
 
+  @Override
   public void stop() {
     status = Status.STOPPED;
     window.setVisible(false);

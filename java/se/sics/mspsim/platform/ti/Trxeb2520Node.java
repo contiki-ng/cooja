@@ -41,6 +41,7 @@ public class Trxeb2520Node extends GenericNode implements PortListener, USARTLis
                 super("Trxeb2520", new MSP430f5437Config());
         }
 
+        @Override
         public void dataReceived(USARTSource source, int data) {
                 radio.dataReceived(source, data);
 
@@ -50,6 +51,7 @@ public class Trxeb2520Node extends GenericNode implements PortListener, USARTLis
                 }
         }
 
+        @Override
         public void portWrite(IOPort source, int data) {
                 if (source == port1) {
                         radio.setVRegOn((data & CC2520_VREG) != 0);
@@ -94,10 +96,12 @@ public class Trxeb2520Node extends GenericNode implements PortListener, USARTLis
                 }
         }
 
+        @Override
         public void setupNode() {
                 setupNodePorts();
         }
 
+        @Override
         public int getModeMax() {
                 return 0;
         }

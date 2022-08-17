@@ -8,6 +8,7 @@ public class FileCommands implements CommandBundle {
 
     private final Hashtable <String,Target> fileTargets = new Hashtable<String,Target>();
 
+    @Override
     public void setupCommands(final ComponentRegistry registry, CommandHandler handler) {
         // TODO: this should also be "registered" as a "sink".
         // probably this should be handled using ">" instead!
@@ -21,6 +22,7 @@ public class FileCommands implements CommandBundle {
             "redirect to file and standard out", "<filename>", true, true));
 
         handler.registerCommand("fclose", new BasicCommand("close the specified file", "<filename>") {
+          @Override
           public int executeCommand(CommandContext context) {
             String name = context.getArgument(0);
             Target ft = fileTargets.get(name);
@@ -35,6 +37,7 @@ public class FileCommands implements CommandBundle {
         });
 
         handler.registerCommand("files", new BasicCommand("list open files", "") {
+          @Override
           public int executeCommand(CommandContext context) {
             FileTarget[] files = null;
             synchronized (fileTargets) {

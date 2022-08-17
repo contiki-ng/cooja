@@ -104,6 +104,7 @@ public class MSP430f5437Config extends MSP430Config {
         // bsl, IO, etc at a later stage...
     }
 
+    @Override
     public int setup(MSP430Core cpu, ArrayList<IOUnit> ioUnits) {
 
         Multiplier32 mp = new Multiplier32(cpu, cpu.memory, 0x4c0);

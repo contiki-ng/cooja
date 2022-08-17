@@ -79,6 +79,7 @@ public class ESBGui extends AbstractNodeGUI implements ADCInput {
 
   private final ESBNode node;
   private final StateChangeListener ledsListener = new StateChangeListener() {
+      @Override
       public void stateChanged(Object source, int oldState, int newState) {
           repaint(LED_BOUNDS);
       }
@@ -96,6 +97,7 @@ public class ESBGui extends AbstractNodeGUI implements ADCInput {
   @Override
   protected void startGUI() {
     mouseMotionListener = new MouseMotionAdapter() {
+      @Override
       public void mouseMoved(MouseEvent e) {
         //    System.out.println("Mouse moved: " + e.getX() + "," + e.getY());
         int x = e.getX();
@@ -108,6 +110,7 @@ public class ESBGui extends AbstractNodeGUI implements ADCInput {
 
     mouseListener = new MouseAdapter() {
       // For the button sensor on the ESB nodes.
+      @Override
       public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
           int x = e.getX();
@@ -131,6 +134,7 @@ public class ESBGui extends AbstractNodeGUI implements ADCInput {
         }
       }
 
+      @Override
       public void mouseReleased(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
           if (buttonDown) {
@@ -188,6 +192,7 @@ public class ESBGui extends AbstractNodeGUI implements ADCInput {
   }
 
   private byte[] data = new byte[4];
+  @Override
   public int nextData() {
     if (inDataLine != null) {
       inDataLine.read(data, 0, 4);
@@ -196,6 +201,7 @@ public class ESBGui extends AbstractNodeGUI implements ADCInput {
     return (((data[1] & 0xff) << 8) | data[0] & 0xff) >> 4;
   }
 
+  @Override
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
 

@@ -260,6 +260,7 @@ public abstract class GenericNode extends Chip implements Runnable {
   }
 
 
+  @Override
   public void run() {
     if (!cpu.isRunning()) {
       try {
@@ -328,6 +329,7 @@ public abstract class GenericNode extends Chip implements Runnable {
     return elf;
   }
 
+  @Override
   public int getConfiguration(int param) {
       return 0;
   }

@@ -65,9 +65,11 @@ public class MspCompileDialog extends AbstractCompileDialog {
     addCompilationTipsTab(tabbedPane);
   }
 
+  @Override
   public Class<? extends MoteInterface>[] getAllMoteInterfaces() {
 	  return ((MspMoteType)moteType).getAllMoteInterfaceClasses();
   }
+  @Override
   public Class<? extends MoteInterface>[] getDefaultMoteInterfaces() {
 	  return ((MspMoteType)moteType).getDefaultMoteInterfaceClasses();
   }
@@ -83,6 +85,7 @@ public class MspCompileDialog extends AbstractCompileDialog {
     parent.addTab("Tips", null, new JScrollPane(textArea), "Compilation tips");
   }
 
+  @Override
   public boolean canLoadFirmware(File file) {
     if (file.getName().endsWith("." + target)) {
       return true;
@@ -90,6 +93,7 @@ public class MspCompileDialog extends AbstractCompileDialog {
     return file.getName().equals("main.exe");
   }
 
+  @Override
   public String getDefaultCompileCommands(File source) {
     /* TODO Split into String[] */
     return
@@ -97,14 +101,17 @@ public class MspCompileDialog extends AbstractCompileDialog {
     getExpectedFirmwareFile(source).getName() + " TARGET=" + target;
   }
 
+  @Override
   public File getExpectedFirmwareFile(File source) {
     return ((MspMoteType)moteType).getExpectedFirmwareFile(source);
   }
 
+  @Override
   public void writeSettingsToMoteType() {
     /* Nothing to do */
   }
 
+  @Override
   protected String getTargetName() {
   	/* Override me */
   	return target;

@@ -167,6 +167,7 @@ public class WindowUtils {
       this.key = key;
     }
 
+    @Override
     public void windowClosing(WindowEvent e) {
       Window source = (Window) e.getSource();
       saveWindowBounds(key, source);
@@ -187,6 +188,7 @@ public class WindowUtils {
       super("WindowUtils-Shutdown");
     }
 
+    @Override
     public void run() {
       Hashtable<Window,String> table = exitTable;
       if (table != null && table.size() > 0) {

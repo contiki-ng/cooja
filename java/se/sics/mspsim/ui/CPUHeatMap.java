@@ -44,6 +44,7 @@ public class CPUHeatMap extends JComponent implements MemoryMonitor {
         window.add(this);
 
         ticker = new Timer(50, new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent arg0) {
                 repaint();
             }
@@ -52,6 +53,7 @@ public class CPUHeatMap extends JComponent implements MemoryMonitor {
 
         setFocusable(true);
         addKeyListener(new KeyAdapter() {
+            @Override
             public void keyPressed(KeyEvent ke) {
                 if (ke.getKeyChar() == 'm') {
                     mode = mode ^ 1;
@@ -110,6 +112,7 @@ public class CPUHeatMap extends JComponent implements MemoryMonitor {
         }
     }
 
+    @Override
     public void paint(Graphics g) {
         updateImage();
         g.drawImage(heatmap, 0, 0, getWidth(), getHeight(), this);

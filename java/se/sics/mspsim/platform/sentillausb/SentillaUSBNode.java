@@ -116,6 +116,7 @@ public class SentillaUSBNode extends CC2420Node {
         }
     }
 
+    @Override
     public void setupGUI() {
         if (gui == null) {
             gui = new SentillaUSBGui(this);

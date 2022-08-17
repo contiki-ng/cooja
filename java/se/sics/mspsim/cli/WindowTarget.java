@@ -32,9 +32,11 @@ public class WindowTarget extends Target {
     window.setVisible(true);
   }
 
+  @Override
   protected void handleLine(final CommandContext context, final String line) {
     if (line != null && window != null) {
       java.awt.EventQueue.invokeLater(new Runnable() {
+        @Override
         public void run() {
           processLine(context, line);
         }
@@ -102,6 +104,7 @@ public class WindowTarget extends Target {
     }
   }
 
+  @Override
   protected void closeTarget() {
       if (window != null) {
           window.setVisible(false);

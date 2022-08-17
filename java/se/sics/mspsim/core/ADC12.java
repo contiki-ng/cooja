@@ -131,6 +131,7 @@ public class ADC12 extends IOUnit {
   private int adc12Vector = 7;
 
   private TimeEvent adcTrigger = new TimeEvent(0) {
+    @Override
     public void execute(long t) {
 //      System.out.println(getName() + " **** executing update timers at " + t + " cycles=" + cpu.cycles);
       convert();
@@ -142,6 +143,7 @@ public class ADC12 extends IOUnit {
     super("ADC12", cpu, cpu.memory, 0);
   }
 
+  @Override
   public void reset(int type) {
     enableConversion = false;
     startConversion = false;
@@ -168,6 +170,7 @@ public class ADC12 extends IOUnit {
   }
 
   // write a value to the IO unit
+  @Override
   public void write(int address, int value, boolean word, long cycles) {
     switch (address) {
     case ADC12CTL0:
@@ -229,6 +232,7 @@ public class ADC12 extends IOUnit {
   }
 
   // read a value from the IO unit
+  @Override
   public int read(int address, boolean word, long cycles) {
     switch(address) {
     case ADC12CTL0:
@@ -297,6 +301,7 @@ public class ADC12 extends IOUnit {
     }
   }
 
+  @Override
   public void interruptServiced(int vector) {
   }
 }

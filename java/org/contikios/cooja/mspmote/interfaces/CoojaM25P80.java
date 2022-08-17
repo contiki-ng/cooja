@@ -122,6 +122,7 @@ public class CoojaM25P80 extends M25P80 implements CoffeeImage {
    * XXX Coffee specific: uses start offset 
    * @see org.contikios.coffee.CoffeeImage#erase(int, int)
    */
+  @Override
   public void erase(int size, int offset) {
     Arrays.fill(data, COFFEE_CONF.startOffset + offset, size, (byte)0);
   }
@@ -130,6 +131,7 @@ public class CoojaM25P80 extends M25P80 implements CoffeeImage {
    * XXX Coffee specific: uses start offset 
    * @see org.contikios.coffee.CoffeeImage#getConfiguration()
    */
+  @Override
   public CoffeeConfiguration getConfiguration() {
     return COFFEE_CONF;
   }
@@ -138,6 +140,7 @@ public class CoojaM25P80 extends M25P80 implements CoffeeImage {
    * XXX Coffee specific: uses start offset 
    * @see org.contikios.coffee.CoffeeImage#read(byte[], int, int)
    */
+  @Override
   public void read(byte[] bytes, int size, int offset) {
     System.arraycopy(data, COFFEE_CONF.startOffset + offset, bytes, 0, size);
   }
@@ -146,6 +149,7 @@ public class CoojaM25P80 extends M25P80 implements CoffeeImage {
    * XXX Coffee specific: uses start offset 
    * @see org.contikios.coffee.CoffeeImage#write(byte[], int, int)
    */
+  @Override
   public void write(byte[] bytes, int size, int offset) {
     System.arraycopy(bytes, 0, data, COFFEE_CONF.startOffset + offset, size);
   }

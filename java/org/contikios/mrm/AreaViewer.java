@@ -276,6 +276,7 @@ public class AreaViewer extends VisPlugin {
 
     // Create canvas
     canvas = new JPanel() {
+      @Override
       public void paintComponent(Graphics g) {
         super.paintComponent(g);
         repaintCanvas((Graphics2D) g);
@@ -379,6 +380,7 @@ public class AreaViewer extends VisPlugin {
     JRadioButton fixedColoringButton = new JRadioButton("Fixed");
     fixedColoringButton.setSelected(true);
     fixedColoringButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         coloringIsFixed = true;
       }
@@ -388,6 +390,7 @@ public class AreaViewer extends VisPlugin {
     JRadioButton relativeColoringButton = new JRadioButton("Relative");
     relativeColoringButton.setSelected(true);
     relativeColoringButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         coloringIsFixed = false;
       }
@@ -401,6 +404,7 @@ public class AreaViewer extends VisPlugin {
     visualizeChannelPanel.add(fixedVsRelative);
 
     coloringIntervalPanel = new JPanel() {
+      @Override
       public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -495,6 +499,7 @@ public class AreaViewer extends VisPlugin {
     signalStrengthButton.setActionCommand("signalStrengthButton");
     signalStrengthButton.setSelected(true);
     signalStrengthButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH;
       }
@@ -505,6 +510,7 @@ public class AreaViewer extends VisPlugin {
     signalStrengthVarButton.setActionCommand("signalStrengthVarButton");
     signalStrengthVarButton.setSelected(false);
     signalStrengthVarButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH_VAR;
       }
@@ -515,6 +521,7 @@ public class AreaViewer extends VisPlugin {
     SNRButton.setActionCommand("SNRButton");
     SNRButton.setSelected(false);
     SNRButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         dataTypeToVisualize = ChannelModel.TransmissionData.SNR;
       }
@@ -525,6 +532,7 @@ public class AreaViewer extends VisPlugin {
     SNRVarButton.setActionCommand("SNRVarButton");
     SNRVarButton.setSelected(false);
     SNRVarButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         dataTypeToVisualize = ChannelModel.TransmissionData.SNR_VAR;
       }
@@ -535,6 +543,7 @@ public class AreaViewer extends VisPlugin {
     probabilityButton.setActionCommand("probabilityButton");
     probabilityButton.setSelected(false);
     probabilityButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         dataTypeToVisualize = ChannelModel.TransmissionData.PROB_OF_RECEPTION;
       }
@@ -545,6 +554,7 @@ public class AreaViewer extends VisPlugin {
     rmsDelaySpreadButton.setActionCommand("rmsDelaySpreadButton");
     rmsDelaySpreadButton.setSelected(false);
     rmsDelaySpreadButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         dataTypeToVisualize = ChannelModel.TransmissionData.DELAY_SPREAD_RMS;
       }
@@ -574,6 +584,7 @@ public class AreaViewer extends VisPlugin {
 
     JButton recalculateVisibleButton = new JButton("Paint radio channel");
     paintEnvironmentAction = new AbstractAction("Paint radio channel") {
+      @Override
       public void actionPerformed(ActionEvent e) {
         repaintRadioEnvironment();
       }
@@ -633,6 +644,7 @@ public class AreaViewer extends VisPlugin {
     private boolean temporaryPan = false;
     private boolean trackedPreviously = false;
 
+    @Override
     public void mouseReleased(MouseEvent e) {
       if (temporaryZoom) {
         temporaryZoom = false;
@@ -657,6 +669,7 @@ public class AreaViewer extends VisPlugin {
       }
     }
 
+    @Override
     public void mousePressed(final MouseEvent e) {
       if (e.isControlDown()) {
         temporaryZoom = true;
@@ -721,11 +734,17 @@ public class AreaViewer extends VisPlugin {
       /* Track */
       if (inTrackMode && selectedRadio != null) {
         TxPair txPair = new TxPair() {
+          @Override
           public double getFromX() { return selectedRadio.getPosition().getXCoordinate(); }
+          @Override
           public double getFromY() { return selectedRadio.getPosition().getYCoordinate(); }
+          @Override
           public double getToX() { return e.getX() / currentZoomX - currentPanX; }
+          @Override
           public double getToY() { return e.getY() / currentZoomY - currentPanY; }
+          @Override
           public double getTxPower() { return selectedRadio.getCurrentOutputPower(); }
+          @Override
           public double getTxGain() {
             if (!(selectedRadio instanceof DirectionalAntennaRadio)) {
               return 0;
@@ -733,6 +752,7 @@ public class AreaViewer extends VisPlugin {
             DirectionalAntennaRadio r = (DirectionalAntennaRadio)selectedRadio;
             return r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
           }
+          @Override
           public double getRxGain() {
             return 0;
           }
@@ -763,8 +783,10 @@ public class AreaViewer extends VisPlugin {
    * Listens to mouse movements when in pan mode
    */
   private final MouseMotionListener canvasPanModeHandler = new MouseMotionListener() {
+    @Override
     public void mouseMoved(MouseEvent e) {
     }
+    @Override
     public void mouseDragged(MouseEvent e) {
       if (lastHandledPosition == null) {
         lastHandledPosition = e.getPoint();
@@ -785,8 +807,10 @@ public class AreaViewer extends VisPlugin {
    * Listens to mouse movements when in zoom mode
    */
   private final MouseMotionListener canvasZoomModeHandler = new MouseMotionListener() {
+    @Override
     public void mouseMoved(MouseEvent e) {
     }
+    @Override
     public void mouseDragged(MouseEvent e) {
       if (lastHandledPosition == null) {
         lastHandledPosition = e.getPoint();
@@ -812,6 +836,7 @@ public class AreaViewer extends VisPlugin {
    * Selects which mouse mode the canvas should be in (select/pan/zoom)
    */
   private final ActionListener canvasModeHandler = new ActionListener() {
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("set select mode")) {
         // Select mode, no mouse motion listener needed
@@ -861,6 +886,7 @@ public class AreaViewer extends VisPlugin {
    * Selects which graphical parts should be painted
    */
   private final ActionListener selectGraphicsHandler = new ActionListener() {
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("toggle background")) {
         drawBackgroundImage = ((JCheckBox) e.getSource()).isSelected();
@@ -889,6 +915,7 @@ public class AreaViewer extends VisPlugin {
      * Choosable file filter that supports tif, gif, jpg, png, bmp.
      */
     class ImageFilter extends FileFilter {
+      @Override
       public boolean accept(File f) {
         if (f.isDirectory()) {
           return true;
@@ -905,6 +932,7 @@ public class AreaViewer extends VisPlugin {
             filename.endsWith(".png") || filename.endsWith(".PNG");
       }
 
+      @Override
       public String getDescription() {
         return "All supported images";
       }
@@ -993,6 +1021,7 @@ public class AreaViewer extends VisPlugin {
         this.getRootPane().setDefaultButton(okButton);
         final JButton cancelButton = new JButton("Cancel");
         okButton.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             virtualStartX = ((Number) virtualStartXField.getValue()).doubleValue();
             virtualStartY = ((Number) virtualStartYField.getValue()).doubleValue();
@@ -1004,6 +1033,7 @@ public class AreaViewer extends VisPlugin {
 }
         });
         cancelButton.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             terminatedOK = false;
             dispose();
@@ -1042,6 +1072,7 @@ public class AreaViewer extends VisPlugin {
 
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("set custom bitmap")) {
         if (!setCustomBitmap() || !analyzeBitmapForObstacles()) {
@@ -1183,6 +1214,7 @@ public class AreaViewer extends VisPlugin {
 
       // Thread that will perform the work
       final Runnable runnable = new Runnable() {
+        @Override
         public void run() {
           try {
             /* Remove already existing obstacles */
@@ -1270,9 +1302,11 @@ public class AreaViewer extends VisPlugin {
      * Listens to preview mouse motion event (when picking color)
      */
     private final MouseMotionListener myMouseMotionListener = new MouseMotionListener() {
+      @Override
       public void mouseDragged(MouseEvent e) {
 
       }
+      @Override
       public void mouseMoved(MouseEvent e) {
         // Convert from mouse to image pixel position
         Point pixelPoint = new Point(
@@ -1300,18 +1334,23 @@ public class AreaViewer extends VisPlugin {
      * Listens to preview mouse event (when picking color)
      */
     private final MouseListener myMouseListener = new MouseListener() {
+      @Override
       public void mouseClicked(MouseEvent e) {
 
       }
+      @Override
       public void mouseReleased(MouseEvent e) {
 
       }
+      @Override
       public void mouseEntered(MouseEvent e) {
 
       }
+      @Override
       public void mouseExited(MouseEvent e) {
 
       }
+      @Override
       public void mousePressed(MouseEvent e) {
         // Stop picking color again; remove mouse listeners and reset mouse cursor
         MouseListener[] allMouseListeners = canvasPanel.getMouseListeners();
@@ -1440,6 +1479,7 @@ public class AreaViewer extends VisPlugin {
         var tempButton = new JButton("Pick color");
         tempPanel.add(tempButton);
         tempButton.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             // Set to color picker mode (if not already there)
             if (canvasPanel.getMouseMotionListeners().length == 0) {
@@ -1452,6 +1492,7 @@ public class AreaViewer extends VisPlugin {
         tempPanel.add(Box.createHorizontalStrut(5));
         tempPanel.add(tempButton = new JButton("Preview obstacles"));
         tempButton.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             obstacleImage = createObstacleImage();
             canvasPanel.repaint();
@@ -1463,6 +1504,7 @@ public class AreaViewer extends VisPlugin {
 
         // Preview image
         tempPanel = new JPanel() {
+          @Override
           public void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.drawImage(imageToAnalyze, 0, 0, getWidth(), getHeight(), this);
@@ -1483,6 +1525,7 @@ public class AreaViewer extends VisPlugin {
         tempPanel.add(Box.createHorizontalGlue());
         tempPanel.add(tempButton = new JButton("Cancel"));
         tempButton.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             dispose();
           }
@@ -1490,6 +1533,7 @@ public class AreaViewer extends VisPlugin {
         tempPanel.add(Box.createHorizontalStrut(5));
         tempPanel.add(tempButton = new JButton("OK"));
         tempButton.addActionListener(new ActionListener() {
+          @Override
           public void actionPerformed(ActionEvent e) {
             obstacleImage = createObstacleImage();
             exitedOK = true;
@@ -1618,6 +1662,7 @@ public class AreaViewer extends VisPlugin {
    * Listens to settings changes in the radio medium.
    */
   private final Observer radioMediumSettingsObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       // Clear selected radio (if any selected) and radio medium coverage
       selectedRadio = null;
@@ -1632,6 +1677,7 @@ public class AreaViewer extends VisPlugin {
    * Listens to settings changes in the radio medium.
    */
   private final Observer radioMediumActivityObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       // Just remove any selected radio (it may have been removed)
       canvas.repaint();
@@ -1642,6 +1688,7 @@ public class AreaViewer extends VisPlugin {
    * Listens to settings changes in the channel model.
    */
   private final Observer channelModelSettingsObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       needToRepaintObstacleImage = true;
       canvas.repaint();
@@ -1730,6 +1777,7 @@ public class AreaViewer extends VisPlugin {
 
         // Thread that will perform the work
         final Runnable runnable = new Runnable() {
+          @Override
           public void run() {
             try {
 
@@ -1744,16 +1792,23 @@ public class AreaViewer extends VisPlugin {
                   final double xx = x;
                   final double yy = y;
                   TxPair txPair = new TxPair() {
+                    @Override
                     public double getDistance() {
                       double w = getFromX() - getToX();
                       double h = getFromY() - getToY();
                       return Math.sqrt(w*w+h*h);
                     }
+                    @Override
                     public double getFromX() { return radioX; }
+                    @Override
                     public double getFromY() { return radioY; }
+                    @Override
                     public double getToX() { return startX + width * xx/resolution.width; }
+                    @Override
                     public double getToY() { return startY + height * yy/resolution.height; }
+                    @Override
                     public double getTxPower() { return selectedRadio.getCurrentOutputPower(); }
+                    @Override
                     public double getTxGain() {
                       if (!(selectedRadio instanceof DirectionalAntennaRadio)) {
                         return 0;
@@ -1761,6 +1816,7 @@ public class AreaViewer extends VisPlugin {
                       DirectionalAntennaRadio r = (DirectionalAntennaRadio)selectedRadio;
                       return r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
                     }
+                    @Override
                     public double getRxGain() {
                       return 0;
                     }
@@ -2273,6 +2329,7 @@ public class AreaViewer extends VisPlugin {
     return hitRadios;
   }
 
+  @Override
   public void closePlugin() {
     // Remove all our observers
 
@@ -2302,6 +2359,7 @@ public class AreaViewer extends VisPlugin {
    * @see #setConfigXML(Collection, boolean) 
    * @return XML element collection
    */
+  @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
     Element element;
@@ -2393,6 +2451,7 @@ public class AreaViewer extends VisPlugin {
    *          Config XML elements
    * @return True if config was set successfully, false otherwise
    */
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("selected")) {

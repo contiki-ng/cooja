@@ -75,6 +75,7 @@ public class SentillaUSBGui extends AbstractNodeGUI {
 
     private final SentillaUSBNode node;
     private final StateChangeListener ledsListener = new StateChangeListener() {
+        @Override
         public void stateChanged(Object source, int oldState, int newState) {
             repaint(LEDS_CLIP);
         }

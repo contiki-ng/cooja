@@ -40,6 +40,7 @@ public class JavaScanner extends Scanner {
   }
 
   /** Override the read method from the Scanner class. */
+  @Override
   protected int read() {
     int type, saveStart = 0;
     if (debug)
@@ -657,6 +658,7 @@ public class JavaScanner extends Scanner {
 
   // Override initSymbolTable
 
+  @Override
   protected void initSymbolTable() {
     lookup(KEYWORD, "abstract");
     if (version >= 14)
@@ -721,6 +723,7 @@ public class JavaScanner extends Scanner {
 
   private Symbol temp = new Symbol(0, null);
 
+  @Override
   protected Symbol lookup(int type, String name) {
     if (type != IDENTIFIER)
       return super.lookup(type, name);

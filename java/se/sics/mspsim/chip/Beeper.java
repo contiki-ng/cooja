@@ -98,6 +98,7 @@ public class Beeper extends Chip {
         }
         if (soundEvent == null) {
             soundEvent = new TimeEvent(0, "Beeper") {
+                @Override
                 public void execute(long t) {
                     if (isSoundEnabled) {
                         ioTick(t);
@@ -188,16 +189,19 @@ public class Beeper extends Chip {
         }
     }
 
+    @Override
     public int getModeMax() {
         return MODE_MAX;
     }
 
+    @Override
     public String info() {
         return "Volume: " + getVolume() + " Beep: " + (beepOn ? "on" : "off")
         + " Sound Enabled: " + isSoundEnabled;
     }
 
     /* just return some value */
+    @Override
     public int getConfiguration(int parameter) {
         return beepOn ? 1 : 0;
     }

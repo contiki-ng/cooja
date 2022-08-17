@@ -57,11 +57,13 @@ import se.sics.mspsim.util.StackMonitor;
  */
 public class ProfilerCommands implements CommandBundle {
 
+  @Override
   public void setupCommands(final ComponentRegistry registry, CommandHandler ch) {
     final MSP430 cpu = registry.getComponent(MSP430.class);
     if (cpu != null) {
       ch.registerCommand("profile", new BasicCommand("show profile information",
           "[-clear] [-sort column] [-showcallers] [regexp]") {
+        @Override
         public int executeCommand(final CommandContext context) {
           Profiler profiler = cpu.getProfiler();
           if (profiler == null) {
@@ -128,6 +130,7 @@ public class ProfilerCommands implements CommandBundle {
       });
 
       ch.registerCommand("stacktrace", new BasicCommand("show stack trace", "") {
+        @Override
         public int executeCommand(CommandContext context) {
           Profiler profiler = cpu.getProfiler();
           if (profiler == null) {
@@ -140,6 +143,7 @@ public class ProfilerCommands implements CommandBundle {
       });
 
       ch.registerCommand("stackprof", new BasicCommand("Start stack profiler", "") {
+          @Override
           public int executeCommand(CommandContext context) {
               new StackMonitor(cpu);
               return 0;
@@ -165,6 +169,7 @@ public class ProfilerCommands implements CommandBundle {
       ch.registerCommand("logevents", new BasicAsyncCommand("log events", "[chips...]") {
         Chip[] chips;
         EventListener eventListener;
+        @Override
         public int executeCommand(final CommandContext context) {
             if (context.getArgumentCount() == 0) {
                 context.out.println("Available chips:");
@@ -189,6 +194,7 @@ public class ProfilerCommands implements CommandBundle {
                 }
             }
             eventListener = new EventListener() {
+                @Override
                 public void event(EventSource source, String event, Object data) {
                     context.out.println("Event:" + source.getName() + ":" + event);
                 }
@@ -198,6 +204,7 @@ public class ProfilerCommands implements CommandBundle {
             }
             return 0;
         }
+        @Override
         public void stopCommand(CommandContext context) {
             for (Chip chip : chips) {
                 chip.removeEventListener(eventListener);
@@ -206,6 +213,7 @@ public class ProfilerCommands implements CommandBundle {
       });
 
       ch.registerCommand("tagprof", new BasicCommand("profile between two events", "") {
+        @Override
         public int executeCommand(CommandContext context) {
           String event1 = context.getArgument(0);
           String event2 = context.getArgument(1);
@@ -230,6 +238,7 @@ public class ProfilerCommands implements CommandBundle {
       });
 
       ch.registerCommand("printtags", new BasicCommand("print tags profile", "") {
+        @Override
         public int executeCommand(CommandContext context) {
           Profiler profiler = cpu.getProfiler();
           SimpleProfiler sprof = (SimpleProfiler) profiler;
@@ -240,6 +249,7 @@ public class ProfilerCommands implements CommandBundle {
 
 
       ch.registerCommand("logcalls", new BasicAsyncCommand("log function calls", "") {
+        @Override
         public int executeCommand(CommandContext context) {
           Profiler profiler = cpu.getProfiler();
           if (profiler == null) {
@@ -249,6 +259,7 @@ public class ProfilerCommands implements CommandBundle {
           profiler.setLogger(context.out);
           return 0;
         }
+        @Override
         public void stopCommand(CommandContext context) {
           Profiler profiler = cpu.getProfiler();
           if (profiler != null) {
@@ -259,6 +270,7 @@ public class ProfilerCommands implements CommandBundle {
 
       ch.registerCommand("profiler", new BasicCommand("configure profiler",
           "<command> <arguments>") {
+            @Override
             public int executeCommand(CommandContext context) {
               // TODO: add more API's to the Profiler???
               SimpleProfiler profiler = (SimpleProfiler) cpu.getProfiler();
@@ -281,12 +293,14 @@ public class ProfilerCommands implements CommandBundle {
       ch.registerCommand("readmap", new BasicAsyncCommand("read map", "") {
           private CPUHeatMap hm;
 
+          @Override
           public int executeCommand(CommandContext context) {
               hm = new CPUHeatMap(cpu, registry.getComponent(WindowManager.class));
               cpu.addGlobalMonitor(hm);
               return 0;
           }
 
+          @Override
           public void stopCommand(CommandContext context) {
               if (hm != null) {
                   cpu.removeGlobalMonitor(hm);

@@ -19,6 +19,7 @@ public class StabFunction {
         params.add(new Param(name[0]));
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Function: " + name);

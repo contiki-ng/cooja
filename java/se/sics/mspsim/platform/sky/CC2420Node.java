@@ -99,6 +99,7 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
         }
     }
 
+    @Override
     public void setupNode() {
         // create a filename for the flash file
         // This should be possible to take from a config file later!
@@ -149,8 +150,10 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
             final NetworkConnection network = new NetworkConnection();
             final RadioWrapper radioWrapper = new RadioWrapper(radio);
             radioWrapper.addPacketListener(new PacketListener() {
+                @Override
                 public void transmissionStarted() {
                 }
+                @Override
                 public void transmissionEnded(byte[] receivedData) {
 //                    System.out.println("**** Sending data len = " + receivedData.length);
 //                    for (int i = 0; i < receivedData.length; i++) {
@@ -161,8 +164,10 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
             });
 
             network.addPacketListener(new PacketListener() {
+                @Override
                 public void transmissionStarted() {
                 }
+                @Override
                 public void transmissionEnded(byte[] receivedData) {
 //                    System.out.println("**** Receiving data = " + receivedData.length);
                     radioWrapper.packetReceived(receivedData);
@@ -174,6 +179,7 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
     public void setupGUI() {
     }
 
+    @Override
     public void portWrite(IOPort source, int data) {
         if (source == port4) {
             // Chip select = active low...
@@ -188,8 +194,10 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
 
     protected abstract void flashWrite(IOPort source, int data);
 
+    @Override
     public abstract void dataReceived(USARTSource source, int data);
 
+    @Override
     public void stateChanged(int state) {
         // Ignore UART state changes by default
     }

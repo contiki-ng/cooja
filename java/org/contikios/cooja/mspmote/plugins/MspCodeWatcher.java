@@ -171,11 +171,13 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     /* Create source file list */
     fileComboBox = new JComboBox();
     fileComboBox.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         sourceFileSelectionChanged();
       }
     });
     fileComboBox.setRenderer(new BasicComboBoxRenderer() {
+      @Override
       public Component getListCellRendererComponent(JList list, Object value,
           int index, boolean isSelected, boolean cellHasFocus) {
         if (isSelected) {
@@ -205,6 +207,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     sourceCodeControl.add(fileComboBox);
     sourceCodeControl.add(Box.createHorizontalStrut(5));
     var mapAction = new AbstractAction("Locate sources...") {
+      @Override
       public void actionPerformed(ActionEvent e) {
         tryMapDebugInfo();
       }
@@ -236,8 +239,10 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
 
     /* Listen for breakpoint changes */
     watchpointMote.addWatchpointListener(watchpointListener = new WatchpointListener() {
+      @Override
       public void watchpointTriggered(final Watchpoint watchpoint) {
         SwingUtilities.invokeLater(new Runnable() {
+          @Override
           public void run() {
             logger.info("Watchpoint triggered: " + watchpoint);
             if (simulation.isRunning()) {
@@ -249,6 +254,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
           }
         });
       }
+      @Override
       public void watchpointsChanged() {
         sourceCodeUI.updateBreakpoints();
       }
@@ -256,6 +262,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
 
     /* Observe when simulation starts/stops */
     simulation.addObserver(simObserver = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         if (!simulation.isRunning()) {
           stepAction.setEnabled(true);
@@ -270,6 +277,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     showCurrentPC();
   }
 
+  @Override
   public void startPlugin() {
     super.startPlugin();
     updateFileComboBox();
@@ -287,6 +295,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
 
   public void displaySourceFile(final File file, final int line, final boolean markCurrent) {
     SwingUtilities.invokeLater(new Runnable() {
+      @Override
       public void run() {
         mainPane.setSelectedIndex(SOURCECODE); /* code */
         sourceCodeUI.displayNewCode(file, line, markCurrent);
@@ -326,6 +335,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     displaySourceFile(file, line, true);
   }
 
+  @Override
   public void closePlugin() {
     watchpointMote.removeWatchpointListener(watchpointListener);
     watchpointListener = null;
@@ -431,6 +441,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
       locatesFile++;
       return file;
     }
+    @Override
     public String toString() {
       return "[" + from + "|" + to + "]";
     }
@@ -495,12 +506,15 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     dialog.setModal(true);
     updateRulesUsage();
     AbstractTableModel model = new AbstractTableModel() {
+      @Override
       public int getRowCount() {
         return 10;
       }
+      @Override
       public int getColumnCount() {
         return 4;
       }
+      @Override
       public String getColumnName(int col) {
         if (col == 0) {
           return "Prefix";
@@ -516,6 +530,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
         }
         return null;
       }
+      @Override
       public Object getValueAt(int rowIndex, int columnIndex) {
         if (rowIndex < 0 || rowIndex >= rules.size()) {
           return null;
@@ -541,12 +556,14 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
         }
         return null;
       }
+      @Override
       public boolean isCellEditable(int row, int column) {
         if (column == 0) {
           return true;
         }
         return column == 1;
       }
+      @Override
       public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         Rule rule;
         if (rowIndex < 0) {
@@ -577,6 +594,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     /* control panel: save/load, clear/apply/close */
     final JButton applyButton = new JButton("Apply");
     applyButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         /* Remove trailing empty rules */
         ArrayList<Rule> trimmedRules = new ArrayList<>();
@@ -615,6 +633,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     });
     JButton clearButton = new JButton("Clear");
     clearButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         rules.clear();
         applyButton.doClick();
@@ -623,6 +642,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
 
     JButton loadButton = new JButton("Load default");
     loadButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         loadDefaultRules();
         applyButton.doClick();
@@ -630,6 +650,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     });
     JButton saveButton = new JButton("Save as default");
     saveButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         StringBuilder sb = new StringBuilder();
         for (Rule r: rules) {
@@ -656,6 +677,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
 
     JButton closeButton = new JButton("Close");
     closeButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         updateFileComboBox();
         dialog.dispose();
@@ -673,6 +695,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
         new JScrollPane(table),
         new JScrollPane(rulesDebuggingOutput));
     SwingUtilities.invokeLater(new Runnable() {
+      @Override
       public void run() {
         split.setDividerLocation(0.5);
         applyButton.doClick();
@@ -708,6 +731,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     /* Sort alphabetically */
     File[] sorted = existing.toArray(new File[0]);
     Arrays.sort(sorted, new Comparator<>() {
+      @Override
       public int compare(File o1, File o2) {
         return o1.getName().compareToIgnoreCase(o2.getName());
       }
@@ -715,6 +739,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     return sorted;
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
     Element element;
@@ -733,6 +758,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     return config;
   }
 
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     boolean clearedRules = false;
     for (Element element : configXML) {
@@ -750,6 +776,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   }
 
   private final AbstractAction currentFileAction = new AbstractAction() {
+    @Override
     public void actionPerformed(ActionEvent e) {
       if (currentCodeFile == null) {
         return;
@@ -759,6 +786,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   };
 
   private final AbstractAction stepAction = new AbstractAction("Step instruction") {
+    @Override
     public void actionPerformed(ActionEvent e) {
       try {
         mspMote.getCPU().stepInstructions(1);
@@ -769,6 +797,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     }
   };
 
+  @Override
   public Mote getMote() {
     return mspMote;
   }

@@ -48,6 +48,7 @@ public class CoojaExternalFlash extends MemoryStorage implements CoffeeImage {
      * XXX Coffee specific: uses start offset
      * @see org.contikios.coffee.CoffeeImage#erase(int, int)
      */
+    @Override
     public void erase(int size, int offset) throws IOException {
         byte[] buffer = new byte[size];
         write(getConfiguration().startOffset + offset, buffer);
@@ -57,6 +58,7 @@ public class CoojaExternalFlash extends MemoryStorage implements CoffeeImage {
      * XXX Coffee specific: uses start offset
      * @see org.contikios.coffee.CoffeeImage#getConfiguration()
      */
+    @Override
     public CoffeeConfiguration getConfiguration() {
         if (coffeeConfiguration == null) {
             try {
@@ -73,6 +75,7 @@ public class CoojaExternalFlash extends MemoryStorage implements CoffeeImage {
      * XXX Coffee specific: uses start offset
      * @see org.contikios.coffee.CoffeeImage#read(byte[], int, int)
      */
+    @Override
     public void read(byte[] bytes, int size, int offset) throws IOException {
         read(getConfiguration().startOffset + offset, bytes, 0, size);
     }
@@ -81,6 +84,7 @@ public class CoojaExternalFlash extends MemoryStorage implements CoffeeImage {
      * XXX Coffee specific: uses start offset
      * @see org.contikios.coffee.CoffeeImage#write(byte[], int, int)
      */
+    @Override
     public void write(byte[] bytes, int size, int offset) throws IOException {
         read(getConfiguration().startOffset + offset, bytes, 0, size);
     }

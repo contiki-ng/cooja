@@ -61,6 +61,7 @@ public class StatCommands implements CommandBundle {
     this.statistics = statistics;
   }
 
+  @Override
   public void setupCommands(ComponentRegistry registry, CommandHandler handler) {
     handler.registerCommand("info", new BasicCommand("show information about specified chip/loggable",
     "[unit...]") {
@@ -113,6 +114,7 @@ public class StatCommands implements CommandBundle {
         "[m1...mn]") {
           double[] multiplicator;
           private PrintStream out;
+          @Override
           public int executeCommand(CommandContext context) {
             this.out = context.out;
             int args = context.getArgumentCount();
@@ -122,6 +124,7 @@ public class StatCommands implements CommandBundle {
             }
             return 0;
           }
+          @Override
           public void lineRead(String line) {
             // Split & parse double on each + multiplicate...
             String[] parts = line.split(" ");
@@ -130,6 +133,7 @@ public class StatCommands implements CommandBundle {
             }
             out.println();
           }
+          @Override
           public void stopCommand(CommandContext context) {
           }
     });
@@ -142,6 +146,7 @@ public class StatCommands implements CommandBundle {
       private double frequency;
       private boolean isRunning = true;
 
+      @Override
       public int executeCommand(CommandContext context) {
         frequency = context.getArgumentAsDouble(0);
         if (frequency <= 0.0) {
@@ -194,6 +199,7 @@ public class StatCommands implements CommandBundle {
         return 0;
       }
 
+      @Override
       public void stopCommand(CommandContext context) {
         isRunning = false;
         context.exit(0);

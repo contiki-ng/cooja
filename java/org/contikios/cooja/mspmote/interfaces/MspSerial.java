@@ -72,6 +72,7 @@ public class MspSerial extends SerialUI implements SerialPort {
     usart = getUSARTSource(this.mote);
     if (usart != null) {
       usart.addUSARTListener(new USARTListener() {
+        @Override
         public void dataReceived(USARTSource source, int data) {
           MspSerial.this.dataReceived(data);
         }
@@ -79,6 +80,7 @@ public class MspSerial extends SerialUI implements SerialPort {
     }
 
     writeDataEvent = new MspMoteTimeEvent(this.mote) {
+      @Override
       public void execute(long t) {
         super.execute(t);
         
@@ -95,6 +97,7 @@ public class MspSerial extends SerialUI implements SerialPort {
       return mote.getCPU().getIOUnit(USARTSource.class, ioConfigString());
   }
 
+  @Override
   public void writeByte(byte b) {
     incomingData.add(b);
     if (writeDataEvent.isScheduled()) {
@@ -109,6 +112,7 @@ public class MspSerial extends SerialUI implements SerialPort {
     
     /* Non-simulation thread: poll */
     simulation.invokeSimulationThread(new Runnable() {
+      @Override
       public void run() {
         if (writeDataEvent.isScheduled()) {
           return;
@@ -118,6 +122,7 @@ public class MspSerial extends SerialUI implements SerialPort {
     });
   }
 
+  @Override
   public void writeString(String s) {
     for (int i=0; i < s.length(); i++) {
       writeByte((byte) s.charAt(i));
@@ -125,6 +130,7 @@ public class MspSerial extends SerialUI implements SerialPort {
     writeByte((byte) 10);
   }
 
+  @Override
   public void writeArray(byte[] s) {
     for (byte element : s) {
       writeByte(element);
@@ -149,6 +155,7 @@ public class MspSerial extends SerialUI implements SerialPort {
     mote.requestImmediateWakeup();
   }
 
+  @Override
   public Mote getMote() {
     return mote;
   }

@@ -438,6 +438,7 @@ public class DwarfReader implements ELFDebug {
     }
 
     /* Access methods for data... */
+    @Override
     public DebugInfo getDebugInfo(int address) {
         for (int i = 0; i < lineInfo.size(); i++) {
             LineData data = lineInfo.get(i);
@@ -467,6 +468,7 @@ public class DwarfReader implements ELFDebug {
         return null;
     }
 
+    @Override
     public ArrayList<Integer> getExecutableAddresses() {
         ArrayList<Integer> executableAddresses = new ArrayList<Integer>();
         for (LineData data: lineInfo) {
@@ -477,6 +479,7 @@ public class DwarfReader implements ELFDebug {
         return executableAddresses;
     }
 
+    @Override
     public String[] getSourceFiles() {
         String[] sourceFilesArray = new String[lineInfo.size()];
         for (int i = 0; i < lineInfo.size(); i++) {

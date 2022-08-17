@@ -20,6 +20,7 @@ public class FileTargetCommand extends BasicLineCommand {
     this.append = append;
   }
 
+  @Override
   public int executeCommand(CommandContext context) {
     this.context = context;
     String fileName = context.getArgument(0);
@@ -54,11 +55,13 @@ public class FileTargetCommand extends BasicLineCommand {
     return 0;
   }
 
+  @Override
   public void lineRead(String line) {
     if (print) context.out.println(line);
     ft.lineRead(context, line);
   }
 
+  @Override
   public void stopCommand(CommandContext context) {
     if (ft != null) {
       ft.removeContext(context);

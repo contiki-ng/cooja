@@ -40,6 +40,7 @@ public class UsciA1Serial extends MspSerial {
   public UsciA1Serial(Mote mote) {
     super(mote);
   }
+  @Override
   public String ioConfigString() {
 	  return "USCI A1";
   }

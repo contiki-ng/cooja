@@ -88,6 +88,7 @@ public class NetworkConnection implements Runnable {
     }
   }
 
+  @Override
   public void run() {
     System.out.println("NetworkConnection: Accepting new connections...");
     while (true) {
@@ -204,6 +205,7 @@ public class NetworkConnection implements Runnable {
       }
     }
 
+    @Override
     public void run() {
       try {
         SendEvent event;
@@ -245,6 +247,7 @@ public class NetworkConnection implements Runnable {
       return socket == null;
     }
 
+    @Override
     public void run() {
       if (DEBUG) System.out.println("NetworkConnection: Started connection thread...");
       try {

@@ -91,6 +91,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
     JPopupMenu popupMenu = new JPopupMenu();
     JMenuItem clearItem = new JMenuItem("Clear");
     clearItem.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         logArea.setText("");
       }
@@ -99,6 +100,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
     logArea.setComponentPopupMenu(popupMenu);
 
     ActionListener action = new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         String command = trim(commandField.getText());
         if (command != null) {
@@ -179,6 +181,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
     setSize(500,500);
   }
 
+  @Override
   public void closePlugin() {
     cliResponseAggregator.stop();
   }
@@ -189,6 +192,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
 
   private static final int UPDATE_INTERVAL = 250;
   private final UpdateAggregator<String> cliResponseAggregator = new UpdateAggregator<>(UPDATE_INTERVAL) {
+    @Override
     protected void handle(List<String> ls) {
       String current = logArea.getText();
       int len = current.length();
@@ -211,10 +215,12 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
     return (text != null) && ((text = text.trim()).length() > 0) ? text : null;
   }
 
+  @Override
   public Mote getMote() {
     return mspMote;
   }
 
+  @Override
   public String getQuickHelp() {
     return
         "<b>MSPSim's Command Line Interface</b>" +

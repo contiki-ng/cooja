@@ -74,6 +74,7 @@ public class SkyLED extends LED {
     IOUnit unit = mspMote.getCPU().getIOUnit("Port 5");
     if (unit instanceof IOPort) {
       ((IOPort) unit).addPortListener(new PortListener() {
+        @Override
         public void portWrite(IOPort source, int data) {
           blueOn = (data & SkyNode.BLUE_LED) == 0;
           greenOn = (data & SkyNode.GREEN_LED) == 0;
@@ -85,24 +86,30 @@ public class SkyLED extends LED {
     }
   }
 
+  @Override
   public boolean isAnyOn() {
     return blueOn || greenOn || redOn;
   }
 
+  @Override
   public boolean isGreenOn() {
     return greenOn;
   }
 
+  @Override
   public boolean isYellowOn()  {
     return blueOn; /* Returning blue */
   }
 
+  @Override
   public boolean isRedOn() {
     return redOn;
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     final JPanel panel = new JPanel() {
+      @Override
       public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -148,6 +155,7 @@ public class SkyLED extends LED {
 
     Observer observer;
     this.addObserver(observer = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         panel.repaint();
       }
@@ -162,6 +170,7 @@ public class SkyLED extends LED {
     return panel;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
@@ -173,10 +182,12 @@ public class SkyLED extends LED {
   }
 
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 

@@ -152,6 +152,7 @@ public class CodeUI extends JPanel {
     selectedLineTag = o;
 
     codeEditor.getComponentPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+      @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
         /* Disable breakpoint actions */
         actionAddBreakpoint.setEnabled(false);
@@ -193,6 +194,7 @@ public class CodeUI extends JPanel {
           actionRemoveBreakpoint.putValue("WatchpointAddress", address);
         }
       }
+      @Override
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
         Highlighter hl = codeEditor.getHighlighter();
         try {
@@ -200,6 +202,7 @@ public class CodeUI extends JPanel {
         } catch (BadLocationException e1) {
         }
       }
+      @Override
       public void popupMenuCanceled(PopupMenuEvent e) {
       }
     });
@@ -254,6 +257,7 @@ public class CodeUI extends JPanel {
    */
   public void displayNoCode(final boolean markCurrent) {
     SwingUtilities.invokeLater(new Runnable() {
+      @Override
       public void run() {
         displayedFile = null;
         codeEditor.setText("[no source displayed]");
@@ -294,6 +298,7 @@ public class CodeUI extends JPanel {
     }
 
     SwingUtilities.invokeLater(new Runnable() {
+      @Override
       public void run() {
         displayLine(lineNr, markCurrent);
       }
@@ -326,6 +331,7 @@ public class CodeUI extends JPanel {
 
         /* ensure visible */
         SwingUtilities.invokeLater(new Runnable() {
+          @Override
           public void run() {
             try {
               Rectangle r = codeEditor.modelToView(start);

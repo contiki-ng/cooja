@@ -83,17 +83,21 @@ public class MspBreakpoint implements Watchpoint {
     createMonitor();
   }
 
+  @Override
   public MspMote getMote() {
     return mspMote;
   }
 
+  @Override
   public Color getColor() {
     return color;
   }
+  @Override
   public void setColor(Color color) {
     this.color = color;
   }
 
+  @Override
   public String getDescription() {
     String desc = "";
     if (codeFile != null) {
@@ -106,26 +110,33 @@ public class MspBreakpoint implements Watchpoint {
     }
     return desc;
   }
+  @Override
   public void setUserMessage(String msg) {
     this.msg = msg;
   }
+  @Override
   public String getUserMessage() {
     return msg;
   }
 
+  @Override
   public File getCodeFile() {
     return codeFile;
   }
+  @Override
   public int getLineNumber() {
     return lineNr;
   }
+  @Override
   public int getExecutableAddress() {
     return address;
   }
 
+  @Override
   public void setStopsSimulation(boolean stops) {
     stopsSimulation = stops;
   }
+  @Override
   public boolean stopsSimulation() {
     return stopsSimulation;
   }
@@ -254,6 +265,7 @@ public class MspBreakpoint implements Watchpoint {
     return true;
   }
 
+  @Override
   public String toString() {
     return getMote() + ": " + getDescription();
   }

@@ -116,6 +116,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   private DMA dma;
 
   private TimeEvent txTrigger = new TimeEvent(0) {
+    @Override
     public void execute(long t) {
         // Ready to transmit new byte!
         handleTransmit(t);
@@ -123,6 +124,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   };
 
   private TimeEvent rxTrigger = new TimeEvent(0) {
+      @Override
       public void execute(long t) {
           handleReceive();
       }
@@ -157,11 +159,13 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
     reset(0);
   }
 
+  @Override
   public void setDMA(DMA dma) {
       this.dma = dma;
   }
 
 
+  @Override
   public void reset(int type) {
     nextTXReady = cpu.cycles + 100;
     txShiftReg = nextTXByte = -1;
@@ -173,6 +177,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
     rxEnabled = false;
   }
 
+  @Override
   public void enableChanged(int reg, int bit, boolean enabled) {
     if (DEBUG) log("enableChanged: " + reg + " bit: " + bit +
         " enabled = " + enabled + " txBit: " + txbit);
@@ -222,6 +227,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   }
 
   // Only 8 bits / read!
+  @Override
   public void write(int address, int data, boolean word, long cycles) {
     address = address - offset;
 
@@ -304,6 +310,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
     }
   }
 
+  @Override
   public int read(int address, boolean word, long cycles) {
     address = address - offset;
 //     System.out.println(">>>>> Read from " + getName() + " at " +
@@ -368,6 +375,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
 
   // We should add "Interrupt serviced..." to indicate that its latest
   // Interrupt was serviced...
+  @Override
   public void interruptServiced(int vector) {
     /* NOTE: this is handled by SFR : clear IFG bit if interrupt is serviced */
 //      System.out.println(getName() + " SFR irq " + vector + " " + txShiftReg + " " + getIFG());
@@ -413,6 +421,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   }
 
 
+  @Override
   public boolean isReceiveFlagCleared() {
     return !receiving && (getIFG() & urxifg) == 0;
   }
@@ -420,6 +429,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   // A byte have been received!
   // This needs to be complemented with a method for checking if the USART
   // is ready for next byte (readyForReceive) that respects the current speed
+  @Override
   public void byteReceived(int b) {
     if (!rxEnabled) return;
     if (DEBUG) {
@@ -447,12 +457,14 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
     }
   }
 
+  @Override
   public String info() {
       return "  UTXIE: " + isIEBitsSet(utxifg) + "  URXIE: " + isIEBitsSet(urxifg) + "\n" +
       "  UTXIFG: " + ((getIFG() & utxifg) > 0) + "  URXIFG: " + ((getIFG() & urxifg) > 0) + "\n" +
       "  Baudrate: " + baudRate + " bps  Cycles per byte: " + tickPerByte;
   }
 
+  @Override
   public boolean getDMATriggerState(int index) {
       if (index == 0) {
           return (getIFG() & urxifg) > 0;
@@ -461,6 +473,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
       }
   }
 
+  @Override
   public void clearDMATrigger(int index) {
       if (index == 0) {
           /* clear RX - might be different in different modes... */

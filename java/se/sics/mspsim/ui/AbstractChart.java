@@ -55,6 +55,7 @@ public abstract class AbstractChart implements Chart {
   protected boolean autoscale = true;
   private Hashtable<String,Object> config = new Hashtable<String,Object>();
 
+  @Override
   public String getName() {
     return name;
   }
@@ -67,6 +68,7 @@ public abstract class AbstractChart implements Chart {
     return autoscale;
   }
 
+  @Override
   public void setAutoscale() {
     if (!this.autoscale) {
       this.autoscale = true;
@@ -74,37 +76,45 @@ public abstract class AbstractChart implements Chart {
     }
   }
 
+  @Override
   public void setMinMax(double minVal, double maxVal) {
     miny = minVal;
     maxy = maxVal;
     autoscale = false;
   }
 
+  @Override
   public double getMinX() {
     return minx;
   }
 
+  @Override
   public double getMaxX() {
     return maxx;
   }
 
+  @Override
   public double getMinY() {
     return miny;
   }
 
+  @Override
   public double getMaxY() {
     return maxy;
   }
 
+  @Override
   public Object getConfig(String param) {
     return getConfig(param, null);
   }
 
+  @Override
   public Object getConfig(String param, Object defVal) {
     Object retVal = config.get(param);
     return retVal != null ? retVal : defVal;
   }
 
+  @Override
   public void setConfig(String param, Object value) {
     if (value != null) {
       config.put(param, value);
@@ -115,6 +125,7 @@ public abstract class AbstractChart implements Chart {
 
   protected abstract void updateMinMax();
 
+  @Override
   public abstract void drawChart(Graphics2D g, double xfac, double yfac,
       int width, int height);
 

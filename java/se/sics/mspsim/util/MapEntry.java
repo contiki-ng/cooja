@@ -132,6 +132,7 @@ public class MapEntry {
     return sb.toString();
   }
 
+  @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append('$').append(Utils.hex(address, 4)).append(' ').append(type).append(' ').append(name);

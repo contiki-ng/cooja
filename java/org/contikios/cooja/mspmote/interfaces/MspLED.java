@@ -61,6 +61,7 @@ public class MspLED extends LED {
         }
         leds.addStateChangeListener(new StateChangeListener() {
 
+            @Override
             public void stateChanged(Object source, int oldState, int newState) {
                 setChanged();
                 notifyObservers();

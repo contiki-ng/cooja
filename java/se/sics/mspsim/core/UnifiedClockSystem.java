@@ -304,18 +304,22 @@ public class UnifiedClockSystem extends ClockSystem {
     this.timers = timers;
   }
 
+  @Override
   public int getMaxDCOFrequency() {
       return MAX_DCO_FRQ;
   }
 
+  @Override
   public int getAddressRangeMin() {
     return UCSCTL0;
   }
 
+  @Override
   public int getAddressRangeMax() {
     return UCSCTL8;
   }
 
+  @Override
   public void reset(int type) {
     // Set the reset states, according to the SLAU208h data sheet.
     write(UCSCTL0, 0x0000, true, cpu.cycles);
@@ -330,6 +334,7 @@ public class UnifiedClockSystem extends ClockSystem {
   }
 
   // do nothing?
+  @Override
   public int read(int address, boolean word, long cycles) {
     int val = memory[address];
     if (word) {
@@ -338,6 +343,7 @@ public class UnifiedClockSystem extends ClockSystem {
     return val;
   }
 
+  @Override
   public void write(int address, int data, boolean word, long cycles) {
     // Currently ignores the word flag...
     if (DEBUG) log("Write to UnifiedClockSystem: " +
@@ -349,6 +355,7 @@ public class UnifiedClockSystem extends ClockSystem {
     setConfiguration(cycles);
   }
 
+  @Override
   public void interruptServiced(int vector) {
   }
 
