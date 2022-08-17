@@ -46,7 +46,7 @@ class AngleInterval {
   private static final Logger logger = LogManager.getLogger(AngleInterval.class);
   
   // Sub intervals all between 0 and 2*PI
-  final Vector<Interval> subIntervals;
+  final Vector<Interval> subIntervals = new Vector<>();
   
   /**
    * Creates a new angle interval.
@@ -55,8 +55,6 @@ class AngleInterval {
    * @param endAngle End angle (rad) (> start angle)
    */
   public AngleInterval(double startAngle, double endAngle) {
-    subIntervals = new Vector<>();
-    
     if (endAngle < startAngle) {
       
     } else if (endAngle - startAngle >= 2*Math.PI) {
@@ -352,15 +350,20 @@ class AngleInterval {
         Math.min(angle1, angle2), Math.max(angle1, angle2)
     );
   }
-  
-  public boolean equals(Object object) {
-    if (object == null)
-      return false;
-    
-    AngleInterval interval = (AngleInterval) object;
-    return (interval.getStartAngle() == this.getStartAngle() && interval.getEndAngle() == this.getEndAngle());
+
+  @Override
+  public int hashCode() {
+    return subIntervals.hashCode();
   }
-  
+
+  public boolean equals(Object object) {
+    if (object instanceof AngleInterval) {
+      AngleInterval interval = (AngleInterval)object;
+      return interval.getStartAngle() == this.getStartAngle() && interval.getEndAngle() == this.getEndAngle();
+    }
+    return false;
+  }
+
   /**
    * Subtracts given interval from all intervals in given vector.
    * This method never returns null (but empty vectors).
