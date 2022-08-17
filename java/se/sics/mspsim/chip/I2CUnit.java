@@ -45,7 +45,7 @@ import se.sics.mspsim.core.USARTSource;
  * Any class extending this unit can use the i2c protocol by just implementing
  * two methods for reading and writing registers.
  *
- * @author Víctor Ariño <victor.arino@tado.com>
+ * @author Víctor Ariño (victor.arino@tado.com)
  */
 public abstract class I2CUnit implements USARTListener {
 
@@ -53,7 +53,7 @@ public abstract class I2CUnit implements USARTListener {
          * Auxiliar class for emulating the i2c signaling. This is necessary as
          * there's no line messages in the emulator.
          *
-         * @author Víctor Ariño <victor.arino@tado.com>
+         * @author Víctor Ariño (victor.arino@tado.com)
          */
         public static class I2CData {
 

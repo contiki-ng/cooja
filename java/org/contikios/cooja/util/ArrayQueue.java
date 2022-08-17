@@ -34,7 +34,7 @@ import java.util.RandomAccess;
 
 /**
  * The ArrayQueue class implements a simple queue using a rotating, resizable
- * array. Permits all elements, including <tt>null</tt>.
+ * array. Permits all elements, including <code>null</code>.
  *
  * The usage is basically the same as for ArrayList but this implementation
  * is optimized for adding last and removing first element while the ArrayList

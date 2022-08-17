@@ -49,7 +49,7 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
  *      timing concerns
  *      first round key operations
  *
- * @author Víctor Ariño <victor.arino@tado.com>
+ * @author Víctor Ariño (victor.arino@tado.com)
  */
 public class AES128 extends IOUnit {
 

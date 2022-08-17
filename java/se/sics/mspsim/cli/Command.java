@@ -13,7 +13,7 @@ public abstract class Command {
 
   /**
    * Returns a text describing the arguments for this command. Required arguments should be surrounded by
-   * '<' and '>', optional arguments should be surrounded by '[' and ']'.
+   * '&lt;' and '&gt;', optional arguments should be surrounded by '[' and ']'.
    *
    * @param commandName the name of the command
    * @return a text describing the arguments for this command

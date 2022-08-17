@@ -77,6 +77,7 @@ import org.contikios.cooja.dialogs.MessageList;
  * <li>getReferenceAbsAddr()
  * <li>getMemory(int start, int length, byte[] mem)
  * <li>setMemory(int start, int length, byte[] mem)
+ * </ul>
  *
  * @author Fredrik Osterlind
  */

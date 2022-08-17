@@ -39,7 +39,7 @@ import se.sics.mspsim.core.USARTSource;
 /**
  * Temperature chipset TI tmp112 emulation
  *
- * @author Víctor Ariño <victor.arino@tado.com>
+ * @author Víctor Ariño (victor.arino@tado.com)
  */
 public class TMP112 extends I2CUnit implements TemperatureChip {
 

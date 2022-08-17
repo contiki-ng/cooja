@@ -43,7 +43,7 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
  *
  * TODO: alarm mode not implemented
  *
- * @author Víctor Ariño <victor.arino@tado.com>
+ * @author Víctor Ariño (victor.arino@tado.com)
  */
 public class RTC extends IOUnit {
 

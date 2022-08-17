@@ -45,10 +45,10 @@ import se.sics.mspsim.util.Utils;
  * How should ports be connected to clock capture???
  * E.g. if port 1.2 give a signal then a capture is made on T_A[2]?!
  * (if it is configured to do that).
- * => some kind of listener on the ports ???
+ * =&gt; some kind of listener on the ports ???
  *
- * ===> how do we capture the internal clocks
- * TACTL2 => ACLK if configured for that
+ * ===&gt; how do we capture the internal clocks
+ * TACTL2 =&gt; ACLK if configured for that
  * - same as any port - some kind of listener that we add when
  *   the configuration is in that way.?!
  * All low-level clocks should probably be ticked by the "cpu"-loop in
@@ -62,7 +62,7 @@ import se.sics.mspsim.util.Utils;
  *
  * ___---___---___
  *
- * ==> Reads might be another problem. If a loop is just checking the
+ * ==&gt; Reads might be another problem. If a loop is just checking the
  * counter it will be reading same value for a long time. Needs to "capture"
  * reads to Timers by some simple means...
  */

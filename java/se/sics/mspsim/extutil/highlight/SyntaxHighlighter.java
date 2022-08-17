@@ -210,8 +210,8 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
 
 
   /**
-   * <font style='color:gray;'>Ignore this method. Responds to the underlying
-   * document changes by re-highlighting.</font>
+   * <span style="color:gray;">Ignore this method. Responds to the underlying
+   * document changes by re-highlighting.</span>
    */
   @Override
   public void insertUpdate(DocumentEvent e) {
@@ -222,8 +222,8 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
   }
 
   /**
-   * <font style='color:gray;'>Ignore this method. Responds to the underlying
-   * document changes by re-highlighting.</font>
+   * <span style="color:gray;">Ignore this method. Responds to the underlying
+   * document changes by re-highlighting.</span>
    */
   @Override
   public void removeUpdate(DocumentEvent e) {
@@ -234,8 +234,8 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
   }
 
   /**
-   * <font style='color:gray;'>Ignore this method. Responds to the underlying
-   * document changes by re-highlighting.</font>
+   * <span style="color:gray;">Ignore this method. Responds to the underlying
+   * document changes by re-highlighting.</span>
    */
   @Override
   public void changedUpdate(DocumentEvent e) {
@@ -254,8 +254,8 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
   private Color highlightColor = new Color(0, 240, 0, 255);
 
   /**
-   * <font style='color:gray;'>Ignore this method. Carries out a small amount of
-   * re-highlighting for each call to <code>repaint</code>.</font>
+   * <span style="color:gray;">Ignore this method. Carries out a small amount of
+   * re-highlighting for each call to <code>repaint</code>.</span>
    */
   @Override
   protected void paintComponent(Graphics g) {
