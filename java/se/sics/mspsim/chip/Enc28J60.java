@@ -82,6 +82,7 @@ public class Enc28J60 extends Chip {
                 myMisoBit = miso;
         }
 
+        @Override
         public void log(String msg) {
                 if (DEBUG) {
                         System.out.println(msg);
@@ -262,10 +263,12 @@ public class Enc28J60 extends Chip {
                 }
         }
 
+        @Override
         public int getConfiguration(int parameter) {
                 return -1;
         }
 
+        @Override
         public int getModeMax() {
                 return -1;
         }

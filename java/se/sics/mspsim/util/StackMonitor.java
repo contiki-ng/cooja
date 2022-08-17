@@ -15,31 +15,37 @@ public class StackMonitor {
   private int profStackMax = 0;
 
   private DataSource maxDataSource = new DataSource() {
+    @Override
     public int getValue() {
       int tmp = stackMax;
       stackMax = stack;
       return tmp;
     }
+    @Override
     public double getDoubleValue() {
       return getValue();
     }
   };
 
   private DataSource minDataSource = new DataSource() {
+    @Override
     public int getValue() {
       int tmp = stackMin;
       stackMin = stack;
       return tmp;
     }
+    @Override
     public double getDoubleValue() {
       return getValue();
     }
   };
 
   private DataSource dataSource = new DataSource() {
+    @Override
     public int getValue() {
       return stack;
     }
+    @Override
     public double getDoubleValue() {
       return getValue();
     }

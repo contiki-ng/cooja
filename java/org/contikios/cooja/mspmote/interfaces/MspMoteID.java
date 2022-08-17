@@ -73,10 +73,12 @@ public class MspMoteID extends MoteID {
 		this.moteMem = new VarMemory(mote.getMemory());
 	}
 
+	@Override
 	public int getMoteID() {
 		return moteID;
 	}
 
+	@Override
 	public void setMoteID(int newID) {
 		if (moteID != newID) {
 			mote.idUpdated(newID);
@@ -159,6 +161,7 @@ public class MspMoteID extends MoteID {
 		notifyObservers();
 	}
 
+	@Override
 	public JPanel getInterfaceVisualizer() {
 		JPanel panel = new JPanel();
 		final JLabel idLabel = new JLabel();
@@ -169,6 +172,7 @@ public class MspMoteID extends MoteID {
 
 		Observer observer;
 		this.addObserver(observer = new Observer() {
+			@Override
 			public void update(Observable obs, Object obj) {
 				idLabel.setText("Mote ID: " + getMoteID());
 			}
@@ -179,6 +183,7 @@ public class MspMoteID extends MoteID {
 		return panel;
 	}
 
+	@Override
 	public void releaseInterfaceVisualizer(JPanel panel) {
 		Observer observer = (Observer) panel.getClientProperty("intf_obs");
 		if (observer == null) {
@@ -189,6 +194,7 @@ public class MspMoteID extends MoteID {
 		this.deleteObserver(observer);
 	}
 
+	@Override
 	public void removed() {
 	  super.removed();
 	  if (memoryMonitor != null) {

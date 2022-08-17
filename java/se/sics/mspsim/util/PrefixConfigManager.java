@@ -73,6 +73,7 @@ public class PrefixConfigManager extends ConfigManager {
     }
   }
 
+  @Override
   public String getProperty(String name, String defaultValue) {
     String value = config.getProperty(longPrefix + name);
     if (value != null) {
@@ -84,6 +85,7 @@ public class PrefixConfigManager extends ConfigManager {
     return config.getProperty(shortPrefix + name, defaultValue);
   }
 
+  @Override
   public void setProperty(String name, String value) {
     config.setProperty(longPrefix + name, value);
   }

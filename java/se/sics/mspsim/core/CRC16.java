@@ -193,6 +193,7 @@ public class CRC16 extends IOUnit {
         /**
          * Clear everything when reset
          */
+        @Override
         public void reset(int type) {
                 crc.reset(CCITTSeed);
         }
@@ -200,6 +201,7 @@ public class CRC16 extends IOUnit {
         /**
          * The registers are written
          */
+        @Override
         public void write(int address, int value, boolean word, long cycles) {
                 /*
                  * The offset variable is used in case the peripheral changes the base
@@ -235,6 +237,7 @@ public class CRC16 extends IOUnit {
         /**
          * Registers are read
          */
+        @Override
         public int read(int address, boolean word, long cycles) {
                 switch (address - offset) {
                 case CRC16.CRCINIRES:
@@ -245,6 +248,7 @@ public class CRC16 extends IOUnit {
                 return 0;
         }
 
+        @Override
         public void interruptServiced(int vector) {
         }
 }

@@ -109,6 +109,7 @@ public class HighlightSourceViewer implements SourceViewer {
     }
   }
 
+  @Override
   public boolean isVisible() {
     return window != null && window.isVisible();
   }
@@ -118,6 +119,7 @@ public class HighlightSourceViewer implements SourceViewer {
     window.setVisible(isVisible);
   }
 
+  @Override
   public void viewFile(final String path, final String filename) {
     if (filename.equals(currentFile)) {
       // Already showing this file
@@ -126,6 +128,7 @@ public class HighlightSourceViewer implements SourceViewer {
     currentFile = filename;
 
     SwingUtilities.invokeLater(new Runnable() {
+      @Override
       public void run() {
         try {
           setup();
@@ -155,9 +158,11 @@ public class HighlightSourceViewer implements SourceViewer {
     });
   }
 
+  @Override
   public void viewLine(final int line) {
     if (highlighter != null) {
       SwingUtilities.invokeLater(new Runnable() {
+        @Override
         public void run() {
           highlighter.viewLine(line - 1);
           if (!window.isVisible()) {

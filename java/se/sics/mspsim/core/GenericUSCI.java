@@ -74,6 +74,7 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
     private final int vector;
 
     private TimeEvent txTrigger = new TimeEvent(0) {
+        @Override
         public void execute(long t) {
             // Ready to transmit new byte!
             handleTransmit(t);
@@ -100,6 +101,7 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
         reset(0);
     }
 
+    @Override
     public void reset(int type) {
         nextTXReady = cpu.cycles + tickPerByte + 100;
         transmitting = false;
@@ -226,10 +228,12 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
     }
 
 
+    @Override
     public void interruptServiced(int vector) {
     }
 
     // Only 8 bits / read!
+    @Override
     public void write(int address, int data, boolean word, long cycles) {
       address = address - offset;
 
@@ -345,6 +349,7 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
       }
     }
 
+    @Override
     public int read(int address, boolean word, long cycles) {
         int op = address - offset;
         switch (op) {
@@ -411,6 +416,7 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
     }
 
     /*  default behavior assumes UART/SPI config */
+    @Override
     public boolean isReceiveFlagCleared() {
         return (ifg & RXIFG) == 0;
     }
@@ -418,6 +424,7 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
     // A byte have been received!
     // This needs to be complemented with a method for checking if the USART
     // is ready for next byte (readyForReceive) that respects the current speed
+    @Override
     public void byteReceived(int b) {
         //System.out.println(getName() + " byte received: " + b);
 
@@ -444,16 +451,20 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
     }
 
     /* TODO: IMPLEMENT DMA! */
+    @Override
     public void setDMA(DMA dma) {
     }
 
+    @Override
     public boolean getDMATriggerState(int index) {
         return false;
     }
 
+    @Override
     public void clearDMATrigger(int index) {
     }
 
+    @Override
     public String info() {
         return "UTXIE: " + isIEBitsSet(TXIFG) + "  URXIE:" + isIEBitsSet(RXIFG) + "\n" +
         "UTXIFG: " + ((getIFG() & TXIFG) > 0) + "  URXIFG:" + ((getIFG() & RXIFG) > 0);

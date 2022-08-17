@@ -70,6 +70,7 @@ public class SkyGui extends AbstractNodeGUI {
 
   private final MoteIVNode node;
   private final StateChangeListener ledsListener = new StateChangeListener() {
+      @Override
       public void stateChanged(Object source, int oldState, int newState) {
           repaint(LEDS_BOUNDS);
       }
@@ -80,6 +81,7 @@ public class SkyGui extends AbstractNodeGUI {
     this.node = node;
   }
 
+  @Override
   protected void startGUI() {
     MouseAdapter mouseHandler = new MouseAdapter() {
 
@@ -87,6 +89,7 @@ public class SkyGui extends AbstractNodeGUI {
         private boolean resetDown = false;
 
         // For the button sensor and reset button on the Sky nodes.
+        @Override
         public void mousePressed(MouseEvent e) {
           int x = e.getX();
           int y = e.getY();
@@ -100,6 +103,7 @@ public class SkyGui extends AbstractNodeGUI {
           }
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
           if (buttonDown) {
             buttonDown = false;
@@ -120,6 +124,7 @@ public class SkyGui extends AbstractNodeGUI {
     node.getLeds().addStateChangeListener(ledsListener);
   }
 
+  @Override
   protected void paintComponent(Graphics g) {
     Color old = g.getColor();
 
@@ -147,6 +152,7 @@ public class SkyGui extends AbstractNodeGUI {
     g.setColor(old);
   }
 
+  @Override
   protected void stopGUI() {
       node.getLeds().removeStateChangeListener(ledsListener);
   }

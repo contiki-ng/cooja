@@ -43,9 +43,11 @@ public class CC2520SPI {
         spiData = cc;
         SPICommand[] spiCommands = {
             new SPICommand("SNOP 0 0 0 0 0 0 0 0") {
+                @Override
                 public void executeSPICommand() {}
             },
             new SPICommand("IBUFLD 0 0 0 0 0 0 1 0 i i i i i i i i") {
+                @Override
                 public void executeSPICommand() {
                     cc2520.instructionBuffer = spiData.getSPIData(1);
                 }
@@ -56,6 +58,7 @@ public class CC2520SPI {
             new SPICommand("MEMRD 0 0 0 1 a a a a a a a a a a a a - - - - - - - - ...") {
                 final BitField adr = getBitField("a");
                 int cAdr = 0;
+                @Override
                 public boolean dataReceived(int data) {
                     /* check if this is first two bytes*/
                     if (spiData.getSPIDataLen() == 2) {
@@ -66,11 +69,13 @@ public class CC2520SPI {
                     }
                     return true;
                 }
+                @Override
                 public void executeSPICommand() {}
             },
             new SPICommand("MEMWR 0 0 1 0 a a a a a a a a a a a a d d d d d d d d ...") {
                 final BitField adr = getBitField("a");
                 int cAdr = -1;
+                @Override
                 public boolean dataReceived(int data) {
                     /* check if this is first two bytes*/
                     int len = spiData.getSPIDataLen();
@@ -86,9 +91,11 @@ public class CC2520SPI {
                     }
                     return true;
                 }
+                @Override
                 public void executeSPICommand() {}
             },
             new SPICommand("RXBUF 0 0 1 1 0 0 0 0 - - - - - - - - ...") {
+                @Override
                 public boolean dataReceived(int data) {
                     /* second byte is fifo data instead of status... */
                     if (spiData.getSPIDataLen() > 1) {
@@ -96,68 +103,81 @@ public class CC2520SPI {
                     }
                     return true;
                 }
+                @Override
                 public void executeSPICommand() {}
             },
             new SPICommand("RXBUFCP 0 0 1 1 1 0 0 0 0 0 0 0 a a a a a a a a a a a a - - - - - - - - ..."),
             new SPICommand("RXBUFMOV 0 0 1 1 0 0 1 p c c c c c c c c 0 0 0 0 a a a a a a a a a a a a"),
             new SPICommand("TXBUF 0 0 1 1 1 0 1 0 d d d d d d d d d d d d d d d d ...") {
+                @Override
                 public boolean dataReceived(int data) {
                     if (spiData.getSPIDataLen() > 1) {
                         cc2520.writeTXFIFO(data);
                     }
                     return true;
                 }
+                @Override
                 public void executeSPICommand() {}
             },
             new SPICommand("TXBUFCP 0 0 1 1 1 1 1 p c c c c c c c c 0 0 0 0 a a a a a a a a a a a a"),
             new SPICommand("RANDOM 0 0 1 1 1 1 0 0 - - - - - - - - - - - - - - - - ..."),
             new SPICommand("SXOSCON 0 1 0 0 0 0 0 0") {
+                @Override
                 public void executeSPICommand() {
                     cc2520.startOscillator();
                 }
             },
             new SPICommand("STXCAL 0 1 0 0 0 0 0 1"),
             new SPICommand("SRXON 0 1 0 0 0 0 1 0") {
+                @Override
                 public void executeSPICommand() {
                     cc2520.rxon();
                 }
             },
             new SPICommand("STXON 0 1 0 0 0 0 1 1") {
+                @Override
                 public void executeSPICommand() {
                     cc2520.stxon();
                 }
             },
             new SPICommand("STXONCCA 0 1 0 0 0 1 0 0") {
+                @Override
                 public void executeSPICommand() {
                     cc2520.stxoncca();
                 }
             },
             new SPICommand("SRFOFF 0 1 0 0 0 1 0 1") {
+                @Override
                 public void executeSPICommand() {
                     cc2520.rxtxoff();
                 }
             },
             new SPICommand("SXOSCOFF 0 1 0 0 0 1 1 0") {
+                @Override
                 public void executeSPICommand() {
                     cc2520.stopOscillator();
                 }
             },
             new SPICommand("SFLUSHRX 0 1 0 0 0 1 1 1") {
+                @Override
                 public void executeSPICommand() {
                     cc2520.flushRX();
                 }
             },
             new SPICommand("SFLUSHTX 0 1 0 0 1 0 0 0") {
+                @Override
                 public void executeSPICommand() {
                     cc2520.flushTX();
                 }
             },
             new SPICommand("SACK 0 1 0 0 1 0 0 1") {
+                @Override
                 public void executeSPICommand() {
                     cc2520.sack(false);
                 }
             },
             new SPICommand("SACKPEND 0 1 0 0 1 0 1 0") {
+                @Override
                 public void executeSPICommand() {
                     cc2520.sack(true);
                 }
@@ -186,6 +206,7 @@ public class CC2520SPI {
             new SPICommand("REGRD 1 0 a a a a a a - - - - - - - - ...") {
                 final BitField adr = getBitField("a");
                 int cAdr = 0;
+                @Override
                 public boolean dataReceived(int data) {
                     /* check if this is first byte*/
                     if (spiData.getSPIDataLen() == 1) {
@@ -196,11 +217,13 @@ public class CC2520SPI {
                     }
                     return true;
                 }
+                @Override
                 public void executeSPICommand() {}
             },
             new SPICommand("REGWR 1 1 a a a a a a d d d d d d d d ...") {
                 final BitField adr = getBitField("a");
                 int cAdr = 0;
+                @Override
                 public boolean dataReceived(int data) {
                     /* check if this is first byte*/
                     if (spiData.getSPIDataLen() == 1) {
@@ -211,6 +234,7 @@ public class CC2520SPI {
                     }
                     return true;
                 }
+                @Override
                 public void executeSPICommand() {}
             }
         };

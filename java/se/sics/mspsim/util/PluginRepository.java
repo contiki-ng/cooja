@@ -108,6 +108,7 @@ public class PluginRepository implements ActiveComponent {
 
   private static class JarFilter implements FileFilter {
 
+    @Override
     public boolean accept(File f) {
       if (f.isFile() && f.canRead()) {
         String name = f.getName().toLowerCase();

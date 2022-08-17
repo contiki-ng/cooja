@@ -115,25 +115,31 @@ public class MspDebugOutput extends Log {
     return mote;
   }
 
+  @Override
   public String getLastLogMessage() {
     return lastLog;
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
 
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     /* Observed Contiki pointer is hardcoded */
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     return null;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
+  @Override
   public void removed() {
     super.removed();
 

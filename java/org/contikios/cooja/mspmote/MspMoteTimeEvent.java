@@ -50,6 +50,7 @@ public abstract class MspMoteTimeEvent extends MoteTimeEvent {
     this.mote = mote;
   }
 
+  @Override
   public void execute(long t) {
     mote.execute(t, 0);
   }

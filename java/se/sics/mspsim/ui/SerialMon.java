@@ -86,14 +86,17 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     this.title = title;
   }
 
+  @Override
   public Status getStatus() {
     return status;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public final void init(String name, ComponentRegistry registry) {
     this.name = name;
   }
@@ -112,6 +115,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     JMenuItem clearItem = new JMenuItem("Clear");
     clearItem.addActionListener(new ActionListener() {
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         textArea.setText("");
         lines = 0;
@@ -124,6 +128,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     commandField = new JTextField();
     commandField.addActionListener(new ActionListener() {
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         String command = commandField.getText().trim();
         if (command.length() > 0) {
@@ -190,6 +195,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     WindowUtils.addSaveOnShutdown(key, window);
   }
 
+  @Override
   public void start() {
     if (window == null) {
       initGUI();
@@ -200,6 +206,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     status = Status.STARTED;
   }
 
+  @Override
   public final void stop() {
     status = Status.STOPPED;
     if (window != null) {
@@ -209,6 +216,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     usart.removeStateChangeListener(this);
   }
 
+  @Override
   public void dataReceived(USARTSource source, int data) {
     if (data == '\n') {
       if (lines >= MAX_LINES) {
@@ -224,6 +232,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     if (!isUpdatePending) {
       isUpdatePending = true;
       EventQueue.invokeLater(new Runnable() {
+          @Override
           public void run() {
             isUpdatePending = false;
 
@@ -254,6 +263,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     return true;
   }
 
+  @Override
   public void stateChanged(Object source, int oldState, int newState) {
     if (newState == USARTListener.RXFLAG_CLEARED) {
       sendNext();
@@ -283,6 +293,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     }
     if (updateCommand && !commandField.isEnabled()) {
       EventQueue.invokeLater(new Runnable() {
+        @Override
         public void run() {
           commandField.setEnabled(true);
         }

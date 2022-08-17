@@ -58,6 +58,7 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
     // Quick fix to highlight selected line
     addCaretListener(new CaretListener() {
 
+      @Override
       public void caretUpdate(CaretEvent e) {
         int caret = getCaretPosition();
         if (caret >= 0) {
@@ -114,6 +115,7 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
    * <code>read</code> in <code>JTextComponent</code> in order to highlight
    * the new text.
    */
+  @Override
   public void read(Reader in, Object desc) throws IOException {
     int oldLength = getDocument().getLength();
     doc.removeDocumentListener(this);
@@ -211,6 +213,7 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
    * <font style='color:gray;'>Ignore this method. Responds to the underlying
    * document changes by re-highlighting.</font>
    */
+  @Override
   public void insertUpdate(DocumentEvent e) {
     int offset = e.getOffset();
     int length = e.getLength();
@@ -222,6 +225,7 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
    * <font style='color:gray;'>Ignore this method. Responds to the underlying
    * document changes by re-highlighting.</font>
    */
+  @Override
   public void removeUpdate(DocumentEvent e) {
     int offset = e.getOffset();
     int length = e.getLength();
@@ -233,6 +237,7 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
    * <font style='color:gray;'>Ignore this method. Responds to the underlying
    * document changes by re-highlighting.</font>
    */
+  @Override
   public void changedUpdate(DocumentEvent e) {
     // Do nothing.
   }
@@ -252,6 +257,7 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
    * <font style='color:gray;'>Ignore this method. Carries out a small amount of
    * re-highlighting for each call to <code>repaint</code>.</font>
    */
+  @Override
   protected void paintComponent(Graphics g) {
     if (currentHeight > 0) {
       g.setColor(highlightColor);

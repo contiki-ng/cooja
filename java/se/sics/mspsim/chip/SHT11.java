@@ -110,6 +110,7 @@ public class SHT11 extends Chip {
 
 
   private TimeEvent measureEvent = new TimeEvent(0) {
+    @Override
     public void execute(long t) {
       if (readData == CMD_MEASURE_TEMP) {
         output[0] = (temp >> 8) & 0xff;
@@ -283,11 +284,13 @@ public class SHT11 extends Chip {
   }
 
 
+  @Override
   public int getModeMax() {
     return 0;
   }
 
   /* no configuration for the SHT11 ? */
+  @Override
   public int getConfiguration(int parameter) {
       return 0;
   }

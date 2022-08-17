@@ -72,6 +72,7 @@ public class CC2420PacketHandler extends AbstractPacketHandler implements RFList
     this.cpu = cpu;
   }
 
+  @Override
   public void receivedByte(byte data) {
     packetBuffer[pos++] = data;
     switch (mode) {
@@ -108,6 +109,7 @@ public class CC2420PacketHandler extends AbstractPacketHandler implements RFList
   }
 
 
+  @Override
   public void printPacket(PrintStream out, Packet packet) {
     int payloadLen = packet.getAttributeAsInt(CC2420_LEN);
     out.print("CC2420 | len:" + payloadLen + " | ");
@@ -120,6 +122,7 @@ public class CC2420PacketHandler extends AbstractPacketHandler implements RFList
     out.println();
   }
 
+  @Override
   public void sendPacket(Packet packet) {
     final Packet sendPacket = packet;
     byte[] size = new byte[1];
@@ -132,6 +135,7 @@ public class CC2420PacketHandler extends AbstractPacketHandler implements RFList
     System.out.println("Should send packet to radio!!!! " + packet.getTotalLength());
     // Stuff to send to radio!!!
     TimeEvent te = new TimeEvent(0) {
+      @Override
       public void execute(long t) {
         System.out.println("CC2420: Packet to send: ");
         byte[] buffer = sendPacket.getBytes();
@@ -152,6 +156,7 @@ public class CC2420PacketHandler extends AbstractPacketHandler implements RFList
     this.out = out;
   }
 
+  @Override
   public void packetReceived(Packet container) {
   }
 }

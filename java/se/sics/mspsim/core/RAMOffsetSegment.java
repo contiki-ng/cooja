@@ -51,7 +51,8 @@ class RAMOffsetSegment implements Memory {
         this.offset = offset;
     }
 
-    @Override public int read(int address, AccessMode mode, AccessType type)
+    @Override
+    public int read(int address, AccessMode mode, AccessType type)
             throws EmulationException {
         address += offset;
         int val = memory[address] & 0xff;
@@ -68,7 +69,8 @@ class RAMOffsetSegment implements Memory {
         return val;
     }
 
-    @Override public void write(int dstAddress, int dst, AccessMode mode)
+    @Override
+    public void write(int dstAddress, int dst, AccessMode mode)
             throws EmulationException {
         dstAddress += offset;
         memory[dstAddress] = dst & 0xff;
@@ -84,11 +86,13 @@ class RAMOffsetSegment implements Memory {
         }
     }
 
-    @Override public int get(int address, AccessMode mode) {
+    @Override
+    public int get(int address, AccessMode mode) {
         return read(address, mode, AccessType.READ);
     }
 
-    @Override public void set(int address, int data, AccessMode mode) {
+    @Override
+    public void set(int address, int data, AccessMode mode) {
         write(address, data, mode);
     }
 

@@ -120,6 +120,7 @@ public class StabDebug implements ELFDebug {
 
 
   /* Just pick up file + some other things */
+  @Override
   public DebugInfo getDebugInfo(int address) {
     String currentPath = null;
     String currentFile = null;
@@ -183,6 +184,7 @@ public class StabDebug implements ELFDebug {
     return null;
   }
 
+  @Override
   public ArrayList<Integer> getExecutableAddresses() {
     ArrayList<Integer> allAddresses = new ArrayList<>();
 
@@ -255,6 +257,7 @@ public class StabDebug implements ELFDebug {
     return allAddresses;
 }
 
+  @Override
   public String[] getSourceFiles() {
     String currentPath = null;
     String currentFile = null;
@@ -302,6 +305,7 @@ public class StabDebug implements ELFDebug {
       this.value = value;
     }
 
+   @Override
    public String toString() {
         return "" + Integer.toHexString(type) + " " + data +
             "   [" + other + "," + desc + "," + value + "]";

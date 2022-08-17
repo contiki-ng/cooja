@@ -73,6 +73,7 @@ public class RF1A extends IOUnit implements InterruptHandler {
         super("RF1A", "RF1A", cpu, memory, ADDRESS);
         cc1101 = new CC1101(cpu);
         cc1101.setGDO0Listener(new GDOListener() {
+          @Override
           public void event(PinState state) {
             /* cc430f5137 datasheet p. 17 */
             gdo0IsHigh = (state == PinState.HI);
@@ -83,6 +84,7 @@ public class RF1A extends IOUnit implements InterruptHandler {
         reset(0);
     }
 
+    @Override
     public void reset(int type) {
         /* Initial values */
         memory[ADDRESS + 0x00] = 0x0000; /* RF1AIFCTL0 */
@@ -128,6 +130,7 @@ public class RF1A extends IOUnit implements InterruptHandler {
     private boolean ioRead = false;
     private boolean ioWrite = false;
     private boolean expectingDummyWrite = false;
+    @Override
     public void write(int address, int value, boolean word, long cycles) {
         /*if (DEBUG) {
             System.out.printf(this.getName() + ": Write to 0x%04x: 0x%04x\n", address, value);
@@ -194,6 +197,7 @@ public class RF1A extends IOUnit implements InterruptHandler {
         }
     }
 
+    @Override
     public int read(int address, boolean word, long cycles) {
         /*if (DEBUG) {
             System.out.printf(this.getName() + ": Read from 0x%04x\n", address);
@@ -240,6 +244,7 @@ public class RF1A extends IOUnit implements InterruptHandler {
         return -1;
     }
 
+    @Override
     public void interruptServiced(int vector) {
         if (DEBUG) {
             System.out.println(this.getName() + ": Interrupt services vector: " + vector);

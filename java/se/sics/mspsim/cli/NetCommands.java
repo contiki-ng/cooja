@@ -19,9 +19,11 @@ import se.sics.mspsim.util.Utils;
 public class NetCommands implements CommandBundle {
 
   private IPStack ipStack;
+  @Override
   public void setupCommands(final ComponentRegistry registry, CommandHandler handler) {
     handler.registerCommand("ipstack", new BasicLineCommand("setup 802.15.4/IP stack", "") {
       CC2420PacketHandler listener;
+      @Override
       public int executeCommand(CommandContext context) {
         MSP430 cpu = registry.getComponent(MSP430.class);
         listener = new CC2420PacketHandler(cpu);
@@ -42,6 +44,7 @@ public class NetCommands implements CommandBundle {
         return 0;
       }
 
+      @Override
       public void lineRead(String line) {
         if (listener != null) {
           byte[] data = Utils.hexconv(line);
@@ -54,6 +57,7 @@ public class NetCommands implements CommandBundle {
     });
 
     handler.registerCommand("tspstart", new BasicCommand("starts a TSP tunnel", "<server> <user> <password>") {
+      @Override
       public int executeCommand(CommandContext context) {
         TSPClient tunnel = TSPClient.startTSPTunnel(ipStack, context.getArgument(0),
             context.getArgument(1), context.getArgument(2));

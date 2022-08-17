@@ -119,6 +119,7 @@ public class DotDiagram extends JComponent {
 
     // Listen for note clicks
     this.addMouseListener(new MouseListener() {
+      @Override
       public void mouseClicked(MouseEvent e) {
         int x = e.getX();
         int y = e.getY();
@@ -147,12 +148,16 @@ public class DotDiagram extends JComponent {
         }
 
       }
+      @Override
       public void mouseReleased(MouseEvent e) {
       }
+      @Override
       public void mousePressed(MouseEvent e) {
       }
+      @Override
       public void mouseEntered(MouseEvent e) {
       }
+      @Override
       public void mouseExited(MouseEvent e) {
       }
     });
@@ -270,6 +275,7 @@ public class DotDiagram extends JComponent {
     }
   }
 
+  @Override
   protected void paintComponent(Graphics g0) {
     Graphics2D g = (Graphics2D) g0;
     FontMetrics fm = g.getFontMetrics();

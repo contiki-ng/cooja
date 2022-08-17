@@ -346,6 +346,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
   private JPanel createCollapsableArea(String title, Container contentPane) {
     // Create panels
     JPanel holdingPanel = new JPanel() {
+      @Override
       public Dimension getMaximumSize() {
         return new Dimension(super.getMaximumSize().width, getPreferredSize().height);
       }
@@ -353,6 +354,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     holdingPanel.setLayout(new BoxLayout(holdingPanel, BoxLayout.Y_AXIS));
 
     final JPanel collapsableArea = new JPanel() {
+      @Override
       public Dimension getMaximumSize() {
         return new Dimension(super.getMaximumSize().width, getPreferredSize().height);
       }
@@ -361,6 +363,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     collapsableArea.setVisible(false);
 
     JPanel titlePanel = new JPanel(new BorderLayout()) {
+      @Override
       public Dimension getMaximumSize() {
         return new Dimension(super.getMaximumSize().width, getPreferredSize().height);
       }
@@ -369,6 +372,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     titlePanel.add(BorderLayout.WEST, new JLabel(title));
     JCheckBox collapseCheckBox = new JCheckBox("show settings", false);
     collapseCheckBox.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         collapsableArea.setVisible(((JCheckBox) e.getSource()).isSelected());
       }
@@ -415,6 +419,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     textField.setColumns(4);
     textField.putClientProperty("id", id);
     textField.addPropertyChangeListener("value", new PropertyChangeListener() {
+      @Override
       public void propertyChange(PropertyChangeEvent e) {
         JFormattedTextField textField = (JFormattedTextField) e.getSource();
         Parameter id = (Parameter) textField.getClientProperty("id");
@@ -470,6 +475,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     textField.setColumns(4);
     textField.putClientProperty("id", id);
     textField.addPropertyChangeListener("value", new PropertyChangeListener() {
+      @Override
       public void propertyChange(PropertyChangeEvent e) {
         JFormattedTextField textField = (JFormattedTextField) e.getSource();
         Parameter id = (Parameter) textField.getClientProperty("id");
@@ -524,6 +530,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     checkBox.setSelected(initialValue);
     checkBox.putClientProperty("id", id);
     checkBox.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         JCheckBox checkBox = (JCheckBox) e.getSource();
         Parameter id = (Parameter) checkBox.getClientProperty("id");
@@ -554,6 +561,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
    * If it changes, all GUI parameters are updated accordingly.
    */
   private final Observer channelModelSettingsObserver = new Observer() {
+    @Override
     public void update(Observable obs, Object obj) {
       // Update all integers
       for (var textField : allIntegerParameters) {
@@ -577,6 +585,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     }
   };
 
+  @Override
   public void closePlugin() {
     channelModel.deleteSettingsObserver(channelModelSettingsObserver);
   }
@@ -587,6 +596,7 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
    * @see #setConfigXML(Collection)
    * @return XML element collection
    */
+  @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
     Element element;

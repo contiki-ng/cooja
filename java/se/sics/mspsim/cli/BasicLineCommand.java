@@ -51,6 +51,7 @@ public abstract class BasicLineCommand extends BasicAsyncCommand implements
     super(cmdHelp, argHelp);
   }
 
+  @Override
   public void stopCommand(CommandContext context) {
     context.exit(0);
   }

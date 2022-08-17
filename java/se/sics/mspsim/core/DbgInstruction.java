@@ -106,6 +106,7 @@ public class DbgInstruction {
     return function;
   }
 
+  @Override
   public String toString() {
     return getASMLine();
   }

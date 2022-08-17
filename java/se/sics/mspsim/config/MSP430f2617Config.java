@@ -84,6 +84,7 @@ public class MSP430f2617Config extends MSP430Config {
         ramMirrorConfig(0x200, 2 * 1024, 0x1100);
     }
 
+    @Override
     public int setup(MSP430Core cpu, ArrayList<IOUnit> ioUnits) {
 
         Multiplier mp = new Multiplier(cpu, cpu.memory, 0);

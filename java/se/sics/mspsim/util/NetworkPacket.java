@@ -71,6 +71,7 @@ public class NetworkPacket {
       this.value = value;
     }
 
+    @Override
     public String toString() {
       return name + ":" + pos + "-" + (pos + size - 1) +
       (mask != 0 ? "=" + value : "");

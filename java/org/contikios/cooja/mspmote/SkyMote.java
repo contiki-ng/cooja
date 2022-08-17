@@ -52,6 +52,7 @@ public class SkyMote extends MspMote {
     super(moteType, sim);
   }
 
+  @Override
   protected boolean initEmulator(File fileELF) {
     try {
       skyNode = new SkyNode();
@@ -95,6 +96,7 @@ public class SkyMote extends MspMote {
     }
   }*/
 
+  @Override
   public void idUpdated(int newID) {
     skyNode.setNodeID(newID);
 
@@ -106,6 +108,7 @@ public class SkyMote extends MspMote {
     return getInterfaces().getInterfaceOfType(SkyCoffeeFilesystem.class);
   }
 
+  @Override
   public String toString() {
     return "Sky " + getID();
   }

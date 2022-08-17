@@ -68,6 +68,7 @@ public class MSP430f1611Config extends MSP430Config {
     }
 
 
+    @Override
     public int setup(MSP430Core cpu, ArrayList<IOUnit> ioUnits) {
         USART usart0 = new USART(cpu, 0, cpu.memory, 0x70);
         USART usart1 = new USART(cpu, 1, cpu.memory, 0x78);

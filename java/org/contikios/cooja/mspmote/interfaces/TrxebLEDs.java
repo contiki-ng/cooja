@@ -48,6 +48,7 @@ public class TrxebLEDs extends LED {
 		IOUnit unit = mspMote.getCPU().getIOUnit("P4");
 		if (unit instanceof IOPort) {
 			((IOPort) unit).addPortListener(new PortListener() {
+				@Override
 				public void portWrite(IOPort source, int data) {
 					redOn = (data & (1<<0)) == 0;
 					yellowOn = (data & (1<<1)) == 0;
@@ -60,18 +61,22 @@ public class TrxebLEDs extends LED {
 		}
 	}
 
+	@Override
 	public boolean isAnyOn() {
 		return redOn || yellowOn || greenOn || blueOn;
 	}
 
+	@Override
 	public boolean isGreenOn() {
 		return greenOn;
 	}
 
+	@Override
 	public boolean isRedOn() {
 		return redOn;
 	}
 
+	@Override
 	public boolean isYellowOn()  {
 		return yellowOn;
 	}
@@ -80,8 +85,10 @@ public class TrxebLEDs extends LED {
 		return blueOn;
 	}
 
+	@Override
 	public JPanel getInterfaceVisualizer() {
 		final JPanel panel = new JPanel() {
+			@Override
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
 
@@ -139,6 +146,7 @@ public class TrxebLEDs extends LED {
 
 		Observer observer;
 		this.addObserver(observer = new Observer() {
+			@Override
 			public void update(Observable obs, Object obj) {
 				panel.repaint();
 			}
@@ -151,6 +159,7 @@ public class TrxebLEDs extends LED {
 		return panel;
 	}
 
+	@Override
 	public void releaseInterfaceVisualizer(JPanel panel) {
 		Observer observer = (Observer) panel.getClientProperty("intf_obs");
 		if (observer == null) {
@@ -162,10 +171,12 @@ public class TrxebLEDs extends LED {
 	}
 
 
+	@Override
 	public Collection<Element> getConfigXML() {
 		return null;
 	}
 
+	@Override
 	public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
 	}
 

@@ -193,10 +193,12 @@ public abstract class Chip implements Loggable, EventSource {
   public abstract int getConfiguration(int parameter);
 
 
+  @Override
   public String getID() {
     return id;
   }
 
+  @Override
   public String getName() {
     return name;
   }
@@ -208,14 +210,17 @@ public abstract class Chip implements Loggable, EventSource {
     return true;
   }
 
+  @Override
   public String info() {
     return "* no info";
   }
 
+  @Override
   public int getLogLevel() {
       return logLevel;
   }
 
+  @Override
   public void setLogLevel(int l) {
       logLevel = l;
       DEBUG = logLevel == Loggable.DEBUG;

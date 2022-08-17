@@ -129,6 +129,7 @@ public class StabFile {
             stab.type == StabDebug.N_VAR_PARAM);
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("File: " + path + file + " starts at: " + startAddress + "\n");

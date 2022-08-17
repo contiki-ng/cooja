@@ -293,6 +293,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
         };
 
         private TimeEvent sendEvent = new TimeEvent(0, "CC1120 Send") {
+                @Override
                 public void execute(long t) {
                         txNext();
                 }
@@ -362,6 +363,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                         if(getState() == CC1120RadioState.CC1120_STATE_IDLE ||
                         getState() == CC1120RadioState.CC1120_STATE_SLEEP) {
                                 TimeEvent goToRX = new TimeEvent(0, "CC1120 go to RX") {
+                                        @Override
                                         public void execute(long t) {
                                                 if(getState() == CC1120RadioState.CC1120_STATE_RX) {
                                                         /* Radio already in RX, ignore */
@@ -454,10 +456,12 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 }
         }
 
+        @Override
         public int getLQI() {
                 return 0; /* TODO */
         };
 
+        @Override
         public void setLQI(int lqi) {
         }
 
@@ -501,6 +505,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 spiAddress = 0xFF;
         }
 
+        @Override
         public void dataReceived(USARTSource source, int data) {
                 if (spiGotAddress) {
                         if (!spiBurstMode) {
@@ -688,6 +693,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 return registers[address];
         }
 
+        @Override
         public boolean isReadyToReceive() {
           /* TODO Implement me */
     if (getState() == CC1120RadioState.CC1120_STATE_IDLE) {
@@ -903,6 +909,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
 
         boolean rxGotSynchByte = false;
         private int rxExpectedLen = -1;
+        @Override
         public void receivedByte(byte data) {
                 if (!rxGotSynchByte) {
                         /* Await synch byte */
@@ -941,6 +948,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 /* printRXFIFO(); */
         }
 
+        @Override
         public String info() {
                 return "CC1120 info: [not implemented]";
         }
@@ -954,23 +962,28 @@ public class CC1120 extends Radio802154 implements USARTListener {
         }
 
         private int currentRssi = -100;
+        @Override
         public void setRSSI(int power) {
                 currentRssi = power;
                 currentRssiReg1 = 0xff&power;
         }
+        @Override
         public int getRSSI() {
                 return currentRssiReg1;
         }
 
+        @Override
         public int getActiveFrequency() {
                 return (int) (1000 * Math.round(frequency)); /* kHz */
         }
 
+        @Override
         public int getActiveChannel() {
                 return (int) Math.round((frequency - FREQUENCY_CHANNEL_0)
                                 / FREQUENCY_CHANNEL_WIDTH);
         }
 
+        @Override
         public int getOutputPowerIndicator() {
                 return 1;
         }
@@ -979,19 +992,23 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 return frequency;
         }
 
+        @Override
         public void notifyReset() {
                 super.notifyReset();
                 setChipSelect(false);
         }
 
+        @Override
         public int getOutputPower() {
                 return 1;
         }
 
+        @Override
         public int getOutputPowerMax() {
                 return 1;
         }
 
+        @Override
         public int getOutputPowerIndicatorMax() {
                 return 1;
         }
@@ -1000,15 +1017,18 @@ public class CC1120 extends Radio802154 implements USARTListener {
          * Chip APIs
          *****************************************************************************/
 
+        @Override
         public int getModeMax() {
                 return 0;
         }
 
         /* return data in register at the correct position */
+        @Override
         public int getConfiguration(int parameter) {
                 return registers[parameter];
         }
 
+        @Override
         public boolean getChipSelect() {
                 return chipSelect;
         }

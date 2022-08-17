@@ -113,6 +113,7 @@ public class CC430f5137Config extends MSP430Config {
         // bsl, IO, etc at a later stage...
     }
 
+    @Override
     public int setup(MSP430Core cpu, ArrayList<IOUnit> ioUnits) {
 
         Multiplier32 mp = new Multiplier32(cpu, cpu.memory, 0x4c0);
@@ -155,10 +156,12 @@ public class CC430f5137Config extends MSP430Config {
         return portConfig.length + uartConfig.length;
     }
 
+    @Override
     public String getAddressAsString(int addr) {
         return Utils.hex20(addr);
     }
 
+    @Override
     public ClockSystem createClockSystem(MSP430Core cpu, int[] memory, Timer[] timers) {
         return new UnifiedClockSystem(cpu, memory, 0, timers);
     }

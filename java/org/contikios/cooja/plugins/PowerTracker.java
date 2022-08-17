@@ -100,11 +100,13 @@ public class PowerTracker implements Plugin {
 
     /* Automatically add/delete motes */
     simulation.getEventCentral().addMoteCountListener(moteCountListener = new MoteCountListener() {
+      @Override
       public void moteWasAdded(Mote mote) {
         addMote(mote);
         table.invalidate();
         table.repaint();
       }
+      @Override
       public void moteWasRemoved(Mote mote) {
         removeMote(mote);
         table.invalidate();
@@ -121,12 +123,15 @@ public class PowerTracker implements Plugin {
     }
 
     AbstractTableModel model = new AbstractTableModel() {
+      @Override
       public int getRowCount() {
         return moteTrackers.size()+1;
       }
+      @Override
       public int getColumnCount() {
         return 4;
       }
+      @Override
       public String getColumnName(int col) {
         if (col == COLUMN_MOTE) {
           return "Mote";
@@ -142,6 +147,7 @@ public class PowerTracker implements Plugin {
         }
         return null;
       }
+      @Override
       public Object getValueAt(int rowIndex, int col) {
         if (rowIndex < 0 || rowIndex >= moteTrackers.size()+1) {
           return null;
@@ -193,6 +199,7 @@ public class PowerTracker implements Plugin {
       }
     };
     table = new JTable(model) {
+      @Override
       public String getToolTipText(MouseEvent e) {
         java.awt.Point p = e.getPoint();
         int rowIndex = table.rowAtPoint(p);
@@ -204,6 +211,7 @@ public class PowerTracker implements Plugin {
       }
     };
     table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+      @Override
       public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if (row == tableMaxRadioOnIndex) {
@@ -239,8 +247,10 @@ public class PowerTracker implements Plugin {
   }
   
   private Action resetAction = new AbstractAction("Reset") {
+    @Override
     public void actionPerformed(ActionEvent e) {
       Runnable r = new Runnable() {
+        @Override
         public void run() {
           reset();
         }
@@ -254,6 +264,7 @@ public class PowerTracker implements Plugin {
   };
 
   private Action printAction = new AbstractAction("Print to console/Copy to clipboard") {
+    @Override
     public void actionPerformed(ActionEvent e) {
       String output = radioStatistics(true, true, false);
       logger.info("PowerTracker output:\n\n" + output);
@@ -341,6 +352,7 @@ public class PowerTracker implements Plugin {
       radio.addObserver(this);
     }
 
+    @Override
     public void update(Observable o, Object arg) {
       update();
     }
@@ -421,6 +433,7 @@ public class PowerTracker implements Plugin {
       mote = null;
     }
 
+    @Override
     public String toString() {
       return toString(true, true);
     }
@@ -503,6 +516,7 @@ public class PowerTracker implements Plugin {
   public void startPlugin() {
   }
 
+  @Override
   public void closePlugin() {
     /* Remove repaint timer */
     repaintTimer.stop();
@@ -526,6 +540,7 @@ public class PowerTracker implements Plugin {
   }
 
   private Timer repaintTimer = new Timer(POWERTRACKER_UPDATE_INTERVAL, new ActionListener() {
+    @Override
     public void actionPerformed(ActionEvent e) {
       /* Identify max radio on */
       double maxRadioOn = 0;
@@ -545,9 +560,11 @@ public class PowerTracker implements Plugin {
     }
   });
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
+  @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     return true;
   }

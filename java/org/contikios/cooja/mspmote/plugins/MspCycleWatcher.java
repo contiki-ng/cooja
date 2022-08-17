@@ -83,6 +83,7 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
 
     JButton updateButton = new JButton("Update");
     updateButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         updateLabels();
       }
@@ -90,6 +91,7 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
 
     JButton resetButton = new JButton("Reset");
     resetButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         cycleReset = cpu.cycles;
         updateLabels();
@@ -110,6 +112,7 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
     setSize(370, 100);
 
     simulation.addObserver(simObserver = new Observer() {
+      @Override
       public void update(Observable obs, Object obj) {
         updateLabels();
       }
@@ -130,10 +133,12 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
     resetTextField.setText(String.valueOf(cpu.cycles - cycleReset));
   }
 
+  @Override
   public void closePlugin() {
     simulation.deleteObserver(simObserver);
   }
 
+  @Override
   public Mote getMote() {
     return mspMote;
   }

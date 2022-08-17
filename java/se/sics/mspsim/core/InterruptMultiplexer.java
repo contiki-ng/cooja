@@ -19,10 +19,12 @@ public class InterruptMultiplexer implements InterruptHandler {
     }
 
 
+    @Override
     public void interruptServiced(int vector) {
         /* do nothing??? */
     }
 
+    @Override
     public String getName() {
         return "InterruptMultiplexer vector " + vector +  " bits: " + interruptBits;
     }

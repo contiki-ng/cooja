@@ -130,6 +130,7 @@ public class Flash extends IOUnit {
   private boolean lockInfo = true;
 
   private TimeEvent end_process = new TimeEvent(0) {
+    @Override
     public void execute(long t) {
       blocked_cpu = false;
 
@@ -195,6 +196,7 @@ public class Flash extends IOUnit {
     return blocked_cpu;
   }
 
+  @Override
   public void interruptServiced(int vector) {
     cpu.flagInterrupt(vector, this, false);
   }
@@ -397,6 +399,7 @@ public class Flash extends IOUnit {
     end[0] = start[0] + segsize;
   }
 
+  @Override
   public int read(int address, boolean word, long cycles) {
     address = address - offset;
 
@@ -512,6 +515,7 @@ public class Flash extends IOUnit {
     waitFlashProcess(BLOCKWRITE_END_TIME);
   }
 
+  @Override
   public void write(int address, int value, boolean word, long cycles) {
     address = address - offset;
     if (!word) {
@@ -605,6 +609,7 @@ public class Flash extends IOUnit {
     }
   }
 
+  @Override
   public void reset(int type) {
     if (DEBUG) {
       log("Got reset!");

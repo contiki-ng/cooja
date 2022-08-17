@@ -69,10 +69,12 @@ import org.contikios.cooja.mspmote.interfaces.UsciA1Serial;
 public class Exp5438MoteType extends MspMoteType {
   private static final Logger logger = LogManager.getLogger(Exp5438MoteType.class);
 
+  @Override
   protected MspMote createMote(Simulation simulation) {
     return new Exp5438Mote(this, simulation);
   }
 
+  @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
   throws MoteTypeCreationException {
 
@@ -161,6 +163,7 @@ public class Exp5438MoteType extends MspMoteType {
     return true;
   }
 
+  @Override
   public Icon getMoteTypeIcon() {
     Toolkit toolkit = Toolkit.getDefaultToolkit();
     URL imageURL = this.getClass().getClassLoader().getResource("exp5438.png");
@@ -179,6 +182,7 @@ public class Exp5438MoteType extends MspMoteType {
     return null;
   }
 
+  @Override
   public Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses() {
 	    return new Class[] {
 	            Position.class,
@@ -195,6 +199,7 @@ public class Exp5438MoteType extends MspMoteType {
 	            MspDebugOutput.class
 	        };
   }
+  @Override
   public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
     return new Class[] {
         Position.class,
@@ -214,6 +219,7 @@ public class Exp5438MoteType extends MspMoteType {
     };
   }
 
+  @Override
   public File getExpectedFirmwareFile(File source) {
     File parentDir = source.getParentFile();
     String sourceNoExtension = source.getName().substring(0, source.getName().length()-2);

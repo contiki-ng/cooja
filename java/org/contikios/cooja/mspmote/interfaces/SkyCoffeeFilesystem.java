@@ -100,9 +100,11 @@ public class SkyCoffeeFilesystem extends MoteInterface {
     adjuster.packColumns();
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     return null;
   }
+  @Override
   public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
   }
 
@@ -126,12 +128,14 @@ public class SkyCoffeeFilesystem extends MoteInterface {
     }
 
     EventQueue.invokeLater(new Runnable() {
+      @Override
       public void run() {
         ((AbstractTableModel)filesTable.getModel()).fireTableDataChanged();
       }
     });
   }
 
+  @Override
   public JPanel getInterfaceVisualizer() {
     JPanel main = new JPanel(new BorderLayout());
 
@@ -154,6 +158,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
     Box box = Box.createHorizontalBox();
     JButton update = new JButton("Update filesystem");
     update.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         logger.info("Updating Coffee filesystem");
         updateFS();
@@ -164,6 +169,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
     /* Insert */
     JButton insert = new JButton("Insert file");
     insert.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         
         JFileChooser fileChooser = new JFileChooser();
@@ -174,6 +180,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
 
         final File file = fileChooser.getSelectedFile();
         new Thread(new Runnable() {
+          @Override
           public void run() {
             logger.info("Adding file: " + file.getName());
             try {
@@ -194,19 +201,24 @@ public class SkyCoffeeFilesystem extends MoteInterface {
     return main;
   }
 
+  @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
   private final AbstractTableModel tableModel = new AbstractTableModel() {
+    @Override
     public String getColumnName(int col) {
       return COLUMN_NAMES[col];
     }
+    @Override
     public int getRowCount() {
       return files.length;
     }
+    @Override
     public int getColumnCount() {
       return COLUMN_NAMES.length;
     }
+    @Override
     public Object getValueAt(int row, int col) {
       if (col == COLUMN_NAME) {
         return files[row].getName();
@@ -220,9 +232,11 @@ public class SkyCoffeeFilesystem extends MoteInterface {
       }
       return Boolean.FALSE;
     }
+    @Override
     public boolean isCellEditable(int row, int col){
       return getColumnClass(col) == Boolean.class;
     }
+    @Override
     public void setValueAt(Object value, final int row, int col) {
       if (col == COLUMN_SAVE) {
         JFileChooser fc = new JFileChooser();
@@ -252,6 +266,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
         }
 
         new Thread(new Runnable() {
+          @Override
           public void run() {
             try {
               logger.info("Saving to file: " + saveFile.getName());
@@ -278,6 +293,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
 
         /* Remove file */
         new Thread(new Runnable() {
+          @Override
           public void run() {
             try {
               logger.info("Removing file: " + files[row].getName());
@@ -290,6 +306,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
         }, "coffeeFS.removeFile").start();
       }
     }
+    @Override
     public Class<?> getColumnClass(int c) {
       return getValueAt(0, c).getClass();
     }

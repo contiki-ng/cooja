@@ -93,15 +93,18 @@ public class Leds extends Chip {
         return ledColors.length;
     }
 
-    @Override public int getModeMax() {
+    @Override
+    public int getModeMax() {
         return 0;
     }
 
-    @Override public String info() {
+    @Override
+    public String info() {
         return "Leds: " + (ledColors.length <= 8 ? Utils.binary8(leds) : Utils.binary16(leds));
     }
 
-    @Override public int getConfiguration(int parameter) {
+    @Override
+    public int getConfiguration(int parameter) {
         return 0;
     }
 

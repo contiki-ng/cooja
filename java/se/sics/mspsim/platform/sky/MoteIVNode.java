@@ -53,6 +53,7 @@ public abstract class MoteIVNode extends CC2420Node {
       button.setPressed(buttonPressed);
   }
 
+  @Override
   public void setupNodePorts() {
     super.setupNodePorts();
 
@@ -62,6 +63,7 @@ public abstract class MoteIVNode extends CC2420Node {
     sht11.setDataPort(port1, SHT11_DATA_PIN);
   }
 
+  @Override
   public void setupGUI() {
     if (gui == null) {
       gui = new SkyGui(this);
@@ -69,6 +71,7 @@ public abstract class MoteIVNode extends CC2420Node {
     }
   }
 
+  @Override
   public void portWrite(IOPort source, int data) {
     super.portWrite(source, data);
 
@@ -85,6 +88,7 @@ public abstract class MoteIVNode extends CC2420Node {
     }
   }
 
+  @Override
   public int getModeMax() {
     return MODE_MAX;
   }

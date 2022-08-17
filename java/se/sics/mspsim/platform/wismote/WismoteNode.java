@@ -116,6 +116,7 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 //        registry.registerComponent("xmem", flash);
 //    }
 
+    @Override
     public void dataReceived(USARTSource source, int data) {
         radio.dataReceived(source, data);
         //flash.dataReceived(source, data);
@@ -125,6 +126,7 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
         }
     }
 
+    @Override
     public void portWrite(IOPort source, int data) {
         switch (source.getPort()) {
         case 1:
@@ -190,6 +192,7 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
         }
     }
 
+    @Override
     public void setupNode() {
         // create a filename for the flash file
         // This should be possible to take from a config file later!
@@ -229,6 +232,7 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
         }
     }
 
+    @Override
     public int getModeMax() {
         return 0;
     }

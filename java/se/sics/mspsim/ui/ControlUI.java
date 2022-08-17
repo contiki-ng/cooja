@@ -127,6 +127,7 @@ public class ControlUI extends JPanel implements ActionListener, SimEventListene
     stepAction = new AbstractAction("Step") {
       private static final long serialVersionUID = 1L;
 
+      @Override
       public void actionPerformed(ActionEvent e) {
         stepButton.setEnabled(false);
         int steps = (int)stepsSpinner.getValue();
@@ -193,6 +194,7 @@ public class ControlUI extends JPanel implements ActionListener, SimEventListene
     window.setTitle(TITLE + "  CPU On: " + cpu.getCPUPercent() + "%");
   }
 
+  @Override
   public void actionPerformed(ActionEvent ae) {
     String cmd = ae.getActionCommand();
     updateCPUPercent();
@@ -243,6 +245,7 @@ public class ControlUI extends JPanel implements ActionListener, SimEventListene
     dui.updateRegs();
   }
 
+  @Override
   public void simChanged(SimEvent event) {
     switch (event.getType()) {
     case START:
@@ -260,25 +263,30 @@ public class ControlUI extends JPanel implements ActionListener, SimEventListene
     }
   }
 
+  @Override
   public Status getStatus() {
       return status;
   }
 
+  @Override
   public String getName() {
       return name;
   }
 
+  @Override
   public void init(String name, ComponentRegistry registry) {
       this.name = name;
       this.registry = registry;
   }
 
+  @Override
   public void start() {
       setup();
       status = Status.STARTED;
       window.setVisible(true);
   }
 
+  @Override
   public void stop() {
       status = Status.STOPPED;
       window.setVisible(false);

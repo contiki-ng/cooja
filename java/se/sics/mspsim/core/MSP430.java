@@ -198,6 +198,7 @@ public class MSP430 extends MSP430Core {
   boolean microClockReady = false;
 
   /* when DCO has changed speed, this method will be called */
+  @Override
   protected void dcoReset() {
       microClockReady = false;
   }
@@ -386,6 +387,7 @@ public class MSP430 extends MSP430Core {
     }
   }
 
+  @Override
   public void generateTrace(PrintStream out) {
     if (profiler != null && out != null) {
       profiler.printStackTrace(out);

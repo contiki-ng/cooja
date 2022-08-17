@@ -37,17 +37,21 @@ public class PMMDummy extends IOUnit {
         reset(0);
     }
 
+    @Override
     public void reset(int type) {
     }
 
+    @Override
     public void write(int address, int value, boolean word, long cycles) {
         memory[address] = value;
     }
 
+    @Override
     public int read(int address, boolean word, long cycles) {
         return memory[address];
     }
 
+    @Override
     public void interruptServiced(int vector) {
         if (DEBUG) {
             log(this.getName() + ": Interrupt services vector: " + vector);

@@ -191,11 +191,14 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
     /* this is for detecting writes/read to/from non-existing IO */
     IOUnit voidIO = new IOUnit("void", this, memory, 0) {
+        @Override
         public void interruptServiced(int vector) {
         }
+        @Override
         public void write(int address, int value, boolean word, long cycles) {
             cpu.logw(WarningType.VOID_IO_WRITE, "*** IOUnit write to non-existent IO at $" + Utils.hex(address, 4));
         }
+        @Override
         public int read(int address, boolean word, long cycles) {
             cpu.logw(WarningType.VOID_IO_READ, "*** IOUnit read from non-existent IO at $" + Utils.hex(address, 4));
             return 0;
@@ -2191,6 +2194,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
           return index;
   }
 
+  @Override
   public int getModeMax() {
     return MODE_MAX;
   }
@@ -2226,10 +2230,12 @@ public class MSP430Core extends Chip implements MSP430Constants {
       return config.getAddressAsString(addr);
   }
 
+  @Override
   public int getConfiguration(int parameter) {
       return 0;
   }
 
+  @Override
   public String info() {
       StringBuilder buf = new StringBuilder();
       buf.append(" Mode: " + getModeName(getMode())

@@ -72,6 +72,7 @@ public class SFR extends IOUnit {
     reset(0);
   }
 
+  @Override
   public void reset(int type) {
     ie1 = 0;
     ie2 = 0;
@@ -98,6 +99,7 @@ public class SFR extends IOUnit {
 
   // write
   // write a value to the IO unit
+  @Override
   public void write(int address, int value, boolean word,
                              long cycles) {
     if (DEBUG) log("write to: " + address + " = " + value);
@@ -119,6 +121,7 @@ public class SFR extends IOUnit {
 
   // read
   // read a value from the IO unit
+  @Override
   public int read(int address, boolean word, long cycles) {
     if (DEBUG) log("read from: " + address);
     switch (address) {
@@ -245,6 +248,7 @@ public class SFR extends IOUnit {
   }
 
 
+  @Override
   public void interruptServiced(int vector) {
     irqTriggered[vector] = false;
     int pos = irqTriggeredPos[vector];

@@ -149,6 +149,7 @@ public class OperatingModeStatistics {
     }
 
     // returns percentage since last call...
+    @Override
     public double getDoubleValue() {
       long diff = cpu.cycles - lastCycles;
       if (diff == 0) return 0;
@@ -162,6 +163,7 @@ public class OperatingModeStatistics {
       return (100.0 * valDiff) / diff;
     }
 
+    @Override
     public int getValue() {
       return (int) getDoubleValue();
     }
@@ -184,15 +186,18 @@ public class OperatingModeStatistics {
       }
     }
 
+    @Override
     public int getModeMax() {
       return entry.chip.getModeMax();
     }
 
     // returns percentage since last call...
+    @Override
     public int getValue(int mode) {
       return (int) getDoubleValue(mode);
     }
 
+    @Override
     public double getDoubleValue(int mode) {
       long diff = cpu.cycles - lastCycles[mode];
       if (diff == 0) return 0;
@@ -228,6 +233,7 @@ public class OperatingModeStatistics {
       return elapsed[mode];
     }
 
+    @Override
     public void modeChanged(Chip source, int mode) {
       this.elapsed[this.mode] += cpu.cycles - startTime;
       this.mode = mode;

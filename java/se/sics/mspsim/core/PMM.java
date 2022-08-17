@@ -45,6 +45,7 @@ public class PMM extends IOUnit {
         reset(0);
     }
 
+    @Override
     public void reset(int type) {
         /* Initial values */
         memory[baseAddress + 0x0] = 0x9600; /* PMMCTL0 */
@@ -56,6 +57,7 @@ public class PMM extends IOUnit {
         memory[baseAddress + 0xe] = 0x1100; /* PMMRIE */
     }
 
+    @Override
     public void write(int address, int value, boolean word, long cycles) {
         if (DEBUG)
             log(this.getName() + ": Write to: "
@@ -64,6 +66,7 @@ public class PMM extends IOUnit {
         memory[address] = value;
     }
 
+    @Override
     public int read(int address, boolean word, long cycles) {
         if (address == baseAddress + 0xc) {
             /* PMMIFG always settled */
@@ -82,6 +85,7 @@ public class PMM extends IOUnit {
         return memory[address];
     }
 
+    @Override
     public void interruptServiced(int vector) {
         if (DEBUG) {
             log(this.getName() + ": Interrupt services vector: " + vector);

@@ -222,6 +222,7 @@ class Interval {
     return highValue <= lowValue;
   }
   
+  @Override
   public String toString() {
     if (isEmpty())
       return "Double interval: (null)";

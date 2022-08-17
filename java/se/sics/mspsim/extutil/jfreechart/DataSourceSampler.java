@@ -62,6 +62,7 @@ public class DataSourceSampler implements ActionListener {
 //    test2.add(new Millisecond(), Math.random() * 100);
   }
 
+  @Override
   public void actionPerformed(ActionEvent arg0) {
     sampleAll();
   }

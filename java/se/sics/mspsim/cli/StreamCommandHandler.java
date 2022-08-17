@@ -62,6 +62,7 @@ public class StreamCommandHandler extends CommandHandler implements Runnable {
     this.exit = false;
     this.inReader = new BufferedReader(new InputStreamReader(in));
     registerCommand("workaround", new BasicCommand("activate workaround for Java console input bug", "") {
+      @Override
       public int executeCommand(CommandContext context) {
         workaround = true;
         return 0;
@@ -73,6 +74,7 @@ public class StreamCommandHandler extends CommandHandler implements Runnable {
     workaround = w;
   }
 
+  @Override
   public void start() {
     super.start();
     new Thread(this, "cmd").start();
@@ -108,6 +110,7 @@ public class StreamCommandHandler extends CommandHandler implements Runnable {
     }
   }
 
+  @Override
   public void run() {
     String lastLine = null;
     while(!exit) {

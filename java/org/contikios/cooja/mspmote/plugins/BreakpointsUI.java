@@ -89,6 +89,7 @@ public class BreakpointsUI extends JPanel {
 
     /* Breakpoints table */
     table = new JTable(tableModel) {
+      @Override
       public String getToolTipText(MouseEvent e) {
 
         /* Tooltips: show full file paths */
@@ -125,6 +126,7 @@ public class BreakpointsUI extends JPanel {
       }
     };
     table.getColumnModel().getColumn(COLUMN_INFO).setCellRenderer(new DefaultTableCellRenderer() {
+      @Override
       public Component getTableCellRendererComponent(JTable table, Object value, 
           boolean isSelected, boolean hasFocus, int row, int column) {
         Component c = super.getTableCellRendererComponent(
@@ -152,6 +154,7 @@ public class BreakpointsUI extends JPanel {
     /* Popup menu: register on all motes */
     final JPopupMenu popupMenu = new JPopupMenu();
     var gotoCodeAction = new AbstractAction("Show in source code") {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (selectedWatchpoint == null) {
           return;
@@ -162,6 +165,7 @@ public class BreakpointsUI extends JPanel {
     popupMenu.add(new JMenuItem(gotoCodeAction));
     popupMenu.add(new JSeparator());
     var removeWatchpointAction = new AbstractAction("Remove watchpoint") {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (selectedWatchpoint == null) {
           return;
@@ -173,6 +177,7 @@ public class BreakpointsUI extends JPanel {
     };
     popupMenu.add(new JMenuItem(removeWatchpointAction));
     var configureWatchpointAction = new AbstractAction("Configure watchpoint information") {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (selectedWatchpoint == null) {
           return;
@@ -183,6 +188,7 @@ public class BreakpointsUI extends JPanel {
     popupMenu.add(new JMenuItem(configureWatchpointAction));
 
     table.addMouseListener(new MouseAdapter() {
+      @Override
       public void mouseClicked(MouseEvent e) {
         java.awt.Point p = e.getPoint();
         int rowIndex = table.rowAtPoint(p);
@@ -245,6 +251,7 @@ public class BreakpointsUI extends JPanel {
     }
     /* Locate breakpoints table index */
     SwingUtilities.invokeLater(new Runnable() {
+      @Override
       public void run() {
         Watchpoint[] watchpoints = mote.getBreakpoints();
         for (int i=0; i < watchpoints.length; i++) {
@@ -259,15 +266,19 @@ public class BreakpointsUI extends JPanel {
   }
 
   private final AbstractTableModel tableModel = new AbstractTableModel() {
+    @Override
     public String getColumnName(int col) {
       return COLUMN_NAMES[col];
     }
+    @Override
     public int getRowCount() {
       return mote.getBreakpoints().length;
     }
+    @Override
     public int getColumnCount() {
       return COLUMN_NAMES.length;
     }
+    @Override
     public Object getValueAt(int row, int col) {
       Watchpoint breakpoint = mote.getBreakpoints()[row];
 
@@ -300,9 +311,11 @@ public class BreakpointsUI extends JPanel {
 
       return Boolean.FALSE;
     }
+    @Override
     public boolean isCellEditable(int row, int col){
       return getColumnClass(col) == Boolean.class;
     }
+    @Override
     public void setValueAt(Object value, int row, int col) {
       Watchpoint breakpoint = mote.getBreakpoints()[row];
 
@@ -312,6 +325,7 @@ public class BreakpointsUI extends JPanel {
         fireTableCellUpdated(row, col);
       }
     }
+    @Override
     public Class<?> getColumnClass(int c) {
       return getValueAt(0, c).getClass();
     }

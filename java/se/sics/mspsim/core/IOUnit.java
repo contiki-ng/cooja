@@ -114,10 +114,12 @@ public abstract class IOUnit implements InterruptHandler, Loggable {
   // read a value from the IO unit
   public abstract int read(int address, boolean word, long cycles);
 
+  @Override
   public String getID() {
       return id;
   }
 
+  @Override
   public String getName() {
       return name;
   }
@@ -130,6 +132,7 @@ public abstract class IOUnit implements InterruptHandler, Loggable {
       logger.logw(this, type, msg);
   }
 
+  @Override
   public String info() {
       return "* no info";
   }

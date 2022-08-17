@@ -52,10 +52,12 @@ public abstract class BasicCommand extends Command {
     argumentHelp = argHelp;
   }
 
+  @Override
   public String getArgumentHelp(String commandName) {
     return argumentHelp;
   }
 
+  @Override
   public String getCommandHelp(String commandName) {
     return commandHelp;
   }

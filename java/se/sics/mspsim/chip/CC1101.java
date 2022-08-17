@@ -172,6 +172,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 }
         };
         private TimeEvent sendEvent = new TimeEvent(0, "CC1101 Send") {
+                @Override
                 public void execute(long t) {
                         txNext();
                 }
@@ -231,6 +232,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
         return 1000.0 / (getBitRate() / 8.0);
     }
 
+        @Override
         public void log(String str) {
             if (DEBUG) {
                 System.out.println(str);
@@ -261,6 +263,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
                        getState() == CC1101RadioState.CC1101_STATE_SLEEP) {
                         log("CC1101 from idle to rx, should wait");
                         TimeEvent goToRX = new TimeEvent(0, "CC1101 go to RX") {
+                                @Override
                                 public void execute(long t) {
                                     if(getState() == CC1101RadioState.CC1101_STATE_RX) {
                                         /* Radio already in RX, ignore */
@@ -277,6 +280,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
                         cpu.scheduleTimeEventMillis(goToRX, RXTIME / 1000.0);
 
                         TimeEvent rssiValid = new TimeEvent(0, "CC1101 set RSSI valid") {
+                                @Override
                                 public void execute(long t) {
                                     log("RSSI is now valid");
                                     currentRssiValid = true;
@@ -350,10 +354,12 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 }
         }
 
+        @Override
         public int getLQI() {
                 return 0; /* TODO */
         };
 
+        @Override
         public void setLQI(int lqi) {
         }
 
@@ -386,6 +392,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 spiAddress = 0xFF;
         }
 
+        @Override
         public void dataReceived(USARTSource source, int data) {
                 if (spiGotAddress) {
                         if (!spiBurstMode) {
@@ -495,6 +502,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
 
 
 
+        @Override
         public boolean isReadyToReceive() {
           /* TODO Implement me */
           if (getState() == CC1101RadioState.CC1101_STATE_IDLE) {
@@ -705,6 +713,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
 
         boolean rxGotSynchByte = false;
         private int rxExpectedLen = -1;
+        @Override
         public void receivedByte(byte data) {
             if(state != CC1101RadioState.CC1101_STATE_RX) {
                 return;
@@ -744,6 +753,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 /*printRXFIFO();*/
         }
 
+        @Override
         public String info() {
                 return "CC1101 info: [not implemented]";
         }
@@ -756,21 +766,26 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 registers[register] = data;
         }
 
+        @Override
         public void setRSSI(int power) {
           currentRssiReg = power;
         }
+        @Override
         public int getRSSI() {
                 return currentRssiReg;
         }
 
+        @Override
         public int getActiveFrequency() {
                 return (int) 0; /* Not implemented */
         }
 
+        @Override
         public int getActiveChannel() {
                 return channel;
         }
 
+        @Override
         public int getOutputPowerIndicator() {
                 return 1;
         }
@@ -779,19 +794,23 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 return 0; /* Not implemented */
         }
 
+        @Override
         public void notifyReset() {
                 super.notifyReset();
                 setChipSelect(false);
         }
 
+        @Override
         public int getOutputPower() {
                 return 1;
         }
 
+        @Override
         public int getOutputPowerMax() {
                 return 1;
         }
 
+        @Override
         public int getOutputPowerIndicatorMax() {
                 return 1;
         }
@@ -800,15 +819,18 @@ public class CC1101 extends Radio802154 implements USARTListener {
          * Chip APIs
          *****************************************************************************/
 
+        @Override
         public int getModeMax() {
                 return 0;
         }
 
         /* return data in register at the correct position */
+        @Override
         public int getConfiguration(int parameter) {
                 return registers[parameter];
         }
 
+        @Override
         public boolean getChipSelect() {
                 return chipSelect;
         }

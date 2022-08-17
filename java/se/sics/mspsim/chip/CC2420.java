@@ -320,6 +320,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private boolean on;
 
   private TimeEvent oscillatorEvent = new TimeEvent(0, "CC2420 OSC") {
+    @Override
     public void execute(long t) {
       status |= STATUS_XOSC16M_STABLE;
       if (logLevel > INFO) log("Oscillator Stable Event.");
@@ -333,6 +334,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   };
 
   private TimeEvent vregEvent = new TimeEvent(0, "CC2420 VREG") {
+    @Override
     public void execute(long t) {
       if(logLevel > INFO) log("VREG Started at: " + t + " cyc: " +
           cpu.cycles + " " + getTime());
@@ -343,24 +345,28 @@ public class CC2420 extends Radio802154 implements USARTListener {
   };
 
   private TimeEvent sendEvent = new TimeEvent(0, "CC2420 Send") {
+    @Override
     public void execute(long t) {
       txNext();
     }
   };
 
   private TimeEvent ackEvent = new TimeEvent(0, "CC2420 Ack") {
+      @Override
       public void execute(long t) {
         ackNext();
       }
     };
 
   private TimeEvent shrEvent = new TimeEvent(0, "CC2420 SHR") {
+    @Override
     public void execute(long t) {
       shrNext();
     }
   };
 
   private TimeEvent symbolEvent = new TimeEvent(0, "CC2420 Symbol") {
+    @Override
     public void execute(long t) {
       switch(stateMachine) {
       case RX_CALIBRATE:
@@ -571,6 +577,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   /* Receive a byte from the radio medium
    * @see se.sics.mspsim.chip.RFListener#receivedByte(byte)
    */
+  @Override
   public void receivedByte(byte data) {
       // Received a byte from the "air"
 
@@ -768,6 +775,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
       configurationChanged(address, oldValue, data);
   }
 
+  @Override
   public void dataReceived(USARTSource source, int data) {
     int oldStatus = status;
     if (logLevel > INFO) {
@@ -1283,20 +1291,24 @@ public class CC2420 extends Radio802154 implements USARTListener {
     activeChannel = (registers[REG_FSCTRL] - 357 - 0x4000)/5 + 11;
   }
 
+  @Override
   public int getActiveFrequency() {
     updateActiveFrequency();
     return activeFrequency;
   }
 
+  @Override
   public int getActiveChannel() {
     updateActiveFrequency();
     return activeChannel;
   }
 
+  @Override
   public int getOutputPowerIndicator() {
     return (registers[REG_TXCTRL] & 0x1f);
   }
 
+  @Override
   public int getOutputPowerIndicatorMax() {
       return 31;
   }
@@ -1306,16 +1318,19 @@ public class CC2420 extends Radio802154 implements USARTListener {
    * @param lqi The Corr-val
    * @sa CC2420 Datasheet
    */
+  @Override
   public void setLQI(int lqi){
       if(lqi < 0) lqi = 0;
       else if(lqi > 0x7f ) lqi = 0x7f;
       corrval = lqi;
   }
 
+  @Override
   public int getLQI() {
       return corrval;
   }
 
+  @Override
   public void setRSSI(int power) {
     final int minp = -128 + RSSI_OFFSET;
     final int maxp = 127 + RSSI_OFFSET;
@@ -1333,10 +1348,12 @@ public class CC2420 extends Radio802154 implements USARTListener {
     updateCCA();
   }
 
+  @Override
   public int getRSSI() {
     return rssi;
   }
 
+  @Override
   public int getOutputPower() {
     /* From CC2420 datasheet */
     int indicator = getOutputPowerIndicator();
@@ -1367,6 +1384,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
       return 0;
   }
 
+  @Override
   public void notifyReset() {
     super.notifyReset();
     setChipSelect(false);
@@ -1408,6 +1426,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
     }
   }
 
+  @Override
   public boolean getChipSelect() {
     return chipSelect;
   }
@@ -1450,6 +1469,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
    * Chip APIs
    *****************************************************************************/
 
+  @Override
   public int getModeMax() {
     return MODE_MAX;
   }
@@ -1465,6 +1485,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
       return sb.toString();
   }
 
+  @Override
   public String info() {
     updateActiveFrequency();
     return " VREG_ON: " + on + "  Chip Select: " + chipSelect +
@@ -1484,10 +1505,12 @@ public class CC2420 extends Radio802154 implements USARTListener {
     ")\n";
   }
 
+  @Override
   public void stateChanged(int state) {
   }
 
   /* return data in register at the correct position */
+  @Override
   public int getConfiguration(int parameter) {
       return registers[parameter];
   }

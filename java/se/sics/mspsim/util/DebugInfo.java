@@ -69,6 +69,7 @@ public class DebugInfo {
     return lineNo;
   }
 
+  @Override
   public String toString() {
     return "Line: " + lineNo + " in file: " + file + " (function: " + function + ")";
   }

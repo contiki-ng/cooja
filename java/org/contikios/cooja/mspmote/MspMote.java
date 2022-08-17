@@ -121,34 +121,44 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       /* TODO Create COOJA-specific window manager */
       registry.removeComponent("windowManager");
       registry.registerComponent("windowManager", new WindowManager() {
+        @Override
         public ManagedWindow createWindow(String name) {
           return new ManagedWindow() {
+            @Override
             public void setVisible(boolean b) {
               logger.warn("setVisible() ignored");
             }
+            @Override
             public void setTitle(String string) {
               logger.warn("setTitle() ignored");
             }
+            @Override
             public void setSize(int width, int height) {
               logger.warn("setSize() ignored");
             }
+            @Override
             public void setBounds(int x, int y, int width, int height) {
               logger.warn("setBounds() ignored");
             }
+            @Override
             public void removeAll() {
               logger.warn("removeAll() ignored");
             }
+            @Override
             public void pack() {
               logger.warn("pack() ignored");
             }
+            @Override
             public boolean isVisible() {
               logger.warn("isVisible() return false");
               return false;
             }
+            @Override
             public String getTitle() {
               logger.warn("getTitle() return \"\"");
               return "";
             }
+            @Override
             public void add(Component component) {
               logger.warn("add() ignored");
             }
@@ -256,10 +266,12 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   public void idUpdated(int newID) {
   }
 
+  @Override
   public MoteType getType() {
     return myMoteType;
   }
 
+  @Override
   public MoteInterfaceHandler getInterfaces() {
     return myMoteInterfaceHandler;
   }
@@ -290,6 +302,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private double jumpError = 0.;
 
+  @Override
   public void execute(long time) {
     execute(time, EXECUTE_DURATION_US);
   }
@@ -420,6 +433,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     /* XXX TODO Reimplement stack monitoring using MSPSim internals */
   }
 
+  @Override
   public String getStackTrace() {
     return executeCLICommand("stacktrace");
   }
@@ -431,6 +445,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   public String executeCLICommand(String cmd) {
     final StringBuilder sb = new StringBuilder();
     LineListener ll = new LineListener() {
+      @Override
       public void lineRead(String line) {
         sb.append(line).append("\n");
       }
@@ -447,14 +462,17 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return sb.toString();
   }
 
+  @Override
   public int getCPUFrequency() {
     return myCpu.getDCOFrequency();
   }
 
+  @Override
   public int getID() {
     return getInterfaces().getMoteID().getMoteID();
   }
 
+  @Override
   public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException {
     setSimulation(simulation);
     if (myMoteInterfaceHandler == null) {
@@ -517,6 +535,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return true;
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
     Element element;
@@ -541,10 +560,12 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return config;
   }
 
+  @Override
   public String getExecutionDetails() {
     return executeCLICommand("stacktrace");
   }
 
+  @Override
   public String getPCString() {
     int pc = myCpu.getPC();
     ELF elf = myCpu.getRegistry().getComponent(ELF.class);
@@ -603,16 +624,20 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   private final ArrayList<MspBreakpoint> watchpoints = new ArrayList<>();
   private HashMap<File, HashMap<Integer, Integer>> debuggingInfo = null;
 
+  @Override
   public void addWatchpointListener(WatchpointListener listener) {
     watchpointListeners.add(listener);
   }
+  @Override
   public void removeWatchpointListener(WatchpointListener listener) {
     watchpointListeners.remove(listener);
   }
+  @Override
   public WatchpointListener[] getWatchpointListeners() {
     return watchpointListeners.toArray(new WatchpointListener[0]);
   }
 
+  @Override
   public Watchpoint addBreakpoint(File codeFile, int lineNr, int address) {
     MspBreakpoint bp = new MspBreakpoint(this, address, codeFile, lineNr);
     watchpoints.add(bp);
@@ -622,6 +647,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
     return bp;
   }
+  @Override
   public void removeBreakpoint(Watchpoint watchpoint) {
     ((MspBreakpoint)watchpoint).unregisterBreakpoint();
     watchpoints.remove(watchpoint);
@@ -630,10 +656,12 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       listener.watchpointsChanged();
     }
   }
+  @Override
   public Watchpoint[] getBreakpoints() {
     return watchpoints.toArray(new Watchpoint[0]);
   }
 
+  @Override
   public boolean breakpointExists(int address) {
     if (address < 0) {
       return false;
@@ -645,6 +673,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
     return false;
   }
+  @Override
   public boolean breakpointExists(File file, int lineNr) {
     for (Watchpoint watchpoint: watchpoints) {
       if (watchpoint.getCodeFile() == null) {
@@ -661,6 +690,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return false;
   }
 
+  @Override
   public int getExecutableAddressOf(File file, int lineNr) {
     if (file == null || lineNr < 0 || debuggingInfo == null) {
       return -1;

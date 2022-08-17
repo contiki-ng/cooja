@@ -116,16 +116,19 @@ public class JCreateNode extends CC2420Node {
         accelerometer = new MMA7260QT(cpu);
         ADC12 adc = cpu.getIOUnit(ADC12.class, "ADC12");
         adc.setADCInput(4, new ADCInput() {
+            @Override
             public int nextData() {
                 return accelerometer.getADCX();
             }
         });
         adc.setADCInput(5, new ADCInput() {
+            @Override
             public int nextData() {
                 return accelerometer.getADCY();
             }
         });
         adc.setADCInput(6, new ADCInput() {
+            @Override
             public int nextData() {
                 return accelerometer.getADCZ();
             }
@@ -139,6 +142,7 @@ public class JCreateNode extends CC2420Node {
         }
     }
 
+    @Override
     public void setupGUI() {
         if (gui == null) {
             gui = new JCreateGui(this);

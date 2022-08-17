@@ -41,6 +41,7 @@ public class Trxeb1120Node extends GenericNode implements PortListener, USARTLis
                 this.withEnc = withEnc;
         }
 
+        @Override
         public void dataReceived(USARTSource source, int data) {
                 radio.dataReceived(source, data);
 
@@ -50,6 +51,7 @@ public class Trxeb1120Node extends GenericNode implements PortListener, USARTLis
                 }
         }
 
+        @Override
         public void portWrite(IOPort source, int data) {
                 if (source == port3) {
                         // Chip select = active low...
@@ -95,10 +97,12 @@ public class Trxeb1120Node extends GenericNode implements PortListener, USARTLis
                 }
         }
 
+        @Override
         public void setupNode() {
                 setupNodePorts();
         }
 
+        @Override
         public int getModeMax() {
                 return 0;
         }

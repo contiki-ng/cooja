@@ -59,6 +59,7 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
 //        registry.registerComponent("xmem", flash);
 //    }
 
+    @Override
     public void dataReceived(USARTSource source, int data) {
         radio.dataReceived(source, data);
         //flash.dataReceived(source, data);
@@ -68,6 +69,7 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
         }
     }
 
+    @Override
     public void portWrite(IOPort source, int data) {
         if (source == port7) {
             //System.out.println("LEDS GREEN = " + ((data & LEDS_CONF_GREEN) > 0));
@@ -124,6 +126,7 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
         }
     }
 
+    @Override
     public void setupNode() {
         // create a filename for the flash file
         // This should be possible to take from a config file later!
@@ -160,6 +163,7 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
         System.out.println("No gui for Tyndall yet...");
     }
 
+    @Override
     public int getModeMax() {
         return 0;
     }

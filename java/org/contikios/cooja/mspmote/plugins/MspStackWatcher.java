@@ -94,6 +94,7 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
 
     toggleButton = new JToggleButton("Click to monitor for stack overflows");
     toggleButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         if (toggleButton.isSelected()) {
           toggleButton.setText("Monitoring for stack overflows");
@@ -116,6 +117,7 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
     stackUI.init("Stack usage", mspMote.registry);
     stackUI.start();
     increasePosTimeEvent = new MoteTimeEvent(mspMote) {
+      @Override
       public void execute(long t) {
         stackUI.requestIncreasePos();
         simulation.scheduleEvent(this, t + Simulation.MILLISECOND);
@@ -178,6 +180,7 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
       final int heapStartAddress = heap;
       registerMonitor = new RegisterMonitor.Adapter() {
     	int min = Integer.MAX_VALUE;
+        @Override
         public void notifyWriteBefore(int register, final int sp, AccessMode mode) {
           /*logger.debug("SP is now: 0x" + Integer.toHexString(sp));*/
           final int available = sp - heapStartAddress;
@@ -193,6 +196,7 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
           
           if (available <= 0) {
             SwingUtilities.invokeLater(new Runnable() {
+              @Override
               public void run() {
                 JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
                     String.format("Stack overflow!\n\n" +
@@ -224,6 +228,7 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
     }
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
     Element element;
@@ -241,6 +246,7 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
     return config;
   }
 
+  @Override
   public boolean setConfigXML(Collection<Element> configXML,
       boolean visAvailable) {
     for (Element element : configXML) {
@@ -258,12 +264,14 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
     return true;
   }
 
+  @Override
   public void closePlugin() {
     increasePosTimeEvent.remove();
     stackUI.stop();
     deactivate();
   }
 
+  @Override
   public Mote getMote() {
     return mspMote;
   }

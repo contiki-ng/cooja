@@ -64,6 +64,7 @@ public class DebugCommands implements CommandBundle {
     return registry.getComponent(ELF.class);
   }
 
+  @Override
   public void setupCommands(ComponentRegistry registry, CommandHandler ch) {
     this.registry = registry;
     final MSP430 cpu = registry.getComponent(MSP430.class);
@@ -73,6 +74,7 @@ public class DebugCommands implements CommandBundle {
           "<address or symbol>") {
         private int address;
         private MemoryMonitor monitor;
+        @Override
         public int executeCommand(final CommandContext context) {
           address = context.getArgumentAsAddress(0);
           if (address < 0) {
@@ -94,6 +96,7 @@ public class DebugCommands implements CommandBundle {
           context.err.println("Breakpoint set at $" + cpu.getAddressAsString(address));
           return 0;
         }
+        @Override
         public void stopCommand(CommandContext context) {
           cpu.removeWatchPoint(address, monitor);
         }
@@ -105,6 +108,7 @@ public class DebugCommands implements CommandBundle {
         int address = 0;
         int length = 1;
         MemoryMonitor monitor;
+        @Override
         public int executeCommand(final CommandContext context) {
           address = context.getArgumentAsAddress(0);
           if (address < 0) {
@@ -180,6 +184,7 @@ public class DebugCommands implements CommandBundle {
           return 0;
         }
 
+        @Override
         public void stopCommand(CommandContext context) {
             for (int i = 0; i < length; i++) {
                 cpu.removeWatchPoint(address + i, monitor);
@@ -193,6 +198,7 @@ public class DebugCommands implements CommandBundle {
         int watchMode = 0;
         int register = 0;
         RegisterMonitor monitor;
+        @Override
         public int executeCommand(final CommandContext context) {
           register = context.getArgumentAsRegister(0);
           if (register < 0) {
@@ -226,6 +232,7 @@ public class DebugCommands implements CommandBundle {
           return 0;
         }
 
+        @Override
         public void stopCommand(CommandContext context) {
           cpu.removeRegisterWriteMonitor(register, monitor);
         }
@@ -240,6 +247,7 @@ public class DebugCommands implements CommandBundle {
 //      });
 
       ch.registerCommand("symbol", new BasicCommand("list matching symbols", "<regexp>") {
+        @Override
         public int executeCommand(final CommandContext context) {
           String regExp = context.getArgument(0);
           MapEntry[] entries = context.getMapTable().getEntries(regExp);
@@ -264,6 +272,7 @@ public class DebugCommands implements CommandBundle {
       });
 
       ch.registerCommand("debug", new BasicCommand("set debug to on or off", "[0/1]") {
+          @Override
           public int executeCommand(final CommandContext context) {
               if (context.getArgumentCount() > 0) {
                   cpu.setDebug(context.getArgumentAsBoolean(0));
@@ -274,6 +283,7 @@ public class DebugCommands implements CommandBundle {
       });
 
       ch.registerCommand("line", new BasicCommand("print line number of address/symbol", "<address or symbol>") {
+        @Override
         public int executeCommand(final CommandContext context) {
           int adr = context.getArgumentAsAddress(0);
           DebugInfo di = getELF().getDebugInfo(adr);
@@ -293,6 +303,7 @@ public class DebugCommands implements CommandBundle {
 
       if (node != null) {
         ch.registerCommand("stop", new BasicCommand("stop the CPU", "") {
+          @Override
           public int executeCommand(CommandContext context) {
             if (!cpu.isRunning()) {
                 context.err.println("CPU is not running");
@@ -304,6 +315,7 @@ public class DebugCommands implements CommandBundle {
           }
         });
         ch.registerCommand("start", new BasicCommand("start the CPU", "") {
+          @Override
           public int executeCommand(CommandContext context) {
             if (cpu.isRunning()) {
                 context.err.println("cpu already running");
@@ -314,10 +326,12 @@ public class DebugCommands implements CommandBundle {
           }
         });
         ch.registerCommand("throw", new BasicCommand("throw an Emulation Exception", "[message]") {
+            @Override
             public int executeCommand(CommandContext context) {
                 final String msg = context.getArgumentCount() > 0 ? context.getArgument(0) : "by request";
                 cpu.scheduleCycleEvent(new TimeEvent(0, "EmulationException") {
-                    @Override public void execute(long t) {
+                    @Override
+                    public void execute(long t) {
                         throw new EmulationException(msg);
                     }}, cpu.cycles);
                 return 0;
@@ -325,6 +339,7 @@ public class DebugCommands implements CommandBundle {
         });
 
         ch.registerCommand("step", new BasicCommand("single step the CPU", "[number of instructions]") {
+          @Override
           public int executeCommand(CommandContext context) {
             int nr = context.getArgumentCount() > 0 ? context.getArgumentAsInt(0) : 1;
             long cyc = cpu.cycles;
@@ -344,6 +359,7 @@ public class DebugCommands implements CommandBundle {
         });
 
         ch.registerCommand("stepmicro", new BasicCommand("single the CPU specified no micros", "<micro skip> <micro step>") {
+          @Override
           public int executeCommand(CommandContext context) {
             long cyc = cpu.cycles;
             if (cpu.isRunning()) {
@@ -363,6 +379,7 @@ public class DebugCommands implements CommandBundle {
         });
 
         ch.registerCommand("stack", new BasicCommand("show stack info", "") {
+          @Override
           public int executeCommand(CommandContext context) {
             int stackEnd = context.getMapTable().heapStartAddress;
             int stackStart = context.getMapTable().stackStartAddress;
@@ -372,6 +389,7 @@ public class DebugCommands implements CommandBundle {
           }
         });
         ch.registerCommand("print", new BasicCommand("print value of an address or symbol", "<address or symbol>") {
+          @Override
           public int executeCommand(CommandContext context) {
             int adr = context.getArgumentAsAddress(0);
             if (adr >= 0) {
@@ -387,6 +405,7 @@ public class DebugCommands implements CommandBundle {
           }
         });
         ch.registerCommand("printreg", new BasicCommand("print value of an register", "[register]") {
+          @Override
           public int executeCommand(CommandContext context) {
               if (context.getArgumentCount() > 0) {
                   for (int i = 0, n = context.getArgumentCount(); i < n; i++) {
@@ -413,6 +432,7 @@ public class DebugCommands implements CommandBundle {
           }
         });
         ch.registerCommand("reset", new BasicCommand("reset the CPU", "") {
+          @Override
           public int executeCommand(CommandContext context) {
             cpu.reset();
             return 0;
@@ -420,6 +440,7 @@ public class DebugCommands implements CommandBundle {
         });
 
         ch.registerCommand("time", new BasicCommand("print the elapse time and cycles", "") {
+          @Override
           public int executeCommand(CommandContext context) {
             long time = (long)cpu.getTimeMillis();
             long wallDiff = System.currentTimeMillis() - lastWall;
@@ -433,6 +454,7 @@ public class DebugCommands implements CommandBundle {
         });
 
         ch.registerCommand("mem", new BasicCommand("dump memory", "<start address> <num_entries> [type] [hex|char|dis]") {
+          @Override
           public int executeCommand(final CommandContext context) {
             int start = context.getArgumentAsAddress(0);
             if (start < 0) {
@@ -496,6 +518,7 @@ public class DebugCommands implements CommandBundle {
         });
 
         ch.registerCommand("mset", new BasicCommand("set memory", "<address> [type] <value> [value ...]") {
+          @Override
           public int executeCommand(final CommandContext context) {
             int count = context.getArgumentCount();
             int adr = context.getArgumentAsAddress(0);
@@ -538,6 +561,7 @@ public class DebugCommands implements CommandBundle {
          * handle external memory (flash, etc).
          ******************************************************/
         ch.registerCommand("xmem", new BasicCommand("dump flash memory", "<start address> <num_entries> [type]") {
+          @Override
           public int executeCommand(final CommandContext context) {
             se.sics.mspsim.chip.Memory xmem = DebugCommands.this.registry.getComponent(se.sics.mspsim.chip.Memory.class, "xmem");
             if (xmem == null) {
@@ -574,6 +598,7 @@ public class DebugCommands implements CommandBundle {
         });
 
         ch.registerCommand("xmset", new BasicCommand("set memory", "<address> <value> [type]") {
+          @Override
           public int executeCommand(final CommandContext context) {
             se.sics.mspsim.chip.Memory xmem = DebugCommands.this.registry.getComponent(se.sics.mspsim.chip.Memory.class, "xmem");
             if (xmem == null) {
@@ -594,6 +619,7 @@ public class DebugCommands implements CommandBundle {
 
         ch.registerCommand("gdbstubs", new BasicCommand("open up a gdb stubs server for GDB remote debugging", "port") {
           private GDBStubs stubs = null;
+          @Override
           public int executeCommand(CommandContext context) {
             if (stubs != null) {
               context.err.println("GDBStubs already open");
@@ -674,6 +700,7 @@ public class DebugCommands implements CommandBundle {
                 return 0;
             }
 
+            @Override
             public void stopCommand(CommandContext context) {
                 if (logListener != null) {
                     cpu.getLogger().removeLogListener(logListener);

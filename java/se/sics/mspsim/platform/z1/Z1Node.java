@@ -100,6 +100,7 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
         registry.registerComponent("xmem", flash);
     }
 
+    @Override
     public void dataReceived(USARTSource source, int data) {
         // USCI s = (USCI) source;
         radio.dataReceived(source, data);
@@ -111,6 +112,7 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
     }
 
     private int lastPort5 = 0;
+    @Override
     public void portWrite(IOPort source, int data) {
         switch (source.getPort()) {
         case 3:
@@ -187,6 +189,7 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
         }
     }
 
+    @Override
     public void setupNode() {
         // create a filename for the flash file
         // This should be possible to take from a config file later!
@@ -228,6 +231,7 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
         }
     }
 
+    @Override
     public int getModeMax() {
         return MODE_MAX;
     }

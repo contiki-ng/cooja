@@ -82,6 +82,7 @@ public class Watchdog extends IOUnit implements SFRModule {
   private boolean timerMode = false;
 
   private TimeEvent wdtTrigger = new TimeEvent(0, "Watchdog") {
+    @Override
     public void execute(long t) {
 //      System.out.println(getName() + " **** executing update timers at " + t + " cycles=" + core.cycles);
       triggerWDT(t);
@@ -97,10 +98,12 @@ public class Watchdog extends IOUnit implements SFRModule {
     cpu.getSFR().registerSFDModule(0, WATCHDOG_INTERRUPT_BIT, this, WATCHDOG_VECTOR);
   }
 
+  @Override
   public void interruptServiced(int vector) {
     cpu.flagInterrupt(vector, this, false);
   }
 
+  @Override
   public void reset(int type) {
       super.reset(type);
       wdtctl = 0x4;
@@ -121,10 +124,12 @@ public class Watchdog extends IOUnit implements SFRModule {
       }
   }
 
+  @Override
   public int read(int address, boolean word, long cycles) {
           return wdtctl | 0x6900;
   }
 
+  @Override
   public void write(int address, int value, boolean word, long cycles) {
     if (address == offset) {
       if ((value >> 8) == 0x5a) {
@@ -167,6 +172,7 @@ public class Watchdog extends IOUnit implements SFRModule {
       }
   }
 
+  @Override
   public void enableChanged(int reg, int bit, boolean enabled) {
       if (DEBUG) log("*** Watchdog module enabled: " + enabled);
   }

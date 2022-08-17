@@ -55,6 +55,7 @@ public class Exp5438Mote extends MspMote {
     super(moteType, sim);
   }
 
+  @Override
   protected boolean initEmulator(File fileELF) {
 	  /* Hack: Try to figure out what type of Mspsim-node we should be used by checking file extension */
 	  String filename = fileELF.getName();
@@ -90,9 +91,11 @@ public class Exp5438Mote extends MspMote {
     return true;
   }
 
+  @Override
   public void idUpdated(int newID) {
   }
 
+  @Override
   public String toString() {
     return desc + " " + getID();
   }

@@ -335,6 +335,7 @@ public class IOPort extends IOUnit {
     }
 
 
+    @Override
     public int read(int address, boolean word, long cycles) {
         PortReg reg = portMap[address - offset];
         /* only byte read allowed if not having an ioPair */
@@ -350,6 +351,7 @@ public class IOPort extends IOUnit {
     }
 
 
+    @Override
     public void write(int address, int data, boolean word, long cycles) {
         int iAddress = address - offset;
         PortReg fun = portMap[iAddress];
@@ -369,6 +371,7 @@ public class IOPort extends IOUnit {
         }
     }
 
+    @Override
     public void interruptServiced(int vector) {
     }
 
@@ -415,6 +418,7 @@ public class IOPort extends IOUnit {
         }
     }
 
+    @Override
     public void reset(int type) {
         int oldValue = out | (~dir) & 0xff;
 
@@ -434,6 +438,7 @@ public class IOPort extends IOUnit {
         }
     }
 
+    @Override
     public String info() {
         StringBuilder sb = new StringBuilder();
         sb.append(" $").append(Utils.hex(offset, 2)).append(':');

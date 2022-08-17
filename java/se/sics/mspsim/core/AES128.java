@@ -128,6 +128,7 @@ public class AES128 extends IOUnit {
          * Clear everything when reset. The cleared fields are specified in the
          * manual
          */
+        @Override
         public void reset(int type) {
                 /*
                  * AES software reset. Immediately resets the complete AES accelerator
@@ -356,6 +357,7 @@ public class AES128 extends IOUnit {
         /**
          * The registers are written
          */
+        @Override
         public void write(int address, int value, boolean word, long cycles) {
                 log("write @ %x <-- %x (word=%b)\n", address, value, word);
                 int lo = (value) & 0xff; // low byte
@@ -472,6 +474,7 @@ public class AES128 extends IOUnit {
         /**
          * Registers are read
          */
+        @Override
         public int read(int address, boolean word, long cycles) {
                 log("read %x (word?%b)\n", address, word);
                 switch (address - offset) {
@@ -499,6 +502,7 @@ public class AES128 extends IOUnit {
                 return 0;
         }
 
+        @Override
         public void interruptServiced(int vector) {
                 if (vector == AES_VECTOR) {
                         readyInterruptFlag = false;

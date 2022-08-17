@@ -69,10 +69,12 @@ public class ContikiChecker implements CallListener, ActiveComponent {
     private Hashtable<String,Integer> callTable = new Hashtable<String,Integer>();
     private int callCount = 0;
 
+    @Override
     public void init(String name, ComponentRegistry registry) {
         this.registry = registry;
     }
 
+    @Override
     public void start() {
         CommandHandler commandHandler = (CommandHandler) registry.getComponent("commandHandler");
         if (commandHandler != null) {
@@ -108,6 +110,7 @@ public class ContikiChecker implements CallListener, ActiveComponent {
                     return 0;
                 }
 
+                @Override
                 public void stopCommand(CommandContext context) {
                     if (monitor != null) {
                         for (int i = 0; i < 0x100; i++) {
@@ -125,6 +128,7 @@ public class ContikiChecker implements CallListener, ActiveComponent {
         }
     }
 
+    @Override
     public void functionCall(Profiler source, CallEntry callEntry) {
         MapEntry entry = callEntry.getFunction();
         // Check for function calls before <prefix>_init() has been called.
@@ -155,6 +159,7 @@ public class ContikiChecker implements CallListener, ActiveComponent {
         }
     }
 
+    @Override
     public void functionReturn(Profiler source, CallEntry entry) {
         // Ignore returns
     }

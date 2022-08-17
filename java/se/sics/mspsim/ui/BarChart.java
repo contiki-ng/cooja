@@ -55,6 +55,7 @@ public class BarChart extends IntSerieChart {
     setName(name);
   }
 
+  @Override
   public void drawChart(Graphics2D g, double xfac, double yfac, int width, int height) {
     int[] data = this.data;
     if (data != null) {

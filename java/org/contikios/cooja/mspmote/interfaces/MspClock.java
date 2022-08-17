@@ -55,27 +55,33 @@ public class MspClock extends Clock {
     deviation = 1.0;
   }
 
+  @Override
   public void setTime(long newTime) {
     logger.fatal("Can't change emulated CPU time");
   }
 
+  @Override
   public long getTime() {
     return simulation.getSimulationTime() + timeDrift;
   }
 
+  @Override
   public void setDrift(long drift) {
     timeDrift = drift;
   }
 
+  @Override
   public long getDrift() {
     return timeDrift;
   }
   
+  @Override
   public void setDeviation(double deviation) {
     assert (deviation>0.0) && (deviation<=1.0);
     this.deviation = deviation;
   }
 
+  @Override
   public double getDeviation() {
     return deviation;
   }
