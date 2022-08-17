@@ -354,11 +354,11 @@ class AngleInterval {
   }
   
   public boolean equals(Object object) {
-    if (object == null)
-      return false;
-    
-    AngleInterval interval = (AngleInterval) object;
-    return (interval.getStartAngle() == this.getStartAngle() && interval.getEndAngle() == this.getEndAngle());
+    if (object instanceof AngleInterval) {
+      AngleInterval interval = (AngleInterval)object;
+      return interval.getStartAngle() == this.getStartAngle() && interval.getEndAngle() == this.getEndAngle();
+    }
+    return false;
   }
   
   /**
