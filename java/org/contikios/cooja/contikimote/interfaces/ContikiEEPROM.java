@@ -300,16 +300,15 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
 
   @Override
   public Collection<Element> getConfigXML() {
-      var config = new ArrayList<Element>();
       var data = getEEPROMData();
-
       if (!isEmpty(data)) {
+        var config = new ArrayList<Element>();
         var element = new Element("eeprom");
         element.setText(Base64.getEncoder().encodeToString(data));
         config.add(element);
+        return config;
       }
-
-      return config;
+      return null;
   }
 
   @Override

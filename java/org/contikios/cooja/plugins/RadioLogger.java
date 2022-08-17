@@ -924,13 +924,17 @@ public class RadioLogger extends VisPlugin {
       config.add(element);
     }
 
-    element = new Element("showdups");
-    element.addContent(Boolean.toString(showDuplicates));
-    config.add(element);
+    if (showDuplicates) {
+      element = new Element("showdups");
+      element.addContent(Boolean.toString(showDuplicates));
+      config.add(element);
+    }
 
-    element = new Element("hidenodests");
-    element.addContent(Boolean.toString(hideNoDestinationPackets));
-    config.add(element);
+    if (hideNoDestinationPackets) {
+      element = new Element("hidenodests");
+      element.addContent(Boolean.toString(hideNoDestinationPackets));
+      config.add(element);
+    }
 
     if (analyzerName != null && analyzers != null) {
       element = new Element("analyzers");
