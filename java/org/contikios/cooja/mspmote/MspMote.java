@@ -538,16 +538,18 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
-    Element element;
 
     /* Breakpoints */
-    element = new Element("breakpoints");
-    element.addContent(getWatchpointConfigXML());
-    config.add(element);
+    Collection<Element> breakpoints = getWatchpointConfigXML();
+    if (breakpoints != null && !breakpoints.isEmpty()) {
+      var element = new Element("breakpoints");
+      element.addContent(breakpoints);
+      config.add(element);
+    }
 
     // Mote interfaces
     for (MoteInterface moteInterface: getInterfaces().getInterfaces()) {
-      element = new Element("interface_config");
+      var element = new Element("interface_config");
       element.setText(moteInterface.getClass().getName());
 
       Collection<Element> interfaceXML = moteInterface.getConfigXML();
@@ -747,10 +749,9 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   public Collection<Element> getWatchpointConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
-    Element element;
 
     for (MspBreakpoint breakpoint: watchpoints) {
-      element = new Element("breakpoint");
+      Element element = new Element("breakpoint");
       element.addContent(breakpoint.getConfigXML());
       config.add(element);
     }
