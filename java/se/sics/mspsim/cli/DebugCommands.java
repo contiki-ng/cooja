@@ -465,7 +465,6 @@ public class DebugCommands implements CommandBundle {
             int count = context.getArgumentAsInt(1);
             int mode = Utils.DEC;
             int type = Utils.UBYTE;
-            boolean signed = false;
             if (context.getArgumentCount() > 2) {
                 int pos = 2;
                 int acount = context.getArgumentCount();
