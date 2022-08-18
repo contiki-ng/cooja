@@ -1363,6 +1363,13 @@ public class Cooja extends Observable {
   }
 
   /**
+   * Returns all registered plugins.
+   */
+  public List<Class<? extends Plugin>> getRegisteredPlugins() {
+    return pluginClasses;
+  }
+
+  /**
    * Register new positioner class.
    *
    * @param positionerClass

@@ -411,10 +411,14 @@ public class ProjectDirectoriesDialog extends JDialog {
 					   (project.configRead()?"OK":"FAILED") + "\n\n");
 			return;
 		}
-		
-		if (project.getConfigPlugins() != null) {
-			projectInfo.append("Plugins: " + Arrays.toString(project.getConfigPlugins()) + "\n");
-		}
+    var sb = new StringBuilder();
+    sb.append("Plugins:");
+    for (var plugin : gui.getRegisteredPlugins()) {
+      sb.append(' ').append(plugin);
+    }
+    sb.append("\n");
+    projectInfo.append(sb.toString());
+    sb.setLength(0);
 		if (project.getConfigJARs() != null) {
 			String[] jars = project.getConfigJARs();
 			projectInfo.append("JARs: " + Arrays.toString(jars) + "\n");
@@ -429,7 +433,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 				}
 			}
 		}
-    var sb = new StringBuilder();
     var moteTypes = gui.getRegisteredMoteTypes();
     if (moteTypes != null) {
       sb.append("Mote types:");
