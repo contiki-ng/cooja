@@ -130,7 +130,13 @@ import org.contikios.cooja.positioners.EllipsePositioner;
 import org.contikios.cooja.positioners.LinearPositioner;
 import org.contikios.cooja.positioners.ManualPositioner;
 import org.contikios.cooja.positioners.RandomPositioner;
+import org.contikios.cooja.radiomediums.DirectedGraphMedium;
+import org.contikios.cooja.radiomediums.LogisticLoss;
+import org.contikios.cooja.radiomediums.SilentRadioMedium;
+import org.contikios.cooja.radiomediums.UDGM;
+import org.contikios.cooja.radiomediums.UDGMConstantLoss;
 import org.contikios.cooja.util.ScnObservable;
+import org.contikios.mrm.MRM;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -1516,7 +1522,13 @@ public class Cooja extends Observable {
       }
     }
 
-    // Register radio mediums
+    // Register radio mediums.
+    registerRadioMedium(UDGM.class);
+    registerRadioMedium(UDGMConstantLoss.class);
+    registerRadioMedium(DirectedGraphMedium.class);
+    registerRadioMedium(SilentRadioMedium.class);
+    registerRadioMedium(LogisticLoss.class);
+    registerRadioMedium(MRM.class);
     String[] radioMediumsClassNames = projectConfig.getStringArrayValue(
         Cooja.class, "RADIOMEDIUMS");
     if (radioMediumsClassNames != null) {
