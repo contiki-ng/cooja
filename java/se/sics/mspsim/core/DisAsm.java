@@ -362,7 +362,6 @@ public class DisAsm implements MSP430Constants {
       int jmpOffset = instruction & 0x3ff;
       jmpOffset = (jmpOffset & 0x200) == 0 ?
         2 * jmpOffset : -(2 * (0x200 - (jmpOffset & 0x1ff)));
-      boolean jump = false;
       String opstr = "";
       switch(instruction & 0xfc00) {
       case JNE:
@@ -411,8 +410,6 @@ public class DisAsm implements MSP430Constants {
       int srcAddress = 0;
       int src = 0;
       int dst = 0;
-      boolean write = false;
-      boolean updateStatus = true;
       String srcadr = "";
       String dstadr = "";
       switch(as) {
