@@ -1,6 +1,7 @@
 plugins {
   id 'application'
   id 'com.diffplug.spotless' version '6.22.0'
+  id 'net.ltgt.errorprone' version '3.1.0'
 }
 
 group = 'org.contikios.cooja'
@@ -63,6 +64,7 @@ dependencies {
   implementation 'org.slf4j:slf4j-api:2.0.9'
   // https://mvnrepository.com/artifact/org.swinglabs.swingx/swingx-autocomplete
   implementation 'org.swinglabs.swingx:swingx-autocomplete:1.6.5-1'
+  errorprone("com.google.errorprone:error_prone_core:2.23.0")
 }
 
 
@@ -96,7 +98,54 @@ application {
 }
 
 tasks.withType(JavaCompile).configureEach {
-  options.compilerArgs += ['--enable-preview',
+  // ErrorProne is slow, only enable with ./gradlew build -Perrorprone.
+  options.errorprone.enabled = project.hasProperty('errorprone')
+  // Uncomment the next two lines and the disable line to generate a patch.
+  //options.errorprone.errorproneArgs = ['-XepPatchChecks:MissingOverride',
+  //   '-XepPatchLocation:' + buildscript.sourceFile.getParent()]
+  options.errorprone.disable('AddressSelection')
+  options.errorprone.disable('AlmostJavadoc')
+  options.errorprone.disable('AnnotateFormatMethod')
+  options.errorprone.disable('ByteBufferBackingArray')
+  options.errorprone.disable('CatchAndPrintStackTrace')
+  options.errorprone.disable('ComparisonOutOfRange')
+  options.errorprone.disable('DefaultCharset')
+  options.errorprone.disable('DoubleCheckedLocking')
+  options.errorprone.disable('EmptyBlockTag')
+  options.errorprone.disable('EmptyCatch')
+  options.errorprone.disable('EqualsGetClass')
+  options.errorprone.disable('EqualsHashCode')
+  options.errorprone.disable('EqualsUnsafeCast')
+  options.errorprone.disable('ErroneousBitwiseExpression')
+  options.errorprone.disable('FallThrough')
+  options.errorprone.disable('FloatingPointLiteralPrecision')
+  options.errorprone.disable('HidingField')
+  options.errorprone.disable('ImmutableEnumChecker')
+  options.errorprone.disable('InconsistentCapitalization')
+  options.errorprone.disable('InlineMeSuggester')
+  options.errorprone.disable('InvalidBlockTag')
+  options.errorprone.disable('JavaTimeDefaultTimeZone')
+  options.errorprone.disable('JavaUtilDate')
+  options.errorprone.disable('JdkObsolete')
+  options.errorprone.disable('MissingCasesInEnumSwitch')
+  options.errorprone.disable('MissingOverride')
+  options.errorprone.disable('MissingSummary')
+  options.errorprone.disable('MutablePublicArray')
+  options.errorprone.disable('NarrowCalculation')
+  options.errorprone.disable('NarrowingCompoundAssignment')
+  options.errorprone.disable('NonApiType')
+  options.errorprone.disable('OperatorPrecedence')
+  options.errorprone.disable('ReferenceEquality')
+  options.errorprone.disable('ShortCircuitBoolean')
+  options.errorprone.disable('StaticAssignmentInConstructor')
+  options.errorprone.disable('StringCaseLocaleUsage')
+  options.errorprone.disable('StringSplitter')
+  options.errorprone.disable('ThreadPriorityCheck')
+  options.errorprone.disable('UnnecessaryLambda')
+  options.errorprone.disable('UnnecessaryParentheses')
+  options.errorprone.disable('UnusedMethod')
+  options.errorprone.disable('UnusedVariable')
+  options.compilerArgs += ['-Werror', '--enable-preview',
                            "-Aproject=${project.group}/${project.name}"]
 }
 
