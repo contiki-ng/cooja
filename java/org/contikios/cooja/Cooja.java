@@ -1805,7 +1805,7 @@ public class Cooja extends Observable {
         }
 
         plugin =
-          pluginClass.getConstructor(new Class[] { Mote.class, Simulation.class, Cooja.class })
+          pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class)
           .newInstance(argMote, argSimulation, argGUI);
 
       } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN
@@ -1818,7 +1818,7 @@ public class Cooja extends Observable {
         }
 
         plugin =
-          pluginClass.getConstructor(new Class[] { Simulation.class, Cooja.class })
+          pluginClass.getConstructor(Simulation.class, Cooja.class)
           .newInstance(argSimulation, argGUI);
 
       } else if (pluginType == PluginType.COOJA_PLUGIN
@@ -1827,9 +1827,7 @@ public class Cooja extends Observable {
           throw new PluginConstructionException("No GUI argument for GUI plugin");
         }
 
-        plugin =
-          pluginClass.getConstructor(new Class[] { Cooja.class })
-          .newInstance(argGUI);
+        plugin = pluginClass.getConstructor(Cooja.class).newInstance(argGUI);
 
       } else {
         throw new PluginConstructionException("Bad plugin type: " + pluginType);
