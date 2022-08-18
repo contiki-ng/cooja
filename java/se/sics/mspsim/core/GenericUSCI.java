@@ -9,7 +9,7 @@ import se.sics.mspsim.chip.I2CUnit.I2CData;
  * GenericUSCI - for newer MSP430's
  *
  * @author Unknown
- * @author Víctor Ariño <victor.arino@tado.com>
+ * @author Víctor Ariño (victor.arino@tado.com)
  */
 public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
 

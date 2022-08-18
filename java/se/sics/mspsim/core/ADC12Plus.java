@@ -90,8 +90,8 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
  *
  * The rest of functionalities are the same as the standard ADC12
  *
- * @author Joakim Eriksson <joakime@sics.se>
- * @author Víctor Ariño <victor.arino@tado.com>
+ * @author Joakim Eriksson (joakime@sics.se)
+ * @author Víctor Ariño (victor.arino@tado.com)
  */
 public class ADC12Plus extends IOUnit {
 

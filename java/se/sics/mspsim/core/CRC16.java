@@ -36,7 +36,7 @@ package se.sics.mspsim.core;
 /**
  * CRC16 module for the MSP430
  *
- * @author Victor Ariño <victor.arino@tado.com>
+ * @author Victor Ariño (victor.arino@tado.com)
  */
 public class CRC16 extends IOUnit {
 

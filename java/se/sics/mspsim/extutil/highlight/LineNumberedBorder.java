@@ -9,12 +9,11 @@ import javax.swing.border.AbstractBorder;
 
 /**
  * Draws line numbers next to each line, in the same font as the text.
- * Currently, this can only be used with a <tt>SyntaxHighlighter</tt> , since it
- * relies on the <tt>getRows()</tt> and <tt>getLineCount()</tt> methods. A
+ * Currently, this can only be used with a <code>SyntaxHighlighter</code> , since it
+ * relies on the <code>getRows()</code> and <code>getLineCount()</code> methods. A
  * possible extension, create an interface to return this rows/linecount.
  *
  * @author Paul Durbin (McDurby@yahoo.com)
- * @created January 29, 2002
  */
 public class LineNumberedBorder extends AbstractBorder {
 

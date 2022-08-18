@@ -158,7 +158,7 @@ public class Cooja extends Observable {
 
   /**
    *  Version used to detect incompatibility with the Contiki-NG
-   *  build system. The format is <YYYY><MM><DD><2 digit sequence number>.
+   *  build system. The format is &lt;YYYY&gt;&lt;MM&gt;&lt;DD&gt;&lt;2 digit sequence number&gt;.
    */
   public static final String CONTIKI_NG_BUILD_VERSION = "2022052601";
 

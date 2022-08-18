@@ -59,8 +59,8 @@ import org.contikios.cooja.plugins.skins.AttributeVisualizerSkin;
  * Mote attributes are visualized by {@link AttributeVisualizerSkin}.
  *
  * Syntax:
- * "#A <Attribute Name>=<Attribute Value>"
- * "#A <Attribute Name>=<Attribute Value>;<Color>"
+ * "<code>#A &lt;Attribute Name&gt;=&lt;Attribute Value&gt;</code>"
+ * "<code>#A &lt;Attribute Name&gt;=&lt;Attribute Value&gt;;&lt;Color&gt;</code>"
  *
  * Example, add an attribute 'sent' with value 41:
  * "#A sent=41"

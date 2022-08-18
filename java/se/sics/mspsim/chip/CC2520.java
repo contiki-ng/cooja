@@ -1352,7 +1352,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     /**
      * This is actually the "CORR" value.
      * @param lqi The Corr-val
-     * @sa CC2520 Datasheet
+     * @see "CC2520 Datasheet"
      */
     @Override
     public void setLQI(int lqi){

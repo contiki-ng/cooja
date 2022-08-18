@@ -39,7 +39,7 @@ package se.sics.mspsim.chip;
  * Implementing this interface makes it compatible with the cooja-interfaces
  * and hence makes the peripheral implementation way easier
  *
- * @author Víctor Ariño <victor.arino@tado.com>
+ * @author Víctor Ariño (victor.arino@tado.com)
  */
 public interface TemperatureChip {
         /**

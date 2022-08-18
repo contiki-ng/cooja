@@ -1316,7 +1316,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   /**
    * This is actually the "CORR" value.
    * @param lqi The Corr-val
-   * @sa CC2420 Datasheet
+   * @see "CC2420 Datasheet"
    */
   @Override
   public void setLQI(int lqi){
