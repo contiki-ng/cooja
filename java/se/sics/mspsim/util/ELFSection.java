@@ -27,16 +27,12 @@
  *
  * This file is part of MSPSim.
  *
- * $Id$
- *
  * -----------------------------------------------------------------
  *
  * ELFSection
  *
  * Author  : Joakim Eriksson
  * Created : Sun Oct 21 22:00:00 2007
- * Updated : $Date$
- *           $Revision$
  */
 
 package se.sics.mspsim.util;
@@ -171,7 +167,7 @@ public class ELFSection {
           val = val + ((b & 127) << bitPos);
           bitPos += 7;
       } while ((b & 128) != 0);
-      long negval = 0x1 << bitPos;
+      long negval = 0x1L << bitPos;
       if (b < 0x40) {
           return val;
       }
