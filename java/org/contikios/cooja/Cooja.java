@@ -3435,6 +3435,10 @@ public class Cooja extends Observable {
       }.invokeAndWait();
     }
 
+    if (!isVisualized()) {
+      return true;
+    }
+
     /* Z order visualized plugins */
     try {
     	for (int z=0; z < getDesktopPane().getAllFrames().length; z++) {
