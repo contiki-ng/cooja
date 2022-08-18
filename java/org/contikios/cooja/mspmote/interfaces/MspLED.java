@@ -133,15 +133,6 @@ public class MspLED extends LED {
         }
     }
 
-    @Override
-    public Collection<Element> getConfigXML() {
-        return null;
-    }
-
-    @Override
-    public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-    }
-
     private class LedsPanel extends JPanel implements StateChangeListener {
         private static final int D = 25;
         private static final int S = D + 15;

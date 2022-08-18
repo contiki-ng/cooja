@@ -429,15 +429,6 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 		return mote.getInterfaces().getPosition();
 	}
 
-	@Override
-	public Collection<Element> getConfigXML() {
-		return null;
-	}
-
-	@Override
-	public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-	}
-
   @Override
   public boolean isRadioOn() {
     return cc1101.isReadyToReceive();

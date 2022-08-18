@@ -150,13 +150,4 @@ public class ContikiBeeper extends Beeper implements ContikiMoteInterface, Polle
     this.deleteObserver(observer);
   }
 
-  @Override
-  public Collection<Element> getConfigXML() {
-    return null;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
-
 }

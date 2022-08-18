@@ -270,12 +270,4 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
         return mote.getInterfaces().getPosition();
     }
 
-    @Override
-    public Collection<Element> getConfigXML() {
-        return null;
-    }
-
-    @Override
-    public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-    }
 }

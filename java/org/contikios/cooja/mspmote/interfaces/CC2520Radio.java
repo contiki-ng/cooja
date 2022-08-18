@@ -380,15 +380,6 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
   }
 
   @Override
-  public Collection<Element> getConfigXML() {
-    return null;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
-
-  @Override
   public boolean isRadioOn() {
     if (radio.isReadyToReceive()) {
       return true;

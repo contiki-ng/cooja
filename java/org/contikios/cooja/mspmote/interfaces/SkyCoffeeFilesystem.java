@@ -100,14 +100,6 @@ public class SkyCoffeeFilesystem extends MoteInterface {
     adjuster.packColumns();
   }
 
-  @Override
-  public Collection<Element> getConfigXML() {
-    return null;
-  }
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
-
   private void updateFS() {
     /* Create new filesystem instance */
     try {

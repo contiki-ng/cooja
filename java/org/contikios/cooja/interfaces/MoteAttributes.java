@@ -204,13 +204,4 @@ public class MoteAttributes extends MoteInterface {
     this.deleteObserver(observer);
   }
 
-  @Override
-  public Collection<Element> getConfigXML() {
-    return null;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
-
 }

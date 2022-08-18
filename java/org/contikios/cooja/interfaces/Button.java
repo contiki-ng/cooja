@@ -168,14 +168,4 @@ public abstract class Button extends MoteInterface {
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
-  @Override
-  public Collection<Element> getConfigXML() {
-    // The button state will not be saved!
-    return null;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-    // The button state will not be saved!
-  }
 }

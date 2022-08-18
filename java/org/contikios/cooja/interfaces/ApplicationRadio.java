@@ -392,17 +392,6 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
   }
 
   @Override
-  public Collection<Element> getConfigXML() {
-    /* TODO Save channel info? */
-    /* TODO Save output power? */
-    return null;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
-
-  @Override
   public Mote getMote() {
     return mote;
   }

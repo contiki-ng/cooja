@@ -219,15 +219,6 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
     this.deleteObserver(observer);
   }
 
-  @Override
-  public Collection<Element> getConfigXML() {
-    return null;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
-
   /**
    * Opens a file dialog and returns the contents of the selected file or null if dialog aborted.
    *
