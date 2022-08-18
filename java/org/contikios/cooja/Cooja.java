@@ -123,14 +123,40 @@ import org.contikios.cooja.motes.DisturberMoteType;
 import org.contikios.cooja.motes.ImportAppMoteType;
 import org.contikios.cooja.mspmote.SkyMoteType;
 import org.contikios.cooja.mspmote.Z1MoteType;
+import org.contikios.cooja.mspmote.plugins.MspCLI;
+import org.contikios.cooja.mspmote.plugins.MspCodeWatcher;
+import org.contikios.cooja.mspmote.plugins.MspCycleWatcher;
+import org.contikios.cooja.mspmote.plugins.MspStackWatcher;
+import org.contikios.cooja.plugins.BaseRSSIconf;
+import org.contikios.cooja.plugins.BufferListener;
+import org.contikios.cooja.plugins.DGRMConfigurator;
+import org.contikios.cooja.plugins.EventListener;
+import org.contikios.cooja.plugins.LogListener;
+import org.contikios.cooja.plugins.MoteInformation;
+import org.contikios.cooja.plugins.MoteInterfaceViewer;
 import org.contikios.cooja.plugins.MoteTypeInformation;
+import org.contikios.cooja.plugins.Notes;
+import org.contikios.cooja.plugins.PowerTracker;
+import org.contikios.cooja.plugins.RadioLogger;
+import org.contikios.cooja.plugins.ScriptRunner;
 import org.contikios.cooja.plugins.SimControl;
 import org.contikios.cooja.plugins.SimInformation;
+import org.contikios.cooja.plugins.TimeLine;
+import org.contikios.cooja.plugins.VariableWatcher;
+import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.positioners.EllipsePositioner;
 import org.contikios.cooja.positioners.LinearPositioner;
 import org.contikios.cooja.positioners.ManualPositioner;
 import org.contikios.cooja.positioners.RandomPositioner;
+import org.contikios.cooja.radiomediums.DirectedGraphMedium;
+import org.contikios.cooja.radiomediums.LogisticLoss;
+import org.contikios.cooja.radiomediums.SilentRadioMedium;
+import org.contikios.cooja.radiomediums.UDGM;
+import org.contikios.cooja.radiomediums.UDGMConstantLoss;
+import org.contikios.cooja.serialsocket.SerialSocketClient;
+import org.contikios.cooja.serialsocket.SerialSocketServer;
 import org.contikios.cooja.util.ScnObservable;
+import org.contikios.mrm.MRM;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -1363,6 +1389,13 @@ public class Cooja extends Observable {
   }
 
   /**
+   * Returns all registered plugins.
+   */
+  public List<Class<? extends Plugin>> getRegisteredPlugins() {
+    return pluginClasses;
+  }
+
+  /**
    * Register new positioner class.
    *
    * @param positionerClass
@@ -1473,6 +1506,26 @@ public class Cooja extends Observable {
     registerPlugin(SimControl.class);
     registerPlugin(SimInformation.class);
     registerPlugin(MoteTypeInformation.class);
+    registerPlugin(Visualizer.class);
+    registerPlugin(LogListener.class);
+    registerPlugin(TimeLine.class);
+    registerPlugin(MoteInformation.class);
+    registerPlugin(MoteInterfaceViewer.class);
+    registerPlugin(VariableWatcher.class);
+    registerPlugin(EventListener.class);
+    registerPlugin(RadioLogger.class);
+    registerPlugin(ScriptRunner.class);
+    registerPlugin(Notes.class);
+    registerPlugin(BufferListener.class);
+    registerPlugin(DGRMConfigurator.class);
+    registerPlugin(BaseRSSIconf.class);
+    registerPlugin(PowerTracker.class);
+    registerPlugin(SerialSocketClient.class);
+    registerPlugin(SerialSocketServer.class);
+    registerPlugin(MspCLI.class);
+    registerPlugin(MspCodeWatcher.class);
+    registerPlugin(MspStackWatcher.class);
+    registerPlugin(MspCycleWatcher.class);
     String[] pluginClassNames = projectConfig.getStringArrayValue(Cooja.class,
     "PLUGINS");
     if (pluginClassNames != null) {
@@ -1509,7 +1562,13 @@ public class Cooja extends Observable {
       }
     }
 
-    // Register radio mediums
+    // Register radio mediums.
+    registerRadioMedium(UDGM.class);
+    registerRadioMedium(UDGMConstantLoss.class);
+    registerRadioMedium(DirectedGraphMedium.class);
+    registerRadioMedium(SilentRadioMedium.class);
+    registerRadioMedium(LogisticLoss.class);
+    registerRadioMedium(MRM.class);
     String[] radioMediumsClassNames = projectConfig.getStringArrayValue(
         Cooja.class, "RADIOMEDIUMS");
     if (radioMediumsClassNames != null) {
