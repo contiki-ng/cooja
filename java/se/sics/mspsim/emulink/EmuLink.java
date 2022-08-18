@@ -38,16 +38,19 @@
 
 package se.sics.mspsim.emulink;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Hashtable;
-
 import se.sics.json.JSONArray;
 import se.sics.json.JSONObject;
 import se.sics.json.ParseException;
@@ -339,8 +342,8 @@ public class EmuLink {
                 System.out.println("EmuLink: Connection accepted...");
 
                 try {
-                    out = new PrintWriter(socket.getOutputStream(), true);
-                    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), UTF_8)), true);
+                    in = new BufferedReader(new InputStreamReader(socket.getInputStream(), UTF_8));
                     processInput(in);
                 } catch (Exception e) {
                     System.err.println("EmuLink: emulator link connection failed");

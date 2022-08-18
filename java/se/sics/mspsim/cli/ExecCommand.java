@@ -37,6 +37,8 @@
  *           $Revision$
  */
 package se.sics.mspsim.cli;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -159,7 +161,7 @@ public class ExecCommand extends BasicLineCommand {
                   InputStream input, PrintStream out) {
       super(name);
       this.command = command;
-      this.input = new BufferedReader(new InputStreamReader(input));
+      this.input = new BufferedReader(new InputStreamReader(input, UTF_8));
       this.out = out;
     }
 
