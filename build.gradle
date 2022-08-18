@@ -8,6 +8,10 @@ java {
   }
 }
 
+repositories {
+  mavenCentral()
+}
+
 dependencies {
   implementation files('lib/jcommon-1.0.14.jar',
                        'lib/jdom.jar',
@@ -19,6 +23,7 @@ dependencies {
                        'lib/picocli-4.6.3.jar',
                        'lib/syntaxpane-1.2.0.jar',
                        'lib/swingx-all-1.6.4.jar')
+  implementation 'org.openjdk.nashorn:nashorn-core:15.4'
 }
 
 
@@ -42,8 +47,7 @@ sourceSets {
 
 application {
   mainClass = 'org.contikios.cooja.Main'
-  applicationDefaultJvmArgs = ['-Dnashorn.args=--no-deprecation-warning',
-                               '-Xms400M', '-Xmx2048M']
+  applicationDefaultJvmArgs = ['-Xms400M', '-Xmx2048M']
 }
 
 jar {

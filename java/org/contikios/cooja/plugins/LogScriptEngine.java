@@ -42,7 +42,6 @@ import java.util.Observer;
 import java.util.concurrent.Semaphore;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +51,7 @@ import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
+import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 /**
  * Loads and executes a Contiki test script.
@@ -65,8 +65,7 @@ public class LogScriptEngine {
   private static final Logger logger = LogManager.getLogger(LogScriptEngine.class);
   private static final long DEFAULT_TIMEOUT = 20*60*1000*Simulation.MILLISECOND; /* 1200s = 20 minutes */
 
-  private final ScriptEngine engine =
-    new ScriptEngineManager().getEngineByName("JavaScript");
+  private final ScriptEngine engine = new NashornScriptEngineFactory().getScriptEngine();
 
   /* Log output listener */
   private final LogOutputListener logOutputListener = new LogOutputListener() {
