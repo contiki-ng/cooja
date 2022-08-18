@@ -1153,7 +1153,7 @@ public class Cooja extends Observable {
           tryStartPlugin((Class<? extends Plugin>) pluginClass, cooja, getSimulation(), (Mote)mote);
         }
       };
-      private JMenuItem createMenuItem(Class<? extends Plugin> newPluginClass, int pluginType) {
+      private JMenuItem createMenuItem(Class<? extends Plugin> newPluginClass) {
         String description = getDescriptionOf(newPluginClass);
         JMenuItem menuItem = new JMenuItem(description + "...");
         menuItem.putClientProperty("class", newPluginClass);
@@ -1175,7 +1175,7 @@ public class Cooja extends Observable {
           if (pluginType != PluginType.COOJA_PLUGIN && pluginType != PluginType.COOJA_STANDARD_PLUGIN) {
             continue;
           }
-          toolsMenu.add(createMenuItem(pluginClass, pluginType));
+          toolsMenu.add(createMenuItem(pluginClass));
           hasCoojaPlugins = true;
         }
 
@@ -1203,7 +1203,7 @@ public class Cooja extends Observable {
             toolsMenu.addSeparator();
           }
 
-          toolsMenu.add(createMenuItem(pluginClass, pluginType));
+          toolsMenu.add(createMenuItem(pluginClass));
           hasSimPlugins = true;
         }
 

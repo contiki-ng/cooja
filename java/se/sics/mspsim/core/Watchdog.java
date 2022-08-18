@@ -69,7 +69,6 @@ public class Watchdog extends IOUnit implements SFRModule {
   private int offset;
 
   public boolean wdtOn = true;
-  private boolean hold = false;
 
   // The current "delay" when started/clered (or hold)
   private int delay;
