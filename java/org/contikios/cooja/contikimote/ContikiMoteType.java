@@ -544,7 +544,17 @@ public class ContikiMoteType implements MoteType {
     abstract Map<String, Symbol> parseSymbols(long offset);
 
     protected static long parseFirstHexLong(String regexp, String[] data) {
-      String retString = getFirstMatchGroup(data, regexp);
+      String retString = null;
+      if (regexp != null) {
+        Pattern pattern = Pattern.compile(regexp);
+        for (String line : data) {
+          Matcher matcher = pattern.matcher(line);
+          if (matcher.find()) {
+            retString = matcher.group(1);
+            break;
+          }
+        }
+      }
 
       if (retString == null || retString.equals("")) {
         return -1;
@@ -630,7 +640,15 @@ public class ContikiMoteType implements MoteType {
           if (varAddr >= secStart && varAddr <= secStart + secSize) {
             String varName = matcher.group(2);
             String regExp = varAddrRegexp1 + varName + varAddrRegexp2;
-            String retString = getFirstMatchGroup(mapFileData, regExp);
+            String retString = null;
+            Pattern pattern2 = Pattern.compile(regExp);
+            for (String line1 : mapFileData) {
+              Matcher matcher2 = pattern2.matcher(line1);
+              if (matcher2.find()) {
+                retString = matcher2.group(1);
+                break;
+              }
+            }
             long mapFileVarAddress = retString == null ? -1 : Long.parseUnsignedLong(retString.trim(), 16);
             int mapFileVarSize = -1;
             Pattern pattern1 = Pattern.compile(varSizeRegexp1 + varName + varSizeRegexp2);
@@ -855,20 +873,6 @@ public class ContikiMoteType implements MoteType {
    */
   public NetworkStack getNetworkStack() {
     return netStack;
-  }
-
-  private static String getFirstMatchGroup(String[] lines, String regexp) {
-    if (regexp == null) {
-      return null;
-    }
-    Pattern pattern = Pattern.compile(regexp);
-    for (String line : lines) {
-      Matcher matcher = pattern.matcher(line);
-      if (matcher.find()) {
-        return matcher.group(1);
-      }
-    }
-    return null;
   }
 
   /**
