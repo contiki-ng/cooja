@@ -276,7 +276,7 @@ public class ADC12 extends IOUnit {
     smp += 7;
     adc12ifg |= (1 << adc12Pos);
     if ((adc12ie & (1 << adc12Pos)) > 0) {
-      // This should check if there already is an higher iv!
+      // This should check if there already is a higher iv!
       adc12iv = adc12Pos * 2 + 6;
       //System.out.println("** Trigger ADC12 IRQ for ADCMEM" + adc12Pos);
       cpu.flagInterrupt(adc12Vector, this, true);

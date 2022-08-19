@@ -186,7 +186,7 @@ public class Utils {
     return Long.parseLong(longValue, radix);
   }
 
-  /* converts hexa-decimal data in a string to an array of bytes */
+  /* converts hexadecimal data in a string to an array of bytes */
   public static byte[] hexconv(String line) {
     if (line == null) {
       return null;

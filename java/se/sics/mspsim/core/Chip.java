@@ -205,7 +205,7 @@ public abstract class Chip implements Loggable, EventSource {
 
   public abstract int getModeMax();
 
-  /* By default the cs is set high */
+  /* By default, the cs is set high */
   public boolean getChipSelect() {
     return true;
   }

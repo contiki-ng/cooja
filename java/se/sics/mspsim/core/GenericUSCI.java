@@ -267,7 +267,7 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
           updateBaudRate();
 
           /*
-           * When in I2C mode and an start or stop condition is reached
+           * When in I2C mode and a start or stop condition is reached
            * just transmit the corresponding signals.
            */
           if (i2cEnabled) {

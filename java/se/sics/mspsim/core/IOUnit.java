@@ -106,11 +106,9 @@ public abstract class IOUnit implements InterruptHandler, Loggable {
   public void reset(int type) {
   }
 
-  // write
   // write a value to the IO unit
   public abstract void write(int address, int value, boolean word, long cycles);
 
-  // read
   // read a value from the IO unit
   public abstract int read(int address, boolean word, long cycles);
 

@@ -334,7 +334,7 @@ class ObstacleWorld {
   
   /**
    * Returns true of given point is on a corner of
-   * any of the structures build from the obstacles.
+   * the structures built from the obstacles.
    * Internally this method checks how many of four point 
    * close to and located around given point (diagonally) are 
    * inside any obstacle.
