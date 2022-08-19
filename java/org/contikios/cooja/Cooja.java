@@ -2977,11 +2977,22 @@ public class Cooja extends Observable {
       javax.swing.SwingUtilities.invokeLater(new Runnable() {
         @Override
         public void run() {
-          Cooja gui = new Cooja(logDirectory, vis);
+          try {
+            Cooja gui = new Cooja(logDirectory, vis);
+          } catch (Exception e) {
+            logger.error(e.getMessage());
+            System.exit(1);
+          }
         }
       });
     } else {
-      Cooja gui = new Cooja(logDirectory, vis);
+      Cooja gui = null;
+      try {
+        gui = new Cooja(logDirectory, vis);
+      } catch (Exception e) {
+        logger.error(e.getMessage());
+        System.exit(1);
+      }
       var config = new File(vis ? options.action.quickstart : options.action.nogui);
       Simulation sim = null;
       if (vis) {
