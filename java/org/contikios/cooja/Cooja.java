@@ -67,6 +67,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.MissingResourceException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -2668,11 +2669,12 @@ public class Cooja extends Observable {
     Properties settings = new Properties();
     try (var in = Cooja.class.getResourceAsStream(EXTERNAL_TOOLS_SETTINGS_FILENAME)) {
       if (in == null) {
-        throw new FileNotFoundException(EXTERNAL_TOOLS_SETTINGS_FILENAME + " not found");
+        throw new MissingResourceException(
+                "Could not find " + EXTERNAL_TOOLS_SETTINGS_FILENAME + ", jar file seems broken", "Cooja", "");
       }
       settings.load(in);
     } catch (IOException e) {
-      logger.warn("Error reading " + EXTERNAL_TOOLS_SETTINGS_FILENAME);
+      throw new MissingResourceException(e.getMessage(), "Cooja", "");
     }
 
     String osName = System.getProperty("os.name").toLowerCase();
@@ -2698,7 +2700,8 @@ public class Cooja extends Observable {
 
     try (var in = Cooja.class.getResourceAsStream(filename)) {
       if (in == null) {
-        throw new FileNotFoundException(filename + " not found");
+        throw new MissingResourceException(
+                "Could not find " + filename + ", jar file seems broken", "Cooja", "");
       }
       settings.load(in);
 
@@ -2706,12 +2709,7 @@ public class Cooja extends Observable {
       defaultExternalToolsSettings = (Properties) currentExternalToolsSettings.clone();
       logger.info("External tools default settings: " + filename);
     } catch (IOException e) {
-      logger.warn("Error when reading external tools settings from " + filename, e);
-    } finally {
-      if (currentExternalToolsSettings == null) {
-        defaultExternalToolsSettings = new Properties();
-        currentExternalToolsSettings = new Properties();
-      }
+      throw new MissingResourceException(e.getMessage(), "Cooja", "");
     }
   }
 
