@@ -63,6 +63,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -695,11 +696,11 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     /* Create and activate new skin */
     try {
-      VisualizerSkin newSkin = skinClass.newInstance();
+      VisualizerSkin newSkin = skinClass.getDeclaredConstructor().newInstance();
       newSkin.setActive(Visualizer.this.simulation, Visualizer.this);
       currentSkins.add(0, newSkin);
     }
-    catch (InstantiationException | IllegalAccessException e1) {
+    catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e1) {
       e1.printStackTrace();
     }
     repaint();
@@ -790,7 +791,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         menu.add(simulation.getCooja().createMotePluginsSubmenu(mote));
         for (Class<? extends MoteMenuAction> menuActionClass : moteMenuActions) {
           try {
-            final MoteMenuAction menuAction = menuActionClass.newInstance();
+            final MoteMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
             if (menuAction.isEnabled(this, mote)) {
               JMenuItem menuItem = new JMenuItem(menuAction.getDescription(this, mote));
               menuItem.addActionListener(new ActionListener() {
@@ -802,7 +803,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
               menu.add(menuItem);
             }
           }
-          catch (InstantiationException | IllegalAccessException e1) {
+          catch (InvocationTargetException | NoSuchMethodException | InstantiationException |
+                 IllegalAccessException e1) {
             logger.fatal("Error: " + e1.getMessage(), e1);
           }
         }
@@ -813,7 +815,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     menu.add(new JSeparator());
     for (Class<? extends SimulationMenuAction> menuActionClass : simulationMenuActions) {
       try {
-        final SimulationMenuAction menuAction = menuActionClass.newInstance();
+        final SimulationMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
         if (menuAction.isEnabled(this, simulation)) {
           JMenuItem menuItem = new JMenuItem(menuAction.getDescription(this, simulation));
           menuItem.addActionListener(new ActionListener() {
@@ -825,7 +827,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           menu.add(menuItem);
         }
       }
-      catch (InstantiationException | IllegalAccessException e1) {
+      catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e1) {
         logger.fatal("Error: " + e1.getMessage(), e1);
       }
     }
