@@ -92,7 +92,7 @@ public class Flash extends IOUnit {
     ACLK,
     MCLK,
     SMCLK
-  };
+  }
 
   private static final int MASS_ERASE_TIME = 5297;
   private static final int SEGMENT_ERASE_TIME = 4819;

@@ -170,7 +170,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 public int getStateAsInt() {
                         return state | (0b10 << 5); /* TODO 2 pin state not implemented */
                 }
-        };
+        }
         private TimeEvent sendEvent = new TimeEvent(0, "CC1101 Send") {
                 @Override
                 public void execute(long t) {
@@ -357,7 +357,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
         @Override
         public int getLQI() {
                 return 0; /* TODO */
-        };
+        }
 
         @Override
         public void setLQI(int lqi) {

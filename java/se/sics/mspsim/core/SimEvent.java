@@ -50,7 +50,7 @@ public class SimEvent {
   public enum Type {
     START,
     STOP
-  };
+  }
 
   private Type type;
 

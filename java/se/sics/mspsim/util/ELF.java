@@ -469,7 +469,6 @@ public class ELF {
     ByteArrayOutputStream baous = new ByteArrayOutputStream();
     byte[] buf = new byte[2048];
     for(int read; (read = input.read(buf)) != -1; baous.write(buf, 0, read)) {
-      ;
     }
     input.close();
     buf = null;

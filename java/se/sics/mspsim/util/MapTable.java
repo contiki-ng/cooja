@@ -60,7 +60,7 @@ public class MapTable {
 
   private final static boolean DEBUG = false;
 
-  private enum Mode {NONE,CODE,DATA,BSS};
+  private enum Mode {NONE,CODE,DATA,BSS}
   private Mode mode;
 
   public int heapStartAddress = -1;

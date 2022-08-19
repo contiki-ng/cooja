@@ -45,7 +45,7 @@ public interface Memory {
         EXECUTE, /* instruction execution read */
         ARG,     /* arguments for execution */
         WRITE    /* write */
-    };
+    }
 
     public enum AccessMode {
         BYTE(1, 8, 0xff),
@@ -63,7 +63,7 @@ public interface Memory {
             this.mask = mask;
             this.msb = 1 << (bitSize - 1);
         }
-    };
+    }
 
     public int read(int address, AccessMode mode, AccessType type) throws EmulationException;
     public void write(int dstAddress, int data, AccessMode mode) throws EmulationException;
