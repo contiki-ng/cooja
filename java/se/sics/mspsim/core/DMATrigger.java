@@ -1,7 +1,7 @@
 package se.sics.mspsim.core;
 
 public interface DMATrigger {
-    public void setDMA(DMA dma);
-    public boolean getDMATriggerState(int index);
-    public void clearDMATrigger(int index);
+    void setDMA(DMA dma);
+    boolean getDMATriggerState(int index);
+    void clearDMATrigger(int index);
 }

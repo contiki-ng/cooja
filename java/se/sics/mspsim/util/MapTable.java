@@ -60,7 +60,7 @@ public class MapTable {
 
   private final static boolean DEBUG = false;
 
-  private enum Mode {NONE,CODE,DATA,BSS};
+  private enum Mode {NONE,CODE,DATA,BSS}
   private Mode mode;
 
   public int heapStartAddress = -1;
@@ -98,7 +98,7 @@ public class MapTable {
    * @param line a <code>String</code> value
    */
   private void parseMapLine(HashMap<String,MapEntry> moduleTable, String line) {
-    String parts[] = line.split("\\s+");
+    String[] parts = line.split("\\s+");
     if (line.startsWith(".text")) {
       mode = Mode.CODE;
       if (DEBUG) {

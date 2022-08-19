@@ -93,7 +93,7 @@ public class RTC extends IOUnit {
         private static final int RTCEVIFG = (1 << 2);
 
         /* Possible types of RTC */
-        public static enum RtcType {
+        public enum RtcType {
                 TYPE_A, TYPE_D,
         }
 

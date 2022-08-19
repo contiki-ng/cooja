@@ -5,7 +5,7 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
 public class FlashSegment implements Memory {
 
     private final MSP430Core core;
-    private final int memory[];
+    private final int[] memory;
     private final Flash flash;
 
     public FlashSegment(MSP430Core core, Flash flash) {

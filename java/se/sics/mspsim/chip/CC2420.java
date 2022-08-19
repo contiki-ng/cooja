@@ -66,12 +66,12 @@ public class CC2420 extends Radio802154 implements USARTListener {
     RES4, RES5, RES6, RES7,
     RES8, RES9, RESa, RESb,
     RESc, RESd, TXFIFO, RXFIFO
-  };
+  }
 
   public enum SpiState {
     WAITING, WRITE_REGISTER, READ_REGISTER, RAM_ACCESS,
     READ_RXFIFO, WRITE_TXFIFO
-  };
+  }
 
 
   public static final int REG_SNOP		= 0x00;
@@ -213,7 +213,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
      public int getFSMState() {
        return state;
      }
-  };
+  }
 
   // FCF High
   public static final int FRAME_TYPE = 0x07;
@@ -400,7 +400,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private boolean frameRejected = false;
 
   public interface StateListener {
-    public void newState(RadioState state);
+    void newState(RadioState state);
   }
 
   private StateListener stateListener = null;

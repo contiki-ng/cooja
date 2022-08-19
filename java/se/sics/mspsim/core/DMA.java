@@ -176,7 +176,7 @@ public class DMA extends IOUnit {
         }
     }
 
-    private Channel channels[] = new Channel[3];
+    private Channel[] channels = new Channel[3];
     private int dmactl0;
     private int dmactl1;
 

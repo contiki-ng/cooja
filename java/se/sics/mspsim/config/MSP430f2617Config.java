@@ -49,7 +49,7 @@ import se.sics.mspsim.util.Utils;
 
 public class MSP430f2617Config extends MSP430Config {
 
-    private static final String portConfig[] = {
+    private static final String[] portConfig = {
         "P1=0,IN 20,OUT 21,DIR 22,IFG 23,IES 24,IE 25,SEL 26,SEL2 41,REN 27",
         "P2=0,IN 28,OUT 29,DIR 2A,IFG 2B,IES 2C,IE 2D,SEL 2E,SEL2 42,REN 2F",
         "P3=0,IN 18,OUT 19,DIR 1A,SEL 1B,SEL2 43,REN 10",

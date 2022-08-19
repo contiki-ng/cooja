@@ -6,7 +6,7 @@ public class ArrayFIFO {
 
     public static final boolean STRICT = false;
 
-    private final int memory[];
+    private final int[] memory;
     private final int start;
     private final int size;
     private final String name;

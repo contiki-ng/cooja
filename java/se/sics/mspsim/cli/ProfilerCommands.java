@@ -217,8 +217,8 @@ public class ProfilerCommands implements CommandBundle {
         public int executeCommand(CommandContext context) {
           String event1 = context.getArgument(0);
           String event2 = context.getArgument(1);
-          String chip1[] = event1.split("\\.");
-          String chip2[] = event2.split("\\.");
+          String[] chip1 = event1.split("\\.");
+          String[] chip2 = event2.split("\\.");
           Chip chipE1 = cpu.getChip(chip1[0]);
           if (chipE1 == null) {
             context.err.println("Can not find chip: " + chip1[0]);

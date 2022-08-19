@@ -42,10 +42,10 @@ import java.util.ArrayList;
 
 public interface ELFDebug {
 
-  public DebugInfo getDebugInfo(int address);
+  DebugInfo getDebugInfo(int address);
 
-  public ArrayList<Integer> getExecutableAddresses();
+  ArrayList<Integer> getExecutableAddresses();
 
-  public String[] getSourceFiles();
+  String[] getSourceFiles();
 
 } // ELFDebug

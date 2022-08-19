@@ -46,5 +46,5 @@ package se.sics.mspsim.cli;
  *
  */
 public interface AsyncCommand {
-  public void stopCommand(CommandContext context);
+  void stopCommand(CommandContext context);
 }

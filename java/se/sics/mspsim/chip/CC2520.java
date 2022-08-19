@@ -316,7 +316,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
         public int getFSMState() {
             return state;
         }
-    };
+    }
 
     // FCF High
     public static final int FRAME_TYPE        = 0x07;

@@ -24,7 +24,7 @@ import se.sics.mspsim.util.ServiceComponent.Status;
 @SuppressWarnings("serial")
 public class DataChart extends JPanel implements ServiceComponent {
 
-  private enum Mode {NONE, STACK, DUTY};
+  private enum Mode {NONE, STACK, DUTY}
   private Mode mode = Mode.NONE;
 
   private TimeSeriesCollection dataset;

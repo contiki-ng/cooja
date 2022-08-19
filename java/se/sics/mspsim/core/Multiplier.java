@@ -72,7 +72,7 @@ public class Multiplier extends IOUnit {
    * Creates a new <code>Multiplier</code> instance.
    *
    */
-  public Multiplier(MSP430Core cpu, int memory[], int offset) {
+  public Multiplier(MSP430Core cpu, int[] memory, int offset) {
     super("Multiplier", "Hardware Multiplier", cpu, memory, offset);
   }
 

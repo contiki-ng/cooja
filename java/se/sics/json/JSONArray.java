@@ -69,7 +69,7 @@ public class JSONArray extends ArrayList<Object> implements JSONAware, JSONStrea
         }
     }
 
-    private void checkAllForCycles(Collection<? extends Object> c) {
+    private void checkAllForCycles(Collection<?> c) {
         for(Object v : c) {
             checkForCycles(v);
         }
@@ -87,13 +87,13 @@ public class JSONArray extends ArrayList<Object> implements JSONAware, JSONStrea
     }
 
     @Override
-    public boolean addAll(Collection<? extends Object> c) {
+    public boolean addAll(Collection<?> c) {
         checkAllForCycles(c);
         return super.addAll(c);
     }
 
     @Override
-    public boolean addAll(int index, Collection<? extends Object> c) {
+    public boolean addAll(int index, Collection<?> c) {
         checkAllForCycles(c);
         return super.addAll(index, c);
     }

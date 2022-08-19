@@ -92,7 +92,7 @@ public class Flash extends IOUnit {
     ACLK,
     MCLK,
     SMCLK
-  };
+  }
 
   private static final int MASS_ERASE_TIME = 5297;
   private static final int SEGMENT_ERASE_TIME = 4819;
@@ -283,8 +283,8 @@ public class Flash extends IOUnit {
 
     switch(currentWriteMode) {
     case ERASE_SEGMENT:
-      int a_area_start[] = new int[1];
-      int a_area_end[] = new int[1];
+      int[] a_area_start = new int[1];
+      int[] a_area_end = new int[1];
       getSegmentRange(address, a_area_start, a_area_end);
       int area_start = a_area_start[0];
       int area_end = a_area_end[0];

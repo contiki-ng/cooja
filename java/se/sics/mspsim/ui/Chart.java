@@ -47,20 +47,20 @@ import java.awt.Graphics2D;
  */
 public interface Chart {
 
-  public String getName();
+  String getName();
 
-  public void setAutoscale();
-  public void setMinMax(double minValue, double maxValue);
+  void setAutoscale();
+  void setMinMax(double minValue, double maxValue);
 
-  public double getMaxY();
-  public double getMinY();
-  public double getMaxX();
-  public double getMinX();
+  double getMaxY();
+  double getMinY();
+  double getMaxX();
+  double getMinX();
 
-  public Object getConfig(String param);
-  public Object getConfig(String param, Object defaultValue);
-  public void setConfig(String param, Object value);
+  Object getConfig(String param);
+  Object getConfig(String param, Object defaultValue);
+  void setConfig(String param, Object value);
 
-  public void drawChart(Graphics2D g, double xfac, double yfac, int width, int height);
+  void drawChart(Graphics2D g, double xfac, double yfac, int width, int height);
 
 }

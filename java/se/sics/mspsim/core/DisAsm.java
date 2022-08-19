@@ -106,7 +106,7 @@ public class DisAsm implements MSP430Constants {
 
     String output = "    ";
     if (interrupt > 0) {
-      output = "I:" + Integer.toString(interrupt) + ' ';
+      output = "I:" + interrupt + ' ';
     }
 
     String regs = "";

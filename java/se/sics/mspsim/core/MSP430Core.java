@@ -73,12 +73,12 @@ public class MSP430Core extends Chip implements MSP430Constants {
   // true => breakpoints can occur!
   boolean breakpointActive = true;
 
-  public final int memory[];
+  public final int[] memory;
   private final Flash flash;
   boolean isFlashBusy;
   boolean isStopping = false;
 
-  private final Memory memorySegments[];
+  private final Memory[] memorySegments;
   Memory currentSegment;
 
   public long cycles = 0;
@@ -94,7 +94,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   // From the possible interrupt sources - to be able to indicate is serviced.
   // NOTE: 64 since more modern MSP430's have more than 16 vectors (5xxx has 64).
-  private InterruptHandler interruptSource[] = new InterruptHandler[64];
+  private InterruptHandler[] interruptSource = new InterruptHandler[64];
   public int MAX_INTERRUPT;
 
   protected int interruptMax = -1;

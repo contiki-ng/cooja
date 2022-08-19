@@ -149,7 +149,7 @@ public class EmuLink {
                 }
             }
         }
-    };
+    }
 
     protected boolean handleMessage(JSONObject json) {
         System.out.println("EmuLink: RECV " + json.toJSONString());

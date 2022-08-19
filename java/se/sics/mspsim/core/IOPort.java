@@ -43,9 +43,9 @@ import se.sics.mspsim.util.Utils;
 
 public class IOPort extends IOUnit {
 
-    public enum PinState { LOW, HI };
+    public enum PinState { LOW, HI }
 
-    public enum PortReg {IN, OUT, DIR, SEL, SEL2, IFG, IES, IE, REN, DS, IV_L, IV_H};
+    public enum PortReg {IN, OUT, DIR, SEL, SEL2, IFG, IES, IE, REN, DS, IV_L, IV_H}
 
     /* portmaps for 1611 */
     private static final PortReg[] PORTMAP_INTERRUPT =
@@ -57,7 +57,7 @@ public class IOPort extends IOUnit {
     private final int interrupt;
 
     // External pin state!
-    private final PinState pinState[] = new PinState[8];
+    private final PinState[] pinState = new PinState[8];
 
     private final PortReg[] portMap;
 

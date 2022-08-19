@@ -120,7 +120,7 @@ public class ADC12 extends IOUnit {
   private int startMem = 0;
   private int adcDiv = 1;
 
-  private ADCInput adcInput[] = new ADCInput[16];
+  private ADCInput[] adcInput = new ADCInput[16];
 
   private int conSeq;
   private int adc12ie;

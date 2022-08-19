@@ -45,5 +45,5 @@ package se.sics.mspsim.core;
 
 public interface ConfigurationChangeListener {
 
-    public void configurationChanged(Object source, int configurationParam, int oldValue, int newValue);
+    void configurationChanged(Object source, int configurationParam, int oldValue, int newValue);
 }

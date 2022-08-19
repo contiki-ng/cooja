@@ -84,7 +84,7 @@ public class NetworkPacket {
       String[] parts = description.split("\\|");
       int pos = 0;
       for (int i = 0; i < parts.length; i++) {
-        String field[] = parts[i].split(":");
+        String[] field = parts[i].split(":");
         String val = field[1];
         String matchVal = null;
         if (val.indexOf('=') > 0) {
@@ -167,7 +167,7 @@ public class NetworkPacket {
   }
 
   public static void main(String[] args) {
-    byte data[] = new byte[] {
+    byte[] data = new byte[] {
         0x61, 0x04, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,

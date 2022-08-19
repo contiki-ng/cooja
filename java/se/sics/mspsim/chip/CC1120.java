@@ -255,7 +255,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
         private boolean triggerGDO0onSynch = false;
         private boolean triggerGDO0onFifoThreshold = false;
 
-        public static enum CC1120RadioState {
+        public enum CC1120RadioState {
                 CC1120_STATE_SLEEP(0b00000)/* 0 */,
                 CC1120_STATE_IDLE(0b00001),
                 CC1120_STATE_XOFF(0b00010),
@@ -290,7 +290,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 public int getStateAsInt() {
                         return state | (0b10 << 5); /* TODO 2 pin state not implemented */
                 }
-        };
+        }
 
         private TimeEvent sendEvent = new TimeEvent(0, "CC1120 Send") {
                 @Override
@@ -459,7 +459,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
         @Override
         public int getLQI() {
                 return 0; /* TODO */
-        };
+        }
 
         @Override
         public void setLQI(int lqi) {
@@ -854,13 +854,13 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 return state;
         }
         public interface StateListener {
-                public void newState(CC1120RadioState state);
+                void newState(CC1120RadioState state);
         }
         public void setStateListener(StateListener listener) {
                 stateListener = listener;
         }
         public interface ReceiverListener {
-          public void newState(boolean on);
+          void newState(boolean on);
         }
         public void setReceiverListener(ReceiverListener listener) {
           receiverListener = listener;

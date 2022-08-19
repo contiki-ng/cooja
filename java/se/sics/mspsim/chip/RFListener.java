@@ -41,9 +41,9 @@ import se.sics.mspsim.util.ProxySupport;
 public interface RFListener {
 
     // A byte has been received via the "air"
-    public void receivedByte(byte data);
+    void receivedByte(byte data);
 
-    public static class Proxy extends ProxySupport<RFListener> implements RFListener {
+    class Proxy extends ProxySupport<RFListener> implements RFListener {
         public static final Proxy INSTANCE = new Proxy();
 
         @Override

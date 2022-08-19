@@ -197,7 +197,7 @@ public class Timer extends IOUnit {
 
   // Support variables Max 7 compare regs for now (timer b)
   private final int noCompare;
-  private final CCR ccr[];
+  private final CCR[] ccr;
 
   /* this is class represents a capture and compare register */
   private class CCR extends TimeEvent {

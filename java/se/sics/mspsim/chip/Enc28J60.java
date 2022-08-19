@@ -125,7 +125,7 @@ public class Enc28J60 extends Chip {
 
         private PacketListener listener = null;
         public interface PacketListener {
-                public void packetSent(Byte[] packetData);
+                void packetSent(Byte[] packetData);
         }
         public void setPacketListener(PacketListener l) {
                 listener = l;

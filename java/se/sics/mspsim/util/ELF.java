@@ -75,8 +75,8 @@ public class ELF {
   byte[] elfData;
   private int pos = 0;
 
-  private ELFSection sections[];
-  private ELFProgram programs[];
+  private ELFSection[] sections;
+  private ELFProgram[] programs;
   private ArrayList<FileInfo> files = new ArrayList<FileInfo>();
 
   ELFSection strTable;
@@ -469,7 +469,6 @@ public class ELF {
     ByteArrayOutputStream baous = new ByteArrayOutputStream();
     byte[] buf = new byte[2048];
     for(int read; (read = input.read(buf)) != -1; baous.write(buf, 0, read)) {
-      ;
     }
     input.close();
     buf = null;

@@ -38,16 +38,16 @@ package se.sics.mspsim.core;
 
 public interface Memory {
 
-    public static final int SEGMENT_SIZE = 256;
+    int SEGMENT_SIZE = 256;
 
-    public enum AccessType {
+    enum AccessType {
         READ,    /* normal read */
         EXECUTE, /* instruction execution read */
         ARG,     /* arguments for execution */
         WRITE    /* write */
-    };
+    }
 
-    public enum AccessMode {
+    enum AccessMode {
         BYTE(1, 8, 0xff),
         WORD(2, 16, 0xffff),
         WORD20(4, 20, 0xfffff);
@@ -63,12 +63,12 @@ public interface Memory {
             this.mask = mask;
             this.msb = 1 << (bitSize - 1);
         }
-    };
+    }
 
-    public int read(int address, AccessMode mode, AccessType type) throws EmulationException;
-    public void write(int dstAddress, int data, AccessMode mode) throws EmulationException;
+    int read(int address, AccessMode mode, AccessType type) throws EmulationException;
+    void write(int dstAddress, int data, AccessMode mode) throws EmulationException;
 
-    public int get(int address, AccessMode mode);
-    public void set(int address, int data, AccessMode mode);
+    int get(int address, AccessMode mode);
+    void set(int address, int data, AccessMode mode);
 
 }

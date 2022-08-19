@@ -4,7 +4,7 @@ public class WatchedMemory implements Memory {
 
     private final int start;
     private final Memory wrappedMemory;
-    private final MemoryMonitor watchPoints[] = new MemoryMonitor[Memory.SEGMENT_SIZE];
+    private final MemoryMonitor[] watchPoints = new MemoryMonitor[Memory.SEGMENT_SIZE];
 
     WatchedMemory(int start, Memory wrapped) {
         this.start = start;
