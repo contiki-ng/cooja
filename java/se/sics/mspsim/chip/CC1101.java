@@ -663,7 +663,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 for (int i = 0; i < rxfifo.size(); i++) {
                     sb.append(String.format("%02x", rxfifo.get(i)));
                 }
-                log(sb.toString() + "\n");
+                log(sb + "\n");
         }
         private void printTXFIFO() {
         StringBuilder sb = new StringBuilder();
@@ -671,7 +671,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 for (int i = 0; i < txfifo.size(); i++) {
                     sb.append(String.format("%02x", txfifo.get(i)));
                 }
-        log(sb.toString() + "\n");
+        log(sb + "\n");
         }
 
         public CC1101RadioState getState() {

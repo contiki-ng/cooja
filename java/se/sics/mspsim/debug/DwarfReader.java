@@ -187,7 +187,7 @@ public class DwarfReader implements ELFDebug {
                   sb.append((char) c);
                 }
 
-                if (DEBUG) System.out.println("Line: include file: " + sb.toString());
+                if (DEBUG) System.out.println("Line: include file: " + sb);
                 directories.add(sb.toString());
                 sb.setLength(0);
             }
@@ -206,8 +206,8 @@ public class DwarfReader implements ELFDebug {
                 time = sec.readLEB128();
                 size = sec.readLEB128();
 
-                if (DEBUG) System.out.println("Line: source file: " + sb.toString() + "  dir: " + dirIndex + " size: " + size);
-                files.add(directories.get((int) dirIndex) + "/" + sb.toString());
+                if (DEBUG) System.out.println("Line: source file: " + sb + "  dir: " + dirIndex + " size: " + size);
+                files.add(directories.get((int) dirIndex) + "/" + sb);
                 sb.setLength(0);
             }
 
