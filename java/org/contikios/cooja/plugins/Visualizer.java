@@ -96,6 +96,9 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
+import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
+import org.contikios.mrm.MRMVisualizerSkin;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -713,7 +716,14 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       return;
     }
 
-    /* Activate default skins */
+    // Activate default skins.
+    generateAndActivateSkin(IDVisualizerSkin.class);
+    generateAndActivateSkin(GridVisualizerSkin.class);
+    generateAndActivateSkin(DGRMVisualizerSkin.class);
+    generateAndActivateSkin(TrafficVisualizerSkin.class);
+    generateAndActivateSkin(UDGMVisualizerSkin.class);
+    generateAndActivateSkin(LogisticLossVisualizerSkin.class);
+    generateAndActivateSkin(MRMVisualizerSkin.class);
     String[] defaultSkins = Cooja.getExternalToolsSetting("VISUALIZER_DEFAULT_SKINS", "").split(";");
     for (String skin : defaultSkins) {
       if (skin.isEmpty()) {
