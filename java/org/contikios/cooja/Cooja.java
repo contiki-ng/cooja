@@ -3358,6 +3358,10 @@ public class Cooja extends Observable {
         logger.fatal("Could not load plugin class: " + pluginClassName);
         return false;
       }
+      // Skip plugins that require visualization in headless mode.
+      if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
+        continue;
+      }
 
       // Parse plugin mote argument (if any)
       Mote mote = null;
