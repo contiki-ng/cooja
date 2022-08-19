@@ -1,4 +1,4 @@
- /**
+ /*
  * Copyright (c) 2007, Swedish Institute of Computer Science.
  * All rights reserved.
  *
@@ -206,7 +206,7 @@ public class MSP430 extends MSP430Core {
   /*
    * Perform a single step (even if in LPM) but no longer than to maxCycles + 1 instr
    * Note: jumpMicros just jump the clock until that time
-   * executeMicros also check eventQ, etc and executes instructions
+   * executeMicros also check eventQ, etc. and executes instructions
    */
   long maxCycles = 0;
   public long stepMicros(long jumpMicros, long executeMicros) throws EmulationException {

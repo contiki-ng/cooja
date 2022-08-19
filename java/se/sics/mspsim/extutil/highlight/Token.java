@@ -2,7 +2,7 @@ package se.sics.mspsim.extutil.highlight;
 // Public domain, no restrictions, Ian Holyer, University of Bristol.
 
 /**
- * A token represents a smallest meaningful fragment of text, such as a word,
+ * A token represents the smallest meaningful fragment of text, such as a word,
  * recognised by a scanner.
  */
 public class Token {

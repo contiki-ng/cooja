@@ -72,7 +72,7 @@ public class ArrayFIFO {
         return v & 0xff;
     }
 
-    /* get data relative the write position (typically negative input values */
+    /* get data relative to the write position (typically negative input values */
     public int get(int index) {
         int pos = writePos + index;
         if (pos < 0) {
@@ -83,7 +83,7 @@ public class ArrayFIFO {
         return memory[start + pos] & 0xff;
     }
 
-    /* set data relative the write position (typically negative input values */
+    /* set data relative to the write position (typically negative input values */
     public void set(int index, int data) {
         int pos = writePos + index;
         if (pos < 0) {
@@ -105,7 +105,7 @@ public class ArrayFIFO {
         len = 0;
     }
 
-    /* for marking a write pos - needed for supporting dropping non-matching packets */
+    /* marking a write pos - needed for supporting dropping non-matching packets */
     public void mark() {
         markWritePos = writePos;
     }

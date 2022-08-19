@@ -81,7 +81,7 @@ public class CommandHandler implements ActiveComponent, LineListener {
         }
         // TODO: Check if first command is also LineListener and set it up for input!!
       }
-      // Execute when all is set-up in opposite order...
+      // Execute when all is set up in opposite order...
       int index = commands.length - 1;
       try {
         for (; index >= 0; index--) {

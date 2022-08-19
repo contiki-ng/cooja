@@ -80,9 +80,8 @@ public class AT45DB extends ExternalFlash implements USARTListener {
   public static final int CHIP_ERASE3 = 0x9A;
   public static final int PAGE_PROGRAM_THROUGH_BUFFER1 = 0x82;
   public static final int PAGE_PROGRAM_THROUGH_BUFFER2 = 0x85;
-  /** End of Program and Erase Command opcodes */
 
-  /** Protection and Security Commands - Datasheet Table 15-3 */
+  /* Protection and Security Commands - Datasheet Table 15-3 */
   /** Additional Commands - Datasheet Table 15-4 */
   public static final int PAGE_TO_BUFFER1 = 0x53;
   public static final int PAGE_TO_BUFFER2 = 0x55;

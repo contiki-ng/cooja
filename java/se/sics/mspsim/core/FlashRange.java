@@ -29,11 +29,11 @@
  * This file is part of mspsim.
  *
  */
-/**
- * @author Klaus Stengel <siklsten@informatik.stud.uni-erlangen.de>
- */
 package se.sics.mspsim.core;
 
+/**
+ * @author Klaus Stengel (siklsten@informatik.stud.uni-erlangen.de)
+ */
 public class FlashRange {
   public int start;
   public int end;

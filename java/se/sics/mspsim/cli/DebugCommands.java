@@ -556,9 +556,9 @@ public class DebugCommands implements CommandBundle {
             return 0;
           }});
 
-        /******************************************************
+        /*-----------------------------------------------------
          * handle external memory (flash, etc).
-         ******************************************************/
+         -----------------------------------------------------*/
         ch.registerCommand("xmem", new BasicCommand("dump flash memory", "<start address> <num_entries> [type]") {
           @Override
           public int executeCommand(final CommandContext context) {

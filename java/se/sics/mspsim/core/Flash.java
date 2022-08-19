@@ -30,10 +30,6 @@
  * This file is part of mspsim.
  *
  */
-/**
- * @author Klaus Stengel <siklsten@informatik.stud.uni-erlangen.de>
- * @author Víctor Ariño <victor.arino@tado.com>
- */
 package se.sics.mspsim.core;
 
 import java.util.Arrays;
@@ -42,6 +38,10 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.Memory.AccessMode;
 import se.sics.mspsim.util.Utils;
 
+/**
+ * @author Klaus Stengel (siklsten@informatik.stud.uni-erlangen.de)
+ * @author Víctor Ariño (victor.arino@tado.com)
+ */
 public class Flash extends IOUnit {
 
   private static final int FCTL1 = 0x00;

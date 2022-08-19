@@ -35,7 +35,7 @@ public class IOSegment implements Memory {
     @Override
     public int read(int address, AccessMode mode, AccessType type) throws EmulationException {
         boolean word = mode != AccessMode.BYTE;
-        // Only word reads at 0x1fe which is highest address...
+        // Only word reads at 0x1fe which is the highest address...
         int val = mem[address].read(address, word, core.cycles);
         if (mode == AccessMode.WORD20) {
             val |= mem[address + 2].read(address, word, core.cycles) << 16;

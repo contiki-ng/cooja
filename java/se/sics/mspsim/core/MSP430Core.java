@@ -655,7 +655,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
       }
     }
 
-    // Pick the one with shortest time in the future.
+    // Pick the one with the shortest time in the future.
     nextEventCycles = nextCycleEventCycles < nextVTimeEventCycles ?
         nextCycleEventCycles : nextVTimeEventCycles;
   }
@@ -687,7 +687,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
     vTimeEventQueue.addEvent(event, time);
     if (currentNext != vTimeEventQueue.nextTime) {
       // This is only valid when not having a cycle event queue also...
-      // if we have it needs to be checked also!
+      // if we have it, it needs to be checked also!
       nextVTimeEventCycles = convertVTime(vTimeEventQueue.nextTime);
       if (nextEventCycles > nextVTimeEventCycles) {
         nextEventCycles = nextVTimeEventCycles;
@@ -841,7 +841,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   // This will be called after an interrupt have been handled
   // In the main-CPU loop
   public void handlePendingInterrupts() {
-    // By default no int. left to process...
+    // By default, no int. left to process...
 
     reevaluateInterrupts();
 
@@ -1030,7 +1030,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
         if ((instruction & 0x80) == 0x80) {
             repeatsInDstReg = true;
         }
-        // Bit 6 indicates whether or not the data length mode should
+        // Bit 6 indicates whether the data length mode should
         // be 20 bits. A one means traditional MSP430 mode; a zero
         // indicates 20 bit mode. (XXX: there is a reserved data
         // length mode if this bit is zero and the MSP430 instruction

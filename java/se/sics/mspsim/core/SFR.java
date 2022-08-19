@@ -97,7 +97,6 @@ public class SFR extends IOUnit {
     irqVector[pos] = irqVec;
   }
 
-  // write
   // write a value to the IO unit
   @Override
   public void write(int address, int value, boolean word,
@@ -119,7 +118,6 @@ public class SFR extends IOUnit {
     memory[address] = value;
   }
 
-  // read
   // read a value from the IO unit
   @Override
   public int read(int address, boolean word, long cycles) {

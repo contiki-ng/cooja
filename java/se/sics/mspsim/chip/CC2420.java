@@ -521,7 +521,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
       break;
 
     case TX_ACK_CALIBRATE:
-        /* TX active during ACK + NOTE: we ignore the SFD when receiving full packets so
+        /* TX active during ACK + NOTE: we ignore the SFD when receiving full packets, so
          * we need to add another extra 2 symbols here to get a correct timing */
         status |= STATUS_TX_ACTIVE;
         setSymbolEvent(12 + 2 + 2);
@@ -1411,7 +1411,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
     chipSelect = select;
     if (!chipSelect) {
       if (state == SpiState.WRITE_REGISTER && usartDataPos == 1) {
-          // Register write incomplete. Do a 8 bit register write.
+          // Register write incomplete. Do an 8 bit register write.
           usartDataValue = (registers[usartDataAddress] & 0xff) | (usartDataValue & 0xff00);
           if (logLevel > INFO) {
               log("wrote 8 MSB to 0x" + Utils.hex8(usartDataAddress) + " = " + usartDataValue);
@@ -1453,7 +1453,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
 
 
   // -------------------------------------------------------------------
-  // Methods for accessing and writing to registers, etc from outside
+  // Methods for accessing and writing to registers, etc. from outside
   // And for receiving data
   // -------------------------------------------------------------------
 

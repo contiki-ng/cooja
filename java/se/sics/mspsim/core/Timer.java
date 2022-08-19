@@ -53,9 +53,9 @@ import se.sics.mspsim.util.Utils;
  *   the configuration is in that way.?!
  * All low-level clocks should probably be ticked by the "cpu"-loop in
  * some way, but configured by the BasicClockModule, otherwise it will
- * be too time consuming (probably).
+ * be too time-consuming (probably).
  * CLCK Capture needs to be moved into the CPU since it is "time-critical"...
- * Other captures (ports, etc) could be handled separately (i think)
+ * Other captures (ports, etc.) could be handled separately (i think)
  *
  * Several capturers can be "looking" at the same signal
  * and capture at different edges - how implement that efficiently?
@@ -563,7 +563,7 @@ public class Timer extends IOUnit {
       int aTicks = clockSpeed / cpu.aclkFrq;
       updateCounter(cycles);
 
-      /* only calculate this if clock runs faster then ACLK - otherwise it
+      /* only calculate this if clock runs faster than ACLK - otherwise it
        * this will be dividing by zero...
        */
       if (aTicks > 0 && counter % aTicks > aTicks / 2) {
@@ -686,7 +686,7 @@ public class Timer extends IOUnit {
 
       // Write to the tctl.
       tctl = data;
-      // Clear clear bit
+      // Clear bit
       tctl &= ~0x04;
 
       // Clear interrupt pending if so requested...

@@ -194,7 +194,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
 //    }
     if (dma != null) {
         sfr.setBitIFG(uartID, bits);
-        /* set bit first, then trigger DMA transfer - this should
+        /* set the bit first, then trigger DMA transfer - this should
          * be made via a 1 cycle or so delayed action */
         if ((bits & urxifg) > 0) dma.trigger(this, 0);
         if ((bits & utxifg) > 0) dma.trigger(this, 1);

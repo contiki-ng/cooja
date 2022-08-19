@@ -119,7 +119,7 @@ public abstract class I2CUnit implements USARTListener {
         protected boolean DEBUG = false;
 
         /**
-         * Is a read message or a write
+         * Is this a read message
          */
         private boolean isRead = false;
 

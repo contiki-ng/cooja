@@ -556,7 +556,7 @@ public class ConsoleUI extends JComponent {
 
     if (editing != false && buffer.length() > 0) {
       /*
-       * set edit to false so we do not get here again before end of "printout".
+       * set edit to false, so we do not get here again before end of "printout".
        */
       editing = false;
       String s = buffer.toString();

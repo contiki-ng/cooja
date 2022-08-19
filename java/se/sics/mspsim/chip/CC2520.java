@@ -656,7 +656,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
             break;
 
         case TX_ACK_CALIBRATE:
-            /* TX active during ACK + NOTE: we ignore the SFD when receiving full packets so
+            /* TX active during ACK + NOTE: we ignore the SFD when receiving full packets, so
              * we need to add another extra 2 symbols here to get a correct timing */
             status |= STATUS_TX_ACTIVE;
             memory[REG_FSMSTAT1] |= (1 << 1);
