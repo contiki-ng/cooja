@@ -42,7 +42,7 @@ import org.contikios.coffee.CoffeeFS.CoffeeFileException;
 public class CoffeeManager {
 	public enum Command { INSERT, EXTRACT, REMOVE, LIST, STATS }
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		String platform = "sky";
 		Command command = Command.STATS;
 		String filename = "";

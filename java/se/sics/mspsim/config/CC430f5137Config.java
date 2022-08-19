@@ -58,7 +58,7 @@ public class CC430f5137Config extends MSP430Config {
     // - positions of all timers (A0, A1, B)
     // - memory configuration
     // -
-    private static final String portConfig[] = {
+    private static final String[] portConfig = {
             "P1=200,IN 00,OUT 02,DIR 04,REN 06,DS 08,SEL 0A,IV_L 0E,IV_H 0F,IES 18,IE 1A,IFG 1C",
             "P2=200,IN 01,OUT 03,DIR 05,REN 07,DS 09,SEL 0B,IV_L 1E,IV_H 1F,IES 19,IE 1B,IFG 1D",
             "P3=220,IN 00,OUT 02,DIR 04,REN 06,DS 08,SEL 0A",

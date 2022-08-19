@@ -50,7 +50,7 @@ import se.sics.mspsim.core.MSP430;
 public class IHexReader {
 
   // 64k tmp ram!
-  private int tmpMemory[] = new int[64 * 1024];
+  private int[] tmpMemory = new int[64 * 1024];
 
   /**
    * Creates a new <code>IHexReader</code> instance.
@@ -59,7 +59,7 @@ public class IHexReader {
   public IHexReader() {
   }
 
-  public boolean readFile(int memory[], String file) {
+  public boolean readFile(int[] memory, String file) {
     for (int i = 0, n = tmpMemory.length; i < n; i++) {
       tmpMemory[i] = -1;
     }

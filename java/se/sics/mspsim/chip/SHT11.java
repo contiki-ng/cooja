@@ -77,7 +77,7 @@ public class SHT11 extends Chip {
   private int bitCnt = 0;
   private int temp = 3960 + 2400;
   private int humid = 0x1040;
-  private int output[] = new int[3];
+  private int[] output = new int[3];
   private int writePos = 0;
   private int writeLen = 0;
   private int writeData = 0;

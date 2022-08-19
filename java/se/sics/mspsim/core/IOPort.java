@@ -57,7 +57,7 @@ public class IOPort extends IOUnit {
     private final int interrupt;
 
     // External pin state!
-    private final PinState pinState[] = new PinState[8];
+    private final PinState[] pinState = new PinState[8];
 
     private final PortReg[] portMap;
 

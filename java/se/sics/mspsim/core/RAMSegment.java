@@ -5,7 +5,7 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
 public class RAMSegment implements Memory {
 
     private final MSP430Core core;
-    private final int memory[];
+    private final int[] memory;
 
     public RAMSegment(MSP430Core core) {
         this.core = core;

@@ -98,7 +98,7 @@ public class MapTable {
    * @param line a <code>String</code> value
    */
   private void parseMapLine(HashMap<String,MapEntry> moduleTable, String line) {
-    String parts[] = line.split("\\s+");
+    String[] parts = line.split("\\s+");
     if (line.startsWith(".text")) {
       mode = Mode.CODE;
       if (DEBUG) {

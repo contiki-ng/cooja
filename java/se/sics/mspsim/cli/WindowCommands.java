@@ -81,7 +81,7 @@ public class WindowCommands implements CommandBundle {
                     }
                 }
                 if (list || windowName == null) {
-                    Target tgts[];
+                    Target[] tgts;
                     synchronized (windowTargets) {
                         tgts = windowTargets.values().toArray(new Target[windowTargets.size()]);
                     }

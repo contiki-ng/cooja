@@ -151,13 +151,13 @@ public class GDBStubs implements Runnable {
         case 'M':
         case 'X':
             String cmd2 = cmd.substring(1);
-            String wdata[] = cmd2.split(":");
+            String[] wdata = cmd2.split(":");
             int cPos = cmd.indexOf(':');
             if (cPos > 0) {
                 /* only until length in first part */
                 cmd2 = wdata[0];
             }
-            String parts[] = cmd2.split(",");
+            String[] parts = cmd2.split(",");
             int addr = Integer.decode("0x" + parts[0]);
             int len = Integer.decode("0x" + parts[1]);
             String data = "";

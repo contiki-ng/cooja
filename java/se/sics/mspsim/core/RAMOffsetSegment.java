@@ -42,7 +42,7 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
 class RAMOffsetSegment implements Memory {
 
     private final MSP430Core core;
-    private final int memory[];
+    private final int[] memory;
     private final int offset;
 
     RAMOffsetSegment(MSP430Core core, int offset) {

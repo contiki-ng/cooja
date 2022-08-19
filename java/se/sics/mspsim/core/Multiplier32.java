@@ -102,7 +102,7 @@ public class Multiplier32 extends IOUnit {
      * Creates a new <code>Multiplier32</code> instance.
      *
      */
-    public Multiplier32(MSP430Core cpu, int memory[], int offset) {
+    public Multiplier32(MSP430Core cpu, int[] memory, int offset) {
         super("Multiplier32", "Hardware Multiplier 32", cpu, memory, offset);
     }
 

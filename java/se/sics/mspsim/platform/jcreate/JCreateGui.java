@@ -59,7 +59,7 @@ public class JCreateGui extends AbstractNodeGUI {
     private static final Color RED_CORE = new Color(0xff,0xa0,0xa0,0xff);
 
     private static final int LEDS_Y = 66;
-    private static final int LEDS_X[] = {29, 49, 67, 86, 103, 122, 142, 162};
+    private static final int[] LEDS_X = {29, 49, 67, 86, 103, 122, 142, 162};
     private static final Rectangle LEDS_CLIP = new Rectangle(LEDS_X[0], LEDS_Y,
         LEDS_X[LEDS_X.length - 1] + 10 - LEDS_X[0], 10);
 
