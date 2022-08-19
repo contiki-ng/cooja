@@ -4,13 +4,13 @@ import se.sics.mspsim.util.ProxySupport;
 
 public interface RegisterMonitor {
 
-    public void notifyReadBefore(int reg, Memory.AccessMode mode);
-    public void notifyReadAfter(int reg, Memory.AccessMode mode);
+    void notifyReadBefore(int reg, Memory.AccessMode mode);
+    void notifyReadAfter(int reg, Memory.AccessMode mode);
 
-    public void notifyWriteBefore(int reg, int data, Memory.AccessMode mode);
-    public void notifyWriteAfter(int reg, int data, Memory.AccessMode mode);
+    void notifyWriteBefore(int reg, int data, Memory.AccessMode mode);
+    void notifyWriteAfter(int reg, int data, Memory.AccessMode mode);
 
-    public static class Adapter implements RegisterMonitor {
+    class Adapter implements RegisterMonitor {
 
         @Override
         public void notifyReadBefore(int reg, Memory.AccessMode mode) {
@@ -30,7 +30,7 @@ public interface RegisterMonitor {
 
     }
 
-    public static class Proxy extends ProxySupport<RegisterMonitor> implements RegisterMonitor {
+    class Proxy extends ProxySupport<RegisterMonitor> implements RegisterMonitor {
         public static final Proxy INSTANCE = new Proxy();
 
         @Override

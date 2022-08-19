@@ -48,32 +48,32 @@ import se.sics.mspsim.util.MapEntry;
 
 public interface Profiler {
 
-  public static final String PARAM_FUNCTION_NAME_REGEXP = "function.regexp";
-  public static final String PARAM_PROFILE_CALLERS = "showcallers";
-  public static final String PARAM_SORT_MODE = "sortmode";
+  String PARAM_FUNCTION_NAME_REGEXP = "function.regexp";
+  String PARAM_PROFILE_CALLERS = "showcallers";
+  String PARAM_SORT_MODE = "sortmode";
 
-  public void setCPU(MSP430Core cpu);
+  void setCPU(MSP430Core cpu);
 
-  public void profileCall(MapEntry entry, long cycles, int from);
-  public void profileReturn(long cycles);
-  public void profileInterrupt(int vector, long cycles);
-  public void profileRETI(long cycles);
+  void profileCall(MapEntry entry, long cycles, int from);
+  void profileReturn(long cycles);
+  void profileInterrupt(int vector, long cycles);
+  void profileRETI(long cycles);
 
-  public void resetProfile();
-  public void clearProfile();
+  void resetProfile();
+  void clearProfile();
 
-  public void addCallListener(CallListener listener);
-  public void removeCallListener(CallListener listener);
+  void addCallListener(CallListener listener);
+  void removeCallListener(CallListener listener);
 
-  public void printProfile(PrintStream out);
+  void printProfile(PrintStream out);
 
-  public void printProfile(PrintStream out, Properties parameters);
+  void printProfile(PrintStream out, Properties parameters);
 
-  public void printStackTrace(PrintStream out);
+  void printStackTrace(PrintStream out);
 
   /* function call logging */
-  public void setLogger(PrintStream out);
+  void setLogger(PrintStream out);
 
-  public String getCall(int i);
+  String getCall(int i);
 
 }

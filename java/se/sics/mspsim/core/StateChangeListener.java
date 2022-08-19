@@ -44,9 +44,9 @@ import se.sics.mspsim.util.ProxySupport;
  */
 public interface StateChangeListener {
 
-    public void stateChanged(Object source, int oldState, int newState);
+    void stateChanged(Object source, int oldState, int newState);
 
-    public static class Proxy extends ProxySupport<StateChangeListener> implements StateChangeListener {
+    class Proxy extends ProxySupport<StateChangeListener> implements StateChangeListener {
         public static final Proxy INSTANCE = new Proxy();
 
         @Override

@@ -40,13 +40,13 @@ import se.sics.mspsim.util.ProxySupport;
 
 public interface MemoryMonitor {
 
-  public void notifyReadBefore(int addr, Memory.AccessMode mode, Memory.AccessType type);
-  public void notifyReadAfter(int addr, Memory.AccessMode mode, Memory.AccessType type);
+  void notifyReadBefore(int addr, Memory.AccessMode mode, Memory.AccessType type);
+  void notifyReadAfter(int addr, Memory.AccessMode mode, Memory.AccessType type);
 
-  public void notifyWriteBefore(int dstAddress, int data, Memory.AccessMode mode);
-  public void notifyWriteAfter(int dstAddress, int data, Memory.AccessMode mode);
+  void notifyWriteBefore(int dstAddress, int data, Memory.AccessMode mode);
+  void notifyWriteAfter(int dstAddress, int data, Memory.AccessMode mode);
 
-  public static class Adapter implements MemoryMonitor {
+  class Adapter implements MemoryMonitor {
 
     @Override
     public void notifyReadBefore(int addr, Memory.AccessMode mode, Memory.AccessType type) {
@@ -66,7 +66,7 @@ public interface MemoryMonitor {
 
   }
 
-  public static class Proxy extends ProxySupport<MemoryMonitor> implements MemoryMonitor {
+  class Proxy extends ProxySupport<MemoryMonitor> implements MemoryMonitor {
       public static final Proxy INSTANCE = new Proxy();
 
       @Override

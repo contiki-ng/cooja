@@ -36,16 +36,16 @@ package se.sics.mspsim.core;
  */
 public interface Loggable {
 
-  public static int SEVERE = 0;
-  public static int WARNING = 1;
-  public static int INFO = 2;
-  public static int DEBUG = 3;
+  int SEVERE = 0;
+  int WARNING = 1;
+  int INFO = 2;
+  int DEBUG = 3;
 
-  public int getLogLevel();
-  public void setLogLevel(int level);
+  int getLogLevel();
+  void setLogLevel(int level);
 
-  public String getID();
-  public String getName();
-  public String info();
+  String getID();
+  String getName();
+  String info();
 
 }

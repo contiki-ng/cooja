@@ -42,9 +42,9 @@ package se.sics.mspsim.util;
 
 public interface MultiDataSource {
 
-  public int getModeMax();
+  int getModeMax();
 
-  public double getDoubleValue(int mode);
-  public int getValue(int mode);
+  double getDoubleValue(int mode);
+  int getValue(int mode);
 
 }

@@ -42,5 +42,5 @@
 package se.sics.mspsim.core;
 
 public interface PortListener {
-  public void portWrite(IOPort source, int data);
+  void portWrite(IOPort source, int data);
 }

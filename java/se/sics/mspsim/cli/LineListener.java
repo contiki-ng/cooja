@@ -46,6 +46,6 @@ package se.sics.mspsim.cli;
  */
 public interface LineListener {
 
-  public void lineRead(String line);
+  void lineRead(String line);
 
 }

@@ -47,6 +47,6 @@ package se.sics.mspsim.core;
  */
 public interface SimEventListener {
 
-  public void simChanged(SimEvent event);
+  void simChanged(SimEvent event);
 
 }

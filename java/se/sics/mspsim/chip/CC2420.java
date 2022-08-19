@@ -400,7 +400,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private boolean frameRejected = false;
 
   public interface StateListener {
-    public void newState(RadioState state);
+    void newState(RadioState state);
   }
 
   private StateListener stateListener = null;

@@ -35,9 +35,9 @@ import se.sics.mspsim.util.ProxySupport;
 
 public interface ChannelListener {
 
-    public void channelChanged(int channel);
+    void channelChanged(int channel);
 
-    public static class Proxy extends ProxySupport<ChannelListener> implements ChannelListener {
+    class Proxy extends ProxySupport<ChannelListener> implements ChannelListener {
         public static final Proxy INSTANCE = new Proxy();
 
         @Override

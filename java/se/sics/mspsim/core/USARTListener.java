@@ -40,10 +40,10 @@ import se.sics.mspsim.util.ProxySupport;
 
 public interface USARTListener {
 
-    public static final int RXFLAG_CLEARED = 1;
-    public void dataReceived(USARTSource source, int data);
+    int RXFLAG_CLEARED = 1;
+    void dataReceived(USARTSource source, int data);
 
-    public static class Proxy extends ProxySupport<USARTListener> implements USARTListener {
+    class Proxy extends ProxySupport<USARTListener> implements USARTListener {
         public static final Proxy INSTANCE = new Proxy();
 
         @Override

@@ -4,11 +4,11 @@ package se.sics.mspsim.util;
  * registered (unless it also implements ActiveComponent)
  */
 public interface ServiceComponent {
-  public static enum Status {STARTED, STOPPED, ERROR}
+  enum Status {STARTED, STOPPED, ERROR}
 
-  public String getName();
-  public Status getStatus();
-  public void init(String name, ComponentRegistry registry);
-  public void start();
-  public void stop();
+  String getName();
+  Status getStatus();
+  void init(String name, ComponentRegistry registry);
+  void start();
+  void stop();
 }

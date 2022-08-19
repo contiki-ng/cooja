@@ -31,7 +31,7 @@ package se.sics.mspsim.extutil.highlight;
  *
  */
 public interface TokenTypes {
-  public static final int UNRECOGNIZED = 0, WHITESPACE = 1, WORD = 2,
+  int UNRECOGNIZED = 0, WHITESPACE = 1, WORD = 2,
       NUMBER = 3, PUNCTUATION = 4, COMMENT = 5, START_COMMENT = 6,
       MID_COMMENT = 7, END_COMMENT = 8, TAG = 9, END_TAG = 10, KEYWORD = 11,
       KEYWORD2 = 12, IDENTIFIER = 13, LITERAL = 14, STRING = 15,
@@ -42,7 +42,7 @@ public interface TokenTypes {
    * The names of the token types, indexed by type, are provided for descriptive
    * purposes.
    */
-  public static final String[] typeNames = {
+  String[] typeNames = {
     "bad token", "whitespace", "word", "number", "punctuation", "comment",
     "start of comment", "middle of comment", "end of comment", "tag",
     "end tag", "keyword", "keyword 2", "identifier", "literal", "string",

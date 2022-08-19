@@ -45,6 +45,6 @@ import se.sics.mspsim.util.ComponentRegistry;
 
 public interface CommandBundle {
 
-  public void setupCommands(ComponentRegistry registry, CommandHandler handler);
+  void setupCommands(ComponentRegistry registry, CommandHandler handler);
 
 }

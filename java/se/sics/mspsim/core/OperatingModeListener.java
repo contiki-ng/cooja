@@ -45,5 +45,5 @@ package se.sics.mspsim.core;
  *
  */
 public interface OperatingModeListener {
-  public void modeChanged(Chip source, int mode);
+  void modeChanged(Chip source, int mode);
 }

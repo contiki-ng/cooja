@@ -31,8 +31,8 @@ package se.sics.mspsim.chip;
 
 public interface SPIData {
 
-    public int getSPIData(int offset);
-    public int getSPIDataLen();
-    public void outputSPI(int data);
+    int getSPIData(int offset);
+    int getSPIDataLen();
+    void outputSPI(int data);
 
 }

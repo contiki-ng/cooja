@@ -43,7 +43,7 @@ package se.sics.mspsim.util;
 
 public class MapEntry {
 
-  public static enum TYPE {function, variable, module}
+  public enum TYPE {function, variable, module}
 
   private final TYPE type;
   private final int address;

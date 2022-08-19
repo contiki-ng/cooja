@@ -136,7 +136,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
         public static final int CC1101_PKTSTATUS_CS_BIT = (1 << 6);
         public static final int CC1101_PKTSTATUS_CCA_BIT = (1 << 4);
 
-        public static enum CC1101RadioState {
+        public enum CC1101RadioState {
                 CC1101_STATE_SLEEP(0x00)/* 0 */,
                 CC1101_STATE_IDLE(0x01),
                 CC1101_STATE_XOFF(0x02),
@@ -638,7 +638,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
         }
 
         public interface GDOListener {
-          public void event(PinState state);
+          void event(PinState state);
         }
         private GDOListener gdo0Listener = null;
         public void setGDO0Listener(GDOListener l) {
@@ -678,13 +678,13 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 return state;
         }
         public interface StateListener {
-                public void newState(CC1101RadioState state);
+                void newState(CC1101RadioState state);
         }
         public void setStateListener(StateListener listener) {
                 stateListener = listener;
         }
   public interface ReceiverListener {
-    public void newState(boolean on);
+    void newState(boolean on);
   }
   public void setReceiverListener(ReceiverListener listener) {
     receiverListener = listener;

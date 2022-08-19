@@ -36,6 +36,6 @@
 package se.sics.mspsim.util;
 
 public interface DataSource {
-  public double getDoubleValue();
-  public int getValue();
+  double getDoubleValue();
+  int getValue();
 }
