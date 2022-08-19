@@ -2665,6 +2665,16 @@ public class Cooja extends Observable {
    * Load external tools settings from default file.
    */
   public static void loadExternalToolsDefaultSettings() {
+    Properties settings = new Properties();
+    try (var in = Cooja.class.getResourceAsStream(EXTERNAL_TOOLS_SETTINGS_FILENAME)) {
+      if (in == null) {
+        throw new FileNotFoundException(EXTERNAL_TOOLS_SETTINGS_FILENAME + " not found");
+      }
+      settings.load(in);
+    } catch (IOException e) {
+      logger.warn("Error reading " + EXTERNAL_TOOLS_SETTINGS_FILENAME);
+    }
+
     String osName = System.getProperty("os.name").toLowerCase();
     String osArch = System.getProperty("os.arch").toLowerCase();
 
@@ -2686,21 +2696,11 @@ public class Cooja extends Observable {
       filename = Cooja.EXTERNAL_TOOLS_LINUX_SETTINGS_FILENAME;
     }
 
-    try {
-      InputStream in = Cooja.class.getResourceAsStream(EXTERNAL_TOOLS_SETTINGS_FILENAME);
-      if (in == null) {
-        throw new FileNotFoundException(filename + " not found");
-      }
-      Properties settings = new Properties();
-      settings.load(in);
-      in.close();
-
-      in = Cooja.class.getResourceAsStream(filename);
+    try (var in = Cooja.class.getResourceAsStream(filename)) {
       if (in == null) {
         throw new FileNotFoundException(filename + " not found");
       }
       settings.load(in);
-      in.close();
 
       currentExternalToolsSettings = settings;
       defaultExternalToolsSettings = (Properties) currentExternalToolsSettings.clone();
