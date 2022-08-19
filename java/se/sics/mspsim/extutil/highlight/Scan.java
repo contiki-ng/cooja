@@ -2,10 +2,13 @@ package se.sics.mspsim.extutil.highlight;
 // Illustrate the use of the scanner by reading in a file and displaying its
 // tokens. Public domain, no restrictions, Ian Holyer, University of Bristol.
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Files;
 
 public class Scan {
   // Get the filename from the command line
@@ -23,7 +26,7 @@ public class Scan {
     File file = new File(filename);
     int len = (int) file.length();
     char[] buffer = new char[len];
-    Reader in = new FileReader(file);
+    Reader in = Files.newBufferedReader(file.toPath(), UTF_8);
     in.read(buffer);
     in.close();
 

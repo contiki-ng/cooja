@@ -40,9 +40,10 @@
  */
 
 package se.sics.mspsim.core;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-
 import se.sics.mspsim.util.MapEntry;
 import se.sics.mspsim.util.MapTable;
 import se.sics.mspsim.util.Utils;
@@ -55,7 +56,7 @@ public class DisAsm implements MSP430Constants {
 
   // Idiots solution to single stepping...
   private BufferedReader input =
-    new BufferedReader(new InputStreamReader(System.in));
+    new BufferedReader(new InputStreamReader(System.in, UTF_8));
 
 
   public void setMap(MapTable m) {

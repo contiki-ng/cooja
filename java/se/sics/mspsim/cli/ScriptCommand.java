@@ -41,11 +41,14 @@
  */
 
 package se.sics.mspsim.cli;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 
 /**
  *
@@ -71,7 +74,7 @@ public class ScriptCommand extends Command {
   @Override
   public int executeCommand(CommandContext context) {
     try {
-      BufferedReader in = new BufferedReader(new FileReader(scriptFile));
+      BufferedReader in = Files.newBufferedReader(scriptFile.toPath(), UTF_8);
       try {
         String line;
         while ((line = in.readLine()) != null) {

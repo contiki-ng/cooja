@@ -40,6 +40,8 @@
  */
 
 package se.sics.mspsim.util;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -64,7 +66,7 @@ public class IHexReader {
       tmpMemory[i] = -1;
     }
     try {
-      BufferedReader bInput = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+      BufferedReader bInput = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8));
       String line;
       boolean terminate = false;
       while ((line = bInput.readLine()) != null && !terminate) {

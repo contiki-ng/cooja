@@ -39,19 +39,21 @@
  */
 
 package se.sics.mspsim.extutil.highlight;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
 import java.util.ArrayList;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-
 import se.sics.mspsim.ui.SourceViewer;
 import se.sics.mspsim.ui.WindowUtils;
 
@@ -135,7 +137,7 @@ public class HighlightSourceViewer implements SourceViewer {
 
           File file = findSourceFile(path, filename);
           if (file != null) {
-            FileReader reader = new FileReader(file);
+            Reader reader = Files.newBufferedReader(file.toPath(), UTF_8);
             try {
               highlighter.read(reader, null);
               // Workaround for bug 4782232 in Java 1.4

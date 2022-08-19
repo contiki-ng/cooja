@@ -39,6 +39,8 @@
  */
 
 package se.sics.mspsim.cli;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +62,7 @@ public class StreamCommandHandler extends CommandHandler implements Runnable {
     super(out, err);
     this.prompt = prompt;
     this.exit = false;
-    this.inReader = new BufferedReader(new InputStreamReader(in));
+    this.inReader = new BufferedReader(new InputStreamReader(in, UTF_8));
     registerCommand("workaround", new BasicCommand("activate workaround for Java console input bug", "") {
       @Override
       public int executeCommand(CommandContext context) {

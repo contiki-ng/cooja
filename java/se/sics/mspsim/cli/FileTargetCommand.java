@@ -1,5 +1,7 @@
 package se.sics.mspsim.cli;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
@@ -31,7 +33,7 @@ public class FileTargetCommand extends BasicLineCommand {
       ft = fileTargets.get(fileName);
       if (ft == null) {
         try {
-          FileWriter writer = new FileWriter(fileName, append);
+          FileWriter writer = new FileWriter(fileName, UTF_8, append);
           ft = new FileTarget(fileTargets, fileName, writer);
         } catch (IOException e) {
           error = e;

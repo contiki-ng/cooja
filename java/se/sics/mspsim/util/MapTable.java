@@ -36,6 +36,8 @@
  */
 
 package se.sics.mspsim.util;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -189,7 +191,7 @@ public class MapTable {
 
   public void loadMap(String file) throws IOException {
     FileInputStream fInput = new FileInputStream(file);
-    BufferedReader bInput = new BufferedReader(new InputStreamReader(fInput));
+    BufferedReader bInput = new BufferedReader(new InputStreamReader(fInput, UTF_8));
     HashMap<String,MapEntry> moduleTable = new HashMap<String,MapEntry>();
     String line;
     while ((line = bInput.readLine()) != null) {

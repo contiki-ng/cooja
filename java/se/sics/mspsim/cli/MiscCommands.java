@@ -39,13 +39,15 @@
  *           $Revision$
  */
 package se.sics.mspsim.cli;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.util.regex.Pattern;
-
 import se.sics.mspsim.chip.RFListener;
 import se.sics.mspsim.chip.RFSource;
 import se.sics.mspsim.core.Chip;
@@ -184,7 +186,7 @@ public class MiscCommands implements CommandBundle {
           context.err.println("could not find the script file '" + context.getArgument(0) + "'.");
           return 1;
         }
-        try (BufferedReader input = new BufferedReader(new FileReader(fp))) {
+        try (BufferedReader input = Files.newBufferedReader(fp.toPath(), UTF_8)) {
           String line;
           while ((line = input.readLine()) != null) {
             if (verbose) context.out.println(line);
