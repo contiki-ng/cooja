@@ -189,12 +189,4 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
-  @Override
-  public Collection<Element> getConfigXML() {
-    return null;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
 }

@@ -121,16 +121,6 @@ public class MspDebugOutput extends Log {
   }
 
   @Override
-  public Collection<Element> getConfigXML() {
-    return null;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-    /* Observed Contiki pointer is hardcoded */
-  }
-
-  @Override
   public JPanel getInterfaceVisualizer() {
     return null;
   }

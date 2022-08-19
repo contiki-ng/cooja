@@ -159,9 +159,13 @@ public abstract class Clock extends MoteInterface {
  
   @Override
   public Collection<Element> getConfigXML() {
+    double deviation = getDeviation();
+    if (deviation == 1.0) {
+      return null;
+    }
     ArrayList<Element> config = new ArrayList<>();
     Element element = new Element("deviation");
-    element.setText(String.valueOf(getDeviation()));
+    element.setText(String.valueOf(deviation));
     config.add(element);
     return config;
   }
@@ -171,6 +175,7 @@ public abstract class Clock extends MoteInterface {
     for (Element element : configXML) {
       if (element.getName().equals("deviation")) {
         setDeviation(Double.parseDouble(element.getText()));
+        break;
       }
     }
   }

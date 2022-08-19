@@ -72,6 +72,7 @@ public abstract class MoteID extends MoteInterface {
     for (Element element : configXML) {
       if (element.getName().equals("id")) {
         setMoteID(Integer.parseInt(element.getText()));
+        break;
       }
     }
   }

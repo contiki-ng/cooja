@@ -3396,7 +3396,7 @@ public class Cooja extends Observable {
       startedPlugin.startPlugin();
 
       /* If Cooja not visualized, ignore window configuration */
-      if (startedPlugin.getCooja() == null || !Cooja.isVisualized()) {
+      if (!Cooja.isVisualized() || startedPlugin.getCooja() == null) {
         continue;
       }
 

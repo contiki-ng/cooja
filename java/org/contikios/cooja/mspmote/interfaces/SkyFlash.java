@@ -147,15 +147,6 @@ public class SkyFlash extends MoteInterface {
     this.deleteObserver(observer);
   }
 
-  @Override
-  public Collection<Element> getConfigXML() {
-    return null;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
-
   public static void writeDialogFileBytes(Component parent, byte[] data) {
     JFileChooser fc = new JFileChooser();
     int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());

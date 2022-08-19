@@ -431,15 +431,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 	}
 
 	@Override
-	public Collection<Element> getConfigXML() {
-		return null;
-	}
-
-	@Override
-	public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-	}
-
-	@Override
 	public boolean isRadioOn() {
 	    return cc1120.isReadyToReceive();
 	}

@@ -124,7 +124,9 @@ public abstract class MoteInterface extends Observable {
    * @see #setConfigXML(Collection, boolean)
    * @return XML elements representing the current interface config
    */
-  public abstract Collection<Element> getConfigXML();
+  public Collection<Element> getConfigXML() {
+    return null;
+  }
 
   /**
    * Sets the current mote interface config depending on the given XML elements.
@@ -135,8 +137,8 @@ public abstract class MoteInterface extends Observable {
    * @param visAvailable
    *          Is this object allowed to show a visualizer?
    */
-  public abstract void setConfigXML(Collection<Element> configXML,
-      boolean visAvailable);
+  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  }
   
   /**
    * Called to free resources used by the mote interface.

@@ -114,13 +114,4 @@ public class ContikiPIR extends PIR implements ContikiMoteInterface {
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
-  @Override
-  public Collection<Element> getConfigXML() {
-    return null;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
-
 }

@@ -65,12 +65,4 @@ public class SkyTemperature extends MoteInterface {
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
-  @Override
-  public Collection<Element> getConfigXML() {
-    return null;
-  }
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
-
 }

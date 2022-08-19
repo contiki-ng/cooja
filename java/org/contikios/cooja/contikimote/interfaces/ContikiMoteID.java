@@ -139,25 +139,4 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
     this.deleteObserver(observer);
   }
 
-  @Override
-  public Collection<Element> getConfigXML() {
-    var config = new ArrayList<Element>();
-
-    // Infinite boolean
-    var element = new Element("id");
-    element.setText(Integer.toString(moteID));
-    config.add(element);
-
-    return config;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-    for (Element element : configXML) {
-      if (element.getName().equals("id")) {
-        setMoteID(Integer.parseInt(element.getText()));
-      }
-    }
-  }
-
 }

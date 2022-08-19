@@ -165,14 +165,4 @@ public class Exp5438LED extends LED {
     this.deleteObserver(observer);
   }
 
-
-  @Override
-  public Collection<Element> getConfigXML() {
-    return null;
-  }
-
-  @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
-
 }
