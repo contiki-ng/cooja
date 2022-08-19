@@ -83,7 +83,7 @@ public class JSONObject extends HashMap<String,Object> implements JSONAware, JSO
     }
 
     @Override
-    public void putAll(Map<? extends String,? extends Object> map) {
+    public void putAll(Map<? extends String,?> map) {
         for (Object v : map.values()) {
             checkForCycles(v);
         }
