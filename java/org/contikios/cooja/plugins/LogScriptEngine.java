@@ -146,6 +146,7 @@ public class LogScriptEngine {
       semSim.acquire();
     } catch (InterruptedException e1) {
       e1.printStackTrace();
+      // FIXME: Something called interrupt() on this thread, computation should stop.
     }
 
     /* ... script is now again waiting for script semaphore ... */
@@ -205,6 +206,7 @@ public class LogScriptEngine {
         scriptThread.join();
       } catch (InterruptedException e) {
         e.printStackTrace();
+        // FIXME: Something called interrupt() on this thread, computation needs to stop.
       }
     }
     scriptThread = null;
@@ -254,6 +256,7 @@ public class LogScriptEngine {
       semaphoreScript.acquire();
     } catch (InterruptedException e) {
       logger.fatal("Error when creating engine: " + e.getMessage(), e);
+      // FIXME: should not proceed after this.
     }
     ThreadGroup group = new ThreadGroup("script") {
       @Override
@@ -306,7 +309,7 @@ public class LogScriptEngine {
       try {
         Thread.sleep(50);
       } catch (InterruptedException e) {
-        // Does not matter, we are waiting.
+        // FIXME: Something called interrupt() on this thread, stop the computation.
       }
     }
 
