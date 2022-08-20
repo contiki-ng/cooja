@@ -413,7 +413,7 @@ public class ContikiMoteType implements MoteType {
 
     SectionParser dataSecParser;
     SectionParser bssSecParser;
-    SectionParser commonSecParser;
+    SectionParser commonSecParser = null;
 
     if (useCommand) {
       /* Parse command output */
@@ -463,10 +463,6 @@ public class ContikiMoteType implements MoteType {
               mapData,
               Cooja.getExternalToolsSetting("MAPFILE_BSS_START"),
               Cooja.getExternalToolsSetting("MAPFILE_BSS_SIZE"));
-      commonSecParser = new MapSectionParser(
-              mapData,
-              Cooja.getExternalToolsSetting("MAPFILE_COMMON_START"),
-              Cooja.getExternalToolsSetting("MAPFILE_COMMON_SIZE"));
     }
 
     /* We first need the value of Contiki's referenceVar, which tells us the
@@ -481,7 +477,9 @@ public class ContikiMoteType implements MoteType {
       VarMemory varMem = new VarMemory(tmp);
       tmp.addMemorySection("tmp.data", dataSecParser.parse(0));
       tmp.addMemorySection("tmp.bss", bssSecParser.parse(0));
-      tmp.addMemorySection("tmp.common", commonSecParser.parse(0));
+      if (commonSecParser != null) {
+        tmp.addMemorySection("tmp.common", commonSecParser.parse(0));
+      }
 
       try {
         long referenceVar = varMem.getVariable("referenceVar").addr;
@@ -504,7 +502,9 @@ public class ContikiMoteType implements MoteType {
 
     initialMemory.addMemorySection("bss", bssSecParser.parse(offset));
 
-    initialMemory.addMemorySection("common", commonSecParser.parse(offset));
+    if (commonSecParser != null) {
+      initialMemory.addMemorySection("common", commonSecParser.parse(offset));
+    }
 
     getCoreMemory(initialMemory);
   }
