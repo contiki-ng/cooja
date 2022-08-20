@@ -19,6 +19,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 7.4.2
+          cache-read-only: false
           arguments: jar
       - name: Test MSPSim
         uses: gradle/gradle-build-action@v2
