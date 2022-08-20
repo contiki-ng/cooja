@@ -2693,7 +2693,7 @@ public class Cooja extends Observable {
         filename = Cooja.EXTERNAL_TOOLS_LINUX_64_SETTINGS_FILENAME;
       }
     } else {
-      filename = Cooja.EXTERNAL_TOOLS_LINUX_SETTINGS_FILENAME;
+      filename = Cooja.EXTERNAL_TOOLS_LINUX_64_SETTINGS_FILENAME;
       logger.warn("Unknown system: " + osName + ", using default: " + filename);
     }
 
