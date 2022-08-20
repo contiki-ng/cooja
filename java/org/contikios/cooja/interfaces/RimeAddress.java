@@ -30,7 +30,6 @@
 
 package org.contikios.cooja.interfaces;
 
-import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -39,7 +38,6 @@ import javax.swing.JPanel;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;

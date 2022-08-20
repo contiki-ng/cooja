@@ -35,7 +35,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Collection;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import org.contikios.cooja.ClassDescription;
@@ -43,7 +42,6 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteTimeEvent;
 import org.contikios.cooja.Simulation;
-import org.jdom.Element;
 
 /**
  * A Button represents a mote button. An implementation should notify all

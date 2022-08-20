@@ -33,7 +33,6 @@ package org.contikios.cooja.mspmote.interfaces;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JPanel;
@@ -43,7 +42,6 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.mspmote.SkyMote;
-import org.jdom.Element;
 
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;

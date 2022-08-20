@@ -31,7 +31,6 @@
 package org.contikios.cooja.interfaces;
 
 import java.awt.BorderLayout;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
@@ -41,7 +40,6 @@ import javax.swing.JTextArea;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;

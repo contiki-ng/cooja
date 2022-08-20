@@ -32,7 +32,6 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -42,7 +41,6 @@ import javax.swing.JPanel;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
 
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.contikimote.ContikiMoteInterface;
