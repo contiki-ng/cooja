@@ -156,6 +156,7 @@ public class LogScriptEngine {
       stopSimulation = false;
     }
     if (quitCooja) {
+      simulation.stopSimulation();
       quitRunnable.run();
       quitCooja = false;
     }
@@ -373,7 +374,6 @@ public class LogScriptEngine {
   private final Runnable quitRunnable = new Runnable() {
     @Override
     public void run() {
-      simulation.stopSimulation();
       new Thread(() -> {
         try { Thread.sleep(500); } catch (InterruptedException e) { }
         simulation.getCooja().doQuit(false, exitCode);
@@ -433,6 +433,7 @@ public class LogScriptEngine {
         simulation.invokeSimulationThread(simulation::stopSimulation);
       } else {
         quitCooja = true;
+        simulation.invokeSimulationThread(simulation::stopSimulation);
         simulation.invokeSimulationThread(quitRunnable);
       }
 
