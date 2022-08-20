@@ -582,6 +582,10 @@ public class ContikiMoteType implements MoteType {
 
     public MapSectionParser(String[] mapFileData, String startRegExp, String sizeRegExp) {
       super(mapFileData);
+      assert startRegExp != null : "Section start regexp must be specified";
+      assert !startRegExp.isEmpty() : "Section start regexp must contain characters";
+      assert sizeRegExp != null : "Section size regexp must be specified";
+      assert !sizeRegExp.isEmpty() : "Section size regexp must contain characters";
       this.startRegExp = startRegExp;
       this.sizeRegExp = sizeRegExp;
     }
@@ -591,24 +595,20 @@ public class ContikiMoteType implements MoteType {
       startAddr = -1;
       size = -1;
       var mapData = getData();
-      if (startRegExp != null && !startRegExp.equals("")) {
-        Pattern varPattern = Pattern.compile(startRegExp);
-        for (var line : mapData) {
-          Matcher varMatcher = varPattern.matcher(line);
-          if (varMatcher.find()) {
-            startAddr = Long.parseUnsignedLong(varMatcher.group(1).trim(), 16);
-            break;
-          }
+      Pattern varPattern = Pattern.compile(startRegExp);
+      for (var line : mapData) {
+        Matcher varMatcher = varPattern.matcher(line);
+        if (varMatcher.find()) {
+          startAddr = Long.parseUnsignedLong(varMatcher.group(1).trim(), 16);
+          break;
         }
       }
-      if (sizeRegExp != null && !sizeRegExp.equals("")) {
-        Pattern sizePattern = Pattern.compile(sizeRegExp);
-        for (var line : mapData) {
-          Matcher sizeMatcher = sizePattern.matcher(line);
-          if (sizeMatcher.find()) {
-            size = (int) Long.parseUnsignedLong(sizeMatcher.group(1).trim(), 16);
-            break;
-          }
+      Pattern sizePattern = Pattern.compile(sizeRegExp);
+      for (var line : mapData) {
+        Matcher sizeMatcher = sizePattern.matcher(line);
+        if (sizeMatcher.find()) {
+          size = (int) Long.parseUnsignedLong(sizeMatcher.group(1).trim(), 16);
+          break;
         }
       }
       return startAddr >= 0 && size > 0;
