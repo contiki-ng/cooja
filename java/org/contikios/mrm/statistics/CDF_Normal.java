@@ -31,10 +31,9 @@ public class CDF_Normal {
 *
 *@param   p    p must lie between 0 and 1.  xnormi returns 
 *              the normal cdf inverse evaluated at p.
-*
-*@author Steve Verrill 
-*@version .5 --- June 7, 1996
-*
+*<p>
+*Author: Steve Verrill
+*Version: .5 --- June 7, 1996
 */
 
 //  FIX: Eventually I should build in a check that p lies in (0,1)
@@ -93,9 +92,8 @@ public class CDF_Normal {
 *
 *@param   z   The method returns the value of the normal
 *             cumulative distribution function at z.
-*
-*@version .5 --- January 10, 2001
-*
+*<p>
+*Version: .5 --- January 10, 2001
 */
 
 
