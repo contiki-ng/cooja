@@ -36,6 +36,7 @@
  */
 
 package se.sics.mspsim.core;
+import java.util.Arrays;
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.util.Utils;
 
@@ -421,7 +422,7 @@ public class Timer extends IOUnit {
     this.srcMap = config.srcMap;
     // noCompare = (srcMap.length / 4) - 1;
     noCompare = config.ccrCount;
-    if (srcMap == TIMER_Ax149) {
+    if (Arrays.equals(srcMap, TIMER_Ax149)) {
       timerOverflow = 0x0a;
     } else {
       timerOverflow = 0x0e;
