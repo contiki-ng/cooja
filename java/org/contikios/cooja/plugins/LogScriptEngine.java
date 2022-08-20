@@ -153,13 +153,13 @@ public class LogScriptEngine {
     /* Check if test script requested us to stop */
     if (stopSimulation) {
       simulation.stopSimulation();
-      stopSimulation = false;
     }
     if (quitCooja) {
       simulation.stopSimulation();
       quitRunnable.run();
-      quitCooja = false;
     }
+    stopSimulation = false;
+    quitCooja = false;
   }
 
   public void setScriptLogObserver(Observer observer) {
