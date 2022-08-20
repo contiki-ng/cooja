@@ -13,7 +13,15 @@ jobs:
         with:
           java-version: 11
           distribution: 'zulu'
+      - name: Verify gradle-wrapper checksum
+        uses: gradle/wrapper-validation-action@v1
       - name: Build Cooja and Documentation
-        run: ant -noinput jar javadoc
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.4.2
+          arguments: jar
       - name: Test MSPSim
-        run: ant test
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.4.2
+          arguments: test
