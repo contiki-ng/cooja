@@ -188,7 +188,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   /* Position where mouse button was pressed */
   Position pressedPos;
 
-  private final Set<Mote> movedMotes = null;
   private static final Cursor MOVE_CURSOR = new Cursor(Cursor.MOVE_CURSOR);
   private final Selection selection;
 
@@ -216,7 +215,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   private Observer moteHighligtObserver = null;
   private final ArrayList<Mote> highlightedMotes = new ArrayList<>();
   private final static Color HIGHLIGHT_COLOR = Color.CYAN;
-  private final static Color MOVE_COLOR = Color.WHITE;
   private Observer moteRelationsObserver = null;
 
   /* Popup menu */
@@ -1278,12 +1276,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       int x = pixelCoord.x;
       int y = pixelCoord.y;
 
-      if (mote == movedMotes) {
-        g.setColor(MOVE_COLOR);
-        g.fillOval(x - MOTE_RADIUS, y - MOTE_RADIUS, 2 * MOTE_RADIUS,
-                   2 * MOTE_RADIUS);
-      }
-      else if (!highlightedMotes.isEmpty() && highlightedMotes.contains(mote)) {
+      if (!highlightedMotes.isEmpty() && highlightedMotes.contains(mote)) {
         g.setColor(HIGHLIGHT_COLOR);
         g.fillOval(x - MOTE_RADIUS, y - MOTE_RADIUS, 2 * MOTE_RADIUS,
                    2 * MOTE_RADIUS);
