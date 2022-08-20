@@ -364,6 +364,7 @@ public class Cooja extends Observable {
   private final ScnObservable moteRelationObservable = new ScnObservable();
 
   private final JTextPane quickHelpTextPane;
+  private final GUIAction showQuickHelpAction;
   private final JScrollPane quickHelpScroll;
   private Properties quickHelpProperties = null; /* quickhelp.txt */
 
@@ -425,6 +426,7 @@ public class Cooja extends Observable {
 
     if (!vis) {
       myDesktopPane = null;
+      showQuickHelpAction = null;
       quickHelpTextPane = null;
       quickHelpScroll = null;
       guiEventHandler = null;
@@ -472,6 +474,25 @@ public class Cooja extends Observable {
     frame = new JFrame(WINDOW_TITLE);
 
     /* Help panel */
+    showQuickHelpAction = new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (!(e.getSource() instanceof JCheckBoxMenuItem)) {
+          return;
+        }
+        boolean show = ((JCheckBoxMenuItem) e.getSource()).isSelected();
+        quickHelpTextPane.setVisible(show);
+        quickHelpScroll.setVisible(show);
+        setExternalToolsSetting("SHOW_QUICKHELP", Boolean.toString(show));
+        frame.getContentPane().revalidate();
+        updateDesktopSize(getDesktopPane());
+      }
+
+      @Override
+      public boolean shouldBeEnabled() {
+        return true;
+      }
+    };
     quickHelpTextPane = new JTextPane();
     quickHelpTextPane.setContentType("text/html");
     quickHelpTextPane.setEditable(false);
@@ -4147,26 +4168,6 @@ public class Cooja extends Observable {
       return getSimulation() != null;
     }
   }
-
-  final GUIAction showQuickHelpAction = new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      if (!(e.getSource() instanceof JCheckBoxMenuItem)) {
-        return;
-      }
-      boolean show = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-      quickHelpTextPane.setVisible(show);
-      quickHelpScroll.setVisible(show);
-      setExternalToolsSetting("SHOW_QUICKHELP", Boolean.toString(show));
-      frame.getContentPane().revalidate();
-      updateDesktopSize(getDesktopPane());
-    }
-
-    @Override
-    public boolean shouldBeEnabled() {
-      return true;
-    }
-  };
 
   private static final class ShutdownHandler extends Thread {
     private final Cooja cooja;
