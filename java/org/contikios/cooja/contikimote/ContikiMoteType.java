@@ -543,26 +543,6 @@ public class ContikiMoteType implements MoteType {
 
     abstract Map<String, Symbol> parseSymbols(long offset);
 
-    protected static long parseFirstHexLong(String regexp, String[] data) {
-      String retString = null;
-      if (regexp != null) {
-        Pattern pattern = Pattern.compile(regexp);
-        for (String line : data) {
-          Matcher matcher = pattern.matcher(line);
-          if (matcher.find()) {
-            retString = matcher.group(1);
-            break;
-          }
-        }
-      }
-
-      if (retString == null || retString.equals("")) {
-        return -1;
-      }
-
-      return Long.parseUnsignedLong(retString.trim(), 16);
-    }
-
     public MemoryInterface parse(long offset) {
       if (!parseStartAddrAndSize()) {
         return null;
@@ -608,16 +588,29 @@ public class ContikiMoteType implements MoteType {
 
     @Override
     protected boolean parseStartAddrAndSize() {
-      if (startRegExp == null || startRegExp.equals("")) {
-        startAddr = -1;
-      } else {
-        startAddr = parseFirstHexLong(startRegExp, getData());
+      startAddr = -1;
+      size = -1;
+      var mapData = getData();
+      if (startRegExp != null && !startRegExp.equals("")) {
+        Pattern varPattern = Pattern.compile(startRegExp);
+        for (var line : mapData) {
+          Matcher varMatcher = varPattern.matcher(line);
+          if (varMatcher.find()) {
+            startAddr = Long.parseUnsignedLong(varMatcher.group(1).trim(), 16);
+            break;
+          }
+        }
       }
-      if (sizeRegExp == null || sizeRegExp.equals("")) {
-        size = -1;
-        return false;
+      if (sizeRegExp != null && !sizeRegExp.equals("")) {
+        Pattern sizePattern = Pattern.compile(sizeRegExp);
+        for (var line : mapData) {
+          Matcher sizeMatcher = sizePattern.matcher(line);
+          if (sizeMatcher.find()) {
+            size = (int) Long.parseUnsignedLong(sizeMatcher.group(1).trim(), 16);
+            break;
+          }
+        }
       }
-      size = (int) parseFirstHexLong(sizeRegExp, getData());
       return startAddr >= 0 && size > 0;
     }
 
@@ -709,10 +702,28 @@ public class ContikiMoteType implements MoteType {
 
     @Override
     protected boolean parseStartAddrAndSize() {
+      // FIXME: Adjust this code to mirror the optimized method in MapSectionParser.
       if (startRegExp == null || startRegExp.equals("")) {
         startAddr = -1;
       } else {
-        startAddr = parseFirstHexLong(startRegExp, getData());
+        long result;
+        String retString = null;
+        Pattern pattern = Pattern.compile(startRegExp);
+        for (String line : getData()) {
+          Matcher matcher = pattern.matcher(line);
+          if (matcher.find()) {
+            retString = matcher.group(1);
+            break;
+          }
+        }
+
+        if (retString == null || retString.equals("")) {
+          result = -1;
+        } else {
+          result = Long.parseUnsignedLong(retString.trim(), 16);
+        }
+
+        startAddr = result;
       }
 
       if (startAddr < 0 || endRegExp == null || endRegExp.equals("")) {
@@ -720,7 +731,23 @@ public class ContikiMoteType implements MoteType {
         return false;
       }
 
-      long end = parseFirstHexLong(endRegExp, getData());
+      long end;
+      String retString = null;
+      Pattern pattern = Pattern.compile(endRegExp);
+      for (String line : getData()) {
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.find()) {
+          retString = matcher.group(1);
+          break;
+        }
+      }
+
+      if (retString == null || retString.equals("")) {
+        end = -1;
+      } else {
+        end = Long.parseUnsignedLong(retString.trim(), 16);
+      }
+
       if (end < 0) {
         size = -1;
         return false;
