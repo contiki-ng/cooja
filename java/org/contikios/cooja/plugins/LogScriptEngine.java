@@ -152,7 +152,7 @@ public class LogScriptEngine {
 
     /* Check if test script requested us to stop */
     if (stopSimulation) {
-      stopSimulationRunnable.run();
+      simulation.stopSimulation();
       stopSimulation = false;
     }
     if (quitCooja) {
@@ -370,12 +370,6 @@ public class LogScriptEngine {
     }
   };
 
-  private final Runnable stopSimulationRunnable = new Runnable() {
-    @Override
-    public void run() {
-      simulation.stopSimulation();
-    }
-  };
   private final Runnable quitRunnable = new Runnable() {
     @Override
     public void run() {
@@ -436,7 +430,12 @@ public class LogScriptEngine {
       if (Cooja.isVisualized()) {
         log("[if test was run without visualization, Cooja would now have been terminated]\n");
         stopSimulation = true;
-        simulation.invokeSimulationThread(stopSimulationRunnable);
+        simulation.invokeSimulationThread(new Runnable() {
+          @Override
+          public void run() {
+            simulation.stopSimulation();
+          }
+        });
       } else {
         quitCooja = true;
         simulation.invokeSimulationThread(quitRunnable);
