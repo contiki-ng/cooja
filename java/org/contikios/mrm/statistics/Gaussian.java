@@ -6,16 +6,16 @@ package org.contikios.mrm.statistics;
 /*************************************************************************
 *  Compilation:  javac Gaussian.java
 *  Execution:    java Gaussian x mu sigma
-*
+* <p>
 *  Function to compute the Gaussian pdf (probability density function)
 *  and the Gaussian cdf (cumulative density function)
-*
+* <p>
 *  % java Gaussian 820 1019 209
 *  0.17050966869132111
-*
+* <p>
 *  % java Gaussian 1500 1019 209
 *  0.9893164837383883
-*
+* <p>
 *  % java Gaussian 1500 1025 231
 *  0.9801220907365489
 *

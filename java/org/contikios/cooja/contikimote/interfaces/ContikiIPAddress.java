@@ -36,7 +36,7 @@ import org.contikios.cooja.interfaces.IPAddress;
 
 /**
  * uIP IP address.
- *
+ * <p>
  * Contiki variables (currently not activated):
  * <ul>
  * <li>char simIP[4], or char simIP[16]

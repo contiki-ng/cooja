@@ -38,7 +38,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 
 /**
  * Button mote interface.
- *
+ * <p>
  * Contiki variables:
  * <ul>
  * <li>char simButtonIsDown (1=down, else up)

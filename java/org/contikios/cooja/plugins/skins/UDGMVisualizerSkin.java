@@ -72,10 +72,10 @@ import org.contikios.cooja.radiomediums.UDGM;
 
 /**
  * Visualizer skin for configuring the Unit Disk Graph radio medium (UDGM).
- *
+ * <p>
  * Allows a user to change the collective TX/interference ranges, and the TX/RX
  * success ratio.
- *
+ * <p>
  * To also see radio traffic, this skin can be combined with {@link
  * TrafficVisualizerSkin}.
  *

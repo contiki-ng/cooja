@@ -47,7 +47,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 
 /**
  * Mote ID interface: 'node_id'.
- *
+ * <p>
  * Contiki variables:
  * <ul>
  * <li>int simMoteID
@@ -55,7 +55,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * </ul>
  *
  * This interface also seeds the Contiki random generator: 'random_init()'.
- *
+ * <p>
  * Core interface:
  * <ul>
  * <li>moteid_interface

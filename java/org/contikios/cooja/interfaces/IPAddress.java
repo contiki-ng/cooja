@@ -320,7 +320,7 @@ public class IPAddress extends MoteInterface {
 
   /**
    * Holds a single IP address.
-   * 
+   * <p>
    * Note: The compressed IP version is already computed in constructor
    */
   public class IPContainer {

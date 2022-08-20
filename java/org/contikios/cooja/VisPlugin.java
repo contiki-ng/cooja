@@ -44,7 +44,7 @@ import org.contikios.cooja.plugins.SimControl;
  * Visualized plugins can extend VisPlugin for basic visualization functionality.
  * VisPlugin extends JInternalFrame, the graphical component used by plugins.
  * VisPlugin implementations may hence directly add buttons to themselves.
- *
+ * <p>
  * Note that plugins of this type can only be started if COOJA is visualized.
  * Hence, these plugins will not be started during nightly Contiki tests.
  *

@@ -46,7 +46,7 @@ import org.contikios.cooja.plugins.VisualizerSkin;
 
 /**
  * Visualizer skin for mote positions.
- *
+ * <p>
  * Paints the three-dimensional mote position on the right-hand side of the mote.
  *
  * @author Fredrik Osterlind

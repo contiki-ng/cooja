@@ -32,7 +32,7 @@ import java.util.Map;
 
 /**
  * A minimal interface to a mote memory.
- * 
+ * <p>
  * Allows reading and writing memory, obtaining symbol information
  * and provides some basic information about size, layout, etc.
  *

@@ -52,7 +52,7 @@ class RayData {
   /**
    * Creates a new ray data instance.
    * A ray can be of the following types:
-   * 
+   * <p>
    *  ORIGIN - starting at source point, line should be null
    *  REFRACTED - ray was refracted at an obstacle, 
    *   source is intersection point with obstacle, line should be null

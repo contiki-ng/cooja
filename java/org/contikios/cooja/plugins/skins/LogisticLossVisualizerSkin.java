@@ -57,7 +57,7 @@ import org.contikios.cooja.radiomediums.LogisticLoss;
 
 /**
  * Visualizer skin for configuring the LogisticLoss radio medium.
- *
+ * <p>
  * To also see radio traffic, this skin can be combined with {@link
  * TrafficVisualizerSkin}.
  *

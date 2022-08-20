@@ -32,7 +32,7 @@ package org.contikios.cooja;
 
 /**
  * Time event associated with a mote.
- * 
+ * <p>
  * Used to automatically delete all time events of a specific mote,
  * when the mote is removed from the simulation.
  * 

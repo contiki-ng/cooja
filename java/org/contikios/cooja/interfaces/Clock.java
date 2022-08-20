@@ -49,7 +49,7 @@ import org.jdom.Element;
 /**
  * Represents a mote's internal clock. Notice that the overall
  * simulation time and the mote's own time may differ.
- *
+ * <p>
  * This observable never notifies.
  *
  * @author Fredrik Osterlind
@@ -79,9 +79,9 @@ public abstract class Clock extends MoteInterface {
   /**
    * The clock drift provides information about the mote's internal time,
    * and can the used to calculate for instance its startup time.
-   * 
+   * <p>
    * The startup time is the negative drift time.
-   * 
+   * <p>
    * The mote internal time can be calculated by:
    * [current simulation time] + [mote drift].
    * 
@@ -94,7 +94,7 @@ public abstract class Clock extends MoteInterface {
   /**
    * The clock deviation is a factor that represents with how much speed the
    * mote progresses through the simulation in relation to the simulation speed.
-   *
+   * <p>
    * A value of 1.0 results in the mote being simulated with the same speed
    * as the simulation. A value of 0.5 results in the mote being simulation
    * at half of the simulation speed.

@@ -40,7 +40,7 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
 
 /**
  * RTC module for the MSP430
- *
+ * <p>
  * TODO: alarm mode not implemented
  *
  * @author Víctor Ariño (victor.arino@tado.com)
@@ -425,7 +425,7 @@ public class RTC extends IOUnit {
 
         /**
          * Parses a calendar input
-         *
+         * <p>
          * This processes the registers written in BCD or hex format
          *
          * @param calField

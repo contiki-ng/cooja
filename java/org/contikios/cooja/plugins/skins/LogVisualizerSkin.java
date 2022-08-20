@@ -48,7 +48,7 @@ import org.contikios.cooja.plugins.VisualizerSkin;
 
 /**
  * Visualizer skin for Log output.
- *
+ * <p>
  * Paints the last log message above each mote.
  *
  * @author Fredrik Osterlind

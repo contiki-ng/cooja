@@ -49,7 +49,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 
 /**
  * LEDs mote interface.
- *
+ * <p>
  * Contiki variables:
  * <ul>
  * <li>char simLedsValue

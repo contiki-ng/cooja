@@ -110,12 +110,12 @@ import org.contikios.mrm.ChannelModel.TxPair;
 
 /**
  * The class AreaViewer belongs to the MRM package.
- *
+ * <p>
  * It is used to visualize available radios, traffic between them as well
  * as the current radio propagation area of single radios.
  * Users may also add background images (such as maps) and color-analyze them
  * in order to add simulated obstacles in the radio medium.
- *
+ * <p>
  * For more information about MRM see MRM.java
  *
  * @see MRM

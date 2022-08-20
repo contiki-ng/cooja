@@ -58,7 +58,7 @@ import org.contikios.cooja.Simulation;
 
 /**
  * Application radio.
- * 
+ * <p>
  * May be used by Java-based mote to implement radio functionality.
  * Supports radio channels and output power functionality.
  * The mote itself should observe the radio for incoming radio packet data.

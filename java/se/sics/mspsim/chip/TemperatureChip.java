@@ -35,7 +35,7 @@ package se.sics.mspsim.chip;
 
 /**
  * Interface for a temperature chip.
- *
+ * <p>
  * Implementing this interface makes it compatible with the cooja-interfaces
  * and hence makes the peripheral implementation way easier
  *

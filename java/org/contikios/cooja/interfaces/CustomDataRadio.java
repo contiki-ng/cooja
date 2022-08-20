@@ -32,7 +32,7 @@ package org.contikios.cooja.interfaces;
 
 /**
  * Custom data radio interface.
- *
+ * <p>
  * A radio may implement custom radio behavior by implementing this interface.
  *
  * @author Fredrik Osterlind

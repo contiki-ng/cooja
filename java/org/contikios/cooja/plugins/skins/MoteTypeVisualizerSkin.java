@@ -43,7 +43,7 @@ import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
 
 /**
  * Mote type visualizer skin.
- * 
+ * <p>
  * Colors motes according to their mote type.
  * Adds a mote menu option to remove all motes of a particular mote type.
  * 

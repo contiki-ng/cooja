@@ -83,10 +83,10 @@ import org.contikios.cooja.interfaces.Position;
 
 /**
  * Abstract configure mote type dialog used by Contiki-based mote type implementations.
- *
+ * <p>
  * The dialog uses tabs for configuring the mote type.
  * Three tabs are provided: compile commands, mote interfaces, and compilation output.
- *
+ * <p>
  * In addition, the dialog implementation can provide additional tabs.
  *
  * @see #tabbedPane
@@ -457,7 +457,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    * Called when user is closing the dialog.
    * Should immediately write mote type specific settings
    * to the current mote type.
-   *
+   * <p>
    * Note that generic mote type settings are already written,
    * such as description, Contiki source, compile commands, and mote interfaces.
    */

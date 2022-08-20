@@ -54,7 +54,7 @@ import se.sics.mspsim.util.DebugInfo;
 
 /**
  * Code visualizer skin for MSPSim motes.
- *
+ * <p>
  * Writes the current code line below each mote.
  *
  * @author Fredrik Osterlind

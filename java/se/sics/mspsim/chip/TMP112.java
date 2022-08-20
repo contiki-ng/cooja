@@ -102,7 +102,7 @@ public class TMP112 extends I2CUnit implements TemperatureChip {
 
         /**
          * Get the raw temperature
-         *
+         * <p>
          * The temperature in the class is stored in a user-friendly way, however the
          * chipset must transmit it in a specific way without resolution conversions.
          * This is done by this function: convert a temperature into the format that

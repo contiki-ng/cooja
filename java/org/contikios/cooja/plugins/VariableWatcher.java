@@ -85,7 +85,7 @@ import org.jdom.Element;
 /**
  * Variable Watcher enables a user to watch mote variables during a simulation.
  * Variables can be read or written either as bytes, integers or byte arrays.
- *
+ * <p>
  * User can also see which variables seem to be available on the selected node.
  *
  * @author Fredrik Osterlind

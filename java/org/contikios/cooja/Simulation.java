@@ -45,7 +45,7 @@ import org.contikios.cooja.dialogs.CreateSimDialog;
 
 /**
  * A simulation consists of a number of motes and mote types.
- *
+ * <p>
  * A simulation is observable:
  * changed simulation state, added or deleted motes etc. are observed.
  * To track mote changes, observe the mote (interfaces) itself.
@@ -194,7 +194,7 @@ public class Simulation extends Observable implements Runnable {
   /**
    * Schedule simulation event for given time.
    * Already scheduled events must be removed before they are rescheduled.
-   *
+   * <p>
    * If the simulation is running, this method may only be called from the simulation thread.
    *
    * @see #invokeSimulationThread(Runnable)

@@ -43,7 +43,7 @@ import org.contikios.cooja.dialogs.MessageList;
  * may differ between different implementations, but typically includes how a
  * mote is initialized, which hardware peripherals each mote has
  * etc. All simulated motes belongs to one mote type.
- *
+ * <p>
  * A mote type may also hold the connection to an underlying simulation
  * framework, such as a compiled Contiki system.
  *
@@ -171,7 +171,7 @@ public interface MoteType {
    * called from the simulator when a new mote type is created. It may simply
    * confirm that all settings are valid and return true, or display a dialog
    * allowing a user to manually configure the mote type.
-   *
+   * <p>
    * This method need normally only be run once per mote type!
    *
    * @param parentContainer

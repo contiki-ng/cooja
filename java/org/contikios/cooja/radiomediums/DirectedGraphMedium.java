@@ -48,10 +48,10 @@ import org.contikios.cooja.interfaces.Radio;
 
 /**
  * Directed Graph Radio Medium.
- * 
+ * <p>
  * Can be used both stand-alone as a radio medium, and 
  * as a basis for other radio medium implementations.
- * 
+ * <p>
  * The stand-alone radio medium supports propagation delays
  * and per-link transmission success ratio/RSSI.
  * 

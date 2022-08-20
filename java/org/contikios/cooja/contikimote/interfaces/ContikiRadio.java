@@ -51,10 +51,10 @@ import org.contikios.cooja.radiomediums.UDGM;
 import org.contikios.cooja.util.CCITT_CRC;
 /**
  * Packet radio transceiver mote interface.
- *
+ * <p>
  * To simulate transmission rates, the underlying Contiki system is
  * locked in TX or RX states using multi-threading library.
- *
+ * <p>
  * Contiki variables:
  * <ul>
  * <li>char simReceiving (1=mote radio is receiving)

@@ -33,9 +33,9 @@ import org.contikios.cooja.mote.memory.MemoryLayout.DataType;
 
 /**
  * Basic routines for memory access with multi-arch support.
- *
+ * <p>
  * Handles endianess, integer size and address size.
- *
+ * <p>
  * Supports padding/aligning.
  *
  * @author Enrico Jorns

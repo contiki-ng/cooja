@@ -50,10 +50,10 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
  * a loaded shared library and JNI.
  * It contains a section mote memory, a mote interface handler and a
  * Contiki mote type.
- *
+ * <p>
  * The mote type is responsible for the connection to the loaded
  * Contiki system.
- *
+ * <p>
  * When ticked a Contiki mote polls all interfaces, copies the mote
  * memory to the core, lets the Contiki system handle one event,
  * fetches the updated memory and finally polls all interfaces again.

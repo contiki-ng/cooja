@@ -64,7 +64,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 
 /**
  * Contiki EEPROM interface
- *
+ * <p>
  * Contiki variables:
  * <ul>
  * <li>char[] simEEPROMData

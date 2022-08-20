@@ -50,7 +50,7 @@ public abstract class RadioMedium {
 
   /**
    * Registers a mote to this medium.
-   *
+   * <p>
    * How radio data will be received from and sent to this mote depends on the
    * medium implementation. Common factors may be random, distance from sending
    * to receiving mote and interference with other radio transmitters in some
@@ -75,7 +75,7 @@ public abstract class RadioMedium {
 
   /**
    * Register a radio to this radio medium.
-   *
+   * <p>
    * Concerning radio data, this radio will be treated the same way as a mote's
    * radio. This method can be used to add non-mote radio devices, such as a
    * packet generator or a sniffer.

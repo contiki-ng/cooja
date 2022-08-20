@@ -147,7 +147,7 @@ public abstract class Radio extends MoteInterface {
    * Interferes with any current reception. If this method is called, the packet
    * will be dropped. This method can be used to simulate radio interference
    * such as high background noise or radio packet collisions.
-   *
+   * <p>
    * When the radio is no longer interfered, the {@link #signalReceptionEnd()}
    * method must be called.
    *

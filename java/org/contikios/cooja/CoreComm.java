@@ -64,7 +64,7 @@ import org.contikios.cooja.dialogs.MessageList;
  * that even if a mote type is deleted, a new one cannot be created using the
  * same corecomm class without restarting the JVM and thus the entire
  * simulation.
- *
+ * <p>
  * Each implemented CoreComm class needs read-access to the following core
  * variables:
  * <ul>
