@@ -430,12 +430,7 @@ public class LogScriptEngine {
       if (Cooja.isVisualized()) {
         log("[if test was run without visualization, Cooja would now have been terminated]\n");
         stopSimulation = true;
-        simulation.invokeSimulationThread(new Runnable() {
-          @Override
-          public void run() {
-            simulation.stopSimulation();
-          }
-        });
+        simulation.invokeSimulationThread(simulation::stopSimulation);
       } else {
         quitCooja = true;
         simulation.invokeSimulationThread(quitRunnable);
