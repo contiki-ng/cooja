@@ -29,7 +29,6 @@
  */
 package org.contikios.cooja.emulatedmote;
 
-import java.util.Collection;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Mote;
@@ -37,7 +36,6 @@ import org.contikios.cooja.RadioPacket;
 import org.contikios.cooja.interfaces.CustomDataRadio;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
-import org.jdom.Element;
 
 /**
  * 802.15.4 radio class for COOJA.

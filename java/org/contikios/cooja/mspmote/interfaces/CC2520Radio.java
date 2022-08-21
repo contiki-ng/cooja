@@ -1,11 +1,8 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import java.util.Collection;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;

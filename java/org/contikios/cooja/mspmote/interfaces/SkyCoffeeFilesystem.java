@@ -37,7 +37,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -50,7 +49,6 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
 
 import org.contikios.coffee.CoffeeFS;
 import org.contikios.coffee.CoffeeFile;

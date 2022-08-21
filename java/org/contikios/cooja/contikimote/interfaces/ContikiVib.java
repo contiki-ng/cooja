@@ -30,10 +30,8 @@
 
 package org.contikios.cooja.contikimote.interfaces;
 
-import java.util.Collection;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import org.jdom.Element;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;

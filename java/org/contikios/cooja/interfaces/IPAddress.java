@@ -31,7 +31,6 @@
 package org.contikios.cooja.interfaces;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -47,7 +46,6 @@ import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor;
 import org.contikios.cooja.mote.memory.MemoryLayout;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.contikios.cooja.util.IPUtils;
-import org.jdom.Element;
 
 /**
  * Read-only interface to IPv6 address.

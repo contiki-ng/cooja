@@ -44,7 +44,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.awt.Color;
 import java.awt.Container;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
