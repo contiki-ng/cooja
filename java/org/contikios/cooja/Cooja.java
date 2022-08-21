@@ -2700,9 +2700,7 @@ public class Cooja extends Observable {
     }
 
     String osName = System.getProperty("os.name").toLowerCase();
-    String osArch = System.getProperty("os.arch").toLowerCase();
-
-    String filename = null;
+    String filename;
     if (osName.startsWith("win")) {
       filename = Cooja.EXTERNAL_TOOLS_WIN32_SETTINGS_FILENAME;
     } else if (osName.startsWith("mac os x")) {
@@ -2711,13 +2709,13 @@ public class Cooja extends Observable {
       filename = Cooja.EXTERNAL_TOOLS_FREEBSD_SETTINGS_FILENAME;
     } else if (osName.startsWith("linux")) {
       filename = Cooja.EXTERNAL_TOOLS_LINUX_SETTINGS_FILENAME;
+      String osArch = System.getProperty("os.arch").toLowerCase();
       if (osArch.startsWith("amd64")) {
         filename = Cooja.EXTERNAL_TOOLS_LINUX_64_SETTINGS_FILENAME;
       }
     } else {
-      logger.warn("Unknown system: " + osName);
-      logger.warn("Using default linux external tools configuration");
-      filename = Cooja.EXTERNAL_TOOLS_LINUX_SETTINGS_FILENAME;
+      filename = Cooja.EXTERNAL_TOOLS_LINUX_64_SETTINGS_FILENAME;
+      logger.warn("Unknown system: " + osName + ", using default: " + filename);
     }
 
     try (var in = Cooja.class.getResourceAsStream(filename)) {
