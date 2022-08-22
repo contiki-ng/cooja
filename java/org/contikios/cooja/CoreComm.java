@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -228,10 +227,7 @@ public abstract class CoreComm {
     }
 
     try {
-      Constructor<?> constr = newCoreCommClass.getConstructor(File.class);
-      CoreComm newCoreComm = (CoreComm) constr
-          .newInstance(new Object[] { libFile });
-
+      CoreComm newCoreComm = (CoreComm) newCoreCommClass.getConstructor(File.class).newInstance(libFile);
       coreCommFiles.add(libFile);
       fileCounter++;
 
