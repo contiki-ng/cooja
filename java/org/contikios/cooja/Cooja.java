@@ -279,7 +279,7 @@ public class Cooja extends Observable {
 
   private static final String[] externalToolsSettingNames = new String[] {
     "PATH_COOJA",
-    "PATH_CONTIKI", "PATH_COOJA_CORE_RELATIVE","PATH_APPS",
+    "PATH_CONTIKI", "PATH_APPS",
     "PATH_APPSEARCH",
     "PATH_CONTIKI_NG_BUILD_DIR",
 
@@ -287,12 +287,6 @@ public class Cooja extends Observable {
     "PATH_SHELL",
     "PATH_C_COMPILER", "COMPILER_ARGS",
     "PATH_JAVAC",
-
-    "CONTIKI_STANDARD_PROCESSES",
-
-    "CMD_GREP_PROCESSES", "REGEXP_PARSE_PROCESSES",
-    "CMD_GREP_INTERFACES", "REGEXP_PARSE_INTERFACES",
-    "CMD_GREP_SENSORS", "REGEXP_PARSE_SENSORS",
 
     "DEFAULT_PROJECTDIRS",
     "CORECOMM_TEMPLATE_FILENAME",
