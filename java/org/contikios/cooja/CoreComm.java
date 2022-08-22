@@ -49,7 +49,7 @@ import org.contikios.cooja.dialogs.MessageList;
 
 
 /**
- * The purpose of corecomm's is communicating with a compiled Contiki system
+ * The purpose of CoreComm is to communicate with a compiled Contiki system
  * using Java Native Interface (JNI). Each implemented class (named
  * Lib[number]), loads a shared library which belongs to one mote type. The
  * reason for this somewhat strange design is that once loaded, a native library
@@ -58,7 +58,7 @@ import org.contikios.cooja.dialogs.MessageList;
  * must have unique names. And those names are defined via the calling class in
  * JNI. For example, the corresponding function for a native tick method in
  * class Lib1 will be named Java_org_contikios_cooja_corecomm_Lib1_tick. When creating
- * a new mote type, the main Contiki source file is generated with function
+ * a new mote type, the main Contiki source file is built with function
  * names compatible with the next available corecomm class. This also implies
  * that even if a mote type is deleted, a new one cannot be created using the
  * same corecomm class without restarting the JVM and thus the entire
