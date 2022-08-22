@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -50,7 +49,7 @@ import org.contikios.cooja.dialogs.MessageList;
 
 
 /**
- * The purpose of corecomm's is communicating with a compiled Contiki system
+ * The purpose of CoreComm is to communicate with a compiled Contiki system
  * using Java Native Interface (JNI). Each implemented class (named
  * Lib[number]), loads a shared library which belongs to one mote type. The
  * reason for this somewhat strange design is that once loaded, a native library
@@ -59,7 +58,7 @@ import org.contikios.cooja.dialogs.MessageList;
  * must have unique names. And those names are defined via the calling class in
  * JNI. For example, the corresponding function for a native tick method in
  * class Lib1 will be named Java_org_contikios_cooja_corecomm_Lib1_tick. When creating
- * a new mote type, the main Contiki source file is generated with function
+ * a new mote type, the main Contiki source file is built with function
  * names compatible with the next available corecomm class. This also implies
  * that even if a mote type is deleted, a new one cannot be created using the
  * same corecomm class without restarting the JVM and thus the entire
@@ -82,10 +81,6 @@ import org.contikios.cooja.dialogs.MessageList;
  * @author Fredrik Osterlind
  */
 public abstract class CoreComm {
-
-  // Static pointers to current libraries
-  private final static ArrayList<CoreComm> coreComms = new ArrayList<>();
-
   private final static ArrayList<File> coreCommFiles = new ArrayList<>();
 
   private static int fileCounter = 1;
@@ -214,9 +209,10 @@ public abstract class CoreComm {
   public static CoreComm createCoreComm(Path tempDir, String className, File libFile)
       throws MoteTypeCreationException {
     generateLibSourceFile(tempDir, className);
-
     compileSourceFile(tempDir, className);
 
+    // Loading a class might leave residue in the JVM so use a new name for the next call.
+    fileCounter++;
     Class<?> newCoreCommClass;
     try (var loader = new URLClassLoader(new URL[]{tempDir.toUri().toURL()},
             CoreComm.class.getClassLoader())) {
@@ -230,14 +226,8 @@ public abstract class CoreComm {
     }
 
     try {
-      Constructor<?> constr = newCoreCommClass.getConstructor(File.class);
-      CoreComm newCoreComm = (CoreComm) constr
-          .newInstance(new Object[] { libFile });
-
-      coreComms.add(newCoreComm);
+      CoreComm newCoreComm = (CoreComm) newCoreCommClass.getConstructor(File.class).newInstance(libFile);
       coreCommFiles.add(libFile);
-      fileCounter++;
-
       return newCoreComm;
     } catch (Exception e) {
       throw new MoteTypeCreationException(
