@@ -413,7 +413,7 @@ public class ContikiMoteType implements MoteType {
 
     SectionParser dataSecParser;
     SectionParser bssSecParser;
-    SectionParser commonSecParser;
+    SectionParser commonSecParser = null;
 
     if (useCommand) {
       /* Parse command output */
@@ -463,10 +463,6 @@ public class ContikiMoteType implements MoteType {
               mapData,
               Cooja.getExternalToolsSetting("MAPFILE_BSS_START"),
               Cooja.getExternalToolsSetting("MAPFILE_BSS_SIZE"));
-      commonSecParser = new MapSectionParser(
-              mapData,
-              Cooja.getExternalToolsSetting("MAPFILE_COMMON_START"),
-              Cooja.getExternalToolsSetting("MAPFILE_COMMON_SIZE"));
     }
 
     /* We first need the value of Contiki's referenceVar, which tells us the
@@ -481,7 +477,9 @@ public class ContikiMoteType implements MoteType {
       VarMemory varMem = new VarMemory(tmp);
       tmp.addMemorySection("tmp.data", dataSecParser.parse(0));
       tmp.addMemorySection("tmp.bss", bssSecParser.parse(0));
-      tmp.addMemorySection("tmp.common", commonSecParser.parse(0));
+      if (commonSecParser != null) {
+        tmp.addMemorySection("tmp.common", commonSecParser.parse(0));
+      }
 
       try {
         long referenceVar = varMem.getVariable("referenceVar").addr;
@@ -504,7 +502,9 @@ public class ContikiMoteType implements MoteType {
 
     initialMemory.addMemorySection("bss", bssSecParser.parse(offset));
 
-    initialMemory.addMemorySection("common", commonSecParser.parse(offset));
+    if (commonSecParser != null) {
+      initialMemory.addMemorySection("common", commonSecParser.parse(offset));
+    }
 
     getCoreMemory(initialMemory);
   }
@@ -542,26 +542,6 @@ public class ContikiMoteType implements MoteType {
     protected abstract boolean parseStartAddrAndSize();
 
     abstract Map<String, Symbol> parseSymbols(long offset);
-
-    protected static long parseFirstHexLong(String regexp, String[] data) {
-      String retString = null;
-      if (regexp != null) {
-        Pattern pattern = Pattern.compile(regexp);
-        for (String line : data) {
-          Matcher matcher = pattern.matcher(line);
-          if (matcher.find()) {
-            retString = matcher.group(1);
-            break;
-          }
-        }
-      }
-
-      if (retString == null || retString.equals("")) {
-        return -1;
-      }
-
-      return Long.parseUnsignedLong(retString.trim(), 16);
-    }
 
     public MemoryInterface parse(long offset) {
       if (!parseStartAddrAndSize()) {
@@ -602,22 +582,34 @@ public class ContikiMoteType implements MoteType {
 
     public MapSectionParser(String[] mapFileData, String startRegExp, String sizeRegExp) {
       super(mapFileData);
+      assert startRegExp != null : "Section start regexp must be specified";
+      assert !startRegExp.isEmpty() : "Section start regexp must contain characters";
+      assert sizeRegExp != null : "Section size regexp must be specified";
+      assert !sizeRegExp.isEmpty() : "Section size regexp must contain characters";
       this.startRegExp = startRegExp;
       this.sizeRegExp = sizeRegExp;
     }
 
     @Override
     protected boolean parseStartAddrAndSize() {
-      if (startRegExp == null || startRegExp.equals("")) {
-        startAddr = -1;
-      } else {
-        startAddr = parseFirstHexLong(startRegExp, getData());
+      startAddr = -1;
+      size = -1;
+      Pattern varPattern = Pattern.compile(startRegExp);
+      Pattern sizePattern = Pattern.compile(sizeRegExp);
+      for (var line : getData()) {
+        Matcher varMatcher = varPattern.matcher(line);
+        if (varMatcher.find()) {
+          startAddr = Long.parseUnsignedLong(varMatcher.group(1).trim(), 16);
+        }
+        // TODO: size is on the same line as the section address in the docker image,
+        //       put the size matcher inside the varMatcher.find() block once this has
+        //       had more testing.
+        Matcher sizeMatcher = sizePattern.matcher(line);
+        if (sizeMatcher.find()) {
+          size = (int) Long.parseUnsignedLong(sizeMatcher.group(1).trim(), 16);
+          break;
+        }
       }
-      if (sizeRegExp == null || sizeRegExp.equals("")) {
-        size = -1;
-        return false;
-      }
-      size = (int) parseFirstHexLong(sizeRegExp, getData());
       return startAddr >= 0 && size > 0;
     }
 
@@ -709,10 +701,28 @@ public class ContikiMoteType implements MoteType {
 
     @Override
     protected boolean parseStartAddrAndSize() {
+      // FIXME: Adjust this code to mirror the optimized method in MapSectionParser.
       if (startRegExp == null || startRegExp.equals("")) {
         startAddr = -1;
       } else {
-        startAddr = parseFirstHexLong(startRegExp, getData());
+        long result;
+        String retString = null;
+        Pattern pattern = Pattern.compile(startRegExp);
+        for (String line : getData()) {
+          Matcher matcher = pattern.matcher(line);
+          if (matcher.find()) {
+            retString = matcher.group(1);
+            break;
+          }
+        }
+
+        if (retString == null || retString.equals("")) {
+          result = -1;
+        } else {
+          result = Long.parseUnsignedLong(retString.trim(), 16);
+        }
+
+        startAddr = result;
       }
 
       if (startAddr < 0 || endRegExp == null || endRegExp.equals("")) {
@@ -720,7 +730,23 @@ public class ContikiMoteType implements MoteType {
         return false;
       }
 
-      long end = parseFirstHexLong(endRegExp, getData());
+      long end;
+      String retString = null;
+      Pattern pattern = Pattern.compile(endRegExp);
+      for (String line : getData()) {
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.find()) {
+          retString = matcher.group(1);
+          break;
+        }
+      }
+
+      if (retString == null || retString.equals("")) {
+        end = -1;
+      } else {
+        end = Long.parseUnsignedLong(retString.trim(), 16);
+      }
+
       if (end < 0) {
         size = -1;
         return false;
