@@ -3046,8 +3046,14 @@ public class Cooja extends Observable {
     try (InputStream in = file.getName().endsWith(".gz")
             ? new GZIPInputStream(new FileInputStream(file)) : new FileInputStream(file)) {
       final var doc = new SAXBuilder().build(in);
+      var root = doc.getRootElement();
+      // Check that config file version is correct
+      if (!root.getName().equals("simconf")) {
+        logger.fatal("Not a valid Cooja simulation config.");
+        return null;
+      }
 
-      sim = loadSimulationConfig(doc.getRootElement(), quick, rewriteCsc, manualRandomSeed);
+      sim = loadSimulationConfig(root, quick, rewriteCsc, manualRandomSeed);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not wellformed", e);
     } catch (IOException e) {
@@ -3063,17 +3069,10 @@ public class Cooja extends Observable {
 
   private Simulation loadSimulationConfig(Element root, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
   throws SimulationCreationException {
-    // Check that config file version is correct
-    if (!root.getName().equals("simconf")) {
-      logger.fatal("Not a valid Cooja simulation config.");
-      return null;
-    }
+    boolean projectsOk = verifyProjects(root);
 
-    Simulation newSim = null;
+    Simulation newSim = new Simulation(this);
     try {
-      /* Verify extension directories */
-      boolean projectsOk = verifyProjects(root.getChildren());
-
       /* GENERATE UNIQUE MOTE TYPE IDENTIFIERS */
 
       /* Locate Contiki mote types in config */
@@ -3129,16 +3128,11 @@ public class Cooja extends Observable {
           }
         }
       }
-      // Create new simulation from config
-      for (var element : root.getChildren("simulation")) {
-        Collection<Element> config = ((Element) element).getChildren();
-        newSim = new Simulation(this);
-        System.gc();
+      System.gc();
 
-        if (!newSim.setConfigXML(config, isVisualized(), quick, manualRandomSeed)) {
-          logger.info("Simulation not loaded");
-          return null;
-        }
+      if (!newSim.setConfigXML((Element) root.getChild("simulation"), isVisualized(), quick, manualRandomSeed)) {
+        logger.info("Simulation not loaded");
+        return null;
       }
 
       // Restart plugins from config
@@ -3155,9 +3149,9 @@ public class Cooja extends Observable {
     }
 
     // Non-GUI Cooja requires a simulation controller, ensure one is started.
-    if (newSim != null && !isVisualized()) {
+    if (!isVisualized()) {
       boolean hasController = false;
-      for (var p : newSim.getCooja().startedPlugins) {
+      for (var p : startedPlugins) {
         int pluginType = p.getClass().getAnnotation(PluginType.class).value();
         if (pluginType == PluginType.SIM_CONTROL_PLUGIN) {
           hasController = true;
@@ -3310,37 +3304,37 @@ public class Cooja extends Observable {
     return config;
   }
 
-  private boolean verifyProjects(Collection<Element> configXML) {
+  /** Verify project extension directories. */
+  private boolean verifyProjects(Element root) {
     boolean allOk = true;
 
     /* Match current extensions against extensions in simulation config */
-    for (final Element pluginElement : configXML.toArray(new Element[0])) {
-      if (pluginElement.getName().equals("project")) {
-        // Skip check for plugins that are Cooja-internal in v4.8.
-        // FIXME: v4.9: remove these special cases.
-        if ("[APPS_DIR]/mrm".equals(pluginElement.getText())) continue;
-        if ("[APPS_DIR]/mspsim".equals(pluginElement.getText())) continue;
-        if ("[APPS_DIR]/powertracker".equals(pluginElement.getText())) continue;
-        if ("[APPS_DIR]/serial_socket".equals(pluginElement.getText())) continue;
-        File projectFile = restorePortablePath(new File(pluginElement.getText()));
-        try {
-          projectFile = projectFile.getCanonicalFile();
-        } catch (IOException e) {
-        }
+    for (var project : root.getChildren("project")) {
+      var pluginElement = (Element)project;
+      // Skip check for plugins that are Cooja-internal in v4.8.
+      // FIXME: v4.9: remove these special cases.
+      if ("[APPS_DIR]/mrm".equals(pluginElement.getText())) continue;
+      if ("[APPS_DIR]/mspsim".equals(pluginElement.getText())) continue;
+      if ("[APPS_DIR]/powertracker".equals(pluginElement.getText())) continue;
+      if ("[APPS_DIR]/serial_socket".equals(pluginElement.getText())) continue;
+      File projectFile = restorePortablePath(new File(pluginElement.getText()));
+      try {
+        projectFile = projectFile.getCanonicalFile();
+      } catch (IOException e) {
+      }
 
-        boolean found = false;
-        for (COOJAProject currentProject: currentProjects) {
-          if (projectFile.getPath().replaceAll("\\\\", "/").
-              equals(currentProject.dir.getPath().replaceAll("\\\\", "/"))) {
-            found = true;
-            break;
-          }
+      boolean found = false;
+      for (COOJAProject currentProject : currentProjects) {
+        if (projectFile.getPath().replaceAll("\\\\", "/").
+                equals(currentProject.dir.getPath().replaceAll("\\\\", "/"))) {
+          found = true;
+          break;
         }
+      }
 
-        if (!found) {
-          logger.warn("Loaded simulation may depend on not found  extension: '" + projectFile + "'");
-          allOk = false;
-        }
+      if (!found) {
+        logger.warn("Loaded simulation may depend on not found extension: '" + projectFile + "'");
+        allOk = false;
       }
     }
 
