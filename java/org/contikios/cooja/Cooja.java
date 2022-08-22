@@ -1741,23 +1741,22 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Same as the {@link #startPlugin(Class, Cooja, Simulation, Mote, boolean, Element)} method,
+   * Same as the {@link #startPlugin(Class, Cooja, Simulation, Mote, Element)} method,
    * but does not throw exceptions. If COOJA is visualised, an error dialog
    * is shown if plugin could not be started.
    *
-   * @see #startPlugin(Class, Cooja, Simulation, Mote, boolean, Element)
+   * @see #startPlugin(Class, Cooja, Simulation, Mote, Element)
    * @param pluginClass Plugin class
    * @param argGUI Plugin GUI argument
    * @param argSimulation Plugin simulation argument
    * @param argMote Plugin mote argument
-   * @param activate Activate plugin
    * @param root XML root element for plugin config
    * @return Started plugin
    */
   private Plugin tryStartPlugin(final Class<? extends Plugin> pluginClass,
-     final Cooja argGUI, final Simulation argSimulation, final Mote argMote, boolean activate, Element root) {
+     final Cooja argGUI, final Simulation argSimulation, final Mote argMote, Element root) {
     try {
-      return startPlugin(pluginClass, argGUI, argSimulation, argMote, activate, root);
+      return startPlugin(pluginClass, argGUI, argSimulation, argMote, root);
     } catch (PluginConstructionException ex) {
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Error when starting plugin", ex, false);
@@ -1779,7 +1778,7 @@ public class Cooja extends Observable {
 
   public Plugin tryStartPlugin(final Class<? extends Plugin> pluginClass,
       final Cooja argGUI, final Simulation argSimulation, final Mote argMote) {
-    return tryStartPlugin(pluginClass, argGUI, argSimulation, argMote, true, null);
+    return tryStartPlugin(pluginClass, argGUI, argSimulation, argMote, null);
   }
 
   /**
@@ -1790,16 +1789,14 @@ public class Cooja extends Observable {
    * @param argGUI Plugin GUI argument
    * @param argSimulation Plugin simulation argument
    * @param argMote Plugin mote argument
-   * @param activate Activate plugin
    * @param root XML root element for plugin config
    * @return Started plugin
    * @throws PluginConstructionException At errors
    */
   private Plugin startPlugin(final Class<? extends Plugin> pluginClass,
-      final Cooja argGUI, final Simulation argSimulation, final Mote argMote, boolean activate, Element root)
+      final Cooja argGUI, final Simulation argSimulation, final Mote argMote, Element root)
   throws PluginConstructionException
   {
-
     // Check that plugin class is registered
     if (!pluginClasses.contains(pluginClass)) {
       throw new PluginConstructionException("Tool class not registered: " + pluginClass);
@@ -1865,16 +1862,14 @@ public class Cooja extends Observable {
       }
     }
 
-    if (activate) {
-      plugin.startPlugin();
-    }
+    plugin.startPlugin();
 
     // Add to active plugins list
     startedPlugins.add(plugin);
     updateGUIComponentState();
 
     // Show plugin if visualizer type
-    if (activate && plugin.getCooja() != null) {
+    if (plugin.getCooja() != null) {
       // If plugin is visualizer plugin, parse visualization arguments
       new RunnableInEDT<Boolean>() {
         @Override
@@ -3441,7 +3436,7 @@ public class Cooja extends Observable {
         }
       }
 
-      tryStartPlugin(pluginClass, this, sim, mote, true, pluginElement);
+      tryStartPlugin(pluginClass, this, sim, mote, pluginElement);
     }
 
     if (!isVisualized()) {
