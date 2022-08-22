@@ -1741,21 +1741,23 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Same as the {@link #startPlugin(Class, Cooja, Simulation, Mote, boolean)} method,
+   * Same as the {@link #startPlugin(Class, Cooja, Simulation, Mote, boolean, Element)} method,
    * but does not throw exceptions. If COOJA is visualised, an error dialog
    * is shown if plugin could not be started.
    *
-   * @see #startPlugin(Class, Cooja, Simulation, Mote, boolean)
+   * @see #startPlugin(Class, Cooja, Simulation, Mote, boolean, Element)
    * @param pluginClass Plugin class
    * @param argGUI Plugin GUI argument
    * @param argSimulation Plugin simulation argument
    * @param argMote Plugin mote argument
+   * @param activate Activate plugin
+   * @param root XML root element for plugin config
    * @return Started plugin
    */
   private Plugin tryStartPlugin(final Class<? extends Plugin> pluginClass,
-      final Cooja argGUI, final Simulation argSimulation, final Mote argMote, boolean activate) {
+     final Cooja argGUI, final Simulation argSimulation, final Mote argMote, boolean activate, Element root) {
     try {
-      return startPlugin(pluginClass, argGUI, argSimulation, argMote, activate);
+      return startPlugin(pluginClass, argGUI, argSimulation, argMote, activate, root);
     } catch (PluginConstructionException ex) {
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Error when starting plugin", ex, false);
@@ -1777,7 +1779,7 @@ public class Cooja extends Observable {
 
   public Plugin tryStartPlugin(final Class<? extends Plugin> pluginClass,
       final Cooja argGUI, final Simulation argSimulation, final Mote argMote) {
-    return tryStartPlugin(pluginClass, argGUI, argSimulation, argMote, true);
+    return tryStartPlugin(pluginClass, argGUI, argSimulation, argMote, true, null);
   }
 
   /**
@@ -1788,11 +1790,13 @@ public class Cooja extends Observable {
    * @param argGUI Plugin GUI argument
    * @param argSimulation Plugin simulation argument
    * @param argMote Plugin mote argument
+   * @param activate Activate plugin
+   * @param root XML root element for plugin config
    * @return Started plugin
    * @throws PluginConstructionException At errors
    */
   private Plugin startPlugin(final Class<? extends Plugin> pluginClass,
-      final Cooja argGUI, final Simulation argSimulation, final Mote argMote, boolean activate)
+      final Cooja argGUI, final Simulation argSimulation, final Mote argMote, boolean activate, Element root)
   throws PluginConstructionException
   {
 
@@ -1855,6 +1859,12 @@ public class Cooja extends Observable {
       throw new PluginConstructionException("Construction error for tool of class: " + pluginClass.getName(), e);
     }
 
+    if (root != null) {
+      for (var cfg : root.getChildren("plugin_config")) {
+        plugin.setConfigXML(((Element)cfg).getChildren(), isVisualized());
+      }
+    }
+
     if (activate) {
       plugin.startPlugin();
     }
@@ -1865,7 +1875,49 @@ public class Cooja extends Observable {
 
     // Show plugin if visualizer type
     if (activate && plugin.getCooja() != null) {
-      cooja.showPlugin(plugin);
+      // If plugin is visualizer plugin, parse visualization arguments
+      new RunnableInEDT<Boolean>() {
+        @Override
+        public Boolean work() {
+          var size = new Dimension(100, 100);
+          var location = new Point(100, 100);
+          for (var cfgElem : (List<Element>)root.getChildren()) {
+            if (cfgElem.getName().equals("width")) {
+              size.width = Integer.parseInt(cfgElem.getText());
+              plugin.getCooja().setSize(size);
+            } else if (cfgElem.getName().equals("height")) {
+              size.height = Integer.parseInt(cfgElem.getText());
+              plugin.getCooja().setSize(size);
+            } else if (cfgElem.getName().equals("z")) {
+              int zOrder = Integer.parseInt(cfgElem.getText());
+              plugin.getCooja().putClientProperty("zorder", zOrder);
+            } else if (cfgElem.getName().equals("location_x")) {
+              location.x = Integer.parseInt(cfgElem.getText());
+              plugin.getCooja().setLocation(location);
+            } else if (cfgElem.getName().equals("location_y")) {
+              location.y = Integer.parseInt(cfgElem.getText());
+              plugin.getCooja().setLocation(location);
+            } else if (cfgElem.getName().equals("minimized")) {
+              boolean minimized = Boolean.parseBoolean(cfgElem.getText());
+              final var pluginGUI = plugin.getCooja();
+              if (minimized && pluginGUI != null) {
+                SwingUtilities.invokeLater(new Runnable() {
+                  @Override
+                  public void run() {
+                    try {
+                      pluginGUI.setIcon(true);
+                    } catch (PropertyVetoException e) {
+                    }
+                  }
+                });
+              }
+            }
+          }
+
+          showPlugin(plugin);
+          return true;
+        }
+      }.invokeAndWait();
     }
 
     return plugin;
@@ -3389,69 +3441,7 @@ public class Cooja extends Observable {
         }
       }
 
-      /* Start plugin */
-      final Plugin startedPlugin = tryStartPlugin(pluginClass, this, sim, mote, false);
-      if (startedPlugin == null) {
-        continue;
-      }
-
-      /* Apply plugin specific configuration */
-      for (var pluginSubElement : pluginElement.getChildren("plugin_config")) {
-        startedPlugin.setConfigXML(((Element)pluginSubElement).getChildren(), isVisualized());
-      }
-
-      /* Activate plugin */
-      startedPlugin.startPlugin();
-
-      /* If Cooja not visualized, ignore window configuration */
-      if (!Cooja.isVisualized() || startedPlugin.getCooja() == null) {
-        continue;
-      }
-
-      // If plugin is visualizer plugin, parse visualization arguments
-      new RunnableInEDT<Boolean>() {
-        @Override
-        public Boolean work() {
-          Dimension size = new Dimension(100, 100);
-          Point location = new Point(100, 100);
-
-          for (Element pluginSubElement : (List<Element>) pluginElement.getChildren()) {
-            if (pluginSubElement.getName().equals("width")) {
-              size.width = Integer.parseInt(pluginSubElement.getText());
-              startedPlugin.getCooja().setSize(size);
-            } else if (pluginSubElement.getName().equals("height")) {
-              size.height = Integer.parseInt(pluginSubElement.getText());
-              startedPlugin.getCooja().setSize(size);
-            } else if (pluginSubElement.getName().equals("z")) {
-              int zOrder = Integer.parseInt(pluginSubElement.getText());
-              startedPlugin.getCooja().putClientProperty("zorder", zOrder);
-            } else if (pluginSubElement.getName().equals("location_x")) {
-              location.x = Integer.parseInt(pluginSubElement.getText());
-              startedPlugin.getCooja().setLocation(location);
-            } else if (pluginSubElement.getName().equals("location_y")) {
-              location.y = Integer.parseInt(pluginSubElement.getText());
-              startedPlugin.getCooja().setLocation(location);
-            } else if (pluginSubElement.getName().equals("minimized")) {
-              boolean minimized = Boolean.parseBoolean(pluginSubElement.getText());
-              final JInternalFrame pluginGUI = startedPlugin.getCooja();
-              if (minimized && pluginGUI != null) {
-                SwingUtilities.invokeLater(new Runnable() {
-                  @Override
-                  public void run() {
-                    try {
-                      pluginGUI.setIcon(true);
-                    } catch (PropertyVetoException e) {
-                    }
-                  }
-                });
-              }
-            }
-          }
-
-          showPlugin(startedPlugin);
-          return true;
-        }
-      }.invokeAndWait();
+      tryStartPlugin(pluginClass, this, sim, mote, true, pluginElement);
     }
 
     if (!isVisualized()) {
