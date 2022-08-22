@@ -3046,8 +3046,14 @@ public class Cooja extends Observable {
     try (InputStream in = file.getName().endsWith(".gz")
             ? new GZIPInputStream(new FileInputStream(file)) : new FileInputStream(file)) {
       final var doc = new SAXBuilder().build(in);
+      var root = doc.getRootElement();
+      // Check that config file version is correct
+      if (!root.getName().equals("simconf")) {
+        logger.fatal("Not a valid Cooja simulation config.");
+        return null;
+      }
 
-      sim = loadSimulationConfig(doc.getRootElement(), quick, rewriteCsc, manualRandomSeed);
+      sim = loadSimulationConfig(root, quick, rewriteCsc, manualRandomSeed);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not wellformed", e);
     } catch (IOException e) {
@@ -3063,12 +3069,6 @@ public class Cooja extends Observable {
 
   private Simulation loadSimulationConfig(Element root, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
   throws SimulationCreationException {
-    // Check that config file version is correct
-    if (!root.getName().equals("simconf")) {
-      logger.fatal("Not a valid Cooja simulation config.");
-      return null;
-    }
-
     Simulation newSim = null;
     try {
       /* Verify extension directories */
