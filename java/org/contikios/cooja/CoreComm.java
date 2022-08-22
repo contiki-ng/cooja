@@ -82,10 +82,6 @@ import org.contikios.cooja.dialogs.MessageList;
  * @author Fredrik Osterlind
  */
 public abstract class CoreComm {
-
-  // Static pointers to current libraries
-  private final static ArrayList<CoreComm> coreComms = new ArrayList<>();
-
   private final static ArrayList<File> coreCommFiles = new ArrayList<>();
 
   private static int fileCounter = 1;
@@ -236,7 +232,6 @@ public abstract class CoreComm {
       CoreComm newCoreComm = (CoreComm) constr
           .newInstance(new Object[] { libFile });
 
-      coreComms.add(newCoreComm);
       coreCommFiles.add(libFile);
       fileCounter++;
 
