@@ -211,9 +211,10 @@ public abstract class CoreComm {
   public static CoreComm createCoreComm(Path tempDir, String className, File libFile)
       throws MoteTypeCreationException {
     generateLibSourceFile(tempDir, className);
-
     compileSourceFile(tempDir, className);
 
+    // Loading a class might leave residue in the JVM so use a new name for the next call.
+    fileCounter++;
     Class<?> newCoreCommClass;
     try (var loader = new URLClassLoader(new URL[]{tempDir.toUri().toURL()},
             CoreComm.class.getClassLoader())) {
@@ -229,8 +230,6 @@ public abstract class CoreComm {
     try {
       CoreComm newCoreComm = (CoreComm) newCoreCommClass.getConstructor(File.class).newInstance(libFile);
       coreCommFiles.add(libFile);
-      fileCounter++;
-
       return newCoreComm;
     } catch (Exception e) {
       throw new MoteTypeCreationException(
