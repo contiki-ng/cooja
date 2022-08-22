@@ -3071,7 +3071,7 @@ public class Cooja extends Observable {
   throws SimulationCreationException {
     boolean projectsOk = verifyProjects(root);
 
-    Simulation newSim = null;
+    Simulation newSim = new Simulation(this);
     try {
       /* GENERATE UNIQUE MOTE TYPE IDENTIFIERS */
 
@@ -3128,15 +3128,11 @@ public class Cooja extends Observable {
           }
         }
       }
-      // Create new simulation from config
-      for (var element : root.getChildren("simulation")) {
-        newSim = new Simulation(this);
-        System.gc();
+      System.gc();
 
-        if (!newSim.setConfigXML((Element)element, isVisualized(), quick, manualRandomSeed)) {
-          logger.info("Simulation not loaded");
-          return null;
-        }
+      if (!newSim.setConfigXML((Element) root.getChild("simulation"), isVisualized(), quick, manualRandomSeed)) {
+        logger.info("Simulation not loaded");
+        return null;
       }
 
       // Restart plugins from config
@@ -3153,9 +3149,9 @@ public class Cooja extends Observable {
     }
 
     // Non-GUI Cooja requires a simulation controller, ensure one is started.
-    if (newSim != null && !isVisualized()) {
+    if (!isVisualized()) {
       boolean hasController = false;
-      for (var p : newSim.getCooja().startedPlugins) {
+      for (var p : startedPlugins) {
         int pluginType = p.getClass().getAnnotation(PluginType.class).value();
         if (pluginType == PluginType.SIM_CONTROL_PLUGIN) {
           hasController = true;
