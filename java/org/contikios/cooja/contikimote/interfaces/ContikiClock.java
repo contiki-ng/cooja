@@ -45,7 +45,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 
 /**
  * Clock mote interface. Controls Contiki time.
- *
+ * <p>
  * Contiki variables:
  * <ul>
  * <li>clock_time_t simCurrentTime

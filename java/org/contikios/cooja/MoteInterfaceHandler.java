@@ -102,7 +102,7 @@ public class MoteInterfaceHandler {
   /**
    * Returns interface of given type. Returns the first interface found that
    * is either of the given class or of a subclass.
-   *
+   * <p>
    * Usage: getInterfaceOfType(Radio.class)
    *
    * @param <N>

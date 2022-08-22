@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
  * The map reader reads the map file with memory map and
  * other information about the binary/firmware to load into the
  * node.
- *
+ * <p>
  * Format of the map file must be:
  * .text WS Adress WS Size WS file
  * WS Adress WS function_name

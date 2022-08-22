@@ -47,7 +47,7 @@ import org.contikios.cooja.plugins.VisualizerSkin;
 
 /**
  * Visualizer skin for LEDs.
- *
+ * <p>
  * Paints three LEDs left to each mote.
  *
  * @author Fredrik Osterlind

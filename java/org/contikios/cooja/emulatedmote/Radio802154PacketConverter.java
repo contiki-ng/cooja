@@ -38,7 +38,7 @@ import org.contikios.cooja.RadioPacket;
 /**
  * Converts radio packets between X-MAC/802.15.4 nodes and COOJA.
  * Handles radio driver specifics such as length header and CRC footer.
- *
+ * <p>
  * TODO: Needs to fix 802.15.4 parsing of packets to really convert them...
  * @author Fredrik Osterlind, Joakim Eriksson
  */

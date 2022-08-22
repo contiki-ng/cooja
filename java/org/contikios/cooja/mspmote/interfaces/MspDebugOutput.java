@@ -48,7 +48,7 @@ import se.sics.mspsim.core.MemoryMonitor;
  * Observes writes to a special (hardcoded) Contiki variable: cooja_debug_ptr.
  * When the pointer is changed, the string that the pointer points to 
  * is outputted as log output from this mote interface.
- * 
+ * <p>
  * Contiki code example:
  *  cooja_debug_ptr = "Almost non-intrusive debug output";
  * or simply:

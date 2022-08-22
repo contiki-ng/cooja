@@ -50,25 +50,25 @@ import org.contikios.cooja.plugins.skins.AttributeVisualizerSkin;
  * MoteAttributes used to store mote attributes for debugging and statistics
  * The interface is write-only: the simulated Contiki has no knowledge of current attributes
  * with other motes. The Contiki application can, however, add and remove attributes.
- *
+ * <p>
  * A Contiki application adds/removes a relation by outputting a simple messages on its log interface,
  * typically via printf()'s of the serial port.
- *
+ * <p>
  * Mote attributes are visualized by {@link AttributeVisualizerSkin}.
- *
+ * <p>
  * Syntax:
  * "<code>#A &lt;Attribute Name&gt;=&lt;Attribute Value&gt;</code>"
  * "<code>#A &lt;Attribute Name&gt;=&lt;Attribute Value&gt;;&lt;Color&gt;</code>"
- *
+ * <p>
  * Example, add an attribute 'sent' with value 41:
  * "#A sent=41"
- *
+ * <p>
  * Example, add an attribute 'sent' with value 41, visualized in red:
  * "#A sent=41;RED"
- *
+ * <p>
  * Example, remove attribute 'sent' (if any):
  * "#A sent"
- *
+ * <p>
  * Special attribute example, visualizes mote in red:
  * "#A color=RED"
  *

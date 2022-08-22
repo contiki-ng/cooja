@@ -53,7 +53,7 @@ import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
 
 /**
  * Visualizer skin for mote addresses.
- *
+ * <p>
  * Paints the address below each mote.
  *
  * @author Fredrik Osterlind

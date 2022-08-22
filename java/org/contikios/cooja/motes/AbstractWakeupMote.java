@@ -71,10 +71,10 @@ public abstract class AbstractWakeupMote implements Mote {
 
   /**
    * Execute mote software as soon as possible.
-   * 
+   * <p>
    * If this method is called from the simulation thread, 
    * the mote software will execute immediately (at the current simulation time).
-   * 
+   * <p>
    * If this method is called from outside the simulation thread, 
    * the mote software will execute as soon as possible.
    */
@@ -102,10 +102,10 @@ public abstract class AbstractWakeupMote implements Mote {
   
   /**
    * Execute mote software at given time, or earlier.
-   * 
+   * <p>
    * If a wakeup is already scheduled earlier than given argument,
    * this request will be ignored.
-   * 
+   * <p>
    * This method must be called from the simulation thread.
    * 
    * @param time Simulation time

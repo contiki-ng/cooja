@@ -38,7 +38,7 @@ import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
  * or deactivated depending on the given argument (e.g. mote). This may for
  * example be used by a mote plugin that only accepts emulated motes, and that
  * consequently should be hidden in other non-emulated motes' plugin menues.
- *
+ * <p>
  * See below code usage examples.
  *
  * @see Cooja#createMotePluginsSubmenu(Mote)

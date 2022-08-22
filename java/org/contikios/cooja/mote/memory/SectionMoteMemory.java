@@ -67,7 +67,7 @@ public class SectionMoteMemory implements MemoryInterface {
 
   /**
    * Adds a section to this memory.
-   * 
+   * <p>
    * A new section will be checked for address overlap with existing sections.
    *
    * @param name

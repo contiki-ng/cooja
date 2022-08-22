@@ -59,10 +59,10 @@ import org.contikios.mrm.statistics.GaussianWrapper;
 /**
  * The channel model object in MRM is responsible for calulating propagation
  * impact on packets being sent in the radio medium.
- *
+ * <p>
  * By registering as a settings observer on this channel model, other parts will
  * be notified if the settings change.
- *
+ * <p>
  * TODO Add better support for different signal strengths
  *
  * @author Fredrik Osterlind
@@ -1678,7 +1678,7 @@ public class ChannelModel {
    * a packet from a transmitter at given source.
    * This method uses current parameters such as transmitted power,
    * obstacles, overall system loss, packet size etc.
-   * 
+   * <p>
    * TODO Packet size
    * TODO External interference/Background noise
    *

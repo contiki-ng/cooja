@@ -49,7 +49,7 @@ import se.sics.mspsim.util.ArgumentManager;
 
 /**
  * Emulation of Telos Mote (old version of Sky Node)
- *
+ * <p>
  * TODO: Cleanup the MoteIVNode, SkyNode and TelosNode
  */
 public class TelosNode extends MoteIVNode {

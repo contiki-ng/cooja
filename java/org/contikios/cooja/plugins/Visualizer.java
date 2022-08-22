@@ -129,9 +129,9 @@ import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
 /**
  * Simulation visualizer supporting different visualizers
  * Motes are painted in the XY-plane, as seen from positive Z axis.
- *
+ * <p>
  * Supports drag-n-drop motes, right-click popup menu, and visualizers
- *
+ * <p>
  * Observes the simulation and all mote positions.
  *
  * @see #registerMoteMenuAction(Class)
@@ -1196,7 +1196,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
   /**
    * Returns all motes at given position.
-   *
+   * <p>
    * If multiple motes were found at a position, the motes are returned
    * in the order they are painted on screen.
    * First mote in array is the bottom mote, last mote is the top mote.

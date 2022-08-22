@@ -33,10 +33,10 @@ package org.contikios.cooja.contikimote;
 /**
  * A Contiki mote interface has information about which, if any, core interfaces
  * it needs.
- *
+ * <p>
  * All classes implementing this interface must define the static method:
  * public static String[] getCoreInterfaceDependencies();
- *
+ * <p>
  * The method should return the names of all needed core interfaces.
  *
  * @author Fredrik Osterlind

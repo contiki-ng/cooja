@@ -41,7 +41,7 @@ import se.sics.mspsim.core.USARTSource;
 
 /**
  * Simple I2C unit
- *
+ * <p>
  * Any class extending this unit can use the i2c protocol by just implementing
  * two methods for reading and writing registers.
  *

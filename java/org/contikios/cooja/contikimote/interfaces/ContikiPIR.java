@@ -40,7 +40,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 
 /**
  * Passive IR sensor mote interface.
- *
+ * <p>
  * Contiki variables:
  * <ul>
  * <li>char simPirChanged (1=changed, else not changed)

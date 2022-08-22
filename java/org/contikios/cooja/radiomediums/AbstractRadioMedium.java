@@ -56,13 +56,13 @@ import org.jdom.Element;
 /**
  * Abstract radio medium provides basic functionality for implementing radio
  * mediums.
- *
+ * <p>
  * The radio medium forwards both radio packets and custom data objects.
- *
+ * <p>
  * The registered radios' signal strengths are updated whenever the radio medium
  * changes. There are three fixed levels: no surrounding traffic heard, noise
  * heard and data heard.
- *
+ * <p>
  * It handles radio registrations, radio loggers, active connections and
  * observes all registered radio interfaces.
  *
@@ -126,7 +126,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	
 	/**
 	 * Creates a new connection from given radio.
-	 *
+	 * <p>
 	 * Determines which radios should receive or be interfered by the transmission.
 	 *
 	 * @param radio Source radio

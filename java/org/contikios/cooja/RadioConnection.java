@@ -40,11 +40,11 @@ import org.contikios.cooja.interfaces.Radio;
 /**
  * A radio connection represents a connection between a single source radio and 
  * any number of destination and interfered radios.
- * 
+ * <p>
  * Note that a destination node may be interfered, and that an interfered radio 
  * does not need to be a destination. Interfered radios may be added during the
  * connection lifetime. 
- * 
+ * <p>
  * Radio medium implementations may differ slightly in how they forward connection data 
  * to destination and interfered radios.
  * Typically, however, all destination radios (including those that are interfered)

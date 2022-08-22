@@ -56,7 +56,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 
 /**
  * Contiki FileSystem (CFS) interface (such as external flash).
- *
+ * <p>
  * Contiki variables:
  * <ul>
  * <li>char[] simCFSData

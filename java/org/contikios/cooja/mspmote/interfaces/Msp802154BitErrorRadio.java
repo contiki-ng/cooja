@@ -44,7 +44,7 @@ import org.contikios.cooja.mspmote.MspMoteTimeEvent;
 
 /**
  * Extension of MSPSim 802.15.4 radio wrapper with bit-level errors.
- *
+ * <p>
  * Only errors due to signal fading are supported (as opposed to errors to interference).
  * Interesting modelling effects can be obtained if this is used together with a dynamic
  * channel fading model.

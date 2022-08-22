@@ -380,7 +380,7 @@ public class ContikiMoteType implements MoteType {
 
   /**
    * For internal use.
-   *
+   * <p>
    * This method creates a core communicator linking a Contiki library and a
    * Java class.
    * It furthermore parses library Contiki memory addresses and creates the

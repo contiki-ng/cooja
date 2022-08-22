@@ -52,7 +52,7 @@ import org.contikios.cooja.mote.memory.MemoryLayout;
 
 /**
  * Abstract application mote.
- *
+ * <p>
  * Simplifies implementation of application level mote types.
  *
  * @author Fredrik Osterlind

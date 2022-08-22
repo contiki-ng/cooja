@@ -218,7 +218,7 @@ public class VarMemory extends Memory {
 
   /**
    * Read pointer from location associated with this variable name.
-   *
+   * <p>
    * The number of bytes actually read depends on the pointer size
    * defined in memory layout.
    *
@@ -332,7 +332,7 @@ public class VarMemory extends Memory {
 
   /**
    * Write pointer value to location associated with this variable name.
-   *
+   * <p>
    * The number of bytes actually written depends on the pointer size
    * defined in memory layout.
    *

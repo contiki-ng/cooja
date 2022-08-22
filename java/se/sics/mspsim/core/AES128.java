@@ -41,7 +41,7 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
 
 /**
  * AES128 msp430 peripheral emulation
- *
+ * <p>
  * TODO:
  *      advanced cipher modes
  *      longer key support
@@ -290,7 +290,7 @@ public class AES128 extends IOUnit {
 
         /**
          * Java implementation of the AES encryption algorithm
-         *
+         * <p>
          * This method encrypts whatever is in inData using key and sets it into
          * outData
          */
@@ -312,7 +312,7 @@ public class AES128 extends IOUnit {
 
         /**
          * Java implementation of the AES decryption algorithm
-         *
+         * <p>
          * This method decrypts whatever is in inData using key and sets it into
          * outData
          */

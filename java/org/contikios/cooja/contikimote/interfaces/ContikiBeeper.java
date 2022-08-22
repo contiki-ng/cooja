@@ -50,7 +50,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 
 /**
  * Beeper mote interface.
- *
+ * <p>
  * Contiki variables:
  * <ul>
  * <li>char simBeeped (1=on, else off)

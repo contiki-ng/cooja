@@ -83,11 +83,11 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
 
 /**
  * ADC12 Plus IO peripheral
- *
+ * <p>
  * This module extends the functionality of the ADC12 by adding one
  * configuration register which controls the power consumption of this
  * peripheral. Additionally, implements several resolutions (8 to 12-bit)
- *
+ * <p>
  * The rest of functionalities are the same as the standard ADC12
  *
  * @author Joakim Eriksson (joakime@sics.se)

@@ -44,46 +44,46 @@ import org.apache.logging.log4j.LogManager;
 /**
  * A project configuration may hold the configuration for one or several project
  * directories as well as a general simulator configuration.
- *
+ * <p>
  * The configuration for a project directory may for example consist of which
  * plugins, interfaces and processes that the specific project directory supplies.
  * Each project directory configuration is read from the property file cooja.config, a
  * file which is required in each project directory.
- *
+ * <p>
  * Values can be fetched as String, Boolean, Integer, Double or String array.
- *
+ * <p>
  * Several configurations can be merged, together forming a final overall
  * configuration. The merge order of configurations matter - later
  * values will overwrite earlier. For example merging two configurations with
  * the key 'SOMEKEY' in the following order:
- *
+ * <p>
  * SOMEKEY = a b c
- *
+ * <p>
  * SOMEKEY = d e
- *
+ * <p>
  * will result in the final value "d e".
- *
+ * <p>
  * If a specific value should be extended instead of overwritten, the value must
  * start with a single space-surrounded '+'. For example, merging two
  * configurations with the key as above in the following order:
- *
+ * <p>
  * SOMEKEY = a b c
- *
+ * <p>
  * SOMEKEY = + d e
- *
+ * <p>
  * will result in the final value "a b c d e".
- *
+ * <p>
  * The simulator will hold a merged project configuration, depending on which
  * project directories are used. Additionally. each mote type may also have a
  * configuration of its own, that differs from the general simulator
  * configuration.
- *
+ * <p>
  * Often, but not necessarily, keys are named depending on which class is
  * associated with the information. For example, let's say a battery interface
  * wants to store its initial capacity (a double) using this approach. Data
  * stored in the external configuration file can look like the following:
  * org.contikios.cooja.interfaces.Battery.initial_capacity 54.123321
- *
+ * <p>
  * This value is then be read by: myMoteTypeConfig.getDoubleValue(Battery.class,
  * "initial_capacity");
  *
@@ -224,7 +224,7 @@ public class ProjectConfig {
    * Loads the given property file and appends it to the current configuration.
    * If a property already exists it will be overwritten, unless the new value
    * begins with a '+' in which case the old value will be extended.
-   *
+   * <p>
    * WARNING! The project directory history will not be saved if this method is
    * called, instead the appendUserPlatform method should be used.
    *
@@ -252,7 +252,7 @@ public class ProjectConfig {
    * configuration. If a property already exists it will be overwritten, unless
    * the new value begins with a '+' in which case the old value will be
    * extended.
-   *
+   * <p>
    * WARNING! The project directory history will not be saved if this method is
    * called, instead the appendUserPlatform method should be used.
    *

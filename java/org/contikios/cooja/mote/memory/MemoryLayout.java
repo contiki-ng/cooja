@@ -131,7 +131,7 @@ public class MemoryLayout {
 
   /**
    * Enable/Disable data alignment.
-   *
+   * <p>
    * Determines whether data alignemnt is used for packing structs.
    * Default is enabled.
    *

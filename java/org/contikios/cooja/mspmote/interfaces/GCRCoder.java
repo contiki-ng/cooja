@@ -126,7 +126,7 @@ public class GCRCoder {
 
   /**
    * Decodes given data. If decoding fails null is returned.
-   *
+   * <p>
    * WARNING! Decoding encoded data may differ from original data due to
    * appended zeroes during encoding.
    *
@@ -172,7 +172,7 @@ public class GCRCoder {
 
   /**
    * Encodes given data. If encoding fails null is returned.
-   *
+   * <p>
    * WARNING! May append data by extra zeroes if needed by GCR.
    *
    * @param data

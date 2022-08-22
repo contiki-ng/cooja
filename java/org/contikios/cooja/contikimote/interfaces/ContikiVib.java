@@ -41,7 +41,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 
 /**
  * Vibration sensor mote interface.
- *
+ * <p>
  * Contiki variables:
  * <ul>
  * <li>char simVibChanged (1=changed, else not changed)

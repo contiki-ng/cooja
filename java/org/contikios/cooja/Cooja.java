@@ -169,7 +169,7 @@ import org.jdom.output.XMLOutputter;
 /**
  * Main file of COOJA Simulator. Typically, contains a visualizer for the
  * simulator, but can also be started without visualizer.
- *
+ * <p>
  * This class loads external Java classes (in extension directories), and handles the
  * COOJA plugins as well as the configuration system. If provides a number of
  * help methods for the rest of the COOJA system, and is the starting point for
@@ -2081,7 +2081,7 @@ public class Cooja extends Observable {
   /**
    * Creates a new mote type of the given mote type class.
    * This may include displaying a dialog for user configurations.
-   *
+   * <p>
    * If mote type is created successfully, the add motes dialog will appear.
    *
    * @param moteTypeClass Mote type class
@@ -3030,7 +3030,7 @@ public class Cooja extends Observable {
 
   /**
    * Loads a simulation configuration from given file.
-   *
+   * <p>
    * When loading Contiki mote types, the libraries must be recompiled. User may
    * change mote type settings at this point.
    *
@@ -3828,7 +3828,7 @@ public class Cooja extends Observable {
    * The portable path is either relative to Contiki, or to the configuration (.csc) file.
    * The config relative path is preferred if the two paths are the same length, otherwise
    * the shorter relative path is preferred.
-   *
+   * <p>
    * If this method fails, it returns the original file.
    *
    * @param file Original file

@@ -50,7 +50,7 @@ import org.contikios.cooja.interfaces.ApplicationRadio;
 /**
  * Simple application-level mote that periodically transmits dummy radio packets
  * on all radio channels (-1), interfering all surrounding radio communication.
- * 
+ * <p>
  * This mote type also implements the mote functionality ("mote software"),
  * and can be used as an example of implementing application-level mote.
  *

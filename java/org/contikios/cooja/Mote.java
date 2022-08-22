@@ -34,7 +34,7 @@ import org.jdom.Element;
 
 /**
  * A simulated mote.
- *
+ * <p>
  * All motes have an interface handler, a mote type and a mote memory.
  *
  * @see org.contikios.cooja.MoteInterfaceHandler
