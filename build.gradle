@@ -61,7 +61,7 @@ jar {
 //  }
 }
 
-task fullJar(type: Jar) {
+tasks.register('fullJar', Jar) {
   archiveClassifier = 'full'
   reproducibleFileOrder = true
   manifest {
