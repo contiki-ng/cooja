@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2007, 2008, Swedish Institute of Computer Science.
  * All rights reserved.
  *
