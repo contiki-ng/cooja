@@ -1506,7 +1506,7 @@ public class BufferListener extends VisPlugin {
           bl,
           mote,
           getPointerAddress(mote),
-          mote.getMemory().getLayout().intSize,
+          mote.getMemory().getLayout().addrSize,
           getSize(mote)
       );
     }
