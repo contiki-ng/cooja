@@ -2081,17 +2081,6 @@ public class Cooja extends Observable {
    * @param moteTypeClass Mote type class
    */
   private void doCreateMoteType(Class<? extends MoteType> moteTypeClass) {
-    doCreateMoteType(moteTypeClass, true);
-  }
-
-  /**
-   * Creates a new mote type of the given mote type class.
-   * This may include displaying a dialog for user configurations.
-   *
-   * @param moteTypeClass Mote type class
-   * @param addMotes Show add motes dialog after successfully adding mote type
-   */
-  private void doCreateMoteType(Class<? extends MoteType> moteTypeClass, boolean addMotes) {
     if (mySimulation == null) {
       logger.fatal("Can't create mote type (no simulation)");
       return;
@@ -2113,11 +2102,7 @@ public class Cooja extends Observable {
       }
       return;
     }
-
-    /* Allow user to immediately add motes */
-    if (addMotes) {
-      doAddMotes(newMoteType);
-    }
+    doAddMotes(newMoteType);
   }
 
   /**
