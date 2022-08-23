@@ -1377,7 +1377,7 @@ public class BufferListener extends VisPlugin {
         mainPanel.add(new JLabel("Size (1-" + MAX_BUFFER_SIZE + "):"));
         mainPanel.add(textSize);
       }
-      if (size != null) {
+      if (offset != null) {
         textOffset.setText(offset);
         mainPanel.add(new JLabel("Offset"));
         mainPanel.add(textOffset);
