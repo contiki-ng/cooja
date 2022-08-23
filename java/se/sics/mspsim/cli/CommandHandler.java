@@ -19,7 +19,7 @@ public class CommandHandler implements ActiveComponent, LineListener {
   protected final PrintStream err;
   private MapTable mapTable;
   private ComponentRegistry registry;
-  private ArrayList<CommandContext[]> currentAsyncCommands = new ArrayList<CommandContext[]>();
+  private final ArrayList<CommandContext[]> currentAsyncCommands = new ArrayList<>();
   private int pidCounter = 0;
 
   public CommandHandler(PrintStream out, PrintStream err) {

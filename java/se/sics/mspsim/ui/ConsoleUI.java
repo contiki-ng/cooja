@@ -96,7 +96,7 @@ public class ConsoleUI extends JComponent {
   /* size of lines */
   int lineWidth = 40;
 
-  private ArrayDeque<String> commands = new ArrayDeque<String>();
+  private final ArrayDeque<String> commands = new ArrayDeque<>();
 
   private int len = 0;
   private int back = 0;

@@ -75,7 +75,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
   private int historyCount = 0;
   private String text = "*** Serial mon for MSPsim ***\n";
 
-  private ArrayDeque<String> sendQueue = new ArrayDeque<String>(8);
+  private final ArrayDeque<String> sendQueue = new ArrayDeque<>(8);
   private int sendIndex;
 
   private int lines = 1;
