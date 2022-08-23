@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010, Swedish Institute of Computer Science.
  * All rights reserved.
  *
@@ -132,7 +132,7 @@ public class StabFile {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("File: " + path + file + " starts at: " + startAddress + "\n");
+        sb.append("File: ").append(path).append(file).append(" starts at: ").append(startAddress).append("\n");
         for (int i = 0; i < functions.size(); i++) {
             sb.append("  ").append(functions.get(i)).append("\n");
         }

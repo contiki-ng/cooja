@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2007, Swedish Institute of Computer Science.
  * All rights reserved.
  *
@@ -83,7 +83,7 @@ public class WindowCommands implements CommandBundle {
                 if (list || windowName == null) {
                     Target[] tgts;
                     synchronized (windowTargets) {
-                        tgts = windowTargets.values().toArray(new Target[windowTargets.size()]);
+                        tgts = windowTargets.values().toArray(new Target[0]);
                     }
                     if (tgts.length == 0) {
                         context.out.println("There are no open windows.");

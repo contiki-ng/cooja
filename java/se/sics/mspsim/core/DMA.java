@@ -258,7 +258,7 @@ public class DMA extends IOUnit {
     @Override
     public String info() {
         StringBuilder sb = new StringBuilder();
-        sb.append("  DMACTL0: 0x" + Utils.hex16(dmactl0) + "  DMACTL1: 0x" + Utils.hex16(dmactl1));
+        sb.append("  DMACTL0: 0x").append(Utils.hex16(dmactl0)).append("  DMACTL1: 0x").append(Utils.hex16(dmactl1));
         for (Channel c : channels) {
             sb.append("\n  ").append(c.info());
         }

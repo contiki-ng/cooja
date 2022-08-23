@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2007, 2008, 2009, Swedish Institute of Computer Science.
  * All rights reserved.
  *
@@ -361,7 +361,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   }
 
   public Chip[] getChips() {
-      return chips.toArray(new Chip[chips.size()]);
+      return chips.toArray(new Chip[0]);
   }
 
   public <T extends Chip> T[] getChips(Class<T> type) {
@@ -2238,17 +2238,17 @@ public class MSP430Core extends Chip implements MSP430Constants {
   @Override
   public String info() {
       StringBuilder buf = new StringBuilder();
-      buf.append(" Mode: " + getModeName(getMode())
-              + "  ACLK: " + aclkFrq + " Hz  SMCLK: " + smclkFrq + " Hz\n"
-              + " Cycles: " + cycles + "  CPU Cycles: " + cpuCycles
-              + "  Time: " + (long)getTimeMillis() + " msec\n");
-      buf.append(" Interrupt enabled: " + interruptsEnabled +  " HighestInterrupt: " + interruptMax);
+      buf.append(" Mode: ").append(getModeName(getMode()))
+         .append("  ACLK: ").append(aclkFrq).append(" Hz  SMCLK: ").append(smclkFrq).append(" Hz\n")
+         .append(" Cycles: ").append(cycles).append("  CPU Cycles: ").append(cpuCycles)
+         .append("  Time: ").append((long)getTimeMillis()).append(" msec\n");
+      buf.append(" Interrupt enabled: ").append(interruptsEnabled).append(" HighestInterrupt: ").append(interruptMax);
       for (int i = 0; i < MAX_INTERRUPT; i++) {
           int value = currentSegment.get(0xfffe - i * 2, AccessMode.WORD);
           if (value != 0xffff) {
-              buf.append(" Vector " + (MAX_INTERRUPT - i) + " at $"
-                      + Utils.hex16(0xfffe - i * 2) + " -> $"
-                      + Utils.hex16(value) + "\n");
+              buf.append(" Vector ").append(MAX_INTERRUPT - i).append(" at $")
+                 .append(Utils.hex16(0xfffe - i * 2)).append(" -> $")
+                 .append(Utils.hex16(value)).append("\n");
           }
       }
       return buf.toString();

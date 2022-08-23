@@ -197,7 +197,7 @@ public class CommandHandler implements ActiveComponent, LineListener {
       public int executeCommand(CommandContext context) {
         if (context.getArgumentCount() == 0) {
           context.out.println("Available commands:");
-          String[] names = commands.keySet().toArray(new String[commands.size()]);
+          String[] names = commands.keySet().toArray(new String[0]);
           Arrays.sort(names);
           for(String name : names) {
             Command command = commands.get(name);

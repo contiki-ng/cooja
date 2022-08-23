@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2012 Swedish Institute of Computer Science.
  * All rights reserved.
  *
@@ -138,7 +138,7 @@ public class SPICommand {
         this.mask = mask;
         this.bitCount = bitCount;
         this.commandLen = commandLen;
-        this.bitFields = bitFields.toArray(new BitField[bitFields.size()]);
+        this.bitFields = bitFields.toArray(new BitField[0]);
     }
 
     /* return -1 if no match */

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2008, Swedish Institute of Computer Science.
  * All rights reserved.
  *
@@ -162,7 +162,7 @@ public class ConfigManager {
       return new String[0];
     }
     synchronized (properties) {
-      return properties.keySet().toArray(new String[properties.size()]);
+      return properties.keySet().toArray(new String[0]);
     }
   }
 

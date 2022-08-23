@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2008, Swedish Institute of Computer Science.
  * All rights reserved.
  *
@@ -108,7 +108,7 @@ public class ArgumentManager extends ConfigManager {
         list.add(args[i]);
       }
     }
-    this.arguments = list.toArray(new String[list.size()]);
+    this.arguments = list.toArray(new String[0]);
     for (int i = 0, n = config.size(); i < n; i += 2) {
       setProperty(config.get(i), config.get(i + 1));
     }

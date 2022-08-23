@@ -418,7 +418,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
                 throw new RuntimeException("Could not load class: " + destClassName);
               }
               try {
-                dest = destClass.newInstance();
+                dest = destClass.getDeclaredConstructor().newInstance();
                 @SuppressWarnings("unchecked")
 				List<Element> children = edgeElement.getChildren();
 				dest.setConfigXML(children, simulation);

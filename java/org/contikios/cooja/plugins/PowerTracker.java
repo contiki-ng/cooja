@@ -297,12 +297,12 @@ public class PowerTracker implements Plugin {
       duration += mt.duration;
     }
     if (radioHW) {
-      sb.append(String.format("AVG" + " ON " + (radioOn + " us ") + "%2.2f %%", 100.0*radioOn/duration) + "\n");
+      sb.append(String.format("AVG" + " ON " + (radioOn + " us ") + "%2.2f %%", 100.0 * radioOn / duration)).append("\n");
     }
     if (radioRXTX) {
-      sb.append(String.format("AVG" + " TX " + (radioTx + " us ") + "%2.2f %%", 100.0*radioTx/duration) + "\n");
-      sb.append(String.format("AVG" + " RX " + (radioRx + " us ") + "%2.2f %%", 100.0*radioRx/duration) + "\n");
-      sb.append(String.format("AVG" + " INT " + (radioInterfered + " us ") + "%2.2f %%", 100.0*radioInterfered/duration) + "\n");
+      sb.append(String.format("AVG" + " TX " + (radioTx + " us ") + "%2.2f %%", 100.0 * radioTx / duration)).append("\n");
+      sb.append(String.format("AVG" + " RX " + (radioRx + " us ") + "%2.2f %%", 100.0 * radioRx / duration)).append("\n");
+      sb.append(String.format("AVG" + " INT " + (radioInterfered + " us ") + "%2.2f %%", 100.0 * radioInterfered / duration)).append("\n");
     }
 
     if (onlyAverage) {
@@ -441,14 +441,14 @@ public class PowerTracker implements Plugin {
       StringBuilder sb = new StringBuilder();
       String moteString = mote.toString().replace(' ', '_');
 
-      sb.append(moteString + " MONITORED " + duration + " us\n");
+      sb.append(moteString).append(" MONITORED ").append(duration).append(" us\n");
       if (radioHW) {
-        sb.append(String.format(moteString + " ON " + (radioOn + " us ") + "%2.2f %%", 100.0*getRadioOnRatio()) + "\n");
+        sb.append(String.format(moteString + " ON " + (radioOn + " us ") + "%2.2f %%", 100.0 * getRadioOnRatio())).append("\n");
       }
       if (radioRXTX) {
-        sb.append(String.format(moteString + " TX " + (radioTx + " us ") + "%2.2f %%", 100.0*getRadioTxRatio()) + "\n");
-        sb.append(String.format(moteString + " RX " + (radioRx + " us ") + "%2.2f %%", 100.0*getRadioRxRatio()) + "\n");
-        sb.append(String.format(moteString + " INT " + (radioInterfered + " us ") + "%2.2f %%", 100.0*getRadioInterferedRatio()) + "\n");
+        sb.append(String.format(moteString + " TX " + (radioTx + " us ") + "%2.2f %%", 100.0 * getRadioTxRatio())).append("\n");
+        sb.append(String.format(moteString + " RX " + (radioRx + " us ") + "%2.2f %%", 100.0 * getRadioRxRatio())).append("\n");
+        sb.append(String.format(moteString + " INT " + (radioInterfered + " us ") + "%2.2f %%", 100.0 * getRadioInterferedRatio())).append("\n");
       }
       return sb.toString();
     }

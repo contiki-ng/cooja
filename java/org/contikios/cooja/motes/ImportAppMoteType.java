@@ -198,8 +198,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     }
     File moteClassFile = new File(moteClassName);
     if (moteClassFile.canRead()) {
-      try {
-        TestLoader test = createTestLoader(moteClassFile);
+      try (var test = createTestLoader(moteClassFile)) {
         // Successfully found the class
         moteClassPath = test.getTestClassPath();
         moteClassName = test.getTestClassName();
@@ -225,7 +224,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
         parent = parent.getParentFile()) {
       list.add(parent.toURI().toURL());
     }
-    return new TestLoader(list.toArray(new URL[list.size()]),
+    return new TestLoader(list.toArray(new URL[0]),
         getParentClassLoader(), classFile);
   }
 
