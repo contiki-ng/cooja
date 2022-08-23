@@ -138,7 +138,7 @@ public abstract class Memory {
    * @return long read from address
    */
   public long getLongValueOf(long addr) {
-    return MemoryBuffer.wrap(memIntf.getLayout(), memIntf.getMemorySegment(addr, 4)).getLong();
+    return MemoryBuffer.wrap(memIntf.getLayout(), memIntf.getMemorySegment(addr, 8)).getLong();
   }
 
   /**
@@ -252,7 +252,7 @@ public abstract class Memory {
    * @param value long to write
    */
   public void setLongValueOf(long addr, long value) {
-    memIntf.setMemorySegment(addr, MemoryBuffer.wrap(memIntf.getLayout(), new byte[4]).putLong(value).getBytes());
+    memIntf.setMemorySegment(addr, MemoryBuffer.wrap(memIntf.getLayout(), new byte[8]).putLong(value).getBytes());
   }
 
   /**
