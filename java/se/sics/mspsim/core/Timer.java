@@ -976,10 +976,10 @@ public class Timer extends IOUnit {
   @Override
   public String info() {
       StringBuilder sb = new StringBuilder();
-      sb.append("  Source: " + getSourceName(clockSource) + "  Speed: " + clockSpeed
-              + " Hz  inDiv: " + inputDivider + "  Multiplier: " + cyclesMultiplicator + '\n'
-              + "  Mode: " + modeNames[mode] + "  IEn: " + interruptEnable
-              + "  IFG: " + interruptPending + "  TR: " + updateCounter(cpu.cycles) + '\n');
+      sb.append("  Source: ").append(getSourceName(clockSource)).append("  Speed: ").append(clockSpeed)
+        .append(" Hz  inDiv: ").append(inputDivider).append("  Multiplier: ").append(cyclesMultiplicator).append('\n')
+        .append("  Mode: ").append(modeNames[mode]).append("  IEn: ").append(interruptEnable)
+        .append("  IFG: ").append(interruptPending).append("  TR: ").append(updateCounter(cpu.cycles)).append('\n');
       for (CCR reg : ccr) {
           sb.append("  ").append(reg.info()).append('\n');
       }
