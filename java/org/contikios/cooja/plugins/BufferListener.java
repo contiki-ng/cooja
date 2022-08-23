@@ -52,6 +52,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1345,8 +1346,8 @@ public class BufferListener extends VisPlugin {
   private void setParser(Class<? extends Parser> bpClass) {
     Parser bp = null;
     try {
-      bp = bpClass.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
+      bp = bpClass.getDeclaredConstructor().newInstance();
+    } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
       logger.warn("Could not create buffer parser: " + e.getMessage(), e);
       return;
     }
@@ -1398,8 +1399,8 @@ public class BufferListener extends VisPlugin {
 
   private static Buffer createBufferInstance(Class<? extends Buffer> btClass) {
     try {
-      return btClass.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
+      return btClass.getDeclaredConstructor().newInstance();
+    } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
       logger.warn("Could not create buffer type: " + e.getMessage(), e);
       return null;
     }
