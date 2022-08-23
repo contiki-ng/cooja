@@ -164,7 +164,7 @@ public abstract class CoreComm {
       int b;
       String[] cmd = new String[] {
           Cooja.getExternalToolsSetting("PATH_JAVAC"),
-          "-cp", System.getProperty("java.class.path"),
+          "-cp", System.getProperty("java.class.path"), "--release", "11",
           tempDir + "/org/contikios/cooja/corecomm/" + className + ".java" };
 
       ProcessBuilder pb = new ProcessBuilder(cmd);
