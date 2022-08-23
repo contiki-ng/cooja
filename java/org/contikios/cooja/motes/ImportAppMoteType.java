@@ -198,8 +198,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     }
     File moteClassFile = new File(moteClassName);
     if (moteClassFile.canRead()) {
-      try {
-        TestLoader test = createTestLoader(moteClassFile);
+      try (var test = createTestLoader(moteClassFile)) {
         // Successfully found the class
         moteClassPath = test.getTestClassPath();
         moteClassName = test.getTestClassName();
