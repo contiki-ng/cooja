@@ -342,7 +342,7 @@ public class BufferListener extends VisPlugin {
           BufferAccess ba = logs.get(row);
           return
           "<html><pre>" +
-          "Address: " + (ba.address==0?"null":String.format("%04x\n", ba.address)) +
+          "Address: " + (ba.address==0?"null":String.format("%016x\n", ba.address)) +
           StringUtils.hexDump(ba.mem, 4, 4) +
           "</pre></html>";
         }
