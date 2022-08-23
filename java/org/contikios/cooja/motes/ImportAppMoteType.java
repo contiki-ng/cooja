@@ -225,7 +225,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
         parent = parent.getParentFile()) {
       list.add(parent.toURI().toURL());
     }
-    return new TestLoader(list.toArray(new URL[list.size()]),
+    return new TestLoader(list.toArray(new URL[0]),
         getParentClassLoader(), classFile);
   }
 

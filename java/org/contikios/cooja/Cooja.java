@@ -2912,7 +2912,7 @@ public class Cooja extends Observable {
       }
     }
 
-    URL[] urlsArray = urls.toArray(new URL[urls.size()]);
+    URL[] urlsArray = urls.toArray(new URL[0]);
     return new URLClassLoader(urlsArray, parent);
   }
 
@@ -3788,7 +3788,7 @@ public class Cooja extends Observable {
    * @see #addMoteRelationsObserver(Observer)
    */
   public MoteRelation[] getMoteRelations() {
-    return moteRelations.toArray(new MoteRelation[moteRelations.size()]);
+    return moteRelations.toArray(new MoteRelation[0]);
   }
 
   /**

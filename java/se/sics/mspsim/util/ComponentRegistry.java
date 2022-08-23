@@ -42,7 +42,7 @@ public class ComponentRegistry {
     private boolean running = false;
 
     private synchronized ComponentEntry[] getAllEntries() {
-        return components.toArray(new ComponentEntry[components.size()]);
+        return components.toArray(new ComponentEntry[0]);
     }
 
     public void registerComponent(String name, Object component) {

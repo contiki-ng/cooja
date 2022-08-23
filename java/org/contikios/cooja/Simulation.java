@@ -953,7 +953,7 @@ public class Simulation extends Observable implements Runnable {
    * @return Motes
    */
   public Mote[] getMotesUninit() {
-    return motesUninit.toArray(new Mote[motesUninit.size()]);
+    return motesUninit.toArray(new Mote[0]);
   }
 
 

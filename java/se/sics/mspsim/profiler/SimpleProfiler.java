@@ -291,7 +291,7 @@ public class SimpleProfiler implements Profiler, EventListener {
   public void clearProfile() {
     if (profileData != null) {
       CallEntry[] entries =
-        profileData.values().toArray(new CallEntry[profileData.size()]);
+        profileData.values().toArray(new CallEntry[0]);
       for (int i = 0, n = entries.length; i < n; i++) {
         entries[i].cycles = 0;
         entries[i].calls = 0;
@@ -316,7 +316,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     String profSort = parameters.getProperty(PARAM_SORT_MODE);
     boolean profCallers = parameters.getProperty(PARAM_PROFILE_CALLERS) != null;
     Pattern pattern = null;
-    CallEntry[] entries = profileData.values().toArray(new CallEntry[profileData.size()]);
+    CallEntry[] entries = profileData.values().toArray(new CallEntry[0]);
 
     Arrays.sort(entries, new CallEntryComparator(profSort));
 
@@ -502,7 +502,7 @@ public class SimpleProfiler implements Profiler, EventListener {
   }
 
   public void printTagProfile(PrintStream out) {
-    TagEntry[] entries = tagProfiles.values().toArray(new TagEntry[tagProfiles.size()]);
+    TagEntry[] entries = tagProfiles.values().toArray(new TagEntry[0]);
     Arrays.sort(entries);
     for (TagEntry entry : entries) {
       out.println(entry.tag + "\t" + entry.calls + "\t" + entry.cycles);

@@ -202,7 +202,7 @@ public class CommandParser {
             if (redirectCommand != null) {
               throw new IllegalArgumentException("pipe can not follow redirection");
             }
-            list.add(args.toArray(new String[args.size()]));
+            list.add(args.toArray(new String[0]));
             args.clear();
           }
           break;
@@ -233,7 +233,7 @@ public class CommandParser {
       redirectFilename = args.remove(redirectFile);
     }
     if (args.size() > 0) {
-      list.add(args.toArray(new String[args.size()]));
+      list.add(args.toArray(new String[0]));
     }
     if (redirectCommand != null) {
       list.add(new String[] { redirectCommand, redirectFilename });

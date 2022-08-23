@@ -361,7 +361,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   }
 
   public Chip[] getChips() {
-      return chips.toArray(new Chip[chips.size()]);
+      return chips.toArray(new Chip[0]);
   }
 
   public <T extends Chip> T[] getChips(Class<T> type) {

@@ -215,7 +215,7 @@ public class MapTable {
   }
 
   public MapEntry[] getAllEntries() {
-    return entries.toArray(new MapEntry[entries.size()]);
+    return entries.toArray(new MapEntry[0]);
   }
 
   public MapEntry[] getEntries(String regexp) {
@@ -226,7 +226,7 @@ public class MapTable {
             allEntries.add(entry);
         }
     }
-    return allEntries.toArray(new MapEntry[allEntries.size()]);
+    return allEntries.toArray(new MapEntry[0]);
   }
 
   // Should be any symbol... not just function...

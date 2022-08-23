@@ -42,7 +42,7 @@ public class FileCommands implements CommandBundle {
             FileTarget[] files = null;
             synchronized (fileTargets) {
                 if (fileTargets.size() > 0) {
-                    files = fileTargets.values().toArray(new FileTarget[fileTargets.size()]);
+                    files = fileTargets.values().toArray(new FileTarget[0]);
                 }
             }
             if (files == null) {

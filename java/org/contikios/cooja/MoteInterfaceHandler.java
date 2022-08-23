@@ -288,7 +288,7 @@ public class MoteInterfaceHandler {
           intfs.add((PolledBeforeActiveTicks)intf);
         }
       }
-      polledBeforeActive = intfs.toArray(new PolledBeforeActiveTicks[intfs.size()]);
+      polledBeforeActive = intfs.toArray(new PolledBeforeActiveTicks[0]);
     }
 
     for (PolledBeforeActiveTicks element : polledBeforeActive) {
@@ -307,7 +307,7 @@ public class MoteInterfaceHandler {
           intfs.add((PolledAfterActiveTicks)intf);
         }
       }
-      polledAfterActive = intfs.toArray(new PolledAfterActiveTicks[intfs.size()]);
+      polledAfterActive = intfs.toArray(new PolledAfterActiveTicks[0]);
     }
 
     for (PolledAfterActiveTicks element : polledAfterActive) {
@@ -326,7 +326,7 @@ public class MoteInterfaceHandler {
           intfs.add((PolledBeforeAllTicks)intf);
         }
       }
-      polledBeforeAll = intfs.toArray(new PolledBeforeAllTicks[intfs.size()]);
+      polledBeforeAll = intfs.toArray(new PolledBeforeAllTicks[0]);
     }
 
     for (PolledBeforeAllTicks element : polledBeforeAll) {
@@ -345,7 +345,7 @@ public class MoteInterfaceHandler {
           intfs.add((PolledAfterAllTicks)intf);
         }
       }
-      polledAfterAll = intfs.toArray(new PolledAfterAllTicks[intfs.size()]);
+      polledAfterAll = intfs.toArray(new PolledAfterAllTicks[0]);
     }
 
     for (PolledAfterAllTicks element : polledAfterAll) {
