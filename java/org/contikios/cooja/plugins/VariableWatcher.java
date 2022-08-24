@@ -138,7 +138,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     BYTE("byte", 1),
     SHORT("short", 2),
     INT("int", 2),
-    LONG("long", 4),
+    LONG("long", 8),
     ADDR("address", 8);
 
     final String mRep;
@@ -356,11 +356,11 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     });
     addrInfoPane.add(varAddrCheckBox);
 
-    DefaultFormatterFactory defac = new DefaultFormatterFactory(new ValueFormatter(VarTypes.LONG, VarFormats.HEX));
+    DefaultFormatterFactory defac = new DefaultFormatterFactory(new ValueFormatter(VarTypes.ADDR, VarFormats.HEX));
     varAddressField = new JFormattedTextField(defac);
     varAddressField.setValue(null);
     varAddressField.setEditable(false);
-    varAddressField.setColumns(8);
+    varAddressField.setColumns(18);
     varAddressField.setMaximumSize(varAddressField.getPreferredSize());
     /* Select all text when clicking in text field */
     varAddressField.addFocusListener(new FocusListener() {
@@ -773,7 +773,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     for (int i = 0; i < elements; i++) {
       varValues[i] = new JFormattedTextField(defac);
       varValues[i].setColumns(((VarTypes) varTypeCombo.getSelectedItem()).getBytes() * 2 + 2);
-      varValues[i].setToolTipText(String.format("0x%04x", address + i * typeSize));
+      varValues[i].setToolTipText(String.format("0x%016x", address + (long)i * typeSize));
       linePane.add(varValues[i]);
       /* After 8 Elements, break line */
       if ((i + 1) % 8 == 0) {
