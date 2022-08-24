@@ -69,8 +69,8 @@ public class ArgumentManager extends ConfigManager {
   }
 
   public void handleArguments(String[] args) {
-    ArrayList<String> list = new ArrayList<String>();
-    ArrayList<String> config = new ArrayList<String>();
+    ArrayList<String> list = new ArrayList<>();
+    ArrayList<String> config = new ArrayList<>();
     for (int i = 0, n = args.length; i < n; i++) {
       if ("-".equals(args[i])) {
           // The rest should be considered arguments

@@ -67,8 +67,8 @@ public class CommandParser {
       return null;
     }
 
-    ArrayList<String[]> list = new ArrayList<String[]>();
-    ArrayList<String> args = new ArrayList<String>();
+    ArrayList<String[]> list = new ArrayList<>();
+    ArrayList<String> args = new ArrayList<>();
     StringBuilder sb = null;
     String redirectCommand = null;
     int redirectFile = -1;

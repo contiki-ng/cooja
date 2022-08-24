@@ -87,11 +87,11 @@ public class SimpleProfiler implements Profiler, EventListener {
   private StackMonitor stackMonitor;
 
   public SimpleProfiler() {
-    profileData = new HashMap<MapEntry, CallEntry>();
-    tagProfiles = new HashMap<String, TagEntry>();
-    startTags = new HashMap<String, TagEntry>();
-    endTags = new HashMap<String, TagEntry>();
-    ignoreFunctions = new HashMap<String, String>();
+    profileData = new HashMap<>();
+    tagProfiles = new HashMap<>();
+    startTags = new HashMap<>();
+    endTags = new HashMap<>();
+    ignoreFunctions = new HashMap<>();
     callStack = new CallEntry[64];
     servicedInterrupt = -1;
   }
@@ -365,12 +365,12 @@ public class SimpleProfiler implements Profiler, EventListener {
 
   private void printCallers(CallEntry callEntry, PrintStream out) {
     HashMap<MapEntry,CallCounter> callers = callEntry.callers;
-    List<Entry<MapEntry,CallCounter>> list = new ArrayList<Entry<MapEntry,CallCounter>>(callers.entrySet());
-    Collections.sort(list, new Comparator<Entry<MapEntry,CallCounter>>() {
-        @Override
-        public int compare(Entry<MapEntry,CallCounter> o1, Entry<MapEntry,CallCounter> o2) {
-          return o2.getValue().compareTo(o1.getValue());
-        }
+    List<Entry<MapEntry,CallCounter>> list = new ArrayList<>(callers.entrySet());
+    Collections.sort(list, new Comparator<>() {
+      @Override
+      public int compare(Entry<MapEntry, CallCounter> o1, Entry<MapEntry, CallCounter> o2) {
+        return o2.getValue().compareTo(o1.getValue());
+      }
     });
     for (Entry<MapEntry,CallCounter> entry : list) {
       String functionName = entry.getKey().getName();

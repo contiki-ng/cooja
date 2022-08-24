@@ -77,7 +77,7 @@ public class DebugUI extends JPanel {
     disAsm = cpu.getDisAsm();
 
     listModel = new DbgListModel();
-    disList = new JList<DbgInstruction>(listModel);
+    disList = new JList<>(listModel);
     disList.setFont(new Font("courier", Font.PLAIN, 12));
     disList.setCellRenderer(new MyCellRenderer());
     disList.setPreferredSize(new Dimension(500, 350));

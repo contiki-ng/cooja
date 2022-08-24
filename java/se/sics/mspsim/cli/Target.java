@@ -50,7 +50,7 @@ public abstract class Target {
     private final Hashtable<String,Target> targets;
     private final String name;
     private final boolean autoclose;
-    private ArrayList<CommandContext> contexts = new ArrayList<CommandContext>();
+    private ArrayList<CommandContext> contexts = new ArrayList<>();
 
     public Target(Hashtable<String,Target> targets, String name, boolean autoclose) {
         this.targets = targets;

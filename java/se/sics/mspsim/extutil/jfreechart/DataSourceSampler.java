@@ -18,7 +18,7 @@ public class DataSourceSampler implements ActionListener {
   private MSP430Core cpu;
   private int interval = 100;
   private Timer timer;
-  private ArrayList<TimeSource> sources = new ArrayList<TimeSource>();
+  private ArrayList<TimeSource> sources = new ArrayList<>();
 
   public DataSourceSampler(MSP430Core cpu) {
     this.cpu = cpu;

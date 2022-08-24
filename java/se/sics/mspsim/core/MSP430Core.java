@@ -129,7 +129,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   private EventQueue cycleEventQueue = new EventQueue();
   private long nextCycleEventCycles;
 
-  private ArrayList<Chip> chips = new ArrayList<Chip>();
+  private ArrayList<Chip> chips = new ArrayList<>();
 
   final ComponentRegistry registry;
   Profiler profiler;
@@ -244,7 +244,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
     setModeNames(MODE_NAMES);
     // IOUnits should likely be placed in a hashtable?
     // Maybe for debugging purposes...
-    ioUnits = new ArrayList<IOUnit>();
+    ioUnits = new ArrayList<>();
 
     ioSegment.setIORange(config.flashControllerOffset, Flash.SIZE, flash);
 
@@ -365,7 +365,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   }
 
   public <T extends Chip> T[] getChips(Class<T> type) {
-      ArrayList<T> list = new ArrayList<T>();
+      ArrayList<T> list = new ArrayList<>();
       for(Chip chip : chips) {
           if (type.isInstance(chip)) {
               list.add(type.cast(chip));

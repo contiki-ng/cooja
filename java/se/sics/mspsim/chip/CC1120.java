@@ -319,8 +319,8 @@ public class CC1120 extends Radio802154 implements USARTListener {
 
         private CC1120RadioState state = null;
 
-        protected List<Byte> txfifo = new ArrayList<Byte>();
-        protected List<Byte> rxfifo = new ArrayList<Byte>();
+        protected List<Byte> txfifo = new ArrayList<>();
+        protected List<Byte> rxfifo = new ArrayList<>();
 
         protected int[] registers = new int[64];
         protected int[] extendedRegisters = new int[256];

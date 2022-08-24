@@ -70,9 +70,9 @@ public class MapTable {
   private int bssFill = 0;
   private int dataFill = 0;
 
-  private ArrayList<MapEntry> modules = new ArrayList<MapEntry>();
-  private ArrayList<MapEntry> entries = new ArrayList<MapEntry>();
-  private HashMap<Integer, MapEntry> addressMap = new HashMap<Integer, MapEntry>();
+  private ArrayList<MapEntry> modules = new ArrayList<>();
+  private ArrayList<MapEntry> entries = new ArrayList<>();
+  private HashMap<Integer, MapEntry> addressMap = new HashMap<>();
 
   public MapTable() {
   }
@@ -192,7 +192,7 @@ public class MapTable {
   public void loadMap(String file) throws IOException {
     FileInputStream fInput = new FileInputStream(file);
     BufferedReader bInput = new BufferedReader(new InputStreamReader(fInput, UTF_8));
-    HashMap<String,MapEntry> moduleTable = new HashMap<String,MapEntry>();
+    HashMap<String,MapEntry> moduleTable = new HashMap<>();
     String line;
     while ((line = bInput.readLine()) != null) {
       parseMapLine(moduleTable, line);
@@ -220,7 +220,7 @@ public class MapTable {
 
   public MapEntry[] getEntries(String regexp) {
     Pattern pattern = Pattern.compile(regexp);
-    ArrayList<MapEntry> allEntries = new ArrayList<MapEntry>();
+    ArrayList<MapEntry> allEntries = new ArrayList<>();
     for (MapEntry entry : entries) {
         if (pattern.matcher(entry.getName()).find()) {
             allEntries.add(entry);

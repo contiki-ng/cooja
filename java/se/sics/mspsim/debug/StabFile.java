@@ -52,8 +52,8 @@ public class StabFile {
 
     public int stabIndex;
 
-    private ArrayList<StabFunction> functions = new ArrayList<StabFunction>();
-    private HashMap<String, StabType> types = new HashMap<String,StabType>();
+    private ArrayList<StabFunction> functions = new ArrayList<>();
+    private HashMap<String, StabType> types = new HashMap<>();
     private StabFunction lastFunction;
 
     public void handleStabs(Stab[] stabs) {

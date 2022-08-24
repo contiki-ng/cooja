@@ -163,7 +163,7 @@ public class NetworkConnection implements Runnable {
 
   class SendThread implements Runnable {
 
-    private ArrayList<SendEvent> queue = new ArrayList<SendEvent>();
+    private ArrayList<SendEvent> queue = new ArrayList<>();
 
     public SendThread() {
       new Thread(this, "NetworkConnection.SendThread").start();

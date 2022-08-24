@@ -176,7 +176,7 @@ public class HighlightSourceViewer implements SourceViewer {
 
   public void addSearchPath(File directory) {
     if (path == null) {
-      path = new ArrayList<File>();
+      path = new ArrayList<>();
     }
     path.add(directory);
   }
@@ -205,7 +205,7 @@ public class HighlightSourceViewer implements SourceViewer {
         }
       }
     } else {
-      path = new ArrayList<File>();
+      path = new ArrayList<>();
     }
     // Find new path to search from
     if (fileChooser == null) {

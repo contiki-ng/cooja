@@ -13,7 +13,7 @@ public class CommandHandler implements ActiveComponent, LineListener {
 
   private String scriptDirectory = "scripts";
 
-  private Hashtable<String, Command> commands = new Hashtable<String, Command>();
+  private Hashtable<String, Command> commands = new Hashtable<>();
 
   protected final PrintStream out;
   protected final PrintStream err;

@@ -188,7 +188,7 @@ public class Scanner implements TokenTypes {
     gap = 0;
     endgap = 0;
     textLength = 0;
-    symbolTable = new HashMap<Symbol,Symbol>();
+    symbolTable = new HashMap<>();
     initSymbolTable();
     Symbol endOfText = new Symbol(WHITESPACE, "");
     tokens[0] = new Token(endOfText, 0);

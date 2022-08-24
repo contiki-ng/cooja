@@ -14,7 +14,7 @@ public class StabFunction {
     public int startLine;
 
     public void addParameter(Stab stab) {
-        if (params == null) params = new ArrayList<Param>();
+        if (params == null) params = new ArrayList<>();
         String[] name = stab.data.split(":");
         params.add(new Param(name[0]));
     }

@@ -57,7 +57,7 @@ public class OperatingModeStatistics {
   public static final int OP_INVERT = 1;
 
   private final MSP430Core cpu;
-  private ArrayList<StatEntry> statistics = new ArrayList<StatEntry>();
+  private ArrayList<StatEntry> statistics = new ArrayList<>();
 
   public OperatingModeStatistics(MSP430Core cpu) {
     this.cpu = cpu;

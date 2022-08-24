@@ -49,7 +49,7 @@ import se.sics.mspsim.util.ComponentRegistry;
 public class WindowCommands implements CommandBundle {
 
     private ComponentRegistry registry;
-    private final Hashtable<String,Target> windowTargets = new Hashtable<String,Target>();
+    private final Hashtable<String,Target> windowTargets = new Hashtable<>();
 
     @Override
     public void setupCommands(ComponentRegistry registry, CommandHandler handler) {

@@ -102,7 +102,7 @@ public class DwarfReader implements ELFDebug {
         LineEntry[] lineEntries;
     }
 
-    ArrayList<LineData> lineInfo = new ArrayList<LineData>();
+    ArrayList<LineData> lineInfo = new ArrayList<>();
 
     /* some state for the line number handling */
     private int lineAddress;
@@ -113,7 +113,7 @@ public class DwarfReader implements ELFDebug {
     private boolean isStatement = false;
     private boolean endSequence = false;
 
-    private ArrayList<Arange> aranges = new ArrayList<Arange>();
+    private ArrayList<Arange> aranges = new ArrayList<>();
 
     public DwarfReader(ELF elfFile) {
         this.elfFile = elfFile;
@@ -139,7 +139,7 @@ public class DwarfReader implements ELFDebug {
 
         sec.reset();
         int endPos = 0;
-        ArrayList<LineEntry> lineData = new ArrayList<LineEntry>();
+        ArrayList<LineEntry> lineData = new ArrayList<>();
         while (sec.getPosition() < sec.getSize()) {
             if (DEBUG) System.out.println(" --- Reading debug info --- ");
             /* here starts the reading of one file's (?) debug info */
@@ -174,9 +174,9 @@ public class DwarfReader implements ELFDebug {
             //        pos = pos + 15 + opcodeBase - 1;
             //        System.out.println("Line pos = " + pos + " sec-pos = " + sec.getPosition());
             if (DEBUG) System.out.println("Line --- include files ---");
-            ArrayList<String> directories = new ArrayList<String>();
+            ArrayList<String> directories = new ArrayList<>();
             directories.add("./");
-            ArrayList<String> files = new ArrayList<String>();
+            ArrayList<String> files = new ArrayList<>();
             StringBuilder sb = new StringBuilder();
 
             /* if first char is zero => no more include directories... */
@@ -469,7 +469,7 @@ public class DwarfReader implements ELFDebug {
 
     @Override
     public ArrayList<Integer> getExecutableAddresses() {
-        ArrayList<Integer> executableAddresses = new ArrayList<Integer>();
+        ArrayList<Integer> executableAddresses = new ArrayList<>();
         for (LineData data: lineInfo) {
             for (LineEntry entry: data.lineEntries) {
                 executableAddresses.add(entry.address);

@@ -88,7 +88,7 @@ public class PowerTracker implements Plugin {
 
   private Simulation simulation;
   private MoteCountListener moteCountListener;
-  private ArrayList<MoteTracker> moteTrackers = new ArrayList<MoteTracker>();
+  private ArrayList<MoteTracker> moteTrackers = new ArrayList<>();
 
   private JTable table;
   private int tableMaxRadioOnIndex = -1;

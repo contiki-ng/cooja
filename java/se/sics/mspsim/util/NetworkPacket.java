@@ -51,7 +51,7 @@ public class NetworkPacket {
     "|payloadLength:16|nextHeader:8|hopLimit:8" +
     "|sourceAddress:128|destinationAddress:128";
 
-  Hashtable<String,Field> fields = new Hashtable<String,Field>();
+  Hashtable<String,Field> fields = new Hashtable<>();
 
   private static class Field {
     String name;

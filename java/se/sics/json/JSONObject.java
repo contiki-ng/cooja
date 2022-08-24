@@ -312,7 +312,7 @@ public class JSONObject extends HashMap<String,Object> implements JSONAware, JSO
 
     private static class JSONObjectHandler implements ContentHandler {
 
-        private Stack<Object> valueStack = new Stack<Object>();
+        private Stack<Object> valueStack = new Stack<>();
 
         public Object getResult() {
             if (this.valueStack.size() == 0) {

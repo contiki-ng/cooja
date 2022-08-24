@@ -66,7 +66,7 @@ public class ContikiChecker implements CallListener, ActiveComponent {
     private MSP430 cpu;
     private Profiler profiler;
 
-    private Hashtable<String,Integer> callTable = new Hashtable<String,Integer>();
+    private Hashtable<String,Integer> callTable = new Hashtable<>();
     private int callCount = 0;
 
     @Override
