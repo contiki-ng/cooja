@@ -372,7 +372,6 @@ public class LogScriptEngine {
     @Override
     public void run() {
       new Thread(() -> {
-        try { Thread.sleep(500); } catch (InterruptedException e) { }
         simulation.getCooja().doQuit(false, exitCode);
       }, "Cooja.doQuit").start();
       new Thread(() -> {
