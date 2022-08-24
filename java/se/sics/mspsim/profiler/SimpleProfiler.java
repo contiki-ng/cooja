@@ -164,8 +164,8 @@ public class SimpleProfiler implements Profiler, EventListener {
 
     CallListener[] listeners = callListeners;
     if (listeners != null) {
-      for (int i = 0, n = listeners.length; i < n; i++) {
-        listeners[i].functionCall(this, ce);
+      for (CallListener listener : listeners) {
+        listener.functionCall(this, ce);
       }
     }
   }
@@ -239,8 +239,8 @@ public class SimpleProfiler implements Profiler, EventListener {
 
       CallListener[] listeners = callListeners;
       if (listeners != null) {
-        for (int i = 0, n = listeners.length; i < n; i++) {
-          listeners[i].functionReturn(this, cspEntry);
+        for (CallListener listener : listeners) {
+          listener.functionReturn(this, cspEntry);
         }
       }
     }
@@ -292,12 +292,11 @@ public class SimpleProfiler implements Profiler, EventListener {
     if (profileData != null) {
       CallEntry[] entries =
         profileData.values().toArray(new CallEntry[0]);
-      for (int i = 0, n = entries.length; i < n; i++) {
-        entries[i].cycles = 0;
-        entries[i].calls = 0;
+      for (CallEntry entry : entries) {
+        entry.cycles = 0;
+        entry.calls = 0;
       }
-      for (int i = 0, n = callStack.length; i < n; i++) {
-        CallEntry e = callStack[i];
+      for (CallEntry e : callStack) {
         if (e != null) {
           e.calls = -1;
         }
@@ -326,15 +325,15 @@ public class SimpleProfiler implements Profiler, EventListener {
     if (functionNameRegexp != null && functionNameRegexp.length() > 0) {
       pattern = Pattern.compile(functionNameRegexp);
     }
-    for (int i = 0, n = entries.length; i < n; i++) {
-      int c = entries[i].calls;
+    for (CallEntry entry : entries) {
+      int c = entry.calls;
       if (c > 0) {
-        String functionName = entries[i].function.getName();
+        String functionName = entry.function.getName();
         if (pattern == null || pattern.matcher(functionName).find()) {
-          String cyclesS = "" + entries[i].cycles;
-          String exCyclesS = "" + entries[i].exclusiveCycles;
+          String cyclesS = "" + entry.cycles;
+          String exCyclesS = "" + entry.exclusiveCycles;
           String callS = "" + c;
-          String avgS = "" + (c > 0 ? (entries[i].cycles / c) : 0);
+          String avgS = "" + (c > 0 ? (entry.cycles / c) : 0);
           out.print(functionName);
           printSpace(out, 43 - functionName.length() - callS.length());
           out.print(callS);
@@ -347,7 +346,7 @@ public class SimpleProfiler implements Profiler, EventListener {
           printSpace(out, 11 - exCyclesS.length());
           out.println(exCyclesS);
           if (profCallers) {
-            printCallers(entries[i], out);
+            printCallers(entry, out);
           }
         }
       }

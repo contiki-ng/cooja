@@ -109,9 +109,9 @@ public class EmuLink {
 
         String[] nodes = getNodes(json);
         if (nodes != null) {
-            for (int i = 0; i < nodes.length; i++) {
-                createNode(type, nodes[i]);
-            }
+          for (String node : nodes) {
+            createNode(type, node);
+          }
         }
         return true;
     }

@@ -48,9 +48,9 @@ public class NetCommands implements CommandBundle {
       public void lineRead(String line) {
         if (listener != null) {
           byte[] data = Utils.hexconv(line);
-          for (int i = 0; i < data.length; i++) {
+          for (byte datum : data) {
             // Currently it will auto print when packet is ready...
-            listener.receivedByte(data[i]);
+            listener.receivedByte(datum);
           }
         }
       }

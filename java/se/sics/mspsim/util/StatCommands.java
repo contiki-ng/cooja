@@ -94,13 +94,13 @@ public class StatCommands implements CommandBundle {
           if (units == null) {
             context.out.println("No loggables found.");
           } else {
-            for (int i = 0, n = units.length; i < n; i++) {
-              String id = units[i].getID();
-              String name = units[i].getName();
+            for (Loggable unit : units) {
+              String id = unit.getID();
+              String name = unit.getName();
               if (id == name) {
-                  context.out.println("  " + id);
+                context.out.println("  " + id);
               } else {
-                  context.out.println("  " + id + " (" + name + ')');
+                context.out.println("  " + id + " (" + name + ')');
               }
             }
           }

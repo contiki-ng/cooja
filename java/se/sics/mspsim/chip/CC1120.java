@@ -837,16 +837,16 @@ public class CC1120 extends Radio802154 implements USARTListener {
 
         private void printRXFIFO() {
                 System.out.printf("RXFIFO[%03d]: ", rxfifo.size());
-                for (int i = 0; i < rxfifo.size(); i++) {
-                        System.out.printf("%02x", rxfifo.get(i));
-                }
+          for (Byte aByte : rxfifo) {
+            System.out.printf("%02x", aByte);
+          }
                 System.out.println();
         }
         private void printTXFIFO() {
                 System.out.printf("TXFIFO[%03d]: ", txfifo.size());
-                for (int i = 0; i < txfifo.size(); i++) {
-                        System.out.printf("%02x", txfifo.get(i));
-                }
+          for (Byte aByte : txfifo) {
+            System.out.printf("%02x", aByte);
+          }
                 System.out.println();
         }
 

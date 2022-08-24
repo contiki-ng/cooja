@@ -114,8 +114,8 @@ public abstract class Chip implements Loggable, EventSource {
       this.mode = mode;
       OperatingModeListener[] listeners = omListeners;
       if (listeners != null) {
-        for (int i = 0, n = listeners.length; i < n; i++) {
-          listeners[i].modeChanged(this, mode);
+        for (OperatingModeListener listener : listeners) {
+          listener.modeChanged(this, mode);
         }
       }
     }
@@ -183,9 +183,9 @@ public abstract class Chip implements Loggable, EventSource {
   protected void configurationChanged(int parameter, int oldValue, int newValue) {
       ConfigurationChangeListener[] listeners = ccListeners;
       if (oldValue != newValue && listeners != null) {
-          for (int i = 0, n = listeners.length; i < n; i++) {
-              listeners[i].configurationChanged(this, parameter, oldValue, newValue);
-          }
+        for (ConfigurationChangeListener listener : listeners) {
+          listener.configurationChanged(this, parameter, oldValue, newValue);
+        }
       }
   }
 

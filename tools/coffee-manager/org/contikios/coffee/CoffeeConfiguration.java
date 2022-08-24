@@ -62,11 +62,11 @@ public class CoffeeConfiguration {
 		}
 
 		prop.load(stream);
-		for (int i = 0; i < requiredParameters.length; i++) {
-			if (prop.getProperty(requiredParameters[i]) == null) {
-				throw new CoffeeException("missing the parameter \"" + requiredParameters[i] + "\" in the configuration file " + filename);
-			}
-		}
+    for (String requiredParameter : requiredParameters) {
+      if (prop.getProperty(requiredParameter) == null) {
+        throw new CoffeeException("missing the parameter \"" + requiredParameter + "\" in the configuration file " + filename);
+      }
+    }
 
 		nameLength = Integer.parseInt(prop.getProperty("name_length"));
 		useMicroLogs = Boolean.parseBoolean(prop.getProperty("use_micro_logs"));

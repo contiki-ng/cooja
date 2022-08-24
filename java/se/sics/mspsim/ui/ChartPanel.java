@@ -106,9 +106,9 @@ public class ChartPanel extends JComponent {
   public Chart getChart(String name) {
     Chart[] charts = this.charts;
     if (charts != null) {
-      for (int i = 0, n = charts.length; i < n; i++) {
-        if (name.equals(charts[i].getName())) {
-          return charts[i];
+      for (Chart chart : charts) {
+        if (name.equals(chart.getName())) {
+          return chart;
         }
       }
     }
@@ -181,8 +181,7 @@ public class ChartPanel extends JComponent {
       double totMaxY = Double.MIN_VALUE, totMinY = Double.MAX_VALUE;
       double totMaxX = Double.MIN_VALUE, totMinX = Double.MAX_VALUE;
 
-      for (int i = 0, n = chs.length; i < n; i++) {
-        Chart chart = chs[i];
+      for (Chart chart : chs) {
         double maxY = chart.getMaxY();
         double minY = chart.getMinY();
         double minX = chart.getMinX();

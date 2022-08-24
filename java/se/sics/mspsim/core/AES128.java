@@ -187,9 +187,9 @@ public class AES128 extends IOUnit {
             }
 
             public void put(byte[] bytes) {
-                for (int i = 0; i < bytes.length; i++) {
-                    put(bytes[i]);
-                }
+              for (byte aByte : bytes) {
+                put(aByte);
+              }
             }
 
             public void put(byte data) {

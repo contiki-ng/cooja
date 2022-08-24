@@ -133,9 +133,9 @@ public class StabFile {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("File: ").append(path).append(file).append(" starts at: ").append(startAddress).append("\n");
-        for (int i = 0; i < functions.size(); i++) {
-            sb.append("  ").append(functions.get(i)).append("\n");
-        }
+      for (StabFunction function : functions) {
+        sb.append("  ").append(function).append("\n");
+      }
         return sb.toString();
     }
 }

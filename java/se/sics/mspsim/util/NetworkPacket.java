@@ -83,25 +83,25 @@ public class NetworkPacket {
       description = pattern;
       String[] parts = description.split("\\|");
       int pos = 0;
-      for (int i = 0; i < parts.length; i++) {
-        String[] field = parts[i].split(":");
-        String val = field[1];
-        String matchVal = null;
-        if (val.indexOf('=') > 0) {
-          String[] match = val.split("=");
-          val = match[0];
-          matchVal = match[1];
-        }
-        int size = Integer.parseInt(val);
-        Field f = new Field(field[0], pos, size);
-        if (matchVal != null) {
-          int mask = Integer.parseInt(matchVal);
-          f.setMatchMask(mask, mask);
-        }
-        pos += size;
-        System.out.println("Adding field: " + f);
-        fields.put(f.name, f);
+    for (String part : parts) {
+      String[] field = part.split(":");
+      String val = field[1];
+      String matchVal = null;
+      if (val.indexOf('=') > 0) {
+        String[] match = val.split("=");
+        val = match[0];
+        matchVal = match[1];
       }
+      int size = Integer.parseInt(val);
+      Field f = new Field(field[0], pos, size);
+      if (matchVal != null) {
+        int mask = Integer.parseInt(matchVal);
+        f.setMatchMask(mask, mask);
+      }
+      pos += size;
+      System.out.println("Adding field: " + f);
+      fields.put(f.name, f);
+    }
   }
 
 

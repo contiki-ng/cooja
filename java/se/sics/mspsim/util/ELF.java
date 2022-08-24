@@ -95,8 +95,8 @@ public class ELF {
   public static boolean isELF(File file) {
     try {
       InputStream input = new BufferedInputStream(new FileInputStream(file));
-      for (int i = 0; i < MAGIC.length; i++) {
-        if (MAGIC[i] != input.read()) {
+      for (int j : MAGIC) {
+        if (j != input.read()) {
           input.close();
           return false;
         }
@@ -362,8 +362,7 @@ public class ELF {
             return di.getFile();
         }
     }
-    for (int i = 0; i < files.size(); i++) {
-      FileInfo fi = files.get(i);
+    for (FileInfo fi : files) {
       if (address >= fi.start && address <= fi.end) {
         return fi.name;
       }

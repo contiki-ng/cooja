@@ -440,31 +440,30 @@ public class DwarfReader implements ELFDebug {
     /* Access methods for data... */
     @Override
     public DebugInfo getDebugInfo(int address) {
-        for (int i = 0; i < lineInfo.size(); i++) {
-            LineData data = lineInfo.get(i);
-            int start = data.lineEntries[0].address;
-            int end = data.lineEntries[data.lineEntries.length - 1].address;
-            /* XXX ignore all line entries starting on address 0 */
-            if (start == 0) continue;
+      for (LineData data : lineInfo) {
+        int start = data.lineEntries[0].address;
+        int end = data.lineEntries[data.lineEntries.length - 1].address;
+        /* XXX ignore all line entries starting on address 0 */
+        if (start == 0) continue;
 
-            if (address <= end && address >= start) {
-                for (int j = 0; j < data.lineEntries.length; j++) {
-                  LineEntry lineEntry = data.lineEntries[j];
-                  int startEntry = lineEntry.address;
-                  int endEntry;
-                  if (j+1 < data.lineEntries.length) {
-                    endEntry = data.lineEntries[j+1].address-1;
-                  } else {
-                    /* do not match prologue entries */
-                    continue;
-                  }
-                  if (address >= startEntry &&
-                      address <= endEntry) {
-                    return new DebugInfo(lineEntry.line, null, data.sourceFiles[lineEntry.file-1], "* not available");
-                  }
-                }
+        if (address <= end && address >= start) {
+          for (int j = 0; j < data.lineEntries.length; j++) {
+            LineEntry lineEntry = data.lineEntries[j];
+            int startEntry = lineEntry.address;
+            int endEntry;
+            if (j + 1 < data.lineEntries.length) {
+              endEntry = data.lineEntries[j + 1].address - 1;
+            } else {
+              /* do not match prologue entries */
+              continue;
             }
+            if (address >= startEntry &&
+                    address <= endEntry) {
+              return new DebugInfo(lineEntry.line, null, data.sourceFiles[lineEntry.file - 1], "* not available");
+            }
+          }
         }
+      }
         return null;
     }
 
