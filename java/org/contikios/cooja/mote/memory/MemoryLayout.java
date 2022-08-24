@@ -64,7 +64,7 @@ public class MemoryLayout {
     INT64(8),
     FLOAT(4),
     DOUBLE(8),
-    POINTER(4);
+    POINTER(8);
 
     private int size;
 
