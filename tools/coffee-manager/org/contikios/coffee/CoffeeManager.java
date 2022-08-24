@@ -135,11 +135,7 @@ public class CoffeeManager {
 				System.err.println("Unknown command!");
 				System.exit(1);
 			}
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		} catch (CoffeeException e) {
-			System.err.println(e.getMessage());
-		} catch (CoffeeFileException e) {
+		} catch (IOException | CoffeeFileException | CoffeeException e) {
 			System.err.println(e.getMessage());
 		}
 	}

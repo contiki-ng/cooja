@@ -144,8 +144,6 @@ public class NetworkConnection implements Runnable {
     try {
       Socket socket = new Socket("127.0.0.1", port);
       connections = ArrayUtils.add(ConnectionThread.class, connections, new ConnectionThread(socket));
-    } catch (UnknownHostException e) {
-      return false;
     } catch (IOException e) {
       return false;
     }
