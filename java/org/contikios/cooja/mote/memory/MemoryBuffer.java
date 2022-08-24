@@ -81,7 +81,7 @@ public class MemoryBuffer {
    * @param layout MemoryLayout for memory to access array from
    * @param structure Array of data types representing the structure to read
    * @param array Byte array that will back this buffer
-   * @return the new MemroyBuffer
+   * @return the new MemoryBuffer
    */
   public static MemoryBuffer wrap(MemoryLayout layout, byte[] array, DataType[] structure) {
     ByteBuffer b = ByteBuffer.wrap(array);
