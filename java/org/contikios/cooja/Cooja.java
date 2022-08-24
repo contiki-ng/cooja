@@ -1884,37 +1884,39 @@ public class Cooja extends Observable {
       new RunnableInEDT<Boolean>() {
         @Override
         public Boolean work() {
-          var size = new Dimension(100, 100);
-          var location = new Point(100, 100);
-          for (var cfgElem : (List<Element>)root.getChildren()) {
-            if (cfgElem.getName().equals("width")) {
-              size.width = Integer.parseInt(cfgElem.getText());
-              plugin.getCooja().setSize(size);
-            } else if (cfgElem.getName().equals("height")) {
-              size.height = Integer.parseInt(cfgElem.getText());
-              plugin.getCooja().setSize(size);
-            } else if (cfgElem.getName().equals("z")) {
-              int zOrder = Integer.parseInt(cfgElem.getText());
-              plugin.getCooja().putClientProperty("zorder", zOrder);
-            } else if (cfgElem.getName().equals("location_x")) {
-              location.x = Integer.parseInt(cfgElem.getText());
-              plugin.getCooja().setLocation(location);
-            } else if (cfgElem.getName().equals("location_y")) {
-              location.y = Integer.parseInt(cfgElem.getText());
-              plugin.getCooja().setLocation(location);
-            } else if (cfgElem.getName().equals("minimized")) {
-              boolean minimized = Boolean.parseBoolean(cfgElem.getText());
-              final var pluginGUI = plugin.getCooja();
-              if (minimized && pluginGUI != null) {
-                SwingUtilities.invokeLater(new Runnable() {
-                  @Override
-                  public void run() {
-                    try {
-                      pluginGUI.setIcon(true);
-                    } catch (PropertyVetoException e) {
+          if (root != null) {
+            var size = new Dimension(100, 100);
+            var location = new Point(100, 100);
+            for (var cfgElem : (List<Element>) root.getChildren()) {
+              if (cfgElem.getName().equals("width")) {
+                size.width = Integer.parseInt(cfgElem.getText());
+                plugin.getCooja().setSize(size);
+              } else if (cfgElem.getName().equals("height")) {
+                size.height = Integer.parseInt(cfgElem.getText());
+                plugin.getCooja().setSize(size);
+              } else if (cfgElem.getName().equals("z")) {
+                int zOrder = Integer.parseInt(cfgElem.getText());
+                plugin.getCooja().putClientProperty("zorder", zOrder);
+              } else if (cfgElem.getName().equals("location_x")) {
+                location.x = Integer.parseInt(cfgElem.getText());
+                plugin.getCooja().setLocation(location);
+              } else if (cfgElem.getName().equals("location_y")) {
+                location.y = Integer.parseInt(cfgElem.getText());
+                plugin.getCooja().setLocation(location);
+              } else if (cfgElem.getName().equals("minimized")) {
+                boolean minimized = Boolean.parseBoolean(cfgElem.getText());
+                final var pluginGUI = plugin.getCooja();
+                if (minimized && pluginGUI != null) {
+                  SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                      try {
+                        pluginGUI.setIcon(true);
+                      } catch (PropertyVetoException e) {
+                      }
                     }
-                  }
-                });
+                  });
+                }
               }
             }
           }
