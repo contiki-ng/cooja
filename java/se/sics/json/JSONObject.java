@@ -157,7 +157,7 @@ public class JSONObject extends HashMap<String,Object> implements JSONAware, JSO
     public boolean getAsBoolean(String key, boolean defaultValue) {
         Object v = get(key);
         if (v instanceof Boolean) {
-            return ((Boolean) v).booleanValue();
+            return (Boolean) v;
         }
         return defaultValue;
     }
