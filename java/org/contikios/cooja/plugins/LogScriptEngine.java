@@ -112,7 +112,7 @@ public class LogScriptEngine {
   private Thread scriptThread = null; /* Script thread */
   private Observer scriptLogObserver = null;
 
-  private boolean stopSimulation = false, quitCooja = false;
+  private boolean quitCooja = false;
 
   private final Simulation simulation;
 
@@ -150,15 +150,10 @@ public class LogScriptEngine {
 
     /* ... script is now again waiting for script semaphore ... */
 
-    /* Check if test script requested us to stop */
-    if (stopSimulation) {
-      simulation.stopSimulation();
-    }
+    // Check if testOK()/testFailed() were called from the script in headless mode.
     if (quitCooja) {
-      simulation.stopSimulation();
       quitRunnable.run();
     }
-    stopSimulation = false;
     quitCooja = false;
   }
 
@@ -431,13 +426,10 @@ public class LogScriptEngine {
 
       if (Cooja.isVisualized()) {
         log("[if test was run without visualization, Cooja would now have been terminated]\n");
-        stopSimulation = true;
-        simulation.invokeSimulationThread(simulation::stopSimulation);
       } else {
         quitCooja = true;
-        simulation.invokeSimulationThread(simulation::stopSimulation);
-        simulation.invokeSimulationThread(quitRunnable);
       }
+      simulation.invokeSimulationThread(simulation::stopSimulation);
 
       throw new RuntimeException("test script killed");
     }
