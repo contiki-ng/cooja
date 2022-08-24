@@ -566,7 +566,6 @@ public class CC1120 extends Radio802154 implements USARTListener {
 
                 /* Return MARCSTATE */
                 source.byteReceived(getMarcstate());
-                return;
         }
         int setReg(int address, int data, boolean extended) {
                 /*System.err.println(String.format("setReg(0x%02x, %s) 0x%02x", address,

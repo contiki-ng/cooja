@@ -436,7 +436,6 @@ public class CC1101 extends Radio802154 implements USARTListener {
 
                 /* Return MARCSTATE */
                 source.byteReceived(getMarcstate());
-                return;
         }
         public int setReg(int address, int data) {
                 switch (address) {
