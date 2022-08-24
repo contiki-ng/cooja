@@ -146,7 +146,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
   private final Simulation simulation;
 
-  private JTextField filterTextField = null;
+  private JTextField filterTextField;
   private final JLabel filterLabel = new JLabel("Filter: ");
   private final Color filterTextFieldBackground;
 

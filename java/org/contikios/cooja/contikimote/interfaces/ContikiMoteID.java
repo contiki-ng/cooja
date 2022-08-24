@@ -63,7 +63,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Fredrik Osterlind
  */
 public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
-  private VarMemory moteMem = null;
+  private VarMemory moteMem;
   private static final Logger logger = LogManager.getLogger(ContikiMoteID.class);
 
   private int moteID = 0;

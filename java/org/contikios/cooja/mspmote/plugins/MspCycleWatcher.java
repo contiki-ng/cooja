@@ -65,7 +65,7 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
   private final MspMote mspMote;
   private final MSP430 cpu;
   private final Simulation simulation;
-  private Observer simObserver = null;
+  private Observer simObserver;
   private final JTextField cycleTextField = new JTextField("");
   private final JTextField resetTextField = new JTextField("");
   private long cycleReset = 0;
