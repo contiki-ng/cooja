@@ -77,19 +77,9 @@ tasks.register('fullJar', Jar) {
   from {
     configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
   }
-  // Workaround for javac call in CoreComm.java.
-  doLast {
-    copy {
-      from file('build/libs/cooja-full.jar')
-      into file('dist')
-    }
-    file('dist/cooja-full.jar').renameTo(file('dist/cooja.jar'))
-  }
 }
 
 run {
-  // Workaround for javac call in CoreComm.java.
-  dependsOn fullJar
   // Workaround for make call in CompileContiki.java.
   workingDir = file('build')
   // Bad Cooja location detected with gradle run, explicitly pass -cooja.
