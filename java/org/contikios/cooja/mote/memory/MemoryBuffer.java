@@ -248,9 +248,10 @@ public class MemoryBuffer {
         value = bbuf.getShort();
         break;
       case 4:
-      default:
         value = bbuf.getInt();
         break;
+      default:
+        throw new RuntimeException("Unknown int size");
     }
     skipPaddingBytesFor(DataType.INT);
     return value;
@@ -293,8 +294,7 @@ public class MemoryBuffer {
         value = bbuf.getLong();
         break;
       default:
-        value = bbuf.getInt();
-        break;
+        throw new RuntimeException("Unknown address size");
     }
     skipPaddingBytesFor(DataType.POINTER);
     return value;
@@ -419,9 +419,10 @@ public class MemoryBuffer {
         bbuf.putShort((short) value);
         break;
       case 4:
-      default:
         bbuf.putInt(value);
         break;
+      default:
+        throw new RuntimeException("Unknown int size");
     }
     skipPaddingBytesFor(DataType.INT);
     return this;
@@ -468,8 +469,7 @@ public class MemoryBuffer {
         bbuf.putLong(value);
         break;
       default:
-        bbuf.putInt((int) value);
-        break;
+        throw new RuntimeException("Unknown address size");
     }
     skipPaddingBytesFor(DataType.POINTER);
     return this;
