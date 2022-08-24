@@ -342,7 +342,7 @@ public class Cooja extends Observable {
 
   private final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
 
-  public ClassLoader projectDirClassLoader;
+  private ClassLoader projectDirClassLoader;
 
   private final ArrayList<Class<? extends MoteType>> moteTypeClasses = new ArrayList<>();
 
@@ -1487,13 +1487,6 @@ public class Cooja extends Observable {
       }
     }
 
-    /* Create extension class loader */
-    try {
-      projectDirClassLoader = createClassLoader(ClassLoader.getSystemClassLoader(), currentProjects);
-    } catch (ClassLoaderCreationException e) {
-      throw new ParseProjectsException("Error when creating class loader", e);
-    }
-
     // Register mote types
     registerMoteType(ImportAppMoteType.class);
     registerMoteType(DisturberMoteType.class);
@@ -1600,6 +1593,23 @@ public class Cooja extends Observable {
         }
       }
     }
+  }
+
+  /**
+   * Allocates and returns the project classloader.
+   *
+   * @return Project classloader
+   * @throws ParseProjectsException when failing to create the classloader
+   */
+  public ClassLoader getProjectClassLoader() throws ParseProjectsException {
+    if (projectDirClassLoader == null) {
+      try {
+        projectDirClassLoader = createClassLoader(ClassLoader.getSystemClassLoader(), currentProjects);
+      } catch (ClassLoaderCreationException e) {
+        throw new ParseProjectsException("Error when creating class loader", e);
+      }
+    }
+    return projectDirClassLoader;
   }
 
   /**
@@ -2835,11 +2845,8 @@ public class Cooja extends Observable {
     }
 
     try {
-      if (projectDirClassLoader != null) {
-        return projectDirClassLoader.loadClass(className).asSubclass(
-            classType);
-      }
-    } catch (NoClassDefFoundError | UnsupportedClassVersionError | ClassNotFoundException e) {
+      return getProjectClassLoader().loadClass(className).asSubclass(classType);
+    } catch (ParseProjectsException | NoClassDefFoundError | UnsupportedClassVersionError | ClassNotFoundException e) {
     }
 
     return null;
