@@ -398,16 +398,13 @@ public class ScriptRunner implements Plugin {
 
       logger.debug("Test script activated");
 
-    } catch (ScriptException e) {
+    } catch (RuntimeException | ScriptException e) {
       logger.fatal("Test script error: ", e);
       setScriptActive(false);
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog(Cooja.getTopParentContainer(),
                 "Script error", e, false);
       }
-    } catch (RuntimeException e) {
-      logger.fatal("Test script error: ", e);
-      setScriptActive(false);
     }
   }
 
