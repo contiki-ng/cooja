@@ -125,8 +125,8 @@ public abstract class GenericNode extends Chip implements Runnable {
         config.setProperty("autorun", "scripts/autorun.sc");
       } else {
         try {
-          File dir = new File(GenericNode.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
-          fp = new File(dir, "scripts/autorun.sc");
+          File dir = new File(GenericNode.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile().getParentFile();
+          fp = new File(dir, "resources/main/scripts/autorun.sc");
           if (fp.exists()) {
             config.setProperty("autorun", fp.getAbsolutePath());
           }
