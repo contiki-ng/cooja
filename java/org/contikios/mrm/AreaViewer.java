@@ -1146,7 +1146,6 @@ public class AreaViewer extends VisPlugin {
         tracker.waitForAll();
         if (tracker.isErrorAny() || image == null) {
           logger.info("Error when loading '" + file.getAbsolutePath() + "'");
-          image = null;
           return false;
         }
       } catch (InterruptedException ex) {
@@ -1164,7 +1163,6 @@ public class AreaViewer extends VisPlugin {
 
       if (!dialog.terminatedOK()) {
         logger.fatal("User canceled, aborting");
-        image = null;
         return false;
       }
 

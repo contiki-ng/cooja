@@ -308,7 +308,6 @@ class ObstacleWorld {
                 areaStartY + y*boxHeight)
         );
         if (testInterval.intersects(angleInterval)) {
-          hit = true;
           for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) {
             if (!obstaclesToReturn.contains(allObstaclesSpatial[x][y].get(i)))
               obstaclesToReturn.add(allObstaclesSpatial[x][y].get(i));

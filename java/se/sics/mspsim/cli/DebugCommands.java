@@ -574,9 +574,7 @@ public class DebugCommands implements CommandBundle {
             if (context.getArgumentCount() > 2) {
               String tS = context.getArgument(2);
               if ("byte".equals(tS)) {
-                signed = true;
               } else if ("word".equals(tS)) {
-                signed = true;
                 size = 2;
               } else if ("uword".equals(tS)) {
                 size = 2;

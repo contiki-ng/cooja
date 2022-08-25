@@ -1581,7 +1581,6 @@ public class BufferListener extends VisPlugin {
       if (inRed) {
         /* Diff ends */
         sb.append("</font>");
-        inRed = false;
       }
       sb.append("</html>");
       return sb.toString();
