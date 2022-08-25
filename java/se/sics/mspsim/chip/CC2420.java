@@ -396,7 +396,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private boolean currentSFD;
   private boolean currentFIFO;
   private boolean currentFIFOP;
-  private boolean overflow = false;
+  private boolean overflow;
   private boolean frameRejected = false;
 
   public interface StateListener {

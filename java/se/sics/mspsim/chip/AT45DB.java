@@ -147,7 +147,7 @@ public class AT45DB extends ExternalFlash implements USARTListener {
 
     @Override
     public void dataReceived(USARTSource source, int data) {
-      int buf_num = 1;
+      int buf_num;
 
       if (chipSelect) {
         //if (DEBUG) {

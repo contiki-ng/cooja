@@ -106,12 +106,12 @@ public abstract class I2CUnit implements USARTListener {
         /**
          * Address of the I2C peripheral
          */
-        protected int busAddress = 0x00;
+        protected int busAddress;
 
         /**
          * String name for logging
          */
-        protected String name = "Unknown";
+        protected String name;
 
         /**
          * Enable debug

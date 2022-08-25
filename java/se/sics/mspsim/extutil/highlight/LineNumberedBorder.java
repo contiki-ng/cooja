@@ -194,7 +194,7 @@ public class LineNumberedBorder extends AbstractBorder {
     int lineWidth = lineNumberWidth(jta);
 
     // base x position of the line number
-    int lnxstart = x;
+    int lnxstart;
     if (location == LEFT_SIDE) {
       // x (LEFT) or (x + lineWidth) (RIGHT)
       // (depends upon justification)

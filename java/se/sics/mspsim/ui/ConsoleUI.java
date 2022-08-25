@@ -471,7 +471,7 @@ public class ConsoleUI extends JComponent {
   int oldBottomLine = 0;
   @Override
   protected void paintComponent(Graphics g) {
-    int pos = 0;
+    int pos;
     int w = getWidth() - 8;
     int h = getHeight() - 15;
 

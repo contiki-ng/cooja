@@ -124,7 +124,7 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
   private DMA dma;
   private int dmaIndex;
 
-  private boolean usciA = true; /* if this is an USCI A or B */
+  private boolean usciA; /* if this is an USCI A or B */
 
   private TimeEvent txTrigger = new TimeEvent(0) {
     @Override

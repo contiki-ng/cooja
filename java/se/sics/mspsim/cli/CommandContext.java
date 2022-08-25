@@ -10,7 +10,7 @@ public class CommandContext {
   private String[] args;
   private String commandLine;
   private MapTable mapTable;
-  private int pid = -1;
+  private int pid;
   private boolean exited = false;
   private Command command;
 

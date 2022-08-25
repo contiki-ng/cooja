@@ -217,7 +217,7 @@ public class ELF {
   }
 
   int readElf32(int pos) {
-    int b = 0;
+    int b;
     if (encMSB) {
       b = (elfData[pos++] & 0xff) << 24 |
         ((elfData[pos++] & 0xff) << 16) |
@@ -233,7 +233,7 @@ public class ELF {
   }
 
   int readElf16(int pos) {
-    int b = 0;
+    int b;
     if (encMSB) {
       b = ((elfData[pos++] & 0xff) << 8) |
         (elfData[pos++] & 0xff);
@@ -470,7 +470,6 @@ public class ELF {
     for(int read; (read = input.read(buf)) != -1; baous.write(buf, 0, read)) {
     }
     input.close();
-    buf = null;
     byte[] data = baous.toByteArray();
     if (DEBUG) {
       System.out.println("Length of data: " + data.length);

@@ -97,8 +97,8 @@ public class RTC extends IOUnit {
                 TYPE_A, TYPE_D,
         }
 
-        private RtcType type = RtcType.TYPE_A;
-        private int rtcIntVector = RTC_VECTOR;
+        private RtcType type;
+        private int rtcIntVector;
 
         /**
          * RTC peripheral for the MSP430
@@ -324,7 +324,7 @@ public class RTC extends IOUnit {
         };
 
         private double getPreScalerFreq() {
-                double freqSrc = 0;
+                double freqSrc;
                 if (preScaler1Src > 1) {
                         /* From preScaler 0 */
                         if (preScaler0Src == 0) {
@@ -348,7 +348,7 @@ public class RTC extends IOUnit {
          * Initialize the RTC clock. This is called when the hold bit is released
          */
         private void rtcInit() {
-                double freqSrc = 1f;
+                double freqSrc;
                 if (modeCalendar) {
                         /* In this mode we can set the counter to 1 second */
                         freqSrc = 1f; // 1Hz = ~1s
@@ -409,7 +409,7 @@ public class RTC extends IOUnit {
                         f -= 1;
                 }
                 int res = 0;
-                int base = 0;
+                int base;
                 if (formatBCD) {
                         base = 10;
                 } else {
@@ -436,7 +436,7 @@ public class RTC extends IOUnit {
         private void parseCalReg(int calField, int value) {
                 int res = 0;
                 int factor = 1;
-                int base = 0;
+                int base;
                 if (formatBCD) {
                         base = 10;
                 } else {

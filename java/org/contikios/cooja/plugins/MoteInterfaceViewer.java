@@ -69,7 +69,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
   private final Mote mote;
   private MoteInterface selectedMoteInterface = null;
   private JPanel currentInterfaceVisualizer = null;
-  private JComboBox selectInterfaceComboBox = null;
+  private JComboBox selectInterfaceComboBox;
   private final JScrollPane mainScrollPane;
 
   /**

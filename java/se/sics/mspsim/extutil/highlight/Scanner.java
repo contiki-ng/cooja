@@ -372,7 +372,6 @@ public class Scanner implements TokenTypes {
     if (position + length > textLength)
       throw new Error("scan too much");
     boolean all = position + length == textLength;
-    end = start + length;
     int startGap = gap;
 
     buffer = array;

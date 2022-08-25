@@ -13,7 +13,7 @@ public class ArrayFIFO {
 
     private int readPos = 0;
     private int writePos = 0;
-    private int len = 0;
+    private int len;
 
     private int markWritePos;
 

@@ -110,7 +110,7 @@ public class DisAsm implements MSP430Constants {
       output = "I:" + interrupt + ' ';
     }
 
-    String regs = "";
+    String regs;
 
 
     if (pc < 0x0010) {
@@ -274,7 +274,7 @@ public class DisAsm implements MSP430Constants {
             // Adress mode of destination...
             int ad = (instruction >> 4) & 3;
             // Pick up the destination address based on ad more and regs...
-            int dstAddress = 0;
+            int dstAddress;
             String adr = "";
             switch(ad) {
             // Operand in register!
@@ -407,12 +407,12 @@ public class DisAsm implements MSP430Constants {
 
       // AD: 0 => register direct, 1 => register index, e.g. X(Rn)
       boolean dstRegMode = ((instruction >> 7) & 1) == 0;
-      int dstAddress = 0;
+      int dstAddress;
       int srcAddress = 0;
       int src = 0;
       int dst = 0;
       String srcadr = "";
-      String dstadr = "";
+      String dstadr;
       switch(as) {
         // Operand in register!
       case AM_REG:

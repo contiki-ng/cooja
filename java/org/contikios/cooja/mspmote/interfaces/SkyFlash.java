@@ -190,7 +190,7 @@ public class SkyFlash extends MoteInterface {
    */
   public static byte[] readDialogFileBytes(Container parent) {
     // Choose file
-    File file = null;
+    File file;
     JFileChooser fileChooser = new JFileChooser();
     fileChooser.setCurrentDirectory(new java.io.File("."));
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -209,7 +209,7 @@ public class SkyFlash extends MoteInterface {
     FileInputStream fileIn;
     DataInputStream dataIn;
     int offset = 0;
-    int numRead = 0;
+    int numRead;
     try {
       fileIn = new FileInputStream(file);
       dataIn = new DataInputStream(fileIn);

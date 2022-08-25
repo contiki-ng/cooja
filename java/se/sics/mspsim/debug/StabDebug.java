@@ -126,7 +126,7 @@ public class StabDebug implements ELFDebug {
     String currentFile = null;
     String currentFunction = null;
     int lastAddress = 0;
-    int currentLine = 0;
+    int currentLine;
     int currentLineAdr = 0;
     for (Stab stab : stabs) {
       switch (stab.type) {
@@ -259,7 +259,7 @@ public class StabDebug implements ELFDebug {
   @Override
   public String[] getSourceFiles() {
     String currentPath = null;
-    String currentFile = null;
+    String currentFile;
     ArrayList<String> sourceFiles = new ArrayList<>();
 
     for (Stab stab : stabs) {

@@ -80,8 +80,8 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
   private static final Logger logger = LogManager.getLogger(ContikiCFS.class);
 
   public static final int FILESYSTEM_SIZE = 4000; /* Configure CFS size here and in cfs-cooja.c */
-  private Mote mote = null;
-  private VarMemory moteMem = null;
+  private Mote mote;
+  private VarMemory moteMem;
 
   private int lastRead = 0;
   private int lastWritten = 0;
@@ -225,7 +225,7 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
    */
   public static byte[] readDialogFileBytes(Component parent) {
     // Choose file
-    File file = null;
+    File file;
     JFileChooser fileChooser = new JFileChooser();
     fileChooser.setCurrentDirectory(new java.io.File("."));
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -244,7 +244,7 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
     FileInputStream fileIn;
     DataInputStream dataIn;
     int offset = 0;
-    int numRead = 0;
+    int numRead;
     try {
       fileIn = new FileInputStream(file);
       dataIn = new DataInputStream(fileIn);

@@ -63,7 +63,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
 
   private SectionMoteMemory memory = null;
 
-  protected MoteInterfaceHandler moteInterfaces = null;
+  protected MoteInterfaceHandler moteInterfaces;
 
   /* Observe our own radio for incoming radio packets */
   private final Observer radioDataObserver = new Observer() {

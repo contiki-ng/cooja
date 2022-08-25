@@ -190,7 +190,7 @@ public class AreaViewer extends VisPlugin {
   private ChannelModel.TrackedSignalComponents trackedComponents = null;
 
   // Coloring variables
-  private JPanel coloringIntervalPanel = null;
+  private JPanel coloringIntervalPanel;
   private double coloringHighest = 0;
   private double coloringLowest = 0;
   private boolean coloringIsFixed = true;
@@ -205,7 +205,7 @@ public class AreaViewer extends VisPlugin {
 //  private JCheckBox radioActivityCheckBox;
   private final JCheckBox arrowCheckBox;
 
-  private JRadioButton noneButton = null;
+  private JRadioButton noneButton;
 
   private final JRadioButton selectModeButton;
   private final JRadioButton panModeButton;
@@ -1146,7 +1146,6 @@ public class AreaViewer extends VisPlugin {
         tracker.waitForAll();
         if (tracker.isErrorAny() || image == null) {
           logger.info("Error when loading '" + file.getAbsolutePath() + "'");
-          image = null;
           return false;
         }
       } catch (InterruptedException ex) {
@@ -1164,7 +1163,6 @@ public class AreaViewer extends VisPlugin {
 
       if (!dialog.terminatedOK()) {
         logger.fatal("User canceled, aborting");
-        image = null;
         return false;
       }
 
@@ -1286,8 +1284,8 @@ public class AreaViewer extends VisPlugin {
 
   static class ObstacleFinderDialog extends JDialog {
     private final NumberFormat intFormat = NumberFormat.getIntegerInstance();
-    private BufferedImage imageToAnalyze = null;
-    private BufferedImage obstacleImage = null;
+    private BufferedImage imageToAnalyze;
+    private BufferedImage obstacleImage;
     private JPanel canvasPanel = null;
     private boolean[][] obstacleArray = null;
     private boolean exitedOK = false;
@@ -2034,7 +2032,7 @@ public class AreaViewer extends VisPlugin {
           obstacleWidth = currentChannelModel.getObstacle(0).getMaxX();
           obstacleHeight = currentChannelModel.getObstacle(0).getMaxY();
 
-          double tempVal = 0;
+          double tempVal;
           for (int i=0; i < currentChannelModel.getNumberOfObstacles(); i++) {
             if ((tempVal = currentChannelModel.getObstacle(i).getMinX()) < obstacleStartX) {
               obstacleStartX = tempVal;

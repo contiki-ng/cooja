@@ -485,7 +485,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
             }
         }
     };
-    private boolean overflow = false;
+    private boolean overflow;
     private boolean frameRejected = false;
 
     private int ackPos;

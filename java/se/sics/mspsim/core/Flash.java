@@ -237,7 +237,6 @@ public class Flash extends IOUnit {
       break;
 
     case SMCLK:
-      myfreq = cpu.smclkFrq / freqdiv;
       finish_msec = ((double)time * freqdiv * 1000) / cpu.smclkFrq;
       /* if (DEBUG)
         System.out.println("Flash: Using SMCLK source with f=" + myfreq
@@ -259,7 +258,7 @@ public class Flash extends IOUnit {
   }
 
   public void flashWrite(int address, int data, AccessMode dataMode) {
-    int wait_time = -1;
+    int wait_time;
 
     if (locked) {
       if (DEBUG) {
