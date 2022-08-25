@@ -18,14 +18,15 @@ dependencies {
                        'lib/jfreechart-1.0.11.jar',
                        'lib/jipv6.jar',
                        'lib/json-simple-1.1.1.jar',
-                       'lib/picocli-4.6.3.jar',
-                       'lib/swingx-all-1.6.4.jar')
+                       'lib/picocli-4.6.3.jar')
   // https://mvnrepository.com/artifact/de.sciss/syntaxpane
   implementation 'de.sciss:syntaxpane:1.2.1'
   // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
   implementation 'org.apache.logging.log4j:log4j-core:2.18.0'
   // https://mvnrepository.com/artifact/org.openjdk.nashorn/nashorn-core
   implementation 'org.openjdk.nashorn:nashorn-core:15.4'
+  // https://mvnrepository.com/artifact/org.swinglabs.swingx/swingx-autocomplete
+  implementation 'org.swinglabs.swingx:swingx-autocomplete:1.6.5-1'
 }
 
 
