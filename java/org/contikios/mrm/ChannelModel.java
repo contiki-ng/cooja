@@ -1755,11 +1755,11 @@ public class ChannelModel {
 
     for (var entry : parameters.entrySet()) {
       var p = entry.getKey();
-      element = new Element(p.toString());
       if (parametersDefaults.get(p).equals(entry.getValue())) {
         /* Default value */
         continue;
       }
+      element = new Element(p.toString());
       element.setAttribute("value", entry.getValue().toString());
       config.add(element);
     }
