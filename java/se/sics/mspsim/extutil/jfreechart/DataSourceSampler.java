@@ -51,7 +51,7 @@ public class DataSourceSampler implements ActionListener {
 
   private void sampleAll() {
     if (sources.size() > 0) {
-      TimeSource[] srcs = (TimeSource[]) sources.toArray(new TimeSource[0]);
+      TimeSource[] srcs = sources.toArray(new TimeSource[0]);
       for (TimeSource src : srcs) {
         if (src != null)
           src.update();

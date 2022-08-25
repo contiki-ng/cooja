@@ -191,7 +191,7 @@ public abstract class I2CUnit implements USARTListener {
                 this.name = name;
                 busAddress = address;
                 if (src != null) {
-                        src.addUSARTListener((USARTListener) this);
+                        src.addUSARTListener(this);
                 }
                 this.cpu = cpu;
                 source = src;

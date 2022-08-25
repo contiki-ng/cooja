@@ -213,7 +213,7 @@ public class CommandContext {
 
   @Override
   public String toString() {
-    return (pid >= 0 ? ("" + pid) : "?") + '\t' + (commandLine == null ? getCommandName() : commandLine);
+    return (pid >= 0 ? String.valueOf(pid) : "?") + '\t' + (commandLine == null ? getCommandName() : commandLine);
   }
 
 }

@@ -1753,13 +1753,14 @@ public class ChannelModel {
     ArrayList<Element> config = new ArrayList<>();
     Element element;
 
-    for (var p : parameters.keySet()) {
-      element = new Element(p.toString());
-      if (parametersDefaults.get(p).equals(parameters.get(p))) {
+    for (var entry : parameters.entrySet()) {
+      var p = entry.getKey();
+      if (parametersDefaults.get(p).equals(entry.getValue())) {
         /* Default value */
         continue;
       }
-      element.setAttribute("value", parameters.get(p).toString());
+      element = new Element(p.toString());
+      element.setAttribute("value", entry.getValue().toString());
       config.add(element);
     }
 

@@ -8,7 +8,7 @@ public class JFrameWindowManager implements WindowManager {
 
     @Override
     public ManagedWindow createWindow(final String name) {
-        ManagedWindow w = new ManagedWindow() {
+        return new ManagedWindow() {
             private JFrame window = new JFrame(name);
             private boolean restored = false;
 
@@ -65,11 +65,10 @@ public class JFrameWindowManager implements WindowManager {
             }
 
             @Override
-            public void setTitle(String name) {
-                window.setTitle(name);
+            public void setTitle(String name1) {
+                window.setTitle(name1);
             }
         };
-        return w;
     }
 
 }

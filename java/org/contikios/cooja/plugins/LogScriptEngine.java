@@ -371,9 +371,7 @@ public class LogScriptEngine {
   private final Runnable quitRunnable = new Runnable() {
     @Override
     public void run() {
-      new Thread(() -> {
-        simulation.getCooja().doQuit(false, exitCode);
-      }, "Cooja.doQuit").start();
+      new Thread(() -> simulation.getCooja().doQuit(false, exitCode), "Cooja.doQuit").start();
       new Thread(() -> {
         try { Thread.sleep(2000); } catch (InterruptedException e) { }
         logger.warn("Killing Cooja");

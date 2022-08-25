@@ -2133,7 +2133,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
                       "DoubleOperand not implemented: op = " + Integer.toHexString(op) + " at " + address);
               if (EXCEPTION_ON_BAD_OPERATION) {
                   EmulationException ex = new EmulationException("Bad operation: $" + Integer.toHexString(op) + " at $" + address);
-                  ex.initCause(new Throwable("" + pc));
+                  ex.initCause(new Throwable(String.valueOf(pc)));
                   throw ex;
               }
           } /* after switch(op) */

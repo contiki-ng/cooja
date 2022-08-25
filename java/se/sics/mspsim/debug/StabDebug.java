@@ -306,8 +306,7 @@ public class StabDebug implements ELFDebug {
 
    @Override
    public String toString() {
-        return "" + Integer.toHexString(type) + " " + data +
-            "   [" + other + "," + desc + "," + value + "]";
+        return Integer.toHexString(type) + " " + data + "   [" + other + "," + desc + "," + value + "]";
     }
   }
 

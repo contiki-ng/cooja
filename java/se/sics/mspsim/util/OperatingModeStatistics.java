@@ -243,7 +243,7 @@ public class OperatingModeStatistics {
     void printStat(PrintStream out) {
       out.println("Stat for: " + chip.getID());
       for (int i = 0; i < elapsed.length; i++) {
-        out.println("" + (i + 1) + " = " + elapsed[i]);
+        out.println((i + 1) + " = " + elapsed[i]);
       }
     }
   }

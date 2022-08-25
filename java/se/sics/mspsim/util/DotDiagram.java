@@ -406,7 +406,7 @@ public class DotDiagram extends JComponent {
       double div = getDivider(totMin, totMax);
       for (double d = div; d < totMax; d += div) {
         int dy = (int) (zero - yfac * d);
-        String text = "" + (int) d;
+        String text = String.valueOf((int) d);
         int tlen = fm.stringWidth(text);
         g.setColor(Color.lightGray);
         g.drawLine(0, dy, width, dy);
@@ -415,7 +415,7 @@ public class DotDiagram extends JComponent {
       }
       for (double d = div; d < -totMin; d += div) {
         int dy = (int) (zero + yfac * d);
-        String text = "" + (int) -d;
+        String text = String.valueOf((int) -d);
         int tlen = fm.stringWidth(text);
         g.setColor(Color.lightGray);
         g.drawLine(0, dy, width, dy);

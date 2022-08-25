@@ -58,16 +58,16 @@ public class Utils {
       switch (mode) {
       case    ASCII:
           if (data >= 32 && data <= 127) {
-              return "" + ((char) data);
+              return String.valueOf((char) data);
           } else {
               return ".";
           }
       case    ASCII_UNMODIFIED:
-          return "" + ((char) data);
+          return String.valueOf((char) data);
       case    HEX:
           return (size == 2 ? Utils.hex16(data):Utils.hex8(data));
       }
-      return "" + data;
+      return String.valueOf(data);
   }
 
   public static String binary8(int data) {

@@ -446,7 +446,7 @@ public class DebugCommands implements CommandBundle {
             long wallDiff = System.currentTimeMillis() - lastWall;
             context.out.println("Emulated time elapsed: " + time + "(ms)  since last: " + (time - lastCall) + " ms" + " wallTime: " +
                                 wallDiff + " ms speed factor: " +
-                                (wallDiff == 0 ? "N/A" : "" + (time - lastCall) / wallDiff));
+                                (wallDiff == 0 ? "N/A" : String.valueOf((time - lastCall) / wallDiff)));
             lastCall = time;
             lastWall = System.currentTimeMillis();
             return 0;

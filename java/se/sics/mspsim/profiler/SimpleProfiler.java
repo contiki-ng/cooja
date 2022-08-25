@@ -330,10 +330,10 @@ public class SimpleProfiler implements Profiler, EventListener {
       if (c > 0) {
         String functionName = entry.function.getName();
         if (pattern == null || pattern.matcher(functionName).find()) {
-          String cyclesS = "" + entry.cycles;
-          String exCyclesS = "" + entry.exclusiveCycles;
-          String callS = "" + c;
-          String avgS = "" + (c > 0 ? (entry.cycles / c) : 0);
+          String cyclesS = String.valueOf(entry.cycles);
+          String exCyclesS = String.valueOf(entry.exclusiveCycles);
+          String callS = String.valueOf(c);
+          String avgS = String.valueOf(c > 0 ? (entry.cycles / c) : 0);
           out.print(functionName);
           printSpace(out, 43 - functionName.length() - callS.length());
           out.print(callS);
@@ -366,7 +366,7 @@ public class SimpleProfiler implements Profiler, EventListener {
   private void printCallers(CallEntry callEntry, PrintStream out) {
     HashMap<MapEntry,CallCounter> callers = callEntry.callers;
     List<Entry<MapEntry,CallCounter>> list = new ArrayList<>(callers.entrySet());
-    Collections.sort(list, new Comparator<>() {
+    list.sort(new Comparator<>() {
       @Override
       public int compare(Entry<MapEntry, CallCounter> o1, Entry<MapEntry, CallCounter> o2) {
         return o2.getValue().compareTo(o1.getValue());
@@ -374,7 +374,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     });
     for (Entry<MapEntry,CallCounter> entry : list) {
       String functionName = entry.getKey().getName();
-      String callS = "" + entry.getValue().count;
+      String callS = String.valueOf(entry.getValue().count);
       printSpace(out, 12 - callS.length());
       out.print(callS);
       printSpace(out, 2);

@@ -214,9 +214,8 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
 
     /* Convert to arrays */
     HashMap<Radio,DGRMDestinationRadio[]> arrTable = new HashMap<>();
-    for (var source : listTable.keySet()) {
-      DGRMDestinationRadio[] arr = listTable.get(source).toArray(new DGRMDestinationRadio[0]);
-      arrTable.put(source, arr);
+    for (var entry : listTable.entrySet()) {
+      arrTable.put(entry.getKey(), entry.getValue().toArray(new DGRMDestinationRadio[0]));
     }
 
     this.edgesTable = arrTable;

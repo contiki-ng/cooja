@@ -618,11 +618,11 @@ public class DisAsm implements MSP430Constants {
   }
 
   private static String dumpSR(int sr) {
-    return "" +
-      (((sr & OVERFLOW) != 0) ? 'V' : '-') +
-      (((sr & NEGATIVE) != 0) ? 'N' : '-') +
-      (((sr & ZERO) != 0) ? 'Z' : '-') +
-      (((sr & CARRY) != 0) ? 'C' : '-');
+    return
+      (((sr & OVERFLOW) != 0) ? "V" : "-") +
+      (((sr & NEGATIVE) != 0) ? "N" : "-") +
+      (((sr & ZERO) != 0) ? "Z" : "-") +
+      (((sr & CARRY) != 0) ? "C" : "-");
   }
 
   private static String dumpMem(int pc, int size, int[] memory) {
