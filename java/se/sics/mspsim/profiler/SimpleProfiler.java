@@ -366,7 +366,7 @@ public class SimpleProfiler implements Profiler, EventListener {
   private void printCallers(CallEntry callEntry, PrintStream out) {
     HashMap<MapEntry,CallCounter> callers = callEntry.callers;
     List<Entry<MapEntry,CallCounter>> list = new ArrayList<>(callers.entrySet());
-    Collections.sort(list, new Comparator<>() {
+    list.sort(new Comparator<>() {
       @Override
       public int compare(Entry<MapEntry, CallCounter> o1, Entry<MapEntry, CallCounter> o2) {
         return o2.getValue().compareTo(o1.getValue());
