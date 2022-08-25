@@ -905,19 +905,11 @@ public class CC1101 extends Radio802154 implements USARTListener {
     if (lastWasRead) {
       /* Return available bytes in RXFIFO */
       int available = rxfifo.size();
-      if (available > 15) {
-        status += 15;
-      } else {
-        status += available;
-      }
+      status += Math.min(available, 15);
     } else {
       /* Return available bytes in TXFIFO */
       int available = 64 - txfifo.size();
-      if (available > 15) {
-        status += 15;
-      } else {
-        status += available;
-      }
+      status += Math.min(available, 15);
     }
 
     return status;

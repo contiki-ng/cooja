@@ -71,7 +71,7 @@ public class CoffeeImageFile implements CoffeeImage {
 		int chunkSize;
 
 		while(size > 0) {
-			chunkSize = size > bytes.length ? bytes.length : size;
+			chunkSize = Math.min(size, bytes.length);
 			imageFile.seek(conf.startOffset + offset);
 			imageFile.write(bytes, 0, chunkSize);
 			size -= chunkSize;

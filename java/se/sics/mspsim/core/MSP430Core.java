@@ -656,8 +656,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
     }
 
     // Pick the one with the shortest time in the future.
-    nextEventCycles = nextCycleEventCycles < nextVTimeEventCycles ?
-        nextCycleEventCycles : nextVTimeEventCycles;
+    nextEventCycles = Math.min(nextCycleEventCycles, nextVTimeEventCycles);
   }
 
   /**
@@ -993,7 +992,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
       if (maxCycles >= 0 && maxCycles < nextEventCycles) {
         // Should it just freeze or take on extra cycle step if cycles > max?
-        cycles = cycles < maxCycles ? maxCycles : cycles;
+        cycles = Math.max(cycles, maxCycles);
       } else {
         cycles = nextEventCycles;
       }

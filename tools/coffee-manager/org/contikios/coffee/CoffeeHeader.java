@@ -134,8 +134,7 @@ class CoffeeHeader {
 		bytes[index++] = (byte) flags;
 
 		byte[] nameBytes = name.getBytes();
-		int copyLength = nameBytes.length > conf.nameLength ?
-					conf.nameLength : nameBytes.length;
+		int copyLength = Math.min(nameBytes.length, conf.nameLength);
 		System.arraycopy(nameBytes, 0, bytes, index, copyLength);
 
 		return bytes;
