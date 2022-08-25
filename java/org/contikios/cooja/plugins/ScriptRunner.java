@@ -474,23 +474,13 @@ public class ScriptRunner implements Plugin {
         File file = simulation.getCooja().restorePortablePath(new File(element.getText().trim()));
         setLinkFile(file);
       } else if ("active".equals(name)) {
-        boolean active = Boolean.parseBoolean(element.getText());
-        if (Cooja.isVisualized()) {
-          try {
-            setScriptActive(active);
-          } catch (Exception e) {
-            logger.fatal("Error: " + e.getMessage(), e);
-          }
+        try {
+          // Automatically activate script in headless mode.
+          setScriptActive(!Cooja.isVisualized() || Boolean.parseBoolean(element.getText()));
+        } catch (Exception e) {
+          logger.fatal("Error: " + e.getMessage(), e);
+          // FIXME: return false here.
         }
-      }
-    }
-
-    if (!Cooja.isVisualized()) {
-      /* Automatically activate script */
-      try {
-        setScriptActive(true);
-      } catch (Exception e) {
-        logger.fatal("Error: " + e.getMessage(), e);
       }
     }
     return true;
