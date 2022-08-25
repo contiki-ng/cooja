@@ -9,7 +9,7 @@ public class CallEntry {
 
         @Override
         public int compareTo(CallCounter o) {
-            return (count < o.count ? -1 : (count == o.count ? 0 : 1));
+            return Integer.compare(count, o.count);
         }
     }
 
