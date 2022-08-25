@@ -399,7 +399,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                         break;
 
                 case CC1120_STX:
-      int len = (int) (0xff&txfifo.get(0));
+      int len = 0xff&txfifo.get(0);
       txFooterCountdown = 1 + len + 1/*len*/;
       if (DEBUG) {
           System.out.println("TX started: len = " + len + ", txFooterCountdown = " + txFooterCountdown);
@@ -753,7 +753,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                         if (txSendSynchByteCnt < NUM_PREAMBLE + NUM_SYNCH) {
                                 txSendSynchByteCnt++;
                                 if (rfListener != null) {
-                                        rfListener.receivedByte((byte) (SYNCH_BYTE_LAST));
+                                        rfListener.receivedByte(SYNCH_BYTE_LAST);
                                 }
                                 cpu.scheduleTimeEventMillis(sendEvent, BITRATE_BYTE_DURATION);
 

@@ -3171,7 +3171,7 @@ public class Cooja extends Observable {
       }
       System.gc();
 
-      if (!newSim.setConfigXML((Element) root.getChild("simulation"), isVisualized(), quick, manualRandomSeed)) {
+      if (!newSim.setConfigXML(root.getChild("simulation"), isVisualized(), quick, manualRandomSeed)) {
         logger.info("Simulation not loaded");
         return null;
       }

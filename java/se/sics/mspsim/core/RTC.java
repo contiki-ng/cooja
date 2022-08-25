@@ -573,7 +573,7 @@ public class RTC extends IOUnit {
                                 parseCalReg(Calendar.DAY_OF_WEEK, hi);
                         } else {
                                 rtcCount &= 0x0000ffff;
-                                rtcCount |= (long) (value << 16);
+                                rtcCount |= value << 16;
                         }
                         break;
 
