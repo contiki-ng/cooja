@@ -318,8 +318,7 @@ public class LogScriptEngine {
     engine.put("gui", simulation.getCooja());
     engine.put("msg", "");
 
-    var scriptMote = new ScriptMote();
-    engine.put("node", scriptMote);
+    engine.put("node", new ScriptMote());
 
     Runnable activate = new Runnable() {
       @Override
