@@ -139,9 +139,9 @@ public class CC2420PacketHandler extends AbstractPacketHandler implements RFList
       public void execute(long t) {
         System.out.println("CC2420: Packet to send: ");
         byte[] buffer = sendPacket.getBytes();
-        for (int i = 0; i < buffer.length; i++) {
-          System.out.print(Utils.hex8(buffer[i]));
-          out.print(Utils.hex8(buffer[i]));
+        for (byte b : buffer) {
+          System.out.print(Utils.hex8(b));
+          out.print(Utils.hex8(b));
         }
         /* send to output + two additional bytes...! */
         out.println();

@@ -88,9 +88,8 @@ public class Beeper extends Chip {
         }
         if (buffer == null) {
             byte[] buf = new byte[WAVE_LEN];
-            double f1 = 0;
             for (int i = 0; i < WAVE_LEN; i++) {
-                f1 = Math.sin(i * 3.141592 * 2 / WAVE_LEN) * 40;
+                double f1 = Math.sin(i * 3.141592 * 2 / WAVE_LEN) * 40;
                 f1 += Math.sin(i * 3.141592 * 4 / WAVE_LEN) * 30;
                 buf[i] = (byte) (f1);
             }

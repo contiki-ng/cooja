@@ -68,7 +68,7 @@ public class EmuLink {
     private long globalEtime = 0L;
     private long globalLastTime = 0L;
 
-    private final Hashtable<String, GenericNode> nodes = new Hashtable<String, GenericNode>();
+    private final Hashtable<String, GenericNode> nodes = new Hashtable<>();
 
     public boolean isConnected() {
         return !isConnected;
@@ -109,9 +109,9 @@ public class EmuLink {
 
         String[] nodes = getNodes(json);
         if (nodes != null) {
-            for (int i = 0; i < nodes.length; i++) {
-                createNode(type, nodes[i]);
-            }
+          for (String node : nodes) {
+            createNode(type, node);
+          }
         }
         return true;
     }

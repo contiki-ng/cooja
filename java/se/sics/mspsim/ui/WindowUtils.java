@@ -108,7 +108,7 @@ public class WindowUtils {
 
   public synchronized static void addSaveOnClose(String key, Window window) {
     if (closeTable == null) {
-      closeTable = new Hashtable<Window,CloseListener>();
+      closeTable = new Hashtable<>();
     }
     if (closeTable.get(window) == null) {
       CloseListener c = new CloseListener(key);
@@ -128,7 +128,7 @@ public class WindowUtils {
 
   public synchronized static void addSaveOnShutdown(String key, Window window) {
     if (exitTable == null) {
-      exitTable = new Hashtable<Window,String>();
+      exitTable = new Hashtable<>();
       Runtime.getRuntime().addShutdownHook(new ShutdownHandler());
     }
     exitTable.put(window, key);

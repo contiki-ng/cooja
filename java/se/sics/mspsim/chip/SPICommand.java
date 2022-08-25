@@ -82,7 +82,7 @@ public class SPICommand {
         String[] subs = pattern.split(" ");
         this.name = subs[0];
 
-        ArrayList<BitField> bitFields = new ArrayList<BitField>();
+        ArrayList<BitField> bitFields = new ArrayList<>();
         int value = 0;
         int mask = 0;
         int bitCount = 0;

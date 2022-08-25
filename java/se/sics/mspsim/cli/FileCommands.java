@@ -6,7 +6,7 @@ import se.sics.mspsim.util.ComponentRegistry;
 
 public class FileCommands implements CommandBundle {
 
-    private final Hashtable <String,Target> fileTargets = new Hashtable<String,Target>();
+    private final Hashtable <String,Target> fileTargets = new Hashtable<>();
 
     @Override
     public void setupCommands(final ComponentRegistry registry, CommandHandler handler) {

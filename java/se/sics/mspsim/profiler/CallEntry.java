@@ -26,7 +26,7 @@ public class CallEntry {
     HashMap<MapEntry,CallCounter> callers;
 
     public CallEntry() {
-      callers = new HashMap<MapEntry,CallCounter>();
+      callers = new HashMap<>();
     }
 
     public MapEntry getFunction() {

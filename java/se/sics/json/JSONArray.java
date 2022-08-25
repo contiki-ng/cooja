@@ -170,7 +170,7 @@ public class JSONArray extends ArrayList<Object> implements JSONAware, JSONStrea
     public boolean getAsBoolean(int index, boolean defaultValue) {
         Object v = get(index);
         if (v instanceof Boolean) {
-            return ((Boolean)v).booleanValue();
+            return (Boolean) v;
         }
         return defaultValue;
     }

@@ -109,7 +109,7 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
 
   private RadioPacket packetFromMote = null;
 
-  private boolean radioOn = true;
+  private boolean radioOn;
 
   private boolean isTransmitting = false;
 

@@ -177,8 +177,8 @@ public class BasicClockModule extends ClockSystem {
 
   private void updateTimers(long cycles) {
     if (timers != null) {
-      for(int i = 0; i < timers.length; i++) {
-        timers[i].resetCounter(cycles);
+      for (Timer timer : timers) {
+        timer.resetCounter(cycles);
       }
     }
   }

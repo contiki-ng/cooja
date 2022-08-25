@@ -51,22 +51,22 @@ import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
 
 /**
  * The Unit Disk Graph Radio Medium abstracts radio transmission range as circles.
- * 
+ * <p>
  * It uses two different range parameters: one for transmissions, and one for
  * interfering with other radios and transmissions.
- * 
+ * <p>
  * Both radio ranges grow with the radio output power indicator.
  * The range parameters are multiplied with [output power]/[maximum output power].
  * For example, if the transmission range is 100m, the current power indicator 
  * is 50, and the maximum output power indicator is 100, then the resulting transmission 
  * range becomes 50m.
- * 
+ * <p>
  * For radio transmissions within range, two different success ratios are used [0.0-1.0]:
  * one for successful transmissions, and one for successful receptions.
  * If the transmission fails, no radio will hear the transmission.
  * If one of receptions fail, only that receiving radio will not receive the transmission,
  * but will be interfered throughout the entire radio connection.  
- * 
+ * <p>
  * The received radio packet signal strength grows inversely with the distance to the
  * transmitter.
  *

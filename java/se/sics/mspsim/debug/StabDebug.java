@@ -128,57 +128,56 @@ public class StabDebug implements ELFDebug {
     int lastAddress = 0;
     int currentLine = 0;
     int currentLineAdr = 0;
-    for (int i = 0, n = stabs.length; i < n; i++) {
-      Stab stab = stabs[i];
-      switch(stab.type) {
-      case N_SO:
-        if (stab.value < address) {
-          if (stab.data != null && stab.data.endsWith("/")) {
-            currentPath = stab.data;
+    for (Stab stab : stabs) {
+      switch (stab.type) {
+        case N_SO:
+          if (stab.value < address) {
+            if (stab.data != null && stab.data.endsWith("/")) {
+              currentPath = stab.data;
+            } else {
+              currentFile = stab.data;
+            }
+            lastAddress = stab.value;
+            currentFunction = null;
           } else {
-            currentFile = stab.data;
+            /* requires sorted order of all file entries in stab section */
+            if (DEBUG) {
+              System.out.println("FILE: Already passed address..." +
+                      currentPath + " " +
+                      currentFile + " " + currentFunction);
+            }
+            return null;
           }
-          lastAddress = stab.value;
-          currentFunction = null;
-        } else {
-          /* requires sorted order of all file entries in stab section */
-          if (DEBUG) {
-            System.out.println("FILE: Already passed address..." +
-                               currentPath + " " +
-                               currentFile + " " + currentFunction);
-          }
-          return null;
-        }
-        break;
-      case N_SLINE:
-        if (currentPath != null) { /* only files with path... */
-          if (currentLineAdr < address) {
-            currentLine = stab.desc;
-            currentLineAdr = lastAddress + stab.value;
-            if (currentLineAdr >= address) {
-              // Finished!!!
-              if (DEBUG) {
-                System.out.println("File: " + currentPath + " " + currentFile);
-                System.out.println("Function: " + currentFunction);
-                System.out.println("Line No: " + currentLine);
+          break;
+        case N_SLINE:
+          if (currentPath != null) { /* only files with path... */
+            if (currentLineAdr < address) {
+              currentLine = stab.desc;
+              currentLineAdr = lastAddress + stab.value;
+              if (currentLineAdr >= address) {
+                // Finished!!!
+                if (DEBUG) {
+                  System.out.println("File: " + currentPath + " " + currentFile);
+                  System.out.println("Function: " + currentFunction);
+                  System.out.println("Line No: " + currentLine);
+                }
+                return new DebugInfo(currentLine, currentPath, currentFile,
+                        currentFunction);
               }
-              return new DebugInfo(currentLine, currentPath, currentFile,
-                                   currentFunction);
             }
           }
-        }
-        break;
-      case N_FUN:
-        if (stab.value < address) {
-          currentFunction = stab.data;
-          lastAddress = stab.value;
-        } else {
-          if (DEBUG) {
-            System.out.println("FUN: Already passed address...");
+          break;
+        case N_FUN:
+          if (stab.value < address) {
+            currentFunction = stab.data;
+            lastAddress = stab.value;
+          } else {
+            if (DEBUG) {
+              System.out.println("FUN: Already passed address...");
+            }
+            return null;
           }
-          return null;
-        }
-        break;
+          break;
       }
     }
     return null;

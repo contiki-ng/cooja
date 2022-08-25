@@ -323,7 +323,7 @@ public class IPAddress extends MoteInterface {
    */
   public class IPContainer {
 
-    private boolean isGlobal = false;
+    private boolean isGlobal;
     private final byte[] ip;
     private final int addrIdx;
     private final String cprString;

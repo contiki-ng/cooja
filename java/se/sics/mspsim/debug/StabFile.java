@@ -52,8 +52,8 @@ public class StabFile {
 
     public int stabIndex;
 
-    private ArrayList<StabFunction> functions = new ArrayList<StabFunction>();
-    private HashMap<String, StabType> types = new HashMap<String,StabType>();
+    private ArrayList<StabFunction> functions = new ArrayList<>();
+    private HashMap<String, StabType> types = new HashMap<>();
     private StabFunction lastFunction;
 
     public void handleStabs(Stab[] stabs) {
@@ -133,9 +133,9 @@ public class StabFile {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("File: ").append(path).append(file).append(" starts at: ").append(startAddress).append("\n");
-        for (int i = 0; i < functions.size(); i++) {
-            sb.append("  ").append(functions.get(i)).append("\n");
-        }
+      for (StabFunction function : functions) {
+        sb.append("  ").append(function).append("\n");
+      }
         return sb.toString();
     }
 }

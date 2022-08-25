@@ -49,7 +49,7 @@ public class CoffeeFS {
 		this.image = image;
 		conf = image.getConfiguration();
 		currentPage = 0;
-		files = new TreeMap<String, CoffeeFile>();
+		files = new TreeMap<>();
 
 		while(currentPage < (conf.fsSize / conf.pageSize)) {
 			CoffeeHeader header = readHeader(currentPage);

@@ -441,8 +441,8 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
   }
 
   public static class Edge {
-    public Radio source = null;
-    public DGRMDestinationRadio superDest = null;
+    public Radio source;
+    public DGRMDestinationRadio superDest;
 
     public Edge(Radio source, DGRMDestinationRadio dest) {
       this.source = source;

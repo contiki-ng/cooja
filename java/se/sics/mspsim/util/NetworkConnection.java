@@ -56,7 +56,7 @@ public class NetworkConnection implements Runnable {
   private final static int DEFAULT_PORT = 4711;
 
   private ServerSocket serverSocket = null;
-  private SendThread sendThread = null;
+  private SendThread sendThread;
   private ConnectionThread[] connections = null;
   private PacketListener packetListener;
 
@@ -134,8 +134,8 @@ public class NetworkConnection implements Runnable {
 
   private void printPacket(String prefix, byte[] data) {
     System.out.print("NetworkConnection: " + prefix);
-    for (int i = 0, len = data.length; i < len; i++) {
-      System.out.print(' ' + Utils.hex8(data[i]));
+    for (byte datum : data) {
+      System.out.print(' ' + Utils.hex8(datum));
     }
     System.out.println();
   }
@@ -144,8 +144,6 @@ public class NetworkConnection implements Runnable {
     try {
       Socket socket = new Socket("127.0.0.1", port);
       connections = ArrayUtils.add(ConnectionThread.class, connections, new ConnectionThread(socket));
-    } catch (UnknownHostException e) {
-      return false;
     } catch (IOException e) {
       return false;
     }
@@ -163,7 +161,7 @@ public class NetworkConnection implements Runnable {
 
   class SendThread implements Runnable {
 
-    private ArrayList<SendEvent> queue = new ArrayList<SendEvent>();
+    private ArrayList<SendEvent> queue = new ArrayList<>();
 
     public SendThread() {
       new Thread(this, "NetworkConnection.SendThread").start();
@@ -184,17 +182,17 @@ public class NetworkConnection implements Runnable {
     private void sendPacket(SendEvent event) {
       ConnectionThread[] cthr = connections;
       if (cthr != null) {
-        for (int i = 0; i < cthr.length; i++) {
-          if (cthr[i].isClosed()) {
-            connections = ArrayUtils.remove(connections, cthr[i]);
+        for (ConnectionThread connectionThread : cthr) {
+          if (connectionThread.isClosed()) {
+            connections = ArrayUtils.remove(connections, connectionThread);
             // Do not write back to the source
-          } else if (cthr[i] != event.source){
+          } else if (connectionThread != event.source) {
             try {
-              cthr[i].output.write(event.data, 0, event.data.length);
-              cthr[i].output.flush();
+              connectionThread.output.write(event.data, 0, event.data.length);
+              connectionThread.output.flush();
             } catch (IOException e) {
               e.printStackTrace();
-              cthr[i].close();
+              connectionThread.close();
             }
           }
         }

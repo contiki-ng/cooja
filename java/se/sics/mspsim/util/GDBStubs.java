@@ -103,9 +103,7 @@ public class GDBStubs implements Runnable {
                         readCmd = true;
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (EmulationException e) {
+            } catch (IOException | EmulationException e) {
                 e.printStackTrace();
             }
         }

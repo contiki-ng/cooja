@@ -13,7 +13,7 @@ public class CommandHandler implements ActiveComponent, LineListener {
 
   private String scriptDirectory = "scripts";
 
-  private Hashtable<String, Command> commands = new Hashtable<String, Command>();
+  private Hashtable<String, Command> commands = new Hashtable<>();
 
   protected final PrintStream out;
   protected final PrintStream err;
@@ -185,8 +185,8 @@ public class CommandHandler implements ActiveComponent, LineListener {
   public void start() {
     Object[] commandBundles = registry.getAllComponents(CommandBundle.class);
     if (commandBundles != null) {
-      for (int i = 0, n = commandBundles.length; i < n; i++) {
-        ((CommandBundle) commandBundles[i]).setupCommands(registry, this);
+      for (Object commandBundle : commandBundles) {
+        ((CommandBundle) commandBundle).setupCommands(registry, this);
       }
     }
   }
@@ -254,10 +254,10 @@ public class CommandHandler implements ActiveComponent, LineListener {
       public int executeCommand(CommandContext context) {
         if (currentAsyncCommands.size() > 0) {
             context.out.println(" PID\tCommand");
-            for (int i = 0; i < currentAsyncCommands.size(); i++) {
-                CommandContext cmd = currentAsyncCommands.get(i)[0];
-                context.out.println("  " + cmd);
-            }
+          for (CommandContext[] currentAsyncCommand : currentAsyncCommands) {
+            CommandContext cmd = currentAsyncCommand[0];
+            context.out.println("  " + cmd);
+          }
         } else {
             context.out.println("No executing commands.");
         }
@@ -301,9 +301,9 @@ public class CommandHandler implements ActiveComponent, LineListener {
 
   private boolean exitCommands(CommandContext[] contexts) {
       if (contexts != null) {
-          for (int i = 0; i < contexts.length; i++) {
-              contexts[i].stopCommand();
-          }
+        for (CommandContext context : contexts) {
+          context.stopCommand();
+        }
           return true;
       }
       return false;

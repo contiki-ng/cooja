@@ -56,7 +56,7 @@ import org.contikios.cooja.VisPlugin;
 public class MoteTypeInformation extends VisPlugin {
   private final Simulation simulation;
   private final Observer simObserver;
-  private int nrMotesTypes = -1;
+  private int nrMotesTypes;
 
   /**
    * @param simulation Simulation

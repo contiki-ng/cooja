@@ -88,8 +88,8 @@ public class DotDiagram extends JComponent {
   private String yLabel = null;
   private String xLabel = null;
 
-  private boolean isAdditive = false;
-  private boolean isFilled = false;
+  private boolean isAdditive;
+  private boolean isFilled;
 
   // Cache to avoid creating new insets objects for each repaint. Is
   // created when first needed.

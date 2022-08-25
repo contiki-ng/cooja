@@ -206,11 +206,11 @@ public class DMA extends IOUnit {
          * with 3 channels it does not make sense. Optimize later - maybe with
          * flag in DMA triggers so that they now if a channel listens at all.
          */
-        for (int i = 0; i < channels.length; i++) {
+      for (Channel channel : channels) {
 //            System.out.println("DMA Channel:" + i + " " + channels[i].trigger + " = " + trigger);
-            if (channels[i].trigger == trigger &&
-                channels[i].triggerIndex == index) channels[i].trigger(trigger, index);
-        }
+        if (channel.trigger == trigger &&
+                channel.triggerIndex == index) channel.trigger(trigger, index);
+      }
     }
 
     @Override

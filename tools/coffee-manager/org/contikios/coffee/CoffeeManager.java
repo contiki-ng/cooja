@@ -135,11 +135,7 @@ public class CoffeeManager {
 				System.err.println("Unknown command!");
 				System.exit(1);
 			}
-		} catch (IOException e) {
-			System.err.println(e.getMessage());
-		} catch (CoffeeException e) {
-			System.err.println(e.getMessage());
-		} catch (CoffeeFileException e) {
+		} catch (IOException | CoffeeFileException | CoffeeException e) {
 			System.err.println(e.getMessage());
 		}
 	}
@@ -151,15 +147,11 @@ public class CoffeeManager {
 		CoffeeConfiguration conf = coffeeFS.getConfiguration();
 
 		try {
-			Iterator<Map.Entry<String, CoffeeFile>> iterator =
-				coffeeFS.getFiles().entrySet().iterator();
-			while (iterator.hasNext()) {
-				Map.Entry<String, CoffeeFile> pair = iterator.next();
-				CoffeeFile file = pair.getValue();
-				bytesWritten += file.getLength();
-				bytesReserved += file.getHeader().getReservedSize();
-				fileCount++;
-			}
+      for (var file : coffeeFS.getFiles().values()) {
+        bytesWritten += file.getLength();
+        bytesReserved += file.getHeader().getReservedSize();
+        fileCount++;
+      }
 			bytesReserved *= conf.pageSize;
 			System.out.println("File system size: " +
 				conf.fsSize / 1024 + "kb");
@@ -178,12 +170,9 @@ public class CoffeeManager {
 
 	public static void printFiles(Map<String, CoffeeFile> files) {
 		try {
-			Iterator<Map.Entry<String, CoffeeFile>> iterator = files.entrySet().iterator();
-			while (iterator.hasNext()) {
-				Map.Entry<String, CoffeeFile> pair = iterator.next();
-				CoffeeFile file = pair.getValue();
-				System.out.println(file.getName() + " " + file.getLength());
-			}
+      for (var file : files.values()) {
+        System.out.println(file.getName() + " " + file.getLength());
+      }
 		} catch (IOException e) {
 			System.err.println("failed to determine the file length");
 		}

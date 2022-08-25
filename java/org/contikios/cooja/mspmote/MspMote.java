@@ -95,7 +95,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private CommandHandler commandHandler;
   private MSP430 myCpu = null;
-  private MspMoteType myMoteType = null;
+  private MspMoteType myMoteType;
   private MspMoteMemory myMemory = null;
   private MoteInterfaceHandler myMoteInterfaceHandler = null;
   public ComponentRegistry registry = null;
@@ -316,7 +316,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   private void regularExecute(MspClock clock, long t, int duration) {
-    long nextExecute = 0;
+    long nextExecute;
     long drift = clock.getDrift();
 
     /* Wait until mote boots */

@@ -107,7 +107,7 @@ public class ComponentRegistry {
 
     @SuppressWarnings("unchecked")
     public synchronized <T> T[] getAllComponents(Class<T> type, String name) {
-        ArrayList<T> list = new ArrayList<T>();
+        ArrayList<T> list = new ArrayList<>();
         for (ComponentEntry entry : components) {
             if (type.isInstance(entry.component) && name.equals(entry.name)) {
                 list.add(type.cast(entry.component));
@@ -127,7 +127,7 @@ public class ComponentRegistry {
 
     @SuppressWarnings("unchecked")
     public synchronized <T> T[] getAllComponents(Class<T> type) {
-        ArrayList<T> list = new ArrayList<T>();
+        ArrayList<T> list = new ArrayList<>();
         for (ComponentEntry entry : components) {
             if (type.isInstance(entry.component)) {
                 list.add(type.cast(entry.component));

@@ -319,8 +319,8 @@ public class CC1120 extends Radio802154 implements USARTListener {
 
         private CC1120RadioState state = null;
 
-        protected List<Byte> txfifo = new ArrayList<Byte>();
-        protected List<Byte> rxfifo = new ArrayList<Byte>();
+        protected List<Byte> txfifo = new ArrayList<>();
+        protected List<Byte> rxfifo = new ArrayList<>();
 
         protected int[] registers = new int[64];
         protected int[] extendedRegisters = new int[256];
@@ -566,7 +566,6 @@ public class CC1120 extends Radio802154 implements USARTListener {
 
                 /* Return MARCSTATE */
                 source.byteReceived(getMarcstate());
-                return;
         }
         int setReg(int address, int data, boolean extended) {
                 /*System.err.println(String.format("setReg(0x%02x, %s) 0x%02x", address,
@@ -837,16 +836,16 @@ public class CC1120 extends Radio802154 implements USARTListener {
 
         private void printRXFIFO() {
                 System.out.printf("RXFIFO[%03d]: ", rxfifo.size());
-                for (int i = 0; i < rxfifo.size(); i++) {
-                        System.out.printf("%02x", rxfifo.get(i));
-                }
+          for (Byte aByte : rxfifo) {
+            System.out.printf("%02x", aByte);
+          }
                 System.out.println();
         }
         private void printTXFIFO() {
                 System.out.printf("TXFIFO[%03d]: ", txfifo.size());
-                for (int i = 0; i < txfifo.size(); i++) {
-                        System.out.printf("%02x", txfifo.get(i));
-                }
+          for (Byte aByte : txfifo) {
+            System.out.printf("%02x", aByte);
+          }
                 System.out.println();
         }
 

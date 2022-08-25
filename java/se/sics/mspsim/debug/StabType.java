@@ -23,9 +23,9 @@ public class StabType {
         parts = parts[1].split("=");
         internalName = parts[0];
         if (!handleKnown(name)) {
-            for (int i = 0; i < parts.length; i++) {
-                handleTypeDef(parts[i]);
-            }
+          for (String part : parts) {
+            handleTypeDef(part);
+          }
         }
     }
 
