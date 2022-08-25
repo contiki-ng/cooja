@@ -87,8 +87,6 @@ tasks.register('fullJar', Jar) {
 }
 
 run {
-  // Workaround for make call in CompileContiki.java.
-  workingDir = file('build')
   // Bad Cooja location detected with gradle run, explicitly pass -cooja.
   doFirst {
     args += ['-cooja', "$projectDir"]
