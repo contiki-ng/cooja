@@ -72,10 +72,7 @@ public class WindowUtils {
   }
 
   private static String getBounds(Window window) {
-    return "" + window.getX()
-      + ',' + window.getY()
-      + ',' + window.getWidth()
-      + ',' + window.getHeight();
+    return String.valueOf(window.getX()) + ',' + window.getY() + ',' + window.getWidth() + ',' + window.getHeight();
   }
 
   private static void setBounds(Window window, String bounds) {

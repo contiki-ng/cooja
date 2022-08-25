@@ -440,7 +440,7 @@ public class Scanner implements TokenTypes {
         continue;
       if (i == endgap)
         System.out.print("... ");
-      System.out.print("" + i + ":" + tokens[i].position);
+      System.out.print(i + ":" + tokens[i].position);
       System.out.print("-"
           + (tokens[i].position + tokens[i].symbol.name.length()));
       System.out.print(" ");

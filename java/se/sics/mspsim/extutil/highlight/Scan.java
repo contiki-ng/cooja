@@ -35,7 +35,7 @@ public class Scan {
 
     for (int i = 0; i < scanner.size(); i++) {
       Token t = scanner.getToken(i);
-      System.out.print("" + t.position);
+      System.out.print(String.valueOf(t.position));
       System.out.print(": " + t.symbol.name);
       System.out.println(" " + TokenTypes.typeNames[t.symbol.type]);
     }
