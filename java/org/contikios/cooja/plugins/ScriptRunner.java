@@ -384,20 +384,7 @@ public class ScriptRunner implements Plugin {
 
     /* Activate engine */
     try {
-      if (!Cooja.isVisualized()) {
-        engine.activateScript(headlessScript);
-      } else {
-        engine.activateScript(codeEditor.getText());
-        if (actionLinkFile != null) {
-          actionLinkFile.setEnabled(false);
-        }
-        logTextArea.setText("");
-        codeEditor.setEnabled(false);
-        updateTitle();
-      }
-
-      logger.debug("Test script activated");
-
+      engine.activateScript(Cooja.isVisualized() ? codeEditor.getText() : headlessScript);
     } catch (RuntimeException | ScriptException e) {
       logger.fatal("Test script error: ", e);
       setScriptActive(false);
@@ -405,6 +392,15 @@ public class ScriptRunner implements Plugin {
         Cooja.showErrorDialog(Cooja.getTopParentContainer(),
                 "Script error", e, false);
       }
+      return;
+    }
+    if (Cooja.isVisualized()) {
+      if (actionLinkFile != null) {
+        actionLinkFile.setEnabled(false);
+      }
+      logTextArea.setText("");
+      codeEditor.setEnabled(false);
+      updateTitle();
     }
   }
 
