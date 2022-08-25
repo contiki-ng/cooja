@@ -86,7 +86,7 @@ public class Simulation extends Observable implements Runnable {
 
   private Thread simulationThread = null;
 
-  private Cooja cooja = null;
+  private Cooja cooja;
 
   private long randomSeed = 123456;
 

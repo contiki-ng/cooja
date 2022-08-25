@@ -75,7 +75,7 @@ import org.contikios.cooja.SimEventCentral.MoteCountListener;
 @ClassDescription("Mote2Mote Relations")
 public class Mote2MoteRelations extends MoteInterface {
   private static final Logger logger = LogManager.getLogger(Mote2MoteRelations.class);
-  private Mote mote = null;
+  private Mote mote;
 
   private final ArrayList<Mote> relations = new ArrayList<>();
   private final Cooja gui;

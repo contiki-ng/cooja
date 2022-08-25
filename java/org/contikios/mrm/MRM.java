@@ -81,15 +81,15 @@ public class MRM extends AbstractRadioMedium {
   public final static boolean WITH_NOISE = true; /* NoiseSourceRadio */
   public final static boolean WITH_DIRECTIONAL = true; /* DirectionalAntennaRadio */
 
-  private Observer channelModelObserver = null;
+  private Observer channelModelObserver;
 
   private boolean WITH_CAPTURE_EFFECT;
   private double CAPTURE_EFFECT_THRESHOLD;
   private double CAPTURE_EFFECT_PREAMBLE_DURATION;
   
   private final Simulation sim;
-  private Random random = null;
-  private ChannelModel currentChannelModel = null;
+  private Random random;
+  private ChannelModel currentChannelModel;
 
   /**
    * Creates a new Multi-path Ray-tracing Medium (MRM).

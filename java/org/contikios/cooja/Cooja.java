@@ -2147,7 +2147,7 @@ public class Cooja extends Observable {
     mySimulation.stopSimulation();
 
     // Create mote type
-    MoteType newMoteType = null;
+    MoteType newMoteType;
     try {
       newMoteType = moteTypeClass.getDeclaredConstructor().newInstance();
       if (!newMoteType.configureAndInit(Cooja.getTopParentContainer(), mySimulation, isVisualized())) {
@@ -2413,7 +2413,7 @@ public class Cooja extends Observable {
         root.addContent(getPluginsConfigXML());
 
         /* Remove current simulation, and load config */
-        boolean shouldRetry = false;
+        boolean shouldRetry;
         do {
           try {
             shouldRetry = false;
@@ -3901,9 +3901,7 @@ public class Cooja extends Observable {
   
   private static File restoreContikiRelativePath(File portable) {
   	int elem = PATH_IDENTIFIER.length;
-  	File path = null;
-	String canonical = null;
-	
+
     try {
     	String portablePath = portable.getPath();
         int i = 0;
@@ -3914,9 +3912,9 @@ public class Cooja extends Observable {
 
       // Not so nice, but goes along with GUI.getExternalToolsSetting
 			String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
-    	path = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));
+      var path = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));
     	
-		canonical = path.getCanonicalPath();
+      var canonical = path.getCanonicalPath();
     	File absolute = new File(portablePath.replace(PATH_IDENTIFIER[i][0], canonical));
 		if(!absolute.exists()){
 			logger.warn("Replaced " + portable  + " with " + absolute + " (default: "+ defp + PATH_IDENTIFIER[i][2] +"), but could not find it. This does not have to be an error, as the file might be created later.");
@@ -4060,7 +4058,7 @@ public class Cooja extends Observable {
       key = obj.getClass().getName();
     }
 
-    String help = null;
+    String help;
     if (obj instanceof HasQuickHelp) {
       help = ((HasQuickHelp) obj).getQuickHelp();
     } else {

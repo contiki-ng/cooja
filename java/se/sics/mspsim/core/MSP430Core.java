@@ -892,7 +892,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   private int serviceInterrupt(int pc) {
     int pcBefore = pc;
     int spBefore = readRegister(SP);
-    int sp = spBefore;
+    int sp;
     int sr = readRegister(SR);
 
     if (profiler != null) {
@@ -1007,7 +1007,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
         return -2;
     }
     int ext3_0 = 0;
-    int ext10_7 = 0;
+    int ext10_7;
     int extSrc = 0;
     int extDst = 0;
     boolean repeatsInDstReg = false;
@@ -1047,8 +1047,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
     op = instruction >> 12;
     int sp = 0;
-    int sr = 0;
-    int rval = 0; /* register value */
+    int sr;
+    int rval; /* register value */
     int repeats = 1; /* msp430X can repeat some instructions in some cases */
     boolean zeroCarry = false; /* msp430X can zero carry in repeats */
     boolean word = (instruction & 0x40) == 0;
@@ -1080,7 +1080,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
             throw new EmulationException("Executing MSP430X instruction but MCU is not a MSP430X");
 //        System.out.println("Executing MSP430X instruction op:" + Utils.hex16(op) +
 //                " ins:" + Utils.hex16(instruction) + " PC = $" + getAddressAsString(pc - 2));
-        int src = 0;
+        int src;
         /* data is either bit 19-16 or src register */
         int srcData = (instruction & 0x0f00) >> 8;
         int dstData = (instruction & 0x000f);
@@ -1520,7 +1520,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
       } else {
           // Address mode of destination...
           int ad = (instruction >> 4) & 3;
-          int nxtCarry = 0;
+          int nxtCarry;
           op = instruction & 0xff80;
           if (op == PUSH || op == CALL) {
               // The PUSH and CALL operations increase the SP before
@@ -2009,7 +2009,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
               //System.out.println("*** Repeat: " + repeats);
           }
 
-          int tmp = 0;
+          int tmp;
           int tmpAdd = 0;
           switch (op) {
           case MOV: // MOV

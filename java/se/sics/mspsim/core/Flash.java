@@ -259,7 +259,7 @@ public class Flash extends IOUnit {
   }
 
   public void flashWrite(int address, int data, AccessMode dataMode) {
-    int wait_time = -1;
+    int wait_time;
 
     if (locked) {
       if (DEBUG) {

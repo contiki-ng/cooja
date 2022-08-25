@@ -397,8 +397,8 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   }
 
   private class Rule {
-    String from = "";
-    String to = "";
+    String from;
+    String to;
     int prefixMatches = 0;
     int locatesFile = 0;
     public Rule(String from, String to) {

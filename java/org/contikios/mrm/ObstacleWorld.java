@@ -51,7 +51,7 @@ class ObstacleWorld {
   private static final Logger logger = LogManager.getLogger(ObstacleWorld.class);
   
   // All registered obstacles
-  private Vector<Rectangle2D> allObstacles = null;
+  private Vector<Rectangle2D> allObstacles;
   
   // All registered obstacles, with spatial information
   private static final int spatialResolution = 10;
@@ -59,7 +59,7 @@ class ObstacleWorld {
   private boolean obstaclesOrganized = false;
   
   // Outer bounds of all obstacles
-  private Rectangle2D outerBounds = null;
+  private Rectangle2D outerBounds;
   
   
   /**
@@ -354,7 +354,7 @@ class ObstacleWorld {
         (int) ((point.getX() - areaStartX)/boxWidth),
         (int) ((point.getY() - areaStartY)/boxHeight)
     );
-    Vector<Rectangle2D> allObstaclesToCheck = null;
+    Vector<Rectangle2D> allObstaclesToCheck;
     if (centerInArray.x < 0)
       centerInArray.x = 0;
     if (centerInArray.x >= spatialResolution)

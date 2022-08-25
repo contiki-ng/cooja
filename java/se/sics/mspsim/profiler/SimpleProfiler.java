@@ -522,7 +522,7 @@ public class SimpleProfiler implements Profiler, EventListener {
 
   @Override
   public void event(EventSource source, String event, Object data) {
-    TagEntry tagEntry = null;
+    TagEntry tagEntry;
     if ((tagEntry = startTags.get(event)) != null) {
       /* only the first occurrence of event will set the lastCycles */
       if (tagEntry.lastCycles == 0) {

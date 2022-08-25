@@ -41,13 +41,13 @@ class RayData {
   enum RayType { ORIGIN, REFRACTION, REFLECTION, DIFFRACTION, DESTINATION }
   final RayType type;
   
-  private Point2D sourcePoint = null;
-  private Line2D line = null;
+  private Point2D sourcePoint;
+  private Line2D line;
 
-  private int limitOverall = 0;
-  private int limitRefracted = 0;
-  private int limitReflected = 0;
-  private int limitDiffracted = 0;
+  private int limitOverall;
+  private int limitRefracted;
+  private int limitReflected;
+  private int limitDiffracted;
 
   /**
    * Creates a new ray data instance.

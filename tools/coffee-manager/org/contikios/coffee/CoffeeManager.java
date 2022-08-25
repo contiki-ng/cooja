@@ -46,7 +46,7 @@ public class CoffeeManager {
 		String platform = "sky";
 		Command command = Command.STATS;
 		String filename = "";
-		String fsImage = "";
+		String fsImage;
 		String usage = "Usage: java -jar coffee.jar " +
 		        "[-p <hardware platform>] " +
 		        "[-i|e|r <file>] " +

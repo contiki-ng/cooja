@@ -14,7 +14,7 @@ import org.contikios.cooja.Mote;
 public class ApplicationLED extends LED {
     private static final Logger logger = LogManager.getLogger(ApplicationLED.class);
 
-    private Mote mote = null;
+    private Mote mote;
     private byte currentLedValue = 0;
 
     public static final byte LEDS_GREEN = 1;

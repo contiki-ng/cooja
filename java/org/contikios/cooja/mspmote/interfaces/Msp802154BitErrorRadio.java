@@ -58,7 +58,7 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
   private static final double NOISE_FLOOR = AbstractRadioMedium.SS_WEAK;
   private static final double GOOD_SIGNAL = NOISE_FLOOR + 15.0;
 
-  private Random random = null;
+  private Random random;
 
   public Msp802154BitErrorRadio(Mote m) {
     super(m);

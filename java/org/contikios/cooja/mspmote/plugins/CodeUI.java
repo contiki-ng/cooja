@@ -74,8 +74,8 @@ public class CodeUI extends JPanel {
     DefaultSyntaxKit.initKit();
   }
 
-  private JEditorPane codeEditor = null;
-  private HashMap<Integer, Integer> codeEditorLines = null;
+  private JEditorPane codeEditor;
+  private HashMap<Integer, Integer> codeEditorLines;
   protected File displayedFile = null;
 
   private static final HighlightPainter CURRENT_LINE_MARKER = new Markers.SimpleMarker(Color.ORANGE);

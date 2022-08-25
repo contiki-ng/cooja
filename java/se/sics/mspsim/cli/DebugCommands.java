@@ -502,7 +502,7 @@ public class DebugCommands implements CommandBundle {
                     context.out.println(dbg.getASMLine(false));
                     start += dbg.getSize();
                 } else {
-                    int data = 0;
+                    int data;
                     data = cpu.memory[start++];
                     if (Utils.size(type) == 2) {
                         data = data  + (cpu.memory[start++] << 8);
@@ -584,7 +584,7 @@ public class DebugCommands implements CommandBundle {
             }
             // Does not yet handle signed data...
             for (int i = 0; i < count; i++) {
-              int data = 0;
+              int data;
               data = xmem.readByte(start++);
               if (size == 2) {
                 data = data  + (xmem.readByte(start++) << 8);

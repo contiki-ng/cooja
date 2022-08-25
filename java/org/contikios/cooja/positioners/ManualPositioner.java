@@ -58,7 +58,7 @@ import org.contikios.cooja.Positioner;
  */
 @ClassDescription("Manual positioning")
 public class ManualPositioner extends Positioner {
-  private int nodesLeft = 0;
+  private int nodesLeft;
   private boolean skipRemainder = false;
   private double lastX, lastY, lastZ;
 

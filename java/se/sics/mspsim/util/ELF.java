@@ -217,7 +217,7 @@ public class ELF {
   }
 
   int readElf32(int pos) {
-    int b = 0;
+    int b;
     if (encMSB) {
       b = (elfData[pos++] & 0xff) << 24 |
         ((elfData[pos++] & 0xff) << 16) |
@@ -233,7 +233,7 @@ public class ELF {
   }
 
   int readElf16(int pos) {
-    int b = 0;
+    int b;
     if (encMSB) {
       b = ((elfData[pos++] & 0xff) << 8) |
         (elfData[pos++] & 0xff);
