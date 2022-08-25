@@ -57,8 +57,6 @@ public class ScriptParser {
 
     code = replaceYieldThenWaitUntils(code);
 
-    code = replaceYields(code);
-
     code = replaceWaitUntils(code);
 
     this.code = code;
@@ -153,13 +151,6 @@ public class ScriptParser {
     return code;
   }
 
-  private static String replaceYields(String code) {
-    Pattern pattern = Pattern.compile(
-        "YIELD\\(\\)"
-    );
-    return pattern.matcher(code).replaceAll("SCRIPT_SWITCH()");
-  }
-
   private static String replaceYieldThenWaitUntils(String code) {
     Pattern pattern = Pattern.compile(
         "YIELD_THEN_WAIT_UNTIL\\(" +
@@ -188,7 +179,7 @@ public class ScriptParser {
     while (matcher.find()) {
       code = matcher.replaceFirst(
           "while (!(" + matcher.group(1) + ")) { " +
-          " SCRIPT_SWITCH(); " +
+          " YIELD(); " +
       "}");
       matcher.reset(code);
     }
@@ -213,7 +204,7 @@ public class ScriptParser {
     code + 
     "\n" +
     "\n" +
-    "while (true) { SCRIPT_SWITCH(); } " /* SCRIPT ENDED */+
+    "log.testFailed(); " /* SCRIPT ENDED */+
     "};" +
     "\n" +
     "function GENERATE_MSG(time, msg) { " +
@@ -237,7 +228,7 @@ public class ScriptParser {
     " SCRIPT_KILL(); " +
     "};\n" +
     "\n" +
-    "function SCRIPT_SWITCH() { " +
+    "function YIELD() { " +
     " SEMAPHORE_SIM.release(); " +
     " SEMAPHORE_SCRIPT.acquire(); " /* SWITCH BLOCKS HERE! */ +
     " if (SHUTDOWN) { SCRIPT_KILL(); } " +
