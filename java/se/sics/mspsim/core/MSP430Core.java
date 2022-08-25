@@ -491,7 +491,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
 //      if (debugInterrupts) System.out.println("Wrote to InterruptEnabled: " + interruptsEnabled + " was: " + oldIE);
 
-      if (oldIE == false && interruptsEnabled && servicedInterrupt >= 0) {
+      if (!oldIE && interruptsEnabled && servicedInterrupt >= 0) {
 //          System.out.println("*** Interrupts enabled while in interrupt : " +
 //                  servicedInterrupt + " PC: $" + getAddressAsString(reg[PC]));
           /* must handle pending immediately */

@@ -273,7 +273,7 @@ public class Flash extends IOUnit {
       }
     }
 
-    if (cpu.isFlashBusy || wait == false) {
+    if (cpu.isFlashBusy || !wait) {
       if (!((mode & BLKWRT) != 0 && wait)) {
         triggerAccessViolation("Flash write prohbited while BUSY=1 or WAIT=0");
         return;
@@ -362,7 +362,7 @@ public class Flash extends IOUnit {
       return;
     }
     if (DEBUG) {
-      if (wait == false && currentWriteMode == WriteMode.WRITE_BLOCK) {
+      if (!wait && currentWriteMode == WriteMode.WRITE_BLOCK) {
         log("Reading flash prohibited. Would read 0x3fff!!!");
         log("CPU PC=$" + Utils.hex(cpu.getPC(), 4)
             + " read address $" + Utils.hex(address, 4));
@@ -537,7 +537,7 @@ public class Flash extends IOUnit {
       // access violation while erase/write in progress
       // exception: block write mode and WAIT==1
 //      if ((mode & ERASE_MASK) != 0 || (mode & WRT) != 0) {
-      if (cpu.isFlashBusy && ((mode & BLKWRT) == 0 || wait == false)) {
+      if (cpu.isFlashBusy && ((mode & BLKWRT) == 0 || !wait)) {
           //	if (!((mode & BLKWRT) != 0 && wait)) {
         triggerAccessViolation("FCTL1 write not allowed while erase/write active");
         return;

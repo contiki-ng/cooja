@@ -139,7 +139,7 @@ public class AT45DB extends ExternalFlash implements USARTListener {
     }
 
     private void setReady(boolean ready) {
-      if(ready == true)
+      if(ready)
         status |= STATUS_RDY;
       else
         status &= ~STATUS_RDY;
@@ -304,7 +304,7 @@ public class AT45DB extends ExternalFlash implements USARTListener {
 
     public void setReset(boolean reset) {
       Reset = reset;
-      if(Reset == true)
+      if(Reset)
         setState(STATE_RESET);
       if(DEBUG) {
         log("Reset: " + Reset);
@@ -312,7 +312,7 @@ public class AT45DB extends ExternalFlash implements USARTListener {
     }
     public void setChipSelect(boolean select) {
       chipSelect = select;
-      if(chipSelect == false) {
+      if(!chipSelect) {
         switch(state) {
 
         case BUFFER1_TO_PAGE_ERASE:

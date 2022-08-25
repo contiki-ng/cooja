@@ -110,7 +110,7 @@ public class CoffeeManager {
 				}
 				break;
 			case EXTRACT:
-				if (coffeeFS.extractFile(filename) == false) {
+				if (!coffeeFS.extractFile(filename)) {
 					System.err.println("Inexistent file: " +
 						filename);
 					System.exit(1);
