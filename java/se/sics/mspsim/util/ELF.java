@@ -253,7 +253,7 @@ public class ELF {
     for (byte element : data) {
       System.out.print(String.valueOf((char) element));
     }
-    System.out.println("");
+    System.out.println();
   }
 
   private void readSections() {

@@ -206,7 +206,7 @@ public class GDBStubs implements Runnable {
         {
             int cursor = 0;
             intValue = base.charAt(x);
-            String binaryChar = new String(Integer.toBinaryString(base.charAt(x)));
+            String binaryChar = Integer.toBinaryString(base.charAt(x));
             for(int i = 0; i < binaryChar.length(); i++) {
                 if(binaryChar.charAt(i) == '1') {
                     cursor += 1;

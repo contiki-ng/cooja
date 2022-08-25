@@ -363,12 +363,12 @@ public class ConsoleUI extends JComponent {
       for (int i = y; i < ye; i++) {
         String data = screenLines[i];
         if (data.length() > x) {
-          selection.append(data.substring(x, data.length())).append('\n');
+          selection.append(data.substring(x)).append('\n');
           x = 0;
         }
       }
       if (screenLines[ye].length() > xe) {
-        selection.append(screenLines[ye].substring(x, xe));
+        selection.append(screenLines[ye], x, xe);
       }
       StringSelection stringSelection = new StringSelection(
           selection.toString());
@@ -585,7 +585,7 @@ public class ConsoleUI extends JComponent {
   private void addChar(int c) {
     if (c == '\t') {
       int p = 8 - (cursorX & 7);
-      currentOutput.append(tabs.substring(0, p));
+      currentOutput.append(tabs, 0, p);
       cursorX += p;
       minCursorX += p;
     } else if (c == '\n') {
