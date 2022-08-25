@@ -426,7 +426,7 @@ public class LogScriptEngine {
       } else {
         quitCooja = true;
       }
-      simulation.invokeSimulationThread(simulation::stopSimulation);
+      simulation.stopSimulation(false);
 
       throw new RuntimeException("test script killed");
     }
