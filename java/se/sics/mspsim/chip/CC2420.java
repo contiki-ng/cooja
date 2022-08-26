@@ -670,7 +670,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
 
                   /* In RX mode, FIFOP goes high when the size of the first enqueued packet exceeds
                    * the programmable threshold and address recognition isn't ongoing */
-                  if (currentFIFOP == false
+                  if (!currentFIFOP
                           && rxFIFO.length() <= rxlen + 1
                           && !decodeAddress && !frameRejected
                           && rxFIFO.length() > fifopThr) {

@@ -151,7 +151,7 @@ public class ELFSection {
       int bitPos = 0;
       do {
           b = readElf8(pos++);
-          val = val + ((b & 127) << bitPos);
+          val = val + ((long) (b & 127) << bitPos);
           bitPos += 7;
       } while ((b & 128) != 0);
       return val;
@@ -164,7 +164,7 @@ public class ELFSection {
       int bitPos = 0;
       do {
           b = readElf8(pos++);
-          val = val + ((b & 127) << bitPos);
+          val = val + ((long) (b & 127) << bitPos);
           bitPos += 7;
       } while ((b & 128) != 0);
       long negval = 0x1L << bitPos;
@@ -200,7 +200,7 @@ public class ELFSection {
       int bitPos = 0;
       do {
           b = readElf8(pos++);
-          val = val + ((b & 127) << bitPos);
+          val = val + ((long) (b & 127) << bitPos);
           bitPos += 7;
       } while ((b & 128) != 0);
       return val;

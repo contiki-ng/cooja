@@ -511,7 +511,7 @@ public class RTC extends IOUnit {
                          * calendar has been enabled
                          */
                         if ((modeCalendar && formatBCD != ((value & RTCBCD) == RTCBCD))
-                                        || (modeCalendar == false && (value & RTCMODE) == RTCMODE)) {
+                                        || (!modeCalendar && (value & RTCMODE) == RTCMODE)) {
                                 /*
                                  * Changing this bit clears seconds, minutes, hours, day of week,
                                  * and year to 0 and sets day of month and month to 1. The real-time
@@ -573,7 +573,7 @@ public class RTC extends IOUnit {
                                 parseCalReg(Calendar.DAY_OF_WEEK, hi);
                         } else {
                                 rtcCount &= 0x0000ffff;
-                                rtcCount |= value << 16;
+                                rtcCount |= (long) value << 16;
                         }
                         break;
 

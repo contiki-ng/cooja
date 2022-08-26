@@ -106,11 +106,11 @@ public class ProfilerCommands implements CommandBundle {
               namematch = context.getArgument(i++);
               if (i < context.getArgumentCount()) {
                   // Multiple patterns
-                  namematch = "(" + namematch;
-                  for(; i < context.getArgumentCount(); i++) {
-                      namematch += "|" + context.getArgument(i);
+                var namematchBuilder = new StringBuilder("(").append(namematch);
+                for(; i < context.getArgumentCount(); i++) {
+                      namematchBuilder.append("|").append(context.getArgument(i));
                   }
-                  namematch += ')';
+                namematch = namematchBuilder.append(')').toString();
               }
           }
 

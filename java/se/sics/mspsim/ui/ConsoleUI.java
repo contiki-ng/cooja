@@ -553,7 +553,7 @@ public class ConsoleUI extends JComponent {
     /* editor is reset too */
     editPos = minCursorX = cursorX = len = 0;
 
-    if (editing != false && buffer.length() > 0) {
+    if (editing && buffer.length() > 0) {
       /*
        * set edit to false, so we do not get here again before end of "printout".
        */

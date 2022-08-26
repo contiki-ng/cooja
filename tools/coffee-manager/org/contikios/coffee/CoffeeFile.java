@@ -51,8 +51,8 @@ public class CoffeeFile {
 		this.header = header;
 		name = header.name;
 		reservedSize = header.maxPages * coffeeFS.getConfiguration().pageSize;
-		if (header.isModified() && 
-		   coffeeFS.getConfiguration().useMicroLogs == true) {
+		if (header.isModified() &&
+            coffeeFS.getConfiguration().useMicroLogs) {
 			microLog = new CoffeeMicroLog(coffeeFS, coffeeFS.readHeader(header.logPage));
 		} else {
 			microLog = null;
