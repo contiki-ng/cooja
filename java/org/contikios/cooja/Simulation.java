@@ -295,6 +295,11 @@ public class Simulation extends Observable implements Runnable {
 
         if (stopSimulation) {
           isRunning = false;
+          var duration = System.currentTimeMillis() - lastStartTime;
+          var curSimTime = getSimulationTimeMillis();
+          logger.info("Runtime: " + duration + " ms. " +
+                  "Simulated time: " + curSimTime + " ms. " +
+                  "Speedup: " + ((double)curSimTime / (double)duration));
         }
       }
     } catch (RuntimeException e) {
@@ -322,13 +327,6 @@ public class Simulation extends Observable implements Runnable {
 
     this.setChanged();
     this.notifyObservers(this);
-    logger.info("Simulation completed, system time: " + System.currentTimeMillis() +
-        "\tDuration: " + (System.currentTimeMillis() - lastStartTime) +
-                " ms" +
-                "\tSimulated time " + getSimulationTimeMillis() +
-                " ms\tRatio " +
-                ((double)getSimulationTimeMillis() /
-                 (double)(System.currentTimeMillis() - lastStartTime)));
   }
 
   /**
