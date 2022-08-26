@@ -152,7 +152,12 @@ public class LogScriptEngine {
 
     // Check if testOK()/testFailed() were called from the script in headless mode.
     if (quitCooja) {
-      quitRunnable.run();
+      new Thread(() -> simulation.getCooja().doQuit(false, exitCode), "Cooja.doQuit").start();
+      new Thread(() -> {
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        logger.warn("Killing Cooja");
+        System.exit(exitCode);
+      }, "System.exit").start();
     }
     quitCooja = false;
   }
@@ -318,8 +323,7 @@ public class LogScriptEngine {
     engine.put("gui", simulation.getCooja());
     engine.put("msg", "");
 
-    var scriptMote = new ScriptMote();
-    engine.put("node", scriptMote);
+    engine.put("node", new ScriptMote());
 
     Runnable activate = new Runnable() {
       @Override
@@ -365,18 +369,6 @@ public class LogScriptEngine {
       double estimatedLeft = 1.0*realDuration/progress - realDuration;
       if (estimatedLeft == 0) estimatedLeft = 1;
       logger.info(String.format("Test script at %2.2f%%, done in %2.1f sec", 100*progress, estimatedLeft/1000));
-    }
-  };
-
-  private final Runnable quitRunnable = new Runnable() {
-    @Override
-    public void run() {
-      new Thread(() -> simulation.getCooja().doQuit(false, exitCode), "Cooja.doQuit").start();
-      new Thread(() -> {
-        try { Thread.sleep(2000); } catch (InterruptedException e) { }
-        logger.warn("Killing Cooja");
-        System.exit(exitCode);
-      }, "System.exit").start();
     }
   };
 
