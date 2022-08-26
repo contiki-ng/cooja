@@ -384,30 +384,23 @@ public class ScriptRunner implements Plugin {
 
     /* Activate engine */
     try {
-      if (!Cooja.isVisualized()) {
-        engine.activateScript(headlessScript);
-      } else {
-        engine.activateScript(codeEditor.getText());
-        if (actionLinkFile != null) {
-          actionLinkFile.setEnabled(false);
-        }
-        logTextArea.setText("");
-        codeEditor.setEnabled(false);
-        updateTitle();
-      }
-
-      logger.debug("Test script activated");
-
-    } catch (ScriptException e) {
+      engine.activateScript(Cooja.isVisualized() ? codeEditor.getText() : headlessScript);
+    } catch (RuntimeException | ScriptException e) {
       logger.fatal("Test script error: ", e);
       setScriptActive(false);
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog(Cooja.getTopParentContainer(),
                 "Script error", e, false);
       }
-    } catch (RuntimeException e) {
-      logger.fatal("Test script error: ", e);
-      setScriptActive(false);
+      return;
+    }
+    if (Cooja.isVisualized()) {
+      if (actionLinkFile != null) {
+        actionLinkFile.setEnabled(false);
+      }
+      logTextArea.setText("");
+      codeEditor.setEnabled(false);
+      updateTitle();
     }
   }
 
@@ -481,23 +474,13 @@ public class ScriptRunner implements Plugin {
         File file = simulation.getCooja().restorePortablePath(new File(element.getText().trim()));
         setLinkFile(file);
       } else if ("active".equals(name)) {
-        boolean active = Boolean.parseBoolean(element.getText());
-        if (Cooja.isVisualized()) {
-          try {
-            setScriptActive(active);
-          } catch (Exception e) {
-            logger.fatal("Error: " + e.getMessage(), e);
-          }
+        try {
+          // Automatically activate script in headless mode.
+          setScriptActive(!Cooja.isVisualized() || Boolean.parseBoolean(element.getText()));
+        } catch (Exception e) {
+          logger.fatal("Error: " + e.getMessage(), e);
+          // FIXME: return false here.
         }
-      }
-    }
-
-    if (!Cooja.isVisualized()) {
-      /* Automatically activate script */
-      try {
-        setScriptActive(true);
-      } catch (Exception e) {
-        logger.fatal("Error: " + e.getMessage(), e);
       }
     }
     return true;
