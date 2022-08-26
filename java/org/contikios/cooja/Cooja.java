@@ -1947,12 +1947,13 @@ public class Cooja extends Observable {
    * @return True if this plugin was registered ok, false otherwise
    */
   public boolean registerPlugin(final Class<? extends Plugin> pluginClass) {
-    if (!pluginClass.isAnnotationPresent(PluginType.class)) {
+    var annotation = pluginClass.getAnnotation(PluginType.class);
+    if (annotation == null) {
       logger.fatal("Could not register plugin, no plugin type found: " + pluginClass);
       return false;
     }
 
-    switch (pluginClass.getAnnotation(PluginType.class).value()) {
+    switch (annotation.value()) {
       case PluginType.MOTE_PLUGIN:
         menuMotePluginClasses.add(pluginClass);
       case PluginType.COOJA_PLUGIN:
