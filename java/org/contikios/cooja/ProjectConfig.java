@@ -111,10 +111,8 @@ public class ProjectConfig {
       InputStream input = Cooja.class
           .getResourceAsStream(Cooja.PROJECT_DEFAULT_CONFIG_FILENAME);
       if (input != null) {
-        try {
+        try (input) {
           appendConfigStream(input);
-        } finally {
-          input.close();
         }
       } else {
         throw new FileNotFoundException(Cooja.PROJECT_DEFAULT_CONFIG_FILENAME);

@@ -136,8 +136,7 @@ public class HighlightSourceViewer implements SourceViewer {
 
           File file = findSourceFile(path, filename);
           if (file != null) {
-            Reader reader = Files.newBufferedReader(file.toPath(), UTF_8);
-            try {
+            try (var reader = Files.newBufferedReader(file.toPath(), UTF_8)) {
               highlighter.read(reader, null);
               // Workaround for bug 4782232 in Java 1.4
               highlighter.setCaretPosition(1);
@@ -147,8 +146,6 @@ public class HighlightSourceViewer implements SourceViewer {
               if (!window.isVisible()) {
                 window.setVisible(true);
               }
-            } finally {
-              reader.close();
             }
           }
         } catch (IOException err) {
