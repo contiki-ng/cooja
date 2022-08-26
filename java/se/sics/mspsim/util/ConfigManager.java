@@ -85,12 +85,8 @@ public class ConfigManager {
 
   public boolean loadConfiguration(File configFile) {
     try {
-      InputStream input =
-        new BufferedInputStream(new FileInputStream(configFile));
-      try {
+      try (var input = new BufferedInputStream(new FileInputStream(configFile))) {
         loadConfiguration(input);
-      } finally {
-        input.close();
       }
       return true;
     } catch (FileNotFoundException e) {
@@ -103,11 +99,8 @@ public class ConfigManager {
 
   public boolean loadConfiguration(URL configURL) {
     try {
-      InputStream input = new BufferedInputStream(configURL.openStream());
-      try {
+      try (var input = new BufferedInputStream(configURL.openStream())) {
         loadConfiguration(input);
-      } finally {
-        input.close();
       }
       return true;
     } catch (FileNotFoundException e) {

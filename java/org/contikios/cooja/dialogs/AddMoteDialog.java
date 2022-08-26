@@ -455,10 +455,10 @@ public class AddMoteDialog extends JDialog {
               if (newPositionArray.length >= 3) {
                 newPosition.setCoordinates(newPositionArray[0],
                     newPositionArray[1], newPositionArray[2]);
-              } else if (newPositionArray.length >= 2) {
+              } else if (newPositionArray.length == 2) {
                 newPosition.setCoordinates(newPositionArray[0],
                     newPositionArray[1], 0);
-              } else if (newPositionArray.length >= 1) {
+              } else if (newPositionArray.length == 1) {
                 newPosition.setCoordinates(newPositionArray[0], 0, 0);
               } else {
                 newPosition.setCoordinates(0, 0, 0);

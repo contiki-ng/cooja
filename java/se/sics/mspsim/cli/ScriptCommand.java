@@ -73,8 +73,7 @@ public class ScriptCommand extends Command {
   @Override
   public int executeCommand(CommandContext context) {
     try {
-      BufferedReader in = Files.newBufferedReader(scriptFile.toPath(), UTF_8);
-      try {
+      try (var in = Files.newBufferedReader(scriptFile.toPath(), UTF_8)) {
         String line;
         while ((line = in.readLine()) != null) {
           line = line.trim();
@@ -84,8 +83,6 @@ public class ScriptCommand extends Command {
             }
           }
         }
-      } finally {
-        in.close();
       }
       return 0;
     } catch (FileNotFoundException e) {

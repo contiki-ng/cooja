@@ -1288,7 +1288,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
                    MOTE_RADIUS);
 
       }
-      else if (moteColors.length >= 1) {
+      else if (moteColors.length == 1) {
         g.setColor(moteColors[0]);
         g.fillOval(x - MOTE_RADIUS, y - MOTE_RADIUS, 2 * MOTE_RADIUS,
                    2 * MOTE_RADIUS);
