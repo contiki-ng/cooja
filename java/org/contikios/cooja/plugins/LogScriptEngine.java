@@ -211,9 +211,9 @@ public class LogScriptEngine {
     scriptThread = null;
   }
 
-  public void activateScript(String scriptCode) throws ScriptException {
+  public boolean activateScript(String scriptCode) throws ScriptException {
     if (scriptActive) {
-      return;
+      return false;
     }
     scriptActive = true;
 
@@ -255,7 +255,8 @@ public class LogScriptEngine {
       semaphoreScript.acquire();
     } catch (InterruptedException e) {
       logger.fatal("Error when creating engine: " + e.getMessage(), e);
-      // FIXME: should not proceed after this.
+      scriptActive = false;
+      return false;
     }
     ThreadGroup group = new ThreadGroup("script") {
       @Override
@@ -345,6 +346,7 @@ public class LogScriptEngine {
     } else {
       activate.run();
     }
+    return true;
   }
 
   private final TimeEvent timeoutEvent = new TimeEvent() {
