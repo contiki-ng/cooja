@@ -378,12 +378,32 @@ public class Cooja extends Observable {
   private final ArrayList<MoteRelation> moteRelations = new ArrayList<>();
 
   /**
-   * Creates a new COOJA Simulator GUI.
+   * Creates a new Cooja Simulator GUI and ensures Swing initialization is done in the right thread.
    *
    * @param logDirectory Directory for log files
    * @param vis          True if running in visual mode
    */
-  public Cooja(String logDirectory, boolean vis) {
+  public static Cooja makeCooja(final String logDirectory, final boolean vis) {
+    assert !java.awt.EventQueue.isDispatchThread() : "Call from regular context";
+    if (vis) {
+      return new RunnableInEDT<Cooja>() {
+        @Override
+        public Cooja work() {
+          return new Cooja(logDirectory, vis);
+        }
+      }.invokeAndWait();
+    }
+
+    return new Cooja(logDirectory, vis);
+  }
+
+  /**
+   * Internal constructor for Cooja.
+   *
+   * @param logDirectory Directory for log files
+   * @param vis          True if running in visual mode
+   */
+  private Cooja(String logDirectory, boolean vis) {
     cooja = this;
     this.logDirectory = logDirectory;
     mySimulation = null;
@@ -3024,29 +3044,15 @@ public class Cooja extends Observable {
       setLookAndFeel();
     }
 
-    // Check if simulator should be quick-started
-    final String logDirectory = options.logDir;
-    if (options.action == null) {
-      // Frame start-up
-      javax.swing.SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            Cooja gui = new Cooja(logDirectory, vis);
-          } catch (Exception e) {
-            logger.error(e.getMessage());
-            System.exit(1);
-          }
-        }
-      });
-    } else {
-      Cooja gui = null;
-      try {
-        gui = new Cooja(logDirectory, vis);
-      } catch (Exception e) {
-        logger.error(e.getMessage());
-        System.exit(1);
-      }
+    Cooja gui = null;
+    try {
+      gui = makeCooja(options.logDir, vis);
+    } catch (Exception e) {
+      logger.error(e.getMessage());
+      System.exit(1);
+    }
+    // Check if simulator should be quick-started.
+    if (options.action != null) {
       var config = new File(vis ? options.action.quickstart : options.action.nogui);
       Simulation sim = null;
       if (vis) {
