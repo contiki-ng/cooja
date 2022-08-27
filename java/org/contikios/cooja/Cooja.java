@@ -714,8 +714,56 @@ public class Cooja extends Observable {
     }
   }
 
-  private void doLoadConfigAsync(final boolean quick, final File file) {
-    new Thread(() -> cooja.doLoadConfig(file, quick, false, null), "asyncld").start();
+  private void doLoadConfigAsync(final boolean quick, File file) {
+    // Warn about memory usage.
+    if (warnMemory()) {
+      return;
+    }
+
+    // Open File Chooser if config is not useful.
+    if (file == null || !file.canRead()) {
+      final File suggestedFile = file;
+      file = new RunnableInEDT<File>() {
+        @Override
+        public File work() {
+          JFileChooser fc = new JFileChooser();
+          fc.setFileFilter(Cooja.SAVED_SIMULATIONS_FILES);
+
+          if (suggestedFile != null && suggestedFile.isDirectory()) {
+            fc.setCurrentDirectory(suggestedFile);
+          } else {
+            // Suggest file using file history.
+            File suggestedFile = getLastOpenedFile();
+            if (suggestedFile != null) {
+              fc.setSelectedFile(suggestedFile);
+            }
+          }
+
+          if (fc.showOpenDialog(Cooja.getTopParentContainer()) != JFileChooser.APPROVE_OPTION) {
+            return null;
+          }
+
+          File file = fc.getSelectedFile();
+          if (!file.exists()) {
+            // Try default file extension.
+            // FIXME: The file chooser should ensure a csc file is selected and this code should be removed.
+            file = new File(file.getParent(), file.getName() + SAVED_SIMULATIONS_FILES);
+          }
+          if (!file.exists() || !file.canRead()) {
+            logger.fatal("No read access to file");
+            return null;
+          }
+          return file;
+        }
+      }.invokeAndWait();
+
+      if (file == null) {
+        return;
+      }
+    }
+
+    final File cfgFile = file;
+    new Thread(() -> cooja.doLoadConfig(cfgFile, quick, false, null), "asyncld").start();
   }
   private void updateOpenHistoryMenuItems(File[] openFilesHistory) {
   	menuOpenSimulation.removeAll();
@@ -2241,60 +2289,8 @@ public class Cooja extends Observable {
    * @param manualRandomSeed The random seed to use for the simulation
    */
   private Simulation doLoadConfig(File configFile, final boolean quick, boolean rewriteCsc, Long manualRandomSeed) {
-    /* Warn about memory usage */
-    if (warnMemory()) {
-      return null;
-    }
-
-    /* Remove current simulation */
     if (!doRemoveSimulation(true)) {
       return null;
-    }
-
-    // Open File Chooser if config is not useful.
-    if (configFile == null || !configFile.canRead()) {
-      final File suggestedFile = configFile;
-      configFile = new RunnableInEDT<File>() {
-        @Override
-        public File work() {
-          JFileChooser fc = new JFileChooser();
-
-          fc.setFileFilter(Cooja.SAVED_SIMULATIONS_FILES);
-
-          if (suggestedFile != null && suggestedFile.isDirectory()) {
-            fc.setCurrentDirectory(suggestedFile);
-          } else {
-            /* Suggest file using file history */
-            File suggestedFile = getLastOpenedFile();
-            if (suggestedFile != null) {
-              fc.setSelectedFile(suggestedFile);
-            }
-          }
-
-          int returnVal = fc.showOpenDialog(Cooja.getTopParentContainer());
-          if (returnVal != JFileChooser.APPROVE_OPTION) {
-            return null;
-          }
-
-          File file = fc.getSelectedFile();
-
-          if (!file.exists()) {
-            /* Try default file extension */
-            file = new File(file.getParent(), file.getName() + SAVED_SIMULATIONS_FILES);
-          }
-
-          if (!file.exists() || !file.canRead()) {
-            logger.fatal("No read access to file");
-            return null;
-          }
-
-          return file;
-        }
-      }.invokeAndWait();
-
-      if (configFile == null) {
-        return null;
-      }
     }
 
     addToFileHistory(configFile);
