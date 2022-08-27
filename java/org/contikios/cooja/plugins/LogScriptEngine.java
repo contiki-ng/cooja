@@ -304,13 +304,6 @@ public class LogScriptEngine {
       }
     }, "script");
     scriptThread.start(); /* Starts by acquiring semaphore (blocks) */
-    while (!semaphoreScript.hasQueuedThreads()) {
-      try {
-        Thread.sleep(50);
-      } catch (InterruptedException e) {
-        // FIXME: Something called interrupt() on this thread, stop the computation.
-      }
-    }
 
     /* Setup simulation observers */
     simulation.getEventCentral().addLogOutputListener(logOutputListener);
@@ -339,6 +332,14 @@ public class LogScriptEngine {
         simulation.scheduleEvent(timeoutEvent, endTime);
       }
     };
+    // Wait for script thread to reach barrier in the beginning of the JavaScript run function.
+    while (!semaphoreScript.hasQueuedThreads()) {
+      try {
+        Thread.sleep(50);
+      } catch (InterruptedException e) {
+        // FIXME: Something called interrupt() on this thread, stop the computation.
+      }
+    }
     if (simulation.isRunning()) {
       simulation.invokeSimulationThread(activate);
     } else {
