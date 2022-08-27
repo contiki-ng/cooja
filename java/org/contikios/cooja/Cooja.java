@@ -246,7 +246,7 @@ public class Cooja extends Observable {
   /**
    * File filter only showing saved simulations files (*.csc).
    */
-  public static final FileFilter SAVED_SIMULATIONS_FILES = new FileFilter() {
+  public final FileFilter SAVED_SIMULATIONS_FILES = new FileFilter() {
     @Override
     public boolean accept(File file) {
       if (file.isDirectory()) {
@@ -776,7 +776,7 @@ public class Cooja extends Observable {
         @Override
         public File work() {
           JFileChooser fc = new JFileChooser();
-          fc.setFileFilter(Cooja.SAVED_SIMULATIONS_FILES);
+          fc.setFileFilter(SAVED_SIMULATIONS_FILES);
 
           if (suggestedFile != null && suggestedFile.isDirectory()) {
             fc.setCurrentDirectory(suggestedFile);
@@ -2561,7 +2561,7 @@ public class Cooja extends Observable {
     mySimulation.stopSimulation();
 
     JFileChooser fc = new JFileChooser();
-    fc.setFileFilter(Cooja.SAVED_SIMULATIONS_FILES);
+    fc.setFileFilter(SAVED_SIMULATIONS_FILES);
 
     // Suggest file using history
     File suggestedFile = getLastOpenedFile();
