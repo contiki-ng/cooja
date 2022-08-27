@@ -71,6 +71,7 @@ import java.util.MissingResourceException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.swing.AbstractAction;
@@ -377,6 +378,9 @@ public class Cooja extends Observable {
     }
   }
   private final ArrayList<MoteRelation> moteRelations = new ArrayList<>();
+
+  /** Synchronization for returning from go(). */
+  private static final CountDownLatch completed = new CountDownLatch(1);
 
   /**
    * Creates a new Cooja Simulator GUI and ensures Swing initialization is done in the right thread.
@@ -2677,6 +2681,8 @@ public class Cooja extends Observable {
       }
       saveExternalToolsUserSettings();
     }
+    // Release the thread waiting in go().
+    completed.countDown();
     System.exit(exitCode);
   }
 
@@ -3092,6 +3098,12 @@ public class Cooja extends Observable {
       if (sim == null) {
         System.exit(1);
       }
+    }
+    // Wait for Cooja to exit. This is required so the log4j logs are closed after Cooja is completed.
+    try {
+      completed.await();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -4163,6 +4175,8 @@ public class Cooja extends Observable {
       if (simulation != null) {
         simulation.stopSimulation(true);
       }
+      // Release the thread waiting in go().
+      completed.countDown();
     }
   }
 
