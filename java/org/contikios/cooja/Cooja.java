@@ -161,7 +161,7 @@ public class Cooja {
       return new RunnableInEDT<Cooja>() {
         @Override
         public Cooja work() {
-          GUI.setLookAndFeel();
+          GUI.setLookAndFeel(configuration.lookAndFeel);
           try {
             return new Cooja();
           } catch (ParseProjectsException e) {
@@ -1680,8 +1680,8 @@ public class Cooja {
    * When SimConfig contains an identical field, these values are the default
    * values when creating a new simulation in the File menu.
    */
-  public record Config(LogbackColors logColors, boolean vis, String externalToolsConfig,
-                       String nashornArgs, String logDir,
+  public record Config(LogbackColors logColors, boolean vis, GUI.LookAndFeel lookAndFeel,
+                       String externalToolsConfig, String nashornArgs, String logDir,
                        String contikiPath, String coojaPath) {}
 
   public record LogbackColors(String error, String warn, String info, String fallback) {}

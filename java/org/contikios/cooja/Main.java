@@ -60,6 +60,12 @@ import se.sics.mspsim.util.ArgumentManager;
         "OS: ${os.name} ${os.version} ${os.arch}"}, sortOptions = false, sortSynopsis = false)
 class Main {
   /**
+   * Option for specifying look and feel.
+   */
+  @Option(names = "--look-and-feel", paramLabel = "LookAndFeel", description = "one of: ${COMPLETION-CANDIDATES}")
+  GUI.LookAndFeel lookAndFeel = GUI.LookAndFeel.Nimbus;
+
+  /**
    * Option for specifying if a GUI should be used.
    */
   @Option(names = "--gui", description = "use graphical mode", negatable = true)
@@ -154,6 +160,7 @@ class Main {
   public static void main(String[] args) {
     Main options = new Main();
     CommandLine commandLine = new CommandLine(options);
+    commandLine.setCaseInsensitiveEnumValuesAllowed(true);
     try {
       commandLine.parseArgs(args);
     } catch (CommandLine.ParameterException e) {
@@ -299,7 +306,7 @@ class Main {
       // Use colors that are good on a dark background and readable on a white background.
       var colors = new LogbackColors(ANSIConstants.BOLD + "91", "96",
               ANSIConstants.GREEN_FG, ANSIConstants.DEFAULT_FG);
-      var cfg = new Config(colors, options.gui, options.externalUserConfig,
+      var cfg = new Config(colors, options.gui, options.lookAndFeel, options.externalUserConfig,
                 options.nashornArgs,
                 options.logDir, options.contikiPath, options.coojaPath);
       Cooja.go(cfg, simConfigs);
