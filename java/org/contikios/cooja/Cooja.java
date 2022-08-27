@@ -323,9 +323,10 @@ public class Cooja extends Observable {
 
   protected final GUIEventHandler guiEventHandler;
 
-  private JMenu menuMoteTypeClasses, menuMoteTypes;
+  private final JMenu menuMoteTypeClasses;
+  private final JMenu menuMoteTypes;
 
-  private JMenu menuOpenSimulation;
+  private final JMenu menuOpenSimulation;
   private boolean hasFileHistoryChanged;
 
   private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
@@ -424,6 +425,9 @@ public class Cooja extends Observable {
       quickHelpTextPane = null;
       quickHelpScroll = null;
       guiEventHandler = null;
+      menuOpenSimulation = null;
+      menuMoteTypeClasses = null;
+      menuMoteTypes = null;
       try {
         parseProjectConfig();
       } catch (ParseProjectsException e) {
@@ -551,6 +555,12 @@ public class Cooja extends Observable {
     frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
     // Menu bar.
+    menuOpenSimulation = new JMenu("Open simulation");
+    menuOpenSimulation.setMnemonic(KeyEvent.VK_O);
+    menuMoteTypeClasses = new JMenu("Create new mote type");
+    menuMoteTypeClasses.setMnemonic(KeyEvent.VK_C);
+    menuMoteTypes = new JMenu("Add motes");
+    menuMoteTypes.setMnemonic(KeyEvent.VK_A);
     frame.setJMenuBar(createMenuBar());
 
     // Scrollable desktop.
@@ -984,9 +994,6 @@ public class Cooja extends Observable {
     });
 
     fileMenu.add(new JMenuItem(newSimulationAction));
-
-    menuOpenSimulation = new JMenu("Open simulation");
-    menuOpenSimulation.setMnemonic(KeyEvent.VK_O);
     fileMenu.add(menuOpenSimulation);
     fileMenu.add(new JMenuItem(closeSimulationAction));
 
@@ -1052,8 +1059,6 @@ public class Cooja extends Observable {
     });
 
     // Mote type classes sub menu
-    menuMoteTypeClasses = new JMenu("Create new mote type");
-    menuMoteTypeClasses.setMnemonic(KeyEvent.VK_C);
     menuMoteTypeClasses.addMenuListener(new MenuListener() {
       @Override
       public void menuSelected(MenuEvent e) {
@@ -1133,8 +1138,6 @@ public class Cooja extends Observable {
 
 
     // Mote types sub menu
-    menuMoteTypes = new JMenu("Add motes");
-    menuMoteTypes.setMnemonic(KeyEvent.VK_A);
     menuMoteTypes.addMenuListener(new MenuListener() {
       @Override
       public void menuSelected(MenuEvent e) {
