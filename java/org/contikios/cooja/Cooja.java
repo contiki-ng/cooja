@@ -354,9 +354,9 @@ public class Cooja extends Observable {
   private final ArrayList<Class<? extends Positioner>> positionerClasses = new ArrayList<>();
 
 
-  private final ScnObservable moteHighlightObservable = new ScnObservable();
+  private final ScnObservable moteHighlightObservable;
 
-  private final ScnObservable moteRelationObservable = new ScnObservable();
+  private final ScnObservable moteRelationObservable;
 
   private final JTextPane quickHelpTextPane;
   private final GUIAction showQuickHelpAction;
@@ -428,6 +428,8 @@ public class Cooja extends Observable {
       menuOpenSimulation = null;
       menuMoteTypeClasses = null;
       menuMoteTypes = null;
+      moteHighlightObservable = null;
+      moteRelationObservable = null;
       try {
         parseProjectConfig();
       } catch (ParseProjectsException e) {
@@ -437,6 +439,9 @@ public class Cooja extends Observable {
     }
 
     // Visualization enabled past this point.
+    moteHighlightObservable = new ScnObservable();
+    moteRelationObservable = new ScnObservable();
+
     guiEventHandler = new GUIEventHandler();
     myDesktopPane = new JDesktopPane() {
       @Override
