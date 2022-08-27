@@ -246,27 +246,7 @@ public class Cooja extends Observable {
   /**
    * File filter only showing saved simulations files (*.csc).
    */
-  public final FileFilter SAVED_SIMULATIONS_FILES = new FileFilter() {
-    @Override
-    public boolean accept(File file) {
-      if (file.isDirectory()) {
-        return true;
-      }
-
-      if (file.getName().endsWith(".csc")) {
-        return true;
-      }
-      return file.getName().endsWith(".csc.gz");
-    }
-    @Override
-    public String getDescription() {
-      return "Cooja simulation (.csc, .csc.gz)";
-    }
-    @Override
-    public String toString() {
-      return ".csc";
-    }
-  };
+  public final FileFilter SAVED_SIMULATIONS_FILES;
 
   // External tools setting names
   public static Properties defaultExternalToolsSettings;
@@ -441,6 +421,7 @@ public class Cooja extends Observable {
 
     if (!vis) {
       quickHelpProperties = null;
+      SAVED_SIMULATIONS_FILES = null;
       myDesktopPane = null;
       showQuickHelpAction = null;
       quickHelpTextPane = null;
@@ -462,7 +443,27 @@ public class Cooja extends Observable {
     // Visualization enabled past this point.
     moteHighlightObservable = new ScnObservable();
     moteRelationObservable = new ScnObservable();
+    SAVED_SIMULATIONS_FILES = new FileFilter() {
+      @Override
+      public boolean accept(File file) {
+        if (file.isDirectory()) {
+          return true;
+        }
 
+        if (file.getName().endsWith(".csc")) {
+          return true;
+        }
+        return file.getName().endsWith(".csc.gz");
+      }
+      @Override
+      public String getDescription() {
+        return "Cooja simulation (.csc, .csc.gz)";
+      }
+      @Override
+      public String toString() {
+        return ".csc";
+      }
+    };
     guiEventHandler = new GUIEventHandler();
     myDesktopPane = new JDesktopPane() {
       @Override
