@@ -429,7 +429,7 @@ public class SimpleProfiler implements Profiler, EventListener {
         diff = o2.exclusiveCycles - o1.exclusiveCycles;
         break;
       case 2:
-        diff = o2.calls - o1.calls;
+        diff = (long)o2.calls - o1.calls;
         break;
       case 3:
         diff = (o2.calls > 0 ? (o2.cycles / o2.calls) : 0) -
