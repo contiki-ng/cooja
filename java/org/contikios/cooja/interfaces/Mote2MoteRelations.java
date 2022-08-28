@@ -177,10 +177,9 @@ public class Mote2MoteRelations extends MoteInterface {
         }
 
         /* Remove mote from our relations */
-        if (!relations.contains(mote)) {
+        if (!relations.remove(mote)) {
           return;
         }
-        relations.remove(mote);
         gui.removeMoteRelation(Mote2MoteRelations.this.mote, mote);
       }
     });
