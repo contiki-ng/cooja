@@ -616,21 +616,19 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     zoomFinish(cpd, focusTime, focusCenter);
   }
 
-  private void zoomIn (final long focusTime,
-                       final double focusCenter) {
-    zoomFinishLevel(zoomGetLevel()-1, focusTime, focusCenter);
+  private void zoomIn(final long focusTime) {
+    zoomFinishLevel(zoomGetLevel()-1, focusTime, 0.5);
   }
 
-  private void zoomOut (final long focusTime,
-                        final double focusCenter) {
-    zoomFinishLevel(zoomGetLevel()+1, focusTime, focusCenter);
+  private void zoomOut(final long focusTime) {
+    zoomFinishLevel(zoomGetLevel()+1, focusTime, 0.5);
   }
 
   private final Action zoomInAction = new AbstractAction("Zoom in (Ctrl+)") {
     @Override
     public void actionPerformed(ActionEvent e) {
       final long centerTime = getCenterPointTime(); 
-      zoomIn(centerTime, 0.5);
+      zoomIn(centerTime);
     }
   };
 
@@ -638,7 +636,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     @Override
     public void actionPerformed(ActionEvent e) {
       final long centerTime = getCenterPointTime(); 
-      zoomOut(centerTime, 0.5);
+      zoomOut(centerTime);
     }
   };
 
