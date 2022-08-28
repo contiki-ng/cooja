@@ -45,7 +45,7 @@ import java.util.prefs.Preferences;
 
 public class WindowUtils {
 
-  private static Preferences prefs =
+  private static final Preferences prefs =
     Preferences.userNodeForPackage(WindowUtils.class);
 
   private static Hashtable<Window,CloseListener> closeTable;
@@ -158,7 +158,7 @@ public class WindowUtils {
 
   private static class CloseListener extends WindowAdapter {
 
-    private String key;
+    private final String key;
 
     public CloseListener(String key) {
       this.key = key;

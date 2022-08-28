@@ -188,7 +188,7 @@ public class CRC16 extends IOUnit {
                 }
         }
 
-        private CRC16Java crc = new CRC16Java();
+        private final CRC16Java crc = new CRC16Java();
 
         /**
          * Clear everything when reset

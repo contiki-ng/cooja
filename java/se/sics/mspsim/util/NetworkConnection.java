@@ -55,7 +55,7 @@ public class NetworkConnection implements Runnable {
   private final static int DEFAULT_PORT = 4711;
 
   private ServerSocket serverSocket = null;
-  private SendThread sendThread;
+  private final SendThread sendThread;
   private ConnectionThread[] connections = null;
   private PacketListener packetListener;
 
@@ -160,7 +160,7 @@ public class NetworkConnection implements Runnable {
 
   class SendThread implements Runnable {
 
-    private ArrayList<SendEvent> queue = new ArrayList<>();
+    private final ArrayList<SendEvent> queue = new ArrayList<>();
 
     public SendThread() {
       new Thread(this, "NetworkConnection.SendThread").start();

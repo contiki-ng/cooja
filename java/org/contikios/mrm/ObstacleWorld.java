@@ -51,7 +51,7 @@ class ObstacleWorld {
   private static final Logger logger = LogManager.getLogger(ObstacleWorld.class);
   
   // All registered obstacles
-  private Vector<Rectangle2D> allObstacles;
+  private final Vector<Rectangle2D> allObstacles;
   
   // All registered obstacles, with spatial information
   private static final int spatialResolution = 10;

@@ -146,7 +146,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private final MoteRuler timelineMoteRuler;
   private final JComponent timeline;
 
-  private Observer moteHighlightObserver;
+  private final Observer moteHighlightObserver;
   private final ArrayList<Mote> highlightedMotes = new ArrayList<>();
   private final static Color HIGHLIGHT_COLOR = Color.CYAN;
 
@@ -2097,7 +2097,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     IDLE, RECEIVING, TRANSMITTING, INTERFERED
   }
   class RadioRXTXEvent extends MoteEvent {
-    RXTXRadioEvent state;
+    final RXTXRadioEvent state;
     public RadioRXTXEvent(long time, RXTXRadioEvent ev) {
       super(time);
       this.state = ev;

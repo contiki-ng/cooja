@@ -61,7 +61,7 @@ public class BasicClockModule extends ClockSystem {
   private final int MIN_DCO_FRQ = 1000;
   private final int DCO_FACTOR;
 
-  private Timer[] timers;
+  private final Timer[] timers;
 
   private int dcoFrequency;
   private int dcoModulator;

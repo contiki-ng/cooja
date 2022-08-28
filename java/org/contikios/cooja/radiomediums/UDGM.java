@@ -89,7 +89,7 @@ public class UDGM extends AbstractRadioMedium {
 
   private final DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
 
-  private Random random;
+  private final Random random;
 
   public UDGM(Simulation simulation) {
     super(simulation);

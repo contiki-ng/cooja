@@ -171,7 +171,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
                         return state | (0b10 << 5); /* TODO 2 pin state not implemented */
                 }
         }
-        private TimeEvent sendEvent = new TimeEvent(0, "CC1101 Send") {
+        private final TimeEvent sendEvent = new TimeEvent(0, "CC1101 Send") {
                 @Override
                 public void execute(long t) {
                         txNext();
@@ -194,10 +194,10 @@ public class CC1101 extends Radio802154 implements USARTListener {
 
         private CC1101RadioState state = null;
 
-        protected List<Byte> txfifo = new ArrayList<>();
-        protected List<Byte> rxfifo = new ArrayList<>();
+        protected final List<Byte> txfifo = new ArrayList<>();
+        protected final List<Byte> rxfifo = new ArrayList<>();
 
-        protected int[] registers = new int[64];
+        protected final int[] registers = new int[64];
         protected int[] memory = new int[512];
 
         private boolean chipSelect;

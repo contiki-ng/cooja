@@ -72,7 +72,7 @@ public class ChartPanel extends JComponent {
 
   private static final Color LIGHT_GRAY = new Color(0xff909090);
 
-  private Hashtable<String,Object> config = new Hashtable<>();
+  private final Hashtable<String,Object> config = new Hashtable<>();
   private Chart[] charts = null;
 
   private Chart axisChart;

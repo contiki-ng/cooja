@@ -53,7 +53,7 @@ public abstract class AbstractChart implements Chart {
   protected double minx, maxx;
   protected double miny, maxy;
   protected boolean autoscale = true;
-  private Hashtable<String,Object> config = new Hashtable<>();
+  private final Hashtable<String,Object> config = new Hashtable<>();
 
   @Override
   public String getName() {

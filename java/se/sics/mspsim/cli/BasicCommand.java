@@ -44,8 +44,8 @@ package se.sics.mspsim.cli;
 
 public abstract class BasicCommand extends Command {
 
-  private String argumentHelp;
-  private String commandHelp;
+  private final String argumentHelp;
+  private final String commandHelp;
 
   public BasicCommand(String cmdHelp, String argHelp) {
     commandHelp = cmdHelp;

@@ -38,7 +38,7 @@ import java.util.ArrayList;
 
 public class ComponentRegistry {
 
-    private ArrayList<ComponentEntry> components = new ArrayList<>();
+    private final ArrayList<ComponentEntry> components = new ArrayList<>();
     private boolean running = false;
 
     private synchronized ComponentEntry[] getAllEntries() {

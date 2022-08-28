@@ -176,13 +176,13 @@ public class DMA extends IOUnit {
         }
     }
 
-    private Channel[] channels = new Channel[3];
+    private final Channel[] channels = new Channel[3];
     private int dmactl0;
     private int dmactl1;
 
     /* MAX 16 triggers ? */
-    private DMATrigger[] dmaTrigger = new DMATrigger[16];
-    private int[] dmaTriggerIndex = new int[16];
+    private final DMATrigger[] dmaTrigger = new DMATrigger[16];
+    private final int[] dmaTriggerIndex = new int[16];
 
     public DMA(String id, MSP430Core cpu, int[] memory, int offset) {
         super(id, cpu, memory, offset);

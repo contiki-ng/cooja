@@ -265,7 +265,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   /* low RSSI => CCA = true in normal mode */
 
   private int rssi = -100;
-  private static int RSSI_OFFSET = -45; /* cc2420 datasheet */
+  private static final int RSSI_OFFSET = -45; /* cc2420 datasheet */
   /* current CCA value */
   private boolean cca = false;
 
@@ -295,9 +295,9 @@ public class CC2420 extends Radio802154 implements USARTListener {
   //private int status = STATUS_XOSC16M_STABLE | STATUS_RSSI_VALID;
   private int status = 0;
 
-  private int[] registers = new int[64];
+  private final int[] registers = new int[64];
   // More than needed...
-  private int[] memory = new int[512];
+  private final int[] memory = new int[512];
 
   // Buffer to hold 5 byte Synchronization header, as it is not written to the TXFIFO
   private byte[] SHR = new byte[5];
@@ -319,7 +319,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private int txCursor;
   private boolean on;
 
-  private TimeEvent oscillatorEvent = new TimeEvent(0, "CC2420 OSC") {
+  private final TimeEvent oscillatorEvent = new TimeEvent(0, "CC2420 OSC") {
     @Override
     public void execute(long t) {
       status |= STATUS_XOSC16M_STABLE;
@@ -333,7 +333,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
     }
   };
 
-  private TimeEvent vregEvent = new TimeEvent(0, "CC2420 VREG") {
+  private final TimeEvent vregEvent = new TimeEvent(0, "CC2420 VREG") {
     @Override
     public void execute(long t) {
       if(logLevel > INFO) log("VREG Started at: " + t + " cyc: " +
@@ -344,28 +344,28 @@ public class CC2420 extends Radio802154 implements USARTListener {
     }
   };
 
-  private TimeEvent sendEvent = new TimeEvent(0, "CC2420 Send") {
+  private final TimeEvent sendEvent = new TimeEvent(0, "CC2420 Send") {
     @Override
     public void execute(long t) {
       txNext();
     }
   };
 
-  private TimeEvent ackEvent = new TimeEvent(0, "CC2420 Ack") {
+  private final TimeEvent ackEvent = new TimeEvent(0, "CC2420 Ack") {
       @Override
       public void execute(long t) {
         ackNext();
       }
     };
 
-  private TimeEvent shrEvent = new TimeEvent(0, "CC2420 SHR") {
+  private final TimeEvent shrEvent = new TimeEvent(0, "CC2420 SHR") {
     @Override
     public void execute(long t) {
       shrNext();
     }
   };
 
-  private TimeEvent symbolEvent = new TimeEvent(0, "CC2420 Symbol") {
+  private final TimeEvent symbolEvent = new TimeEvent(0, "CC2420 Symbol") {
     @Override
     public void execute(long t) {
       switch(stateMachine) {
@@ -408,10 +408,10 @@ public class CC2420 extends Radio802154 implements USARTListener {
   /* type = 2 (ACK), third byte needs to be sequence number... */
   private int[] ackBuf = {0x05, 0x02, 0x00, 0x00, 0x00, 0x00};
   private boolean ackFramePending = false;
-  private CCITT_CRC rxCrc = new CCITT_CRC();
-  private CCITT_CRC txCrc = new CCITT_CRC();
+  private final CCITT_CRC rxCrc = new CCITT_CRC();
+  private final CCITT_CRC txCrc = new CCITT_CRC();
 
-  private ArrayFIFO rxFIFO;
+  private final ArrayFIFO rxFIFO;
 
   public void setStateListener(StateListener listener) {
     stateListener = listener;

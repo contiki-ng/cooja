@@ -22,22 +22,22 @@ public class LineNumberedBorder extends AbstractBorder {
   /**
    * The line numbers should be drawn on the left side of the component.
    */
-  public static int LEFT_SIDE = -2;
+  public static final int LEFT_SIDE = -2;
 
   /**
    * The line numbers should be drawn on the right side of the component.
    */
-  public static int RIGHT_SIDE = -1;
+  public static final int RIGHT_SIDE = -1;
 
   /**
    * The line number should be right justified.
    */
-  public static int RIGHT_JUSTIFY = 0;
+  public static final int RIGHT_JUSTIFY = 0;
 
   /**
    * The line number should be left justified.
    */
-  public static int LEFT_JUSTIFY = 1;
+  public static final int LEFT_JUSTIFY = 1;
 
   /**
    * Indicates the justification of the text of the line number.

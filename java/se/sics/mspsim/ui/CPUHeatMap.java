@@ -19,7 +19,7 @@ public class CPUHeatMap extends JComponent implements MemoryMonitor {
 
     private static final long serialVersionUID = -7964848220064713887L;
 
-    private Timer ticker;
+    private final Timer ticker;
 
     private ManagedWindow window;
     private BufferedImage heatmap;

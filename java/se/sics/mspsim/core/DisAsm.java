@@ -55,7 +55,7 @@ public class DisAsm implements MSP430Constants {
   private MapTable map;
 
   // Idiots solution to single stepping...
-  private BufferedReader input =
+  private final BufferedReader input =
     new BufferedReader(new InputStreamReader(System.in, UTF_8));
 
 

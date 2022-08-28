@@ -54,7 +54,7 @@ public class MspMoteID extends MoteID {
 	private static final Logger logger = LogManager.getLogger(MspMoteID.class);
 
 	private final MspMote mote;
-	private VarMemory moteMem;
+	private final VarMemory moteMem;
 
 	private boolean writeFlashHeader = true;
 	private int moteID = -1;

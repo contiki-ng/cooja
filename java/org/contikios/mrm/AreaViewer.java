@@ -190,7 +190,7 @@ public class AreaViewer extends VisPlugin {
   private ChannelModel.TrackedSignalComponents trackedComponents = null;
 
   // Coloring variables
-  private JPanel coloringIntervalPanel;
+  private final JPanel coloringIntervalPanel;
   private double coloringHighest = 0;
   private double coloringLowest = 0;
   private boolean coloringIsFixed = true;
@@ -205,7 +205,7 @@ public class AreaViewer extends VisPlugin {
 //  private JCheckBox radioActivityCheckBox;
   private final JCheckBox arrowCheckBox;
 
-  private JRadioButton noneButton;
+  private final JRadioButton noneButton;
 
   private final JRadioButton selectModeButton;
   private final JRadioButton panModeButton;
@@ -1284,7 +1284,7 @@ public class AreaViewer extends VisPlugin {
 
   static class ObstacleFinderDialog extends JDialog {
     private final NumberFormat intFormat = NumberFormat.getIntegerInstance();
-    private BufferedImage imageToAnalyze;
+    private final BufferedImage imageToAnalyze;
     private BufferedImage obstacleImage;
     private JPanel canvasPanel = null;
     private boolean[][] obstacleArray = null;

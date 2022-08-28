@@ -63,7 +63,7 @@ public class MSP430 extends MSP430Core {
 
   private double lastCPUPercent = 0d;
 
-  private DisAsm disAsm;
+  private final DisAsm disAsm;
 
   private SimEventListener[] simEventListeners;
 

@@ -73,8 +73,8 @@ import org.contikios.cooja.mote.memory.VarMemory;
 public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, PolledAfterActiveTicks {
   private static final Logger logger = LogManager.getLogger(ContikiRS232.class);
 
-  private ContikiMote mote;
-  private VarMemory moteMem;
+  private final ContikiMote mote;
+  private final VarMemory moteMem;
 
   static final int SERIAL_BUF_SIZE = 16 * 1024; /* rs232.c:40 */
 

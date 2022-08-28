@@ -99,9 +99,9 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 	private Cooja gui;
 
-	private JTable table;
+	private final JTable table;
 	private final JTextArea projectInfo = new JTextArea("Extension information:");
-	private DirectoryTreePanel treePanel;
+	private final DirectoryTreePanel treePanel;
 
 	private final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
 	private COOJAProject[] returnedProjects = null;
@@ -752,7 +752,7 @@ class DirectoryTreePanel extends JPanel {
 	}
 
 	private class TreeDirectory {
-		File dir;
+		final File dir;
 		File[] subdirs = null;
 
 		public TreeDirectory(File file) {
