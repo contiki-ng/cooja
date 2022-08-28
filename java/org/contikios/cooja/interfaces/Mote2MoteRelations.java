@@ -84,7 +84,64 @@ public class Mote2MoteRelations extends MoteInterface {
     @Override
     public void update(Observable o, Object arg) {
       String msg = ((Log) o).getLastLogMessage();
-      handleNewLog(msg);
+      if (msg == null) {
+        return;
+      }
+
+      if (msg.startsWith("DEBUG: ")) {
+        msg = msg.substring("DEBUG: ".length());
+      }
+
+      if (!msg.startsWith("#L ")) {
+        return;
+      }
+
+      String colorName = null;
+      int colorIndex = msg.indexOf(';');
+      if (colorIndex > 0) {
+         colorName = msg.substring(colorIndex + 1).trim();
+         msg = msg.substring(0, colorIndex).trim();
+      }
+      String[] args = msg.split(" ");
+      if (args.length != 3) {
+        return;
+      }
+
+      int destID;
+      try {
+        destID = Integer.parseInt(args[1]);
+      } catch (Exception e) {
+        // Not a mote id
+        return;
+      }
+      String state = args[2];
+
+      /* Locate destination mote */
+      /* TODO Use Rime address interface instead of mote ID? */
+      Mote destinationMote = mote.getSimulation().getMoteWithID(destID);
+      if (destinationMote == null) {
+        logger.warn("No destination mote with ID: " + destID);
+        return;
+      }
+      if (destinationMote == mote) {
+        /*logger.warn("Cannot create relation with ourselves");*/
+        return;
+      }
+
+      /* Change line state */
+      if (state.equals("1")) {
+        if (relations.contains(destinationMote)) {
+          return;
+        }
+        relations.add(destinationMote);
+        gui.addMoteRelation(mote, destinationMote, decodeColor(colorName));
+      } else {
+        relations.remove(destinationMote);
+        gui.removeMoteRelation(mote, destinationMote);
+      }
+
+      setChanged();
+      notifyObservers();
     }
   };
   
@@ -149,67 +206,6 @@ public class Mote2MoteRelations extends MoteInterface {
     relations.clear();
 
     mote.getSimulation().getEventCentral().removeMoteCountListener(moteCountListener);
-  }
-
-  private void handleNewLog(String msg) {
-    if (msg == null) {
-      return;
-    }
-
-    if (msg.startsWith("DEBUG: ")) {
-      msg = msg.substring("DEBUG: ".length());
-    }
-    
-    if (!msg.startsWith("#L ")) {
-      return;
-    }
-
-    String colorName = null;
-    int colorIndex = msg.indexOf(';');
-    if (colorIndex > 0) {
-       colorName = msg.substring(colorIndex + 1).trim();
-       msg = msg.substring(0, colorIndex).trim();
-    }
-    String[] args = msg.split(" ");
-    if (args.length != 3) {
-      return;
-    }
-
-    int destID;
-    try {
-      destID = Integer.parseInt(args[1]);
-    } catch (Exception e) {
-      // Not a mote id
-      return;
-    }
-    String state = args[2];
-
-    /* Locate destination mote */
-    /* TODO Use Rime address interface instead of mote ID? */
-    Mote destinationMote = mote.getSimulation().getMoteWithID(destID);
-    if (destinationMote == null) {
-      logger.warn("No destination mote with ID: " + destID);
-      return;
-    }
-    if (destinationMote == mote) {
-      /*logger.warn("Cannot create relation with ourselves");*/
-      return;
-    }
-
-    /* Change line state */
-    if (state.equals("1")) {
-      if (relations.contains(destinationMote)) {
-        return;
-      }
-      relations.add(destinationMote);
-      gui.addMoteRelation(mote, destinationMote, decodeColor(colorName));
-    } else {
-      relations.remove(destinationMote);
-      gui.removeMoteRelation(mote, destinationMote);
-    }
-
-    setChanged();
-    notifyObservers();
   }
 
   private static Color decodeColor(String colorString) {
