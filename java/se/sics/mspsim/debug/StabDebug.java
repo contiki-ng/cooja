@@ -201,15 +201,12 @@ public class StabDebug implements ELFDebug {
         if (stab.value < address) {
           if (stab.data != null && stab.data.endsWith("/")) {
             currentPath = stab.data;
-            lastAddress = stab.value;
-            allAddresses.add(lastAddress);
-            currentFunction = null;
           } else {
             currentFile = stab.data;
-            lastAddress = stab.value;
-            allAddresses.add(lastAddress);
-            currentFunction = null;
           }
+          lastAddress = stab.value;
+          allAddresses.add(lastAddress);
+          currentFunction = null;
         } else {
           /* requires sorted order of all file entries in stab section */
           if (DEBUG) {
