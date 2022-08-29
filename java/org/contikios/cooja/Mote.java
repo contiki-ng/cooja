@@ -60,7 +60,6 @@ public interface Mote {
   /**
    * Returns the memory of this mote.
    *
-   * @see org.contikios.cooja.contikimote.ContikiMote#setMemory(SectionMoteMemory)
    * @return Mote memory
    */
   MemoryInterface getMemory();

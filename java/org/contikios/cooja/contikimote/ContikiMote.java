@@ -99,10 +99,6 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     return myMemory;
   }
 
-  public void setMemory(SectionMoteMemory memory) {
-    myMemory = memory;
-  }
-
   @Override
   public MoteType getType() {
     return myType;
