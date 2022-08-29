@@ -1842,11 +1842,11 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Same as the {@link #startPlugin(Class, Cooja, Simulation, Mote, Element)} method,
+   * Same as the {@link #constructPlugin(Class, Cooja, Simulation, Mote)} method,
    * but does not throw exceptions. If COOJA is visualised, an error dialog
    * is shown if plugin could not be started.
    *
-   * @see #startPlugin(Class, Cooja, Simulation, Mote, Element)
+   * @see #constructPlugin(Class, Cooja, Simulation, Mote)
    * @param pluginClass Plugin class
    * @param argGUI Plugin GUI argument
    * @param argSimulation Plugin simulation argument
@@ -1857,7 +1857,7 @@ public class Cooja extends Observable {
   private Plugin tryStartPlugin(final Class<? extends Plugin> pluginClass,
      final Cooja argGUI, final Simulation argSimulation, final Mote argMote, Element root) {
     try {
-      return startPlugin(pluginClass, argGUI, argSimulation, argMote, root);
+      return startPlugin(constructPlugin(pluginClass, argGUI, argSimulation, argMote), root);
     } catch (PluginConstructionException ex) {
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Error when starting plugin", ex, false);
@@ -1883,19 +1883,18 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Starts given plugin. If visualized, the plugin is also shown.
+   * Runs the constructor of a given plugin.
    *
    * @see PluginType
    * @param pluginClass Plugin class
    * @param argGUI Plugin GUI argument
    * @param argSimulation Plugin simulation argument
    * @param argMote Plugin mote argument
-   * @param root XML root element for plugin config
-   * @return Started plugin
+   * @return Plugin
    * @throws PluginConstructionException At errors
    */
-  private Plugin startPlugin(final Class<? extends Plugin> pluginClass,
-      final Cooja argGUI, final Simulation argSimulation, final Mote argMote, Element root)
+  private Plugin constructPlugin(final Class<? extends Plugin> pluginClass,
+      final Cooja argGUI, final Simulation argSimulation, final Mote argMote)
   throws PluginConstructionException
   {
     // Check that plugin class is registered
@@ -1956,7 +1955,17 @@ public class Cooja extends Observable {
     } catch (Exception e) {
       throw new PluginConstructionException("Construction error for tool of class: " + pluginClass.getName(), e);
     }
+    return plugin;
+  }
 
+  /**
+   * Configures and starts a plugin. If visualized, the plugin is also shown.
+   *
+   * @param plugin Plugin to start
+   * @param root Configuration for plugin
+   * @return Started plugin
+   */
+  private Plugin startPlugin(Plugin plugin, Element root) {
     if (root != null) {
       for (var cfg : root.getChildren("plugin_config")) {
         plugin.setConfigXML(((Element)cfg).getChildren(), isVisualized());
