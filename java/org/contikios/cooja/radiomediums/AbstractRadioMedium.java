@@ -501,7 +501,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 	*/
 	public void setBaseRssi(Radio radio, double rssi) {
 		baseRssi.put(radio, rssi);
-		simulation.invokeSimulationThread(() -> updateSignalStrengths());
+		simulation.invokeSimulationThread(this::updateSignalStrengths);
 	}
 
 	

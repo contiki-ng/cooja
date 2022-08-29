@@ -1838,7 +1838,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         ui.getNorthPane().setPreferredSize(new Dimension(0, 0));
       }
       visualizer.revalidate();
-      SwingUtilities.invokeLater(() -> visualizer.repaint());
+      SwingUtilities.invokeLater(visualizer::repaint);
     }
 
     @Override

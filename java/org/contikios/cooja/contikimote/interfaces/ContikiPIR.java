@@ -85,7 +85,7 @@ public class ContikiPIR extends PIR implements ContikiMoteInterface {
    */
   @Override
   public void triggerChange() {
-    mote.getSimulation().invokeSimulationThread(() -> doTriggerChange());
+    mote.getSimulation().invokeSimulationThread(this::doTriggerChange);
   }
 
   public void doTriggerChange() { 

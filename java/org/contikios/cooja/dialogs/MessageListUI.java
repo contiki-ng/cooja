@@ -192,7 +192,7 @@ public class MessageListUI extends JList implements MessageList {
     MessageContainer msg = new MessageContainer(message, type);
     messages.add(msg);
 
-    java.awt.EventQueue.invokeLater(() -> updateModel());
+    java.awt.EventQueue.invokeLater(this::updateModel);
   }
 
   @Override
