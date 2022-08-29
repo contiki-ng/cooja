@@ -211,9 +211,9 @@ public class LogScriptEngine {
     scriptThread = null;
   }
 
-  public void activateScript(String scriptCode) throws ScriptException {
+  public boolean activateScript(String scriptCode) throws ScriptException {
     if (scriptActive) {
-      return;
+      return false;
     }
     scriptActive = true;
 
@@ -255,7 +255,8 @@ public class LogScriptEngine {
       semaphoreScript.acquire();
     } catch (InterruptedException e) {
       logger.fatal("Error when creating engine: " + e.getMessage(), e);
-      // FIXME: should not proceed after this.
+      scriptActive = false;
+      return false;
     }
     ThreadGroup group = new ThreadGroup("script") {
       @Override
@@ -304,13 +305,6 @@ public class LogScriptEngine {
       }
     }, "script");
     scriptThread.start(); /* Starts by acquiring semaphore (blocks) */
-    while (!semaphoreScript.hasQueuedThreads()) {
-      try {
-        Thread.sleep(50);
-      } catch (InterruptedException e) {
-        // FIXME: Something called interrupt() on this thread, stop the computation.
-      }
-    }
 
     /* Setup simulation observers */
     simulation.getEventCentral().addLogOutputListener(logOutputListener);
@@ -339,11 +333,20 @@ public class LogScriptEngine {
         simulation.scheduleEvent(timeoutEvent, endTime);
       }
     };
+    // Wait for script thread to reach barrier in the beginning of the JavaScript run function.
+    while (!semaphoreScript.hasQueuedThreads()) {
+      try {
+        Thread.sleep(50);
+      } catch (InterruptedException e) {
+        // FIXME: Something called interrupt() on this thread, stop the computation.
+      }
+    }
     if (simulation.isRunning()) {
       simulation.invokeSimulationThread(activate);
     } else {
       activate.run();
     }
+    return true;
   }
 
   private final TimeEvent timeoutEvent = new TimeEvent() {
