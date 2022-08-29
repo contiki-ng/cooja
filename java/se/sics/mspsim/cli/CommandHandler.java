@@ -41,7 +41,6 @@ public class CommandHandler implements ActiveComponent, LineListener {
     commands.put(cmd, command);
   }
 
-  @SuppressWarnings("resource")
   public int executeCommand(String commandLine, CommandContext context) {
     String[][] parts;
     final PrintStream cOut = context == null ? this.out : context.out;

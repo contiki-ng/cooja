@@ -158,7 +158,7 @@ public class ManualPositioner extends Positioner {
         @Override
         public void focusGained(FocusEvent e) {
           final JFormattedTextField source = ((JFormattedTextField)e.getSource());
-          SwingUtilities.invokeLater(() -> source.selectAll());
+          SwingUtilities.invokeLater(source::selectAll);
         }
         @Override
         public void focusLost(FocusEvent e) {

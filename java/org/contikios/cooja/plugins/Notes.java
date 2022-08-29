@@ -123,7 +123,7 @@ public class Notes extends VisPlugin {
     }
 
     Notes.this.revalidate();
-    SwingUtilities.invokeLater(() -> Notes.this.repaint());
+    SwingUtilities.invokeLater(Notes.this::repaint);
 
     decorationsVisible = visible;
   }

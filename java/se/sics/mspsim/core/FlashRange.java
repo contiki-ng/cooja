@@ -48,9 +48,6 @@ public class FlashRange {
   }
 
   public boolean isInRange(int address) {
-    if (address >= start && address < end) {
-      return true;
-    }
-    return false;
+    return address >= start && address < end;
   }
 }

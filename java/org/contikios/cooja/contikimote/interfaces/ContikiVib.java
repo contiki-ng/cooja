@@ -86,7 +86,7 @@ public class ContikiVib extends MoteInterface implements ContikiMoteInterface {
    * Simulates a change in the vibration sensor.
    */
   public void triggerChange() {
-    mote.getSimulation().invokeSimulationThread(() -> doTriggerChange());
+    mote.getSimulation().invokeSimulationThread(this::doTriggerChange);
   }
   
   public void doTriggerChange() { 
