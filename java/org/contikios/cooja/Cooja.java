@@ -3433,6 +3433,15 @@ public class Cooja extends Observable {
   private boolean setPluginsConfigXML(Element root, Simulation sim) {
     for (var e : root.getChildren("plugin")) {
       final Element pluginElement = (Element)e;
+      // Parse plugin mote argument (if any)
+      Mote mote = null;
+      for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
+        int moteNr = Integer.parseInt(((Element)pluginSubElement).getText());
+        if (moteNr >= 0 && moteNr < sim.getMotesCount()) {
+          mote = sim.getMote(moteNr);
+        }
+      }
+
       // Read plugin class
       String pluginClassName = pluginElement.getText().trim();
 
@@ -3459,15 +3468,6 @@ public class Cooja extends Observable {
       // Skip plugins that require visualization in headless mode.
       if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
         continue;
-      }
-
-      // Parse plugin mote argument (if any)
-      Mote mote = null;
-      for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
-        int moteNr = Integer.parseInt(((Element)pluginSubElement).getText());
-        if (moteNr >= 0 && moteNr < sim.getMotesCount()) {
-          mote = sim.getMote(moteNr);
-        }
       }
 
       tryStartPlugin(pluginClass, this, sim, mote, pluginElement);
