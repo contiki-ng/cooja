@@ -58,6 +58,7 @@ import org.contikios.cooja.Cooja;
 import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
+import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
@@ -1176,14 +1177,14 @@ public class ContikiMoteType implements MoteType {
           /* Backwards compatibility: se.sics -> org.contikios */
           if (intfClass.startsWith("se.sics")) {
             intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
-          } Class<? extends MoteInterface> moteInterfaceClass
-                = simulation.getCooja().tryLoadClass(
-                        this, MoteInterface.class, intfClass);
-        if (moteInterfaceClass == null) {
-          logger.warn("Can't find mote interface class: " + intfClass);
-        } else {
-          moteInterfacesClasses.add(moteInterfaceClass);
-        } break;
+          }
+          var clazz = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
+          if (clazz == null) {
+            logger.warn("Can't find mote interface class: " + intfClass);
+          } else  {
+            moteInterfacesClasses.add(clazz);
+          }
+          break;
         case "contikibasedir":
         case "contikicoredir":
         case "projectdir":

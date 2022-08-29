@@ -30,8 +30,23 @@
 
 package org.contikios.cooja;
 
+import static java.util.Map.entry;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
+import org.contikios.cooja.contikimote.interfaces.ContikiBeeper;
+import org.contikios.cooja.contikimote.interfaces.ContikiButton;
+import org.contikios.cooja.contikimote.interfaces.ContikiCFS;
+import org.contikios.cooja.contikimote.interfaces.ContikiClock;
+import org.contikios.cooja.contikimote.interfaces.ContikiEEPROM;
+import org.contikios.cooja.contikimote.interfaces.ContikiIPAddress;
+import org.contikios.cooja.contikimote.interfaces.ContikiLED;
+import org.contikios.cooja.contikimote.interfaces.ContikiMoteID;
+import org.contikios.cooja.contikimote.interfaces.ContikiPIR;
+import org.contikios.cooja.contikimote.interfaces.ContikiRS232;
+import org.contikios.cooja.contikimote.interfaces.ContikiRadio;
+import org.contikios.cooja.contikimote.interfaces.ContikiVib;
 import org.contikios.cooja.interfaces.Battery;
 import org.contikios.cooja.interfaces.Beeper;
 import org.contikios.cooja.interfaces.Button;
@@ -39,6 +54,8 @@ import org.contikios.cooja.interfaces.Clock;
 import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.Log;
+import org.contikios.cooja.interfaces.Mote2MoteRelations;
+import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.PIR;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
@@ -61,6 +78,26 @@ import org.contikios.cooja.interfaces.RimeAddress;
  * @author Fredrik Osterlind
  */
 public class MoteInterfaceHandler {
+  /** Static translation map from name -> class for builtin interfaces. */
+  private static final Map<String, Class<? extends MoteInterface>> builtinInterfaces = Map.ofEntries(
+          entry("org.contikios.cooja.interfaces.Position", Position.class),
+          entry("org.contikios.cooja.interfaces.Battery", Battery.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiVib", ContikiVib.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiMoteID", ContikiMoteID.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiRS232", ContikiRS232.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiBeeper", ContikiBeeper.class),
+          entry("org.contikios.cooja.interfaces.RimeAddress", RimeAddress.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiIPAddress", ContikiIPAddress.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiRadio", ContikiRadio.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiButton", ContikiButton.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiPIR", ContikiPIR.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiClock", ContikiClock.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiLED", ContikiLED.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiCFS", ContikiCFS.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiEEPROM", ContikiEEPROM.class),
+          entry("org.contikios.cooja.interfaces.Mote2MoteRelations", Mote2MoteRelations.class),
+          entry("org.contikios.cooja.interfaces.MoteAttributes", MoteAttributes.class));
+
   private final ArrayList<MoteInterface> moteInterfaces = new ArrayList<>();
 
   /* Cached interfaces */
@@ -97,6 +134,21 @@ public class MoteInterfaceHandler {
     for (Class<? extends MoteInterface> interfaceClass : interfaceClasses) {
       addInterface(MoteInterface.generateInterface(interfaceClass, mote));
     }
+  }
+
+  /** Fast translation from class name to class file for builtin interfaces. Uses the classloader
+   * to load other interfaces.
+   * @param gui Cooja
+   * @param caller Object calling
+   * @param name Name of class to find
+   * @return Found class or null
+   */
+  public static Class<? extends MoteInterface> getInterfaceClass(Cooja gui, Object caller, String name) {
+    var clazz = builtinInterfaces.get(name);
+    if (clazz != null) {
+      return clazz;
+    }
+    return gui.tryLoadClass(caller, MoteInterface.class, name);
   }
 
   /**
