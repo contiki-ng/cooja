@@ -3459,18 +3459,157 @@ public class Cooja extends Observable {
         pluginClassName = "org.contikios.cooja.plugins.Visualizer";
       }
 
-      Class<? extends Plugin> pluginClass =
-              tryLoadClass(this, Plugin.class, pluginClassName);
-      if (pluginClass == null) {
-        logger.fatal("Could not load plugin class: " + pluginClassName);
-        return false;
+      boolean dynamic = false;
+      Class<? extends Plugin> pluginClass = null;
+      Plugin plugin = null;
+      switch (pluginClassName) {
+        case "org.contikios.cooja.plugins.SimControl":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new SimControl(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.SimInformation":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new SimInformation(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.MoteTypeInformation":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new MoteTypeInformation(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.Visualizer":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new Visualizer(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.LogListener":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new LogListener(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.TimeLine":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new TimeLine(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.MoteInformation":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new MoteInformation(mote, sim, this);
+          break;
+        case "org.contikios.cooja.plugins.MoteInterfaceViewer":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new MoteInterfaceViewer(mote, sim, this);
+          break;
+        case "org.contikios.cooja.plugins.VariableWatcher":
+          if (!isVisualized()) {
+            continue;
+          }
+          assert mote != null : "Mote configuration not found";
+          plugin = new VariableWatcher(mote, sim, this);
+          break;
+        case "org.contikios.cooja.plugins.EventListener":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new EventListener(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.RadioLogger":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new RadioLogger(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.ScriptRunner":
+          plugin = new ScriptRunner(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.Notes":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new Notes(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.BufferListener":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new BufferListener(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.DGRMConfigurator":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new DGRMConfigurator(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.BaseRSSIconf":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new BaseRSSIconf(sim, this);
+          break;
+        case "org.contikios.cooja.plugins.PowerTracker":
+          plugin = new PowerTracker(sim, this);
+          break;
+        case "org.contikios.cooja.serialsocket.SerialSocketClient":
+          plugin = new SerialSocketClient(mote, sim, this);
+          break;
+        case "org.contikios.cooja.serialsocket.SerialSocketServer":
+          assert mote != null : "Mote configuration not found";
+          plugin = new SerialSocketServer(mote, sim, this);
+          break;
+        case "org.contikios.cooja.mspmote.plugins.MspCLI":
+          if (!isVisualized()) {
+            continue;
+          }
+          assert mote != null : "Mote configuration not found";
+          plugin = new MspCLI(mote, sim, this);
+          break;
+        case "org.contikios.cooja.mspmote.plugins.MspCodeWatcher":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new MspCodeWatcher(mote, sim, this);
+          break;
+        case "org.contikios.cooja.mspmote.plugins.MspStackWatcher":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new MspStackWatcher(mote, sim, this);
+          break;
+        case "org.contikios.cooja.mspmote.plugins.MspCycleWatcher":
+          if (!isVisualized()) {
+            continue;
+          }
+          plugin = new MspCycleWatcher(mote, sim, this);
+          break;
+        default:
+          dynamic = true;
+          pluginClass = tryLoadClass(this, Plugin.class, pluginClassName);
+          if (pluginClass == null) {
+            logger.fatal("Could not load plugin class: " + pluginClassName);
+            return false;
+          }
+          // Skip plugins that require visualization in headless mode.
+          if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
+            continue;
+          }
+          break;
       }
-      // Skip plugins that require visualization in headless mode.
-      if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
-        continue;
+      if (dynamic) {
+        tryStartPlugin(pluginClass, this, sim, mote, pluginElement);
+      } else {
+        startPlugin(plugin, pluginElement);
       }
-
-      tryStartPlugin(pluginClass, this, sim, mote, pluginElement);
     }
 
     if (!isVisualized()) {
