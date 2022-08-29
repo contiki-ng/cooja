@@ -361,7 +361,7 @@ public class Cooja extends Observable {
   private final JTextPane quickHelpTextPane;
   private final GUIAction showQuickHelpAction;
   private final JScrollPane quickHelpScroll;
-  private Properties quickHelpProperties = null; /* quickhelp.txt */
+  private final Properties quickHelpProperties;
 
   /**
    * Mote relation (directed).
@@ -440,6 +440,7 @@ public class Cooja extends Observable {
     }
 
     if (!vis) {
+      quickHelpProperties = null;
       myDesktopPane = null;
       showQuickHelpAction = null;
       quickHelpTextPane = null;
@@ -516,6 +517,19 @@ public class Cooja extends Observable {
         return true;
       }
     };
+    quickHelpProperties = new Properties();
+    quickHelpProperties.put("KEYBOARD_SHORTCUTS",
+      "<b>Keyboard shortcuts</b><br>" +
+      "<br><i>Ctrl+N:</i> New simulation" +
+      "<br><i>Ctrl+S:</i> Start/pause simulation" +
+      "<br><i>Ctrl+R:</i> Reload current simulation. If no simulation exists, the last used simulation config is loaded" +
+      "<br><i>Ctrl+Shift+R:</i> Reload current simulation with another random seed" +
+      "<br>" +
+      "<br><i>F1:</i> Toggle quick help");
+    quickHelpProperties.put("GETTING_STARTED",
+      "<b>Getting started</b><br>" +
+      "<br>" +
+      "<br><i>F1:</i> Toggle quick help</i>");
     quickHelpTextPane = new JTextPane();
     quickHelpTextPane.setContentType("text/html");
     quickHelpTextPane.setEditable(false);
@@ -4080,22 +4094,6 @@ public class Cooja extends Observable {
     if (obj instanceof HasQuickHelp) {
       help = ((HasQuickHelp) obj).getQuickHelp();
     } else {
-      if (quickHelpProperties == null) {
-        quickHelpProperties = new Properties();
-        quickHelpProperties.put("KEYBOARD_SHORTCUTS",
-           "<b>Keyboard shortcuts</b><br>" +
-           "<br><i>Ctrl+N:</i> New simulation" +
-           "<br><i>Ctrl+S:</i> Start/pause simulation" +
-           "<br><i>Ctrl+R:</i> Reload current simulation. If no simulation exists, the last used simulation config is loaded" +
-"<br><i>Ctrl+Shift+R:</i> Reload current simulation with another random seed" +
-           "<br>" +
-           "<br><i>F1:</i> Toggle quick help");
-        quickHelpProperties.put("GETTING_STARTED",
-           "<b>Getting started</b><br>" +
-           "<br>" +
-           "<br><i>F1:</i> Toggle quick help</i>");
-      }
-
       help = quickHelpProperties.getProperty(key);
     }
 
