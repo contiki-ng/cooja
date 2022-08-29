@@ -261,13 +261,14 @@ class Main {
       // Construct the root logger and initialize the configurator
       builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("Stdout"))
               .add(builder.newAppenderRef("File")));
-      try (var cxt = Configurator.initialize(builder.build())) {
-        Cooja.go(options);
-      }
+      // FIXME: This should be try (LoggerContext cxt = Configurator.initialize(..)),
+      //        but go immediately returns which causes the log file to be closed
+      //        while the simulation is still running.
+      Configurator.initialize(builder.build());
+      Cooja.go(options);
     } else {
-      try (var cxt = Configurator.initialize("ConfigFile", options.logConfigFile)) {
-        Cooja.go(options);
-      }
+      Configurator.initialize("ConfigFile", options.logConfigFile);
+      Cooja.go(options);
     }
   }
 }
