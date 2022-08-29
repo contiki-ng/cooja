@@ -105,8 +105,8 @@ public class ADC12 extends IOUnit {
 
   private int adc12ctl0 = 0;
   private int adc12ctl1 = 0;
-  private int[] adc12mctl = new int[16];
-  private int[] adc12mem = new int[16];
+  private final int[] adc12mctl = new int[16];
+  private final int[] adc12mem = new int[16];
   private int adc12Pos = 0;
 
   private int shTime0 = 4;
@@ -120,7 +120,7 @@ public class ADC12 extends IOUnit {
   private int startMem = 0;
   private int adcDiv = 1;
 
-  private ADCInput[] adcInput = new ADCInput[16];
+  private final ADCInput[] adcInput = new ADCInput[16];
 
   private int conSeq;
   private int adc12ie;
@@ -128,9 +128,9 @@ public class ADC12 extends IOUnit {
   private int adc12iv;
 
   private int adcSSel;
-  private int adc12Vector = 7;
+  private final int adc12Vector = 7;
 
-  private TimeEvent adcTrigger = new TimeEvent(0) {
+  private final TimeEvent adcTrigger = new TimeEvent(0) {
     @Override
     public void execute(long t) {
 //      System.out.println(getName() + " **** executing update timers at " + t + " cycles=" + cpu.cycles);

@@ -61,11 +61,11 @@ import se.sics.mspsim.util.Utils;
 
 public class SimpleProfiler implements Profiler, EventListener {
 
-  private HashMap<MapEntry,CallEntry> profileData;
-  private HashMap<String, TagEntry> tagProfiles;
-  private HashMap<String, TagEntry> startTags;
-  private HashMap<String, TagEntry> endTags;
-  private HashMap<String, String> ignoreFunctions;
+  private final HashMap<MapEntry,CallEntry> profileData;
+  private final HashMap<String, TagEntry> tagProfiles;
+  private final HashMap<String, TagEntry> startTags;
+  private final HashMap<String, TagEntry> endTags;
+  private final HashMap<String, String> ignoreFunctions;
   private CallEntry[] callStack;
   private int cSP = 0;
   private MSP430Core cpu;
@@ -75,9 +75,9 @@ public class SimpleProfiler implements Profiler, EventListener {
   private CallListener[] callListeners;
 
   /* statistics for interrupts */
-  private long[] lastInterruptTime = new long[64];
-  private long[] interruptTime = new long[64];
-  private long[] interruptCount = new long[64];
+  private final long[] lastInterruptTime = new long[64];
+  private final long[] interruptTime = new long[64];
+  private final long[] interruptCount = new long[64];
   private int servicedInterrupt;
   private int interruptLevel;
   private int interruptFrom;
@@ -405,7 +405,7 @@ public class SimpleProfiler implements Profiler, EventListener {
   }
 
   private static class CallEntryComparator implements Comparator<CallEntry> {
-    private int mode;
+    private final int mode;
 
     public CallEntryComparator(String modeS) {
       if ("exclusive".equalsIgnoreCase(modeS)) {

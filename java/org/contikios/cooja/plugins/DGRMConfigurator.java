@@ -96,10 +96,10 @@ public class DGRMConfigurator extends VisPlugin {
     "Source", "Destination", "RX Ratio", "RSSI","LQI", "Delay"
   };
 
-  private Cooja gui;
-  private DirectedGraphMedium radioMedium;
+  private final Cooja gui;
+  private final DirectedGraphMedium radioMedium;
   private final Observer radioMediumObserver;
-  private JTable graphTable;
+  private final JTable graphTable;
   private final JComboBox combo = new JComboBox();
 	private final JButton removeButton;
 

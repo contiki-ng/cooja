@@ -23,7 +23,7 @@ public class CallEntry {
     int stackStart;
     int currentStackMax;
 
-    HashMap<MapEntry,CallCounter> callers;
+    final HashMap<MapEntry,CallCounter> callers;
 
     public CallEntry() {
       callers = new HashMap<>();

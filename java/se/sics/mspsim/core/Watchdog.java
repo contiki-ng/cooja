@@ -79,7 +79,7 @@ public class Watchdog extends IOUnit implements SFRModule {
   // Timer or WDT mode
   private boolean timerMode = false;
 
-  private TimeEvent wdtTrigger = new TimeEvent(0, "Watchdog") {
+  private final TimeEvent wdtTrigger = new TimeEvent(0, "Watchdog") {
     @Override
     public void execute(long t) {
 //      System.out.println(getName() + " **** executing update timers at " + t + " cycles=" + core.cycles);

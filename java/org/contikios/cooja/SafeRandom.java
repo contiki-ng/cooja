@@ -43,7 +43,7 @@ import java.util.Random;
  */
 public class SafeRandom extends Random {
   
-  Simulation sim;
+  final Simulation sim;
   Thread initThread = null;
   Boolean simStarted = false;
   

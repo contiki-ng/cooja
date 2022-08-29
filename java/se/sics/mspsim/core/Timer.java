@@ -386,7 +386,7 @@ public class Timer extends IOUnit {
 
   }
 
-  private TimeEvent counterTrigger = new TimeEvent(0, "Timer Counter Trigger") {
+  private final TimeEvent counterTrigger = new TimeEvent(0, "Timer Counter Trigger") {
       @Override
       public void execute(long t) {
           interruptPending = true;

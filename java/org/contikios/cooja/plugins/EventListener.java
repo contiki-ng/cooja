@@ -81,18 +81,18 @@ public class EventListener extends VisPlugin {
 
   private final EventListener myPlugin;
 
-  private JLabel messageLabel;
+  private final JLabel messageLabel;
 
-  private JButton actionButton;
+  private final JButton actionButton;
 
-  private JPanel interfacePanel;
+  private final JPanel interfacePanel;
 
-  private JPanel generalPanel;
+  private final JPanel generalPanel;
 
   protected abstract static class EventObserver implements Observer {
-    protected Observable myObservation;
+    protected final Observable myObservation;
 
-    protected EventListener myParent;
+    protected final EventListener myParent;
 
     public EventObserver(EventListener parent, Observable objectToObserve) {
       myParent = parent;
@@ -116,7 +116,7 @@ public class EventListener extends VisPlugin {
   }
 
   protected class InterfaceEventObserver extends EventObserver {
-    private Mote myMote;
+    private final Mote myMote;
 
     public InterfaceEventObserver(EventListener parent, Mote mote,
         Observable objectToObserve) {

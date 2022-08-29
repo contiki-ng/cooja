@@ -16,7 +16,7 @@ public class WindowTarget extends Target {
 
   private ManagedWindow window;
   // Default in the current version - TODO: replace with better
-  private JTextArea jta = new JTextArea(40,80);
+  private final JTextArea jta = new JTextArea(40,80);
   private WindowDataHandler dataHandler = null;
 
   public WindowTarget(Hashtable<String,Target> targets, String name) {

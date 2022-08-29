@@ -60,10 +60,10 @@ import org.jfree.data.xy.XYSeriesCollection;
  */
 public class LineChart extends JFreeWindowDataHandler {
 
-  private JPanel panel;
-  private JFreeChart chart;
-  private XYSeriesCollection dataset;
-  private DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
+  private final JPanel panel;
+  private final JFreeChart chart;
+  private final XYSeriesCollection dataset;
+  private final DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
 
   public LineChart() {
     NumberAxis domain = new NumberAxis("Time");

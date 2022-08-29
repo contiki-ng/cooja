@@ -77,7 +77,7 @@ public class SHT11 extends Chip {
   private int bitCnt = 0;
   private int temp = 3960 + 2400;
   private int humid = 0x1040;
-  private int[] output = new int[3];
+  private final int[] output = new int[3];
   private int writePos = 0;
   private int writeLen = 0;
   private int writeData = 0;
@@ -109,7 +109,7 @@ public class SHT11 extends Chip {
   }
 
 
-  private TimeEvent measureEvent = new TimeEvent(0) {
+  private final TimeEvent measureEvent = new TimeEvent(0) {
     @Override
     public void execute(long t) {
       if (readData == CMD_MEASURE_TEMP) {

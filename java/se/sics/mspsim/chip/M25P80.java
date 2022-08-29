@@ -93,10 +93,10 @@ public class M25P80 extends ExternalFlash implements USARTListener, PortListener
   private int readAddress;
   private int loadedAddress = -1;
   private int blockWriteAddress;
-  private byte[] readMemory = new byte[256];
-  private byte[] buffer = new byte[256];
+  private final byte[] readMemory = new byte[256];
+  private final byte[] buffer = new byte[256];
 
-  private TimeEvent writeEvent = new TimeEvent(0, "M25P80 Writing") {
+  private final TimeEvent writeEvent = new TimeEvent(0, "M25P80 Writing") {
     @Override
     public void execute(long t) {
       writing = false;

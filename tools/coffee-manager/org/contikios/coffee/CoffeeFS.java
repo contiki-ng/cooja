@@ -42,7 +42,7 @@ public class CoffeeFS {
 	private final CoffeeImage image;
 	private final CoffeeConfiguration conf;
 	private int currentPage;
-	private Map<String, CoffeeFile> files;
+	private final Map<String, CoffeeFile> files;
 	private static final int INVALID_PAGE = -1;
 
 	public CoffeeFS(CoffeeImage image) throws IOException {

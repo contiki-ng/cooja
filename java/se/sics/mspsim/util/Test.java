@@ -54,8 +54,8 @@ import se.sics.mspsim.core.USARTSource;
  */
 public class Test implements USARTListener {
 
-  private StringBuilder lineBuffer = new StringBuilder();
-  private MSP430 cpu;
+  private final StringBuilder lineBuffer = new StringBuilder();
+  private final MSP430 cpu;
 
   public Test(MSP430 cpu) {
     this.cpu = cpu;

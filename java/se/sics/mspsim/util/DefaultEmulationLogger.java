@@ -13,7 +13,7 @@ public class DefaultEmulationLogger implements EmulationLogger {
   private final MSP430Core cpu;
   private final WarningMode[] warningModes = new WarningMode[WarningType.values().length];
   private WarningMode defaultMode = WarningMode.PRINT;
-  private PrintStream out;
+  private final PrintStream out;
   private LogListener[] logListeners;
 
   public DefaultEmulationLogger(MSP430Core cpu, PrintStream out) {

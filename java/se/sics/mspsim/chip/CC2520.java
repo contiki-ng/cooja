@@ -355,7 +355,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     /* low RSSI => CCA = true in normal mode */
 
     private int rssi = -100;
-    private static int RSSI_OFFSET = -45; /* cc2520 datasheet */
+    private static final int RSSI_OFFSET = -45; /* cc2520 datasheet */
 
     /* This is the magical LQI */
     private int corrval = 37;
@@ -385,9 +385,9 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
 
     private final int[] memory = new int[0x400]; /* total memory */
 
-    private CC2520SPI cc2520SPI = new CC2520SPI(this);
+    private final CC2520SPI cc2520SPI = new CC2520SPI(this);
     private SPICommand command;
-    private int[] spiData = new int[20]; /* SPI data buffer */
+    private final int[] spiData = new int[20]; /* SPI data buffer */
     private int spiLen;
 
     // Buffer to hold 5 byte Synchronization header, as it is not written to the TXFIFO
@@ -411,7 +411,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     private int txCursor;
     private boolean isRadioOn;
 
-    private TimeEvent oscillatorEvent = new TimeEvent(0, "CC2520 OSC") {
+    private final TimeEvent oscillatorEvent = new TimeEvent(0, "CC2520 OSC") {
         @Override
         public void execute(long t) {
             status |= STATUS_XOSC16M_STABLE;
@@ -421,7 +421,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
         }
     };
 
-    private TimeEvent vregEvent = new TimeEvent(0, "CC2520 VREG") {
+    private final TimeEvent vregEvent = new TimeEvent(0, "CC2520 VREG") {
         @Override
         public void execute(long t) {
             if(DEBUG) log("VREG Started at: " + t + " cyc: " +
@@ -432,28 +432,28 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
         }
     };
 
-    private TimeEvent sendEvent = new TimeEvent(0, "CC2520 Send") {
+    private final TimeEvent sendEvent = new TimeEvent(0, "CC2520 Send") {
         @Override
         public void execute(long t) {
             txNext();
         }
     };
 
-    private TimeEvent ackEvent = new TimeEvent(0, "CC2520 Ack") {
+    private final TimeEvent ackEvent = new TimeEvent(0, "CC2520 Ack") {
         @Override
         public void execute(long t) {
             ackNext();
         }
     };
 
-    private TimeEvent shrEvent = new TimeEvent(0, "CC2520 SHR") {
+    private final TimeEvent shrEvent = new TimeEvent(0, "CC2520 SHR") {
         @Override
         public void execute(long t) {
             shrNext();
         }
     };
 
-    private TimeEvent symbolEvent = new TimeEvent(0, "CC2520 Symbol") {
+    private final TimeEvent symbolEvent = new TimeEvent(0, "CC2520 Symbol") {
         @Override
         public void execute(long t) {
             switch(stateMachine) {
@@ -492,8 +492,8 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     /* type = 2 (ACK), third byte needs to be sequence number... */
     private int[] ackBuf = {0x05, 0x02, 0x00, 0x00, 0x00, 0x00};
     private boolean ackFramePending = false;
-    private CCITT_CRC rxCrc = new CCITT_CRC();
-    private CCITT_CRC txCrc = new CCITT_CRC();
+    private final CCITT_CRC rxCrc = new CCITT_CRC();
+    private final CCITT_CRC txCrc = new CCITT_CRC();
 
     private final ArrayFIFO rxFIFO = new ArrayFIFO("RXFIFO", memory, 128, 128);
 

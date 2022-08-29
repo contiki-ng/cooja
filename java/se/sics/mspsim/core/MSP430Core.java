@@ -1902,12 +1902,11 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
                         pc += 2;
                         writeRegister(PC, pc);
-                        cycles += dstRegMode ? 2 : 5;
                 } else {
                         srcAddress = readRegister(srcRegister);
                         incRegister(srcRegister, mode.bytes);
-                        cycles += dstRegMode ? 2 : 5;
                 }
+          cycles += dstRegMode ? 2 : 5;
 
                 /* If destination register is PC another cycle is consumed */
                 if (dstRegister == PC) {

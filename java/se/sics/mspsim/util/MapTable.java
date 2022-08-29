@@ -70,9 +70,9 @@ public class MapTable {
   private int bssFill = 0;
   private int dataFill = 0;
 
-  private ArrayList<MapEntry> modules = new ArrayList<>();
-  private ArrayList<MapEntry> entries = new ArrayList<>();
-  private HashMap<Integer, MapEntry> addressMap = new HashMap<>();
+  private final ArrayList<MapEntry> modules = new ArrayList<>();
+  private final ArrayList<MapEntry> entries = new ArrayList<>();
+  private final HashMap<Integer, MapEntry> addressMap = new HashMap<>();
 
   public MapTable() {
   }

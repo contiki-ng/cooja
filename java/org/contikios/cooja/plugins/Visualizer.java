@@ -501,12 +501,12 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     canvas.addMouseMotionListener(new MouseMotionAdapter() {
       @Override
       public void mouseDragged(MouseEvent e) {
-        handleMouseDrag(e, false);
+        handleMouseDrag(e);
       }
 
       @Override
       public void mouseMoved(MouseEvent e) {
-        handleMouseDrag(e, false);
+        handleMouseDrag(e);
       }
     });
     canvas.addMouseListener(new MouseAdapter() {
@@ -1010,7 +1010,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
   final Map<Mote, double[]> moveStartPositions = new HashMap<>();
 
-  private void handleMouseDrag(MouseEvent e, boolean stop) {
+  private void handleMouseDrag(MouseEvent e) {
     Position currPos = transformPixelToPosition(e.getPoint());
 
     switch (mouseActionState) {
@@ -1126,7 +1126,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     repaint();
   }
 
-  private void beginMoveRequest(Mote selectedMote, boolean withTiming, boolean confirm) {
+  private void beginMoveRequest(Mote selectedMote) {
     /* Save start positions and set move-start position to clicked mote */
     for (Mote m : selectedMotes) {
       Position pos = m.getInterfaces().getPosition();
@@ -1249,7 +1249,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         Point destPoint = transformPositionToPixel(destPos);
 
         g.setColor(r.color == null ? Color.black : r.color);
-        drawArrow(g, sourcePoint.x, sourcePoint.y, destPoint.x, destPoint.y, MOTE_RADIUS + 1);
+        drawArrow(g, sourcePoint.x, sourcePoint.y, destPoint.x, destPoint.y);
       }
     }
 
@@ -1315,14 +1315,14 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
   private final Polygon arrowPoly = new Polygon();
 
-  private void drawArrow(Graphics g, int xSource, int ySource, int xDest, int yDest, int delta) {
+  private void drawArrow(Graphics g, int xSource, int ySource, int xDest, int yDest) {
     double dx = xSource - xDest;
     double dy = ySource - yDest;
     double dir = Math.atan2(dx, dy);
     double len = Math.sqrt(dx * dx + dy * dy);
     dx /= len;
     dy /= len;
-    len -= delta;
+    len -= 9;
     xDest = xSource - (int) (dx * len);
     yDest = ySource - (int) (dy * len);
     g.drawLine(xDest, yDest, xSource, ySource);
@@ -1330,18 +1330,18 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     final int size = 8;
     arrowPoly.reset();
     arrowPoly.addPoint(xDest, yDest);
-    arrowPoly.addPoint(xDest + xCor(size, dir + 0.5), yDest + yCor(size, dir + 0.5));
-    arrowPoly.addPoint(xDest + xCor(size, dir - 0.5), yDest + yCor(size, dir - 0.5));
+    arrowPoly.addPoint(xDest + xCor(dir + 0.5), yDest + yCor(dir + 0.5));
+    arrowPoly.addPoint(xDest + xCor(dir - 0.5), yDest + yCor(dir - 0.5));
     arrowPoly.addPoint(xDest, yDest);
     g.fillPolygon(arrowPoly);
   }
 
-  private static int yCor(int len, double dir) {
-    return (int) (0.5 + len * Math.cos(dir));
+  private static int yCor(double dir) {
+    return (int) (0.5 + 8 * Math.cos(dir));
   }
 
-  private static int xCor(int len, double dir) {
-    return (int) (0.5 + len * Math.sin(dir));
+  private static int xCor(double dir) {
+    return (int) (0.5 + 8 * Math.sin(dir));
   }
 
   /**
@@ -1796,7 +1796,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         visualizer.getSelectedMotes().clear();
         visualizer.getSelectedMotes().add(mote);
       }
-      visualizer.beginMoveRequest(mote, false, false);
+      visualizer.beginMoveRequest(mote);
     }
   }
 

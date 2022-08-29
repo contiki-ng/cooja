@@ -33,7 +33,7 @@ public class Trxeb1120Node extends GenericNode implements PortListener, USARTLis
         public CC1120 radio;
         public Enc28J60 enc = null;
 
-        private boolean withEnc;
+        private final boolean withEnc;
 
         public Trxeb1120Node(boolean withEnc) {
                 super("Trxeb1120", new MSP430f5437Config());

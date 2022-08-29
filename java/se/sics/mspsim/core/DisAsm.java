@@ -55,7 +55,7 @@ public class DisAsm implements MSP430Constants {
   private MapTable map;
 
   // Idiots solution to single stepping...
-  private BufferedReader input =
+  private final BufferedReader input =
     new BufferedReader(new InputStreamReader(System.in, UTF_8));
 
 
@@ -267,7 +267,6 @@ public class DisAsm implements MSP430Constants {
             output += dumpMem(startPC, size, memory);
             output += opstr + " ";
             regs = "R" + dst + "=" + Utils.hex16(reg[dst]);
-            regs += " SP=" + Utils.hex16(reg[SP]);
         } else {
             // Register
             int register = instruction & 0xf;
@@ -352,8 +351,8 @@ public class DisAsm implements MSP430Constants {
             output += dumpMem(startPC, size, memory);
             output += opstr + " " + adr;
             regs = "R" + register + "=" + Utils.hex16(reg[register]);
-            regs += " SP=" + Utils.hex16(reg[SP]);
         }
+      regs += " SP=" + Utils.hex16(reg[SP]);
     }
     break;
     // Jump instructions

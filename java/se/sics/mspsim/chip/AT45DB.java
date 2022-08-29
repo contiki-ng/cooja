@@ -125,8 +125,8 @@ public class AT45DB extends ExternalFlash implements USARTListener {
 
 
   // AT45 has two page sized RAM buffers
-  private byte[] buffer1 = new byte[PAGE_SIZE];
-  private byte[] buffer2 = new byte[PAGE_SIZE];
+  private final byte[] buffer1 = new byte[PAGE_SIZE];
+  private final byte[] buffer2 = new byte[PAGE_SIZE];
 
   private TimeEvent writeEvent = new TimeEvent(0) {
     @Override

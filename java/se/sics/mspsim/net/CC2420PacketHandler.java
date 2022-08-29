@@ -61,13 +61,13 @@ public class CC2420PacketHandler extends AbstractPacketHandler implements RFList
 
   private PrintStream out;
 
-  byte[] packetBuffer = new byte[256];
+  final byte[] packetBuffer = new byte[256];
   int mode = SFD_SEARCH;
   int pos;
   int packetLen;
   int sfdSearch = 0;
 
-  MSP430Core cpu;
+  final MSP430Core cpu;
   public CC2420PacketHandler(MSP430Core cpu) {
     this.cpu = cpu;
   }

@@ -27,7 +27,7 @@ public class DataChart extends JPanel implements ServiceComponent {
   private enum Mode {NONE, STACK, DUTY}
   private Mode mode = Mode.NONE;
 
-  private TimeSeriesCollection dataset;
+  private final TimeSeriesCollection dataset;
   private ComponentRegistry registry;
   private ManagedWindow jw;
   private MSP430 cpu;

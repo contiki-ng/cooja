@@ -52,7 +52,7 @@ public class SimEvent {
     STOP
   }
 
-  private Type type;
+  private final Type type;
 
   public SimEvent(Type type) {
     this.type = type;

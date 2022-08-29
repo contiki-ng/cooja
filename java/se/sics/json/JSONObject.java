@@ -296,7 +296,7 @@ public class JSONObject extends HashMap<String,Object> implements JSONAware, JSO
         throw new ParseException("not a JSON object: " + input);
     }
 
-    private static ContainerFactory jsonObjectFactory = new ContainerFactory() {
+    private static final ContainerFactory jsonObjectFactory = new ContainerFactory() {
 
         @Override
         public List<Object> creatArrayContainer() {
@@ -312,7 +312,7 @@ public class JSONObject extends HashMap<String,Object> implements JSONAware, JSO
 
     private static class JSONObjectHandler implements ContentHandler {
 
-        private Stack<Object> valueStack = new Stack<>();
+        private final Stack<Object> valueStack = new Stack<>();
 
         public Object getResult() {
             if (this.valueStack.size() == 0) {

@@ -191,7 +191,7 @@ public class ESBGui extends AbstractNodeGUI implements ADCInput {
       // TODO cleanup
   }
 
-  private byte[] data = new byte[4];
+  private final byte[] data = new byte[4];
   @Override
   public int nextData() {
     if (inDataLine != null) {

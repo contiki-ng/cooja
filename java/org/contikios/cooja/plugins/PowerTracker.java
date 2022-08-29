@@ -86,9 +86,9 @@ public class PowerTracker implements Plugin {
   private static final int COLUMN_RADIOTX = 2;
   private static final int COLUMN_RADIORX = 3;
 
-  private Simulation simulation;
-  private MoteCountListener moteCountListener;
-  private ArrayList<MoteTracker> moteTrackers = new ArrayList<>();
+  private final Simulation simulation;
+  private final MoteCountListener moteCountListener;
+  private final ArrayList<MoteTracker> moteTrackers = new ArrayList<>();
 
   private JTable table;
   private int tableMaxRadioOnIndex = -1;
@@ -246,7 +246,7 @@ public class PowerTracker implements Plugin {
 	  return null;
   }
   
-  private Action resetAction = new AbstractAction("Reset") {
+  private final Action resetAction = new AbstractAction("Reset") {
     @Override
     public void actionPerformed(ActionEvent e) {
       Runnable r = new Runnable() {
@@ -263,7 +263,7 @@ public class PowerTracker implements Plugin {
     }
   };
 
-  private Action printAction = new AbstractAction("Print to console/Copy to clipboard") {
+  private final Action printAction = new AbstractAction("Print to console/Copy to clipboard") {
     @Override
     public void actionPerformed(ActionEvent e) {
       String output = radioStatistics(true, true, false);
@@ -328,7 +328,7 @@ public class PowerTracker implements Plugin {
     long radioRx = 0;
     long radioInterfered = 0;
 
-    private Simulation simulation;
+    private final Simulation simulation;
     private Mote mote;
     private Radio radio;
 
@@ -539,7 +539,7 @@ public class PowerTracker implements Plugin {
     IDLE, RECEIVING, TRANSMITTING, INTERFERED
   }
 
-  private Timer repaintTimer = new Timer(POWERTRACKER_UPDATE_INTERVAL, new ActionListener() {
+  private final Timer repaintTimer = new Timer(POWERTRACKER_UPDATE_INTERVAL, new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
       /* Identify max radio on */

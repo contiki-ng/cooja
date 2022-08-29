@@ -70,7 +70,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
   private JFrame window;
   private JTextArea textArea;
   private JTextField commandField;
-  private String[] history = new String[50];
+  private final String[] history = new String[50];
   private int historyPos = 0;
   private int historyCount = 0;
   private String text = "*** Serial mon for MSPsim ***\n";

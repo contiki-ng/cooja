@@ -97,8 +97,8 @@ public class RTC extends IOUnit {
                 TYPE_A, TYPE_D,
         }
 
-        private RtcType type;
-        private int rtcIntVector;
+        private final RtcType type;
+        private final int rtcIntVector;
 
         /**
          * RTC peripheral for the MSP430
@@ -246,7 +246,7 @@ public class RTC extends IOUnit {
         /**
          * Timer to generate the interrupts and handle the calendar
          */
-        private TimeEvent rtcTimer = new TimeEvent(0) {
+        private final TimeEvent rtcTimer = new TimeEvent(0) {
 
                 @Override
                 public void execute(long t) {

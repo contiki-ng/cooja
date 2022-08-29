@@ -80,8 +80,8 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
   private static final Logger logger = LogManager.getLogger(ContikiCFS.class);
 
   public static final int FILESYSTEM_SIZE = 4000; /* Configure CFS size here and in cfs-cooja.c */
-  private Mote mote;
-  private VarMemory moteMem;
+  private final Mote mote;
+  private final VarMemory moteMem;
 
   private int lastRead = 0;
   private int lastWritten = 0;

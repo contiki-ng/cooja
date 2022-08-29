@@ -15,10 +15,10 @@ import se.sics.mspsim.util.DataSource;
 
 public class DataSourceSampler implements ActionListener {
 
-  private MSP430Core cpu;
+  private final MSP430Core cpu;
   private int interval = 100;
-  private Timer timer;
-  private ArrayList<TimeSource> sources = new ArrayList<>();
+  private final Timer timer;
+  private final ArrayList<TimeSource> sources = new ArrayList<>();
 
   public DataSourceSampler(MSP430Core cpu) {
     this.cpu = cpu;
@@ -69,9 +69,9 @@ public class DataSourceSampler implements ActionListener {
 
   private static class TimeSource {
 
-    private MSP430Core cpu;
-    private DataSource dataSource;
-    private TimeSeries timeSeries;
+    private final MSP430Core cpu;
+    private final DataSource dataSource;
+    private final TimeSeries timeSeries;
     private long lastUpdate;
 
     TimeSource(MSP430Core cpu, DataSource ds, TimeSeries ts) {

@@ -56,7 +56,7 @@ import org.jdom.Element;
 @ClassDescription("Position")
 public class Position extends MoteInterface {
   private static final Logger logger = LogManager.getLogger(Position.class);
-  private Mote mote;
+  private final Mote mote;
   private final double[] coords = new double[3];
 
   /**

@@ -45,7 +45,7 @@ import java.awt.Graphics2D;
 
 public class ConstantLineChart extends AbstractChart {
 
-  private int lineY;
+  private final int lineY;
 
   public ConstantLineChart(int y) {
     this.lineY = y;

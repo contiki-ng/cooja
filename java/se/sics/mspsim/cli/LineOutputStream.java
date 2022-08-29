@@ -48,8 +48,8 @@ import java.io.OutputStream;
  */
 public class LineOutputStream extends OutputStream {
 
-  private StringBuilder line = new StringBuilder();
-  private LineListener listener;
+  private final StringBuilder line = new StringBuilder();
+  private final LineListener listener;
 
   public LineOutputStream(LineListener listener) {
     this.listener = listener;
