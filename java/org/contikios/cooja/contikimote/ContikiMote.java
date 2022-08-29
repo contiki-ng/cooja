@@ -94,10 +94,6 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     return myInterfaceHandler;
   }
 
-  public void setInterfaces(MoteInterfaceHandler newInterfaces) {
-    myInterfaceHandler = newInterfaces;
-  }
-
   @Override
   public MemoryInterface getMemory() {
     return myMemory;
