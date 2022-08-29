@@ -2290,11 +2290,10 @@ public class Cooja extends Observable {
     }
 
     // Close all started non-GUI plugins
-    for (Object startedPlugin : startedPlugins.toArray()) {
+    for (var startedPlugin : startedPlugins.toArray(new Plugin[0])) {
       int pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
-      if (pluginType != PluginType.COOJA_PLUGIN
-          && pluginType != PluginType.COOJA_STANDARD_PLUGIN) {
-        removePlugin((Plugin) startedPlugin, false);
+      if (pluginType != PluginType.COOJA_PLUGIN && pluginType != PluginType.COOJA_STANDARD_PLUGIN) {
+        removePlugin(startedPlugin, false);
       }
     }
 
@@ -2658,9 +2657,8 @@ public class Cooja extends Observable {
     }
 
     // Clean up resources
-    Object[] plugins = startedPlugins.toArray();
-    for (Object plugin : plugins) {
-      removePlugin((Plugin) plugin, false);
+    for (var plugin : startedPlugins.toArray(new Plugin[0])) {
+      removePlugin(plugin, false);
     }
 
     /* Store frame size and position */
