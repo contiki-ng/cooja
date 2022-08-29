@@ -66,7 +66,6 @@ public class Watchdog extends IOUnit implements SFRModule {
   private int resetVector;
 
   private int wdtctl = 0x4;
-  private int offset;
 
   public boolean wdtOn = true;
 
@@ -93,7 +92,6 @@ public class Watchdog extends IOUnit implements SFRModule {
 
     resetVector = cpu.MAX_INTERRUPT;
 
-    this.offset = address;
     cpu.getSFR().registerSFDModule(0, WATCHDOG_INTERRUPT_BIT, this, WATCHDOG_VECTOR);
   }
 
