@@ -596,18 +596,15 @@ public class ContikiMoteType implements MoteType {
       startAddr = -1;
       size = -1;
       Pattern varPattern = Pattern.compile(startRegExp);
-      Pattern sizePattern = Pattern.compile(sizeRegExp);
       for (var line : getData()) {
         Matcher varMatcher = varPattern.matcher(line);
         if (varMatcher.find()) {
           startAddr = Long.parseUnsignedLong(varMatcher.group(1).trim(), 16);
-        }
-        // TODO: size is on the same line as the section address in the docker image,
-        //       put the size matcher inside the varMatcher.find() block once this has
-        //       had more testing.
-        Matcher sizeMatcher = sizePattern.matcher(line);
-        if (sizeMatcher.find()) {
-          size = (int) Long.parseUnsignedLong(sizeMatcher.group(1).trim(), 16);
+          Pattern sizePattern = Pattern.compile(sizeRegExp);
+          Matcher sizeMatcher = sizePattern.matcher(line);
+          if (sizeMatcher.find()) {
+            size = (int) Long.parseUnsignedLong(sizeMatcher.group(1).trim(), 16);
+          }
           break;
         }
       }
