@@ -205,11 +205,7 @@ public class Flash extends IOUnit {
     if (main_range.isInRange(address)) {
       return true;
     }
-    if (info_range.isInRange(address)) {
-      return true;
-    }
-
-    return false;
+    return info_range.isInRange(address);
   }
 
   private int getFlashClockDiv() {

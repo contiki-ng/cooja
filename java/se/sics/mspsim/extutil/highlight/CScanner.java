@@ -577,9 +577,7 @@ public class CScanner extends Scanner {
       } else
         break;
     }
-    if ((i == 0) || (val > 0xFF))
-      return false;
-    return true;
+    return (i != 0) && (val <= 0xFF);
   }
 
   // A malformed or incomplete token has a negative type

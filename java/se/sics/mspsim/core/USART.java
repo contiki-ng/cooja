@@ -258,11 +258,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
           log(" Selected SMCLK as source");
         }
       }
-      if ((data & UTCTL_URXSE) == UTCTL_URXSE) {
-          sfr.setAutoclear(rxVector, false);
-      } else {
-          sfr.setAutoclear(rxVector, true);
-      }
+      sfr.setAutoclear(rxVector, (data & UTCTL_URXSE) != UTCTL_URXSE);
       updateBaudRate();
       break;
     case URCTL:
