@@ -64,6 +64,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.HasQuickHelp;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -89,7 +90,7 @@ import se.sics.mspsim.util.ELFDebug;
 @ClassDescription("Msp Code Watcher")
 @PluginType(PluginType.MOTE_PLUGIN)
 @SupportedArguments(motes = {MspMote.class})
-public class MspCodeWatcher extends VisPlugin implements MotePlugin {
+public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHelp {
   private static final int SOURCECODE = 0;
   private static final int BREAKPOINTS = 2;
 
@@ -394,6 +395,15 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
       rulesMatched[i] = rules.get(i).prefixMatches;
       rulesOK[i] = rules.get(i).locatesFile;
     }
+  }
+
+  @Override
+  public String getQuickHelp() {
+    return "<b>MSPSim's Code Watcher</b><br>" +
+            "<br>This plugin shows the source code for MSP430 based motes and can set or remove breakpoints." +
+            "<br><br>" +
+            "<b>Note:</b> You must compile the code with <i>DEBUG=1</i> to include information about the source code in the build." +
+            "<br><br>Example: make TARGET=sky DEBUG=1 hello-world";
   }
 
   private class Rule {
