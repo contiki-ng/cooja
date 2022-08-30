@@ -465,6 +465,7 @@ public class ScriptRunner implements Plugin {
 
   @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+    boolean activate = false;
     for (Element element : configXML) {
       String name = element.getName();
       if ("script".equals(name)) {
@@ -475,15 +476,20 @@ public class ScriptRunner implements Plugin {
         File file = simulation.getCooja().restorePortablePath(new File(element.getText().trim()));
         setLinkFile(file);
       } else if ("active".equals(name)) {
-        try {
-          // Automatically activate script in headless mode.
-          setScriptActive(!Cooja.isVisualized() || Boolean.parseBoolean(element.getText()));
-        } catch (Exception e) {
-          logger.fatal("Error: " + e.getMessage(), e);
-          // FIXME: return false here.
-        }
+        activate = Boolean.parseBoolean(element.getText());
       }
     }
+
+    // Automatically activate script in headless mode.
+    if (activate || !Cooja.isVisualized()) {
+      try {
+        setScriptActive(true);
+      } catch (Exception e) {
+        logger.fatal("Error: failed to start script: {}", e.getMessage(), e);
+        return false;
+      }
+    }
+
     return true;
   }
 
