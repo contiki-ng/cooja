@@ -342,7 +342,7 @@ public class BufferListener extends VisPlugin {
           BufferAccess ba = logs.get(row);
           return
           "<html><pre>" +
-          "Address: " + (ba.address==0?"null":String.format("%016x\n", ba.address)) +
+          "Address: " + (ba.address<=0?"null":String.format("%016x\n", ba.address)) +
           StringUtils.hexDump(ba.mem, 4, 4) +
           "</pre></html>";
         }
@@ -748,7 +748,7 @@ public class BufferListener extends VisPlugin {
       this.address = address;
       this.size = size;
 
-      if (address != 0) {
+      if (address > 0) {
         if (!mote.getMemory().addSegmentMonitor(SegmentMonitor.EventType.WRITE, address, size, this)) {
           throw new Exception("Could not register memory monitor on: " + mote);
         }
@@ -769,14 +769,14 @@ public class BufferListener extends VisPlugin {
     }
 
     public void dispose() {
-      if (address != 0) {
+      if (address > 0) {
         mote.getMemory().removeSegmentMonitor(address, size, this);
       }
     }
 
     @Override
     public void memoryChanged(MemoryInterface memory, EventType type, long address) {
-      byte[] newData = getAddress()==0?null:mote.getMemory().getMemorySegment(getAddress(), getSize());
+      byte[] newData = getAddress()<=0?null:mote.getMemory().getMemorySegment(getAddress(), getSize());
       addBufferAccess(bl, mote, oldData, newData, type, this.address);
       oldData = newData;
     }
@@ -1039,7 +1039,7 @@ public class BufferListener extends VisPlugin {
     }
 
     public String getAsHex() {
-      return String.format("%04x", address) + ":" + StringUtils.toHex(mem);
+      return String.format("%016x", address) + ":" + StringUtils.toHex(mem);
     }
 
     public boolean[] getAccessedBitpattern() {
