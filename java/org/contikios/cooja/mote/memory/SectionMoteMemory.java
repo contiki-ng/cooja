@@ -178,7 +178,7 @@ public class SectionMoteMemory implements MemoryInterface {
   /**
    * Returns memory segment from section matching segment given by address and size
    * @param address start address of segment to get
-   * @param size size of segmetn to get
+   * @param size size of segment to get
    * @return Array containing data of segment
    * @throws MoteMemoryException if no single section containing the given address range was found
    */
