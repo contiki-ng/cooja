@@ -2198,9 +2198,7 @@ public class Cooja extends Observable {
   }
 
   private void setSimulation(Simulation sim, boolean startPlugins) {
-    if (sim != null) {
-      doRemoveSimulation(false);
-    }
+    doRemoveSimulation(false);
     mySimulation = sim;
     updateGUIComponentState();
 
