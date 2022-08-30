@@ -169,7 +169,6 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
 
   @Override
   public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) {
-    setSimulation(simulation);
     for (Element element: configXML) {
       String name = element.getName();
 

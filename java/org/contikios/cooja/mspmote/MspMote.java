@@ -106,7 +106,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   public GenericNode mspNode = null;
 
   public MspMote(MspMoteType moteType, Simulation simulation) {
-    this.simulation = simulation;
+    setSimulation(simulation);
     myMoteType = moteType;
 
     /* Schedule us immediately */
@@ -474,7 +474,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   @Override
   public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException {
-    setSimulation(simulation);
     if (myMoteInterfaceHandler == null) {
       myMoteInterfaceHandler = createMoteInterfaceHandler();
     }
