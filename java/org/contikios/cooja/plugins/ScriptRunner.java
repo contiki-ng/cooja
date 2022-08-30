@@ -432,29 +432,30 @@ public class ScriptRunner implements Plugin {
   @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
-    Element element;
 
     if (linkedFile != null) {
-      element = new Element("scriptfile");
+      Element element = new Element("scriptfile");
       element.setText(simulation.getCooja().createPortablePath(linkedFile).getPath().replace('\\', '/'));
       config.add(element);
     } else {
-      element = new Element("script");
+      Element element = new Element("script");
       element.setText(codeEditor.getText());
       config.add(element);
     }
 
-    element = new Element("active");
-    element.setText(String.valueOf(isActive()));
-    config.add(element);
+    if (isActive()) {
+      Element element = new Element("active");
+      element.setText(String.valueOf(true));
+      config.add(element);
+    }
 
     return config;
   }
 
   public boolean isActive() {
     return engine != null;
-
   }
+
   @Override
   public void closePlugin() {
     try {
