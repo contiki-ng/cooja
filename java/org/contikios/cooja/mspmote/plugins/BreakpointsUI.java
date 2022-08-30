@@ -101,11 +101,7 @@ public class BreakpointsUI extends JPanel {
           if (file == null) {
             return String.format("[unknown @ 0x%04x]", watchpoint.getExecutableAddress());
           }
-          Integer line = watchpoint.getLineNumber();
-          if (line == null) {
-            return file.getPath() + ":?";
-          }
-          return file.getPath() + ":" + line;
+          return file.getPath() + ":" + watchpoint.getLineNumber();
         }
 
         if (realColumnIndex == COLUMN_INFO) {
