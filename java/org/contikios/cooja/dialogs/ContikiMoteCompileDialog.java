@@ -338,23 +338,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   }
 
   @Override
-  public void compileContiki()
-  throws Exception {
-    if (((ContikiMoteType)moteType).mapFile == null ||
-        ((ContikiMoteType)moteType).javaClassName == null) {
-      throw new Exception("Library variables not defined");
-    }
-
-    /* Extract Contiki dependencies from currently selected mote interfaces */
-    String[] coreInterfaces =
-      ContikiMoteType.getRequiredCoreInterfaces(getSelectedMoteInterfaceClasses());
-    ((ContikiMoteType)moteType).setCoreInterfaces(coreInterfaces);
-
-    /* Start compiling */
-    super.compileContiki();
-  }
-
-  @Override
   protected String getTargetName() {
   	return "cooja";
   }

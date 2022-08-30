@@ -36,7 +36,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -182,8 +181,6 @@ public class ContikiMoteType implements MoteType {
   public File mapFile = null; /* Contiki map: build/cooja/mtype1.map */
 
   public String javaClassName = null; /* Loading Java class name: Lib1 */
-
-  private String[] coreInterfaces = null;
 
   private ArrayList<Class<? extends MoteInterface>> moteInterfacesClasses = null;
 
@@ -993,16 +990,6 @@ public class ContikiMoteType implements MoteType {
     return myConfig;
   }
 
-  /**
-   * Set core interfaces
-   *
-   * @param coreInterfaces
-   * New core interfaces
-   */
-  public void setCoreInterfaces(String[] coreInterfaces) {
-    this.coreInterfaces = coreInterfaces;
-  }
-
   @Override
   public Class<? extends MoteInterface>[] getMoteInterfaceClasses() {
     if (moteInterfacesClasses == null) {
@@ -1077,13 +1064,6 @@ public class ContikiMoteType implements MoteType {
     sb.append("<tr><td valign=\"top\">Mote interface</td><td>");
     for (Class<? extends MoteInterface> moteInterface : moteInterfacesClasses) {
       sb.append(moteInterface.getSimpleName()).append("<br>");
-    }
-    sb.append("</td></tr>");
-
-    /* Contiki core mote interfaces */
-    sb.append("<tr><td valign=\"top\">Contiki's mote interface</td><td>");
-    for (var coreInterface : coreInterfaces) {
-      sb.append(coreInterface).append("<br>");
     }
     sb.append("</td></tr>");
 
@@ -1207,12 +1187,6 @@ public class ContikiMoteType implements MoteType {
       }
     }
 
-    /* Create initial core interface dependencies */
-    Class<? extends MoteInterface>[] arr
-            = new Class[moteInterfacesClasses.size()];
-    moteInterfacesClasses.toArray(arr);
-    setCoreInterfaces(ContikiMoteType.getRequiredCoreInterfaces(arr));
-
     /* Backwards compatibility: old cooja mote type is being loaded */
     if (getContikiSourceFile() == null
             && warnedOldVersion
@@ -1233,36 +1207,4 @@ public class ContikiMoteType implements MoteType {
 
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
   }
-
-  public static String[] getRequiredCoreInterfaces(
-          Class<? extends MoteInterface>[] moteInterfaces) {
-    /* Extract Contiki dependencies from currently selected mote interfaces */
-    ArrayList<String> coreInterfacesList = new ArrayList<>();
-    for (Class<? extends MoteInterface> intf : moteInterfaces) {
-      if (!ContikiMoteInterface.class.isAssignableFrom(intf)) {
-        continue;
-      }
-
-      String[] deps;
-      try {
-        /* Call static method */
-        Method m = intf.getDeclaredMethod("getCoreInterfaceDependencies", (Class[]) null);
-        deps = (String[]) m.invoke(null, (Object[]) null);
-      } catch (Exception e) {
-        logger.warn("Could not extract Contiki dependencies of mote interface: " + intf.getName());
-        e.printStackTrace();
-        continue;
-      }
-
-      if (deps == null || deps.length == 0) {
-        continue;
-      }
-      coreInterfacesList.addAll(Arrays.asList(deps));
-    }
-
-    String[] coreInterfaces = new String[coreInterfacesList.size()];
-    coreInterfacesList.toArray(coreInterfaces);
-    return coreInterfaces;
-  }
-
 }
