@@ -50,9 +50,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Watchpoint;
 import org.contikios.cooja.WatchpointMote;
@@ -63,8 +60,6 @@ import org.contikios.cooja.WatchpointMote;
  * @author Fredrik Osterlind
  */
 public class BreakpointsUI extends JPanel {
-  private static final Logger logger = LogManager.getLogger(BreakpointsUI.class);
-
   private static final int COLUMN_ADDRESS = 0;
   private static final int COLUMN_FILELINE = 1;
   private static final int COLUMN_INFO = 2;
@@ -78,14 +73,12 @@ public class BreakpointsUI extends JPanel {
   };
 
   private final WatchpointMote mote;
-  private final MspCodeWatcher codeWatcher;
-  private JTable table = null;
+  private final JTable table;
 
   private Watchpoint selectedWatchpoint = null;
 
   public BreakpointsUI(WatchpointMote mote, final MspCodeWatcher codeWatcher) {
     this.mote = mote;
-    this.codeWatcher = codeWatcher;
 
     /* Breakpoints table */
     table = new JTable(tableModel) {
@@ -108,11 +101,7 @@ public class BreakpointsUI extends JPanel {
           if (file == null) {
             return String.format("[unknown @ 0x%04x]", watchpoint.getExecutableAddress());
           }
-          Integer line = watchpoint.getLineNumber();
-          if (line == null) {
-            return file.getPath() + ":?";
-          }
-          return file.getPath() + ":" + line;
+          return file.getPath() + ":" + watchpoint.getLineNumber();
         }
 
         if (realColumnIndex == COLUMN_INFO) {
