@@ -105,11 +105,6 @@ public class ContikiMoteType implements MoteType {
   private static final String librarySuffix = ".cooja";
 
   /**
-   * Map file suffix
-   */
-  private static final String mapSuffix = ".map";
-
-  /**
    * Temporary output directory
    */
   private static final File tempOutputDirectory = new File(
@@ -229,7 +224,7 @@ public class ContikiMoteType implements MoteType {
    * @return The compilation environment
    */
   public String[][] configureForCompilation() {
-    mapFile = getMoteFile(mapSuffix);
+    mapFile = getMoteFile(".map");
     javaClassName = CoreComm.getAvailableClassName();
     var sources = new StringBuilder();
     var dirs = new StringBuilder();
