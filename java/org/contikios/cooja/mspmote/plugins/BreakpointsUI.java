@@ -78,7 +78,7 @@ public class BreakpointsUI extends JPanel {
   };
 
   private final WatchpointMote mote;
-  private JTable table = null;
+  private final JTable table;
 
   private Watchpoint selectedWatchpoint = null;
 
