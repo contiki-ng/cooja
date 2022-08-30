@@ -3079,14 +3079,12 @@ public class Cooja extends Observable {
     if (options.action != null) {
       var config = new File(vis ? options.action.quickstart : options.action.nogui);
       Simulation sim = null;
-      if (vis) {
-        sim = gui.doLoadConfig(config, true, options.updateSimulation, options.randomSeed);
-      } else {
-        try {
-          sim = gui.loadSimulationConfig(config, true, false, options.randomSeed);
-        } catch (Exception e) {
-          logger.fatal("Exception when loading simulation: ", e);
-        }
+      try {
+        sim = vis
+                ? gui.doLoadConfig(config, true, options.updateSimulation, options.randomSeed)
+                : gui.loadSimulationConfig(config, true, false, options.randomSeed);
+      } catch (Exception e) {
+        logger.fatal("Exception when loading simulation: ", e);
       }
       if (sim == null) {
         System.exit(1);
