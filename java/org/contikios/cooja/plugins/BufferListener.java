@@ -1039,7 +1039,7 @@ public class BufferListener extends VisPlugin {
     }
 
     public String getAsHex() {
-      return String.format("%04x", address) + ":" + StringUtils.toHex(mem);
+      return String.format("%016x", address) + ":" + StringUtils.toHex(mem);
     }
 
     public boolean[] getAccessedBitpattern() {
