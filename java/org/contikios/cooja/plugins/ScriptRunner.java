@@ -432,29 +432,30 @@ public class ScriptRunner implements Plugin {
   @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
-    Element element;
 
     if (linkedFile != null) {
-      element = new Element("scriptfile");
+      Element element = new Element("scriptfile");
       element.setText(simulation.getCooja().createPortablePath(linkedFile).getPath().replace('\\', '/'));
       config.add(element);
     } else {
-      element = new Element("script");
+      Element element = new Element("script");
       element.setText(codeEditor.getText());
       config.add(element);
     }
 
-    element = new Element("active");
-    element.setText(String.valueOf(isActive()));
-    config.add(element);
+    if (isActive()) {
+      Element element = new Element("active");
+      element.setText(String.valueOf(true));
+      config.add(element);
+    }
 
     return config;
   }
 
   public boolean isActive() {
     return engine != null;
-
   }
+
   @Override
   public void closePlugin() {
     try {
@@ -465,6 +466,7 @@ public class ScriptRunner implements Plugin {
 
   @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+    boolean activate = false;
     for (Element element : configXML) {
       String name = element.getName();
       if ("script".equals(name)) {
@@ -475,15 +477,20 @@ public class ScriptRunner implements Plugin {
         File file = simulation.getCooja().restorePortablePath(new File(element.getText().trim()));
         setLinkFile(file);
       } else if ("active".equals(name)) {
-        try {
-          // Automatically activate script in headless mode.
-          setScriptActive(!Cooja.isVisualized() || Boolean.parseBoolean(element.getText()));
-        } catch (Exception e) {
-          logger.fatal("Error: " + e.getMessage(), e);
-          // FIXME: return false here.
-        }
+        activate = Boolean.parseBoolean(element.getText());
       }
     }
+
+    // Automatically activate script in headless mode.
+    if (activate || !Cooja.isVisualized()) {
+      try {
+        setScriptActive(true);
+      } catch (Exception e) {
+        logger.fatal("Error: failed to start script: {}", e.getMessage(), e);
+        return false;
+      }
+    }
+
     return true;
   }
 
