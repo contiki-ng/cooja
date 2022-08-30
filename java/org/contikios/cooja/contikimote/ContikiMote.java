@@ -64,7 +64,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
   private static final Logger logger = LogManager.getLogger(ContikiMote.class);
 
   private final ContikiMoteType myType;
-  private SectionMoteMemory myMemory;
+  private final SectionMoteMemory myMemory;
   private MoteInterfaceHandler myInterfaceHandler;
 
   /**
@@ -170,7 +170,6 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
   @Override
   public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) {
     setSimulation(simulation);
-    myMemory = myType.createInitialMemory();
     try {
       myInterfaceHandler = new MoteInterfaceHandler(this, myType.getMoteInterfaceClasses());
     } catch (Exception e) {
