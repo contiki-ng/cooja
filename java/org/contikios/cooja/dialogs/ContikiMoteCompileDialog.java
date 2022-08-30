@@ -111,14 +111,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   @Override
   public boolean canLoadFirmware(File file) {
-    /* Disallow loading firmwares without compilation */
-    /*
-    if (file.getName().endsWith(ContikiMoteType.librarySuffix)) {
-      return true;
-    }
-    */
-
-    return false;
+    return false; // Always recompile, CoreComm needs fresh names.
   }
 
   @Override
