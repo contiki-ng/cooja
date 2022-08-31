@@ -1120,7 +1120,7 @@ public class AreaViewer extends VisPlugin {
       /* Select image file */
       JFileChooser fileChooser = new JFileChooser();
       ImageFilter filter = new ImageFilter();
-      fileChooser.addChoosableFileFilter(filter);
+      fileChooser.setFileFilter(filter);
 
       int returnVal = fileChooser.showOpenDialog(canvas);
       if (returnVal != JFileChooser.APPROVE_OPTION) {
