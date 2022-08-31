@@ -30,6 +30,9 @@
 package org.contikios.cooja.plugins;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 import de.sciss.syntaxpane.DefaultSyntaxKit;
 import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
@@ -45,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
@@ -349,14 +353,12 @@ public class ScriptRunner implements Plugin {
         /* Continuously write test output to file */
         if (logWriter == null) {
           /* Warning: static variable, used by all active test editor plugins */
-          File logFile = new File(gui.logDirectory + "/COOJA.testlog");
           Path logDirPath = Path.of(gui.logDirectory);
           if (!Files.exists(logDirPath)) {
             Files.createDirectory(logDirPath);
-          } else if (logFile.exists()) {
-            logFile.delete();
           }
-          logWriter = Files.newBufferedWriter(logFile.toPath(), UTF_8);
+          var logFile = Paths.get(gui.logDirectory, "COOJA.testlog");
+          logWriter = Files.newBufferedWriter(logFile, UTF_8, WRITE, CREATE, TRUNCATE_EXISTING);
           logWriter.write("Random seed: " + simulation.getRandomSeed() + "\n");
           logWriter.flush();
         }
