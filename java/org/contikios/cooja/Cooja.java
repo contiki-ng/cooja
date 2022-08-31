@@ -265,7 +265,6 @@ public class Cooja extends Observable {
     "PATH_COOJA",
     "PATH_CONTIKI", "PATH_APPS",
     "PATH_APPSEARCH",
-    "PATH_CONTIKI_NG_BUILD_DIR",
 
     "PATH_MAKE",
     "PATH_SHELL",

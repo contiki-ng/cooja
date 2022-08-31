@@ -104,12 +104,6 @@ public class ContikiMoteType implements MoteType {
   private static final String librarySuffix = ".cooja";
 
   /**
-   * Temporary output directory
-   */
-  private static final File tempOutputDirectory = new File(
-      Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja"));
-
-  /**
    * Random generator for generating a unique mote ID.
    */
   private static final Random rnd = new Random();
@@ -209,8 +203,7 @@ public class ContikiMoteType implements MoteType {
    * @return The mote file for the extension
    */
   private File getMoteFile(String extension) {
-    var dir = Cooja.getExternalToolsSetting("PATH_CONTIKI_NG_BUILD_DIR", "build/cooja");
-    return new File(fileSource.getParentFile(),dir + "/" + identifier + extension);
+    return new File(fileSource.getParentFile(), "build/cooja/" + identifier + extension);
   }
 
   /**
@@ -365,8 +358,7 @@ public class ContikiMoteType implements MoteType {
   }
 
   public static File getExpectedFirmwareFile(String moteId, File source) {
-    return new File(source.getParentFile(),
-            ContikiMoteType.tempOutputDirectory + "/" + moteId + ContikiMoteType.librarySuffix);
+    return new File(source.getParentFile(), "build/cooja/" + moteId + ContikiMoteType.librarySuffix);
   }
 
   /**
