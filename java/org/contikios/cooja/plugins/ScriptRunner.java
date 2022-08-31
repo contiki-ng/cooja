@@ -380,6 +380,7 @@ public class ScriptRunner implements Plugin {
       } catch (Exception e) {
         logger.fatal("Create log writer error: ", e);
         setScriptActive(false);
+        return;
       }
     }
 
