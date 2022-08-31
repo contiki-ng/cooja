@@ -1091,8 +1091,6 @@ public class ContikiMoteType implements MoteType {
   public boolean setConfigXML(Simulation simulation,
                               Collection<Element> configXML, boolean visAvailable)
           throws MoteTypeCreationException {
-    boolean warnedOldVersion = false;
-    File oldVersionSource = null;
     moteInterfacesClasses = new ArrayList<>();
 
     for (Element element : configXML) {
@@ -1147,42 +1145,13 @@ public class ContikiMoteType implements MoteType {
         case "process":
         case "sensor":
         case "coreinterface":
-          /* Backwards compatibility: old cooja mote type is being loaded */
-          if (!warnedOldVersion) {
-            warnedOldVersion = true;
-            logger.warn("Old simulation config detected: Cooja mote types may not load correctly");
-          } if (name.equals("compilefile")) {
-          if (element.getText().endsWith(".c")) {
-            File potentialFile = new File(element.getText());
-            if (potentialFile.exists()) {
-              oldVersionSource = potentialFile;
-            }
-          }
-        } break;
+          logger.fatal("Old Cooja mote type detected, aborting..");
+          return false;
         default:
           logger.fatal("Unrecognized entry in loaded configuration: " + name);
           break;
       }
     }
-
-    /* Backwards compatibility: old cooja mote type is being loaded */
-    if (getContikiSourceFile() == null
-            && warnedOldVersion
-            && oldVersionSource != null) {
-      /* Guess Contiki source */
-      setContikiSourceFile(oldVersionSource);
-      logger.info("Guessing Contiki source: " + oldVersionSource.getAbsolutePath());
-
-      setContikiFirmwareFile(getExpectedFirmwareFile(getIdentifier(), oldVersionSource));
-      logger.info("Guessing Contiki firmware: " + getContikiFirmwareFile().getAbsolutePath());
-
-      /* Guess compile commands */
-      String compileCommands
-              = "make -j$(CPUS) " + getMakeTargetName(oldVersionSource).getName() + " TARGET=cooja";
-      logger.info("Guessing compile commands: " + compileCommands);
-      setCompileCommands(compileCommands);
-    }
-
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
   }
 }
