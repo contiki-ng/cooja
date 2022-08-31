@@ -165,8 +165,6 @@ public class ContikiMoteType implements MoteType {
     }
   }
 
-  private final String[] sensors = {"button_sensor", "pir_sensor", "vib_sensor"};
-
   private String identifier = null;
   private String description = null;
   private File fileSource = null;
@@ -1047,13 +1045,6 @@ public class ContikiMoteType implements MoteType {
     /* JNI class */
     sb.append("<tr><td>JNI library</td><td>")
             .append(this.javaClassName).append("</td></tr>");
-
-    /* Contiki sensors */
-    sb.append("<tr><td valign=\"top\">Contiki sensors</td><td>");
-    for (String sensor : sensors) {
-      sb.append(sensor).append("<br>");
-    }
-    sb.append("</td></tr>");
 
     /* Mote interfaces */
     sb.append("<tr><td valign=\"top\">Mote interface</td><td>");
