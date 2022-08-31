@@ -111,26 +111,13 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   @Override
   public boolean canLoadFirmware(File file) {
-    /* Disallow loading firmwares without compilation */
-    /*
-    if (file.getName().endsWith(ContikiMoteType.librarySuffix)) {
-      return true;
-    }
-    */
-
-    return false;
+    return false; // Always recompile, CoreComm needs fresh names.
   }
 
   @Override
   public String getDefaultCompileCommands(final File source) {
-    if (moteType == null) {
-      /* Not ready to compile yet */
-      return "";
-    }
-
-    if (source == null || !source.exists()) {
-      /* Not ready to compile yet */
-      return "";
+    if (moteType == null || source == null || !source.exists()) {
+      return ""; // Not ready to compile yet.
     }
 
     if (moteType.getIdentifier() == null) {
@@ -335,23 +322,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   @Override
   public void writeSettingsToMoteType() {
     ((ContikiMoteType)moteType).setContikiFirmwareFile();
-  }
-
-  @Override
-  public void compileContiki()
-  throws Exception {
-    if (((ContikiMoteType)moteType).mapFile == null ||
-        ((ContikiMoteType)moteType).javaClassName == null) {
-      throw new Exception("Library variables not defined");
-    }
-
-    /* Extract Contiki dependencies from currently selected mote interfaces */
-    String[] coreInterfaces =
-      ContikiMoteType.getRequiredCoreInterfaces(getSelectedMoteInterfaceClasses());
-    ((ContikiMoteType)moteType).setCoreInterfaces(coreInterfaces);
-
-    /* Start compiling */
-    super.compileContiki();
   }
 
   @Override
