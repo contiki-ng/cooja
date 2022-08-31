@@ -162,24 +162,18 @@ public abstract class AbstractCompileDialog extends JDialog {
     label.setPreferredSize(LABEL_DIMENSION);
     sourcePanel.add(label);
     contikiField = new JTextField(40);
-    final Runnable selectedContikiFile = new Runnable() {
-      @Override
-      public void run() {
-        setContikiSelection(new File(contikiField.getText()));
-      }
-    };
     DocumentListener contikiFieldListener = new DocumentListener() {
       @Override
       public void changedUpdate(DocumentEvent e) {
-        selectedContikiFile.run();
+        setContikiSelection(new File(contikiField.getText()));
       }
       @Override
       public void insertUpdate(DocumentEvent e) {
-        selectedContikiFile.run();
+        setContikiSelection(new File(contikiField.getText()));
       }
       @Override
       public void removeUpdate(DocumentEvent e) {
-        selectedContikiFile.run();
+        setContikiSelection(new File(contikiField.getText()));
       }
     };
     sourcePanel.add(contikiField);
