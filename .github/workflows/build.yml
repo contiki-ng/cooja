@@ -18,11 +18,11 @@ jobs:
       - name: Build Cooja and Documentation
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.4.2
+          gradle-version: 7.5.1
           cache-read-only: false
           arguments: jar
       - name: Test MSPSim
         uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 7.4.2
+          gradle-version: 7.5.1
           arguments: test
