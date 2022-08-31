@@ -675,7 +675,9 @@ public class Cooja extends Observable {
    *          New observer
    */
   public void addMoteHighlightObserver(Observer newObserver) {
-    moteHighlightObservable.addObserver(newObserver);
+    if (moteHighlightObservable != null) {
+      moteHighlightObservable.addObserver(newObserver);
+    }
   }
 
   /**
@@ -686,7 +688,9 @@ public class Cooja extends Observable {
    *          Observer to delete
    */
   public void deleteMoteHighlightObserver(Observer observer) {
-    moteHighlightObservable.deleteObserver(observer);
+    if (moteHighlightObservable != null) {
+      moteHighlightObservable.deleteObserver(observer);
+    }
   }
 
   /**
@@ -3770,7 +3774,9 @@ public class Cooja extends Observable {
    *          Mote to highlight
    */
   public void signalMoteHighlight(Mote m) {
-    moteHighlightObservable.setChangedAndNotify(m);
+    if (moteHighlightObservable != null) {
+      moteHighlightObservable.setChangedAndNotify(m);
+    }
   }
 
   /**
@@ -3791,7 +3797,7 @@ public class Cooja extends Observable {
    * @param color The color to use when visualizing the mote relation
    */
   public void addMoteRelation(Mote source, Mote dest, Color color) {
-    if (source == null || dest == null) {
+    if (source == null || dest == null || moteRelationObservable == null) {
       return;
     }
     removeMoteRelation(source, dest); /* Unique relations */
@@ -3806,7 +3812,7 @@ public class Cooja extends Observable {
    * @param dest Destination mote
    */
   public void removeMoteRelation(Mote source, Mote dest) {
-    if (source == null || dest == null) {
+    if (source == null || dest == null || moteRelationObservable == null) {
       return;
     }
     MoteRelation[] arr = getMoteRelations();
@@ -3836,7 +3842,9 @@ public class Cooja extends Observable {
    * @param newObserver Observer
    */
   public void addMoteRelationsObserver(Observer newObserver) {
-    moteRelationObservable.addObserver(newObserver);
+    if (moteRelationObservable != null) {
+      moteRelationObservable.addObserver(newObserver);
+    }
   }
 
   /**
@@ -3846,7 +3854,9 @@ public class Cooja extends Observable {
    * @param observer Observer
    */
   public void deleteMoteRelationsObserver(Observer observer) {
-    moteRelationObservable.deleteObserver(observer);
+    if (moteRelationObservable != null) {
+      moteRelationObservable.deleteObserver(observer);
+    }
   }
 
   /**
