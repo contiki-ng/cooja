@@ -328,10 +328,9 @@ public class ScriptRunner implements Plugin {
       String script = StringUtils.loadFromFile(linkedFile);
       if (script == null) {
         logger.fatal("Failed to load script from: " + linkedFile.getAbsolutePath());
-        // FIXME: script load failed, do not create new simulation.
-      } else {
-        updateScript(script);
+        return;
       }
+      updateScript(script);
     }
 
     /* Create new engine */
