@@ -165,9 +165,9 @@ public class ContikiMoteType implements MoteType {
   private File fileFirmware = null;
   private String compileCommands = null;
 
-  public File mapFile = null; /* Contiki map: build/cooja/mtype1.map */
+  private File mapFile = null; /* Contiki map: build/cooja/mtype1.map */
 
-  public String javaClassName = null; /* Loading Java class name: Lib1 */
+  private String javaClassName = null; /* Loading Java class name: Lib1 */
 
   private ArrayList<Class<? extends MoteInterface>> moteInterfacesClasses = null;
 
