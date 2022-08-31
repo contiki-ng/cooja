@@ -224,7 +224,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         }
 
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fc.addChoosableFileFilter(new FileFilter() {
+        fc.setFileFilter(new FileFilter() {
           @Override
           public boolean accept(File f) {
             if (f.isDirectory()) {
