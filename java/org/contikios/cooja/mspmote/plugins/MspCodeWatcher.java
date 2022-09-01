@@ -356,11 +356,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   }
 
   private int getLocatedSourcesCount() {
-    File[] files = getSourceFiles(mspMote, rules);
-    if (files == null) {
-      return 0;
-    }
-    return files.length;
+    return getSourceFiles(mspMote, rules).length;
   }
 
   private void updateRulesUsage() {
