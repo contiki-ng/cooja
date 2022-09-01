@@ -175,7 +175,7 @@ public abstract class AbstractMspMoteType extends MspMoteType {
         if (sourceNoExtension.endsWith(".c")) {
             sourceNoExtension = sourceNoExtension.substring(0, source.getName().length() - 2);
         }
-        return new File(parentDir, sourceNoExtension + '.' + getMoteType());
+        return new File(parentDir, "/build/" + getMoteType() + "/" + sourceNoExtension + '.' + getMoteType());
     }
 
     protected Class<? extends MoteInterface>[] createMoteInterfaceList(Class<? extends MoteInterface>... interfaceList) {
