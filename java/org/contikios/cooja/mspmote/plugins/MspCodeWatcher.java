@@ -34,14 +34,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.AbstractAction;
