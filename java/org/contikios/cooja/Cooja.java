@@ -976,9 +976,7 @@ public class Cooja extends Observable {
       @Override
       public void actionPerformed(ActionEvent e) {
         Simulation s = getSimulation();
-        if (s.isRunning()) {
-          s.stopSimulation();
-        }
+        s.stopSimulation();
 
         while (s.getMotesCount() > 0) {
           s.removeMote(getSimulation().getMote(0));

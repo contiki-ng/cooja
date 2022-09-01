@@ -824,9 +824,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private final Action statisticsAction = new AbstractAction("Print statistics to console") {
     @Override
     public void actionPerformed(ActionEvent e) {
-      if (simulation.isRunning()) {
-        simulation.stopSimulation();
-      }
+      simulation.stopSimulation();
       logger.info(extractStatistics());
     }
   };
