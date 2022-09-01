@@ -28,6 +28,7 @@
 
 package org.contikios.cooja;
 
+import java.util.HashMap;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
@@ -169,9 +170,29 @@ class Main {
       System.setProperty("java.awt.headless", "true");
     }
 
-    // Verify soundness of -nogui/-quickstart argument.
+    var cfg = new HashMap<String, String>();
+    // Parse and verify soundness of -nogui/-quickstart argument.
     if (options.action != null) {
-      String file = options.action.nogui == null ? options.action.quickstart : options.action.nogui;
+      // Argument on the form "file.csc[,key1=value1,key2=value2, ..]"
+      String arg = options.action.nogui == null ? options.action.quickstart : options.action.nogui;
+      String file = null;
+      for (var item : arg.split(",", -1)) {
+        if (file == null) {
+          file = item;
+          continue;
+        }
+        var pair = item.split("=", -1);
+        if (pair.length != 2) {
+          System.err.println("Faulty key=value specification: " + item);
+          System.exit(1);
+        }
+        cfg.put(pair[0], pair[1]);
+      }
+      if (file == null) {
+        System.err.println("Failed argument parsing of -nogui/-quickstart");
+        System.exit(1);
+      }
+
       if (!file.endsWith(".csc") && !file.endsWith(".csc.gz")) {
         String option = options.action.nogui == null ? "-quickstart" : "-nogui";
         System.err.println("Cooja " + option + " expects a filename extension of '.csc'");
@@ -180,6 +201,12 @@ class Main {
       if (!Files.exists(Path.of(file))) {
         System.err.println("File '" + file + "' does not exist");
         System.exit(1);
+      }
+      // Put back the file without key-value pairs into the parameter holder.
+      if (options.action.nogui != null) {
+        options.action.nogui = file;
+      } else {
+        options.action.quickstart = file;
       }
     }
 
@@ -265,10 +292,10 @@ class Main {
       //        but go immediately returns which causes the log file to be closed
       //        while the simulation is still running.
       Configurator.initialize(builder.build());
-      Cooja.go(options);
+      Cooja.go(options, cfg);
     } else {
       Configurator.initialize("ConfigFile", options.logConfigFile);
-      Cooja.go(options);
+      Cooja.go(options, cfg);
     }
   }
 }
