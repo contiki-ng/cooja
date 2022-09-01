@@ -497,7 +497,7 @@ public class ScriptRunner implements Plugin {
   }
 
   private static String loadScript(String file) {
-    return StringUtils.loadFromURL(ScriptRunner.class.getResource("/scripts/" + file));
+    return StringUtils.loadFromStream(ScriptRunner.class.getResourceAsStream("/scripts/" + file));
   }
 
   public static class JSyntaxLinkFile extends DefaultSyntaxAction {

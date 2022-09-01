@@ -33,9 +33,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.zip.GZIPInputStream;
 
@@ -148,11 +148,11 @@ public class StringUtils {
     return sb.toString();
   }
 
-  public static String loadFromURL(URL url) {
-    if (url == null) {
+  public static String loadFromStream(InputStream s) {
+    if (s == null) {
       return null;
     }
-    try (var reader = new InputStreamReader(url.openStream(), UTF_8)) {
+    try (var reader = new InputStreamReader(s, UTF_8)) {
       StringBuilder sb = new StringBuilder();
       char[] buf = new char[4096];
       int read;
