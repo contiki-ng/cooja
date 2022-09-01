@@ -255,11 +255,6 @@ public class ScriptRunner implements Plugin {
 
   @Override
   public void startPlugin() {
-	/* start simulation */
-	if (!Cooja.isVisualized()) {
-	  simulation.setSpeedLimit(null);
-	  simulation.startSimulation();
-	}
   }
 
   public void setLinkFile(File source) {
