@@ -187,6 +187,9 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       /* Add */
       int index = logs.size();
       logs.addAll(ls);
+      // Tell the sorter that rows have been inserted to avoid getting:
+      // "WARNING: row index is bigger than sorter's row count. Most likely this is a wrong sorter usage.".
+      logTable.getRowSorter().rowsInserted(index, logs.size() - 1);
       model.fireTableRowsInserted(index, logs.size()-1);
 
       /* Remove old */
