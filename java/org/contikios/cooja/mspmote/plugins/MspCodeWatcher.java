@@ -675,14 +675,6 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   }
 
   private File[] getSourceFiles(MspMote mote, ArrayList<Rule> rules) {
-    File contikiSource = mote.getType().getContikiSourceFile();
-    if (contikiSource != null) {
-      try {
-        contikiSource = contikiSource.getCanonicalFile();
-      } catch (IOException e1) {
-      }
-    }
-
     /* Verify that files exist */
     ArrayList<File> existing = new ArrayList<>();
     for (String sourceFile: debugSourceFiles) {
