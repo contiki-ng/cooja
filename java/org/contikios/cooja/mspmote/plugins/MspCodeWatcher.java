@@ -148,14 +148,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     {
       ArrayList<String> newDebugSourceFiles = new ArrayList<>();
       for (String sf: debugSourceFiles) {
-        boolean found = false;
-        for (String nsf: newDebugSourceFiles) {
-          if (sf.equals(nsf)) {
-            found = true;
-            break;
-          }
-        }
-        if (!found) {
+        if (!newDebugSourceFiles.contains(sf)) {
           newDebugSourceFiles.add(sf);
         }
       }
