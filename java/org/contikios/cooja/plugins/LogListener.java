@@ -318,15 +318,13 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
           return;
         }
 
-        try {
-          PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
+        try (var outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8))) {
           for (LogData data : logs) {
             outStream.println(
                     data.getTime() + "\t" +
                             data.getID() + "\t" +
                             data.ev.getMessage());
           }
-          outStream.close();
         } catch (Exception ex) {
           logger.fatal("Could not write to file: " + saveFile);
         }
