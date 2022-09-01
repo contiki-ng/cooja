@@ -85,7 +85,7 @@ public class Simulation extends Observable implements Runnable {
 
   private static final Logger logger = LogManager.getLogger(Simulation.class);
 
-  private boolean isRunning = false;
+  private volatile boolean isRunning = false;
 
   private boolean stopSimulation = false;
 
