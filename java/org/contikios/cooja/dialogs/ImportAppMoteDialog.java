@@ -135,14 +135,13 @@ public class ImportAppMoteDialog extends JDialog {
         }
 
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fc.addChoosableFileFilter(new FileFilter() {
+        fc.setFileFilter(new FileFilter() {
           @Override
           public boolean accept(File f) {
             if (f.isDirectory()) {
               return true;
             }
-            String filename = f.getName();
-            return filename != null && filename.endsWith(".class");
+            return f.getName().endsWith(".class");
           }
 
           @Override
