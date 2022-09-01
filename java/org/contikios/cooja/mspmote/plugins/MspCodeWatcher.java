@@ -407,7 +407,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
       }
       if (to == null) {
         if (rulesWithDebuggingOutput) {
-          rulesDebuggingOutput.addMessage(this + " enter substition: " + f.getPath(), MessageList.ERROR);
+          rulesDebuggingOutput.addMessage(this + " enter substitution: " + f.getPath(), MessageList.ERROR);
         }
         return null;
       }
