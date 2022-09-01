@@ -662,8 +662,8 @@ public abstract class AbstractCompileDialog extends JDialog {
     	compileButton.setEnabled(false);
     	createButton.setEnabled(true);
     	commandsArea.setEnabled(false);
-    	setCompileCommands("");
       getRootPane().setDefaultButton(createButton);
+      setCompileCommands("");
       break;
 
     default:
@@ -673,18 +673,25 @@ public abstract class AbstractCompileDialog extends JDialog {
 
   private void addCompileCommandTab(JTabbedPane parent) {
     commandsArea = new JTextArea(10, 1);
+    // Loading firmware sets the create button to default, so do not update dialog state after that.
     commandsArea.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       public void changedUpdate(DocumentEvent e) {
-        setDialogState(DialogState.AWAITING_COMPILATION);
+        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
+          setDialogState(DialogState.AWAITING_COMPILATION);
+        }
       }
       @Override
       public void insertUpdate(DocumentEvent e) {
-        setDialogState(DialogState.AWAITING_COMPILATION);
+        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
+          setDialogState(DialogState.AWAITING_COMPILATION);
+        }
       }
       @Override
       public void removeUpdate(DocumentEvent e) {
-        setDialogState(DialogState.AWAITING_COMPILATION);
+        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
+          setDialogState(DialogState.AWAITING_COMPILATION);
+        }
       }
     });
     parent.addTab("Compile commands", null, new JScrollPane(commandsArea), "Manually alter Contiki compilation commands");
