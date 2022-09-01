@@ -109,7 +109,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   private final WatchpointMote watchpointMote;
   private WatchpointListener watchpointListener;
 
-  private final JComboBox fileComboBox;
+  private final JComboBox<String> fileComboBox;
   private File[] sourceFiles;
 
   private final JTabbedPane mainPane;
@@ -163,7 +163,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     getContentPane().setLayout(new BorderLayout());
 
     /* Create source file list */
-    fileComboBox = new JComboBox();
+    fileComboBox = new JComboBox<>();
     fileComboBox.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
