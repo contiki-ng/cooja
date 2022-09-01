@@ -167,7 +167,7 @@ public class ContikiMoteType implements MoteType {
 
   private File mapFile = null; /* Contiki map: build/cooja/mtype1.map */
 
-  private String javaClassName = null; /* Loading Java class name: Lib1 */
+  private final String javaClassName; // Loading Java class name: Lib1.java.
 
   private ArrayList<Class<? extends MoteInterface>> moteInterfacesClasses = null;
 
@@ -189,6 +189,7 @@ public class ContikiMoteType implements MoteType {
    * a library file and parse a map file before it can be used.
    */
   public ContikiMoteType() {
+    javaClassName = CoreComm.getAvailableClassName();
   }
 
   @Override
@@ -213,7 +214,6 @@ public class ContikiMoteType implements MoteType {
    */
   public String[][] configureForCompilation() {
     mapFile = getMoteFile(".map");
-    javaClassName = CoreComm.getAvailableClassName();
     var sources = new StringBuilder();
     var dirs = new StringBuilder();
     // Check whether Cooja projects include additional sources.
