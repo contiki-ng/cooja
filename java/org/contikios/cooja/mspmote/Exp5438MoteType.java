@@ -33,7 +33,6 @@ import java.awt.Container;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
-import java.io.File;
 import java.net.URL;
 
 import javax.swing.Icon;
@@ -66,12 +65,27 @@ import org.contikios.cooja.mspmote.interfaces.UsciA1Serial;
 
 @ClassDescription("EXP430F5438 mote")
 @AbstractionLevelDescription("Emulated level")
-public class Exp5438MoteType extends MspMoteType {
+public class Exp5438MoteType extends AbstractMspMoteType {
   private static final Logger logger = LogManager.getLogger(Exp5438MoteType.class);
 
   @Override
   protected MspMote createMote(Simulation simulation) {
     return new Exp5438Mote(this, simulation);
+  }
+
+  @Override
+  public String getMoteType() {
+    return "exp5438";
+  }
+
+  @Override
+  public String getMoteName() {
+    return "Exp5438";
+  }
+
+  @Override
+  protected String getMoteImage() {
+    return "/images/exp5438.png";
   }
 
   @Override
@@ -218,17 +232,4 @@ public class Exp5438MoteType extends MspMoteType {
         MspDebugOutput.class
     };
   }
-
-  @Override
-  public File getExpectedFirmwareFile(File source) {
-    File parentDir = source.getParentFile();
-    String sourceNoExtension = source.getName().substring(0, source.getName().length()-2);
-
-    return new File(parentDir, sourceNoExtension + ".exp5438");
-  }
-
-  protected String getTargetName() {
-  	return "exp5438";
-  }
-
 }

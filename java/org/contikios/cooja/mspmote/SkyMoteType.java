@@ -34,7 +34,6 @@ import java.awt.Container;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
-import java.io.File;
 import java.net.URL;
 
 import javax.swing.Icon;
@@ -70,12 +69,27 @@ import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
 
 @ClassDescription("Sky mote")
 @AbstractionLevelDescription("Emulated level")
-public class SkyMoteType extends MspMoteType {
+public class SkyMoteType extends AbstractMspMoteType {
   private static final Logger logger = LogManager.getLogger(SkyMoteType.class);
 
   @Override
   protected MspMote createMote(Simulation simulation) {
     return new SkyMote(this, simulation);
+  }
+
+  @Override
+  public String getMoteType() {
+    return "sky";
+  }
+
+  @Override
+  public String getMoteName() {
+    return "Sky";
+  }
+
+  @Override
+  protected String getMoteImage() {
+    return "/images/sky.jpg";
   }
 
   @Override
@@ -205,17 +219,4 @@ public class SkyMoteType extends MspMoteType {
         SkyTemperature.class
     };
   }
-
-  @Override
-  public File getExpectedFirmwareFile(File source) {
-    File parentDir = source.getParentFile();
-    String sourceNoExtension = source.getName().substring(0, source.getName().length()-2);
-
-    return new File(parentDir, sourceNoExtension + ".sky");
-  }
-
-  protected String getTargetName() {
-  	return "sky";
-  }
-
 }
