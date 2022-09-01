@@ -164,12 +164,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
 
     /* Create source file list */
     fileComboBox = new JComboBox<>();
-    fileComboBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        sourceFileSelectionChanged();
-      }
-    });
+    fileComboBox.addActionListener(e -> sourceFileSelectionChanged());
     fileComboBox.setRenderer(new BasicComboBoxRenderer() {
       @Override
       public Component getListCellRendererComponent(JList list, Object value,
@@ -235,17 +230,14 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     watchpointMote.addWatchpointListener(watchpointListener = new WatchpointListener() {
       @Override
       public void watchpointTriggered(final Watchpoint watchpoint) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            logger.info("Watchpoint triggered: " + watchpoint);
-            if (simulation.isRunning()) {
-              return;
-            }
-            breakpointsUI.selectBreakpoint(watchpoint);
-            sourceCodeUI.updateBreakpoints();
-            showCurrentPC();
+        SwingUtilities.invokeLater(() -> {
+          logger.info("Watchpoint triggered: " + watchpoint);
+          if (simulation.isRunning()) {
+            return;
           }
+          breakpointsUI.selectBreakpoint(watchpoint);
+          sourceCodeUI.updateBreakpoints();
+          showCurrentPC();
         });
       }
       @Override
@@ -255,15 +247,12 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     });
 
     /* Observe when simulation starts/stops */
-    simulation.addObserver(simObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        if (!simulation.isRunning()) {
-          stepAction.setEnabled(true);
-          showCurrentPC();
-        } else {
-          stepAction.setEnabled(false);
-        }
+    simulation.addObserver(simObserver = (obs, obj) -> {
+      if (!simulation.isRunning()) {
+        stepAction.setEnabled(true);
+        showCurrentPC();
+      } else {
+        stepAction.setEnabled(false);
       }
     });
 
@@ -288,12 +277,10 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   }
 
   public void displaySourceFile(final File file, final int line, final boolean markCurrent) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        mainPane.setSelectedIndex(SOURCECODE); /* code */
-        sourceCodeUI.displayNewCode(file, line, markCurrent);
-      }});
+    SwingUtilities.invokeLater(() -> {
+      mainPane.setSelectedIndex(SOURCECODE); /* code */
+      sourceCodeUI.displayNewCode(file, line, markCurrent);
+    });
   }
 
   private void sourceFileSelectionChanged() {
@@ -596,95 +583,80 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
 
     /* control panel: save/load, clear/apply/close */
     final JButton applyButton = new JButton("Apply");
-    applyButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        /* Remove trailing empty rules */
-        ArrayList<Rule> trimmedRules = new ArrayList<>();
-        for (Rule rule: rules) {
-          if (rule.from == null || rule.from.trim().isEmpty()) {
-            rule.from = "";
-          }
-          if (rule.to == null || rule.to.trim().isEmpty()) {
-            rule.to = "";
-          }
-          if (rule.from.isEmpty() && rule.to.isEmpty()) {
-            /* ignore */
-            continue;
-          }
-          trimmedRules.add(rule);
+    applyButton.addActionListener(e -> {
+      /* Remove trailing empty rules */
+      ArrayList<Rule> trimmedRules = new ArrayList<>();
+      for (Rule rule: rules) {
+        if (rule.from == null || rule.from.trim().isEmpty()) {
+          rule.from = "";
         }
-        rules = trimmedRules;
-
-        rulesDebuggingOutput.clearMessages();
-        rulesDebuggingOutput.addMessage("Applying " + rules.size() + " substitution rules");
-        rulesWithDebuggingOutput = true;
-        updateRulesUsage();
-        rulesWithDebuggingOutput = false;
-        rulesDebuggingOutput.addMessage("Done! " + "Located sources: " + getLocatedSourcesCount() + "/" + debugSourceFiles.length);
-        rulesDebuggingOutput.addMessage(" ");
-        for (String s: debugSourceFiles) {
-          File f = applySubstitutionRules(s, rules);
-          if (f == null || !f.exists()) {
-            rulesDebuggingOutput.addMessage("Not yet located: " + s, MessageList.ERROR);
-          }
+        if (rule.to == null || rule.to.trim().isEmpty()) {
+          rule.to = "";
         }
-
-        table.invalidate();
-        table.repaint();
+        if (rule.from.isEmpty() && rule.to.isEmpty()) {
+          /* ignore */
+          continue;
+        }
+        trimmedRules.add(rule);
       }
+      rules = trimmedRules;
+
+      rulesDebuggingOutput.clearMessages();
+      rulesDebuggingOutput.addMessage("Applying " + rules.size() + " substitution rules");
+      rulesWithDebuggingOutput = true;
+      updateRulesUsage();
+      rulesWithDebuggingOutput = false;
+      rulesDebuggingOutput.addMessage("Done! " + "Located sources: " + getLocatedSourcesCount() + "/" + debugSourceFiles.length);
+      rulesDebuggingOutput.addMessage(" ");
+      for (String s: debugSourceFiles) {
+        File f = applySubstitutionRules(s, rules);
+        if (f == null || !f.exists()) {
+          rulesDebuggingOutput.addMessage("Not yet located: " + s, MessageList.ERROR);
+        }
+      }
+
+      table.invalidate();
+      table.repaint();
     });
     JButton clearButton = new JButton("Clear");
-    clearButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        rules.clear();
-        applyButton.doClick();
-      }
+    clearButton.addActionListener(e -> {
+      rules.clear();
+      applyButton.doClick();
     });
 
     JButton loadButton = new JButton("Load default");
-    loadButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        loadDefaultRules();
-        applyButton.doClick();
-      }
+    loadButton.addActionListener(e -> {
+      loadDefaultRules();
+      applyButton.doClick();
     });
     JButton saveButton = new JButton("Save as default");
-    saveButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        StringBuilder sb = new StringBuilder();
-        for (Rule r: rules) {
-          sb.append("*");
-          if (r.from.isEmpty()) {
-            sb.append("[empty]");
-          } else {
-            sb.append(r.from);
-          }
-          sb.append("*");
-          if (r.to.isEmpty()) {
-            sb.append("[empty]");
-          } else {
-            sb.append(r.to);
-          }
-        }
-        if (sb.length() >= 1) {
-          Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", sb.substring(1));
+    saveButton.addActionListener(e -> {
+      StringBuilder sb = new StringBuilder();
+      for (Rule r1 : rules) {
+        sb.append("*");
+        if (r1.from.isEmpty()) {
+          sb.append("[empty]");
         } else {
-          Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", "");
+          sb.append(r1.from);
         }
+        sb.append("*");
+        if (r1.to.isEmpty()) {
+          sb.append("[empty]");
+        } else {
+          sb.append(r1.to);
+        }
+      }
+      if (sb.length() >= 1) {
+        Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", sb.substring(1));
+      } else {
+        Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", "");
       }
     });
 
     JButton closeButton = new JButton("Close");
-    closeButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        updateFileComboBox();
-        dialog.dispose();
-      }
+    closeButton.addActionListener(e -> {
+      updateFileComboBox();
+      dialog.dispose();
     });
     Box control = Box.createHorizontalBox();
     control.add(loadButton);
@@ -697,12 +669,9 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     final JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
         new JScrollPane(table),
         new JScrollPane(rulesDebuggingOutput));
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        split.setDividerLocation(0.5);
-        applyButton.doClick();
-      }
+    SwingUtilities.invokeLater(() -> {
+      split.setDividerLocation(0.5);
+      applyButton.doClick();
     });
     dialog.getContentPane().add(BorderLayout.CENTER, split);
     dialog.getContentPane().add(BorderLayout.SOUTH, control);
@@ -733,12 +702,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
 
     /* Sort alphabetically */
     File[] sorted = existing.toArray(new File[0]);
-    Arrays.sort(sorted, new Comparator<>() {
-      @Override
-      public int compare(File o1, File o2) {
-        return o1.getName().compareToIgnoreCase(o2.getName());
-      }
-    });
+    Arrays.sort(sorted, (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
     return sorted;
   }
 
