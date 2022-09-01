@@ -85,7 +85,7 @@ public class Simulation extends Observable implements Runnable {
 
   private static final Logger logger = LogManager.getLogger(Simulation.class);
 
-  private boolean isRunning = false;
+  private volatile boolean isRunning = false;
 
   private boolean stopSimulation = false;
 
@@ -271,9 +271,9 @@ public class Simulation extends Observable implements Runnable {
 
   @Override
   public void run() {
+    assert isRunning : "Did not set isRunning before starting";
     lastStartTime = System.currentTimeMillis();
     logger.debug("Simulation started, system time: " + lastStartTime);
-    isRunning = true;
     speedLimitLastRealtime = System.currentTimeMillis();
     speedLimitLastSimtime = getSimulationTime();
 
@@ -1171,7 +1171,7 @@ public class Simulation extends Observable implements Runnable {
    * @return True if simulation is running
    */
   public boolean isRunning() {
-    return isRunning && simulationThread != null;
+    return isRunning;
   }
 
   /**
