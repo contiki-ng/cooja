@@ -212,7 +212,6 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     sourceCodeUI = new CodeUI(watchpointMote);
     JPanel sourceCodePanel = new JPanel(new BorderLayout());
     sourceCodePanel.add(BorderLayout.CENTER, sourceCodeUI);
-    sourceCodePanel.add(BorderLayout.SOUTH, sourceCodeControl);
     mainPane.addTab("Source code", null, sourceCodePanel, null); /* SOURCECODE */
 
     assCodeUI = new DebugUI(this.mspMote.getCPU(), true);
@@ -225,6 +224,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     mainPane.addTab("Breakpoints", null, breakpointsUI, "Right-click source code to add"); /* BREAKPOINTS */
 
     add(BorderLayout.CENTER, mainPane);
+    add(BorderLayout.SOUTH, sourceCodeControl);
 
     /* Listen for breakpoint changes */
     watchpointMote.addWatchpointListener(watchpointListener = new WatchpointListener() {
