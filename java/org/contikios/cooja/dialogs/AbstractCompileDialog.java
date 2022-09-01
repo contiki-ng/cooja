@@ -802,8 +802,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     });
 
     /* Always select position and ID interface */
-    if (intfClass == Position.class ||
-        intfClass == MoteID.class) {
+    if (Position.class.isAssignableFrom(intfClass) || MoteID.class.isAssignableFrom(intfClass)) {
       intfCheckBox.setEnabled(false);
       intfCheckBox.setSelected(true);
     }
