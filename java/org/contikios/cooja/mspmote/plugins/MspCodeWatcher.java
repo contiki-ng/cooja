@@ -264,7 +264,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   }
 
   private void updateFileComboBox() {
-    sourceFiles = getSourceFiles(mspMote, rules);
+    sourceFiles = getSourceFiles(rules);
     fileComboBox.removeAllItems();
     fileComboBox.addItem("[view sourcefile]");
     for (File f: sourceFiles) {
@@ -353,7 +353,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   }
 
   private int getLocatedSourcesCount() {
-    return getSourceFiles(mspMote, rules).length;
+    return getSourceFiles(rules).length;
   }
 
   private void updateRulesUsage() {
@@ -361,7 +361,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
       rule.prefixMatches = 0;
       rule.locatesFile = 0;
     }
-    getSourceFiles(mspMote, rules);
+    getSourceFiles(rules);
     rulesMatched = new int[rules.size()];
     rulesOK = new int[rules.size()];
     for (int i=0; i < rules.size(); i++) {
@@ -674,7 +674,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     dialog.setVisible(true);
   }
 
-  private File[] getSourceFiles(MspMote mote, ArrayList<Rule> rules) {
+  private File[] getSourceFiles(ArrayList<Rule> rules) {
     /* Verify that files exist */
     ArrayList<File> existing = new ArrayList<>();
     for (String sourceFile: debugSourceFiles) {
