@@ -301,8 +301,8 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     /* Source */
     updateCurrentSourceCodeFile();
     File file = currentCodeFile;
-    Integer line = currentLineNumber;
-    if (file == null || line == null) {
+    int line = currentLineNumber;
+    if (file == null || line <= 0) {
       currentFileAction.setEnabled(false);
       currentFileAction.putValue(Action.NAME, "[unknown]");
       currentFileAction.putValue(Action.SHORT_DESCRIPTION, null);
