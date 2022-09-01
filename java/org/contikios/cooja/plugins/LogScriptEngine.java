@@ -371,7 +371,7 @@ public class LogScriptEngine {
       long realDuration = System.currentTimeMillis()-startRealTime;
       double estimatedLeft = 1.0*realDuration/progress - realDuration;
       if (estimatedLeft == 0) estimatedLeft = 1;
-      logger.info(String.format("Test script at %2.2f%%, done in %2.1f sec", 100*progress, estimatedLeft/1000));
+      logger.info(String.format("%2.0f%% completed, %2.1f sec remaining", 100*progress, estimatedLeft/1000));
     }
   };
 
