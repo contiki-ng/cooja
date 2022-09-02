@@ -157,7 +157,7 @@ public abstract class Memory {
    * Read byte array starting at given address.
    *
    * @param addr Start address to read from
-   * @param length Numbe of bytes to read
+   * @param length Number of bytes to read
    * @return byte array read from location assigned to variable name
    */
   public byte[] getByteArray(long addr, int length)

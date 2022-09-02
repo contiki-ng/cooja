@@ -3160,7 +3160,7 @@ public class Cooja extends Observable {
 
       sim = loadSimulationConfig(root, quick, rewriteCsc, manualRandomSeed);
     } catch (JDOMException e) {
-      throw new SimulationCreationException("Config not wellformed", e);
+      throw new SimulationCreationException("Config not well-formed", e);
     } catch (IOException e) {
       throw new SimulationCreationException("Load simulation error", e);
     }
