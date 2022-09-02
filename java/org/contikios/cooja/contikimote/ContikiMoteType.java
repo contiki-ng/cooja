@@ -669,7 +669,7 @@ public class ContikiMoteType implements MoteType {
      * @param mapFileData Map file lines as array of String
      * @param startRegExp Regular expression for parsing start of section
      * @param endRegExp Regular expression for parsing end of section
-     * @param sectionRegExp Reqular expression describing symbol table section identifier (e.g. '[Rr]' for readonly)
+     * @param sectionRegExp Regular expression describing symbol table section identifier (e.g. '[Rr]' for readonly)
      *        Will be used to replaced '<SECTION>'in 'COMMAND_VAR_NAME_ADDRESS_SIZE'
      */
     public CommandSectionParser(String[] mapFileData, String startRegExp, String endRegExp, String sectionRegExp) {

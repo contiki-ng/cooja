@@ -319,7 +319,7 @@ public abstract class MspMoteType implements MoteType {
     Class<? extends MoteInterface>[] intfClasses = intfClassList.toArray(new Class[0]);
 
     if (intfClasses.length == 0) {
-      /* Backwards compatibility: No interfaces specifed */
+      /* Backwards compatibility: No interfaces specified */
       logger.warn("Old simulation config detected: no mote interfaces specified, assuming all.");
       intfClasses = getAllMoteInterfaceClasses();
     }
