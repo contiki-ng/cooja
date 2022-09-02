@@ -87,7 +87,7 @@ public class Simulation extends Observable implements Runnable {
 
   private volatile boolean isRunning = false;
 
-  private boolean stopSimulation = false;
+  private volatile boolean stopSimulation = false;
 
   private Thread simulationThread = null;
 
