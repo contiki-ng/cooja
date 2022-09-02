@@ -454,10 +454,6 @@ public abstract class AbstractCompileDialog extends JDialog {
   public void compileContiki() throws Exception {
     final MessageListUI taskOutput = new MessageListUI();
 
-    if (contikiFirmware.exists()) {
-      contikiFirmware.delete();
-    }
-
     /* Handle multiple compilation commands one by one */
     final ArrayList<String> commands = new ArrayList<>();
     String[] arr = getCompileCommands().split("\n");
