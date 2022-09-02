@@ -99,6 +99,7 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
    * Project default transmission bitrate (kbps).
    */
   private final double RADIO_TRANSMISSION_RATE_KBPS;
+  private final CCITT_CRC txCrc = new CCITT_CRC();
 
   /**
    * Configured transmission bitrate (kbps).
@@ -370,7 +371,6 @@ public class ContikiRadio extends Radio implements ContikiMoteInterface, PolledA
       }
 
       byte[] data = packetFromMote.getPacketData();
-      CCITT_CRC txCrc = new CCITT_CRC();
       txCrc.setCRC(0);
       for (int i = 0; i < size; i++) {
         txCrc.addBitrev(data[i]);
