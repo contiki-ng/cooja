@@ -34,14 +34,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.AbstractAction;
@@ -64,6 +61,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.HasQuickHelp;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -89,7 +87,7 @@ import se.sics.mspsim.util.ELFDebug;
 @ClassDescription("Msp Code Watcher")
 @PluginType(PluginType.MOTE_PLUGIN)
 @SupportedArguments(motes = {MspMote.class})
-public class MspCodeWatcher extends VisPlugin implements MotePlugin {
+public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHelp {
   private static final int SOURCECODE = 0;
   private static final int BREAKPOINTS = 2;
 
@@ -108,7 +106,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   private final WatchpointMote watchpointMote;
   private WatchpointListener watchpointListener;
 
-  private final JComboBox fileComboBox;
+  private final JComboBox<String> fileComboBox;
   private File[] sourceFiles;
 
   private final JTabbedPane mainPane;
@@ -147,14 +145,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     {
       ArrayList<String> newDebugSourceFiles = new ArrayList<>();
       for (String sf: debugSourceFiles) {
-        boolean found = false;
-        for (String nsf: newDebugSourceFiles) {
-          if (sf.equals(nsf)) {
-            found = true;
-            break;
-          }
-        }
-        if (!found) {
+        if (!newDebugSourceFiles.contains(sf)) {
           newDebugSourceFiles.add(sf);
         }
       }
@@ -169,13 +160,8 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     getContentPane().setLayout(new BorderLayout());
 
     /* Create source file list */
-    fileComboBox = new JComboBox();
-    fileComboBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        sourceFileSelectionChanged();
-      }
-    });
+    fileComboBox = new JComboBox<>();
+    fileComboBox.addActionListener(e -> sourceFileSelectionChanged());
     fileComboBox.setRenderer(new BasicComboBoxRenderer() {
       @Override
       public Component getListCellRendererComponent(JList list, Object value,
@@ -223,7 +209,6 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     sourceCodeUI = new CodeUI(watchpointMote);
     JPanel sourceCodePanel = new JPanel(new BorderLayout());
     sourceCodePanel.add(BorderLayout.CENTER, sourceCodeUI);
-    sourceCodePanel.add(BorderLayout.SOUTH, sourceCodeControl);
     mainPane.addTab("Source code", null, sourceCodePanel, null); /* SOURCECODE */
 
     assCodeUI = new DebugUI(this.mspMote.getCPU(), true);
@@ -236,22 +221,20 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     mainPane.addTab("Breakpoints", null, breakpointsUI, "Right-click source code to add"); /* BREAKPOINTS */
 
     add(BorderLayout.CENTER, mainPane);
+    add(BorderLayout.SOUTH, sourceCodeControl);
 
     /* Listen for breakpoint changes */
     watchpointMote.addWatchpointListener(watchpointListener = new WatchpointListener() {
       @Override
       public void watchpointTriggered(final Watchpoint watchpoint) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            logger.info("Watchpoint triggered: " + watchpoint);
-            if (simulation.isRunning()) {
-              return;
-            }
-            breakpointsUI.selectBreakpoint(watchpoint);
-            sourceCodeUI.updateBreakpoints();
-            showCurrentPC();
+        SwingUtilities.invokeLater(() -> {
+          logger.info("Watchpoint triggered: " + watchpoint);
+          if (simulation.isRunning()) {
+            return;
           }
+          breakpointsUI.selectBreakpoint(watchpoint);
+          sourceCodeUI.updateBreakpoints();
+          showCurrentPC();
         });
       }
       @Override
@@ -261,15 +244,12 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     });
 
     /* Observe when simulation starts/stops */
-    simulation.addObserver(simObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        if (!simulation.isRunning()) {
-          stepAction.setEnabled(true);
-          showCurrentPC();
-        } else {
-          stepAction.setEnabled(false);
-        }
+    simulation.addObserver(simObserver = (obs, obj) -> {
+      if (!simulation.isRunning()) {
+        stepAction.setEnabled(true);
+        showCurrentPC();
+      } else {
+        stepAction.setEnabled(false);
       }
     });
 
@@ -284,7 +264,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   }
 
   private void updateFileComboBox() {
-    sourceFiles = getSourceFiles(mspMote, rules);
+    sourceFiles = getSourceFiles(rules);
     fileComboBox.removeAllItems();
     fileComboBox.addItem("[view sourcefile]");
     for (File f: sourceFiles) {
@@ -294,12 +274,10 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   }
 
   public void displaySourceFile(final File file, final int line, final boolean markCurrent) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        mainPane.setSelectedIndex(SOURCECODE); /* code */
-        sourceCodeUI.displayNewCode(file, line, markCurrent);
-      }});
+    SwingUtilities.invokeLater(() -> {
+      mainPane.setSelectedIndex(SOURCECODE); /* code */
+      sourceCodeUI.displayNewCode(file, line, markCurrent);
+    });
   }
 
   private void sourceFileSelectionChanged() {
@@ -320,8 +298,8 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     /* Source */
     updateCurrentSourceCodeFile();
     File file = currentCodeFile;
-    Integer line = currentLineNumber;
-    if (file == null || line == null) {
+    int line = currentLineNumber;
+    if (file == null || line <= 0) {
       currentFileAction.setEnabled(false);
       currentFileAction.putValue(Action.NAME, "[unknown]");
       currentFileAction.putValue(Action.SHORT_DESCRIPTION, null);
@@ -375,11 +353,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
   }
 
   private int getLocatedSourcesCount() {
-    File[] files = getSourceFiles(mspMote, rules);
-    if (files == null) {
-      return 0;
-    }
-    return files.length;
+    return getSourceFiles(rules).length;
   }
 
   private void updateRulesUsage() {
@@ -387,13 +361,22 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
       rule.prefixMatches = 0;
       rule.locatesFile = 0;
     }
-    getSourceFiles(mspMote, rules);
+    getSourceFiles(rules);
     rulesMatched = new int[rules.size()];
     rulesOK = new int[rules.size()];
     for (int i=0; i < rules.size(); i++) {
       rulesMatched[i] = rules.get(i).prefixMatches;
       rulesOK[i] = rules.get(i).locatesFile;
     }
+  }
+
+  @Override
+  public String getQuickHelp() {
+    return "<b>MSPSim's Code Watcher</b><br>" +
+            "<br>This plugin shows the source code for MSP430 based motes and can set or remove breakpoints." +
+            "<br><br>" +
+            "<b>Note:</b> You must compile the code with <i>DEBUG=1</i> to include information about the source code in the build." +
+            "<br><br>Example: make TARGET=sky DEBUG=1 hello-world";
   }
 
   private class Rule {
@@ -424,7 +407,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
       }
       if (to == null) {
         if (rulesWithDebuggingOutput) {
-          rulesDebuggingOutput.addMessage(this + " enter substition: " + f.getPath(), MessageList.ERROR);
+          rulesDebuggingOutput.addMessage(this + " enter substitution: " + f.getPath(), MessageList.ERROR);
         }
         return null;
       }
@@ -593,95 +576,80 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
 
     /* control panel: save/load, clear/apply/close */
     final JButton applyButton = new JButton("Apply");
-    applyButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        /* Remove trailing empty rules */
-        ArrayList<Rule> trimmedRules = new ArrayList<>();
-        for (Rule rule: rules) {
-          if (rule.from == null || rule.from.trim().isEmpty()) {
-            rule.from = "";
-          }
-          if (rule.to == null || rule.to.trim().isEmpty()) {
-            rule.to = "";
-          }
-          if (rule.from.isEmpty() && rule.to.isEmpty()) {
-            /* ignore */
-            continue;
-          }
-          trimmedRules.add(rule);
+    applyButton.addActionListener(e -> {
+      /* Remove trailing empty rules */
+      ArrayList<Rule> trimmedRules = new ArrayList<>();
+      for (Rule rule: rules) {
+        if (rule.from == null || rule.from.trim().isEmpty()) {
+          rule.from = "";
         }
-        rules = trimmedRules;
-
-        rulesDebuggingOutput.clearMessages();
-        rulesDebuggingOutput.addMessage("Applying " + rules.size() + " substitution rules");
-        rulesWithDebuggingOutput = true;
-        updateRulesUsage();
-        rulesWithDebuggingOutput = false;
-        rulesDebuggingOutput.addMessage("Done! " + "Located sources: " + getLocatedSourcesCount() + "/" + debugSourceFiles.length);
-        rulesDebuggingOutput.addMessage(" ");
-        for (String s: debugSourceFiles) {
-          File f = applySubstitutionRules(s, rules);
-          if (f == null || !f.exists()) {
-            rulesDebuggingOutput.addMessage("Not yet located: " + s, MessageList.ERROR);
-          }
+        if (rule.to == null || rule.to.trim().isEmpty()) {
+          rule.to = "";
         }
-
-        table.invalidate();
-        table.repaint();
+        if (rule.from.isEmpty() && rule.to.isEmpty()) {
+          /* ignore */
+          continue;
+        }
+        trimmedRules.add(rule);
       }
+      rules = trimmedRules;
+
+      rulesDebuggingOutput.clearMessages();
+      rulesDebuggingOutput.addMessage("Applying " + rules.size() + " substitution rules");
+      rulesWithDebuggingOutput = true;
+      updateRulesUsage();
+      rulesWithDebuggingOutput = false;
+      rulesDebuggingOutput.addMessage("Done! " + "Located sources: " + getLocatedSourcesCount() + "/" + debugSourceFiles.length);
+      rulesDebuggingOutput.addMessage(" ");
+      for (String s: debugSourceFiles) {
+        File f = applySubstitutionRules(s, rules);
+        if (f == null || !f.exists()) {
+          rulesDebuggingOutput.addMessage("Not yet located: " + s, MessageList.ERROR);
+        }
+      }
+
+      table.invalidate();
+      table.repaint();
     });
     JButton clearButton = new JButton("Clear");
-    clearButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        rules.clear();
-        applyButton.doClick();
-      }
+    clearButton.addActionListener(e -> {
+      rules.clear();
+      applyButton.doClick();
     });
 
     JButton loadButton = new JButton("Load default");
-    loadButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        loadDefaultRules();
-        applyButton.doClick();
-      }
+    loadButton.addActionListener(e -> {
+      loadDefaultRules();
+      applyButton.doClick();
     });
     JButton saveButton = new JButton("Save as default");
-    saveButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        StringBuilder sb = new StringBuilder();
-        for (Rule r: rules) {
-          sb.append("*");
-          if (r.from.isEmpty()) {
-            sb.append("[empty]");
-          } else {
-            sb.append(r.from);
-          }
-          sb.append("*");
-          if (r.to.isEmpty()) {
-            sb.append("[empty]");
-          } else {
-            sb.append(r.to);
-          }
-        }
-        if (sb.length() >= 1) {
-          Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", sb.substring(1));
+    saveButton.addActionListener(e -> {
+      StringBuilder sb = new StringBuilder();
+      for (Rule r1 : rules) {
+        sb.append("*");
+        if (r1.from.isEmpty()) {
+          sb.append("[empty]");
         } else {
-          Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", "");
+          sb.append(r1.from);
         }
+        sb.append("*");
+        if (r1.to.isEmpty()) {
+          sb.append("[empty]");
+        } else {
+          sb.append(r1.to);
+        }
+      }
+      if (sb.length() >= 1) {
+        Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", sb.substring(1));
+      } else {
+        Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", "");
       }
     });
 
     JButton closeButton = new JButton("Close");
-    closeButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        updateFileComboBox();
-        dialog.dispose();
-      }
+    closeButton.addActionListener(e -> {
+      updateFileComboBox();
+      dialog.dispose();
     });
     Box control = Box.createHorizontalBox();
     control.add(loadButton);
@@ -694,12 +662,9 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     final JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
         new JScrollPane(table),
         new JScrollPane(rulesDebuggingOutput));
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        split.setDividerLocation(0.5);
-        applyButton.doClick();
-      }
+    SwingUtilities.invokeLater(() -> {
+      split.setDividerLocation(0.5);
+      applyButton.doClick();
     });
     dialog.getContentPane().add(BorderLayout.CENTER, split);
     dialog.getContentPane().add(BorderLayout.SOUTH, control);
@@ -709,15 +674,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
     dialog.setVisible(true);
   }
 
-  private File[] getSourceFiles(MspMote mote, ArrayList<Rule> rules) {
-    File contikiSource = mote.getType().getContikiSourceFile();
-    if (contikiSource != null) {
-      try {
-        contikiSource = contikiSource.getCanonicalFile();
-      } catch (IOException e1) {
-      }
-    }
-
+  private File[] getSourceFiles(ArrayList<Rule> rules) {
     /* Verify that files exist */
     ArrayList<File> existing = new ArrayList<>();
     for (String sourceFile: debugSourceFiles) {
@@ -730,12 +687,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin {
 
     /* Sort alphabetically */
     File[] sorted = existing.toArray(new File[0]);
-    Arrays.sort(sorted, new Comparator<>() {
-      @Override
-      public int compare(File o1, File o2) {
-        return o1.getName().compareToIgnoreCase(o2.getName());
-      }
-    });
+    Arrays.sort(sorted, (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
     return sorted;
   }
 
