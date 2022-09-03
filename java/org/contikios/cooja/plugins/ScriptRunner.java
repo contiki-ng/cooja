@@ -96,7 +96,9 @@ public class ScriptRunner implements Plugin {
   };
 
   private final Simulation simulation;
-  private LogScriptEngine engine;
+  private final LogScriptEngine engine;
+
+  private boolean activated = false;
 
   private static BufferedWriter logWriter = null; /* For non-GUI tests */
 
@@ -112,7 +114,7 @@ public class ScriptRunner implements Plugin {
   public ScriptRunner(Simulation simulation, Cooja gui) {
     this.gui = gui;
     this.simulation = simulation;
-    this.engine = null;
+    this.engine = new LogScriptEngine(simulation);
 
     if (!Cooja.isVisualized()) {
       frame = null;
@@ -282,10 +284,9 @@ public class ScriptRunner implements Plugin {
   }
 
   private void deactivateScript() {
+    activated = false;
     if (engine != null) {
       engine.deactivateScript();
-      engine.setScriptLogObserver(null);
-      engine = null;
     }
 
     if (logWriter != null) {
@@ -311,9 +312,7 @@ public class ScriptRunner implements Plugin {
 
   private void activateScript() {
     deactivateScript();
-
-    /* Create new engine */
-    engine = new LogScriptEngine(simulation);
+    activated = true;
     if (Cooja.isVisualized()) {
       /* Attach visualized log observer */
       engine.setScriptLogObserver(new Observer() {
@@ -360,9 +359,9 @@ public class ScriptRunner implements Plugin {
     }
 
     /* Activate engine */
-    boolean activated;
+    boolean active;
     try {
-      activated = engine.activateScript(Cooja.isVisualized() ? codeEditor.getText() : headlessScript);
+      active = engine.activateScript(Cooja.isVisualized() ? codeEditor.getText() : headlessScript);
     } catch (RuntimeException | ScriptException e) {
       logger.fatal("Test script error: ", e);
       deactivateScript();
@@ -372,7 +371,7 @@ public class ScriptRunner implements Plugin {
       }
       return;
     }
-    if (activated && Cooja.isVisualized()) {
+    if (active && Cooja.isVisualized()) {
       if (actionLinkFile != null) {
         actionLinkFile.setEnabled(false);
       }
@@ -426,7 +425,7 @@ public class ScriptRunner implements Plugin {
   }
 
   public boolean isActive() {
-    return engine != null;
+    return activated;
   }
 
   @Override
