@@ -62,7 +62,6 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -144,14 +143,7 @@ public class ScriptRunner implements Plugin {
       exampleItem.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          String script = loadScript(file);
-          if (script == null) {
-            JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-                "Could not load example script: scripts/" + file,
-                "Could not load script", JOptionPane.ERROR_MESSAGE);
-            return;
-          }
-          updateScript(script);
+          updateScript(loadScript(file));
         }
       });
       examplesMenu.add(exampleItem);
@@ -179,10 +171,10 @@ public class ScriptRunner implements Plugin {
     activateMenuItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent ev) {
-        try {
-          setScriptActive(!isActive());
-        } catch (Exception e) {
-          logger.fatal("Error: " + e.getMessage(), e);
+        if (isActive()) {
+          deactivateScript();
+        } else {
+          activateScript();
         }
       }
     });
@@ -246,10 +238,7 @@ public class ScriptRunner implements Plugin {
     }
 
     /* Set default script */
-    String script = loadScript(EXAMPLE_SCRIPTS[0]);
-    if (script != null) {
-      updateScript(script);
-    }
+    updateScript(loadScript(EXAMPLE_SCRIPTS[0]));
   }
 
   @Override
@@ -261,37 +250,41 @@ public class ScriptRunner implements Plugin {
   public void startPlugin() {
   }
 
-  public void setLinkFile(File source) {
-    linkedFile = source;
-    String script = source == null ? "" : StringUtils.loadFromFile(linkedFile);
-    if (script != null) {
-      updateScript(script);
-    }
-    if (!Cooja.isVisualized()) {
-      return;
-    }
-
-    if (source == null) {
+  public void removeLinkFile() {
+    linkedFile = null;
+    updateScript("");
+    if (Cooja.isVisualized()) {
       if (actionLinkFile != null) {
         actionLinkFile.setMenuText("Link script to disk file");
         actionLinkFile.putValue("JavascriptSource", null);
       }
       codeEditor.setEditable(true);
-    } else {
+      updateTitle();
+    }
+  }
+
+  public boolean setLinkFile(File source) {
+    String script = StringUtils.loadFromFile(source);
+    if (script == null) {
+      logger.error("Could not read " + source);
+      return false;
+    }
+    linkedFile = source;
+    updateScript(script);
+    if (Cooja.isVisualized()) {
       Cooja.setExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", source.getAbsolutePath());
       if (actionLinkFile != null) {
         actionLinkFile.setMenuText("Unlink script: " + source.getName());
         actionLinkFile.putValue("JavascriptSource", source);
       }
       codeEditor.setEditable(false);
+      updateTitle();
     }
-    updateTitle();
+    return true;
   }
 
-  public void setScriptActive(boolean active) {
-    // Always clean up the resources for the currently running script.
+  private void deactivateScript() {
     if (engine != null) {
-      /* Deactivate script */
       engine.deactivateScript();
       engine.setScriptLogObserver(null);
       engine = null;
@@ -316,13 +309,10 @@ public class ScriptRunner implements Plugin {
       codeEditor.setEnabled(true);
       updateTitle();
     }
+  }
 
-    // Previous script deactivated at this point.
-    if (!active) {
-      return;
-    }
-
-    // Activate new script.
+  private void activateScript() {
+    deactivateScript();
     if (linkedFile != null) {
       String script = StringUtils.loadFromFile(linkedFile);
       if (script == null) {
@@ -374,7 +364,7 @@ public class ScriptRunner implements Plugin {
         });
       } catch (Exception e) {
         logger.fatal("Create log writer error: ", e);
-        setScriptActive(false);
+        deactivateScript();
         return;
       }
     }
@@ -385,7 +375,7 @@ public class ScriptRunner implements Plugin {
       activated = engine.activateScript(Cooja.isVisualized() ? codeEditor.getText() : headlessScript);
     } catch (RuntimeException | ScriptException e) {
       logger.fatal("Test script error: ", e);
-      setScriptActive(false);
+      deactivateScript();
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog(Cooja.getTopParentContainer(),
                 "Script error", e, false);
@@ -414,10 +404,6 @@ public class ScriptRunner implements Plugin {
   }
 
   private void updateScript(String script) {
-    if (script == null) {
-      return;
-    }
-
     if (Cooja.isVisualized()) {
       codeEditor.setText(script);
       logTextArea.setText("");
@@ -455,10 +441,7 @@ public class ScriptRunner implements Plugin {
 
   @Override
   public void closePlugin() {
-    try {
-      setScriptActive(false);
-    } catch (Exception e) {
-    }
+    deactivateScript();
   }
 
   @Override
@@ -472,7 +455,9 @@ public class ScriptRunner implements Plugin {
         }
       } else if ("scriptfile".equals(name)) {
         File file = simulation.getCooja().restorePortablePath(new File(element.getText().trim()));
-        setLinkFile(file);
+        if (!setLinkFile(file)) {
+          return false;
+        }
       } else if ("active".equals(name)) {
         activate = Boolean.parseBoolean(element.getText());
       }
@@ -480,12 +465,7 @@ public class ScriptRunner implements Plugin {
 
     // Automatically activate script in headless mode.
     if (activate || !Cooja.isVisualized()) {
-      try {
-        setScriptActive(true);
-      } catch (Exception e) {
-        logger.fatal("Error: failed to start script: {}", e.getMessage(), e);
-        return false;
-      }
+      activateScript();
     }
 
     return true;
@@ -508,7 +488,7 @@ public class ScriptRunner implements Plugin {
       File currentSource = (File) action.getValue("JavascriptSource");
 
       if (currentSource != null) {
-        scriptRunner.setLinkFile(null);
+        scriptRunner.removeLinkFile();
         return;
       }
 
