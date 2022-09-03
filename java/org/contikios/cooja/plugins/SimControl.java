@@ -94,6 +94,9 @@ public class SimControl extends VisPlugin implements HasQuickHelp {
       updateLabelTimer.start();
     }
 
+    // There should only be one SimControl, so start automatically and prevent closing the window.
+    setClosable(false);
+
     /* Menus */
     JMenuBar menuBar = new JMenuBar();
     JMenu runMenu = new JMenu("Run");

@@ -1123,14 +1123,7 @@ public class Cooja extends Observable {
     reloadSimulationMenuItem.add(new JMenuItem(reloadRandomSimulationAction));
     simulationMenu.add(reloadSimulationMenuItem);
 
-    GUIAction guiAction = new StartPluginGUIAction("Control panel...");
-    menuItem = new JMenuItem(guiAction);
-    guiActions.add(guiAction);
-    menuItem.setMnemonic(KeyEvent.VK_C);
-    menuItem.putClientProperty("class", SimControl.class);
-    simulationMenu.add(menuItem);
-
-    guiAction = new StartPluginGUIAction("Simulation...");
+    var guiAction = new StartPluginGUIAction("Simulation...");
     menuItem = new JMenuItem(guiAction);
     guiActions.add(guiAction);
     menuItem.setMnemonic(KeyEvent.VK_I);
