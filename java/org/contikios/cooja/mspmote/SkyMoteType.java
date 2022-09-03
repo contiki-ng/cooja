@@ -30,27 +30,10 @@
 
 package org.contikios.cooja.mspmote;
 
-import java.awt.Container;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
-import java.net.URL;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
-import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.dialogs.CompileContiki;
-import org.contikios.cooja.dialogs.MessageList;
-import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
@@ -70,7 +53,6 @@ import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
 @ClassDescription("Sky mote")
 @AbstractionLevelDescription("Emulated level")
 public class SkyMoteType extends AbstractMspMoteType {
-  private static final Logger logger = LogManager.getLogger(SkyMoteType.class);
 
   @Override
   protected MspMote createMote(Simulation simulation) {
@@ -89,110 +71,7 @@ public class SkyMoteType extends AbstractMspMoteType {
 
   @Override
   protected String getMoteImage() {
-    return "/images/sky.jpg";
-  }
-
-  @Override
-  public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
-  throws MoteTypeCreationException {
-    /* If visualized, show compile dialog and let user configure */
-    if (visAvailable && !simulation.isQuickSetup()) {
-
-      /* Create unique identifier */
-      if (getIdentifier() == null) {
-        int counter = 0;
-        boolean identifierOK = false;
-        while (!identifierOK) {
-          identifierOK = true;
-
-          counter++;
-          setIdentifier("sky" + counter);
-
-          for (MoteType existingMoteType : simulation.getMoteTypes()) {
-            if (existingMoteType == this) {
-              continue;
-            }
-            if (existingMoteType.getIdentifier().equals(getIdentifier())) {
-              identifierOK = false;
-              break;
-            }
-          }
-        }
-      }
-
-      /* Create initial description */
-      if (getDescription() == null) {
-        setDescription("Sky Mote Type #" + getIdentifier());
-      }
-
-      return MspCompileDialog.showDialog(parentContainer, simulation, this, "sky");
-    }
-
-    /* Not visualized: Compile Contiki immediately */
-    if (getIdentifier() == null) {
-      throw new MoteTypeCreationException("No identifier");
-    }
-
-    final MessageList compilationOutput = MessageContainer.createMessageList(visAvailable);
-
-    if (getCompileCommands() != null) {
-      /* Handle multiple compilation commands one by one */
-      String[] arr = getCompileCommands().split("\n");
-      for (String cmd: arr) {
-        if (cmd.trim().isEmpty()) {
-          continue;
-        }
-
-        try {
-          CompileContiki.compile(
-              cmd,
-              null,
-              getContikiSourceFile().getParentFile(),
-              null,
-              null,
-              compilationOutput,
-              true
-          );
-        } catch (Exception e) {
-          /* Print last 10 compilation errors to console */
-          MessageContainer[] messages = compilationOutput.getMessages();
-          for (int i=messages.length-10; i < messages.length; i++) {
-            if (i < 0) {
-              continue;
-            }
-            logger.fatal(">> " + messages[i]);
-          }
-
-          logger.fatal("Compilation error: " + compilationOutput);
-          return false;
-        }
-      }
-    }
-
-    if (getContikiFirmwareFile() == null ||
-        !getContikiFirmwareFile().exists()) {
-      throw new MoteTypeCreationException("Contiki firmware file does not exist: " + getContikiFirmwareFile());
-    }
-    return true;
-  }
-
-  @Override
-  public Icon getMoteTypeIcon() {
-    Toolkit toolkit = Toolkit.getDefaultToolkit();
-    URL imageURL = this.getClass().getClassLoader().getResource("images/sky.jpg");
-    Image image = toolkit.getImage(imageURL);
-    MediaTracker tracker = new MediaTracker(Cooja.getTopParentContainer());
-    tracker.addImage(image, 1);
-    try {
-      tracker.waitForAll();
-    } catch (InterruptedException ex) {
-    }
-    if (image.getHeight(Cooja.getTopParentContainer()) > 0 && image.getWidth(Cooja.getTopParentContainer()) > 0) {
-      image = image.getScaledInstance((200*image.getWidth(Cooja.getTopParentContainer())/image.getHeight(Cooja.getTopParentContainer())), 200, Image.SCALE_DEFAULT);
-      return new ImageIcon(image);
-    }
-
-    return null;
+    return "images/sky.jpg";
   }
 
   @Override
@@ -201,7 +80,8 @@ public class SkyMoteType extends AbstractMspMoteType {
   }
   @Override
   public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
-    return new Class[] {
+    @SuppressWarnings("unchecked")
+    Class<? extends MoteInterface>[] list =  createMoteInterfaceList(
         Position.class,
         RimeAddress.class,
         IPAddress.class,
@@ -216,7 +96,7 @@ public class SkyMoteType extends AbstractMspMoteType {
         MspSerial.class,
         SkyLED.class,
         MspDebugOutput.class, /* EXPERIMENTAL: Enable me for COOJA_DEBUG(..) */
-        SkyTemperature.class
-    };
+        SkyTemperature.class);
+    return list;
   }
 }
