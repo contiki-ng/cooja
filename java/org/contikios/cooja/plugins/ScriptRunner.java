@@ -171,7 +171,11 @@ public class ScriptRunner implements Plugin {
     activateMenuItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent ev) {
-        setScriptActive(!isActive());
+        if (isActive()) {
+          deactivateScript();
+        } else {
+          activateScript();
+        }
       }
     });
     runMenu.add(activateMenuItem);
@@ -279,10 +283,8 @@ public class ScriptRunner implements Plugin {
     return true;
   }
 
-  public void setScriptActive(boolean active) {
-    // Always clean up the resources for the currently running script.
+  private void deactivateScript() {
     if (engine != null) {
-      /* Deactivate script */
       engine.deactivateScript();
       engine.setScriptLogObserver(null);
       engine = null;
@@ -307,13 +309,10 @@ public class ScriptRunner implements Plugin {
       codeEditor.setEnabled(true);
       updateTitle();
     }
+  }
 
-    // Previous script deactivated at this point.
-    if (!active) {
-      return;
-    }
-
-    // Activate new script.
+  private void activateScript() {
+    deactivateScript();
     if (linkedFile != null) {
       String script = StringUtils.loadFromFile(linkedFile);
       if (script == null) {
@@ -365,7 +364,7 @@ public class ScriptRunner implements Plugin {
         });
       } catch (Exception e) {
         logger.fatal("Create log writer error: ", e);
-        setScriptActive(false);
+        deactivateScript();
         return;
       }
     }
@@ -376,7 +375,7 @@ public class ScriptRunner implements Plugin {
       activated = engine.activateScript(Cooja.isVisualized() ? codeEditor.getText() : headlessScript);
     } catch (RuntimeException | ScriptException e) {
       logger.fatal("Test script error: ", e);
-      setScriptActive(false);
+      deactivateScript();
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog(Cooja.getTopParentContainer(),
                 "Script error", e, false);
@@ -442,7 +441,7 @@ public class ScriptRunner implements Plugin {
 
   @Override
   public void closePlugin() {
-    setScriptActive(false);
+    deactivateScript();
   }
 
   @Override
@@ -466,7 +465,7 @@ public class ScriptRunner implements Plugin {
 
     // Automatically activate script in headless mode.
     if (activate || !Cooja.isVisualized()) {
-      setScriptActive(true);
+      activateScript();
     }
 
     return true;
