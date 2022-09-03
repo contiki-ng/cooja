@@ -150,6 +150,19 @@ public class ScriptRunner implements Plugin {
     logTextArea.setEditable(true);
     logTextArea.setCursor(null);
 
+    var saveAs = new JMenuItem("Save as...");
+    saveAs.addActionListener(l -> {
+      var f = showFileChooser(false);
+      if (f == null) {
+        return;
+      }
+      try (var writer = Files.newBufferedWriter(f.toPath(), UTF_8)) {
+        writer.write(codeEditor.getText());
+      } catch (IOException e) {
+        logger.error("Failed saving file: " + e.getMessage());
+      }
+    });
+    fileMenu.add(saveAs);
     /* Example scripts */
     final JMenu examplesMenu = new JMenu("Load example script");
     for (int i=0; i < EXAMPLE_SCRIPTS.length; i += 2) {
