@@ -62,7 +62,6 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -264,12 +263,14 @@ public class ScriptRunner implements Plugin {
     }
   }
 
-  public void setLinkFile(File source) {
-    linkedFile = source;
-    String script = StringUtils.loadFromFile(linkedFile);
-    if (script != null) {
-      updateScript(script);
+  public boolean setLinkFile(File source) {
+    String script = StringUtils.loadFromFile(source);
+    if (script == null) {
+      logger.error("Could not read " + source);
+      return false;
     }
+    linkedFile = source;
+    updateScript(script);
     if (Cooja.isVisualized()) {
       Cooja.setExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", source.getAbsolutePath());
       if (actionLinkFile != null) {
@@ -279,6 +280,7 @@ public class ScriptRunner implements Plugin {
       codeEditor.setEditable(false);
       updateTitle();
     }
+    return true;
   }
 
   public void setScriptActive(boolean active) {
@@ -461,7 +463,9 @@ public class ScriptRunner implements Plugin {
         }
       } else if ("scriptfile".equals(name)) {
         File file = simulation.getCooja().restorePortablePath(new File(element.getText().trim()));
-        setLinkFile(file);
+        if (!setLinkFile(file)) {
+          return false;
+        }
       } else if ("active".equals(name)) {
         activate = Boolean.parseBoolean(element.getText());
       }
