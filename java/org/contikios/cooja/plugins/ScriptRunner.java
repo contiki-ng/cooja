@@ -144,14 +144,7 @@ public class ScriptRunner implements Plugin {
       exampleItem.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          String script = loadScript(file);
-          if (script == null) {
-            JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-                "Could not load example script: scripts/" + file,
-                "Could not load script", JOptionPane.ERROR_MESSAGE);
-            return;
-          }
-          updateScript(script);
+          updateScript(loadScript(file));
         }
       });
       examplesMenu.add(exampleItem);
@@ -246,10 +239,7 @@ public class ScriptRunner implements Plugin {
     }
 
     /* Set default script */
-    String script = loadScript(EXAMPLE_SCRIPTS[0]);
-    if (script != null) {
-      updateScript(script);
-    }
+    updateScript(loadScript(EXAMPLE_SCRIPTS[0]));
   }
 
   @Override
@@ -414,10 +404,6 @@ public class ScriptRunner implements Plugin {
   }
 
   private void updateScript(String script) {
-    if (script == null) {
-      return;
-    }
-
     if (Cooja.isVisualized()) {
       codeEditor.setText(script);
       logTextArea.setText("");
