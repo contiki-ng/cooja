@@ -465,6 +465,36 @@ public class ScriptRunner implements Plugin {
     return StringUtils.loadFromStream(ScriptRunner.class.getResourceAsStream("/scripts/" + file));
   }
 
+  /**
+   * Show a file chooser dialog for opening or saving a JavaScript file.
+   *
+   * @param open True shows an open dialog, false shows a save dialog.
+   * @return The file chosen, null on cancel.
+   */
+  private File showFileChooser(boolean open) {
+    var chooser = new JFileChooser();
+    String suggest = Cooja.getExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", null);
+    if (suggest != null) {
+      chooser.setSelectedFile(new File(suggest));
+    } else {
+      chooser.setCurrentDirectory(new File("."));
+    }
+    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    chooser.setDialogTitle("Select script file");
+    chooser.setFileFilter(new FileFilter() {
+      @Override
+      public boolean accept(File file) {
+        return file.isDirectory() || file.getName().endsWith(".js");
+      }
+      @Override
+      public String getDescription() {
+        return "JavaScript";
+      }
+    });
+    var choice = open ? chooser.showOpenDialog(frame) : chooser.showSaveDialog(frame);
+    return choice == JFileChooser.APPROVE_OPTION ? chooser.getSelectedFile() : null;
+  }
+
   public static class JSyntaxLinkFile extends DefaultSyntaxAction {
     public JSyntaxLinkFile() {
       super("linkfile");
@@ -481,31 +511,10 @@ public class ScriptRunner implements Plugin {
         scriptRunner.removeLinkFile();
         return;
       }
-
-      JFileChooser fileChooser = new JFileChooser();
-      String suggest = Cooja.getExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", null);
-      if (suggest != null) {
-        fileChooser.setSelectedFile(new File(suggest));
-      } else {
-        fileChooser.setCurrentDirectory(new java.io.File("."));
+      var file = scriptRunner.showFileChooser(true);
+      if (file != null) {
+        scriptRunner.setLinkFile(file);
       }
-      fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-      fileChooser.setDialogTitle("Select script file");
-      fileChooser.setFileFilter(new FileFilter() {
-        @Override
-        public boolean accept(File file) {
-          if (file.isDirectory()) { return true; }
-          return file.getName().endsWith(".js");
-        }
-        @Override
-        public String getDescription() {
-          return "Javascript";
-        }
-      });
-      if (fileChooser.showOpenDialog(scriptRunner.frame) != JFileChooser.APPROVE_OPTION) {
-        return;
-      }
-      scriptRunner.setLinkFile(fileChooser.getSelectedFile());
     }
   }
 }
