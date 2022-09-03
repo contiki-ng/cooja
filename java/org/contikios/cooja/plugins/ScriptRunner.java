@@ -136,21 +136,6 @@ public class ScriptRunner implements Plugin {
 
     frame.setJMenuBar(menuBar);
 
-    /* Example scripts */
-    final JMenu examplesMenu = new JMenu("Load example script");
-    for (int i=0; i < EXAMPLE_SCRIPTS.length; i += 2) {
-      final String file = EXAMPLE_SCRIPTS[i];
-      JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
-      exampleItem.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          updateScript(loadScript(file));
-        }
-      });
-      examplesMenu.add(exampleItem);
-    }
-    fileMenu.add(examplesMenu);
-
     /* Script area */
     frame.setLayout(new BorderLayout());
     codeEditor = new JEditorPane();
@@ -166,6 +151,46 @@ public class ScriptRunner implements Plugin {
     logTextArea.setMargin(new Insets(5,5,5,5));
     logTextArea.setEditable(true);
     logTextArea.setCursor(null);
+
+    var open = new JMenuItem("Open...");
+    open.addActionListener(l -> {
+      var f = showFileChooser(true);
+      if (f == null) {
+        return;
+      }
+      var script = StringUtils.loadFromFile(f);
+      if (script != null) {
+        codeEditor.setText(script);
+      }
+    });
+    fileMenu.add(open);
+    var saveAs = new JMenuItem("Save as...");
+    saveAs.addActionListener(l -> {
+      var f = showFileChooser(false);
+      if (f == null) {
+        return;
+      }
+      try (var writer = Files.newBufferedWriter(f.toPath(), UTF_8)) {
+        writer.write(codeEditor.getText());
+      } catch (IOException e) {
+        logger.error("Failed saving file: " + e.getMessage());
+      }
+    });
+    fileMenu.add(saveAs);
+    /* Example scripts */
+    final JMenu examplesMenu = new JMenu("Load example script");
+    for (int i=0; i < EXAMPLE_SCRIPTS.length; i += 2) {
+      final String file = EXAMPLE_SCRIPTS[i];
+      JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
+      exampleItem.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          updateScript(loadScript(file));
+        }
+      });
+      examplesMenu.add(exampleItem);
+    }
+    fileMenu.add(examplesMenu);
 
     final JCheckBoxMenuItem activateMenuItem = new JCheckBoxMenuItem("Activate");
     activateMenuItem.addActionListener(new ActionListener() {
@@ -464,6 +489,36 @@ public class ScriptRunner implements Plugin {
     return StringUtils.loadFromStream(ScriptRunner.class.getResourceAsStream("/scripts/" + file));
   }
 
+  /**
+   * Show a file chooser dialog for opening or saving a JavaScript file.
+   *
+   * @param open True shows an open dialog, false shows a save dialog.
+   * @return The file chosen, null on cancel.
+   */
+  private File showFileChooser(boolean open) {
+    var chooser = new JFileChooser();
+    String suggest = Cooja.getExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", null);
+    if (suggest != null) {
+      chooser.setSelectedFile(new File(suggest));
+    } else {
+      chooser.setCurrentDirectory(new File("."));
+    }
+    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    chooser.setDialogTitle("Select script file");
+    chooser.setFileFilter(new FileFilter() {
+      @Override
+      public boolean accept(File file) {
+        return file.isDirectory() || file.getName().endsWith(".js");
+      }
+      @Override
+      public String getDescription() {
+        return "JavaScript";
+      }
+    });
+    var choice = open ? chooser.showOpenDialog(frame) : chooser.showSaveDialog(frame);
+    return choice == JFileChooser.APPROVE_OPTION ? chooser.getSelectedFile() : null;
+  }
+
   public static class JSyntaxLinkFile extends DefaultSyntaxAction {
     public JSyntaxLinkFile() {
       super("linkfile");
@@ -480,31 +535,10 @@ public class ScriptRunner implements Plugin {
         scriptRunner.removeLinkFile();
         return;
       }
-
-      JFileChooser fileChooser = new JFileChooser();
-      String suggest = Cooja.getExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", null);
-      if (suggest != null) {
-        fileChooser.setSelectedFile(new File(suggest));
-      } else {
-        fileChooser.setCurrentDirectory(new java.io.File("."));
+      var file = scriptRunner.showFileChooser(true);
+      if (file != null) {
+        scriptRunner.setLinkFile(file);
       }
-      fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-      fileChooser.setDialogTitle("Select script file");
-      fileChooser.setFileFilter(new FileFilter() {
-        @Override
-        public boolean accept(File file) {
-          if (file.isDirectory()) { return true; }
-          return file.getName().endsWith(".js");
-        }
-        @Override
-        public String getDescription() {
-          return "Javascript";
-        }
-      });
-      if (fileChooser.showOpenDialog(scriptRunner.frame) != JFileChooser.APPROVE_OPTION) {
-        return;
-      }
-      scriptRunner.setLinkFile(fileChooser.getSelectedFile());
     }
   }
 }
