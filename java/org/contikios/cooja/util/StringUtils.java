@@ -169,11 +169,11 @@ public class StringUtils {
     if (file == null) {
       return null;
     }
-    StringBuilder sb = new StringBuilder();
 
     try (var reader = new InputStreamReader(file.getName().endsWith(".gz")
             ? new GZIPInputStream(new FileInputStream(file))
             : new FileInputStream(file), UTF_8)) {
+      StringBuilder sb = new StringBuilder(4096);
       char[] buf = new char[4096];
       int read;
       while ((read = reader.read(buf)) > 0) {
@@ -181,14 +181,10 @@ public class StringUtils {
       }
       return sb.toString();
     } catch (IOException e) {
-      e.printStackTrace();
-      if (sb.length() > 0) {
-        return sb.toString();
-      }
+      return null;
     }
-    return null;
   }
-  
+
   public static boolean saveToFile(File file, String text) {
     try {
       PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(file.toPath(), UTF_8));
