@@ -150,6 +150,18 @@ public class ScriptRunner implements Plugin {
     logTextArea.setEditable(true);
     logTextArea.setCursor(null);
 
+    var open = new JMenuItem("Open...");
+    open.addActionListener(l -> {
+      var f = showFileChooser(true);
+      if (f == null) {
+        return;
+      }
+      var script = StringUtils.loadFromFile(f);
+      if (script != null) {
+        codeEditor.setText(script);
+      }
+    });
+    fileMenu.add(open);
     var saveAs = new JMenuItem("Save as...");
     saveAs.addActionListener(l -> {
       var f = showFileChooser(false);
