@@ -55,7 +55,7 @@ public class StringUtils {
   }
 
   public static String toHex(byte data) {
-      return String.valueOf(HEX[(data >> 4) & 0xf]) + HEX[data & 0xf];
+      return new String(new char[] { HEX[(data >> 4) & 0xf],  HEX[data & 0xf] });
   }
   
   public static String toHex(byte[] data) {
@@ -109,7 +109,7 @@ public class StringUtils {
     }
     return bin;
   }
-  
+
   public static String hexDump(byte[] data, int groupsPerLine, int bytesPerGroup) {
     if (bytesPerGroup <= 0) {
       throw new IllegalArgumentException("0 bytes per group");
