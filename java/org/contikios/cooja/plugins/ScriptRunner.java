@@ -35,9 +35,7 @@ import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
 
 import de.sciss.syntaxpane.DefaultSyntaxKit;
-import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -52,7 +50,6 @@ import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 import javax.script.ScriptException;
-import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
@@ -60,12 +57,14 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
@@ -105,9 +104,10 @@ public class ScriptRunner implements Plugin {
   /** The script text when running in headless mode. */
   private String headlessScript = null;
   private final JEditorPane codeEditor;
+  private boolean codeEditorChanged = false;
+  private final ActionListener saveAsAction;
   private final JTextArea logTextArea;
 
-  private JSyntaxLinkFile actionLinkFile = null;
   private File linkedFile = null;
   private final VisPlugin frame;
 
@@ -119,6 +119,7 @@ public class ScriptRunner implements Plugin {
     if (!Cooja.isVisualized()) {
       frame = null;
       codeEditor = null;
+      saveAsAction = null;
       logTextArea = null;
       engine.setScriptLogObserver(new Observer() {
         @Override
@@ -156,8 +157,7 @@ public class ScriptRunner implements Plugin {
     codeEditor = newEditor();
     if (codeEditor.getEditorKit() instanceof DefaultSyntaxKit) {
       DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
-      kit.setProperty(DefaultSyntaxKit.CONFIG_MENU, "copy-to-clipboard,-,find,find-next,goto-line,-,linkfile");
-      kit.setProperty("Action.linkfile", JSyntaxLinkFile.class.getName());
+      kit.setProperty(DefaultSyntaxKit.CONFIG_MENU, "copy-to-clipboard,-,find,find-next,goto-line");
       kit.install(codeEditor);
       // Recover control-R (reload simulation) key binding from DefaultSyntaxKit.
       var event = KeyStroke.getKeyStroke("control R");
@@ -186,20 +186,20 @@ public class ScriptRunner implements Plugin {
       if (f == null) {
         return;
       }
-      var script = StringUtils.loadFromFile(f);
-      if (script != null) {
-        codeEditor.setText(script);
-      }
+      setLinkFile(f);
     });
     fileMenu.add(open);
     var saveAs = new JMenuItem("Save as...");
-    saveAs.addActionListener(l -> {
-      var f = showFileChooser(false);
+    saveAs.addActionListener(saveAsAction = l -> {
+      var f = l == null ? linkedFile : showFileChooser(false);
       if (f == null) {
         return;
       }
       try (var writer = Files.newBufferedWriter(f.toPath(), UTF_8)) {
         writer.write(codeEditor.getText());
+        linkedFile = f;
+        codeEditorChanged = false;
+        updateTitle();
       } catch (IOException e) {
         logger.error("Failed saving file: " + e.getMessage());
       }
@@ -213,6 +213,7 @@ public class ScriptRunner implements Plugin {
       exampleItem.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
+          linkedFile = null;
           updateScript(loadScript(file));
         }
       });
@@ -256,21 +257,6 @@ public class ScriptRunner implements Plugin {
     fileMenu.addMenuListener(toggleMenuItems);
     runMenu.addMenuListener(toggleMenuItems);
 
-    JPopupMenu p = codeEditor.getComponentPopupMenu();
-    if (p != null) {
-      for (Component c: p.getComponents()) {
-        if (!(c instanceof JMenuItem)) {
-          continue;
-        }
-        Action a = ((JMenuItem) c).getAction();
-        if (a instanceof JSyntaxLinkFile) {
-          actionLinkFile = (JSyntaxLinkFile) a;
-          actionLinkFile.setMenuText("Link script to disk file");
-          actionLinkFile.putValue("ScriptRunner", this);
-        }
-      }
-    }
-
     centerPanel.setOneTouchExpandable(true);
     centerPanel.setResizeWeight(0.5);
 
@@ -303,19 +289,6 @@ public class ScriptRunner implements Plugin {
   public void startPlugin() {
   }
 
-  public void removeLinkFile() {
-    linkedFile = null;
-    updateScript("");
-    if (Cooja.isVisualized()) {
-      if (actionLinkFile != null) {
-        actionLinkFile.setMenuText("Link script to disk file");
-        actionLinkFile.putValue("JavascriptSource", null);
-      }
-      codeEditor.setEditable(true);
-      updateTitle();
-    }
-  }
-
   public boolean setLinkFile(File source) {
     String script = StringUtils.loadFromFile(source);
     if (script == null) {
@@ -326,11 +299,6 @@ public class ScriptRunner implements Plugin {
     updateScript(script);
     if (Cooja.isVisualized()) {
       Cooja.setExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", source.getAbsolutePath());
-      if (actionLinkFile != null) {
-        actionLinkFile.setMenuText("Unlink script: " + source.getName());
-        actionLinkFile.putValue("JavascriptSource", source);
-      }
-      codeEditor.setEditable(false);
       updateTitle();
     }
     return true;
@@ -351,9 +319,6 @@ public class ScriptRunner implements Plugin {
     }
 
     if (Cooja.isVisualized()) {
-      if (actionLinkFile != null) {
-        actionLinkFile.setEnabled(true);
-      }
       codeEditor.setEnabled(true);
       updateTitle();
     }
@@ -393,9 +358,6 @@ public class ScriptRunner implements Plugin {
       return;
     }
     if (active && Cooja.isVisualized()) {
-      if (actionLinkFile != null) {
-        actionLinkFile.setEnabled(false);
-      }
       logTextArea.setText("");
       codeEditor.setEnabled(false);
       updateTitle();
@@ -413,16 +375,47 @@ public class ScriptRunner implements Plugin {
     frame.setTitle(title);
   }
 
+  /** Check if the script has been updated and offer the user to save the changes. */
+  private void checkForUpdatesAndSave() {
+    if (!codeEditorChanged) {
+      return;
+    }
+    if (JOptionPane.showConfirmDialog(Cooja.getTopParentContainer(),
+            "Do you want to save the changes to " + linkedFile.getAbsolutePath() + "?",
+            "Save script changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+      saveAsAction.actionPerformed(null);
+    }
+    // User has chosen, do not ask again for the current modifications.
+    codeEditorChanged = false;
+  }
+
   /** Make a new code editor. */
-  private static JEditorPane newEditor() {
+  private JEditorPane newEditor() {
     var editor = new JEditorPane();
     editor.setContentType("text/javascript");
+    editor.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      public void insertUpdate(DocumentEvent documentEvent) {
+        codeEditorChanged = linkedFile != null;
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent documentEvent) {
+        codeEditorChanged = linkedFile != null;
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent documentEvent) {
+        codeEditorChanged = linkedFile != null;
+      }
+    });
     return editor;
   }
 
   private void updateScript(String script) {
     if (Cooja.isVisualized()) {
       codeEditor.setText(script);
+      codeEditorChanged = false;
       logTextArea.setText("");
     } else {
       headlessScript = script;
@@ -431,8 +424,8 @@ public class ScriptRunner implements Plugin {
 
   @Override
   public Collection<Element> getConfigXML() {
+    checkForUpdatesAndSave();
     ArrayList<Element> config = new ArrayList<>();
-
     if (linkedFile != null) {
       Element element = new Element("scriptfile");
       element.setText(simulation.getCooja().createPortablePath(linkedFile).getPath().replace('\\', '/'));
@@ -458,6 +451,7 @@ public class ScriptRunner implements Plugin {
 
   @Override
   public void closePlugin() {
+    checkForUpdatesAndSave();
     deactivateScript();
   }
 
@@ -520,28 +514,5 @@ public class ScriptRunner implements Plugin {
     });
     var choice = open ? chooser.showOpenDialog(frame) : chooser.showSaveDialog(frame);
     return choice == JFileChooser.APPROVE_OPTION ? chooser.getSelectedFile() : null;
-  }
-
-  public static class JSyntaxLinkFile extends DefaultSyntaxAction {
-    public JSyntaxLinkFile() {
-      super("linkfile");
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      JMenuItem menuItem = (JMenuItem) e.getSource();
-      Action action = menuItem.getAction();
-      ScriptRunner scriptRunner = (ScriptRunner) action.getValue("ScriptRunner");
-      File currentSource = (File) action.getValue("JavascriptSource");
-
-      if (currentSource != null) {
-        scriptRunner.removeLinkFile();
-        return;
-      }
-      var file = scriptRunner.showFileChooser(true);
-      if (file != null) {
-        scriptRunner.setLinkFile(file);
-      }
-    }
   }
 }
