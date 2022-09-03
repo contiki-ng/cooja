@@ -171,11 +171,7 @@ public class ScriptRunner implements Plugin {
     activateMenuItem.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent ev) {
-        try {
-          setScriptActive(!isActive());
-        } catch (Exception e) {
-          logger.fatal("Error: " + e.getMessage(), e);
-        }
+        setScriptActive(!isActive());
       }
     });
     runMenu.add(activateMenuItem);
@@ -446,10 +442,7 @@ public class ScriptRunner implements Plugin {
 
   @Override
   public void closePlugin() {
-    try {
-      setScriptActive(false);
-    } catch (Exception e) {
-    }
+    setScriptActive(false);
   }
 
   @Override
@@ -473,12 +466,7 @@ public class ScriptRunner implements Plugin {
 
     // Automatically activate script in headless mode.
     if (activate || !Cooja.isVisualized()) {
-      try {
-        setScriptActive(true);
-      } catch (Exception e) {
-        logger.fatal("Error: failed to start script: {}", e.getMessage(), e);
-        return false;
-      }
+      setScriptActive(true);
     }
 
     return true;
