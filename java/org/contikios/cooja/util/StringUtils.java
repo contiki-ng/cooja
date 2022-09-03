@@ -35,7 +35,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.zip.GZIPInputStream;
 
@@ -186,10 +185,8 @@ public class StringUtils {
   }
 
   public static boolean saveToFile(File file, String text) {
-    try {
-      PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(file.toPath(), UTF_8));
-      outStream.print(text);
-      outStream.close();
+    try (var writer = Files.newBufferedWriter(file.toPath(), UTF_8)) {
+      writer.write(text);
       return true;
     } catch (Exception ex) {
       return false;
