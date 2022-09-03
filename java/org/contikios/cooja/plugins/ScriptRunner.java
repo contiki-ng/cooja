@@ -311,14 +311,6 @@ public class ScriptRunner implements Plugin {
 
   private void activateScript() {
     deactivateScript();
-    if (linkedFile != null) {
-      String script = StringUtils.loadFromFile(linkedFile);
-      if (script == null) {
-        logger.fatal("Failed to load script from: " + linkedFile.getAbsolutePath());
-        return;
-      }
-      updateScript(script);
-    }
 
     /* Create new engine */
     engine = new LogScriptEngine(simulation);
