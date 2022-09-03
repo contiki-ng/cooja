@@ -134,21 +134,6 @@ public class ScriptRunner implements Plugin {
 
     frame.setJMenuBar(menuBar);
 
-    /* Example scripts */
-    final JMenu examplesMenu = new JMenu("Load example script");
-    for (int i=0; i < EXAMPLE_SCRIPTS.length; i += 2) {
-      final String file = EXAMPLE_SCRIPTS[i];
-      JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
-      exampleItem.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          updateScript(loadScript(file));
-        }
-      });
-      examplesMenu.add(exampleItem);
-    }
-    fileMenu.add(examplesMenu);
-
     /* Script area */
     frame.setLayout(new BorderLayout());
     codeEditor = new JEditorPane();
@@ -164,6 +149,21 @@ public class ScriptRunner implements Plugin {
     logTextArea.setMargin(new Insets(5,5,5,5));
     logTextArea.setEditable(true);
     logTextArea.setCursor(null);
+
+    /* Example scripts */
+    final JMenu examplesMenu = new JMenu("Load example script");
+    for (int i=0; i < EXAMPLE_SCRIPTS.length; i += 2) {
+      final String file = EXAMPLE_SCRIPTS[i];
+      JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
+      exampleItem.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          updateScript(loadScript(file));
+        }
+      });
+      examplesMenu.add(exampleItem);
+    }
+    fileMenu.add(examplesMenu);
 
     final JCheckBoxMenuItem activateMenuItem = new JCheckBoxMenuItem("Activate");
     activateMenuItem.addActionListener(new ActionListener() {
