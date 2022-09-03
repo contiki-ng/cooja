@@ -337,9 +337,7 @@ public class ScriptRunner implements Plugin {
 
     if (logWriter != null) {
       try {
-        logWriter.write(
-                "Test ended at simulation time: " +
-                        (simulation!=null?simulation.getSimulationTime():"?") + "\n");
+        logWriter.write("Test ended at simulation time: " + simulation.getSimulationTime() + "\n");
         logWriter.flush();
         logWriter.close();
       } catch (IOException e) {
