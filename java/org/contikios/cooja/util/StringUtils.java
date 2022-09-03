@@ -35,7 +35,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.zip.GZIPInputStream;
 
@@ -55,7 +54,7 @@ public class StringUtils {
   }
 
   public static String toHex(byte data) {
-      return String.valueOf(HEX[(data >> 4) & 0xf]) + HEX[data & 0xf];
+      return new String(new char[] { HEX[(data >> 4) & 0xf],  HEX[data & 0xf] });
   }
   
   public static String toHex(byte[] data) {
@@ -109,7 +108,7 @@ public class StringUtils {
     }
     return bin;
   }
-  
+
   public static String hexDump(byte[] data, int groupsPerLine, int bytesPerGroup) {
     if (bytesPerGroup <= 0) {
       throw new IllegalArgumentException("0 bytes per group");
@@ -169,11 +168,11 @@ public class StringUtils {
     if (file == null) {
       return null;
     }
-    StringBuilder sb = new StringBuilder();
 
     try (var reader = new InputStreamReader(file.getName().endsWith(".gz")
             ? new GZIPInputStream(new FileInputStream(file))
             : new FileInputStream(file), UTF_8)) {
+      StringBuilder sb = new StringBuilder(4096);
       char[] buf = new char[4096];
       int read;
       while ((read = reader.read(buf)) > 0) {
@@ -181,19 +180,13 @@ public class StringUtils {
       }
       return sb.toString();
     } catch (IOException e) {
-      e.printStackTrace();
-      if (sb.length() > 0) {
-        return sb.toString();
-      }
+      return null;
     }
-    return null;
   }
-  
+
   public static boolean saveToFile(File file, String text) {
-    try {
-      PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(file.toPath(), UTF_8));
-      outStream.print(text);
-      outStream.close();
+    try (var writer = Files.newBufferedWriter(file.toPath(), UTF_8)) {
+      writer.write(text);
       return true;
     } catch (Exception ex) {
       return false;
