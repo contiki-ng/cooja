@@ -93,13 +93,6 @@ public class MyDummyPlugin extends VisPlugin {
     textField = new JTextField("enter text to save");
     add(BorderLayout.SOUTH, textField);
 
-    /* Register as millisecond observer: print time every millisecond */
-    simulation.addMillisecondObserver(msObserver = new Observer() {
-      public void update(Observable obs, Object obj) {
-        logger.info("Millisecond observer: simulation time is now: " + sim.getSimulationTimeMillis() + " ms");
-      }
-    });
-
     /* Register self-repeating event in simulation thread */
     simulation.invokeSimulationThread(new Runnable() {
       public void run() {
@@ -122,9 +115,6 @@ public class MyDummyPlugin extends VisPlugin {
 
   public void closePlugin() {
     /* Clean up plugin resources */
-    logger.info("Deleting millisecond observer");
-    sim.deleteMillisecondObserver(msObserver);
-
     logger.info("Unschedule repeat event");
     repeatEvent.remove();
   }

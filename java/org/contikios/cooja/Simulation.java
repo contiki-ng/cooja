@@ -101,15 +101,6 @@ public class Simulation extends Observable implements Runnable {
 
   private final SafeRandom randomGenerator;
 
-  private boolean hasMillisecondObservers = false;
-  private final MillisecondObservable millisecondObservable = new MillisecondObservable();
-  private static class MillisecondObservable extends Observable {
-    private void newMillisecond(long time) {
-      setChanged();
-      notifyObservers(time);
-    }
-  }
-
   /* Event queue */
   private final EventQueue eventQueue = new EventQueue();
 
@@ -145,40 +136,6 @@ public class Simulation extends Observable implements Runnable {
       }
       r.run();
     }
-  }
-
-  /**
-   * Add millisecond observer.
-   * This observer is notified once every simulated millisecond.
-   *
-   * @see #deleteMillisecondObserver(Observer)
-   * @param newObserver Observer
-   */
-  public void addMillisecondObserver(Observer newObserver) {
-    millisecondObservable.addObserver(newObserver);
-    hasMillisecondObservers = true;
-
-    invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        if (!millisecondEvent.isScheduled()) {
-          scheduleEvent(
-              millisecondEvent,
-              currentSimulationTime - (currentSimulationTime % MILLISECOND) + MILLISECOND);
-        }
-      }
-    });
-  }
-
-  /**
-   * Delete millisecond observer.
-   *
-   * @see #addMillisecondObserver(Observer)
-   * @param observer Observer to delete
-   */
-  public void deleteMillisecondObserver(Observer observer) {
-    millisecondObservable.deleteObserver(observer);
-    hasMillisecondObservers = millisecondObservable.countObservers() > 0;
   }
 
   /**
@@ -245,22 +202,6 @@ public class Simulation extends Observable implements Runnable {
     @Override
     public String toString() {
       return "DELAY";
-    }
-  };
-
-  private final TimeEvent millisecondEvent = new TimeEvent() {
-    @Override
-    public void execute(long t) {
-      if (!hasMillisecondObservers) {
-        return;
-      }
-
-      millisecondObservable.newMillisecond(getSimulationTime());
-      scheduleEvent(this, t+MILLISECOND);
-    }
-    @Override
-    public String toString() {
-      return "MILLISECOND: " + millisecondObservable.countObservers();
     }
   };
 
