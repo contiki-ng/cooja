@@ -251,31 +251,34 @@ public class ScriptRunner implements Plugin {
   public void startPlugin() {
   }
 
-  public void setLinkFile(File source) {
-    linkedFile = source;
-    String script = source == null ? "" : StringUtils.loadFromFile(linkedFile);
-    if (script != null) {
-      updateScript(script);
-    }
-    if (!Cooja.isVisualized()) {
-      return;
-    }
-
-    if (source == null) {
+  public void removeLinkFile() {
+    linkedFile = null;
+    updateScript("");
+    if (Cooja.isVisualized()) {
       if (actionLinkFile != null) {
         actionLinkFile.setMenuText("Link script to disk file");
         actionLinkFile.putValue("JavascriptSource", null);
       }
       codeEditor.setEditable(true);
-    } else {
+      updateTitle();
+    }
+  }
+
+  public void setLinkFile(File source) {
+    linkedFile = source;
+    String script = StringUtils.loadFromFile(linkedFile);
+    if (script != null) {
+      updateScript(script);
+    }
+    if (Cooja.isVisualized()) {
       Cooja.setExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", source.getAbsolutePath());
       if (actionLinkFile != null) {
         actionLinkFile.setMenuText("Unlink script: " + source.getName());
         actionLinkFile.putValue("JavascriptSource", source);
       }
       codeEditor.setEditable(false);
+      updateTitle();
     }
-    updateTitle();
   }
 
   public void setScriptActive(boolean active) {
@@ -494,7 +497,7 @@ public class ScriptRunner implements Plugin {
       File currentSource = (File) action.getValue("JavascriptSource");
 
       if (currentSource != null) {
-        scriptRunner.setLinkFile(null);
+        scriptRunner.removeLinkFile();
         return;
       }
 
