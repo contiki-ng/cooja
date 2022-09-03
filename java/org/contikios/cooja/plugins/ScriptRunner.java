@@ -333,9 +333,7 @@ public class ScriptRunner implements Plugin {
 
   private void deactivateScript() {
     activated = false;
-    if (engine != null) {
-      engine.deactivateScript();
-    }
+    engine.deactivateScript();
 
     if (logWriter != null) {
       try {
