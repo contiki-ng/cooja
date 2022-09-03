@@ -36,7 +36,6 @@ import static java.nio.file.StandardOpenOption.WRITE;
 
 import de.sciss.syntaxpane.DefaultSyntaxKit;
 import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
-import de.sciss.syntaxpane.actions.ScriptRunnerAction;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -164,9 +163,8 @@ public class ScriptRunner implements Plugin {
     codeEditor.setContentType("text/javascript");
     if (codeEditor.getEditorKit() instanceof DefaultSyntaxKit) {
       DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
-      kit.setProperty("PopupMenu", "copy-to-clipboard,-,find,find-next,goto-line,-,linkfile");
+      kit.setProperty(DefaultSyntaxKit.CONFIG_MENU, "copy-to-clipboard,-,find,find-next,goto-line,-,linkfile");
       kit.setProperty("Action.linkfile", JSyntaxLinkFile.class.getName());
-      kit.setProperty("Action.execute-script", ScriptRunnerAction.class.getName());
       kit.install(codeEditor);
     }
 
