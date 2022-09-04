@@ -116,7 +116,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   @Override
   public String getDefaultCompileCommands(final File source) {
-    if (moteType == null || source == null || !source.exists()) {
+    if (source == null || !source.exists()) {
       return ""; // Not ready to compile yet.
     }
 
