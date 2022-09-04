@@ -323,12 +323,6 @@ public class ContikiMoteType implements MoteType {
           throw newException;
         }
       }
-
-      /* Make sure compiled firmware exists */
-      if (getContikiFirmwareFile() == null
-              || !getContikiFirmwareFile().exists()) {
-        throw new MoteTypeCreationException("Contiki firmware file does not exist: " + getContikiFirmwareFile());
-      }
     }
 
     Path tmpDir;
