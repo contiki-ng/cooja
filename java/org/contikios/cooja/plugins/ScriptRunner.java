@@ -153,8 +153,7 @@ public class ScriptRunner implements Plugin {
 
     /* Script area */
     frame.setLayout(new BorderLayout());
-    codeEditor = new JEditorPane();
-    codeEditor.setContentType("text/javascript");
+    codeEditor = newEditor();
     if (codeEditor.getEditorKit() instanceof DefaultSyntaxKit) {
       DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
       kit.setProperty(DefaultSyntaxKit.CONFIG_MENU, "copy-to-clipboard,-,find,find-next,goto-line,-,linkfile");
@@ -410,6 +409,13 @@ public class ScriptRunner implements Plugin {
       title += "*active*";
     }
     frame.setTitle(title);
+  }
+
+  /** Make a new code editor. */
+  private JEditorPane newEditor() {
+    var editor = new JEditorPane();
+    editor.setContentType("text/javascript");
+    return editor;
   }
 
   private void updateScript(String script) {
