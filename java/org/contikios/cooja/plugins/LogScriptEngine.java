@@ -218,14 +218,16 @@ public class LogScriptEngine {
     scriptActive = true;
 
     if (semaphoreScript != null) {
-      logger.warn("Semaphores were not reset correctly");
+      logger.fatal("semaphoreScript was not reset correctly");
       semaphoreScript.release(100);
       semaphoreScript = null;
+      throw new RuntimeException("semaphoreScript was not reset correctly");
     }
     if (semaphoreSim != null) {
-      logger.warn("Semaphores were not reset correctly");
+      logger.fatal("semaphoreSim was not reset correctly");
       semaphoreSim.release(100);
       semaphoreSim = null;
+      throw new RuntimeException("semaphoreSim was not reset correctly");
     }
     scriptThread = null;
 
