@@ -414,7 +414,7 @@ public class Cooja extends Observable {
       String[] arr = searchProjectDirs.split(";");
       for (String d : arr) {
         File searchDir = restorePortablePath(new File(d));
-        File[] projects = COOJAProject.sarchProjects(searchDir, 3);
+        File[] projects = COOJAProject.searchProjects(searchDir, 3);
         if(projects == null) continue;
         for(File p : projects){
           currentProjects.add(new COOJAProject(p));

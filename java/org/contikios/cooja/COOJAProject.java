@@ -43,13 +43,8 @@ import org.apache.logging.log4j.LogManager;
  */
 public class COOJAProject {
 	private static final Logger logger = LogManager.getLogger(COOJAProject.class);
-	
-	
-	public static File[] sarchProjects(File folder){
-		return sarchProjects(folder, 3);
-	}
-	
-	public static File[] sarchProjects(File folder, int depth){
+
+	public static File[] searchProjects(File folder, int depth){
 		if(depth == 0){
 			return null;
 		}
@@ -57,14 +52,14 @@ public class COOJAProject {
 		ArrayList<File> dirs = new ArrayList<>();
 		
 		if(!folder.isDirectory()){
-			logger.warn("Project directorys: " + folder.getPath() + "is not a Folder" );
+			logger.warn("Project directories: " + folder.getPath() + " is not a folder" );
 			return null;
 		}
 		File[] files = folder.listFiles();
 		for(File subf : files){
 			if(subf.getName().charAt(0) == '.') continue;
 			if(subf.isDirectory()){
-				File[] newf = sarchProjects(subf, depth);
+				File[] newf = searchProjects(subf, depth);
 				if(newf != null){
 					Collections.addAll(dirs, newf);
 				}
@@ -73,7 +68,7 @@ public class COOJAProject {
 				try{
 					dirs.add(folder);
 				} catch(Exception e){
-					logger.error("Somthing odd happend", e);
+					logger.error("Something odd happened", e);
 				}
 			}
 		}
