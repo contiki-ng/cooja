@@ -44,7 +44,7 @@ import org.apache.logging.log4j.LogManager;
 public class COOJAProject {
 	private static final Logger logger = LogManager.getLogger(COOJAProject.class);
 
-	public static File[] sarchProjects(File folder, int depth){
+	public static File[] searchProjects(File folder, int depth){
 		if(depth == 0){
 			return null;
 		}
@@ -59,7 +59,7 @@ public class COOJAProject {
 		for(File subf : files){
 			if(subf.getName().charAt(0) == '.') continue;
 			if(subf.isDirectory()){
-				File[] newf = sarchProjects(subf, depth);
+				File[] newf = searchProjects(subf, depth);
 				if(newf != null){
 					Collections.addAll(dirs, newf);
 				}
