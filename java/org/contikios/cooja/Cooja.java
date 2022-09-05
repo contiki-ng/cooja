@@ -368,8 +368,8 @@ public class Cooja extends Observable {
    * @param vis          True if running in visual mode
    */
   public static Cooja makeCooja(final String logDirectory, final boolean vis) {
-    assert !java.awt.EventQueue.isDispatchThread() : "Call from regular context";
     if (vis) {
+      assert !java.awt.EventQueue.isDispatchThread() : "Call from regular context";
       return new RunnableInEDT<Cooja>() {
         @Override
         public Cooja work() {
