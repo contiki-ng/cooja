@@ -43,12 +43,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class COOJAProject {
 	private static final Logger logger = LogManager.getLogger(COOJAProject.class);
-	
-	
-	public static File[] sarchProjects(File folder){
-		return sarchProjects(folder, 3);
-	}
-	
+
 	public static File[] sarchProjects(File folder, int depth){
 		if(depth == 0){
 			return null;
