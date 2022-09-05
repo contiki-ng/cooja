@@ -196,41 +196,6 @@ public class Cooja extends Observable {
   private static JFrame frame = null;
   private static final Logger logger = LogManager.getLogger(Cooja.class);
 
-  /**
-   * External tools configuration.
-   */
-  public static final String EXTERNAL_TOOLS_SETTINGS_FILENAME = "/external_tools.config";
-
-  /**
-   * External tools default Win32 settings filename.
-   */
-  public static final String EXTERNAL_TOOLS_WIN32_SETTINGS_FILENAME = "/external_tools_win32.config";
-
-  /**
-   * External tools default Mac OS X settings filename.
-   */
-  public static final String EXTERNAL_TOOLS_MACOSX_SETTINGS_FILENAME = "/external_tools_macosx.config";
-
-  /**
-   * External tools default FreeBSD settings filename.
-   */
-  public static final String EXTERNAL_TOOLS_FREEBSD_SETTINGS_FILENAME = "/external_tools_freebsd.config";
-
-  /**
-   * External tools default Linux/Unix settings filename.
-   */
-  public static final String EXTERNAL_TOOLS_LINUX_SETTINGS_FILENAME = "/external_tools_linux.config";
-
-  /**
-   * External tools default Linux/Unix settings filename for 64-bit architectures.
-   * Tested on Intel 64-bit Gentoo Linux.
-   */
-  public static final String EXTERNAL_TOOLS_LINUX_64_SETTINGS_FILENAME = "/external_tools_linux_64.config";
-
-  /**
-   * External tools user settings filename.
-   */
-  public static final String EXTERNAL_TOOLS_USER_SETTINGS_FILENAME = ".cooja.user.properties";
   public static File externalToolsUserSettingsFile = null;
   private static boolean externalToolsUserSettingsFileReadOnly = false;
 
@@ -2795,33 +2760,35 @@ public class Cooja extends Observable {
    * Load external tools settings from default file.
    */
   public static void loadExternalToolsDefaultSettings() {
+    final var toolsConfigFileName = "/external_tools.config";
     Properties settings = new Properties();
-    try (var in = Cooja.class.getResourceAsStream(EXTERNAL_TOOLS_SETTINGS_FILENAME)) {
+    try (var in = Cooja.class.getResourceAsStream(toolsConfigFileName)) {
       if (in == null) {
         throw new MissingResourceException(
-                "Could not find " + EXTERNAL_TOOLS_SETTINGS_FILENAME + ", jar file seems broken", "Cooja", "");
+                "Could not find " + toolsConfigFileName + ", jar file seems broken", "Cooja", "");
       }
       settings.load(in);
     } catch (IOException e) {
       throw new MissingResourceException(e.getMessage(), "Cooja", "");
     }
 
+    final var toolsLinux64ConfigFileName = "/external_tools_linux_64.config";
     String osName = System.getProperty("os.name").toLowerCase();
     String filename;
     if (osName.startsWith("win")) {
-      filename = Cooja.EXTERNAL_TOOLS_WIN32_SETTINGS_FILENAME;
+      filename = "/external_tools_win32.config";
     } else if (osName.startsWith("mac os x")) {
-      filename = Cooja.EXTERNAL_TOOLS_MACOSX_SETTINGS_FILENAME;
+      filename = "/external_tools_macosx.config";
     } else if (osName.startsWith("freebsd")) {
-      filename = Cooja.EXTERNAL_TOOLS_FREEBSD_SETTINGS_FILENAME;
+      filename = "/external_tools_freebsd.config";
     } else if (osName.startsWith("linux")) {
-      filename = Cooja.EXTERNAL_TOOLS_LINUX_SETTINGS_FILENAME;
+      filename = "/external_tools_linux.config";
       String osArch = System.getProperty("os.arch").toLowerCase();
       if (osArch.startsWith("amd64")) {
-        filename = Cooja.EXTERNAL_TOOLS_LINUX_64_SETTINGS_FILENAME;
+        filename = toolsLinux64ConfigFileName;
       }
     } else {
-      filename = Cooja.EXTERNAL_TOOLS_LINUX_64_SETTINGS_FILENAME;
+      filename = toolsLinux64ConfigFileName;
       logger.warn("Unknown system: " + osName + ", using default: " + filename);
     }
 
@@ -3077,7 +3044,7 @@ public class Cooja extends Observable {
   public static void go(Main options) {
     externalToolsUserSettingsFileReadOnly = options.externalToolsConfig != null;
     if (options.externalToolsConfig == null) {
-      externalToolsUserSettingsFile = new File(System.getProperty("user.home"), EXTERNAL_TOOLS_USER_SETTINGS_FILENAME);
+      externalToolsUserSettingsFile = new File(System.getProperty("user.home"), ".cooja.user.properties");
     } else {
       externalToolsUserSettingsFile = new File(options.externalToolsConfig);
     }
