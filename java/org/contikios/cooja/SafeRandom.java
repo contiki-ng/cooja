@@ -70,19 +70,13 @@ public class SafeRandom extends Random {
     throw new RuntimeException("A random-function was not called from the simulation thread. This can break things!");
     
   }
-  
+
   public SafeRandom(Simulation sim) {
     // assertSimThread is called by the super-constructor.
     super();
     this.sim = sim;
   }
-  
-  public SafeRandom(Simulation sim, long seed) {
-    // assertSimThread is called by the super-constructor.
-    super(seed);
-    this.sim = sim;
-  }
-  
+
   @Override
   synchronized public void setSeed(long seed) {
     assertSimThread();
