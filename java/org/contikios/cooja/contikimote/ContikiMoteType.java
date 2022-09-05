@@ -61,10 +61,27 @@ import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
+import org.contikios.cooja.contikimote.interfaces.ContikiBeeper;
+import org.contikios.cooja.contikimote.interfaces.ContikiButton;
+import org.contikios.cooja.contikimote.interfaces.ContikiCFS;
+import org.contikios.cooja.contikimote.interfaces.ContikiClock;
+import org.contikios.cooja.contikimote.interfaces.ContikiEEPROM;
+import org.contikios.cooja.contikimote.interfaces.ContikiIPAddress;
+import org.contikios.cooja.contikimote.interfaces.ContikiLED;
+import org.contikios.cooja.contikimote.interfaces.ContikiMoteID;
+import org.contikios.cooja.contikimote.interfaces.ContikiPIR;
+import org.contikios.cooja.contikimote.interfaces.ContikiRS232;
+import org.contikios.cooja.contikimote.interfaces.ContikiRadio;
+import org.contikios.cooja.contikimote.interfaces.ContikiVib;
 import org.contikios.cooja.dialogs.CompileContiki;
 import org.contikios.cooja.dialogs.ContikiMoteCompileDialog;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
+import org.contikios.cooja.interfaces.Battery;
+import org.contikios.cooja.interfaces.Mote2MoteRelations;
+import org.contikios.cooja.interfaces.MoteAttributes;
+import org.contikios.cooja.interfaces.Position;
+import org.contikios.cooja.interfaces.RimeAddress;
 import org.contikios.cooja.mote.memory.ArrayMemory;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
@@ -107,6 +124,8 @@ public class ContikiMoteType implements MoteType {
    * Random generator for generating a unique mote ID.
    */
   private static final Random rnd = new Random();
+
+  private final Cooja gui;
 
   /**
    * Communication stacks in Contiki.
@@ -188,7 +207,8 @@ public class ContikiMoteType implements MoteType {
    * Creates a new uninitialized Cooja mote type. This mote type needs to load
    * a library file and parse a map file before it can be used.
    */
-  public ContikiMoteType() {
+  public ContikiMoteType(Cooja gui) {
+    this.gui = gui;
     javaClassName = CoreComm.getAvailableClassName();
   }
 
@@ -345,6 +365,38 @@ public class ContikiMoteType implements MoteType {
     return true;
   }
 
+  public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
+    String[] ifNames = getConfig().getStringArrayValue(ContikiMoteType.class, "MOTE_INTERFACES");
+    ArrayList<Class<? extends MoteInterface>> classes = new ArrayList<>();
+
+    classes.add(Position.class);
+    classes.add(Battery.class);
+    classes.add(ContikiVib.class);
+    classes.add(ContikiMoteID.class);
+    classes.add(ContikiRS232.class);
+    classes.add(ContikiBeeper.class);
+    classes.add(RimeAddress.class);
+    classes.add(ContikiIPAddress.class);
+    classes.add(ContikiRadio.class);
+    classes.add(ContikiButton.class);
+    classes.add(ContikiPIR.class);
+    classes.add(ContikiClock.class);
+    classes.add(ContikiLED.class);
+    classes.add(ContikiCFS.class);
+    classes.add(ContikiEEPROM.class);
+    classes.add(Mote2MoteRelations.class);
+    classes.add(MoteAttributes.class);
+    // Load mote interface classes.
+    for (String ifName : ifNames) {
+      var ifClass = gui.tryLoadClass(this, MoteInterface.class, ifName);
+      if (ifClass == null) {
+        logger.warn("Failed to load mote interface class: " + ifName);
+        continue;
+      }
+      classes.add(ifClass);
+    }
+    return classes.toArray(new Class[0]);
+  }
   /**
    * Returns make target based on source file.
    *

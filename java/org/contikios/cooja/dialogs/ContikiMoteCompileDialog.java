@@ -37,7 +37,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 
 import java.util.HashSet;
 import javax.swing.BorderFactory;
@@ -59,27 +58,9 @@ import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.contikimote.ContikiMoteType.NetworkStack;
-import org.contikios.cooja.contikimote.interfaces.ContikiBeeper;
-import org.contikios.cooja.contikimote.interfaces.ContikiButton;
-import org.contikios.cooja.contikimote.interfaces.ContikiCFS;
-import org.contikios.cooja.contikimote.interfaces.ContikiClock;
-import org.contikios.cooja.contikimote.interfaces.ContikiEEPROM;
-import org.contikios.cooja.contikimote.interfaces.ContikiIPAddress;
-import org.contikios.cooja.contikimote.interfaces.ContikiLED;
-import org.contikios.cooja.contikimote.interfaces.ContikiMoteID;
-import org.contikios.cooja.contikimote.interfaces.ContikiPIR;
-import org.contikios.cooja.contikimote.interfaces.ContikiRS232;
-import org.contikios.cooja.contikimote.interfaces.ContikiRadio;
-import org.contikios.cooja.contikimote.interfaces.ContikiVib;
-import org.contikios.cooja.interfaces.Battery;
-import org.contikios.cooja.interfaces.Mote2MoteRelations;
-import org.contikios.cooja.interfaces.MoteAttributes;
-import org.contikios.cooja.interfaces.Position;
-import org.contikios.cooja.interfaces.RimeAddress;
 
 /**
  * Contiki Mote Type compile dialog.
@@ -167,41 +148,9 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   @Override
   public Class<? extends MoteInterface>[] getAllMoteInterfaces() {
-	  ProjectConfig projectConfig = moteType.getConfig();
-	  String[] intfNames = projectConfig.getStringArrayValue(ContikiMoteType.class, "MOTE_INTERFACES");
-	  ArrayList<Class<? extends MoteInterface>> classes = new ArrayList<>();
-
-    classes.add(Position.class);
-    classes.add(Battery.class);
-    classes.add(ContikiVib.class);
-    classes.add(ContikiMoteID.class);
-    classes.add(ContikiRS232.class);
-    classes.add(ContikiBeeper.class);
-    classes.add(RimeAddress.class);
-    classes.add(ContikiIPAddress.class);
-    classes.add(ContikiRadio.class);
-    classes.add(ContikiButton.class);
-    classes.add(ContikiPIR.class);
-    classes.add(ContikiClock.class);
-    classes.add(ContikiLED.class);
-    classes.add(ContikiCFS.class);
-    classes.add(ContikiEEPROM.class);
-    classes.add(Mote2MoteRelations.class);
-    classes.add(MoteAttributes.class);
-	  /* Load mote interface classes */
-	  for (String intfName : intfNames) {
-		  Class<? extends MoteInterface> intfClass =
-				  gui.tryLoadClass(this, MoteInterface.class, intfName);
-
-		  if (intfClass == null) {
-			  logger.warn("Failed to load mote interface class: " + intfName);
-			  continue;
-		  }
-
-		  classes.add(intfClass);
-	  }
-	  return classes.toArray(new Class[0]);
+    return ((ContikiMoteType)moteType).getAllMoteInterfaceClasses();
   }
+
   @Override
   public Class<? extends MoteInterface>[] getDefaultMoteInterfaces() {
 	  return getAllMoteInterfaces();
