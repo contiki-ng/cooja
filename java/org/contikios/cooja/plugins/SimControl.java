@@ -96,23 +96,9 @@ public class SimControl extends VisPlugin implements HasQuickHelp {
 
     /* Menus */
     JMenuBar menuBar = new JMenuBar();
-    JMenu runMenu = new JMenu("Run");
     JMenu speedMenu = new JMenu("Speed limit");
-
-    menuBar.add(runMenu);
     menuBar.add(speedMenu);
     this.setJMenuBar(menuBar);
-
-    runMenu.add(new JMenuItem(startAction));
-    runMenu.add(new JMenuItem(stopAction));
-    runMenu.add(new JMenuItem(stepAction));
-    var reloadAction = new AbstractAction("Reload") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        simulation.getCooja().reloadCurrentSimulation();
-      }
-    };
-    runMenu.add(new JMenuItem(reloadAction));
 
     ButtonGroup speedlimitButtonGroup = new ButtonGroup();
     JRadioButtonMenuItem limitMenuItemNo = new JRadioButtonMenuItem(
@@ -169,7 +155,12 @@ public class SimControl extends VisPlugin implements HasQuickHelp {
     smallPanel.add(startButton = new JButton(startAction));
     smallPanel.add(stopButton = new JButton(stopAction));
     smallPanel.add(new JButton(stepAction));
-    smallPanel.add(new JButton(reloadAction));
+    smallPanel.add(new JButton(new AbstractAction("Reload") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        simulation.getCooja().reloadCurrentSimulation();
+      }
+    }));
 
     smallPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
     controlPanel.add(smallPanel);
