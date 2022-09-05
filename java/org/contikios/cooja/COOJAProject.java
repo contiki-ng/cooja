@@ -52,7 +52,7 @@ public class COOJAProject {
 		ArrayList<File> dirs = new ArrayList<>();
 		
 		if(!folder.isDirectory()){
-			logger.warn("Project directorys: " + folder.getPath() + "is not a Folder" );
+			logger.warn("Project directories: " + folder.getPath() + " is not a folder" );
 			return null;
 		}
 		File[] files = folder.listFiles();
@@ -68,7 +68,7 @@ public class COOJAProject {
 				try{
 					dirs.add(folder);
 				} catch(Exception e){
-					logger.error("Somthing odd happend", e);
+					logger.error("Something odd happened", e);
 				}
 			}
 		}
