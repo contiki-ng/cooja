@@ -94,14 +94,6 @@ public class MspCompileDialog extends AbstractCompileDialog {
   }
 
   @Override
-  public String getDefaultCompileCommands(File source) {
-    /* TODO Split into String[] */
-    return
-    Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-    getExpectedFirmwareFile(source).getName() + " TARGET=" + target;
-  }
-
-  @Override
   public File getExpectedFirmwareFile(File source) {
     return ((MspMoteType)moteType).getExpectedFirmwareFile(source);
   }

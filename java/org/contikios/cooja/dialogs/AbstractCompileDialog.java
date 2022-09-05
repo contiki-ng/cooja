@@ -833,7 +833,10 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @param source Contiki source
    * @return Suggested compile commands for compiling source
    */
-  public abstract String getDefaultCompileCommands(File source);
+  public String getDefaultCompileCommands(File source) {
+    return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
+           getExpectedFirmwareFile(source).getName() + " TARGET=" + getTargetName();
+  }
 
   /**
    * @param source Contiki source
