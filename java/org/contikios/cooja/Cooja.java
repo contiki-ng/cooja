@@ -215,7 +215,7 @@ public class Cooja extends Observable {
   /**
    * File filter only showing saved simulations files (*.csc).
    */
-  public final FileFilter SAVED_SIMULATIONS_FILES;
+  private final FileFilter SAVED_SIMULATIONS_FILES;
 
   // External tools setting names
   public static Properties defaultExternalToolsSettings;
