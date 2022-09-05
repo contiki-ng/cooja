@@ -165,8 +165,6 @@ public class ContikiMoteType implements MoteType {
   private File fileFirmware = null;
   private String compileCommands = null;
 
-  private File mapFile = null; /* Contiki map: build/cooja/mtype1.map */
-
   private final String javaClassName; // Loading Java class name: Lib1.java.
 
   private ArrayList<Class<? extends MoteInterface>> moteInterfacesClasses = null;
@@ -213,7 +211,6 @@ public class ContikiMoteType implements MoteType {
    * @return The compilation environment
    */
   public String[][] configureForCompilation() {
-    mapFile = getMoteFile(".map");
     var sources = new StringBuilder();
     var dirs = new StringBuilder();
     // Check whether Cooja projects include additional sources.
@@ -418,8 +415,9 @@ public class ContikiMoteType implements MoteType {
               Cooja.getExternalToolsSetting("COMMAND_COMMON_END"),
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
     } else {
-      /* Parse map file */
-      if (mapFile == null || !mapFile.exists()) {
+      // Parse map file (build/cooja/mtype1.map).
+      var mapFile = getMoteFile(".map");
+      if (!mapFile.exists()) {
         throw new MoteTypeCreationException("Map file " + mapFile + " could not be found");
       }
       // The map file for 02-ringbufindex.csc is 2779 lines long, add some margin beyond that.
