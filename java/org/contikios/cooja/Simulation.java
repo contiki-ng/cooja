@@ -655,7 +655,7 @@ public class Simulation extends Observable implements Runnable {
             moteType = new DisturberMoteType();
             break;
           case "org.contikios.cooja.contikimote.ContikiMoteType":
-            moteType = new ContikiMoteType();
+            moteType = new ContikiMoteType(getCooja());
             break;
           case "org.contikios.cooja.mspmote.SkyMoteType":
             moteType = new SkyMoteType();
