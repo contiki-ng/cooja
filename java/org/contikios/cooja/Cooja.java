@@ -37,6 +37,8 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -45,6 +47,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -80,6 +84,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultDesktopManager;
 import javax.swing.InputMap;
 import javax.swing.JButton;
@@ -98,14 +103,18 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -145,7 +154,6 @@ import org.contikios.cooja.plugins.Notes;
 import org.contikios.cooja.plugins.PowerTracker;
 import org.contikios.cooja.plugins.RadioLogger;
 import org.contikios.cooja.plugins.ScriptRunner;
-import org.contikios.cooja.plugins.SimControl;
 import org.contikios.cooja.plugins.SimInformation;
 import org.contikios.cooja.plugins.TimeLine;
 import org.contikios.cooja.plugins.VariableWatcher;
@@ -262,6 +270,8 @@ public class Cooja extends Observable {
   private final JMenu menuMoteTypeClasses;
   private final JMenu menuMoteTypes;
 
+  /** Listener for the toolbar. */
+  private ToolbarListener toolbarListener;
   private boolean hasFileHistoryChanged;
 
   private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
@@ -521,6 +531,7 @@ public class Cooja extends Observable {
         }
       }
     }
+    updateProgress(false);
     frame.setVisible(true);
   }
 
@@ -683,6 +694,19 @@ public class Cooja extends Observable {
   }
 
   /**
+   * Updates GUI state based on simulation status.
+   * @param stoppedSimulation True if update was triggered by a stop event.
+   */
+  public void updateProgress(boolean stoppedSimulation) {
+    if (!isVisualized()) {
+      return;
+    }
+    java.awt.EventQueue.invokeLater(() -> {
+      toolbarListener.updateToolbar(stoppedSimulation);
+    });
+  }
+
+  /**
    * Enables/disables menus and menu items depending on whether a simulation is loaded etc.
    */
   void updateGUIComponentState() {
@@ -698,9 +722,198 @@ public class Cooja extends Observable {
     // Mote and mote type menus.
     menuMoteTypeClasses.setEnabled(getSimulation() != null);
     menuMoteTypes.setEnabled(getSimulation() != null);
+    updateProgress(false);
   }
 
   private JMenuBar createMenuBar(JPanel desktop) {
+    // Create simulation control toolbar.
+    var toolBar = new JToolBar("Simulation Control");
+    var startButton = new JToggleButton("Start/Pause");
+    startButton.setText("Start/Pause");
+    startButton.setToolTipText("Start");
+    toolBar.add(startButton);
+    var stepButton = new JButton("Step");
+    stepButton.setToolTipText("Step");
+    toolBar.add(stepButton);
+    var reloadButton = new JButton("Reload");
+    reloadButton.setToolTipText("Reload");
+    toolBar.add(reloadButton);
+    toolBar.addSeparator();
+    toolBar.add(new JLabel("Speed limit:"));
+    var pane = new JPanel(new GridBagLayout());
+    var group = new ButtonGroup();
+    var radioConstraints = new GridBagConstraints();
+    radioConstraints.fill = GridBagConstraints.HORIZONTAL;
+    var slowCrawlSpeedButton = new JRadioButton("0.01X");
+    slowCrawlSpeedButton.setToolTipText("1%");
+    pane.add(slowCrawlSpeedButton, radioConstraints);
+    group.add(slowCrawlSpeedButton);
+    var crawlSpeedButton = new JRadioButton("0.1X");
+    crawlSpeedButton.setToolTipText("10%");
+    pane.add(crawlSpeedButton, radioConstraints);
+    group.add(crawlSpeedButton);
+    var normalSpeedButton = new JRadioButton("1X");
+    normalSpeedButton.setToolTipText("100%");
+    pane.add(normalSpeedButton, radioConstraints);
+    group.add(normalSpeedButton);
+    var doubleSpeedButton = new JRadioButton("2X");
+    doubleSpeedButton.setToolTipText("200%");
+    pane.add(doubleSpeedButton, radioConstraints);
+    group.add(doubleSpeedButton);
+    var superSpeedButton = new JRadioButton("20X");
+    superSpeedButton.setToolTipText("2000%");
+    pane.add(superSpeedButton, radioConstraints);
+    group.add(superSpeedButton);
+    var unlimitedSpeedButton = new JRadioButton("Unlimited");
+    superSpeedButton.setToolTipText("Unlimited");
+    pane.add(unlimitedSpeedButton, radioConstraints);
+    group.add(unlimitedSpeedButton);
+    toolBar.add(pane);
+    toolBar.addSeparator();
+    final var simulationTime = new JLabel("Time:");
+    toolBar.add(simulationTime);
+    toolBar.setMinimumSize(toolBar.getSize());
+    desktop.add(toolBar, BorderLayout.PAGE_START);
+
+    toolbarListener = new ToolbarListener() {
+      private final Timer updateTimer = new Timer(500, e -> {
+        final var sim = getSimulation();
+        simulationTime.setText(getTimeString(sim));
+      });
+
+      @Override
+      public void itemStateChanged(ItemEvent e) {
+        final var sim = getSimulation();
+        // Simulation is null when resetting the state of startButton after closing simulation.
+        if (sim == null) {
+          return;
+        }
+        switch (e.getStateChange()) {
+          case ItemEvent.SELECTED:
+            sim.startSimulation();
+            stepButton.setEnabled(false);
+            break;
+          case ItemEvent.DESELECTED:
+            sim.stopSimulation();
+            stepButton.setEnabled(true);
+            break;
+        }
+        updateToolbar(false);
+      }
+
+      @Override
+      public void updateToolbar(boolean stoppedSimulation) {
+        // Ensure the start button can be pressed if this update was from stopping the simulation.
+        if (stoppedSimulation) {
+          startButton.setSelected(false);
+          updateTimer.stop();
+        }
+        final var sim = getSimulation();
+        simulationTime.setText(getTimeString(sim));
+        var hasSim = sim != null;
+        var state = hasSim && !sim.isRunning() && sim.isRunnable();
+        startButton.setEnabled(hasSim && sim.isRunnable());
+        startButton.setSelected(hasSim && sim.isRunning());
+        stepButton.setEnabled(state);
+        reloadButton.setEnabled(hasSim);
+        slowCrawlSpeedButton.setEnabled(hasSim);
+        crawlSpeedButton.setEnabled(hasSim);
+        normalSpeedButton.setEnabled(hasSim);
+        doubleSpeedButton.setEnabled(hasSim);
+        superSpeedButton.setEnabled(hasSim);
+        unlimitedSpeedButton.setEnabled(hasSim);
+        if (hasSim) {
+          Double speed = sim.getSpeedLimit();
+          if (speed == null) {
+            unlimitedSpeedButton.setSelected(true);
+          } else if (speed == 0.01) {
+            slowCrawlSpeedButton.setSelected(true);
+          } else if (speed == 0.1) {
+            crawlSpeedButton.setSelected(true);
+          } else if (speed == 1.0) {
+            normalSpeedButton.setSelected(true);
+          } else if (speed == 2.0) {
+            doubleSpeedButton.setSelected(true);
+          } else if (speed == 20.0) {
+            superSpeedButton.setSelected(true);
+          }
+        } else {
+          startButton.setSelected(false);
+        }
+        // Start timer after updating the UI states.
+        if (hasSim && sim.isRunning() && !stoppedSimulation && !updateTimer.isRunning()) {
+          updateTimer.start();
+        }
+      }
+      private static final long TIME_SECOND = 1000 * Simulation.MILLISECOND;
+      private static final long TIME_MINUTE = 60 * TIME_SECOND;
+      private static final long TIME_HOUR = 60 * TIME_MINUTE;
+
+      public String getTimeString(Simulation sim) {
+        if (sim == null) {
+          return "Time:";
+        }
+        long t = sim.getSimulationTime();
+        long h = t / TIME_HOUR;
+        t -= (t / TIME_HOUR) * TIME_HOUR;
+        long m = t / TIME_MINUTE;
+        t -= (t / TIME_MINUTE) * TIME_MINUTE;
+        long s = t / TIME_SECOND;
+        t -= (t / TIME_SECOND) * TIME_SECOND;
+        long ms = t / Simulation.MILLISECOND;
+        if (h > 0) {
+          return String.format("Time: %d:%02d:%02d.%03d", h, m, s, ms);
+        }
+        return String.format("Time: %02d:%02d.%03d", m, s, ms);
+      }
+    };
+
+    startButton.addItemListener(toolbarListener);
+    final var buttonAction = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        var source = e.getSource();
+        if (source == stepButton) {
+          getSimulation().stepMillisecondSimulation();
+        } else if (source == reloadButton) {
+          reloadCurrentSimulation();
+        }
+        java.awt.EventQueue.invokeLater(() -> toolbarListener.updateToolbar(source == reloadButton));
+      }
+    };
+    stepButton.addActionListener(buttonAction);
+    reloadButton.addActionListener(buttonAction);
+    final var speedListener = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+          case "0.01X":
+            getSimulation().setSpeedLimit(0.01);
+            break;
+          case "0.1X":
+            getSimulation().setSpeedLimit(0.1);
+            break;
+          case "1X":
+            getSimulation().setSpeedLimit(1.0);
+            break;
+          case "2X":
+            getSimulation().setSpeedLimit(2.0);
+            break;
+          case "20X":
+            getSimulation().setSpeedLimit(20.0);
+            break;
+          case "Unlimited":
+            getSimulation().setSpeedLimit(null);
+            break;
+        }
+      }
+    };
+    slowCrawlSpeedButton.addActionListener(speedListener);
+    crawlSpeedButton.addActionListener(speedListener);
+    normalSpeedButton.addActionListener(speedListener);
+    doubleSpeedButton.addActionListener(speedListener);
+    superSpeedButton.addActionListener(speedListener);
+    unlimitedSpeedButton.addActionListener(speedListener);
     final var newSimulationAction = new GUIAction("New simulation...", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK)) {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -844,8 +1057,6 @@ public class Cooja extends Observable {
       }
     };
 
-    JMenuItem menuItem;
-
     /* Prepare GUI actions */
     guiActions.add(newSimulationAction);
     guiActions.add(closeSimulationAction);
@@ -957,15 +1168,8 @@ public class Cooja extends Observable {
     reloadSimulationMenuItem.add(new JMenuItem(reloadRandomSimulationAction));
     simulationMenu.add(reloadSimulationMenuItem);
 
-    GUIAction guiAction = new StartPluginGUIAction("Control panel...");
-    menuItem = new JMenuItem(guiAction);
-    guiActions.add(guiAction);
-    menuItem.setMnemonic(KeyEvent.VK_C);
-    menuItem.putClientProperty("class", SimControl.class);
-    simulationMenu.add(menuItem);
-
-    guiAction = new StartPluginGUIAction("Information...");
-    menuItem = new JMenuItem(guiAction);
+    var guiAction = new StartPluginGUIAction("Information...");
+    var menuItem = new JMenuItem(guiAction);
     guiActions.add(guiAction);
     menuItem.setMnemonic(KeyEvent.VK_I);
     menuItem.putClientProperty("class", SimInformation.class);
@@ -1154,9 +1358,6 @@ public class Cooja extends Observable {
         /* Simulation plugins */
         boolean hasSimPlugins = false;
         for (Class<? extends Plugin> pluginClass: pluginClasses) {
-          if (pluginClass.equals(SimControl.class)) {
-            continue; /* ignore */
-          }
           if (pluginClass.equals(SimInformation.class)) {
             continue; /* ignore */
           }
@@ -1521,7 +1722,6 @@ public class Cooja extends Observable {
     }
 
     // Register plugins
-    registerPlugin(SimControl.class);
     registerPlugin(SimInformation.class);
     registerPlugin(MoteTypeInformation.class);
     registerPlugin(Visualizer.class);
@@ -2280,6 +2480,7 @@ public class Cooja extends Observable {
 
       @Override
       protected void done() {
+        updateProgress(false);
         // Optionally show compilation warnings.
         var hideWarn = Boolean.parseBoolean(Cooja.getExternalToolsSetting("HIDE_WARNINGS", "false"));
         if (quick && !hideWarn && !PROGRESS_WARNINGS.isEmpty()) {
@@ -3287,6 +3488,11 @@ public class Cooja extends Observable {
         pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
       }
 
+      // Skip SimControl, functionality is now in Cooja class.
+      if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName)) {
+        continue;
+      }
+
       /* Backwards compatibility: old visualizers were replaced */
       if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
               pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
@@ -4013,6 +4219,11 @@ public class Cooja extends Observable {
     public boolean shouldBeEnabled() {
       return getSimulation() != null;
     }
+  }
+
+  private interface ToolbarListener extends ItemListener {
+    /** Updates buttons according to simulation status. */
+    void updateToolbar(boolean stoppedSimulation);
   }
 
   private static final class ShutdownHandler extends Thread {
