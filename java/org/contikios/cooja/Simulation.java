@@ -1121,7 +1121,12 @@ public class Simulation extends Observable implements Runnable {
    * @return True if simulation is runnable
    */
   public boolean isRunnable() {
-    return isRunning || hasPollRequests || !eventQueue.isEmpty();
+    if (isRunning || !eventQueue.isEmpty()) {
+      return true;
+    }
+    synchronized (pollRequests) {
+      return hasPollRequests;
+    }
   }
 
   /**
