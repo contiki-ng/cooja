@@ -32,7 +32,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
-import java.util.Observer;
 import java.util.Random;
 
 import javax.swing.JOptionPane;
@@ -229,14 +228,9 @@ public class Simulation extends Observable implements Runnable {
 
         /* Handle one simulation event, and update simulation time */
         nextEvent = eventQueue.popFirst();
-        if (nextEvent == null) {
-          throw new RuntimeException("No more events");
-        }
-        if (nextEvent.time < currentSimulationTime) {
-          throw new RuntimeException("Next event is in the past: " + nextEvent.time + " < " + currentSimulationTime + ": " + nextEvent.event);
-        }
+        assert nextEvent != null : "Ran out of events in eventQueue";
+        assert nextEvent.time >= currentSimulationTime : "Event from the past";
         currentSimulationTime = nextEvent.time;
-        /*logger.info("Executing event #" + EVENT_COUNTER++ + " @ " + currentSimulationTime + ": " + nextEvent);*/
         nextEvent.event.execute(currentSimulationTime);
 
         if (stopSimulation) {
