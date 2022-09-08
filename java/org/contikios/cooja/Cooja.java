@@ -304,9 +304,7 @@ public class Cooja extends Observable {
   private final ScnObservable moteHighlightObservable;
 
   private final ScnObservable moteRelationObservable;
-
   private final JTextPane quickHelpTextPane;
-  private final GUIAction showQuickHelpAction;
   private final JScrollPane quickHelpScroll;
 
   /**
@@ -388,7 +386,6 @@ public class Cooja extends Observable {
     if (!vis) {
       SAVED_SIMULATIONS_FILES = null;
       myDesktopPane = null;
-      showQuickHelpAction = null;
       quickHelpTextPane = null;
       quickHelpScroll = null;
       guiEventHandler = null;
@@ -463,25 +460,6 @@ public class Cooja extends Observable {
     frame = new JFrame(WINDOW_TITLE);
 
     /* Help panel */
-    showQuickHelpAction = new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (!(e.getSource() instanceof JCheckBoxMenuItem)) {
-          return;
-        }
-        boolean show = ((JCheckBoxMenuItem) e.getSource()).isSelected();
-        quickHelpTextPane.setVisible(show);
-        quickHelpScroll.setVisible(show);
-        setExternalToolsSetting("SHOW_QUICKHELP", Boolean.toString(show));
-        frame.getContentPane().revalidate();
-        updateDesktopSize(getDesktopPane());
-      }
-
-      @Override
-      public boolean shouldBeEnabled() {
-        return true;
-      }
-    };
     quickHelpTextPane = new JTextPane();
     quickHelpTextPane.setContentType("text/html");
     quickHelpTextPane.setEditable(false);
@@ -493,24 +471,6 @@ public class Cooja extends Observable {
         BorderFactory.createEmptyBorder(0, 3, 0, 0)
     ));
     quickHelpScroll.setVisible(false);
-    loadQuickHelp("GETTING_STARTED");
-
-    final boolean showQuickhelp = getExternalToolsSetting("SHOW_QUICKHELP", "true").equalsIgnoreCase("true");
-    if (showQuickhelp) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          JCheckBoxMenuItem checkBox = ((JCheckBoxMenuItem)showQuickHelpAction.getValue("checkbox"));
-          if (checkBox == null) {
-            return;
-          }
-          if (checkBox.isSelected()) {
-            return;
-          }
-          checkBox.doClick();
-        }
-      });
-    }
 
     /* Debugging - Break on repaints outside EDT */
     /*RepaintManager.setCurrentManager(new RepaintManager() {
@@ -898,38 +858,6 @@ public class Cooja extends Observable {
       public boolean shouldBeEnabled() {
         Simulation s = getSimulation();
         return s != null && s.getMotesCount() > 0;
-      }
-    };
-    final var showGettingStartedAction = new GUIAction("Getting started") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        loadQuickHelp("GETTING_STARTED");
-        var checkBox = ((JCheckBoxMenuItem)showQuickHelpAction.getValue("checkbox"));
-        if (checkBox == null || checkBox.isSelected()) {
-          return;
-        }
-        checkBox.doClick();
-      }
-
-      @Override
-      public boolean shouldBeEnabled() {
-        return true;
-      }
-    };
-    final var showKeyboardShortcutsAction = new GUIAction("Keyboard shortcuts") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        loadQuickHelp("KEYBOARD_SHORTCUTS");
-        var checkBox = ((JCheckBoxMenuItem)showQuickHelpAction.getValue("checkbox"));
-        if (checkBox == null || checkBox.isSelected()) {
-          return;
-        }
-        checkBox.doClick();
-      }
-
-      @Override
-      public boolean shouldBeEnabled() {
-        return true;
       }
     };
     final var showBufferSettingsAction = new GUIAction("Buffer sizes...") {
@@ -1330,7 +1258,75 @@ public class Cooja extends Observable {
     settingsMenu.add(new JMenuItem(showBufferSettingsAction));
 
     /* Help */
+    var showQuickHelpAction = new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (!(e.getSource() instanceof JCheckBoxMenuItem)) {
+          return;
+        }
+        boolean show = ((JCheckBoxMenuItem) e.getSource()).isSelected();
+        quickHelpTextPane.setVisible(show);
+        quickHelpScroll.setVisible(show);
+        setExternalToolsSetting("SHOW_QUICKHELP", Boolean.toString(show));
+        frame.getContentPane().revalidate();
+        updateDesktopSize(getDesktopPane());
+      }
+
+      @Override
+      public boolean shouldBeEnabled() {
+        return true;
+      }
+    };
+    loadQuickHelp("GETTING_STARTED");
+    final boolean showQuickhelp = getExternalToolsSetting("SHOW_QUICKHELP", "true").equalsIgnoreCase("true");
+    if (showQuickhelp) {
+      SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+          JCheckBoxMenuItem checkBox = ((JCheckBoxMenuItem)showQuickHelpAction.getValue("checkbox"));
+          if (checkBox == null) {
+            return;
+          }
+          if (checkBox.isSelected()) {
+            return;
+          }
+          checkBox.doClick();
+        }
+      });
+    }
+    final var showGettingStartedAction = new GUIAction("Getting started") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        loadQuickHelp("GETTING_STARTED");
+        var checkBox = ((JCheckBoxMenuItem)showQuickHelpAction.getValue("checkbox"));
+        if (checkBox == null || checkBox.isSelected()) {
+          return;
+        }
+        checkBox.doClick();
+      }
+
+      @Override
+      public boolean shouldBeEnabled() {
+        return true;
+      }
+    };
     helpMenu.add(new JMenuItem(showGettingStartedAction));
+    final var showKeyboardShortcutsAction = new GUIAction("Keyboard shortcuts") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        loadQuickHelp("KEYBOARD_SHORTCUTS");
+        var checkBox = ((JCheckBoxMenuItem)showQuickHelpAction.getValue("checkbox"));
+        if (checkBox == null || checkBox.isSelected()) {
+          return;
+        }
+        checkBox.doClick();
+      }
+
+      @Override
+      public boolean shouldBeEnabled() {
+        return true;
+      }
+    };
     helpMenu.add(new JMenuItem(showKeyboardShortcutsAction));
     JCheckBoxMenuItem checkBox = new JCheckBoxMenuItem(showQuickHelpAction);
     showQuickHelpAction.putValue("checkbox", checkBox);
