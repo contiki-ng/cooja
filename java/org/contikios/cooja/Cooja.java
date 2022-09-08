@@ -775,7 +775,7 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Enables/disables menues and menu items depending on whether a simulation is loaded etc.
+   * Enables/disables menus and menu items depending on whether a simulation is loaded etc.
    */
   void updateGUIComponentState() {
     if (!isVisualized()) {
@@ -787,7 +787,7 @@ public class Cooja extends Observable {
       a.setEnabled(a.shouldBeEnabled());
     }
 
-    /* Mote and mote type menues */
+    // Mote and mote type menus.
     menuMoteTypeClasses.setEnabled(getSimulation() != null);
     menuMoteTypes.setEnabled(getSimulation() != null);
   }
