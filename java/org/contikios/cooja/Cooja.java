@@ -265,8 +265,6 @@ public class Cooja extends Observable {
 
   private Simulation mySimulation;
 
-  protected final GUIEventHandler guiEventHandler;
-
   private final JMenu menuMoteTypeClasses;
   private final JMenu menuMoteTypes;
 
@@ -382,7 +380,6 @@ public class Cooja extends Observable {
       SAVED_SIMULATIONS_FILES = null;
       myDesktopPane = null;
       quickHelpTextPane = null;
-      guiEventHandler = null;
       menuMoteTypeClasses = null;
       menuMoteTypes = null;
       moteHighlightObservable = null;
@@ -419,7 +416,6 @@ public class Cooja extends Observable {
         return ".csc";
       }
     };
-    guiEventHandler = new GUIEventHandler();
     myDesktopPane = new JDesktopPane() {
       @Override
       public void setBounds(int x, int y, int w, int h) {
@@ -996,7 +992,7 @@ public class Cooja extends Observable {
       public void menuCanceled(MenuEvent e) {
       }
     });
-
+    final var guiEventHandler = new GUIEventHandler();
     // Mote type classes sub menu
     menuMoteTypeClasses.addMenuListener(new MenuListener() {
       @Override
