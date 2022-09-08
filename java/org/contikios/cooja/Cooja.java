@@ -212,11 +212,6 @@ public class Cooja extends Observable {
    */
   public static final String PROJECT_CONFIG_FILENAME = "cooja.config";
 
-  /**
-   * File filter only showing saved simulations files (*.csc).
-   */
-  private final FileFilter SAVED_SIMULATIONS_FILES;
-
   // External tools setting names
   public static Properties defaultExternalToolsSettings;
   public static Properties currentExternalToolsSettings;
@@ -377,7 +372,6 @@ public class Cooja extends Observable {
     }
 
     if (!vis) {
-      SAVED_SIMULATIONS_FILES = null;
       myDesktopPane = null;
       quickHelpTextPane = null;
       menuMoteTypeClasses = null;
@@ -395,27 +389,6 @@ public class Cooja extends Observable {
     // Visualization enabled past this point.
     moteHighlightObservable = new ScnObservable();
     moteRelationObservable = new ScnObservable();
-    SAVED_SIMULATIONS_FILES = new FileFilter() {
-      @Override
-      public boolean accept(File file) {
-        if (file.isDirectory()) {
-          return true;
-        }
-
-        if (file.getName().endsWith(".csc")) {
-          return true;
-        }
-        return file.getName().endsWith(".csc.gz");
-      }
-      @Override
-      public String getDescription() {
-        return "Cooja simulation (.csc, .csc.gz)";
-      }
-      @Override
-      public String toString() {
-        return ".csc";
-      }
-    };
     myDesktopPane = new JDesktopPane() {
       @Override
       public void setBounds(int x, int y, int w, int h) {
@@ -657,8 +630,7 @@ public class Cooja extends Observable {
       file = new RunnableInEDT<File>() {
         @Override
         public File work() {
-          JFileChooser fc = new JFileChooser();
-          fc.setFileFilter(SAVED_SIMULATIONS_FILES);
+          JFileChooser fc = newFileChooser();
 
           if (suggestedFile != null && suggestedFile.isDirectory()) {
             fc.setCurrentDirectory(suggestedFile);
@@ -677,8 +649,7 @@ public class Cooja extends Observable {
           File file = fc.getSelectedFile();
           if (!file.exists()) {
             // Try default file extension.
-            // FIXME: The file chooser should ensure a csc file is selected and this code should be removed.
-            file = new File(file.getParent(), file.getName() + SAVED_SIMULATIONS_FILES);
+            file = new File(file.getParent(), file.getName() + fc.getFileFilter());
           }
           if (!file.exists() || !file.canRead()) {
             logger.fatal("No read access to file");
@@ -2505,20 +2476,13 @@ public class Cooja extends Observable {
 
     mySimulation.stopSimulation();
 
-    JFileChooser fc = new JFileChooser();
-    fc.setFileFilter(SAVED_SIMULATIONS_FILES);
-
-    // Suggest file using history
-    File suggestedFile = getLastOpenedFile();
-    if (suggestedFile != null) {
-      fc.setSelectedFile(suggestedFile);
-    }
+    JFileChooser fc = newFileChooser();
 
     int returnVal = fc.showSaveDialog(myDesktopPane);
     if (returnVal == JFileChooser.APPROVE_OPTION) {
       File saveFile = fc.getSelectedFile();
       if (!fc.accept(saveFile)) {
-        saveFile = new File(saveFile.getParent(), saveFile.getName() + SAVED_SIMULATIONS_FILES);
+        saveFile = new File(saveFile.getParent(), saveFile.getName() + fc.getFileFilter());
       }
       if (saveFile.exists()) {
         if (askForConfirmation) {
@@ -2547,6 +2511,35 @@ public class Cooja extends Observable {
       }
     }
     return null;
+  }
+
+  /** Allocate a file chooser for Cooja simulation files. */
+  private JFileChooser newFileChooser() {
+    JFileChooser fc = new JFileChooser();
+    fc.setFileFilter(new FileFilter() {
+      @Override
+      public boolean accept(File file) {
+        if (file.isDirectory()) {
+          return true;
+        }
+        return file.getName().endsWith(".csc") || file.getName().endsWith(".csc.gz");
+      }
+      @Override
+      public String getDescription() {
+        return "Cooja simulation (.csc, .csc.gz)";
+      }
+      @Override
+      public String toString() {
+        return ".csc";
+      }
+    });
+
+    // Suggest file using history
+    File suggestedFile = getLastOpenedFile();
+    if (suggestedFile != null) {
+      fc.setSelectedFile(suggestedFile);
+    }
+    return fc;
   }
 
   /**
