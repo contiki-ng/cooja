@@ -1681,7 +1681,13 @@ public class Cooja extends Observable {
 
         /* Set location if not already set */
         if (pluginFrame.getLocation().x <= 0 && pluginFrame.getLocation().y <= 0) {
-          pluginFrame.setLocation(determineNewPluginLocation());
+          JInternalFrame[] iframes = myDesktopPane.getAllFrames();
+          Point topFrameLoc = iframes.length > 1
+                  ? iframes[1].getLocation()
+                  :  new Point(myDesktopPane.getSize().width / 2, myDesktopPane.getSize().height / 2);
+          pluginFrame.setLocation(new Point(
+                  topFrameLoc.x + FRAME_NEW_OFFSET,
+                  topFrameLoc.y + FRAME_NEW_OFFSET));
         }
 
         pluginFrame.setVisible(true);
@@ -1698,29 +1704,6 @@ public class Cooja extends Observable {
         return true;
       }
     }.invokeAndWait();
-  }
-
-  /**
-   * Determines suitable location for placing new plugin.
-   * <p>
-   * If possible, this is below right of the second last activated
-   * internfal frame (offset is determined by FRAME_NEW_OFFSET).
-   *
-   * @return Resulting placement position
-   */
-  private Point determineNewPluginLocation() {
-    Point topFrameLoc;
-    JInternalFrame[] iframes = myDesktopPane.getAllFrames();
-    if (iframes.length > 1) {
-      topFrameLoc = iframes[1].getLocation();
-    } else {
-      topFrameLoc = new Point(
-              myDesktopPane.getSize().width / 2,
-              myDesktopPane.getSize().height / 2);
-    }
-    return new Point(
-            topFrameLoc.x + FRAME_NEW_OFFSET,
-            topFrameLoc.y + FRAME_NEW_OFFSET);
   }
 
   /**
