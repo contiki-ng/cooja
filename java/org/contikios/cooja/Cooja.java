@@ -707,16 +707,6 @@ public class Cooja extends Observable {
     hasFileHistoryChanged = true;
   }
 
-  private void updateOpenHistoryMenuItems() {
-    if (!hasFileHistoryChanged) {
-      return;
-    }
-    hasFileHistoryChanged = false;
-
-    File[] openFilesHistory = getFileHistory();
-    updateOpenHistoryMenuItems(openFilesHistory);
-  }
-
   private void populateMenuWithHistory(JMenu menu, final boolean quick, File[] openFilesHistory) {
     JMenuItem lastItem;
     int index = 0;
@@ -1040,7 +1030,12 @@ public class Cooja extends Observable {
       @Override
       public void menuSelected(MenuEvent e) {
         updateGUIComponentState();
-        updateOpenHistoryMenuItems();
+        if (!hasFileHistoryChanged) {
+          return;
+        }
+        hasFileHistoryChanged = false;
+        File[] openFilesHistory = getFileHistory();
+        updateOpenHistoryMenuItems(openFilesHistory);
       }
       @Override
       public void menuDeselected(MenuEvent e) {
