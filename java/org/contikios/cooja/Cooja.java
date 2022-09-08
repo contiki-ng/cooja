@@ -3705,16 +3705,6 @@ public class Cooja extends Observable {
    *
    * @param source Source mote
    * @param dest Destination mote
-   */
-  public void addMoteRelation(Mote source, Mote dest) {
-    addMoteRelation(source, dest, null);
-  }
-
-  /**
-   * Adds directed relation between given motes.
-   *
-   * @param source Source mote
-   * @param dest Destination mote
    * @param color The color to use when visualizing the mote relation
    */
   public void addMoteRelation(Mote source, Mote dest, Color color) {
