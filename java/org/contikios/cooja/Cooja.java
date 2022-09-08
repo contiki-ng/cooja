@@ -2044,18 +2044,6 @@ public class Cooja extends Observable {
     return null;
   }
 
-  /**
-   * Returns started plugin with given class name, if any.
-   *
-   * @param classname Class name
-   * @return Plugin instance
-   * @deprecated
-   */
-  @Deprecated
-  public Plugin getStartedPlugin(String classname) {
-    return getPlugin(classname);
-  }
-
   public Plugin[] getStartedPlugins() {
     return startedPlugins.toArray(new Plugin[0]);
   }
