@@ -760,7 +760,7 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Enables/disables menues and menu items depending on whether a simulation is loaded etc.
+   * Enables/disables menus and menu items depending on whether a simulation is loaded etc.
    */
   void updateGUIComponentState() {
     if (!isVisualized()) {
@@ -772,13 +772,9 @@ public class Cooja extends Observable {
       a.setEnabled(a.shouldBeEnabled());
     }
 
-    /* Mote and mote type menues */
-    if (menuMoteTypeClasses != null) {
-      menuMoteTypeClasses.setEnabled(getSimulation() != null);
-    }
-    if (menuMoteTypes != null) {
-      menuMoteTypes.setEnabled(getSimulation() != null);
-    }
+    // Mote and mote type menus.
+    menuMoteTypeClasses.setEnabled(getSimulation() != null);
+    menuMoteTypes.setEnabled(getSimulation() != null);
   }
 
   private JMenuBar createMenuBar() {
