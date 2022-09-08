@@ -788,12 +788,8 @@ public class Cooja extends Observable {
     }
 
     /* Mote and mote type menues */
-    if (menuMoteTypeClasses != null) {
-      menuMoteTypeClasses.setEnabled(getSimulation() != null);
-    }
-    if (menuMoteTypes != null) {
-      menuMoteTypes.setEnabled(getSimulation() != null);
-    }
+    menuMoteTypeClasses.setEnabled(getSimulation() != null);
+    menuMoteTypes.setEnabled(getSimulation() != null);
   }
 
   private JMenuBar createMenuBar() {
