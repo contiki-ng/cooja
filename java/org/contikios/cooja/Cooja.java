@@ -305,7 +305,6 @@ public class Cooja extends Observable {
 
   private final ScnObservable moteRelationObservable;
   private final JTextPane quickHelpTextPane;
-  private final JScrollPane quickHelpScroll;
 
   /**
    * Mote relation (directed).
@@ -387,7 +386,6 @@ public class Cooja extends Observable {
       SAVED_SIMULATIONS_FILES = null;
       myDesktopPane = null;
       quickHelpTextPane = null;
-      quickHelpScroll = null;
       guiEventHandler = null;
       menuMoteTypeClasses = null;
       menuMoteTypes = null;
@@ -464,13 +462,6 @@ public class Cooja extends Observable {
     quickHelpTextPane.setContentType("text/html");
     quickHelpTextPane.setEditable(false);
     quickHelpTextPane.setVisible(false);
-    quickHelpScroll = new JScrollPane(quickHelpTextPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    quickHelpScroll.setPreferredSize(new Dimension(200, 0));
-    quickHelpScroll.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(Color.GRAY),
-        BorderFactory.createEmptyBorder(0, 3, 0, 0)
-    ));
-    quickHelpScroll.setVisible(false);
 
     /* Debugging - Break on repaints outside EDT */
     /*RepaintManager.setCurrentManager(new RepaintManager() {
@@ -510,16 +501,11 @@ public class Cooja extends Observable {
     menuMoteTypeClasses.setMnemonic(KeyEvent.VK_C);
     menuMoteTypes = new JMenu("Add motes");
     menuMoteTypes.setMnemonic(KeyEvent.VK_A);
-    frame.setJMenuBar(createMenuBar());
+    var container = new JPanel(new BorderLayout());
+    frame.setJMenuBar(createMenuBar(container));
 
     // Scrollable desktop.
     myDesktopPane.setOpaque(true);
-
-    var container = new JPanel(new BorderLayout());
-    var scroll = new JScrollPane(myDesktopPane);
-    scroll.setBorder(null);
-    container.add(BorderLayout.CENTER, scroll);
-    container.add(BorderLayout.EAST, quickHelpScroll);
     frame.setContentPane(container);
 
     frame.setSize(700, 700);
@@ -737,7 +723,7 @@ public class Cooja extends Observable {
     menuMoteTypes.setEnabled(getSimulation() != null);
   }
 
-  private JMenuBar createMenuBar() {
+  private JMenuBar createMenuBar(JPanel desktop) {
     final var newSimulationAction = new GUIAction("New simulation...", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK)) {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -1258,6 +1244,17 @@ public class Cooja extends Observable {
     settingsMenu.add(new JMenuItem(showBufferSettingsAction));
 
     /* Help */
+    var quickHelpScroll = new JScrollPane(quickHelpTextPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    quickHelpScroll.setPreferredSize(new Dimension(200, 0));
+    quickHelpScroll.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.GRAY),
+            BorderFactory.createEmptyBorder(0, 3, 0, 0)
+    ));
+    quickHelpScroll.setVisible(false);
+    var scroll = new JScrollPane(myDesktopPane);
+    scroll.setBorder(null);
+    desktop.add(BorderLayout.CENTER, scroll);
+    desktop.add(BorderLayout.EAST, quickHelpScroll);
     var showQuickHelpAction = new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
       @Override
       public void actionPerformed(ActionEvent e) {
