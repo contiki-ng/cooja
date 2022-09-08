@@ -4067,17 +4067,16 @@ public class Cooja extends Observable {
       return;
     }
 
-    String key;
-    if (obj instanceof String) {
-      key = (String) obj;
-    } else {
-      key = obj.getClass().getName();
-    }
-
     String help;
     if (obj instanceof HasQuickHelp) {
       help = ((HasQuickHelp) obj).getQuickHelp();
     } else {
+      String key;
+      if (obj instanceof String) {
+        key = (String) obj;
+      } else {
+        key = obj.getClass().getName();
+      }
       help = quickHelpProperties.getProperty(key);
     }
 
