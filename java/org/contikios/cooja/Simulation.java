@@ -75,7 +75,8 @@ public class Simulation extends Observable implements Runnable {
   private long speedLimitLastSimtime;
   private long speedLimitLastRealtime;
 
-  private long lastStartTime;
+  private long lastStartRealTime;
+  private long lastStartSimulationTime;
   private long currentSimulationTime = 0;
 
   private String title = null;
@@ -176,7 +177,7 @@ public class Simulation extends Observable implements Runnable {
         return;
       }
 
-      long diffSimtime = (getSimulationTime() - speedLimitLastSimtime)/1000; /* ms */
+      long diffSimtime = getSimulationTimeMillis() - speedLimitLastSimtime; /* ms */
       long diffRealtime = System.currentTimeMillis() - speedLimitLastRealtime; /* ms */
       long expectedDiffRealtime = (long) (diffSimtime/speedLimit);
       long sleep = expectedDiffRealtime - diffRealtime;
@@ -195,7 +196,7 @@ public class Simulation extends Observable implements Runnable {
       /* Update counters every second */
       if (diffRealtime > 1000) {
         speedLimitLastRealtime = System.currentTimeMillis();
-        speedLimitLastSimtime = getSimulationTime();
+        speedLimitLastSimtime = getSimulationTimeMillis();
       }
     }
     @Override
@@ -212,10 +213,11 @@ public class Simulation extends Observable implements Runnable {
   @Override
   public void run() {
     assert isRunning : "Did not set isRunning before starting";
-    lastStartTime = System.currentTimeMillis();
-    logger.debug("Simulation started, system time: " + lastStartTime);
-    speedLimitLastRealtime = System.currentTimeMillis();
-    speedLimitLastSimtime = getSimulationTime();
+    lastStartRealTime = System.currentTimeMillis();
+    lastStartSimulationTime = getSimulationTimeMillis();
+    logger.debug("Simulation started, system time: {}", lastStartRealTime);
+    speedLimitLastRealtime = lastStartRealTime;
+    speedLimitLastSimtime = lastStartSimulationTime;
 
     /* Simulation starting */
     this.setChanged();
@@ -235,11 +237,11 @@ public class Simulation extends Observable implements Runnable {
 
         if (stopSimulation) {
           isRunning = false;
-          var duration = System.currentTimeMillis() - lastStartTime;
-          var curSimTime = getSimulationTimeMillis();
-          logger.info("Runtime: " + duration + " ms. " +
-                  "Simulated time: " + curSimTime + " ms. " +
-                  "Speedup: " + ((double)curSimTime / (double)duration));
+          var realTimeDuration = System.currentTimeMillis() - lastStartRealTime;
+          var simulationDuration = getSimulationTimeMillis() - lastStartSimulationTime;
+          logger.info("Runtime: {} ms. Simulated time: {} ms. Speedup: {}",
+                      realTimeDuration, simulationDuration,
+                      ((double) simulationDuration / Math.max(1, realTimeDuration)));
         }
       }
     } catch (RuntimeException e) {
@@ -992,7 +994,7 @@ public class Simulation extends Observable implements Runnable {
 
         speedLimitNone = false;
         speedLimitLastRealtime = System.currentTimeMillis();
-        speedLimitLastSimtime = getSimulationTime();
+        speedLimitLastSimtime = getSimulationTimeMillis();
         speedLimit = newSpeedLimit;
 
         if (delayEvent.isScheduled()) {
@@ -1061,7 +1063,7 @@ public class Simulation extends Observable implements Runnable {
    * @return Actual time (microseconds)
    */
   public long convertSimTimeToActualTime(long simTime) {
-    return simTime + lastStartTime * 1000;
+    return simTime + lastStartRealTime * 1000;
   }
 
   /**
