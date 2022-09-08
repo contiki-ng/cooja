@@ -510,12 +510,12 @@ public class Cooja extends Observable {
     menuMoteTypeClasses.setMnemonic(KeyEvent.VK_C);
     menuMoteTypes = new JMenu("Add motes");
     menuMoteTypes.setMnemonic(KeyEvent.VK_A);
-    frame.setJMenuBar(createMenuBar());
+    var container = new JPanel(new BorderLayout());
+    frame.setJMenuBar(createMenuBar(container));
 
     // Scrollable desktop.
     myDesktopPane.setOpaque(true);
 
-    var container = new JPanel(new BorderLayout());
     var scroll = new JScrollPane(myDesktopPane);
     scroll.setBorder(null);
     container.add(BorderLayout.CENTER, scroll);
@@ -737,7 +737,7 @@ public class Cooja extends Observable {
     menuMoteTypes.setEnabled(getSimulation() != null);
   }
 
-  private JMenuBar createMenuBar() {
+  private JMenuBar createMenuBar(JPanel desktop) {
     final var newSimulationAction = new GUIAction("New simulation...", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK)) {
       @Override
       public void actionPerformed(ActionEvent e) {
