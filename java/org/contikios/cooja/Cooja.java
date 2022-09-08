@@ -777,26 +777,6 @@ public class Cooja extends Observable {
     final File cfgFile = file;
     new Thread(() -> cooja.doLoadConfig(cfgFile, quick, false, null), "asyncld").start();
   }
-  private void updateOpenHistoryMenuItems(File[] openFilesHistory) {
-  	menuOpenSimulation.removeAll();
-
-    /* Reconfigure submenu */
-    JMenu reconfigureMenu = new JMenu("Open and Reconfigure");
-    JMenuItem browseItem2 = new JMenuItem("Browse...");
-    browseItem2.addActionListener(e -> doLoadConfigAsync(false, null));
-    reconfigureMenu.add(browseItem2);
-    reconfigureMenu.add(new JSeparator());
-    populateMenuWithHistory(reconfigureMenu, false, openFilesHistory);
-
-    /* Open menu */
-    JMenuItem browseItem = new JMenuItem("Browse...");
-    browseItem.addActionListener(e -> doLoadConfigAsync(true, null));
-    menuOpenSimulation.add(browseItem);
-    menuOpenSimulation.add(new JSeparator());
-    menuOpenSimulation.add(reconfigureMenu);
-    menuOpenSimulation.add(new JSeparator());
-    populateMenuWithHistory(menuOpenSimulation, true, openFilesHistory);
-  }
 
   /**
    * Enables/disables menues and menu items depending on whether a simulation is loaded etc.
@@ -1034,8 +1014,25 @@ public class Cooja extends Observable {
           return;
         }
         hasFileHistoryChanged = false;
+
+        // Reconfigure submenu.
+        menuOpenSimulation.removeAll();
+        JMenu reconfigureMenu = new JMenu("Open and Reconfigure");
+        JMenuItem browseItem2 = new JMenuItem("Browse...");
+        browseItem2.addActionListener(e1 -> doLoadConfigAsync(false, null));
+        reconfigureMenu.add(browseItem2);
+        reconfigureMenu.add(new JSeparator());
         File[] openFilesHistory = getFileHistory();
-        updateOpenHistoryMenuItems(openFilesHistory);
+        populateMenuWithHistory(reconfigureMenu, false, openFilesHistory);
+
+        // Open menu.
+        JMenuItem browseItem = new JMenuItem("Browse...");
+        browseItem.addActionListener(e1 -> doLoadConfigAsync(true, null));
+        menuOpenSimulation.add(browseItem);
+        menuOpenSimulation.add(new JSeparator());
+        menuOpenSimulation.add(reconfigureMenu);
+        menuOpenSimulation.add(new JSeparator());
+        populateMenuWithHistory(menuOpenSimulation, true, openFilesHistory);
       }
       @Override
       public void menuDeselected(MenuEvent e) {
