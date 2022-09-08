@@ -3241,10 +3241,7 @@ public class Cooja extends Observable {
     root.addContent(simulationElement);
 
     // Create started plugins config
-    Collection<Element> pluginsConfig = getPluginsConfigXML();
-    if (pluginsConfig != null) {
-      root.addContent(pluginsConfig);
-    }
+    root.addContent(getPluginsConfigXML());
 
     return root;
   }
