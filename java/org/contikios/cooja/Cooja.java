@@ -274,7 +274,6 @@ public class Cooja extends Observable {
   private final JMenu menuMoteTypeClasses;
   private final JMenu menuMoteTypes;
 
-  private final JMenu menuOpenSimulation;
   private boolean hasFileHistoryChanged;
 
   private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
@@ -395,7 +394,6 @@ public class Cooja extends Observable {
       quickHelpTextPane = null;
       quickHelpScroll = null;
       guiEventHandler = null;
-      menuOpenSimulation = null;
       menuMoteTypeClasses = null;
       menuMoteTypes = null;
       moteHighlightObservable = null;
@@ -563,8 +561,6 @@ public class Cooja extends Observable {
     frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
     // Menu bar.
-    menuOpenSimulation = new JMenu("Open simulation");
-    menuOpenSimulation.setMnemonic(KeyEvent.VK_O);
     menuMoteTypeClasses = new JMenu("Create new mote type");
     menuMoteTypeClasses.setMnemonic(KeyEvent.VK_C);
     menuMoteTypes = new JMenu("Add motes");
@@ -991,6 +987,8 @@ public class Cooja extends Observable {
     final JMenu toolsMenu = new JMenu("Tools");
     JMenu settingsMenu = new JMenu("Settings");
     JMenu helpMenu = new JMenu("Help");
+    var menuOpenSimulation = new JMenu("Open simulation");
+    menuOpenSimulation.setMnemonic(KeyEvent.VK_O);
 
     menuBar.add(fileMenu);
     menuBar.add(simulationMenu);
