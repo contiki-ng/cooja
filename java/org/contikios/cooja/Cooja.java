@@ -67,6 +67,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Observable;
 import java.util.Observer;
@@ -2965,8 +2966,9 @@ public class Cooja extends Observable {
    * Load configurations and create a GUI.
    *
    * @param options Parsed command line options
+   * @param cfg Map of key-value pairs of configuration
    */
-  public static void go(Main options) {
+  public static void go(Main options, Map<String, String> cfg) {
     externalToolsUserSettingsFileReadOnly = options.externalToolsConfig != null;
     if (options.externalToolsConfig == null) {
       externalToolsUserSettingsFile = new File(System.getProperty("user.home"), ".cooja.user.properties");
@@ -3013,7 +3015,9 @@ public class Cooja extends Observable {
         System.exit(1);
       }
       if (!vis) {
-        sim.setSpeedLimit(null);
+        if (Boolean.parseBoolean(cfg.get("ignore-speed-limit"))) {
+          sim.setSpeedLimit(null);
+        }
         sim.startSimulation();
       }
     }
