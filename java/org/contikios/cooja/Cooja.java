@@ -3050,6 +3050,7 @@ public class Cooja extends Observable {
       }
       doRemoveSimulation(false);
       sim = createSimulation(root, quick, rewriteCsc, manualRandomSeed);
+      setSimulation(sim, false);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not well-formed", e);
     } catch (IOException e) {
@@ -3167,7 +3168,6 @@ public class Cooja extends Observable {
         return null;
       }
     }
-    setSimulation(newSim, false);
     return newSim;
   }
 
