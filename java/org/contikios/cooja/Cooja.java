@@ -2070,7 +2070,6 @@ public class Cooja extends Observable {
   }
 
   private void setSimulation(Simulation sim, boolean startPlugins) {
-    doRemoveSimulation(false);
     mySimulation = sim;
     updateGUIComponentState();
 
@@ -2260,7 +2259,6 @@ public class Cooja extends Observable {
         do {
           try {
             shouldRetry = false;
-            cooja.doRemoveSimulation(false);
             PROGRESS_WARNINGS.clear();
             newSim = loadSimulationConfig(cfgFile, quick, rewriteCsc, manualRandomSeed);
           } catch (SimulationCreationException e) {
@@ -3049,7 +3047,7 @@ public class Cooja extends Observable {
         logger.fatal("Not a valid Cooja simulation config.");
         return null;
       }
-
+      doRemoveSimulation(false);
       sim = loadSimulationConfig(root, quick, rewriteCsc, manualRandomSeed);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not well-formed", e);
