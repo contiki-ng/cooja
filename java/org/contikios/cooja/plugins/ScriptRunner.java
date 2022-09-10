@@ -412,7 +412,7 @@ public class ScriptRunner implements Plugin {
   }
 
   /** Make a new code editor. */
-  private JEditorPane newEditor() {
+  private static JEditorPane newEditor() {
     var editor = new JEditorPane();
     editor.setContentType("text/javascript");
     return editor;
