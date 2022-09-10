@@ -2497,7 +2497,7 @@ public class Cooja extends Observable {
   }
 
   /** Allocate a file chooser for Cooja simulation files. */
-  private JFileChooser newFileChooser() {
+  private static JFileChooser newFileChooser() {
     JFileChooser fc = new JFileChooser();
     fc.setFileFilter(new FileFilter() {
       @Override
