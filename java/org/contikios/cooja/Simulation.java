@@ -205,11 +205,6 @@ public class Simulation extends Observable implements Runnable {
     }
   };
 
-  public void clearEvents() {
-    eventQueue.clear();
-    pollRequests.clear();
-  }
-
   @Override
   public void run() {
     assert isRunning : "Did not set isRunning before starting";
@@ -357,13 +352,6 @@ public class Simulation extends Observable implements Runnable {
    */
   public long getRandomSeed() {
     return randomSeed;
-  }
-
-  /**
-   * @return Random seed (converted to a string)
-   */
-  public String getRandomSeedString() {
-    return Long.toString(randomSeed);
   }
 
   /**
