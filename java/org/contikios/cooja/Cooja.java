@@ -661,6 +661,12 @@ public class Cooja extends Observable {
     }.invokeAndWait();
   }
 
+  /**
+   * Load a simulation configuration file from disk asynchronously.
+   *
+   * @param quick Quick-load simulation
+   * @param file Configuration file to load, if null a dialog will appear
+   */
   private void doLoadConfigAsync(final boolean quick, File file) {
     // Warn about memory usage.
     if (warnMemory()) {
@@ -2197,7 +2203,7 @@ public class Cooja extends Observable {
   /**
    * Load a simulation configuration file from disk
    *
-   * @param configFile Configuration file to load, if null a dialog will appear
+   * @param configFile Configuration file to load
    * @param quick      Quick-load simulation
    * @param rewriteCsc Rewrite simulation config
    * @param manualRandomSeed The random seed to use for the simulation
