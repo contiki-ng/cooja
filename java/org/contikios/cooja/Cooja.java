@@ -2203,21 +2203,24 @@ public class Cooja extends Observable {
   /**
    * Load a simulation configuration file from disk
    *
-   * @param configFile Configuration file to load
+   * @param configFile Configuration file to load, reloads current sim if null
    * @param quick      Quick-load simulation
    * @param rewriteCsc Rewrite simulation config
    * @param manualRandomSeed The random seed to use for the simulation
    */
   private Simulation doLoadConfig(File configFile, final boolean quick, boolean rewriteCsc, Long manualRandomSeed) {
-    if (!doRemoveSimulation(true)) {
+    final var autoStart = configFile == null && mySimulation.isRunning();
+    if (configFile != null && !doRemoveSimulation(true)) {
       return null;
     }
 
-    addToFileHistory(configFile);
+    if (configFile != null) {
+      addToFileHistory(configFile);
+    }
 
     final JDialog progressDialog;
     if (quick) {
-      final String progressTitle = "Loading " + configFile.getAbsolutePath();
+      final String progressTitle = "Loading " + (configFile == null ? "" : configFile.getAbsolutePath());
 
       progressDialog = new RunnableInEDT<JDialog>() {
         @Override
@@ -2259,13 +2262,29 @@ public class Cooja extends Observable {
     var worker = new SwingWorker<Simulation, SimulationCreationException>() {
       @Override
       public Simulation doInBackground() {
+        Element root = new Element("simconf");
+        if (cfgFile == null) {
+          var simElem = new Element("simulation");
+          simElem.addContent(getSimulation().getConfigXML());
+          root.addContent(simElem);
+          root.addContent(getPluginsConfigXML());
+        }
         boolean shouldRetry;
         Simulation newSim = null;
         do {
           try {
             shouldRetry = false;
             PROGRESS_WARNINGS.clear();
-            newSim = loadSimulationConfig(cfgFile, quick, rewriteCsc, manualRandomSeed);
+            if (cfgFile == null) {
+              cooja.doRemoveSimulation(false);
+              newSim = createSimulation(root, quick, rewriteCsc, manualRandomSeed);
+              setSimulation(newSim);
+            } else {
+              newSim = loadSimulationConfig(cfgFile, quick, rewriteCsc, manualRandomSeed);
+            }
+            if (newSim != null && autoStart) {
+              newSim.startSimulation();
+            }
           } catch (SimulationCreationException e) {
             publish(e);
             try {
@@ -2341,90 +2360,8 @@ public class Cooja extends Observable {
       return;
     }
 
-    final boolean autoStart = sim.isRunning();
     final long randomSeed = sim.getRandomSeed();
-    final JDialog progressDialog = new JDialog(frame, "Reloading", true);
-    final Thread loadThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-
-        /* Get current simulation configuration */
-        Element root = new Element("simconf");
-        Element simulationElement = new Element("simulation");
-
-        simulationElement.addContent(getSimulation().getConfigXML());
-        root.addContent(simulationElement);
-        root.addContent(getPluginsConfigXML());
-
-        /* Remove current simulation, and load config */
-        boolean shouldRetry;
-        do {
-          try {
-            shouldRetry = false;
-            cooja.doRemoveSimulation(false);
-            PROGRESS_WARNINGS.clear();
-            Simulation newSim = createSimulation(root, true, false, randomSeed);
-
-            if (autoStart) {
-              newSim.startSimulation();
-            }
-
-            /* Optionally show compilation warnings */
-            boolean hideWarn = Boolean.parseBoolean(
-                Cooja.getExternalToolsSetting("HIDE_WARNINGS", "false")
-            );
-            if (!hideWarn && !PROGRESS_WARNINGS.isEmpty()) {
-              showWarningsDialog(frame, PROGRESS_WARNINGS.toArray(new String[0]));
-            }
-            PROGRESS_WARNINGS.clear();
-
-          } catch (SimulationCreationException e) {
-            shouldRetry = showErrorDialog(frame, "Simulation reload error", e, true);
-
-            cooja.doRemoveSimulation(false);
-          }
-        } while (shouldRetry);
-
-        if (progressDialog.isDisplayable()) {
-          progressDialog.dispose();
-        }
-      }
-    }, "reloadCurrentSimulation");
-
-    // Display progress dialog while reloading
-    JProgressBar progressBar = new JProgressBar(0, 100);
-    progressBar.setValue(0);
-    progressBar.setIndeterminate(true);
-
-    PROGRESS_BAR = progressBar; /* Allow various parts of COOJA to show messages */
-
-    JButton button = new JButton("Abort");
-    button.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (loadThread.isAlive()) {
-          loadThread.interrupt();
-          doRemoveSimulation(false);
-        }
-      }
-    });
-
-    JPanel progressPanel = new JPanel(new BorderLayout());
-    progressPanel.add(BorderLayout.CENTER, progressBar);
-    progressPanel.add(BorderLayout.SOUTH, button);
-    progressPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-    progressPanel.setVisible(true);
-
-    progressDialog.getContentPane().add(progressPanel);
-    progressDialog.setSize(400, 200);
-
-    progressDialog.getRootPane().setDefaultButton(button);
-    progressDialog.setLocationRelativeTo(frame);
-    progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-
-    loadThread.start();
-    progressDialog.setVisible(true);
+    new Thread(() -> cooja.doLoadConfig(null, true, false, randomSeed), "asyncld").start();
   }
 
   private static boolean warnMemory() {
