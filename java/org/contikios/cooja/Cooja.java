@@ -695,7 +695,14 @@ public class Cooja extends Observable {
 
         var sim = new Simulation(cooja);
         if (CreateSimDialog.showDialog(Cooja.getTopParentContainer(), sim)) {
-          cooja.setSimulation(sim, true);
+          // Start GUI plugins.
+          for (var pluginClass : pluginClasses) {
+            int type = pluginClass.getAnnotation(PluginType.class).value();
+            if (type == PluginType.SIM_STANDARD_PLUGIN) {
+              tryStartPlugin(pluginClass, cooja, sim, null);
+            }
+          }
+          cooja.setSimulation(sim);
         }
       }
       @Override
@@ -2068,24 +2075,13 @@ public class Cooja extends Observable {
     return mySimulation;
   }
 
-  private void setSimulation(Simulation sim, boolean startPlugins) {
-    doRemoveSimulation(false);
+  private void setSimulation(Simulation sim) {
     mySimulation = sim;
     updateGUIComponentState();
 
     // Set frame title
     if (frame != null) {
       frame.setTitle(sim.getTitle() + " - " + WINDOW_TITLE);
-    }
-
-    // Open standard plugins (if none opened already)
-    if (startPlugins) {
-      for (Class<? extends Plugin> pluginClass : pluginClasses) {
-        int pluginType = pluginClass.getAnnotation(PluginType.class).value();
-        if (pluginType == PluginType.SIM_STANDARD_PLUGIN) {
-          tryStartPlugin(pluginClass, this, sim, null);
-        }
-      }
     }
 
     setChanged();
@@ -2259,7 +2255,6 @@ public class Cooja extends Observable {
         do {
           try {
             shouldRetry = false;
-            cooja.doRemoveSimulation(false);
             PROGRESS_WARNINGS.clear();
             newSim = loadSimulationConfig(cfgFile, quick, rewriteCsc, manualRandomSeed);
           } catch (SimulationCreationException e) {
@@ -2356,7 +2351,7 @@ public class Cooja extends Observable {
             shouldRetry = false;
             cooja.doRemoveSimulation(false);
             PROGRESS_WARNINGS.clear();
-            Simulation newSim = loadSimulationConfig(root, true, false, randomSeed);
+            Simulation newSim = createSimulation(root, true, false, randomSeed);
 
             if (autoStart) {
               newSim.startSimulation();
@@ -3026,6 +3021,7 @@ public class Cooja extends Observable {
    *
    * @param file       File to read
    * @param rewriteCsc Should Cooja update the .csc file.
+   * @param manualRandomSeed The random seed.
    * @return New simulation or null if recompiling failed or aborted
    * @throws SimulationCreationException If loading fails.
    * @see #saveSimulationConfig(File)
@@ -3048,8 +3044,9 @@ public class Cooja extends Observable {
         logger.fatal("Not a valid Cooja simulation config.");
         return null;
       }
-
-      sim = loadSimulationConfig(root, quick, rewriteCsc, manualRandomSeed);
+      doRemoveSimulation(false);
+      sim = createSimulation(root, quick, rewriteCsc, manualRandomSeed);
+      setSimulation(sim);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not well-formed", e);
     } catch (IOException e) {
@@ -3063,7 +3060,15 @@ public class Cooja extends Observable {
     return sim;
   }
 
-  private Simulation loadSimulationConfig(Element root, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
+  /** Create a new simulation object.
+   * @param root The XML config.
+   * @param quick Do a quickstart.
+   * @param rewriteCsc Should Cooja update the .csc file.
+   * @param manualRandomSeed The random seed.
+   * @throws SimulationCreationException If creation fails.
+   * @return Simulation object.
+   * */
+  private Simulation createSimulation(Element root, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
   throws SimulationCreationException {
     boolean projectsOk = verifyProjects(root);
 
@@ -3159,7 +3164,6 @@ public class Cooja extends Observable {
         return null;
       }
     }
-    setSimulation(newSim, false);
     return newSim;
   }
 
