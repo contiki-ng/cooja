@@ -148,7 +148,7 @@ public class ExternalToolsDialog extends JDialog {
 
     // MAIN PART
     textFields = new JTextField[Cooja.getExternalToolsSettingsCount()];
-    for (int i = 0; i < Cooja.getExternalToolsSettingsCount(); i++) {
+    for (int i = 0; i < textFields.length; i++) {
       // Add text fields for every changeable property
       smallPane = new JPanel();
       smallPane.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -185,13 +185,13 @@ public class ExternalToolsDialog extends JDialog {
   }
 
   private void updateTextFields() {
-    for (int i = 0; i < Cooja.getExternalToolsSettingsCount(); i++) {
+    for (int i = 0; i < textFields.length; i++) {
       textFields[i].setText(Cooja.getExternalToolsSetting(Cooja.getExternalToolsSettingName(i), ""));
     }
   }
 
   private void compareWithDefaults() {
-    for (int i = 0; i < Cooja.getExternalToolsSettingsCount(); i++) {
+    for (int i = 0; i < textFields.length; i++) {
       String currentValue = textFields[i].getText();
 
       // Compare with default value
@@ -225,7 +225,7 @@ public class ExternalToolsDialog extends JDialog {
         updateTextFields();
         compareWithDefaults();
       } else if (e.getActionCommand().equals("ok")) {
-        for (int i = 0; i < Cooja.getExternalToolsSettingsCount(); i++) {
+        for (int i = 0; i < textFields.length; i++) {
           Cooja.setExternalToolsSetting(Cooja.getExternalToolsSettingName(i), textFields[i].getText()
               .trim());
         }

@@ -227,7 +227,6 @@ public class Cooja extends Observable {
     "PATH_APPSEARCH",
 
     "PATH_MAKE",
-    "PATH_SHELL",
     "PATH_C_COMPILER", "COMPILER_ARGS",
     "PATH_JAVAC",
 
