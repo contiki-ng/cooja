@@ -575,10 +575,16 @@ public class Cooja extends Observable {
     return history;
   }
 
+  /** Adds a file first to the file history. Method avoids adding duplicates. */
   private void addToFileHistory(File file) {
     // Fetch current history
     String[] history = getExternalToolsSetting("SIMCFG_HISTORY", "").split(";");
-    String newFile = file.getAbsolutePath();
+    String newFile;
+    try {
+      newFile = file.getCanonicalPath();
+    } catch (IOException e) {
+      return;
+    }
     if (history.length > 0 && history[0].equals(newFile)) {
       // File already added
       return;
