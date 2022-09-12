@@ -2239,9 +2239,6 @@ public class Cooja extends Observable {
           progressDialog.getRootPane().setDefaultButton(button);
           progressDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
           progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-
-          java.awt.EventQueue.invokeLater(() -> progressDialog.setVisible(true));
-
           return progressDialog;
         }
       }.invokeAndWait();
@@ -2304,7 +2301,10 @@ public class Cooja extends Observable {
     };
 
     if (progressDialog != null) {
-      progressDialog.getRootPane().getDefaultButton().addActionListener(e -> worker.cancel(true));
+      java.awt.EventQueue.invokeLater(() -> {
+        progressDialog.getRootPane().getDefaultButton().addActionListener(e -> worker.cancel(true));
+        progressDialog.setVisible(true);
+      });
     }
 
     worker.execute();
