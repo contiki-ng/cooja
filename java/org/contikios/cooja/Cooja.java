@@ -617,53 +617,53 @@ public class Cooja extends Observable {
     }
   }
 
+  /** Opens a file chooser if the file cannot be read. */
+  private static File validateFileOrSelectNew(File file) {
+    if (file != null && file.canRead()) {
+      return file;
+    }
+    final File suggestedFile = file;
+    return new RunnableInEDT<File>() {
+      @Override
+      public File work() {
+        JFileChooser fc = newFileChooser();
+
+        if (suggestedFile != null && suggestedFile.isDirectory()) {
+          fc.setCurrentDirectory(suggestedFile);
+        } else {
+          // Suggest file using file history.
+          File suggestedFile = getLastOpenedFile();
+          if (suggestedFile != null) {
+            fc.setSelectedFile(suggestedFile);
+          }
+        }
+
+        if (fc.showOpenDialog(Cooja.getTopParentContainer()) != JFileChooser.APPROVE_OPTION) {
+          return null;
+        }
+
+        File file = fc.getSelectedFile();
+        if (!file.exists()) {  // Try default file extension.
+          file = new File(file.getParent(), file.getName() + fc.getFileFilter());
+        }
+        if (!file.exists() || !file.canRead()) {
+          logger.fatal("No read access to file");
+          return null;
+        }
+        return file;
+      }
+    }.invokeAndWait();
+  }
+
   private void doLoadConfigAsync(final boolean quick, File file) {
     // Warn about memory usage.
     if (warnMemory()) {
       return;
     }
 
-    // Open File Chooser if config is not useful.
-    if (file == null || !file.canRead()) {
-      final File suggestedFile = file;
-      file = new RunnableInEDT<File>() {
-        @Override
-        public File work() {
-          JFileChooser fc = newFileChooser();
+    final var cfgFile = validateFileOrSelectNew(file);
+    if (cfgFile == null) return;
 
-          if (suggestedFile != null && suggestedFile.isDirectory()) {
-            fc.setCurrentDirectory(suggestedFile);
-          } else {
-            // Suggest file using file history.
-            File suggestedFile = getLastOpenedFile();
-            if (suggestedFile != null) {
-              fc.setSelectedFile(suggestedFile);
-            }
-          }
-
-          if (fc.showOpenDialog(Cooja.getTopParentContainer()) != JFileChooser.APPROVE_OPTION) {
-            return null;
-          }
-
-          File file = fc.getSelectedFile();
-          if (!file.exists()) {
-            // Try default file extension.
-            file = new File(file.getParent(), file.getName() + fc.getFileFilter());
-          }
-          if (!file.exists() || !file.canRead()) {
-            logger.fatal("No read access to file");
-            return null;
-          }
-          return file;
-        }
-      }.invokeAndWait();
-
-      if (file == null) {
-        return;
-      }
-    }
-
-    final File cfgFile = file;
     new Thread(() -> cooja.doLoadConfig(cfgFile, quick, false, null), "asyncld").start();
   }
 
