@@ -31,7 +31,6 @@
 package org.contikios.cooja.contikimote.interfaces;
 
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.IPAddress;
 
 /**
@@ -46,17 +45,13 @@ import org.contikios.cooja.interfaces.IPAddress;
  * </ul>
  * <p>
  *
- * Core interface:
- * <ul>
- * <li>ip_interface
- * </ul>
- *
  * This observable notifies when the IP address is set.
  * Note that this mote interface does not detect if Contiki changes IP address at run-time.
  *
  * @author Fredrik Osterlind
  */
-public class ContikiIPAddress extends IPAddress implements ContikiMoteInterface {
+// FIXME: Remove this class.
+public class ContikiIPAddress extends IPAddress {
   /**
    * Creates an interface to the IP address at mote.
    *
@@ -66,10 +61,5 @@ public class ContikiIPAddress extends IPAddress implements ContikiMoteInterface 
    */
   public ContikiIPAddress(final Mote mote) {
     super(mote);
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    /*return new String[]{"ip_interface"};*/
-    return null;
   }
 }

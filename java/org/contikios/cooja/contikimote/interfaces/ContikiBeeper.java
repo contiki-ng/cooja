@@ -43,7 +43,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.Beeper;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
@@ -57,17 +56,11 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * </ul>
  * <p>
  *
- * Core interface:
- * <ul>
- * <li>beep_interface
- * </ul>
- * <p>
- *
  * This observable is changed and notifies observers when the mote beeps.
  *
  * @author Fredrik Osterlind
  */
-public class ContikiBeeper extends Beeper implements ContikiMoteInterface, PolledAfterActiveTicks {
+public class ContikiBeeper extends Beeper implements PolledAfterActiveTicks {
   private final Mote mote;
   private final VarMemory moteMem;
   private static final Logger logger = LogManager.getLogger(ContikiBeeper.class);
@@ -88,10 +81,6 @@ public class ContikiBeeper extends Beeper implements ContikiMoteInterface, Polle
   @Override
   public boolean isBeeping() {
     return moteMem.getByteValueOf("simBeeped") == 1;
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"beep_interface"};
   }
 
   @Override

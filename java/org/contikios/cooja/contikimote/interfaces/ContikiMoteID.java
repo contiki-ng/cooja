@@ -38,7 +38,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Mote;
 
-import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.mote.memory.VarMemory;
 
@@ -53,16 +52,12 @@ import org.contikios.cooja.mote.memory.VarMemory;
  *
  * This interface also seeds the Contiki random generator: 'random_init()'.
  * <p>
- * Core interface:
- * <ul>
- * <li>moteid_interface
- * </ul>
  *
  * This observable notifies observers when the mote ID is set or altered.
  *
  * @author Fredrik Osterlind
  */
-public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
+public class ContikiMoteID extends MoteID {
   private final VarMemory moteMem;
   private static final Logger logger = LogManager.getLogger(ContikiMoteID.class);
 
@@ -81,10 +76,6 @@ public class ContikiMoteID extends MoteID implements ContikiMoteInterface {
   public ContikiMoteID(Mote mote) {
     this.mote = mote;
     this.moteMem = new VarMemory(mote.getMemory());
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"moteid_interface"};
   }
 
   @Override

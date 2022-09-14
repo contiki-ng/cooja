@@ -32,10 +32,6 @@ public class ApplicationLED extends LED {
        this.mote = mote;
      }
 
-     public static String[] getCoreInterfaceDependencies() {
-       return new String[]{"leds_interface"};
-     }
-
      @Override
      public boolean isAnyOn() {
        return currentLedValue > 0;

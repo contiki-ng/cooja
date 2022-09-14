@@ -37,7 +37,6 @@ import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMote;
-import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.Clock;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
@@ -57,17 +56,11 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * <li>int simEtimerPending
  * </ul>
  *
- * Core interface:
- * <ul>
- * <li>clock_interface
- * </ul>
- * <p>
- *
  * This observable never notifies.
  *
  * @author Fredrik Osterlind
  */
-public class ContikiClock extends Clock implements ContikiMoteInterface, PolledBeforeActiveTicks, PolledAfterAllTicks {
+public class ContikiClock extends Clock implements PolledBeforeActiveTicks, PolledAfterAllTicks {
   private static final Logger logger = LogManager.getLogger(ContikiClock.class);
 
   private final Simulation simulation;
@@ -89,10 +82,6 @@ public class ContikiClock extends Clock implements ContikiMoteInterface, PolledB
     this.moteMem = new VarMemory(mote.getMemory());
     timeDrift = 0;
     moteTime = 0;
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"clock_interface"};
   }
 
   @Override

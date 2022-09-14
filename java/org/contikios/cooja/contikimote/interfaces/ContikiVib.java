@@ -36,7 +36,6 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.contikimote.ContikiMote;
-import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.mote.memory.VarMemory;
 
 /**
@@ -49,18 +48,12 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * </ul>
  * <p>
  *
- * Core interface:
- * <ul>
- * <li>vib_interface
- * </ul>
- * <p>
- *
  * This observable never notifies.
  *
  * @author Fredrik Osterlind
  */
 @ClassDescription("Vibration sensor")
-public class ContikiVib extends MoteInterface implements ContikiMoteInterface {
+public class ContikiVib extends MoteInterface {
 
   private final ContikiMote mote;
   private final VarMemory moteMem;
@@ -76,10 +69,6 @@ public class ContikiVib extends MoteInterface implements ContikiMoteInterface {
   public ContikiVib(Mote mote) {
     this.mote = (ContikiMote) mote;
     this.moteMem = new VarMemory(mote.getMemory());
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"vib_interface"};
   }
 
   /**

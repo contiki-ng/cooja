@@ -40,7 +40,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Mote;
 
-import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
@@ -54,17 +53,11 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * </ul>
  * <p>
  *
- * Core interface:
- * <ul>
- * <li>leds_interface
- * </ul>
- * <p>
- *
  * This observable notifies when any LED changes.
  *
  * @author Fredrik Osterlind
  */
-public class ContikiLED extends LED implements ContikiMoteInterface, PolledAfterActiveTicks {
+public class ContikiLED extends LED implements PolledAfterActiveTicks {
   private static final Logger logger = LogManager.getLogger(ContikiLED.class);
 
   private Mote mote = null;
@@ -96,10 +89,6 @@ public class ContikiLED extends LED implements ContikiMoteInterface, PolledAfter
   public ContikiLED(Mote mote) {
     this.mote = mote;
     this.moteMem = new VarMemory(mote.getMemory());
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"leds_interface"};
   }
 
   @Override
