@@ -32,7 +32,6 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.contikimote.ContikiMote;
-import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.Button;
 import org.contikios.cooja.mote.memory.VarMemory;
 
@@ -46,17 +45,11 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * <li>char simButtonIsActive (1=active, else inactive)
  * </ul>
  *
- * Core interface:
- * <ul>
- * <li>button_interface
- * </ul>
- * <p>
- *
  * This observable notifies when the button is pressed or released.
  *
  * @author Fredrik Osterlind
  */
-public class ContikiButton extends Button implements ContikiMoteInterface {
+public class ContikiButton extends Button {
   private final VarMemory moteMem;
   private final ContikiMote mote;
 
@@ -71,10 +64,6 @@ public class ContikiButton extends Button implements ContikiMoteInterface {
     super(mote);
     this.mote = (ContikiMote) mote;
     this.moteMem = new VarMemory(mote.getMemory());
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"button_interface"};
   }
 
   @Override

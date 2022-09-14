@@ -58,7 +58,6 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.jdom.Element;
 
-import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
 
@@ -74,17 +73,12 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * </ul>
  * <p>
  *
- * Core interface:
- * <ul>
- * <li>eeprom_interface
- * </ul>
- * <p>
  * This observable notifies when the eeprom is used (read/write).
  *
  * @author Claes Jakobsson (based on ContikiCFS by Fredrik Osterlind)
  */
 @ClassDescription("EEPROM")
-public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface, PolledAfterActiveTicks {
+public class ContikiEEPROM extends MoteInterface implements PolledAfterActiveTicks {
   private static final Logger logger = LogManager.getLogger(ContikiEEPROM.class);
 
   public static final int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */
@@ -104,10 +98,6 @@ public class ContikiEEPROM extends MoteInterface implements ContikiMoteInterface
   public ContikiEEPROM(Mote mote) {
     this.mote = mote;
     this.moteMem = new VarMemory(mote.getMemory());
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"eeprom_interface"};
   }
 
   @Override

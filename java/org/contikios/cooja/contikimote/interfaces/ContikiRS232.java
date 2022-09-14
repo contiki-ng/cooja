@@ -40,7 +40,6 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteTimeEvent;
 import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.contikimote.ContikiMote;
-import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.dialogs.SerialUI;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
@@ -56,13 +55,6 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * </ul>
  * <p>
  *
- * Core interface:
- * <ul>
- * <li>rs232_interface
- * <li>simlog_interface
- * </ul>
- * <p>
- *
  * This observable notifies observers when a serial message is sent from the mote.
  *
  * @see #getLastLogMessage()
@@ -70,7 +62,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Serial port")
-public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, PolledAfterActiveTicks {
+public class ContikiRS232 extends SerialUI implements PolledAfterActiveTicks {
   private static final Logger logger = LogManager.getLogger(ContikiRS232.class);
 
   private final ContikiMote mote;
@@ -89,10 +81,6 @@ public class ContikiRS232 extends SerialUI implements ContikiMoteInterface, Poll
   public ContikiRS232(Mote mote) {
     this.mote = (ContikiMote) mote;
     this.moteMem = new VarMemory(mote.getMemory());
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"rs232_interface", "simlog_interface" };
   }
 
   @Override

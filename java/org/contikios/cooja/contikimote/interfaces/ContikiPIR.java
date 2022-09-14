@@ -34,7 +34,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.contikimote.ContikiMote;
-import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.PIR;
 import org.contikios.cooja.mote.memory.VarMemory;
 
@@ -48,17 +47,11 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * </ul>
  * <p>
  *
- * Core interface:
- * <ul>
- * <li>pir_interface
- * </ul>
- * <p>
- *
  * This observable notifies if PIR triggers.
  *
  * @author Fredrik Osterlind
  */
-public class ContikiPIR extends PIR implements ContikiMoteInterface {
+public class ContikiPIR extends PIR {
 
   private final ContikiMote mote;
   private final VarMemory moteMem;
@@ -74,10 +67,6 @@ public class ContikiPIR extends PIR implements ContikiMoteInterface {
   public ContikiPIR(Mote mote) {
     this.mote = (ContikiMote) mote;
     this.moteMem = new VarMemory(mote.getMemory());
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"pir_interface"};
   }
 
   /**

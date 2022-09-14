@@ -48,18 +48,12 @@ import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
  * </ul>
  * <p>
  *
- * Core interface:
- * <ul>
- * <li>dummy_interface
- * </ul>
- * <p>
- *
  * This observable never changes.
  *
  * @author Fredrik Osterlind
  */
 @ClassDescription("Dummy Interface")
-public class DummyInterface extends MoteInterface implements ContikiMoteInterface, PolledBeforeAllTicks, PolledAfterAllTicks {
+public class DummyInterface extends MoteInterface implements PolledBeforeAllTicks, PolledAfterAllTicks {
   private static final Logger logger = LogManager.getLogger(DummyInterface.class);
 
   private Mote mote;
@@ -68,11 +62,6 @@ public class DummyInterface extends MoteInterface implements ContikiMoteInterfac
   public DummyInterface(Mote mote) {
     this.mote = mote;
     memory = (SectionMoteMemory) mote.getMemory();
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    // I need the corresponding C dummy interface (in dummy_intf.c)
-    return new String[] { "dummy_interface" };
   }
 
   public void doActionsBeforeTick() {

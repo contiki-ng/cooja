@@ -50,7 +50,6 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 
-import org.contikios.cooja.contikimote.ContikiMoteInterface;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
 
@@ -65,18 +64,12 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * <li>int simCFSWritten (bytes written to filesystem)
  * </ul>
  * <p>
- *
- * Core interface:
- * <ul>
- * <li>cfs_interface
- * </ul>
- * <p>
  * This observable notifies when the filesystem is used (read/write).
  *
  * @author Fredrik Osterlind
  */
 @ClassDescription("Filesystem (CFS)")
-public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, PolledAfterActiveTicks {
+public class ContikiCFS extends MoteInterface implements PolledAfterActiveTicks {
   private static final Logger logger = LogManager.getLogger(ContikiCFS.class);
 
   public static final int FILESYSTEM_SIZE = 4000; /* Configure CFS size here and in cfs-cooja.c */
@@ -96,10 +89,6 @@ public class ContikiCFS extends MoteInterface implements ContikiMoteInterface, P
   public ContikiCFS(Mote mote) {
     this.mote = mote;
     this.moteMem = new VarMemory(mote.getMemory());
-  }
-
-  public static String[] getCoreInterfaceDependencies() {
-    return new String[]{"cfs_interface"};
   }
 
   @Override
