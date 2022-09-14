@@ -45,10 +45,6 @@ public abstract class Accelerometer extends Chip {
         super(id, "Accelerometer", cpu);
     }
 
-    protected Accelerometer(String id, String name, MSP430Core cpu) {
-        super(id, name, cpu);
-    }
-
     public void setX(double x) {
         this.x = x;
     }
