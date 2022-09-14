@@ -54,6 +54,7 @@ import java.util.Observable;
 import java.util.Observer;
 import javax.script.ScriptException;
 import javax.swing.Action;
+import javax.swing.InputMap;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
@@ -66,6 +67,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
@@ -159,6 +161,12 @@ public class ScriptRunner implements Plugin {
       kit.setProperty(DefaultSyntaxKit.CONFIG_MENU, "copy-to-clipboard,-,find,find-next,goto-line,-,linkfile");
       kit.setProperty("Action.linkfile", JSyntaxLinkFile.class.getName());
       kit.install(codeEditor);
+      // Recover control-R (reload simulation) key binding from DefaultSyntaxKit.
+      var event = KeyStroke.getKeyStroke("control R");
+      var inputMap = codeEditor.getInputMap();
+      // Stored both in the input map and the parent of the input map.
+      inputMap.getParent().remove(event);
+      inputMap.remove(event);
     }
 
     logTextArea = new JTextArea(12,50);
