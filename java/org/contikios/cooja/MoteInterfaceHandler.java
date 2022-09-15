@@ -119,12 +119,6 @@ public class MoteInterfaceHandler {
   private PolledAfterAllTicks[] polledAfterAll = null;
 
   /**
-   * Creates new empty mote interface handler.
-   */
-  public MoteInterfaceHandler() {
-  }
-
-  /**
    * Creates new mote interface handler. All given interfaces are created.
    *
    * @param mote Mote
