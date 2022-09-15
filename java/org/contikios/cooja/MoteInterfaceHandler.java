@@ -35,6 +35,8 @@ import static java.util.Map.entry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.contikimote.interfaces.ContikiBeeper;
 import org.contikios.cooja.contikimote.interfaces.ContikiButton;
 import org.contikios.cooja.contikimote.interfaces.ContikiCFS;
@@ -78,6 +80,8 @@ import org.contikios.cooja.interfaces.RimeAddress;
  * @author Fredrik Osterlind
  */
 public class MoteInterfaceHandler {
+  private static final Logger logger = LogManager.getLogger(MoteInterfaceHandler.class);
+
   /** Static translation map from name -> class for builtin interfaces. */
   private static final Map<String, Class<? extends MoteInterface>> builtinInterfaces = Map.ofEntries(
           entry("org.contikios.cooja.interfaces.Position", Position.class),
@@ -126,7 +130,12 @@ public class MoteInterfaceHandler {
    */
   public MoteInterfaceHandler(Mote mote, Class<? extends MoteInterface>[] interfaceClasses) throws MoteType.MoteTypeCreationException {
     for (Class<? extends MoteInterface> interfaceClass : interfaceClasses) {
-      addInterface(MoteInterface.generateInterface(interfaceClass, mote));
+      try {
+        addInterface(interfaceClass.getConstructor(Mote.class).newInstance(mote));
+      } catch (Exception e) {
+        logger.fatal("Exception when calling constructor of " + interfaceClass, e);
+        throw new MoteType.MoteTypeCreationException("Exception when calling constructor of " + interfaceClass, e);
+      }
     }
   }
 
