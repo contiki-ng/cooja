@@ -1994,14 +1994,14 @@ public class Cooja extends Observable {
     }
 
     /* Check mote type */
-    boolean moteTypeOK = false;
+    final var clazz = mote.getClass();
     for (Class<? extends Mote> supportedMote: supportedArgs.motes()) {
-      if (supportedMote.isAssignableFrom(mote.getClass())) {
-        moteTypeOK = true;
+      if (supportedMote.isAssignableFrom(clazz)) {
+        return true;
       }
     }
 
-    return moteTypeOK;
+    return false;
   }
 
   public JMenu createMotePluginsSubmenu(Class<? extends Plugin> pluginClass) {
