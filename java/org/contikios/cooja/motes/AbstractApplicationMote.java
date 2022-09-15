@@ -162,8 +162,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
           intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
         }
 
-        Class<? extends MoteInterface> moteInterfaceClass =
-            simulation.getCooja().tryLoadClass(this, MoteInterface.class, intfClass);
+        var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
 
         if (moteInterfaceClass == null) {
           logger.warn("Can't find mote interface class: " + intfClass);

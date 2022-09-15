@@ -41,6 +41,7 @@ import javax.swing.JLabel;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.MoteInterfaceHandler;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -301,8 +302,7 @@ public abstract class MspMoteType implements MoteType {
         	intfClass = MspSerial.class.getName();
         }
 
-        Class<? extends MoteInterface> moteInterfaceClass =
-          simulation.getCooja().tryLoadClass(this, MoteInterface.class, intfClass);
+        var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
 
         if (moteInterfaceClass == null) {
           logger.warn("Can't find mote interface class: " + intfClass);

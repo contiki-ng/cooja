@@ -379,7 +379,7 @@ public class ContikiMoteType implements MoteType {
     classes.add(MoteAttributes.class);
     // Load mote interface classes.
     for (String ifName : ifNames) {
-      var ifClass = gui.tryLoadClass(this, MoteInterface.class, ifName);
+      var ifClass = MoteInterfaceHandler.getInterfaceClass(gui, this, ifName);
       if (ifClass == null) {
         logger.warn("Failed to load mote interface class: " + ifName);
         continue;

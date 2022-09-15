@@ -180,8 +180,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
           intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
         }
 
-        Class<? extends MoteInterface> moteInterfaceClass =
-            simulation.getCooja().tryLoadClass(this, MoteInterface.class, intfClass);
+        var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
 
         if (moteInterfaceClass == null) {
           logger.fatal("Could not load mote interface class: " + intfClass);

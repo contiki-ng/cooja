@@ -512,8 +512,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
         	intfClass = MspSerial.class.getName();
         }
 
-        Class<? extends MoteInterface> moteInterfaceClass = simulation.getCooja().tryLoadClass(
-              this, MoteInterface.class, intfClass);
+        var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
 
         if (moteInterfaceClass == null) {
           logger.fatal("Could not load mote interface class: " + intfClass);
