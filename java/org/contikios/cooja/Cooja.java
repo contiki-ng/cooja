@@ -1981,14 +1981,13 @@ public class Cooja extends Observable {
   }
 
   private static boolean isMotePluginCompatible(Class<? extends Plugin> motePluginClass, Mote mote) {
-    if (motePluginClass.getAnnotation(SupportedArguments.class) == null) {
+    var supportedArgs = motePluginClass.getAnnotation(SupportedArguments.class);
+    if (supportedArgs == null) {
       return true;
     }
 
     /* Check mote interfaces */
-    Class<? extends MoteInterface>[] moteInterfaces =
-      motePluginClass.getAnnotation(SupportedArguments.class).moteInterfaces();
-    for (Class<? extends MoteInterface> requiredMoteInterface: moteInterfaces) {
+    for (Class<? extends MoteInterface> requiredMoteInterface: supportedArgs.moteInterfaces()) {
       if (mote.getInterfaces().getInterfaceOfType(requiredMoteInterface) == null) {
         return false;
       }
@@ -1996,9 +1995,7 @@ public class Cooja extends Observable {
 
     /* Check mote type */
     boolean moteTypeOK = false;
-    Class<? extends Mote>[] motes =
-      motePluginClass.getAnnotation(SupportedArguments.class).motes();
-    for (Class<? extends Mote> supportedMote: motes) {
+    for (Class<? extends Mote> supportedMote: supportedArgs.motes()) {
       if (supportedMote.isAssignableFrom(mote.getClass())) {
         moteTypeOK = true;
       }
