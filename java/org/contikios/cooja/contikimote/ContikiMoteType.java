@@ -398,13 +398,10 @@ public class ContikiMoteType extends BaseContikiMoteType {
       try {
         long referenceVar = varMem.getVariable("referenceVar").addr;
         myCoreComm.setReferenceAddress(referenceVar);
-      } catch (RuntimeException e) {
+        offset = myCoreComm.getReferenceAddress() - referenceVar;
+      } catch (Exception e) {
         throw new MoteTypeCreationException("Error setting reference variable: " + e.getMessage(), e);
       }
-
-      getCoreMemory(tmp);
-
-      offset = varMem.getAddrValueOf("referenceVar");
       logger.debug(firmwareFile.getName()
               + ": offsetting Cooja mote address space: 0x" + Long.toHexString(offset));
     }

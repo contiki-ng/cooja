@@ -60,7 +60,9 @@ application {
     // Several Contiki-NG tests crash the JVM without these flags with Java 17,
     // 08-ipv6-unicast.csc is one example. Unclear why, the JVM should not
     // do anything with the pointers in C-land part of ContikiMoteType.
-    '-XX:-UseCompressedOops', '-XX:-UseCompressedClassPointers']
+    '-XX:-UseCompressedOops', '-XX:-UseCompressedClassPointers',
+    // Enable the experimental foreign function interface in Java 17.
+    '--enable-native-access', 'ALL-UNNAMED', '--add-modules', 'jdk.incubator.foreign']
 }
 
 jar {
