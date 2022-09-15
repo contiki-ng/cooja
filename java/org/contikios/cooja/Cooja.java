@@ -1987,8 +1987,9 @@ public class Cooja extends Observable {
     }
 
     /* Check mote interfaces */
+    final var moteInterfaces = mote.getInterfaces();
     for (Class<? extends MoteInterface> requiredMoteInterface: supportedArgs.moteInterfaces()) {
-      if (mote.getInterfaces().getInterfaceOfType(requiredMoteInterface) == null) {
+      if (moteInterfaces.getInterfaceOfType(requiredMoteInterface) == null) {
         return false;
       }
     }
