@@ -131,30 +131,23 @@ public class MoteInterfaceHandler {
   public MoteInterfaceHandler(Mote mote, Class<? extends MoteInterface>[] interfaceClasses) throws MoteType.MoteTypeCreationException {
     for (Class<? extends MoteInterface> interfaceClass : interfaceClasses) {
       try {
-        moteInterfaces.add(interfaceClass.getConstructor(Mote.class).newInstance(mote));
+        var intf = interfaceClass.getConstructor(Mote.class).newInstance(mote);
+        moteInterfaces.add(intf);
+        if (intf instanceof PolledBeforeActiveTicks) {
+          polledBeforeActive.add((PolledBeforeActiveTicks) intf);
+        }
+        if (intf instanceof PolledAfterActiveTicks) {
+          polledAfterActive.add((PolledAfterActiveTicks) intf);
+        }
+        if (intf instanceof PolledBeforeAllTicks) {
+          polledBeforeAll.add((PolledBeforeAllTicks) intf);
+        }
+        if (intf instanceof PolledAfterAllTicks) {
+          polledAfterAll.add((PolledAfterAllTicks) intf);
+        }
       } catch (Exception e) {
         logger.fatal("Exception when calling constructor of " + interfaceClass, e);
         throw new MoteType.MoteTypeCreationException("Exception when calling constructor of " + interfaceClass, e);
-      }
-    }
-    for (MoteInterface intf : moteInterfaces) {
-      if (intf instanceof PolledBeforeActiveTicks) {
-        polledBeforeActive.add((PolledBeforeActiveTicks) intf);
-      }
-    }
-    for (MoteInterface intf : moteInterfaces) {
-      if (intf instanceof PolledAfterActiveTicks) {
-        polledAfterActive.add((PolledAfterActiveTicks) intf);
-      }
-    }
-    for (MoteInterface intf : moteInterfaces) {
-      if (intf instanceof PolledBeforeAllTicks) {
-        polledBeforeAll.add((PolledBeforeAllTicks) intf);
-      }
-    }
-    for (MoteInterface intf : moteInterfaces) {
-      if (intf instanceof PolledAfterAllTicks) {
-        polledAfterAll.add((PolledAfterAllTicks) intf);
       }
     }
   }
