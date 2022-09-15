@@ -131,7 +131,7 @@ public class MoteInterfaceHandler {
   public MoteInterfaceHandler(Mote mote, Class<? extends MoteInterface>[] interfaceClasses) throws MoteType.MoteTypeCreationException {
     for (Class<? extends MoteInterface> interfaceClass : interfaceClasses) {
       try {
-        addInterface(interfaceClass.getConstructor(Mote.class).newInstance(mote));
+        moteInterfaces.add(interfaceClass.getConstructor(Mote.class).newInstance(mote));
       } catch (Exception e) {
         logger.fatal("Exception when calling constructor of " + interfaceClass, e);
         throw new MoteType.MoteTypeCreationException("Exception when calling constructor of " + interfaceClass, e);
@@ -413,24 +413,6 @@ public class MoteInterfaceHandler {
    */
   public Collection<MoteInterface> getInterfaces() {
     return moteInterfaces;
-  }
-
-  /**
-   * Add mote interface.
-   *
-   * @param intf Mote interface
-   * @see PolledBeforeActiveTicks
-   * @see PolledBeforeAllTicks
-   * @see PolledAfterActiveTicks
-   * @see PolledAfterAllTicks
-   */
-  public void addInterface(MoteInterface intf) {
-    moteInterfaces.add(intf);
-
-    polledBeforeActive = null;
-    polledAfterActive = null;
-    polledBeforeAll = null;
-    polledAfterAll = null;
   }
 
   @Override
