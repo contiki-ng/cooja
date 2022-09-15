@@ -35,6 +35,8 @@ import static java.util.Map.entry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.contikimote.interfaces.ContikiBeeper;
 import org.contikios.cooja.contikimote.interfaces.ContikiButton;
 import org.contikios.cooja.contikimote.interfaces.ContikiCFS;
@@ -78,6 +80,8 @@ import org.contikios.cooja.interfaces.RimeAddress;
  * @author Fredrik Osterlind
  */
 public class MoteInterfaceHandler {
+  private static final Logger logger = LogManager.getLogger(MoteInterfaceHandler.class);
+
   /** Static translation map from name -> class for builtin interfaces. */
   private static final Map<String, Class<? extends MoteInterface>> builtinInterfaces = Map.ofEntries(
           entry("org.contikios.cooja.interfaces.Position", Position.class),
@@ -113,16 +117,10 @@ public class MoteInterfaceHandler {
   private PIR myPIR;
   private Position myPosition;
   private Radio myRadio;
-  private PolledBeforeActiveTicks[] polledBeforeActive = null;
-  private PolledAfterActiveTicks[] polledAfterActive = null;
-  private PolledBeforeAllTicks[] polledBeforeAll = null;
-  private PolledAfterAllTicks[] polledAfterAll = null;
-
-  /**
-   * Creates new empty mote interface handler.
-   */
-  public MoteInterfaceHandler() {
-  }
+  private final ArrayList<PolledBeforeActiveTicks> polledBeforeActive = new ArrayList<>();
+  private final ArrayList<PolledAfterActiveTicks> polledAfterActive = new ArrayList<>();
+  private final ArrayList<PolledBeforeAllTicks> polledBeforeAll = new ArrayList<>();
+  private final ArrayList<PolledAfterAllTicks> polledAfterAll = new ArrayList<>();
 
   /**
    * Creates new mote interface handler. All given interfaces are created.
@@ -132,7 +130,25 @@ public class MoteInterfaceHandler {
    */
   public MoteInterfaceHandler(Mote mote, Class<? extends MoteInterface>[] interfaceClasses) throws MoteType.MoteTypeCreationException {
     for (Class<? extends MoteInterface> interfaceClass : interfaceClasses) {
-      addInterface(MoteInterface.generateInterface(interfaceClass, mote));
+      try {
+        var intf = interfaceClass.getConstructor(Mote.class).newInstance(mote);
+        moteInterfaces.add(intf);
+        if (intf instanceof PolledBeforeActiveTicks) {
+          polledBeforeActive.add((PolledBeforeActiveTicks) intf);
+        }
+        if (intf instanceof PolledAfterActiveTicks) {
+          polledAfterActive.add((PolledAfterActiveTicks) intf);
+        }
+        if (intf instanceof PolledBeforeAllTicks) {
+          polledBeforeAll.add((PolledBeforeAllTicks) intf);
+        }
+        if (intf instanceof PolledAfterAllTicks) {
+          polledAfterAll.add((PolledAfterAllTicks) intf);
+        }
+      } catch (Exception e) {
+        logger.fatal("Exception when calling constructor of " + interfaceClass, e);
+        throw new MoteType.MoteTypeCreationException("Exception when calling constructor of " + interfaceClass, e);
+      }
     }
   }
 
@@ -333,16 +349,6 @@ public class MoteInterfaceHandler {
    * Polls active interfaces before mote tick.
    */
   public void doActiveActionsBeforeTick() {
-    if (polledBeforeActive == null) {
-      ArrayList<PolledBeforeActiveTicks> intfs = new ArrayList<>();
-      for (MoteInterface intf: moteInterfaces) {
-        if (intf instanceof PolledBeforeActiveTicks) {
-          intfs.add((PolledBeforeActiveTicks)intf);
-        }
-      }
-      polledBeforeActive = intfs.toArray(new PolledBeforeActiveTicks[0]);
-    }
-
     for (PolledBeforeActiveTicks element : polledBeforeActive) {
       element.doActionsBeforeTick();
     }
@@ -352,16 +358,6 @@ public class MoteInterfaceHandler {
    * Polls active interfaces after mote tick.
    */
   public void doActiveActionsAfterTick() {
-    if (polledAfterActive == null) {
-      ArrayList<PolledAfterActiveTicks> intfs = new ArrayList<>();
-      for (MoteInterface intf: moteInterfaces) {
-        if (intf instanceof PolledAfterActiveTicks) {
-          intfs.add((PolledAfterActiveTicks)intf);
-        }
-      }
-      polledAfterActive = intfs.toArray(new PolledAfterActiveTicks[0]);
-    }
-
     for (PolledAfterActiveTicks element : polledAfterActive) {
       element.doActionsAfterTick();
     }
@@ -371,16 +367,6 @@ public class MoteInterfaceHandler {
    * Polls passive interfaces before mote tick.
    */
   public void doPassiveActionsBeforeTick() {
-    if (polledBeforeAll == null) {
-      ArrayList<PolledBeforeAllTicks> intfs = new ArrayList<>();
-      for (MoteInterface intf: moteInterfaces) {
-        if (intf instanceof PolledBeforeAllTicks) {
-          intfs.add((PolledBeforeAllTicks)intf);
-        }
-      }
-      polledBeforeAll = intfs.toArray(new PolledBeforeAllTicks[0]);
-    }
-
     for (PolledBeforeAllTicks element : polledBeforeAll) {
       element.doActionsBeforeTick();
     }
@@ -390,16 +376,6 @@ public class MoteInterfaceHandler {
    * Polls passive interfaces after mote tick.
    */
   public void doPassiveActionsAfterTick() {
-    if (polledAfterAll == null) {
-      ArrayList<PolledAfterAllTicks> intfs = new ArrayList<>();
-      for (MoteInterface intf: moteInterfaces) {
-        if (intf instanceof PolledAfterAllTicks) {
-          intfs.add((PolledAfterAllTicks)intf);
-        }
-      }
-      polledAfterAll = intfs.toArray(new PolledAfterAllTicks[0]);
-    }
-
     for (PolledAfterAllTicks element : polledAfterAll) {
       element.doActionsAfterTick();
     }
@@ -410,24 +386,6 @@ public class MoteInterfaceHandler {
    */
   public Collection<MoteInterface> getInterfaces() {
     return moteInterfaces;
-  }
-
-  /**
-   * Add mote interface.
-   *
-   * @param intf Mote interface
-   * @see PolledBeforeActiveTicks
-   * @see PolledBeforeAllTicks
-   * @see PolledAfterActiveTicks
-   * @see PolledAfterAllTicks
-   */
-  public void addInterface(MoteInterface intf) {
-    moteInterfaces.add(intf);
-
-    polledBeforeActive = null;
-    polledAfterActive = null;
-    polledBeforeAll = null;
-    polledAfterAll = null;
   }
 
   @Override

@@ -33,8 +33,6 @@ package org.contikios.cooja;
 import java.util.Collection;
 import java.util.Observable;
 import javax.swing.JPanel;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
@@ -63,29 +61,6 @@ import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
  * @author Fredrik Osterlind
  */
 public abstract class MoteInterface extends Observable {
-  private static final Logger logger = LogManager.getLogger(MoteInterface.class);
-
-  /**
-   * This method creates an instance of the given class with the given mote as
-   * constructor argument. Instead of calling the interface constructors
-   * directly this method may be used.
-   *
-   * @param interfaceClass
-   *          Mote interface class
-   * @param mote
-   *          Mote that will hold the interface
-   * @return Mote interface instance
-   */
-  public static MoteInterface generateInterface(
-      Class<? extends MoteInterface> interfaceClass, Mote mote) throws MoteType.MoteTypeCreationException {
-    try {
-      return interfaceClass.getConstructor(Mote.class).newInstance(mote);
-    } catch (Exception e) {
-      logger.fatal("Exception when calling constructor of " + interfaceClass, e);
-      throw new MoteType.MoteTypeCreationException("Exception when calling constructor of " + interfaceClass, e);
-    }
-  }
-
   /**
    * Returns a panel visualizing this interface. This could for
    * example show last messages sent/received for a radio interface, or logged
