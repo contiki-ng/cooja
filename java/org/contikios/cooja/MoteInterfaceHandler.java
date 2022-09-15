@@ -40,7 +40,6 @@ import org.contikios.cooja.contikimote.interfaces.ContikiButton;
 import org.contikios.cooja.contikimote.interfaces.ContikiCFS;
 import org.contikios.cooja.contikimote.interfaces.ContikiClock;
 import org.contikios.cooja.contikimote.interfaces.ContikiEEPROM;
-import org.contikios.cooja.contikimote.interfaces.ContikiIPAddress;
 import org.contikios.cooja.contikimote.interfaces.ContikiLED;
 import org.contikios.cooja.contikimote.interfaces.ContikiMoteID;
 import org.contikios.cooja.contikimote.interfaces.ContikiPIR;
@@ -80,6 +79,7 @@ import org.contikios.cooja.interfaces.RimeAddress;
 public class MoteInterfaceHandler {
   /** Static translation map from name -> class for builtin interfaces. */
   private static final Map<String, Class<? extends MoteInterface>> builtinInterfaces = Map.ofEntries(
+          entry("org.contikios.cooja.interfaces.IPAddress", IPAddress.class),
           entry("org.contikios.cooja.interfaces.Position", Position.class),
           entry("org.contikios.cooja.interfaces.Battery", Battery.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiVib", ContikiVib.class),
@@ -87,7 +87,7 @@ public class MoteInterfaceHandler {
           entry("org.contikios.cooja.contikimote.interfaces.ContikiRS232", ContikiRS232.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiBeeper", ContikiBeeper.class),
           entry("org.contikios.cooja.interfaces.RimeAddress", RimeAddress.class),
-          entry("org.contikios.cooja.contikimote.interfaces.ContikiIPAddress", ContikiIPAddress.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiIPAddress", IPAddress.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiRadio", ContikiRadio.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiButton", ContikiButton.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiPIR", ContikiPIR.class),
