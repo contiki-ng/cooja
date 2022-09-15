@@ -117,10 +117,10 @@ public class MoteInterfaceHandler {
   private PIR myPIR;
   private Position myPosition;
   private Radio myRadio;
-  private PolledBeforeActiveTicks[] polledBeforeActive = null;
-  private PolledAfterActiveTicks[] polledAfterActive = null;
-  private PolledBeforeAllTicks[] polledBeforeAll = null;
-  private PolledAfterAllTicks[] polledAfterAll = null;
+  private final PolledBeforeActiveTicks[] polledBeforeActive;
+  private final PolledAfterActiveTicks[] polledAfterActive;
+  private final PolledBeforeAllTicks[] polledBeforeAll;
+  private final PolledAfterAllTicks[] polledAfterAll;
 
   /**
    * Creates new mote interface handler. All given interfaces are created.
@@ -137,6 +137,34 @@ public class MoteInterfaceHandler {
         throw new MoteType.MoteTypeCreationException("Exception when calling constructor of " + interfaceClass, e);
       }
     }
+    ArrayList<PolledBeforeActiveTicks> preActiveTickPoll = new ArrayList<>();
+    for (MoteInterface intf : moteInterfaces) {
+      if (intf instanceof PolledBeforeActiveTicks) {
+        preActiveTickPoll.add((PolledBeforeActiveTicks) intf);
+      }
+    }
+    polledBeforeActive = preActiveTickPoll.toArray(new PolledBeforeActiveTicks[0]);
+    ArrayList<PolledAfterActiveTicks> postActiveTickPoll = new ArrayList<>();
+    for (MoteInterface intf : moteInterfaces) {
+      if (intf instanceof PolledAfterActiveTicks) {
+        postActiveTickPoll.add((PolledAfterActiveTicks) intf);
+      }
+    }
+    polledAfterActive = postActiveTickPoll.toArray(new PolledAfterActiveTicks[0]);
+    ArrayList<PolledBeforeAllTicks> preAllTicksPoll = new ArrayList<>();
+    for (MoteInterface intf : moteInterfaces) {
+      if (intf instanceof PolledBeforeAllTicks) {
+        preAllTicksPoll.add((PolledBeforeAllTicks) intf);
+      }
+    }
+    polledBeforeAll = preAllTicksPoll.toArray(new PolledBeforeAllTicks[0]);
+    ArrayList<PolledAfterAllTicks> postAllTicksPoll = new ArrayList<>();
+    for (MoteInterface intf : moteInterfaces) {
+      if (intf instanceof PolledAfterAllTicks) {
+        postAllTicksPoll.add((PolledAfterAllTicks) intf);
+      }
+    }
+    polledAfterAll = postAllTicksPoll.toArray(new PolledAfterAllTicks[0]);
   }
 
   /** Fast translation from class name to class file for builtin interfaces. Uses the classloader
@@ -336,16 +364,6 @@ public class MoteInterfaceHandler {
    * Polls active interfaces before mote tick.
    */
   public void doActiveActionsBeforeTick() {
-    if (polledBeforeActive == null) {
-      ArrayList<PolledBeforeActiveTicks> intfs = new ArrayList<>();
-      for (MoteInterface intf: moteInterfaces) {
-        if (intf instanceof PolledBeforeActiveTicks) {
-          intfs.add((PolledBeforeActiveTicks)intf);
-        }
-      }
-      polledBeforeActive = intfs.toArray(new PolledBeforeActiveTicks[0]);
-    }
-
     for (PolledBeforeActiveTicks element : polledBeforeActive) {
       element.doActionsBeforeTick();
     }
@@ -355,16 +373,6 @@ public class MoteInterfaceHandler {
    * Polls active interfaces after mote tick.
    */
   public void doActiveActionsAfterTick() {
-    if (polledAfterActive == null) {
-      ArrayList<PolledAfterActiveTicks> intfs = new ArrayList<>();
-      for (MoteInterface intf: moteInterfaces) {
-        if (intf instanceof PolledAfterActiveTicks) {
-          intfs.add((PolledAfterActiveTicks)intf);
-        }
-      }
-      polledAfterActive = intfs.toArray(new PolledAfterActiveTicks[0]);
-    }
-
     for (PolledAfterActiveTicks element : polledAfterActive) {
       element.doActionsAfterTick();
     }
@@ -374,16 +382,6 @@ public class MoteInterfaceHandler {
    * Polls passive interfaces before mote tick.
    */
   public void doPassiveActionsBeforeTick() {
-    if (polledBeforeAll == null) {
-      ArrayList<PolledBeforeAllTicks> intfs = new ArrayList<>();
-      for (MoteInterface intf: moteInterfaces) {
-        if (intf instanceof PolledBeforeAllTicks) {
-          intfs.add((PolledBeforeAllTicks)intf);
-        }
-      }
-      polledBeforeAll = intfs.toArray(new PolledBeforeAllTicks[0]);
-    }
-
     for (PolledBeforeAllTicks element : polledBeforeAll) {
       element.doActionsBeforeTick();
     }
@@ -393,16 +391,6 @@ public class MoteInterfaceHandler {
    * Polls passive interfaces after mote tick.
    */
   public void doPassiveActionsAfterTick() {
-    if (polledAfterAll == null) {
-      ArrayList<PolledAfterAllTicks> intfs = new ArrayList<>();
-      for (MoteInterface intf: moteInterfaces) {
-        if (intf instanceof PolledAfterAllTicks) {
-          intfs.add((PolledAfterAllTicks)intf);
-        }
-      }
-      polledAfterAll = intfs.toArray(new PolledAfterAllTicks[0]);
-    }
-
     for (PolledAfterAllTicks element : polledAfterAll) {
       element.doActionsAfterTick();
     }
