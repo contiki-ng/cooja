@@ -201,10 +201,8 @@ public abstract class MspMoteType implements MoteType {
   public Collection<Element> getConfigXML(Simulation simulation) {
     ArrayList<Element> config = new ArrayList<>();
 
-    Element element;
-
     // Identifier
-    element = new Element("identifier");
+    var element = new Element("identifier");
     element.setText(getIdentifier());
     config.add(element);
 
@@ -342,14 +340,10 @@ public abstract class MspMoteType implements MoteType {
   public abstract Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses();
   public abstract File getExpectedFirmwareFile(File source);
 
-  private static ELF loadELF(String filepath) throws IOException {
-    return ELF.readELF(filepath);
-  }
-
   private ELF elf; /* cached */
   public ELF getELF() throws IOException {
     if (elf == null) {
-      elf = loadELF(getContikiFirmwareFile().getPath());
+      elf = ELF.readELF(getContikiFirmwareFile().getPath());
     }
     return elf;
   }
