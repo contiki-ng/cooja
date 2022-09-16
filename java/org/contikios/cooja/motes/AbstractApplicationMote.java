@@ -85,7 +85,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
   public abstract void sentPacket(RadioPacket p);
   
   public AbstractApplicationMote(MoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
-    setSimulation(sim);
+    super(sim);
     this.moteType = moteType;
     this.memory = new SectionMoteMemory(new HashMap<>());
     this.moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());

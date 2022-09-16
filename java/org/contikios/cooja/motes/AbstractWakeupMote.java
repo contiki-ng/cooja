@@ -36,9 +36,13 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 
 public abstract class AbstractWakeupMote implements Mote {
-  protected Simulation simulation = null;
+  protected final Simulation simulation;
 
   private long nextWakeupTime = -1;
+
+  public AbstractWakeupMote(Simulation sim) {
+    this.simulation = sim;
+  }
 
   private final TimeEvent executeMoteEvent = new MoteTimeEvent(this) {
     @Override
@@ -57,10 +61,6 @@ public abstract class AbstractWakeupMote implements Mote {
       return simulation;
   }
 
-  public void setSimulation(Simulation simulation) {
-      this.simulation = simulation;
-  }
-  
   /**
    * Execute mote software.
    * This method is only called from the simulation thread.

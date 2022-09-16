@@ -106,7 +106,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   public GenericNode mspNode = null;
 
   public MspMote(MspMoteType moteType, Simulation simulation) {
-    setSimulation(simulation);
+    super(simulation);
     myMoteType = moteType;
 
     /* Schedule us immediately */
