@@ -270,6 +270,10 @@ public class ContikiMoteType implements MoteType {
     if (relstr != null) {
       env.add(new String[] { "RELSTR", relstr });
     }
+    String quiet = System.getenv("QUIET");
+    if (quiet != null) {
+      env.add(new String[] { "QUIET", quiet });
+    }
     return env.toArray(new String[0][0]);
   }
 
