@@ -35,6 +35,10 @@ import java.util.Collection;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
+import org.contikios.cooja.interfaces.PolledAfterAllTicks;
+import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
+import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
 import org.jdom.Element;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
@@ -116,10 +120,9 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
    */
   @Override
   public void execute(long simTime) {
-
     /* Poll mote interfaces */
-    myInterfaceHandler.doActiveActionsBeforeTick();
-    myInterfaceHandler.doPassiveActionsBeforeTick();
+    myInterfaceHandler.getActiveActionsBeforeTick().forEach(PolledBeforeActiveTicks::doActionsBeforeTick);
+    myInterfaceHandler.getPassiveActionsBeforeTick().forEach(PolledBeforeAllTicks::doActionsBeforeTick);
 
     /* Check if pre-boot time */
     if (myInterfaceHandler.getClock().getTime() < 0) {
@@ -138,8 +141,8 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
 
     /* Poll mote interfaces */
     myMemory.pollForMemoryChanges();
-    myInterfaceHandler.doActiveActionsAfterTick();
-    myInterfaceHandler.doPassiveActionsAfterTick();
+    myInterfaceHandler.getActiveActionsAfterTick().forEach(PolledAfterActiveTicks::doActionsAfterTick);
+    myInterfaceHandler.getPassiveActionsAfterTick().forEach(PolledAfterAllTicks::doActionsAfterTick);
   }
 
   /**

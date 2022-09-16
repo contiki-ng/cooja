@@ -69,12 +69,6 @@ import org.contikios.cooja.interfaces.RimeAddress;
 
 /**
  * The mote interface handler holds all interfaces for a specific mote.
- * Interfaces should be polled via this class when the mote is ticked.
- *
- * @see #doActiveActionsAfterTick()
- * @see #doActiveActionsBeforeTick()
- * @see #doPassiveActionsAfterTick()
- * @see #doPassiveActionsBeforeTick()
  *
  * @author Fredrik Osterlind
  */
@@ -201,6 +195,26 @@ public class MoteInterfaceHandler {
       }
     }
     return null;
+  }
+
+  /** Returns a list of active interfaces before tick. */
+  public ArrayList<PolledBeforeActiveTicks> getActiveActionsBeforeTick() {
+    return polledBeforeActive;
+  }
+
+  /** Returns a list of active interfaces after tick. */
+  public ArrayList<PolledAfterActiveTicks> getActiveActionsAfterTick() {
+    return polledAfterActive;
+  }
+
+  /** Returns a list of passive interfaces before tick. */
+  public ArrayList<PolledBeforeAllTicks> getPassiveActionsBeforeTick() {
+    return polledBeforeAll;
+  }
+
+  /** Returns a list of passive interfaces after tick. */
+  public ArrayList<PolledAfterAllTicks> getPassiveActionsAfterTick() {
+    return polledAfterAll;
   }
 
   /**
@@ -343,42 +357,6 @@ public class MoteInterfaceHandler {
       myRadio = getInterfaceOfType(Radio.class);
     }
     return myRadio;
-  }
-
-  /**
-   * Polls active interfaces before mote tick.
-   */
-  public void doActiveActionsBeforeTick() {
-    for (PolledBeforeActiveTicks element : polledBeforeActive) {
-      element.doActionsBeforeTick();
-    }
-  }
-
-  /**
-   * Polls active interfaces after mote tick.
-   */
-  public void doActiveActionsAfterTick() {
-    for (PolledAfterActiveTicks element : polledAfterActive) {
-      element.doActionsAfterTick();
-    }
-  }
-
-  /**
-   * Polls passive interfaces before mote tick.
-   */
-  public void doPassiveActionsBeforeTick() {
-    for (PolledBeforeAllTicks element : polledBeforeAll) {
-      element.doActionsBeforeTick();
-    }
-  }
-
-  /**
-   * Polls passive interfaces after mote tick.
-   */
-  public void doPassiveActionsAfterTick() {
-    for (PolledAfterAllTicks element : polledAfterAll) {
-      element.doActionsAfterTick();
-    }
   }
 
   /**
