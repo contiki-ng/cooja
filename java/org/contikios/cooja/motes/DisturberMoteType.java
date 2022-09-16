@@ -66,11 +66,6 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
     super();
   }
 
-  public DisturberMoteType(String identifier) {
-    super(identifier);
-    setDescription("Disturber Mote Type #" + identifier);
-  }
-
   @Override
   public boolean configureAndInit(Container parentContainer,
       Simulation simulation, boolean visAvailable) 
