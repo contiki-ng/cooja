@@ -201,10 +201,8 @@ public abstract class MspMoteType implements MoteType {
   public Collection<Element> getConfigXML(Simulation simulation) {
     ArrayList<Element> config = new ArrayList<>();
 
-    Element element;
-
     // Identifier
-    element = new Element("identifier");
+    var element = new Element("identifier");
     element.setText(getIdentifier());
     config.add(element);
 
