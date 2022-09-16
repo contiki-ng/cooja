@@ -342,14 +342,10 @@ public abstract class MspMoteType implements MoteType {
   public abstract Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses();
   public abstract File getExpectedFirmwareFile(File source);
 
-  private static ELF loadELF(String filepath) throws IOException {
-    return ELF.readELF(filepath);
-  }
-
   private ELF elf; /* cached */
   public ELF getELF() throws IOException {
     if (elf == null) {
-      elf = loadELF(getContikiFirmwareFile().getPath());
+      elf = ELF.readELF(getContikiFirmwareFile().getPath());
     }
     return elf;
   }
