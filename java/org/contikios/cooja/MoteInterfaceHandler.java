@@ -66,6 +66,15 @@ import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.interfaces.RimeAddress;
+import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
+import org.contikios.cooja.mspmote.interfaces.MspClock;
+import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
+import org.contikios.cooja.mspmote.interfaces.MspDefaultSerial;
+import org.contikios.cooja.mspmote.interfaces.MspLED;
+import org.contikios.cooja.mspmote.interfaces.MspMoteID;
+import org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem;
+import org.contikios.cooja.mspmote.interfaces.SkyFlash;
+import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
 
 /**
  * The mote interface handler holds all interfaces for a specific mote.
@@ -100,7 +109,16 @@ public class MoteInterfaceHandler {
           entry("org.contikios.cooja.contikimote.interfaces.ContikiCFS", ContikiCFS.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiEEPROM", ContikiEEPROM.class),
           entry("org.contikios.cooja.interfaces.Mote2MoteRelations", Mote2MoteRelations.class),
-          entry("org.contikios.cooja.interfaces.MoteAttributes", MoteAttributes.class));
+          entry("org.contikios.cooja.interfaces.MoteAttributes", MoteAttributes.class),
+          entry("org.contikios.cooja.mspmote.interfaces.MspClock", MspClock.class),
+          entry("org.contikios.cooja.mspmote.interfaces.MspDebugOutput", MspDebugOutput.class),
+          entry("org.contikios.cooja.mspmote.interfaces.MspDefaultSerial", MspDefaultSerial.class),
+          entry("org.contikios.cooja.mspmote.interfaces.MspLED", MspLED.class),
+          entry("org.contikios.cooja.mspmote.interfaces.MspMoteID", MspMoteID.class),
+          entry("org.contikios.cooja.mspmote.interfaces.Msp802154Radio", Msp802154Radio.class),
+          entry("org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem", SkyCoffeeFilesystem.class),
+          entry("org.contikios.cooja.mspmote.interfaces.SkyFlash", SkyFlash.class),
+          entry("org.contikios.cooja.mspmote.interfaces.SkyTemperature", SkyTemperature.class));
 
   private final ArrayList<MoteInterface> moteInterfaces = new ArrayList<>();
 
