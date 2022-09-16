@@ -28,6 +28,7 @@
  */
 
 package org.contikios.cooja.mspmote;
+import java.util.List;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.MoteInterface;
@@ -72,8 +73,7 @@ public class Exp5438MoteType extends AbstractMspMoteType {
 
   @Override
   public Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses() {
-    @SuppressWarnings("unchecked")
-    Class<? extends MoteInterface>[] list = createMoteInterfaceList(
+    var classes = List.of(
             Position.class,
             RimeAddress.class,
             IPAddress.class,
@@ -84,15 +84,13 @@ public class Exp5438MoteType extends AbstractMspMoteType {
             Msp802154Radio.class,
             UsciA1Serial.class,
             Exp5438LED.class,
-            /*Exp5438LCD.class,*/ /* TODO */
             MspDebugOutput.class);
-    return list;
+    return classes.toArray(new Class[0]);
   }
 
   @Override
   public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
-    @SuppressWarnings("unchecked")
-    Class<? extends MoteInterface>[] list = createMoteInterfaceList(
+    var classes = List.of(
         Position.class,
         RimeAddress.class,
         IPAddress.class,
@@ -105,8 +103,7 @@ public class Exp5438MoteType extends AbstractMspMoteType {
         CC1120Radio.class,
         UsciA1Serial.class,
         Exp5438LED.class,
-        /*Exp5438LCD.class,*/ /* TODO */
         MspDebugOutput.class);
-    return list;
+    return classes.toArray(new Class[0]);
   }
 }
