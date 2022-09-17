@@ -898,13 +898,6 @@ public class ContikiMoteType implements MoteType {
     fileFirmware = file;
   }
 
-  /**
-   * Set the Contiki firmware file according to the source file.
-   */
-  public void setContikiFirmwareFile() {
-    fileFirmware = getMoteFile(librarySuffix);
-  }
-
   @Override
   public String getCompileCommands() {
     return compileCommands;
@@ -1157,7 +1150,7 @@ public class ContikiMoteType implements MoteType {
             file = simulation.getCooja().restorePortablePath(file);
           }
           setContikiSourceFile(file);
-          setContikiFirmwareFile();
+          fileFirmware = getMoteFile(librarySuffix);
           break;
         case "commands":
           compileCommands = element.getText();
