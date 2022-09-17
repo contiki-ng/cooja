@@ -53,7 +53,6 @@ import java.util.Observable;
 import java.util.Observer;
 import javax.script.ScriptException;
 import javax.swing.Action;
-import javax.swing.InputMap;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;

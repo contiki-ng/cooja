@@ -37,7 +37,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.AbstractCompileDialog;

@@ -29,7 +29,6 @@ package org.contikios.cooja;
 
 import java.util.Collection;
 import org.contikios.cooja.mote.memory.MemoryInterface;
-import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.jdom.Element;
 
 /**
