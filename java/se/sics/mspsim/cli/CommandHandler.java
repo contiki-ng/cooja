@@ -11,7 +11,7 @@ import se.sics.mspsim.util.MapTable;
 
 public class CommandHandler implements ActiveComponent, LineListener {
 
-  private final String scriptDirectory = "scripts";
+  private static final String scriptDirectory = "scripts";
 
   private final Hashtable<String, Command> commands = new Hashtable<>();
 
