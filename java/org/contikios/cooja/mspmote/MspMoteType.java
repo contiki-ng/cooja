@@ -232,7 +232,7 @@ public abstract class MspMoteType implements MoteType {
     config.add(element);
 
     // Mote interfaces
-    for (Class<? extends MoteInterface> moteInterface : getMoteInterfaceClasses()) {
+    for (var moteInterface : moteInterfaceClasses) {
       element = new Element("moteinterface");
       element.setText(moteInterface.getName());
       config.add(element);
