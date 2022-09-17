@@ -124,7 +124,7 @@ public abstract class CoreComm {
     dst.toFile().deleteOnExit();
 
     // Instantiate the CoreComm template into the temporary directory.
-    var template = Cooja.getExternalToolsSetting("CORECOMM_TEMPLATE_FILENAME");
+    var template = "corecomm_template.java";
     Path templatePath = Path.of(template);
     try (var input = CoreComm.class.getResourceAsStream('/' + template);
          var reader = Files.exists(templatePath)
