@@ -856,8 +856,7 @@ public class ContikiMoteType implements MoteType {
   }
 
   /**
-   * Copy given memory to the Contiki system. This should not be used directly,
-   * but instead via ContikiMote.setMemory().
+   * Copy given memory to the Contiki system.
    *
    * @param mem
    * New memory

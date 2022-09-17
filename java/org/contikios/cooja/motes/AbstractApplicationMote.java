@@ -115,10 +115,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
     return memory;
   }
 
-  public void setMemory(SectionMoteMemory memory) {
-    this.memory = memory;
-  }
-
   @Override
   public MoteType getType() {
     return moteType;
