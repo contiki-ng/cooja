@@ -298,7 +298,8 @@ public class ContikiMoteType implements MoteType {
       if (getContikiSourceFile() == null) {
         throw new MoteTypeCreationException("No Contiki application specified");
       }
-      if (getCompileCommands() == null) {
+      final var commands = getCompileCommands();
+      if (commands == null) {
         throw new MoteTypeCreationException("No compile commands specified");
       }
 
@@ -310,8 +311,7 @@ public class ContikiMoteType implements MoteType {
 
       /* Compile Contiki (may consist of several commands) */
       final MessageList compilationOutput = MessageContainer.createMessageList(visAvailable);
-      String[] arr = getCompileCommands().split("\n");
-      for (String cmd : arr) {
+      for (String cmd : commands.split("\n")) {
         if (cmd.trim().isEmpty()) {
           continue;
         }
