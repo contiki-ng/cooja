@@ -71,6 +71,11 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
   private final SectionMoteMemory myMemory;
   private final MoteInterfaceHandler myInterfaceHandler;
 
+  private final ArrayList<PolledBeforeActiveTicks> polledBeforeActive = new ArrayList<>();
+  private final ArrayList<PolledAfterActiveTicks> polledAfterActive = new ArrayList<>();
+  private final ArrayList<PolledBeforeAllTicks> polledBeforePassive = new ArrayList<>();
+  private final ArrayList<PolledAfterAllTicks> polledAfterPassive = new ArrayList<>();
+
   /**
    * Creates a new mote of given type.
    * Both the initial mote memory and the interface handler
@@ -84,7 +89,20 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     this.myType = moteType;
     this.myMemory = moteType.createInitialMemory();
     this.myInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
-
+    for (var intf : myInterfaceHandler.getInterfaces()) {
+      if (intf instanceof PolledBeforeActiveTicks intf2) {
+        polledBeforeActive.add(intf2);
+      }
+      if (intf instanceof PolledAfterActiveTicks intf2) {
+        polledAfterActive.add(intf2);
+      }
+      if (intf instanceof PolledBeforeAllTicks intf2) {
+        polledBeforePassive.add(intf2);
+      }
+      if (intf instanceof PolledAfterAllTicks intf2) {
+        polledAfterPassive.add(intf2);
+      }
+    }
     requestImmediateWakeup();
   }
 
@@ -121,8 +139,8 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
   @Override
   public void execute(long simTime) {
     /* Poll mote interfaces */
-    myInterfaceHandler.getActiveActionsBeforeTick().forEach(PolledBeforeActiveTicks::doActionsBeforeTick);
-    myInterfaceHandler.getPassiveActionsBeforeTick().forEach(PolledBeforeAllTicks::doActionsBeforeTick);
+    polledBeforeActive.forEach(PolledBeforeActiveTicks::doActionsBeforeTick);
+    polledBeforePassive.forEach(PolledBeforeAllTicks::doActionsBeforeTick);
 
     /* Check if pre-boot time */
     if (myInterfaceHandler.getClock().getTime() < 0) {
@@ -141,8 +159,8 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
 
     /* Poll mote interfaces */
     myMemory.pollForMemoryChanges();
-    myInterfaceHandler.getActiveActionsAfterTick().forEach(PolledAfterActiveTicks::doActionsAfterTick);
-    myInterfaceHandler.getPassiveActionsAfterTick().forEach(PolledAfterAllTicks::doActionsAfterTick);
+    polledAfterActive.forEach(PolledAfterActiveTicks::doActionsAfterTick);
+    polledAfterPassive.forEach(PolledAfterAllTicks::doActionsAfterTick);
   }
 
   /**
