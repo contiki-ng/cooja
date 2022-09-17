@@ -587,7 +587,7 @@ public class DisAsm implements MSP430Constants {
     return dbg;
   }
 
-  private String getRegName(int index) {
+  private static String getRegName(int index) {
     if (index == 0) return "PC";
     if (index == 1) return "SP";
     if (index == 2) return "SR";

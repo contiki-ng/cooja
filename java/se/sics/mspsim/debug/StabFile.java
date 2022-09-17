@@ -124,7 +124,7 @@ public class StabFile {
         return index - i;
     }
 
-    private boolean isParam(Stab stab) {
+    private static boolean isParam(Stab stab) {
         return (stab.type == StabDebug.N_REG_PARAM ||
             stab.type == StabDebug.N_VAR_PARAM);
     }

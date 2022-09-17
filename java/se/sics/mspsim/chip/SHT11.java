@@ -95,7 +95,7 @@ public class SHT11 extends Chip {
     return r & 0xff;
   }
 
-  private int crc8Add(int acc, int data) {
+  private static int crc8Add(int acc, int data) {
     int i;
     acc ^= (data & 0xff);
     for(i = 0; i < 8; i++) {

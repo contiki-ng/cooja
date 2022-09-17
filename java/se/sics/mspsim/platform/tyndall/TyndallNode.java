@@ -159,7 +159,7 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
         }
     }
 
-    public void setupGUI() {
+    public static void setupGUI() {
         System.out.println("No gui for Tyndall yet...");
     }
 

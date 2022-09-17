@@ -402,7 +402,7 @@ public class DwarfReader implements ELFDebug {
     }
 
     /* DWARF - address ranges information */
-    private void readAranges(ELFSection sec) {
+    private static void readAranges(ELFSection sec) {
         if (DEBUG) System.out.println("DWARF Aranges - ELF Section length: " + sec.getSize());
         int pos = 0;
         int index = 0;

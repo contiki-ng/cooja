@@ -896,7 +896,7 @@ public class Timer extends IOUnit {
    return counter;
   }
 
-  public String getSourceName(int source) {
+  public static String getSourceName(int source) {
     switch (source) {
     case SRC_ACLK:
       return "ACLK";
