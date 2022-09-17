@@ -270,7 +270,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   @Override
   public void writeSettingsToMoteType() {
-    ((ContikiMoteType)moteType).setContikiFirmwareFile();
   }
 
   @Override
