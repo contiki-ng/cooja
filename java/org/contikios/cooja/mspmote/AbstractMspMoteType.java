@@ -35,14 +35,8 @@
 
 package org.contikios.cooja.mspmote;
 
-import org.contikios.cooja.MoteInterface;
-
 /**
  *
  */
 public abstract class AbstractMspMoteType extends MspMoteType {
-    protected Class<? extends MoteInterface>[] createMoteInterfaceList(Class<? extends MoteInterface>... interfaceList) {
-        return interfaceList;
-    }
-
 }

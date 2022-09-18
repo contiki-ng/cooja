@@ -29,6 +29,7 @@
  */
 
 package org.contikios.cooja.mspmote;
+import java.util.List;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.MoteInterface;
@@ -77,8 +78,7 @@ public class Z1MoteType extends AbstractMspMoteType {
 
     @Override
     public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
-        @SuppressWarnings("unchecked")
-        Class<? extends MoteInterface>[] list = createMoteInterfaceList(
+        var classes = List.of(
                 Position.class,
                 RimeAddress.class,
                 IPAddress.class,
@@ -91,9 +91,8 @@ public class Z1MoteType extends AbstractMspMoteType {
                 Msp802154Radio.class,
                 MspDefaultSerial.class,
                 MspLED.class,
-                MspDebugOutput.class /* EXPERIMENTAL: Enable me for COOJA_DEBUG(..) */
-        );
-        return list;
+                MspDebugOutput.class);
+        return classes.toArray(new Class[0]);
     }
 
 }
