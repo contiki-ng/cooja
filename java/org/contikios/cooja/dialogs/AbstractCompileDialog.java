@@ -279,6 +279,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     cleanButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+        createButton.setEnabled(false);
 				try {
 					currentCompilationProcess = CompileContiki.compile(
 							"make clean TARGET=" + getTargetName(),
