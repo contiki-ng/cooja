@@ -29,19 +29,26 @@
 
 package org.contikios.cooja.mspmote;
 
+import java.awt.Container;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.MoteInterfaceHandler;
+import org.contikios.cooja.dialogs.CompileContiki;
+import org.contikios.cooja.dialogs.MessageContainer;
+import org.contikios.cooja.dialogs.MessageList;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -77,6 +84,12 @@ public abstract class MspMoteType implements MoteType {
   private File fileFirmware = null;
 
   private Class<? extends MoteInterface>[] moteInterfaceClasses = null;
+
+  public abstract String getMoteType();
+
+  public abstract String getMoteName();
+
+  protected abstract String getMoteImage();
 
   @Override
   public String getIdentifier() {
@@ -148,6 +161,75 @@ public abstract class MspMoteType implements MoteType {
   protected abstract MspMote createMote(Simulation simulation);
 
   @Override
+  public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
+          throws MoteTypeCreationException {
+    // If visualized, show compile dialog and let user configure.
+    if (visAvailable && !simulation.isQuickSetup()) {
+      // Create unique identifier.
+      if (getIdentifier() == null) {
+        int counter = 0;
+        boolean identifierOK = false;
+        while (!identifierOK) {
+          identifierOK = true;
+          counter++;
+          setIdentifier(getMoteType() + counter);
+
+          for (MoteType existingMoteType : simulation.getMoteTypes()) {
+            if (existingMoteType == this) {
+              continue;
+            }
+            if (existingMoteType.getIdentifier().equals(getIdentifier())) {
+              identifierOK = false;
+              break;
+            }
+          }
+        }
+      }
+
+      if (getDescription() == null) {
+        setDescription(getMoteName() + " Mote Type #" + getIdentifier());
+      }
+      return MspCompileDialog.showDialog(parentContainer, simulation, this, getMoteType());
+    }
+
+    if (getIdentifier() == null) {
+      throw new MoteTypeCreationException("No identifier");
+    }
+
+    // Not visualized: Compile Contiki immediately.
+    final MessageList compilationOutput = MessageContainer.createMessageList(visAvailable);
+    if (getCompileCommands() != null) {
+      // Handle multiple compilation commands one by one.
+      String[] arr = getCompileCommands().split("\n");
+      for (String cmd: arr) {
+        cmd = cmd.trim();
+        if (cmd.isEmpty()) {
+          continue;
+        }
+
+        try {
+          CompileContiki.compile(cmd, null, getContikiSourceFile().getParentFile(), null, null,
+                  compilationOutput, true);
+        } catch (Exception e) {
+          // Print last 10 compilation errors to console.
+          MessageContainer[] messages = compilationOutput.getMessages();
+          for (int i = Math.max(messages.length - 10, 0); i < messages.length; i++) {
+            logger.fatal(">> " + messages[i]);
+          }
+          logger.fatal("Compilation error: " + compilationOutput);
+          return false;
+        }
+      }
+    }
+
+    final var firmware = getContikiFirmwareFile();
+    if (firmware == null || !firmware.exists()) {
+      throw new MoteTypeCreationException("Contiki firmware file does not exist: " + firmware);
+    }
+    return true;
+  }
+
+  @Override
   public JComponent getTypeVisualizer() {
     StringBuilder sb = new StringBuilder();
     // Identifier
@@ -189,7 +271,24 @@ public abstract class MspMoteType implements MoteType {
     return label;
   }
 
-  public abstract Icon getMoteTypeIcon();
+  public Icon getMoteTypeIcon() {
+    String imageName = getMoteImage();
+    if (imageName == null) {
+      return null;
+    }
+    URL imageURL = this.getClass().getClassLoader().getResource(imageName);
+    if (imageURL == null) {
+      return null;
+    }
+    ImageIcon icon = new ImageIcon(imageURL);
+    if (icon.getIconHeight() > 0 && icon.getIconWidth() > 0) {
+      Image image = icon.getImage().getScaledInstance(
+              (200 * icon.getIconWidth() / icon.getIconHeight()), 200,
+              Image.SCALE_DEFAULT);
+      return new ImageIcon(image);
+    }
+    return null;
+  }
 
   @Override
   public ProjectConfig getConfig() {
@@ -338,7 +437,15 @@ public abstract class MspMoteType implements MoteType {
 
   public abstract Class<? extends MoteInterface>[] getAllMoteInterfaceClasses();
   public abstract Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses();
-  public abstract File getExpectedFirmwareFile(File source);
+
+  public File getExpectedFirmwareFile(File source) {
+    File parentDir = source.getParentFile();
+    String sourceNoExtension = source.getName();
+    if (sourceNoExtension.endsWith(".c")) {
+      sourceNoExtension = sourceNoExtension.substring(0, source.getName().length() - 2);
+    }
+    return new File(parentDir, "/build/" + getMoteType() + "/" + sourceNoExtension + '.' + getMoteType());
+  }
 
   private ELF elf; /* cached */
   public ELF getELF() throws IOException {
