@@ -198,10 +198,10 @@ public abstract class MspMoteType implements MoteType {
 
     // Not visualized: Compile Contiki immediately.
     final MessageList compilationOutput = MessageContainer.createMessageList(visAvailable);
-    if (getCompileCommands() != null) {
+    final var commands = getCompileCommands();
+    if (commands != null) {
       // Handle multiple compilation commands one by one.
-      String[] arr = getCompileCommands().split("\n");
-      for (String cmd: arr) {
+      for (String cmd: commands.split("\n")) {
         cmd = cmd.trim();
         if (cmd.isEmpty()) {
           continue;
@@ -242,8 +242,9 @@ public abstract class MspMoteType implements MoteType {
 
     /* Contiki source */
     sb.append("<tr><td>Contiki source</td><td>");
-    if (getContikiSourceFile() != null) {
-      sb.append(getContikiSourceFile().getAbsolutePath());
+    final var source = getContikiSourceFile();
+    if (source != null) {
+      sb.append(source.getAbsolutePath());
     } else {
       sb.append("[not specified]");
     }

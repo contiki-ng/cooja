@@ -295,7 +295,8 @@ public class ContikiMoteType implements MoteType {
       if (getIdentifier() == null) {
         throw new MoteTypeCreationException("No identifier specified");
       }
-      if (getContikiSourceFile() == null) {
+      final var source = getContikiSourceFile();
+      if (source == null) {
         throw new MoteTypeCreationException("No Contiki application specified");
       }
       final var commands = getCompileCommands();
@@ -320,7 +321,7 @@ public class ContikiMoteType implements MoteType {
           CompileContiki.compile(
                   cmd,
                   envOneDimension,
-                  getContikiSourceFile().getParentFile(),
+                  source.getParentFile(),
                   null,
                   null,
                   compilationOutput,
@@ -1146,7 +1147,7 @@ public class ContikiMoteType implements MoteType {
           if (!file.exists()) {
             file = simulation.getCooja().restorePortablePath(file);
           }
-          setContikiSourceFile(file);
+          fileSource = file;
           fileFirmware = getMoteFile(librarySuffix);
           break;
         case "commands":
