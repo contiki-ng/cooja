@@ -69,10 +69,10 @@ class Main {
   String logDir = ".";
 
   /**
-   * Option for specifying basename of logs.
+   * Option for also logging stdout output to a file.
    */
   @Option(names = "-logname", paramLabel = "NAME", description = "the filename for the log")
-  String logName = "COOJA.log";
+  String logName;
 
   /**
    * Option for specifying Contiki-NG path.
@@ -226,7 +226,7 @@ class Main {
       System.exit(1);
     }
 
-    if (!options.logName.endsWith(".log")) {
+    if (options.logName != null && !options.logName.endsWith(".log")) {
       options.logName += ".log";
     }
 
@@ -247,20 +247,24 @@ class Main {
       builder.add(appenderBuilder);
       builder.add(builder.newLogger("org.apache.logging.log4j", Level.DEBUG)
               .add(builder.newAppenderRef("Stdout")).addAttribute("additivity", false));
-      // Configure logfile file appender.
-      appenderBuilder = builder.newAppender("File", "FILE")
-              .addAttribute("fileName", options.logDir + "/" + options.logName)
-              .addAttribute("Append", "false");
-      appenderBuilder.add(builder.newLayout("PatternLayout")
-              .addAttribute("pattern", "[%d{HH:mm:ss} - %t] [%F:%L] [%p] - %m%n"));
-      appenderBuilder.add(builder.newFilter("MarkerFilter", Filter.Result.DENY, Filter.Result.NEUTRAL)
-              .addAttribute("marker", "FLOW"));
-      builder.add(appenderBuilder);
-      builder.add(builder.newLogger("org.apache.logging.log4j", Level.DEBUG)
-              .add(builder.newAppenderRef("File")).addAttribute("additivity", false));
-      // Construct the root logger and initialize the configurator
-      builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("Stdout"))
-              .add(builder.newAppenderRef("File")));
+      if (options.logName != null) {
+        // Configure logfile file appender.
+        appenderBuilder = builder.newAppender("File", "FILE")
+                .addAttribute("fileName", options.logDir + "/" + options.logName)
+                .addAttribute("Append", "false");
+        appenderBuilder.add(builder.newLayout("PatternLayout")
+                .addAttribute("pattern", "[%d{HH:mm:ss} - %t] [%F:%L] [%p] - %m%n"));
+        appenderBuilder.add(builder.newFilter("MarkerFilter", Filter.Result.DENY, Filter.Result.NEUTRAL)
+                .addAttribute("marker", "FLOW"));
+        builder.add(appenderBuilder);
+        builder.add(builder.newLogger("org.apache.logging.log4j", Level.DEBUG)
+                .add(builder.newAppenderRef("File")).addAttribute("additivity", false));
+        // Construct the root logger and initialize the configurator
+        builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("Stdout"))
+                .add(builder.newAppenderRef("File")));
+      } else {
+        builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("Stdout")));
+      }
       // FIXME: This should be try (LoggerContext cxt = Configurator.initialize(..)),
       //        but go immediately returns which causes the log file to be closed
       //        while the simulation is still running.
