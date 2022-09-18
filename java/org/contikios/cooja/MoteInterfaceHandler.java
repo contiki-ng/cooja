@@ -59,10 +59,6 @@ import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.PIR;
-import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
-import org.contikios.cooja.interfaces.PolledAfterAllTicks;
-import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
-import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.interfaces.RimeAddress;
@@ -78,12 +74,6 @@ import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
 
 /**
  * The mote interface handler holds all interfaces for a specific mote.
- * Interfaces should be polled via this class when the mote is ticked.
- *
- * @see #doActiveActionsAfterTick()
- * @see #doActiveActionsBeforeTick()
- * @see #doPassiveActionsAfterTick()
- * @see #doPassiveActionsBeforeTick()
  *
  * @author Fredrik Osterlind
  */
@@ -135,10 +125,6 @@ public class MoteInterfaceHandler {
   private PIR myPIR;
   private Position myPosition;
   private Radio myRadio;
-  private final ArrayList<PolledBeforeActiveTicks> polledBeforeActive = new ArrayList<>();
-  private final ArrayList<PolledAfterActiveTicks> polledAfterActive = new ArrayList<>();
-  private final ArrayList<PolledBeforeAllTicks> polledBeforeAll = new ArrayList<>();
-  private final ArrayList<PolledAfterAllTicks> polledAfterAll = new ArrayList<>();
 
   /**
    * Creates new mote interface handler. All given interfaces are created.
@@ -149,20 +135,7 @@ public class MoteInterfaceHandler {
   public MoteInterfaceHandler(Mote mote, Class<? extends MoteInterface>[] interfaceClasses) throws MoteType.MoteTypeCreationException {
     for (Class<? extends MoteInterface> interfaceClass : interfaceClasses) {
       try {
-        var intf = interfaceClass.getConstructor(Mote.class).newInstance(mote);
-        moteInterfaces.add(intf);
-        if (intf instanceof PolledBeforeActiveTicks) {
-          polledBeforeActive.add((PolledBeforeActiveTicks) intf);
-        }
-        if (intf instanceof PolledAfterActiveTicks) {
-          polledAfterActive.add((PolledAfterActiveTicks) intf);
-        }
-        if (intf instanceof PolledBeforeAllTicks) {
-          polledBeforeAll.add((PolledBeforeAllTicks) intf);
-        }
-        if (intf instanceof PolledAfterAllTicks) {
-          polledAfterAll.add((PolledAfterAllTicks) intf);
-        }
+        moteInterfaces.add(interfaceClass.getConstructor(Mote.class).newInstance(mote));
       } catch (Exception e) {
         logger.fatal("Exception when calling constructor of " + interfaceClass, e);
         throw new MoteType.MoteTypeCreationException("Exception when calling constructor of " + interfaceClass, e);
@@ -361,42 +334,6 @@ public class MoteInterfaceHandler {
       myRadio = getInterfaceOfType(Radio.class);
     }
     return myRadio;
-  }
-
-  /**
-   * Polls active interfaces before mote tick.
-   */
-  public void doActiveActionsBeforeTick() {
-    for (PolledBeforeActiveTicks element : polledBeforeActive) {
-      element.doActionsBeforeTick();
-    }
-  }
-
-  /**
-   * Polls active interfaces after mote tick.
-   */
-  public void doActiveActionsAfterTick() {
-    for (PolledAfterActiveTicks element : polledAfterActive) {
-      element.doActionsAfterTick();
-    }
-  }
-
-  /**
-   * Polls passive interfaces before mote tick.
-   */
-  public void doPassiveActionsBeforeTick() {
-    for (PolledBeforeAllTicks element : polledBeforeAll) {
-      element.doActionsBeforeTick();
-    }
-  }
-
-  /**
-   * Polls passive interfaces after mote tick.
-   */
-  public void doPassiveActionsAfterTick() {
-    for (PolledAfterAllTicks element : polledAfterAll) {
-      element.doActionsAfterTick();
-    }
   }
 
   /**
