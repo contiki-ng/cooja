@@ -114,63 +114,69 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   protected void initMote() throws MoteType.MoteTypeCreationException {
-    if (myMoteType != null) {
-      initEmulator(myMoteType.getContikiFirmwareFile());
-      myMoteInterfaceHandler = createMoteInterfaceHandler();
+    initEmulator(myMoteType.getContikiFirmwareFile());
+    myMoteInterfaceHandler = createMoteInterfaceHandler();
 
-      /* TODO Create COOJA-specific window manager */
-      registry.removeComponent("windowManager");
-      registry.registerComponent("windowManager", new WindowManager() {
-        @Override
-        public ManagedWindow createWindow(String name) {
-          return new ManagedWindow() {
-            @Override
-            public void setVisible(boolean b) {
-              logger.warn("setVisible() ignored");
-            }
-            @Override
-            public void setTitle(String string) {
-              logger.warn("setTitle() ignored");
-            }
-            @Override
-            public void setSize(int width, int height) {
-              logger.warn("setSize() ignored");
-            }
-            @Override
-            public void setBounds(int x, int y, int width, int height) {
-              logger.warn("setBounds() ignored");
-            }
-            @Override
-            public void removeAll() {
-              logger.warn("removeAll() ignored");
-            }
-            @Override
-            public void pack() {
-              logger.warn("pack() ignored");
-            }
-            @Override
-            public boolean isVisible() {
-              logger.warn("isVisible() return false");
-              return false;
-            }
-            @Override
-            public String getTitle() {
-              logger.warn("getTitle() return \"\"");
-              return "";
-            }
-            @Override
-            public void add(Component component) {
-              logger.warn("add() ignored");
-            }
-          };
-        }
-      });
+    /* TODO Create COOJA-specific window manager */
+    registry.removeComponent("windowManager");
+    registry.registerComponent("windowManager", new WindowManager() {
+      @Override
+      public ManagedWindow createWindow(String name) {
+        return new ManagedWindow() {
+          @Override
+          public void setVisible(boolean b) {
+            logger.warn("setVisible() ignored");
+          }
 
-      try {
-        debuggingInfo = ((MspMoteType)getType()).getFirmwareDebugInfo();
-      } catch (IOException e) {
-        throw new RuntimeException("Error: " + e.getMessage(), e);
+          @Override
+          public void setTitle(String string) {
+            logger.warn("setTitle() ignored");
+          }
+
+          @Override
+          public void setSize(int width, int height) {
+            logger.warn("setSize() ignored");
+          }
+
+          @Override
+          public void setBounds(int x, int y, int width, int height) {
+            logger.warn("setBounds() ignored");
+          }
+
+          @Override
+          public void removeAll() {
+            logger.warn("removeAll() ignored");
+          }
+
+          @Override
+          public void pack() {
+            logger.warn("pack() ignored");
+          }
+
+          @Override
+          public boolean isVisible() {
+            logger.warn("isVisible() return false");
+            return false;
+          }
+
+          @Override
+          public String getTitle() {
+            logger.warn("getTitle() return \"\"");
+            return "";
+          }
+
+          @Override
+          public void add(Component component) {
+            logger.warn("add() ignored");
+          }
+        };
       }
+    });
+
+    try {
+      debuggingInfo = ((MspMoteType) getType()).getFirmwareDebugInfo();
+    } catch (IOException e) {
+      throw new RuntimeException("Error: " + e.getMessage(), e);
     }
   }
 
