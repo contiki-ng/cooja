@@ -102,10 +102,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
     return moteInterfaces;
   }
 
-  public void setInterfaces(MoteInterfaceHandler moteInterfaceHandler) {
-    moteInterfaces = moteInterfaceHandler;
-  }
-
   @Override
   public MemoryInterface getMemory() {
     return memory;

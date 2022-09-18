@@ -276,10 +276,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return myMoteInterfaceHandler;
   }
 
-  public void setInterfaces(MoteInterfaceHandler moteInterfaceHandler) {
-    myMoteInterfaceHandler = moteInterfaceHandler;
-  }
-
   private boolean booted = false;
 
   public void simTimeChanged(long diff) {
