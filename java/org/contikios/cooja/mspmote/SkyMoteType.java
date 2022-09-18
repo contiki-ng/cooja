@@ -53,7 +53,7 @@ import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
 
 @ClassDescription("Sky mote")
 @AbstractionLevelDescription("Emulated level")
-public class SkyMoteType extends AbstractMspMoteType {
+public class SkyMoteType extends MspMoteType {
 
   @Override
   protected MspMote createMote(Simulation simulation) {
