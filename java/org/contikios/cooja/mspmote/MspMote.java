@@ -97,7 +97,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   private MSP430 myCpu = null;
   private final MspMoteType myMoteType;
   private MspMoteMemory myMemory = null;
-  private MoteInterfaceHandler myMoteInterfaceHandler = null;
+  protected MoteInterfaceHandler myMoteInterfaceHandler;
   public ComponentRegistry registry = null;
 
   /* Stack monitoring variables */
@@ -112,9 +112,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     requestImmediateWakeup();
   }
 
-  protected void initMote() throws MoteType.MoteTypeCreationException {
-    myMoteInterfaceHandler = createMoteInterfaceHandler();
-
+  protected void initMote() {
     /* TODO Create COOJA-specific window manager */
     registry.removeComponent("windowManager");
     registry.registerComponent("windowManager", new WindowManager() {
@@ -185,10 +183,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   public void stopNextInstruction() {
     stopNextInstruction = true;
     getCPU().stop();
-  }
-
-  protected MoteInterfaceHandler createMoteInterfaceHandler() throws MoteType.MoteTypeCreationException {
-    return new MoteInterfaceHandler(this, getType().getMoteInterfaceClasses());
   }
 
   /**
@@ -462,10 +456,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   @Override
   public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException {
-    if (myMoteInterfaceHandler == null) {
-      myMoteInterfaceHandler = createMoteInterfaceHandler();
-    }
-
     try {
       debuggingInfo = ((MspMoteType)getType()).getFirmwareDebugInfo();
     } catch (IOException e) {

@@ -33,6 +33,7 @@ package org.contikios.cooja.mspmote;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
@@ -58,6 +59,7 @@ public class SkyMote extends MspMote {
       logger.fatal("Error when creating Sky mote: ", e);
       throw new MoteType.MoteTypeCreationException("Error when creating Sky mote: " + e.getMessage());
     }
+    myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
   }
 
   /*private void configureWithMacAddressesTxt(int id) {

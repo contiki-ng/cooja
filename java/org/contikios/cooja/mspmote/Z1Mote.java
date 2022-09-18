@@ -31,6 +31,7 @@
 package org.contikios.cooja.mspmote;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
@@ -54,6 +55,7 @@ public class Z1Mote extends MspMote {
             logger.fatal("Error when creating Z1 mote: ", e);
             throw new MoteType.MoteTypeCreationException("Error when creating Z1 mote: " + e.getMessage());
         }
+        myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     }
 
     @Override
