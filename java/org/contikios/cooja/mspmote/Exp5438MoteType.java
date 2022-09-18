@@ -49,7 +49,7 @@ import org.contikios.cooja.mspmote.interfaces.UsciA1Serial;
 
 @ClassDescription("EXP430F5438 mote")
 @AbstractionLevelDescription("Emulated level")
-public class Exp5438MoteType extends AbstractMspMoteType {
+public class Exp5438MoteType extends MspMoteType {
 
   @Override
   protected MspMote createMote(Simulation simulation) {

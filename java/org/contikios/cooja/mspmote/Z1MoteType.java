@@ -49,7 +49,7 @@ import org.contikios.cooja.mspmote.interfaces.MspMoteID;
 
 @ClassDescription("Z1 mote")
 @AbstractionLevelDescription("Emulated level")
-public class Z1MoteType extends AbstractMspMoteType {
+public class Z1MoteType extends MspMoteType {
 
     @Override
     public String getMoteType() {
