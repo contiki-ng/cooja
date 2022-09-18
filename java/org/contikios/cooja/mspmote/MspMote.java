@@ -203,10 +203,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return myMemory;
   }
 
-  public void setMemory(MspMoteMemory memory) {
-    myMemory = memory;
-  }
-
   /**
    * Prepares CPU, memory and ELF module.
    *
