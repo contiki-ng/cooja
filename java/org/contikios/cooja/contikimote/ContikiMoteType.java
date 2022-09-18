@@ -827,7 +827,7 @@ public class ContikiMoteType implements MoteType {
    * Ticks the currently loaded mote. This should not be used directly, but
    * rather via {@link ContikiMote#execute(long)}.
    */
-  public void tick() {
+  protected void tick() {
     myCoreComm.tick();
   }
 
@@ -838,7 +838,7 @@ public class ContikiMoteType implements MoteType {
    *
    * @return Initial memory of a mote type
    */
-  public SectionMoteMemory createInitialMemory() {
+  protected SectionMoteMemory createInitialMemory() {
     return initialMemory.clone();
   }
 
@@ -849,7 +849,7 @@ public class ContikiMoteType implements MoteType {
    * @param mem
    *          Memory to set
    */
-  public void getCoreMemory(SectionMoteMemory mem) {
+  protected void getCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
       myCoreComm.getMemory(sec.getStartAddr() - offset, sec.getTotalSize(), sec.getMemory());
     }
@@ -861,7 +861,7 @@ public class ContikiMoteType implements MoteType {
    * @param mem
    * New memory
    */
-  public void setCoreMemory(SectionMoteMemory mem) {
+  protected void setCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
       myCoreComm.setMemory(sec.getStartAddr() - offset, sec.getTotalSize(), sec.getMemory());
     }

@@ -84,7 +84,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
    * @param moteType Mote type
    * @param sim Mote's simulation
    */
-  public ContikiMote(ContikiMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
+  protected ContikiMote(ContikiMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
     setSimulation(sim);
     this.myType = moteType;
     this.myMemory = moteType.createInitialMemory();
