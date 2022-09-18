@@ -29,10 +29,14 @@
 package org.contikios.cooja.motes;
 
 import org.contikios.cooja.Mote;
+import org.contikios.cooja.Simulation;
 import org.contikios.cooja.plugins.BufferListener;
 import org.contikios.cooja.plugins.TimeLine;
 
 public abstract class AbstractEmulatedMote extends AbstractWakeupMote implements Mote {
+  public AbstractEmulatedMote(Simulation sim) {
+    super(sim);
+  }
 
   /**
    * @return CPU frequency (Hz)

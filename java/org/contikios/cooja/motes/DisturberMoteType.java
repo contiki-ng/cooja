@@ -66,11 +66,6 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
     super();
   }
 
-  public DisturberMoteType(String identifier) {
-    super(identifier);
-    setDescription("Disturber Mote Type #" + identifier);
-  }
-
   @Override
   public boolean configureAndInit(Container parentContainer,
       Simulation simulation, boolean visAvailable) 
@@ -96,9 +91,6 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
     private final static long DELAY = Simulation.MILLISECOND/5;
     private final static long DURATION = 10*Simulation.MILLISECOND;
     
-    public DisturberMote() throws MoteTypeCreationException {
-      super();
-    }
     public DisturberMote(MoteType moteType, Simulation simulation) throws MoteTypeCreationException {
       super(moteType, simulation);
     }
