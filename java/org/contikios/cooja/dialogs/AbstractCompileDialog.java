@@ -418,8 +418,9 @@ public abstract class AbstractCompileDialog extends JDialog {
       }
 
       /* Restore compile commands */
-      if (moteType.getCompileCommands() != null) {
-        setCompileCommands(moteType.getCompileCommands());
+      final var commands = moteType.getCompileCommands();
+      if (commands != null) {
+        setCompileCommands(commands);
         setDialogState(DialogState.AWAITING_COMPILATION);
         restoredDialogState = true;
       }
