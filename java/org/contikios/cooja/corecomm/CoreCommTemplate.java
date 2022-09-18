@@ -25,19 +25,21 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
  */
 
 package org.contikios.cooja.corecomm;
-import java.io.File;
 
-import org.contikios.cooja.*;
+import java.io.File;
+import org.contikios.cooja.CoreComm;
 
 /**
+ * This class is part of the resources of Cooja and is used by CoreComm to generate LibN.java,
+ * which contains the interface to Contiki-NG.
+ *
  * @see CoreComm
  * @author Fredrik Osterlind
  */
-public class [CLASSNAME] extends CoreComm {
+public class CoreCommTemplate extends CoreComm {
 
   /**
    * Loads library libFile.
@@ -45,7 +47,7 @@ public class [CLASSNAME] extends CoreComm {
    * @see CoreComm
    * @param libFile Library file
    */
-  public [CLASSNAME](File libFile) {
+  public CoreCommTemplate(File libFile) {
     System.load(libFile.getAbsolutePath());
     init();
   }

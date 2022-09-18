@@ -32,6 +32,11 @@ dependencies {
 
 // FIXME: add test resources.
 sourceSets {
+  corecomm {
+    resources {
+      srcDirs = ['java/org/contikios/cooja/corecomm']
+    }
+  }
   data {
     resources {
       srcDirs = ['tools/coffee-manager']
@@ -41,9 +46,10 @@ sourceSets {
   main {
     java {
       srcDirs = ['java', 'tools/coffee-manager']
+      exclude 'org/contikios/cooja/corecomm/CoreCommTemplate.java'
     }
     resources {
-      srcDirs = [data.resources, 'config', 'images']
+      srcDirs = [corecomm.resources, data.resources, 'config', 'images']
     }
   }
 }

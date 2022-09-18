@@ -231,7 +231,6 @@ public class Cooja extends Observable {
     "PATH_JAVAC",
 
     "DEFAULT_PROJECTDIRS",
-    "CORECOMM_TEMPLATE_FILENAME",
 
     "PARSE_WITH_COMMAND",
 
