@@ -108,13 +108,11 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   public MspMote(MspMoteType moteType, Simulation simulation) {
     super(simulation);
     myMoteType = moteType;
-
     /* Schedule us immediately */
     requestImmediateWakeup();
   }
 
   protected void initMote() throws MoteType.MoteTypeCreationException {
-    initEmulator(myMoteType.getContikiFirmwareFile());
     myMoteInterfaceHandler = createMoteInterfaceHandler();
 
     /* TODO Create COOJA-specific window manager */
@@ -281,14 +279,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   public void setInterfaces(MoteInterfaceHandler moteInterfaceHandler) {
     myMoteInterfaceHandler = moteInterfaceHandler;
   }
-
-  /**
-   * Initializes emulator by creating CPU, memory and node object.
-   *
-   * @param ELFFile ELF file
-   * @return True if successful
-   */
-  protected abstract boolean initEmulator(File ELFFile);
 
   private boolean booted = false;
 

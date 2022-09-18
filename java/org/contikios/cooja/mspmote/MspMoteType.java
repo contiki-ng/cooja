@@ -158,7 +158,7 @@ public abstract class MspMoteType implements MoteType {
     return mote;
   }
 
-  protected abstract MspMote createMote(Simulation simulation);
+  protected abstract MspMote createMote(Simulation simulation) throws MoteTypeCreationException;
 
   @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)

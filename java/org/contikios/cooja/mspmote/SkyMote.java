@@ -30,11 +30,10 @@
 
 package org.contikios.cooja.mspmote;
 
-import java.io.File;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
 import org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem;
@@ -46,25 +45,19 @@ import se.sics.mspsim.platform.sky.SkyNode;
 public class SkyMote extends MspMote {
   private static final Logger logger = LogManager.getLogger(SkyMote.class);
 
-  public SkyNode skyNode = null;
+  public final SkyNode skyNode;
 
-  public SkyMote(MspMoteType moteType, Simulation sim) {
+  public SkyMote(MspMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
     super(moteType, sim);
-  }
-
-  @Override
-  protected boolean initEmulator(File fileELF) {
+    skyNode = new SkyNode();
+    registry = skyNode.getRegistry();
+    skyNode.setFlash(new CoojaM25P80(skyNode.getCPU()));
     try {
-      skyNode = new SkyNode();
-      registry = skyNode.getRegistry();
-      skyNode.setFlash(new CoojaM25P80(skyNode.getCPU()));
-
-      prepareMote(fileELF, skyNode);
+      prepareMote(moteType.getContikiFirmwareFile(), skyNode);
     } catch (Exception e) {
       logger.fatal("Error when creating Sky mote: ", e);
-      return false;
+      throw new MoteType.MoteTypeCreationException("Error when creating Sky mote: " + e.getMessage());
     }
-    return true;
   }
 
   /*private void configureWithMacAddressesTxt(int id) {
