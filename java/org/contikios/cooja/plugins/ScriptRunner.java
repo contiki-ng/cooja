@@ -46,7 +46,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -369,10 +368,6 @@ public class ScriptRunner implements Plugin {
         /* Continuously write test output to file */
         if (logWriter == null) {
           /* Warning: static variable, used by all active test editor plugins */
-          Path logDirPath = Path.of(gui.logDirectory);
-          if (!Files.exists(logDirPath)) {
-            Files.createDirectory(logDirPath);
-          }
           var logFile = Paths.get(gui.logDirectory, "COOJA.testlog");
           logWriter = Files.newBufferedWriter(logFile, UTF_8, WRITE, CREATE, TRUNCATE_EXISTING);
           logWriter.write("Random seed: " + simulation.getRandomSeed() + "\n");

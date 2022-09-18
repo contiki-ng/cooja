@@ -28,6 +28,7 @@
 
 package org.contikios.cooja;
 
+import java.io.IOException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
@@ -167,6 +168,15 @@ class Main {
     if (options.action != null && options.action.nogui != null) {
       // Ensure no UI is used by Java
       System.setProperty("java.awt.headless", "true");
+      Path logDirPath = Path.of(options.logDir);
+      if (!Files.exists(logDirPath)) {
+        try {
+          Files.createDirectory(logDirPath);
+        } catch (IOException e) {
+          System.err.println("Could not create log directory '" + options.logDir + "'");
+          System.exit(1);
+        }
+      }
     }
 
     // Verify soundness of -nogui/-quickstart argument.
