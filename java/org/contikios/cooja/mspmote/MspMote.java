@@ -465,9 +465,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     for (Element element: configXML) {
       String name = element.getName();
 
-      if (name.equals("motetype_identifier")) {
-        /* Ignored: handled by simulation */
-      } else if ("breakpoints".equals(element.getName())) {
+      if ("breakpoints".equals(element.getName())) {
         setWatchpointConfigXML(element.getChildren(), visAvailable);
       } else if (name.equals("interface_config")) {
         String intfClass = element.getText().trim();
