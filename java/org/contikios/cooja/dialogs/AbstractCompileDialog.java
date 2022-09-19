@@ -855,7 +855,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     currentCompilationProcess = null;
   }
 
-  private boolean createNewCompilationTab(MessageListUI output) {
+  private void createNewCompilationTab(MessageListUI output) {
     abortAnyCompilation();
     tabbedPane.remove(currentCompilationOutput);
 
@@ -864,7 +864,6 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     tabbedPane.setSelectedComponent(scrollOutput);
     currentCompilationOutput = scrollOutput;
-    return true;
   }
 
   protected abstract String getTargetName();
