@@ -105,9 +105,14 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   public GenericNode mspNode = null;
 
-  public MspMote(MspMoteType moteType, Simulation simulation) {
+  public MspMote(MspMoteType moteType, Simulation simulation) throws MoteType.MoteTypeCreationException {
     super(simulation);
     myMoteType = moteType;
+    try {
+      debuggingInfo = moteType.getFirmwareDebugInfo();
+    } catch (IOException e) {
+      throw new MoteType.MoteTypeCreationException("Error: " + e.getMessage(), e);
+    }
     /* Schedule us immediately */
     requestImmediateWakeup();
   }
@@ -168,12 +173,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
         };
       }
     });
-
-    try {
-      debuggingInfo = ((MspMoteType) getType()).getFirmwareDebugInfo();
-    } catch (IOException e) {
-      throw new RuntimeException("Error: " + e.getMessage(), e);
-    }
   }
 
   /**
@@ -456,12 +455,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   @Override
   public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException {
-    try {
-      debuggingInfo = ((MspMoteType)getType()).getFirmwareDebugInfo();
-    } catch (IOException e) {
-      throw new RuntimeException("Error: " + e.getMessage(), e);
-    }
-
     for (Element element: configXML) {
       String name = element.getName();
 
@@ -600,7 +593,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   /* WatchpointMote */
   private final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<>();
   private final ArrayList<MspBreakpoint> watchpoints = new ArrayList<>();
-  private HashMap<File, HashMap<Integer, Integer>> debuggingInfo = null;
+  private final HashMap<File, HashMap<Integer, Integer>> debuggingInfo;
 
   @Override
   public void addWatchpointListener(WatchpointListener listener) {
