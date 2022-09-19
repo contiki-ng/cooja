@@ -2098,40 +2098,6 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Creates a new mote type of the given mote type class.
-   * This may include displaying a dialog for user configurations.
-   * <p>
-   * If mote type is created successfully, the add motes dialog will appear.
-   *
-   * @param moteTypeClass Mote type class
-   */
-  private void doCreateMoteType(Class<? extends MoteType> moteTypeClass) {
-    if (mySimulation == null) {
-      logger.fatal("Can't create mote type (no simulation)");
-      return;
-    }
-    mySimulation.stopSimulation();
-
-    // Create mote type
-    MoteType newMoteType;
-    try {
-      newMoteType = moteTypeClass == ContikiMoteType.class
-              ? new ContikiMoteType(this) : moteTypeClass.getDeclaredConstructor().newInstance();
-      if (!newMoteType.configureAndInit(Cooja.getTopParentContainer(), mySimulation, isVisualized())) {
-        return;
-      }
-      mySimulation.addMoteType(newMoteType);
-    } catch (Exception e) {
-      logger.fatal("Exception when creating mote type", e);
-      if (isVisualized()) {
-        showErrorDialog(getTopParentContainer(), "Mote type creation error", e, false);
-      }
-      return;
-    }
-    doAddMotes(newMoteType);
-  }
-
-  /**
    * Remove current simulation
    *
    * @param askForConfirmation
@@ -2733,8 +2699,30 @@ public class Cooja extends Observable {
     @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("create mote type")) {
-        cooja.doCreateMoteType((Class<? extends MoteType>) ((JMenuItem) e
-            .getSource()).getClientProperty("class"));
+        if (cooja.mySimulation == null) {
+          logger.fatal("Can't create mote type (no simulation)");
+          return;
+        }
+        cooja.mySimulation.stopSimulation();
+
+        // Create mote type
+        var clazz = (Class<? extends MoteType>) ((JMenuItem) e.getSource()).getClientProperty("class");
+        MoteType newMoteType;
+        try {
+          newMoteType = clazz == ContikiMoteType.class
+                  ? new ContikiMoteType(cooja) : clazz.getDeclaredConstructor().newInstance();
+          if (!newMoteType.configureAndInit(Cooja.getTopParentContainer(), cooja.mySimulation, isVisualized())) {
+            return;
+          }
+          cooja.mySimulation.addMoteType(newMoteType);
+        } catch (Exception e1) {
+          logger.fatal("Exception when creating mote type", e1);
+          if (isVisualized()) {
+            showErrorDialog(getTopParentContainer(), "Mote type creation error", e1, false);
+          }
+          return;
+        }
+        cooja.doAddMotes(newMoteType);
       } else if (e.getActionCommand().equals("add motes")) {
         cooja.doAddMotes((MoteType) ((JMenuItem) e.getSource())
             .getClientProperty("motetype"));
