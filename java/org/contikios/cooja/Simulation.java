@@ -456,7 +456,7 @@ public class Simulation extends Observable implements Runnable {
     config.add(element);
 
     // Mote types
-    for (MoteType moteType : getMoteTypes()) {
+    for (MoteType moteType : moteTypes) {
       element = new Element("motetype");
       element.setText(moteType.getClass().getName());
 
