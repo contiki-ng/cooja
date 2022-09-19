@@ -690,23 +690,7 @@ public class Cooja extends Observable {
     final var cfgFile = validateFileOrSelectNew(file);
     if (cfgFile == null) return;
 
-    executeWorkerAsync(createLoadSimWorker(cfgFile, quick, false, null));
-  }
-
-  /**
-   * Executes a worker in a separate thread, ignoring the result.
-   *
-   * @param worker Worker to execute.
-   */
-  private static void executeWorkerAsync(SwingWorker<Simulation, SimulationCreationException> worker) {
-    new Thread(() -> {
-      worker.execute();
-      try {
-        worker.get();
-      } catch (CancellationException | InterruptedException | ExecutionException e) {
-        throw new RuntimeException(e);
-      }
-    }, "asyncld").start();
+    createLoadSimWorker(cfgFile, quick, false, null).execute();
   }
 
   /**
@@ -2395,7 +2379,12 @@ public class Cooja extends Observable {
    * @return The simulation
    */
   private Simulation doLoadConfig(File configFile, final boolean quick, boolean rewriteCsc, Long manualRandomSeed) {
-    final var worker = createLoadSimWorker(configFile, quick, rewriteCsc, manualRandomSeed);
+    final var worker = new RunnableInEDT<SwingWorker<Simulation, SimulationCreationException>>() {
+      @Override
+      public SwingWorker<Simulation, SimulationCreationException> work() {
+        return createLoadSimWorker(configFile, quick, rewriteCsc, manualRandomSeed);
+      }
+    }.invokeAndWait();
     worker.execute();
     try {
       return worker.get();
@@ -2417,6 +2406,7 @@ public class Cooja extends Observable {
    */
   private SwingWorker<Simulation, SimulationCreationException> createLoadSimWorker(File configFile, final boolean quick,
                                                                                    boolean rewriteCsc, Long manualRandomSeed) {
+    assert java.awt.EventQueue.isDispatchThread() : "Call from AWT thread";
     final var autoStart = configFile == null && mySimulation.isRunning();
     if (configFile != null && !doRemoveSimulation(true)) {
       return null;
@@ -2426,40 +2416,33 @@ public class Cooja extends Observable {
       addToFileHistory(configFile);
     }
 
+    final JPanel progressPanel;
     final JDialog progressDialog;
     if (quick) {
       final String progressTitle = "Loading " + (configFile == null ? "" : configFile.getAbsolutePath());
+      progressDialog = new JDialog(Cooja.getTopParentContainer(), progressTitle, ModalityType.APPLICATION_MODAL);
 
-      progressDialog = new RunnableInEDT<JDialog>() {
-        @Override
-        public JDialog work() {
-          final JDialog progressDialog = new JDialog(Cooja.getTopParentContainer(), progressTitle, ModalityType.APPLICATION_MODAL);
+      progressPanel = new JPanel(new BorderLayout());
+      var progressBar = new JProgressBar(0, 100);
+      progressBar.setValue(0);
+      progressBar.setIndeterminate(true);
 
-          JPanel progressPanel = new JPanel(new BorderLayout());
-          var progressBar = new JProgressBar(0, 100);
-          progressBar.setValue(0);
-          progressBar.setIndeterminate(true);
+      PROGRESS_BAR = progressBar; /* Allow various parts of COOJA to show messages */
 
-          PROGRESS_BAR = progressBar; /* Allow various parts of COOJA to show messages */
+      var button = new JButton("Abort");
 
-          var button = new JButton("Abort");
+      progressPanel.add(BorderLayout.CENTER, progressBar);
+      progressPanel.add(BorderLayout.SOUTH, button);
+      progressPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-          progressPanel.add(BorderLayout.CENTER, progressBar);
-          progressPanel.add(BorderLayout.SOUTH, button);
-          progressPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+      progressDialog.getContentPane().add(progressPanel);
+      progressDialog.setSize(400, 200);
 
-          progressPanel.setVisible(true);
-
-          progressDialog.getContentPane().add(progressPanel);
-          progressDialog.setSize(400, 200);
-
-          progressDialog.getRootPane().setDefaultButton(button);
-          progressDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
-          progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-          return progressDialog;
-        }
-      }.invokeAndWait();
+      progressDialog.getRootPane().setDefaultButton(button);
+      progressDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
+      progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     } else {
+      progressPanel = null;
       progressDialog = null;
     }
 
@@ -2536,6 +2519,7 @@ public class Cooja extends Observable {
 
     if (progressDialog != null) {
       java.awt.EventQueue.invokeLater(() -> {
+        progressPanel.setVisible(true);
         progressDialog.getRootPane().getDefaultButton().addActionListener(e -> worker.cancel(true));
         progressDialog.setVisible(true);
       });
@@ -2559,7 +2543,7 @@ public class Cooja extends Observable {
       return;
     }
 
-    executeWorkerAsync(createLoadSimWorker(null, true, false, sim.getRandomSeed()));
+    createLoadSimWorker(null, true, false, sim.getRandomSeed()).execute();
   }
 
   private static boolean warnMemory() {
