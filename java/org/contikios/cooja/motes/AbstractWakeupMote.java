@@ -80,12 +80,9 @@ public abstract class AbstractWakeupMote implements Mote {
    */
   public void requestImmediateWakeup() {
     long t = simulation.getSimulationTime();
-    
     if (simulation.isSimulationThread()) {
-      /* Schedule wakeup immediately */
       scheduleNextWakeup(t);
     } else {
-      /* Schedule wakeup asap */
       simulation.invokeSimulationThread(() -> scheduleNextWakeup(t));
     }
   }
@@ -112,7 +109,6 @@ public abstract class AbstractWakeupMote implements Mote {
 
     if (executeMoteEvent.isScheduled()) {
       /* Reschedule wakeup mote event */
-      /*logger.info("Rescheduled wakeup from " + executeMoteEvent.getTime() + " to " + time);*/
       executeMoteEvent.remove();
     }
 
