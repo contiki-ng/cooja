@@ -365,7 +365,6 @@ public abstract class AbstractCompileDialog extends JDialog {
       Dimension newSize = new Dimension();
       newSize.height = Math.min((int) maxSize.getHeight(), (int) getSize().getHeight());
       newSize.width = Math.min((int) maxSize.getWidth(), (int) getSize().getWidth());
-      /*logger.info("Resizing dialog: " + myDialog.getSize() + " -> " + newSize);*/
       setSize(newSize);
     }
 
@@ -812,7 +811,6 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @param commands User configured compile commands
    */
   public void setCompileCommands(String commands) {
-    /* TODO Merge from String[] */
     commandsArea.setText(commands);
   }
 
@@ -820,7 +818,6 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @return User configured compile commands
    */
   public String getCompileCommands() {
-    /* TODO Split into String[] */
     return commandsArea.getText();
   }
 
