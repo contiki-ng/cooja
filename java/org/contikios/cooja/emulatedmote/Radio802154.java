@@ -60,8 +60,6 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
     protected boolean isReceiving = false;
     //    private boolean hasFailedReception = false;
 
-    private final boolean radioOn = true;
-
     private RadioByte lastOutgoingByte = null;
 
     private RadioByte lastIncomingByte = null;
