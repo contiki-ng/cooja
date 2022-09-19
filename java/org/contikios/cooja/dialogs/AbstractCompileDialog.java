@@ -402,10 +402,9 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     /* Restore mote interface classes */
     for (Component c : moteIntfBox.getComponents()) {
-      if (!(c instanceof JCheckBox)) {
-        continue;
+      if (c instanceof JCheckBox box) {
+        box.setSelected(false);
       }
-      ((JCheckBox) c).setSelected(false);
     }
     for (var intf : getAllMoteInterfaces()) {
       addMoteInterface(intf, false);
