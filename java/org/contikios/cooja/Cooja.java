@@ -2686,6 +2686,7 @@ public class Cooja extends Observable {
       MoteType newMoteType = null;
       final var cmd = e.getActionCommand();
       if (cmd.equals("create mote type")) {
+        // FIXME: Simulation should never be null if this action is enabled.
         if (cooja.mySimulation == null) {
           logger.fatal("Can't create mote type (no simulation)");
           return;
@@ -2707,6 +2708,7 @@ public class Cooja extends Observable {
           newMoteType = null;
         }
       } else if (cmd.equals("add motes")) {
+        // FIXME: Simulation should never be null if this action is enabled.
         if (cooja.mySimulation == null) {
           logger.warn("No simulation active");
           return;
