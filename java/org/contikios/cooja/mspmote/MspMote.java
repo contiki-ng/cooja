@@ -466,7 +466,16 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       String name = element.getName();
 
       if ("breakpoints".equals(element.getName())) {
-        setWatchpointConfigXML(element.getChildren(), visAvailable);
+        for (Element elem : (Collection<Element>) element.getChildren()) {
+          if (elem.getName().equals("breakpoint")) {
+            MspBreakpoint breakpoint = new MspBreakpoint(this);
+            if (!breakpoint.setConfigXML(elem.getChildren(), visAvailable)) {
+              logger.warn("Could not restore breakpoint: " + breakpoint);
+            } else {
+              watchpoints.add(breakpoint);
+            }
+          }
+        }
       } else if (name.equals("interface_config")) {
         String intfClass = element.getText().trim();
 
@@ -731,18 +740,5 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     return config;
-  }
-  public boolean setWatchpointConfigXML(Collection<Element> configXML, boolean visAvailable) {
-    for (Element element : configXML) {
-      if (element.getName().equals("breakpoint")) {
-        MspBreakpoint breakpoint = new MspBreakpoint(this);
-        if (!breakpoint.setConfigXML(element.getChildren(), visAvailable)) {
-          logger.warn("Could not restore breakpoint: " + breakpoint);
-        } else {
-          watchpoints.add(breakpoint);
-        }
-      }
-    }
-    return true;
   }
 }
