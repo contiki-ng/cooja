@@ -450,8 +450,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     /* Handle multiple compilation commands one by one */
     final ArrayList<String> commands = new ArrayList<>();
-    String[] arr = getCompileCommands().split("\n");
-    for (String cmd: arr) {
+    for (String cmd: getCompileCommands().split("\n")) {
       if (cmd.trim().isEmpty()) {
         continue;
       }
