@@ -575,6 +575,7 @@ public class Simulation extends Observable implements Runnable {
 
         // Show configure simulation dialog
         if (visAvailable && !quick) {
+          // FIXME: this should run from the AWT thread.
           if (!CreateSimDialog.showDialog(Cooja.getTopParentContainer(), this)) {
             logger.debug("Simulation not created, aborting");
             throw new Exception("Load aborted by user");
