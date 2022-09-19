@@ -961,10 +961,6 @@ public class Timer extends IOUnit {
     /* triggerInterrupts(cpu.cycles); */
   }
 
-  public int getModeMax() {
-    return 0;
-  }
-
   private String getName(int address) {
     int reg = address - offset;
     if (reg == 0) return "TCTL";
