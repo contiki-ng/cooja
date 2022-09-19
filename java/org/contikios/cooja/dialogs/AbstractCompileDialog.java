@@ -503,20 +503,13 @@ public abstract class AbstractCompileDialog extends JDialog {
     final Action nextCommandAction = new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-        Action nextSuccessAction;
-        if (commands.size() == 1) {
-          nextSuccessAction = compilationSuccessAction;
-        } else {
-          nextSuccessAction = this;
-        }
-
         String command = commands.remove(0);
         try {
           currentCompilationProcess = CompileContiki.compile(
               command,
               compilationEnvironment,
               new File(contikiField.getText()).getParentFile(),
-              nextSuccessAction,
+              commands.isEmpty() ? compilationSuccessAction : this,
               compilationFailureAction,
               taskOutput,
               false
