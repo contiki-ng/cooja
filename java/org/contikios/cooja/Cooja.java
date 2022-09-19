@@ -690,7 +690,23 @@ public class Cooja extends Observable {
     final var cfgFile = validateFileOrSelectNew(file);
     if (cfgFile == null) return;
 
-    new Thread(() -> cooja.doLoadConfig(cfgFile, quick, false, null), "asyncld").start();
+    executeWorkerAsync(createLoadSimWorker(cfgFile, quick, false, null));
+  }
+
+  /**
+   * Executes a worker in a separate thread, ignoring the result.
+   *
+   * @param worker Worker to execute.
+   */
+  private static void executeWorkerAsync(SwingWorker<Simulation, SimulationCreationException> worker) {
+    new Thread(() -> {
+      worker.execute();
+      try {
+        worker.get();
+      } catch (CancellationException | InterruptedException | ExecutionException e) {
+        throw new RuntimeException(e);
+      }
+    }, "asyncld").start();
   }
 
   /**
@@ -2370,14 +2386,37 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Load a simulation configuration file from disk
+   * Load a simulation configuration file from disk and return the simulation.
    *
    * @param configFile Configuration file to load, reloads current sim if null
    * @param quick      Quick-load simulation
    * @param rewriteCsc Rewrite simulation config
    * @param manualRandomSeed The random seed to use for the simulation
+   * @return The simulation
    */
   private Simulation doLoadConfig(File configFile, final boolean quick, boolean rewriteCsc, Long manualRandomSeed) {
+    final var worker = createLoadSimWorker(configFile, quick, rewriteCsc, manualRandomSeed);
+    worker.execute();
+    try {
+      return worker.get();
+    } catch (CancellationException | ExecutionException | InterruptedException e) {
+      cooja.doRemoveSimulation(false);
+      return null;
+    }
+  }
+
+  /**
+   * Create a worker that will load the simulation in the background, displaying
+   * a progress dialog if it is a quick-load.
+   *
+   * @param configFile Configuration file to load, reloads current sim if null
+   * @param quick      Quick-load simulation
+   * @param rewriteCsc Rewrite simulation config
+   * @param manualRandomSeed The random seed to use for the simulation
+   * @return The worker that will load the simulation.
+   */
+  private SwingWorker<Simulation, SimulationCreationException> createLoadSimWorker(File configFile, final boolean quick,
+                                                                                   boolean rewriteCsc, Long manualRandomSeed) {
     final var autoStart = configFile == null && mySimulation.isRunning();
     if (configFile != null && !doRemoveSimulation(true)) {
       return null;
@@ -2501,17 +2540,7 @@ public class Cooja extends Observable {
         progressDialog.setVisible(true);
       });
     }
-
-    worker.execute();
-    Simulation sim;
-    try {
-      sim = worker.get();
-    } catch (CancellationException | ExecutionException | InterruptedException e) {
-      cooja.doRemoveSimulation(false);
-      return null;
-    }
-
-    return sim;
+    return worker;
   }
 
   /**
@@ -2530,8 +2559,7 @@ public class Cooja extends Observable {
       return;
     }
 
-    final long randomSeed = sim.getRandomSeed();
-    new Thread(() -> cooja.doLoadConfig(null, true, false, randomSeed), "asyncld").start();
+    executeWorkerAsync(createLoadSimWorker(null, true, false, sim.getRandomSeed()));
   }
 
   private static boolean warnMemory() {
