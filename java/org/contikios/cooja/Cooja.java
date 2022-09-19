@@ -2432,21 +2432,6 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Add new mote to current simulation
-   */
-  private void doAddMotes(MoteType moteType) {
-    if (mySimulation == null) {
-      logger.warn("No simulation active");
-      return;
-    }
-
-    mySimulation.stopSimulation();
-    for (var mote : AddMoteDialog.showDialog(frame, mySimulation, moteType)) {
-      mySimulation.addMote(mote);
-    }
-  }
-
-  /**
    * Quit program
    *
    * @param askForConfirmation Should we ask for confirmation before quitting?
@@ -2724,6 +2709,11 @@ public class Cooja extends Observable {
           return;
         }
       } else if (cmd.equals("add motes")) {
+        if (cooja.mySimulation == null) {
+          logger.warn("No simulation active");
+          return;
+        }
+        cooja.mySimulation.stopSimulation();
         newMoteType = (MoteType) ((JMenuItem) e.getSource()).getClientProperty("motetype");
       } else if (cmd.equals("edit paths")) {
         ExternalToolsDialog.showDialog(Cooja.getTopParentContainer());
@@ -2754,7 +2744,9 @@ public class Cooja extends Observable {
         logger.warn("Unhandled action: " + cmd);
       }
       if (newMoteType != null) {
-        cooja.doAddMotes(newMoteType);
+        for (var mote : AddMoteDialog.showDialog(frame, cooja.mySimulation, newMoteType)) {
+          cooja.mySimulation.addMote(mote);
+        }
       }
     }
   }
