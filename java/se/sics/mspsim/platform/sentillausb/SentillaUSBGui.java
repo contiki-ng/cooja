@@ -112,7 +112,7 @@ public class SentillaUSBGui extends AbstractNodeGUI {
         g.setColor(old);
     }
 
-    protected void paintLed(Graphics g, int x, Color[] colors) {
+    protected static void paintLed(Graphics g, int x, Color[] colors) {
         g.setColor(colors[0]);
         g.fillOval(x, LEDS_Y, 10, 13);
         g.setColor(colors[1]);

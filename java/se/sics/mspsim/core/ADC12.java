@@ -128,7 +128,7 @@ public class ADC12 extends IOUnit {
   private int adc12iv;
 
   private int adcSSel;
-  private final int adc12Vector = 7;
+  private static final int adc12Vector = 7;
 
   private final TimeEvent adcTrigger = new TimeEvent(0) {
     @Override

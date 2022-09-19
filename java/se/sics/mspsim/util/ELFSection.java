@@ -188,7 +188,7 @@ public class ELFSection {
       return elf.readElf32(pos + getOffset());
   }
 
-  public int LEB128Size(long val) {
+  public static int LEB128Size(long val) {
       /* at least one byte, but possibly more */
       return (int) (1 + (val / 128));
   }

@@ -362,7 +362,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     }
   }
 
-  private void printCallers(CallEntry callEntry, PrintStream out) {
+  private static void printCallers(CallEntry callEntry, PrintStream out) {
     HashMap<MapEntry,CallCounter> callers = callEntry.callers;
     List<Entry<MapEntry,CallCounter>> list = new ArrayList<>(callers.entrySet());
     list.sort(new Comparator<>() {
@@ -382,7 +382,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     }
   }
 
-  private void printSpace(PrintStream out, int len) {
+  private static void printSpace(PrintStream out, int len) {
     for (int i = 0; i < len; i++) {
       out.print(' ');
     }

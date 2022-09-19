@@ -507,10 +507,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
           if (getState() == CC1101RadioState.CC1101_STATE_IDLE) {
             return false;
           }
-          if (getState() == CC1101RadioState.CC1101_STATE_SLEEP) {
-            return false;
-          }
-          return true;
+          return getState() != CC1101RadioState.CC1101_STATE_SLEEP;
         }
 
         /* txFooterCountdown: send CRC footer in these many bytes */

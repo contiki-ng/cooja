@@ -142,7 +142,7 @@ public class CRC16 extends IOUnit {
                  *           byte to reflect
                  * @return reversed byte
                  */
-                private byte reflectByte(byte b) {
+                private static byte reflectByte(byte b) {
                         byte ret = 0;
                         for (int i = 0; i < 8; i++) {
                                 if ((b & (1 << i)) == (1 << i)) {
@@ -159,7 +159,7 @@ public class CRC16 extends IOUnit {
                  * @param crc
                  * @return crc reversed
                  */
-                private int reflectCrcBytewise(int crc) {
+                private static int reflectCrcBytewise(int crc) {
                         int lowByte = reflectByte((byte) (crc & 0xFF)) & 0xFF;
                         int highByte = reflectByte((byte) ((crc & 0xFF00) >> 8)) & 0xFF;
                         return ((highByte << 8) + lowByte) & 0xFFFF;
@@ -172,7 +172,7 @@ public class CRC16 extends IOUnit {
                  * @param crc
                  * @return swapped bytes
                  */
-                private int swapBytes(int crc) {
+                private static int swapBytes(int crc) {
                         int lowByte = crc & 0xFF;
                         int highByte = crc & 0xFF00;
                         return ((lowByte << 8) + (highByte >> 8)) & 0xFFFF;

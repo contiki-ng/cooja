@@ -56,8 +56,8 @@ public class SHT11 extends Chip {
   private static final int WRITE_BYTE = 4;
   private static final int ACK_WRITE = 5;
 
-  private final int CMD_MEASURE_TEMP = 0x03;
-  private final int CMD_MEASURE_HUM = 0x05;
+  private static final int CMD_MEASURE_TEMP = 0x03;
+  private static final int CMD_MEASURE_HUM = 0x05;
 
   private final static char[] INIT_COMMAND = "CdcCDc".toCharArray();
   private int initPos = 0;
@@ -95,7 +95,7 @@ public class SHT11 extends Chip {
     return r & 0xff;
   }
 
-  private int crc8Add(int acc, int data) {
+  private static int crc8Add(int acc, int data) {
     int i;
     acc ^= (data & 0xff);
     for(i = 0; i < 8; i++) {

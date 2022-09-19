@@ -55,12 +55,7 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
     protected boolean isInterfered = false;
 
-    private final boolean isTransmitting = false;
-
     protected boolean isReceiving = false;
-    //    private boolean hasFailedReception = false;
-
-    private final boolean radioOn = true;
 
     private RadioByte lastOutgoingByte = null;
 
@@ -157,11 +152,6 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
     }
 
     /* General radio support */
-    @Override
-    public boolean isTransmitting() {
-        return isTransmitting;
-    }
-
     @Override
     public boolean isReceiving() {
         return isReceiving;

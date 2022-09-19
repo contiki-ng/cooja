@@ -108,7 +108,7 @@ public class DebugUI extends JPanel {
 
     int startPos = -1;
     int endPos = -1;
-    final int size = 21;
+    static final int size = 21;
 
     DbgInstruction[] instructions = new DbgInstruction[size];
 

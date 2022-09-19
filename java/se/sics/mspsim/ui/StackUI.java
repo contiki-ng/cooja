@@ -212,7 +212,7 @@ public class StackUI extends JPanel implements ServiceComponent {
   }
 
 
-  private void copy(int[] data1, int[] data2, int p) {
+  private static void copy(int[] data1, int[] data2, int p) {
     if (p + 1 < data1.length) {
       System.arraycopy(data1, p + 1, data2, 0, data1.length - p - 1);
     }

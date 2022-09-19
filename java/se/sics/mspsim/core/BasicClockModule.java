@@ -58,7 +58,7 @@ public class BasicClockModule extends ClockSystem {
   // Based on the scatterweb code it looks like less than
   // 5Mhz is more correct...
   private final int MAX_DCO_FRQ;
-  private final int MIN_DCO_FRQ = 1000;
+  private static final int MIN_DCO_FRQ = 1000;
   private final int DCO_FACTOR;
 
   private final Timer[] timers;

@@ -896,7 +896,7 @@ public class Timer extends IOUnit {
    return counter;
   }
 
-  public String getSourceName(int source) {
+  public static String getSourceName(int source) {
     switch (source) {
     case SRC_ACLK:
       return "ACLK";
@@ -959,10 +959,6 @@ public class Timer extends IOUnit {
     }
     /* old method is replaced */
     /* triggerInterrupts(cpu.cycles); */
-  }
-
-  public int getModeMax() {
-    return 0;
   }
 
   private String getName(int address) {

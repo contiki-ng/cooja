@@ -698,10 +698,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
     if (getState() == CC1120RadioState.CC1120_STATE_IDLE) {
       return false;
     }
-    if (getState() == CC1120RadioState.CC1120_STATE_SLEEP) {
-      return false;
-    }
-          return true;
+    return getState() != CC1120RadioState.CC1120_STATE_SLEEP;
         }
 
 
