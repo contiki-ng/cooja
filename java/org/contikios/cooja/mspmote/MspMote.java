@@ -273,7 +273,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   private boolean booted = false;
 
   private long lastExecute = -1; /* Last time mote executed */
-  private long nextExecute;
 
   private double jumpError = 0.;
 
@@ -390,7 +389,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     exactExecuteDelta = executeDelta * invDeviation;
     executeDelta = (int)Math.floor(exactExecuteDelta);
 
-    nextExecute = executeDelta + t;
+    var nextExecute = executeDelta + t;
 
     /* Schedule wakeup */
     if (nextExecute < t) {
