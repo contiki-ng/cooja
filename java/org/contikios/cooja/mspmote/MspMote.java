@@ -464,8 +464,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     for (Element element: configXML) {
       String name = element.getName();
-
-      if ("breakpoints".equals(element.getName())) {
+      if ("breakpoints".equals(name)) {
         for (Element elem : (Collection<Element>) element.getChildren()) {
           if (elem.getName().equals("breakpoint")) {
             MspBreakpoint breakpoint = new MspBreakpoint(this);
