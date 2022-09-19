@@ -272,13 +272,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private boolean booted = false;
 
-  public void simTimeChanged(long diff) {
-    /* Compensates for simulation time changes (without simulation execution) */
-    lastExecute -= diff;
-    nextExecute -= diff;
-    scheduleNextWakeup(nextExecute);
-  }
-
   private long lastExecute = -1; /* Last time mote executed */
   private long nextExecute;
 
