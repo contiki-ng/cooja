@@ -97,7 +97,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   private MSP430 myCpu = null;
   private final MspMoteType myMoteType;
   private MspMoteMemory myMemory = null;
-  private MoteInterfaceHandler myMoteInterfaceHandler = null;
+  protected MoteInterfaceHandler myMoteInterfaceHandler;
   public ComponentRegistry registry = null;
 
   /* Stack monitoring variables */
@@ -108,15 +108,11 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   public MspMote(MspMoteType moteType, Simulation simulation) {
     super(simulation);
     myMoteType = moteType;
-
     /* Schedule us immediately */
     requestImmediateWakeup();
   }
 
-  protected void initMote() throws MoteType.MoteTypeCreationException {
-    initEmulator(myMoteType.getContikiFirmwareFile());
-    myMoteInterfaceHandler = createMoteInterfaceHandler();
-
+  protected void initMote() {
     /* TODO Create COOJA-specific window manager */
     registry.removeComponent("windowManager");
     registry.registerComponent("windowManager", new WindowManager() {
@@ -187,10 +183,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   public void stopNextInstruction() {
     stopNextInstruction = true;
     getCPU().stop();
-  }
-
-  protected MoteInterfaceHandler createMoteInterfaceHandler() throws MoteType.MoteTypeCreationException {
-    return new MoteInterfaceHandler(this, getType().getMoteInterfaceClasses());
   }
 
   /**
@@ -277,18 +269,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   public MoteInterfaceHandler getInterfaces() {
     return myMoteInterfaceHandler;
   }
-
-  public void setInterfaces(MoteInterfaceHandler moteInterfaceHandler) {
-    myMoteInterfaceHandler = moteInterfaceHandler;
-  }
-
-  /**
-   * Initializes emulator by creating CPU, memory and node object.
-   *
-   * @param ELFFile ELF file
-   * @return True if successful
-   */
-  protected abstract boolean initEmulator(File ELFFile);
 
   private boolean booted = false;
 
@@ -476,10 +456,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   @Override
   public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException {
-    if (myMoteInterfaceHandler == null) {
-      myMoteInterfaceHandler = createMoteInterfaceHandler();
-    }
-
     try {
       debuggingInfo = ((MspMoteType)getType()).getFirmwareDebugInfo();
     } catch (IOException e) {

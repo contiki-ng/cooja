@@ -186,7 +186,7 @@ public class ContikiMoteType implements MoteType {
 
   private final String javaClassName; // Loading Java class name: Lib1.java.
 
-  private ArrayList<Class<? extends MoteInterface>> moteInterfacesClasses = null;
+  private final ArrayList<Class<? extends MoteInterface>> moteInterfacesClasses = new ArrayList<>();
 
   private NetworkStack netStack = NetworkStack.DEFAULT;
 
@@ -295,7 +295,8 @@ public class ContikiMoteType implements MoteType {
       if (getIdentifier() == null) {
         throw new MoteTypeCreationException("No identifier specified");
       }
-      if (getContikiSourceFile() == null) {
+      final var source = getContikiSourceFile();
+      if (source == null) {
         throw new MoteTypeCreationException("No Contiki application specified");
       }
       final var commands = getCompileCommands();
@@ -320,7 +321,7 @@ public class ContikiMoteType implements MoteType {
           CompileContiki.compile(
                   cmd,
                   envOneDimension,
-                  getContikiSourceFile().getParentFile(),
+                  source.getParentFile(),
                   null,
                   null,
                   compilationOutput,
@@ -1017,7 +1018,7 @@ public class ContikiMoteType implements MoteType {
 
   @Override
   public Class<? extends MoteInterface>[] getMoteInterfaceClasses() {
-    if (moteInterfacesClasses == null) {
+    if (moteInterfacesClasses.isEmpty()) {
       return null;
     }
     Class<? extends MoteInterface>[] arr = new Class[moteInterfacesClasses.size()];
@@ -1027,8 +1028,8 @@ public class ContikiMoteType implements MoteType {
 
   @Override
   public void setMoteInterfaceClasses(Class<? extends MoteInterface>[] moteInterfaces) {
-    this.moteInterfacesClasses = new ArrayList<>();
-    this.moteInterfacesClasses.addAll(Arrays.asList(moteInterfaces));
+    moteInterfacesClasses.clear();
+    moteInterfacesClasses.addAll(Arrays.asList(moteInterfaces));
   }
 
   /**
@@ -1131,8 +1132,6 @@ public class ContikiMoteType implements MoteType {
   public boolean setConfigXML(Simulation simulation,
                               Collection<Element> configXML, boolean visAvailable)
           throws MoteTypeCreationException {
-    moteInterfacesClasses = new ArrayList<>();
-
     for (Element element : configXML) {
       String name = element.getName();
       switch (name) {
@@ -1148,7 +1147,7 @@ public class ContikiMoteType implements MoteType {
           if (!file.exists()) {
             file = simulation.getCooja().restorePortablePath(file);
           }
-          setContikiSourceFile(file);
+          fileSource = file;
           fileFirmware = getMoteFile(librarySuffix);
           break;
         case "commands":

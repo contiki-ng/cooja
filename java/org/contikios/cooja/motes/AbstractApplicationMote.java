@@ -59,9 +59,9 @@ import org.contikios.cooja.mote.memory.MemoryInterface;
 public abstract class AbstractApplicationMote extends AbstractWakeupMote implements Mote {
   private static final Logger logger = LogManager.getLogger(AbstractApplicationMote.class);
 
-  private MoteType moteType = null;
+  private final MoteType moteType;
 
-  private SectionMoteMemory memory = null;
+  private SectionMoteMemory memory;
 
   protected MoteInterfaceHandler moteInterfaces;
 
@@ -100,10 +100,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
   @Override
   public MoteInterfaceHandler getInterfaces() {
     return moteInterfaces;
-  }
-
-  public void setInterfaces(MoteInterfaceHandler moteInterfaceHandler) {
-    moteInterfaces = moteInterfaceHandler;
   }
 
   @Override

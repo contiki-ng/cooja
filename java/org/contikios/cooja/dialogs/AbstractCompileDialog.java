@@ -392,12 +392,14 @@ public abstract class AbstractCompileDialog extends JDialog {
       }
 
       /* Restore Contiki source or firmware */
-      if (moteType.getContikiSourceFile() != null) {
-        contikiField.setText(moteType.getContikiSourceFile().getAbsolutePath());
+      final var source = moteType.getContikiSourceFile();
+      final var firmware = moteType.getContikiFirmwareFile();
+      if (source != null) {
+        contikiField.setText(source.getAbsolutePath());
         setDialogState(DialogState.SELECTED_SOURCE);
         restoredDialogState = true;
-      } else if (moteType.getContikiFirmwareFile() != null) {
-        contikiField.setText(moteType.getContikiFirmwareFile().getAbsolutePath());
+      } else if (firmware != null) {
+        contikiField.setText(firmware.getAbsolutePath());
         setDialogState(DialogState.SELECTED_FIRMWARE);
         restoredDialogState = true;
       }
