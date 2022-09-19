@@ -66,7 +66,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
@@ -461,16 +460,7 @@ public abstract class AbstractCompileDialog extends JDialog {
       throw new Exception("No compile commands specified");
     }
 
-    if (SwingUtilities.isEventDispatchThread()) {
-      setDialogState(DialogState.IS_COMPILING);
-    } else {
-      SwingUtilities.invokeAndWait(new Runnable() {
-        @Override
-        public void run() {
-          setDialogState(DialogState.IS_COMPILING);
-        }
-      });
-    }
+    setDialogState(DialogState.IS_COMPILING);
     createNewCompilationTab(taskOutput);
 
     /* Add abort compilation menu item */
