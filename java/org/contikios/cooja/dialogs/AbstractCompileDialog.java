@@ -382,9 +382,8 @@ public abstract class AbstractCompileDialog extends JDialog {
     tryRestoreMoteType();
   }
 
-  private void tryRestoreMoteType() { 
-    /* Restore old configuration if mote type is already configured */
-    boolean restoredDialogState = false;
+  private void tryRestoreMoteType() {
+    var dialogState = DialogState.NO_SELECTION;
     /* Restore description */
     if (moteType.getDescription() != null) {
       descriptionField.setText(moteType.getDescription());
@@ -395,12 +394,10 @@ public abstract class AbstractCompileDialog extends JDialog {
     final var firmware = moteType.getContikiFirmwareFile();
     if (source != null) {
       contikiField.setText(source.getAbsolutePath());
-      setDialogState(DialogState.SELECTED_SOURCE);
-      restoredDialogState = true;
+      dialogState = DialogState.SELECTED_SOURCE;
     } else if (firmware != null) {
       contikiField.setText(firmware.getAbsolutePath());
-      setDialogState(DialogState.SELECTED_FIRMWARE);
-      restoredDialogState = true;
+      dialogState = DialogState.SELECTED_FIRMWARE;
     }
 
     /* Restore mote interface classes */
@@ -422,12 +419,9 @@ public abstract class AbstractCompileDialog extends JDialog {
     final var commands = moteType.getCompileCommands();
     if (commands != null) {
       setCompileCommands(commands);
-      setDialogState(DialogState.AWAITING_COMPILATION);
-      restoredDialogState = true;
+      dialogState = DialogState.AWAITING_COMPILATION;
     }
-    if (!restoredDialogState) {
-      setDialogState(DialogState.NO_SELECTION);
-    }
+    setDialogState(dialogState);
   }
 
   /**
