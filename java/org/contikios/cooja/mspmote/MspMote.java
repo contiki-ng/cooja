@@ -464,11 +464,17 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     for (Element element: configXML) {
       String name = element.getName();
-
-      if (name.equals("motetype_identifier")) {
-        /* Ignored: handled by simulation */
-      } else if ("breakpoints".equals(element.getName())) {
-        setWatchpointConfigXML(element.getChildren(), visAvailable);
+      if ("breakpoints".equals(name)) {
+        for (Element elem : (Collection<Element>) element.getChildren()) {
+          if (elem.getName().equals("breakpoint")) {
+            MspBreakpoint breakpoint = new MspBreakpoint(this);
+            if (!breakpoint.setConfigXML(elem.getChildren(), visAvailable)) {
+              logger.warn("Could not restore breakpoint: " + breakpoint);
+            } else {
+              watchpoints.add(breakpoint);
+            }
+          }
+        }
       } else if (name.equals("interface_config")) {
         String intfClass = element.getText().trim();
 
@@ -477,21 +483,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
           intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
         }
 
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.MspIPAddress")) {
-        	intfClass = IPAddress.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.ESBLog")) {
-        	intfClass = MspSerial.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.SkyByteRadio")) {
-        	intfClass = Msp802154Radio.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.SkySerial")) {
-        	intfClass = MspSerial.class.getName();
-        }
-
         var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
-
         if (moteInterfaceClass == null) {
           logger.fatal("Could not load mote interface class: " + intfClass);
           return false;
@@ -733,18 +725,5 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     return config;
-  }
-  public boolean setWatchpointConfigXML(Collection<Element> configXML, boolean visAvailable) {
-    for (Element element : configXML) {
-      if (element.getName().equals("breakpoint")) {
-        MspBreakpoint breakpoint = new MspBreakpoint(this);
-        if (!breakpoint.setConfigXML(element.getChildren(), visAvailable)) {
-          logger.warn("Could not restore breakpoint: " + breakpoint);
-        } else {
-          watchpoints.add(breakpoint);
-        }
-      }
-    }
-    return true;
   }
 }
