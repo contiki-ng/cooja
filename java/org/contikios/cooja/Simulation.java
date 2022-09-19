@@ -857,24 +857,6 @@ public class Simulation extends Observable implements Runnable {
   }
 
   /**
-   * Returns uninitialised simulation mote with given ID.
-   * 
-   * @param id ID
-   * @return Mote or null
-   * @see Mote#getID()
-   */
-  public Mote getMoteWithIDUninit(int id) {
-    for (Mote m: motesUninit) {
-      if (m.getID() == id) {
-        return m;
-      }
-    }
-    return null;
-  }
-
-
-
-  /**
    * Returns number of motes in this simulation.
    *
    * @return Number of motes
@@ -893,16 +875,6 @@ public class Simulation extends Observable implements Runnable {
     motes.toArray(arr);
     return arr;
   }
-
-  /**
-   * Returns uninitialised motes
-   *
-   * @return Motes
-   */
-  public Mote[] getMotesUninit() {
-    return motesUninit.toArray(new Mote[0]);
-  }
-
 
   /**
    * Returns all mote types in simulation.
