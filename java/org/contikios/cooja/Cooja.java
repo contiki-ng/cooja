@@ -2698,7 +2698,8 @@ public class Cooja extends Observable {
   private class GUIEventHandler implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-      if (e.getActionCommand().equals("create mote type")) {
+      final var cmd = e.getActionCommand();
+      if (cmd.equals("create mote type")) {
         if (cooja.mySimulation == null) {
           logger.fatal("Can't create mote type (no simulation)");
           return;
@@ -2723,12 +2724,12 @@ public class Cooja extends Observable {
           return;
         }
         cooja.doAddMotes(newMoteType);
-      } else if (e.getActionCommand().equals("add motes")) {
+      } else if (cmd.equals("add motes")) {
         cooja.doAddMotes((MoteType) ((JMenuItem) e.getSource())
             .getClientProperty("motetype"));
-      } else if (e.getActionCommand().equals("edit paths")) {
+      } else if (cmd.equals("edit paths")) {
         ExternalToolsDialog.showDialog(Cooja.getTopParentContainer());
-      } else if (e.getActionCommand().equals("manage extensions")) {
+      } else if (cmd.equals("manage extensions")) {
         COOJAProject[] newProjects = ProjectDirectoriesDialog.showDialog(
             Cooja.getTopParentContainer(),
             Cooja.this,
@@ -2752,7 +2753,7 @@ public class Cooja extends Observable {
           }
         }
       } else {
-        logger.warn("Unhandled action: " + e.getActionCommand());
+        logger.warn("Unhandled action: " + cmd);
       }
     }
   }
