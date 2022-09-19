@@ -68,6 +68,7 @@ import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
 import org.contikios.cooja.mspmote.interfaces.MspDefaultSerial;
 import org.contikios.cooja.mspmote.interfaces.MspLED;
 import org.contikios.cooja.mspmote.interfaces.MspMoteID;
+import org.contikios.cooja.mspmote.interfaces.MspSerial;
 import org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem;
 import org.contikios.cooja.mspmote.interfaces.SkyFlash;
 import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
@@ -90,7 +91,7 @@ public class MoteInterfaceHandler {
           entry("org.contikios.cooja.contikimote.interfaces.ContikiRS232", ContikiRS232.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiBeeper", ContikiBeeper.class),
           entry("org.contikios.cooja.interfaces.RimeAddress", RimeAddress.class),
-          entry("org.contikios.cooja.contikimote.interfaces.ContikiIPAddress", IPAddress.class),
+          entry("org.contikios.cooja.contikimote.interfaces.ContikiIPAddress", IPAddress.class), // Compatibility.
           entry("org.contikios.cooja.contikimote.interfaces.ContikiRadio", ContikiRadio.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiButton", ContikiButton.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiPIR", ContikiPIR.class),
@@ -100,14 +101,18 @@ public class MoteInterfaceHandler {
           entry("org.contikios.cooja.contikimote.interfaces.ContikiEEPROM", ContikiEEPROM.class),
           entry("org.contikios.cooja.interfaces.Mote2MoteRelations", Mote2MoteRelations.class),
           entry("org.contikios.cooja.interfaces.MoteAttributes", MoteAttributes.class),
+          entry("org.contikios.cooja.mspmote.interfaces.ESBLog", MspSerial.class), // Compatibility.
           entry("org.contikios.cooja.mspmote.interfaces.MspClock", MspClock.class),
           entry("org.contikios.cooja.mspmote.interfaces.MspDebugOutput", MspDebugOutput.class),
           entry("org.contikios.cooja.mspmote.interfaces.MspDefaultSerial", MspDefaultSerial.class),
+          entry("org.contikios.cooja.mspmote.interfaces.MspIPAddress", IPAddress.class), // Compatibility.
           entry("org.contikios.cooja.mspmote.interfaces.MspLED", MspLED.class),
           entry("org.contikios.cooja.mspmote.interfaces.MspMoteID", MspMoteID.class),
           entry("org.contikios.cooja.mspmote.interfaces.Msp802154Radio", Msp802154Radio.class),
+          entry("org.contikios.cooja.mspmote.interfaces.SkyByteRadio", Msp802154Radio.class), // Compatibility.
           entry("org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem", SkyCoffeeFilesystem.class),
           entry("org.contikios.cooja.mspmote.interfaces.SkyFlash", SkyFlash.class),
+          entry("org.contikios.cooja.mspmote.interfaces.SkySerial", MspSerial.class), // Compatibility.
           entry("org.contikios.cooja.mspmote.interfaces.SkyTemperature", SkyTemperature.class));
 
   private final ArrayList<MoteInterface> moteInterfaces = new ArrayList<>();

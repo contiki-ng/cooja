@@ -484,21 +484,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
           intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
         }
 
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.MspIPAddress")) {
-        	intfClass = IPAddress.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.ESBLog")) {
-        	intfClass = MspSerial.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.SkyByteRadio")) {
-        	intfClass = Msp802154Radio.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.SkySerial")) {
-        	intfClass = MspSerial.class.getName();
-        }
-
         var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
-
         if (moteInterfaceClass == null) {
           logger.fatal("Could not load mote interface class: " + intfClass);
           return false;
