@@ -2703,10 +2703,8 @@ public class Cooja extends Observable {
           cooja.mySimulation.addMoteType(newMoteType);
         } catch (Exception e1) {
           logger.fatal("Exception when creating mote type", e1);
-          if (isVisualized()) {
-            showErrorDialog(getTopParentContainer(), "Mote type creation error", e1, false);
-          }
-          return;
+          showErrorDialog(getTopParentContainer(), "Mote type creation error", e1, false);
+          newMoteType = null;
         }
       } else if (cmd.equals("add motes")) {
         if (cooja.mySimulation == null) {
@@ -2730,13 +2728,11 @@ public class Cooja extends Observable {
             reparseProjectConfig();
           } catch (ParseProjectsException ex) {
             logger.fatal("Error when loading extensions: " + ex.getMessage(), ex);
-            if (isVisualized()) {
-            	JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-            			"All Cooja extensions could not load.\n\n" +
-            			"To manage Cooja extensions:\n" +
-            			"Menu->Settings->Cooja extensions",
-            			"Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
-            }
+            JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
+                    "All Cooja extensions could not load.\n\n" +
+                            "To manage Cooja extensions:\n" +
+                            "Menu->Settings->Cooja extensions",
+                    "Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
             showErrorDialog(getTopParentContainer(), "Cooja extensions load error", ex, false);
           }
         }
