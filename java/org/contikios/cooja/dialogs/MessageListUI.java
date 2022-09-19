@@ -187,12 +187,13 @@ public class MessageListUI extends JList implements MessageList {
 
   @Override
   public void addMessage(final String message, final int type) {
-    Cooja.setProgressMessage(message, type);
+    java.awt.EventQueue.invokeLater(() -> {
+      Cooja.setProgressMessage(message, type);
 
-    MessageContainer msg = new MessageContainer(message, type);
-    messages.add(msg);
-
-    java.awt.EventQueue.invokeLater(this::updateModel);
+      MessageContainer msg = new MessageContainer(message, type);
+      messages.add(msg);
+      updateModel();
+    });
   }
 
   @Override
