@@ -593,12 +593,12 @@ public abstract class AbstractCompileDialog extends JDialog {
       break;
 
     case SELECTED_SOURCE:
-      if (!sourceFile.exists()) {
-        logger.warn("Could not find Contiki source: " + sourceFile.getAbsolutePath());
+      if (!sourceFile.getName().endsWith(".c")) {
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
-      if (!sourceFile.getName().endsWith(".c")) {
+      if (!sourceFile.exists()) {
+        logger.warn("Could not find Contiki source: " + sourceFile.getAbsolutePath());
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
@@ -614,12 +614,12 @@ public abstract class AbstractCompileDialog extends JDialog {
       break;
 
     case AWAITING_COMPILATION:
-      if (!sourceFile.exists()) {
-        logger.warn("Could not find Contiki source: " + sourceFile.getAbsolutePath());
+      if (!sourceFile.getName().endsWith(".c")) {
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
-      if (!sourceFile.getName().endsWith(".c")) {
+      if (!sourceFile.exists()) {
+        logger.warn("Could not find Contiki source: " + sourceFile.getAbsolutePath());
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
