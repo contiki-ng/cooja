@@ -291,8 +291,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private void regularExecute(MspClock clock, long t, int duration) {
     long nextExecute;
-    long drift = clock.getDrift();
-
     /* Wait until mote boots */
     if (!booted && clock.getTime() < 0) {
       scheduleNextWakeup(t - clock.getTime());
@@ -342,7 +340,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   private void driftExecute(MspClock clock, long t, int duration) {
     double deviation = clock.getDeviation();
     double invDeviation = 1.0 / deviation;
-    long drift = clock.getDrift();
     long jump, executeDelta;
     double exactJump, exactExecuteDelta;
 
