@@ -23,7 +23,12 @@ public class MessageContainer {
      */
     public static MessageList createMessageList(boolean withUI) {
         if (withUI && !GraphicsEnvironment.isHeadless() && Cooja.isVisualized()) {
-            return new MessageListUI();
+            return new Cooja.RunnableInEDT<MessageList>() {
+                @Override
+                public MessageList work() {
+                    return new MessageListUI();
+                }
+            }.invokeAndWait();
         } else {
             return new MessageListText();
         }
