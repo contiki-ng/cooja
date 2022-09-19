@@ -37,7 +37,6 @@ import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
-import org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem;
 import se.sics.mspsim.platform.sky.SkyNode;
 
 /**
@@ -97,10 +96,6 @@ public class SkyMote extends MspMote {
 
     /* Statically configured MAC addresses */
     /*configureWithMacAddressesTxt(newID);*/
-  }
-
-  public SkyCoffeeFilesystem getFilesystem() {
-    return getInterfaces().getInterfaceOfType(SkyCoffeeFilesystem.class);
   }
 
   @Override
