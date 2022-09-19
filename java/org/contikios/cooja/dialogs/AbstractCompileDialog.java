@@ -385,47 +385,45 @@ public abstract class AbstractCompileDialog extends JDialog {
   private void tryRestoreMoteType() { 
     /* Restore old configuration if mote type is already configured */
     boolean restoredDialogState = false;
-    if (moteType != null) {
-      /* Restore description */
-      if (moteType.getDescription() != null) {
-        descriptionField.setText(moteType.getDescription());
-      }
+    /* Restore description */
+    if (moteType.getDescription() != null) {
+      descriptionField.setText(moteType.getDescription());
+    }
 
-      /* Restore Contiki source or firmware */
-      final var source = moteType.getContikiSourceFile();
-      final var firmware = moteType.getContikiFirmwareFile();
-      if (source != null) {
-        contikiField.setText(source.getAbsolutePath());
-        setDialogState(DialogState.SELECTED_SOURCE);
-        restoredDialogState = true;
-      } else if (firmware != null) {
-        contikiField.setText(firmware.getAbsolutePath());
-        setDialogState(DialogState.SELECTED_FIRMWARE);
-        restoredDialogState = true;
-      }
+    /* Restore Contiki source or firmware */
+    final var source = moteType.getContikiSourceFile();
+    final var firmware = moteType.getContikiFirmwareFile();
+    if (source != null) {
+      contikiField.setText(source.getAbsolutePath());
+      setDialogState(DialogState.SELECTED_SOURCE);
+      restoredDialogState = true;
+    } else if (firmware != null) {
+      contikiField.setText(firmware.getAbsolutePath());
+      setDialogState(DialogState.SELECTED_FIRMWARE);
+      restoredDialogState = true;
+    }
 
-      /* Restore mote interface classes */
-      for (Component c : moteIntfBox.getComponents()) {
-        if (!(c instanceof JCheckBox)) {
-          continue;
-        }
-        ((JCheckBox) c).setSelected(false);
+    /* Restore mote interface classes */
+    for (Component c : moteIntfBox.getComponents()) {
+      if (!(c instanceof JCheckBox)) {
+        continue;
       }
-      for (var intf : getAllMoteInterfaces()) {
-        addMoteInterface(intf, false);
-      }
-      var moteClasses = moteType.getMoteInterfaceClasses();
-      for (var intf : moteClasses == null ? getDefaultMoteInterfaces() : moteClasses) {
-        addMoteInterface(intf, true);
-      }
+      ((JCheckBox) c).setSelected(false);
+    }
+    for (var intf : getAllMoteInterfaces()) {
+      addMoteInterface(intf, false);
+    }
+    var moteClasses = moteType.getMoteInterfaceClasses();
+    for (var intf : moteClasses == null ? getDefaultMoteInterfaces() : moteClasses) {
+      addMoteInterface(intf, true);
+    }
 
-      /* Restore compile commands */
-      final var commands = moteType.getCompileCommands();
-      if (commands != null) {
-        setCompileCommands(commands);
-        setDialogState(DialogState.AWAITING_COMPILATION);
-        restoredDialogState = true;
-      }
+    /* Restore compile commands */
+    final var commands = moteType.getCompileCommands();
+    if (commands != null) {
+      setCompileCommands(commands);
+      setDialogState(DialogState.AWAITING_COMPILATION);
+      restoredDialogState = true;
     }
     if (!restoredDialogState) {
       setDialogState(DialogState.NO_SELECTION);
