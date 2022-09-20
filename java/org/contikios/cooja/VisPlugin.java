@@ -38,8 +38,6 @@ import javax.swing.event.InternalFrameEvent;
 
 import org.jdom.Element;
 
-import org.contikios.cooja.plugins.SimControl;
-
 /**
  * Visualized plugins can extend VisPlugin for basic visualization functionality.
  * VisPlugin extends JInternalFrame, the graphical component used by plugins.
@@ -48,7 +46,6 @@ import org.contikios.cooja.plugins.SimControl;
  * Note that plugins of this type can only be started if COOJA is visualized.
  * Hence, these plugins will not be started during nightly Contiki tests.
  *
- * @see SimControl
  * @see PluginRequiresVisualizationException
  * @author Fredrik Osterlind
  */

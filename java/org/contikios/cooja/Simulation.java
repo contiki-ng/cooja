@@ -213,6 +213,7 @@ public class Simulation extends Observable implements Runnable {
     speedLimitLastSimtime = lastStartSimulationTime;
 
     /* Simulation starting */
+    cooja.updateProgress(false);
     this.setChanged();
     this.notifyObservers(this);
 
@@ -260,6 +261,7 @@ public class Simulation extends Observable implements Runnable {
     simulationThread = null;
     stopSimulation = false;
 
+    cooja.updateProgress(true);
     this.setChanged();
     this.notifyObservers(this);
   }
@@ -310,6 +312,7 @@ public class Simulation extends Observable implements Runnable {
       } catch (InterruptedException e) {
       }
     }
+    cooja.updateProgress(true);
   }
 
   /**
