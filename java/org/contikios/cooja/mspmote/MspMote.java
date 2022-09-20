@@ -272,15 +272,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private boolean booted = false;
 
-  public void simTimeChanged(long diff) {
-    /* Compensates for simulation time changes (without simulation execution) */
-    lastExecute -= diff;
-    nextExecute -= diff;
-    scheduleNextWakeup(nextExecute);
-  }
-
   private long lastExecute = -1; /* Last time mote executed */
-  private long nextExecute;
 
   private double jumpError = 0.;
 
@@ -299,8 +291,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private void regularExecute(MspClock clock, long t, int duration) {
     long nextExecute;
-    long drift = clock.getDrift();
-
     /* Wait until mote boots */
     if (!booted && clock.getTime() < 0) {
       scheduleNextWakeup(t - clock.getTime());
@@ -350,7 +340,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   private void driftExecute(MspClock clock, long t, int duration) {
     double deviation = clock.getDeviation();
     double invDeviation = 1.0 / deviation;
-    long drift = clock.getDrift();
     long jump, executeDelta;
     double exactJump, exactExecuteDelta;
 
@@ -397,7 +386,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     exactExecuteDelta = executeDelta * invDeviation;
     executeDelta = (int)Math.floor(exactExecuteDelta);
 
-    nextExecute = executeDelta + t;
+    var nextExecute = executeDelta + t;
 
     /* Schedule wakeup */
     if (nextExecute < t) {
