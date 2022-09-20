@@ -156,7 +156,7 @@ public class CompileContiki {
           if (compileProcess.exitValue() != 0) {
             messageDialog.addMessage("Process returned error code " + compileProcess.exitValue(), MessageList.ERROR);
             if (onFailure != null) {
-              onFailure.actionPerformed(null);
+              java.awt.EventQueue.invokeLater(() -> onFailure.actionPerformed(null));
             }
             syncException.setCompilationOutput(MessageContainer.createMessageList(true));
             syncException.fillInStackTrace();
@@ -164,7 +164,7 @@ public class CompileContiki {
           }
 
           if (onSuccess != null) {
-            onSuccess.actionPerformed(null);
+            java.awt.EventQueue.invokeLater(() -> onSuccess.actionPerformed(null));
           }
         }
       }, "handle compilation results");
