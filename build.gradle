@@ -101,4 +101,10 @@ run {
   doFirst {
     args += ['-cooja', "$projectDir"]
   }
+  // Pass all command line "-Dcooja.k=v" as "-Dk=v" to Cooja.
+  System.properties.each { k,v ->
+    if (k.startsWith("cooja.")) {
+      systemProperty k - "cooja.", v
+    }
+  }
 }

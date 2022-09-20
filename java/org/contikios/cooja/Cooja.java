@@ -103,6 +103,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
+import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
@@ -426,15 +427,18 @@ public class Cooja extends Observable {
     quickHelpTextPane.setEditable(false);
     quickHelpTextPane.setVisible(false);
 
-    /* Debugging - Break on repaints outside EDT */
-    /*RepaintManager.setCurrentManager(new RepaintManager() {
-      public void addDirtyRegion(JComponent comp, int a, int b, int c, int d) {
-        if(!java.awt.EventQueue.isDispatchThread()) {
-          throw new RuntimeException("Repainting outside EDT");
+    // Print a warning when repainting outside EDT with: gradlew run -Dcooja.debug.repaint=true
+    if (System.getProperty("debug.repaint") != null) {
+      RepaintManager.setCurrentManager(new RepaintManager() {
+        public void addDirtyRegion(JComponent comp, int a, int b, int c, int d) {
+          if (!java.awt.EventQueue.isDispatchThread()) {
+            // Log to console so the thread name is printed along with the complete backtrace.
+            logger.warn("Repainting outside EDT", new IllegalStateException("Repainting outside EDT"));
+          }
+          super.addDirtyRegion(comp, a, b, c, d);
         }
-        super.addDirtyRegion(comp, a, b, c, d);
-      }
-    });*/
+      });
+    }
 
     /* Parse current extension configuration */
     try {
