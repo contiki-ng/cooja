@@ -107,4 +107,6 @@ run {
       systemProperty k - "cooja.", v
     }
   }
+  // Enable assertions with "-Passertions".
+  enableAssertions = project.hasProperty('assertions')
 }
