@@ -199,6 +199,16 @@ public class ContikiMoteType extends BaseContikiMoteType {
   }
 
   @Override
+  public String getMoteType() {
+    return "cooja";
+  }
+
+  @Override
+  public String getMoteName() {
+    return "Cooja";
+  }
+
+  @Override
   public Mote generateMote(Simulation simulation) throws MoteTypeCreationException {
     return new ContikiMote(this, simulation);
   }

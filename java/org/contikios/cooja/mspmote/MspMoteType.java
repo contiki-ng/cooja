@@ -72,10 +72,6 @@ import se.sics.mspsim.util.ELF;
 public abstract class MspMoteType extends BaseContikiMoteType {
   private static final Logger logger = LogManager.getLogger(MspMoteType.class);
 
-  public abstract String getMoteType();
-
-  public abstract String getMoteName();
-
   protected abstract String getMoteImage();
 
   @Override

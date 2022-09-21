@@ -72,6 +72,12 @@ public abstract class BaseContikiMoteType implements MoteType {
   /** MoteInterface classes used by the mote type. */
   protected final ArrayList<Class<? extends MoteInterface>> moteInterfaceClasses = new ArrayList<>();
 
+  /** Returns file name extension for firmware. */
+  public abstract String getMoteType();
+
+  /** Returns human-readable name for mote type. */
+  public abstract String getMoteName();
+
   @Override
   public String getDescription() {
     return description;
