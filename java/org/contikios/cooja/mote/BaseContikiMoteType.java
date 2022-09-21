@@ -226,6 +226,23 @@ public abstract class BaseContikiMoteType implements MoteType {
     return null;
   }
 
+  /** Return a two-dimensional compilation environment. */
+  public String[][] getCompilationEnvironment() {
+    return null;
+  }
+
+  /** Turn a two-dimensional environment into a one-dimensional environment. */
+  public static String[] oneDimensionalEnv(String[][] env) {
+    if (env == null) {
+      return null;
+    }
+    String[] envOneDimension = new String[env.length];
+    for (int i = 0; i < env.length; i++) {
+      envOneDimension[i] = env[i][0] + "=" + env[i][1];
+    }
+    return envOneDimension;
+  }
+
   /**
    * Compile the mote type.
    *

@@ -226,12 +226,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
     return new File(fileSource.getParentFile(), "build/cooja/" + identifier + extension);
   }
 
-  /**
-   * Configure the internal state of the mote, so it can be compiled.
-   *
-   * @return The compilation environment
-   */
-  public String[][] configureForCompilation() {
+  @Override
+  public String[][] getCompilationEnvironment() {
     var sources = new StringBuilder();
     var dirs = new StringBuilder();
     // Check whether Cooja projects include additional sources.
@@ -309,13 +305,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
         throw new MoteTypeCreationException("No compile commands specified");
       }
 
-      var env = configureForCompilation();
-      String[] envOneDimension = new String[env.length];
-      for (int i = 0; i < env.length; i++) {
-        envOneDimension[i] = env[i][0] + "=" + env[i][1];
-      }
-
-      if (!compileMoteType(visAvailable, envOneDimension)) {
+      if (!compileMoteType(visAvailable, BaseContikiMoteType.oneDimensionalEnv(getCompilationEnvironment()))) {
         return false;
       }
     }

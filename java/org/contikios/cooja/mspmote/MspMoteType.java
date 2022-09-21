@@ -122,7 +122,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     }
 
     // Not visualized: Compile Contiki immediately.
-    return compileMoteType(visAvailable, null);
+    return compileMoteType(visAvailable, BaseContikiMoteType.oneDimensionalEnv(getCompilationEnvironment()));
   }
 
   @Override
