@@ -69,7 +69,6 @@ import org.contikios.cooja.contikimote.interfaces.ContikiPIR;
 import org.contikios.cooja.contikimote.interfaces.ContikiRS232;
 import org.contikios.cooja.contikimote.interfaces.ContikiRadio;
 import org.contikios.cooja.contikimote.interfaces.ContikiVib;
-import org.contikios.cooja.dialogs.CompileContiki;
 import org.contikios.cooja.dialogs.ContikiMoteCompileDialog;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
@@ -307,7 +306,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
         }
 
         try {
-          CompileContiki.compile(
+          BaseContikiMoteType.compile(
                   cmd,
                   envOneDimension,
                   source.getParentFile(),

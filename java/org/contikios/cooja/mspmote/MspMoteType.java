@@ -46,7 +46,6 @@ import javax.swing.JLabel;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.MoteInterfaceHandler;
-import org.contikios.cooja.dialogs.CompileContiki;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.mote.BaseContikiMoteType;
@@ -138,7 +137,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
         }
 
         try {
-          CompileContiki.compile(cmd, null, getContikiSourceFile().getParentFile(), null, null,
+          BaseContikiMoteType.compile(cmd, null, getContikiSourceFile().getParentFile(), null, null,
                   compilationOutput, true);
         } catch (Exception e) {
           // Print last 10 compilation errors to console.
