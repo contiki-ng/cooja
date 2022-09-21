@@ -62,6 +62,7 @@ public abstract class BaseContikiMoteType implements MoteType {
 
   /** Project configuration of the mote type. */
   protected ProjectConfig projectConfig = null;
+  // FIXME: combine fileSource and fileFirmware so only one can be active.
   /** Source file of the mote type. */
   protected File fileSource = null;
   /** Commands to compile the source into the firmware. */
