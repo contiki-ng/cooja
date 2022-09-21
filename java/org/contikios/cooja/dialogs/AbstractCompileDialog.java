@@ -274,14 +274,14 @@ public abstract class AbstractCompileDialog extends JDialog {
     	}
     };
     cleanButton = new JButton("Clean");
-    cleanButton.setToolTipText("make clean TARGET=" + getTargetName());
+    cleanButton.setToolTipText("make clean TARGET=" + moteType.getMoteType());
     cleanButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         createButton.setEnabled(false);
 				try {
 					currentCompilationProcess = BaseContikiMoteType.compile(
-							"make clean TARGET=" + getTargetName(),
+							"make clean TARGET=" + moteType.getMoteType(),
 							compilationEnvironment,
 							new File(contikiField.getText()).getParentFile(),
 							null,
@@ -802,7 +802,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    */
   public String getDefaultCompileCommands(File source) {
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-           moteType.getExpectedFirmwareFile(source).getName() + " TARGET=" + getTargetName();
+           moteType.getExpectedFirmwareFile(source).getName() + " TARGET=" + moteType.getMoteType();
   }
 
   private void abortAnyCompilation() {
@@ -823,6 +823,4 @@ public abstract class AbstractCompileDialog extends JDialog {
     tabbedPane.setSelectedComponent(scrollOutput);
     currentCompilationOutput = scrollOutput;
   }
-
-  protected abstract String getTargetName();
 }
