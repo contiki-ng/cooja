@@ -47,8 +47,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Observable;
-import java.util.Observer;
 import javax.script.ScriptException;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JEditorPane;
@@ -121,19 +119,16 @@ public class ScriptRunner implements Plugin {
       codeEditor = null;
       saveAsAction = null;
       logTextArea = null;
-      engine.setScriptLogObserver(new Observer() {
-        @Override
-        public void update(Observable obs, Object obj) {
-          try {
-            if (logWriter != null) {
-              logWriter.write((String) obj);
-              logWriter.flush();
-            } else {
-              logger.fatal("No log writer: " + obj);
-            }
-          } catch (IOException e) {
-            logger.fatal("Error when writing to test log file: " + obj, e);
+      engine.setScriptLogObserver((obs, obj) -> {
+        try {
+          if (logWriter != null) {
+            logWriter.write((String) obj);
+            logWriter.flush();
+          } else {
+            logger.fatal("No log writer: " + obj);
           }
+        } catch (IOException e) {
+          logger.fatal("Error when writing to test log file: " + obj, e);
         }
       });
       return;
@@ -172,12 +167,9 @@ public class ScriptRunner implements Plugin {
     logTextArea.setEditable(true);
     logTextArea.setCursor(null);
 
-    engine.setScriptLogObserver(new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        logTextArea.append((String) obj);
-        logTextArea.setCaretPosition(logTextArea.getText().length());
-      }
+    engine.setScriptLogObserver((obs, obj) -> {
+      logTextArea.append((String) obj);
+      logTextArea.setCaretPosition(logTextArea.getText().length());
     });
 
     var open = new JMenuItem("Open...");
@@ -210,26 +202,20 @@ public class ScriptRunner implements Plugin {
     for (int i=0; i < EXAMPLE_SCRIPTS.length; i += 2) {
       final String file = EXAMPLE_SCRIPTS[i];
       JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
-      exampleItem.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          linkedFile = null;
-          updateScript(loadScript(file));
-        }
+      exampleItem.addActionListener(e -> {
+        linkedFile = null;
+        updateScript(loadScript(file));
       });
       examplesMenu.add(exampleItem);
     }
     fileMenu.add(examplesMenu);
 
     final JCheckBoxMenuItem activateMenuItem = new JCheckBoxMenuItem("Activate");
-    activateMenuItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent ev) {
-        if (isActive()) {
-          deactivateScript();
-        } else {
-          activateScript();
-        }
+    activateMenuItem.addActionListener(ev -> {
+      if (isActive()) {
+        deactivateScript();
+      } else {
+        activateScript();
       }
     });
     runMenu.add(activateMenuItem);
