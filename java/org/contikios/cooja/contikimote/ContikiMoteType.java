@@ -46,8 +46,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.AbstractionLevelDescription;
@@ -206,6 +204,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
   @Override
   public String getMoteName() {
     return "Cooja";
+  }
+
+  @Override
+  protected String getMoteImage() {
+    return null;
   }
 
   @Override
@@ -943,30 +946,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
     return testID;
   }
 
-  /**
-   * Returns a panel with interesting data for this mote type.
-   *
-   * @return Mote type visualizer
-   */
   @Override
-  public JComponent getTypeVisualizer() {
-    StringBuilder sb = new StringBuilder();
-    // Identifier
-    sb.append("<html><table><tr><td>Identifier</td><td>")
-            .append(getIdentifier()).append("</td></tr>");
-
-    // Description
-    sb.append("<tr><td>Description</td><td>")
-            .append(getDescription()).append("</td></tr>");
-
-    /* Contiki application */
-    sb.append("<tr><td>Contiki application</td><td>")
-            .append(getContikiSourceFile().getAbsolutePath()).append("</td></tr>");
-
-    /* Contiki firmware */
-    sb.append("<tr><td>Contiki firmware</td><td>")
-            .append(getContikiFirmwareFile().getAbsolutePath()).append("</td></tr>");
-
+  protected void appendVisualizerInfo(StringBuilder sb) {
     /* JNI class */
     sb.append("<tr><td>JNI library</td><td>")
             .append(this.javaClassName).append("</td></tr>");
@@ -977,10 +958,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
       sb.append(moteInterface.getSimpleName()).append("<br>");
     }
     sb.append("</td></tr>");
-
-    JLabel label = new JLabel(sb.append("</table></html>").toString());
-    label.setVerticalTextPosition(JLabel.TOP);
-    return label;
   }
 
   @Override

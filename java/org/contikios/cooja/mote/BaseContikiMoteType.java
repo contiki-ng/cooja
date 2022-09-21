@@ -32,16 +32,22 @@ package org.contikios.cooja.mote;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.MoteInterface;
@@ -78,6 +84,8 @@ public abstract class BaseContikiMoteType implements MoteType {
 
   /** Returns human-readable name for mote type. */
   public abstract String getMoteName();
+
+  protected abstract String getMoteImage();
 
   @Override
   public String getDescription() {
@@ -157,6 +165,65 @@ public abstract class BaseContikiMoteType implements MoteType {
   public void setMoteInterfaceClasses(Class<? extends MoteInterface>[] moteInterfaces) {
     moteInterfaceClasses.clear();
     moteInterfaceClasses.addAll(Arrays.asList(moteInterfaces));
+  }
+
+  /** Target hook for adding additional information to view. */
+  protected abstract void appendVisualizerInfo(StringBuilder sb);
+
+  @Override
+  public JComponent getTypeVisualizer() {
+    StringBuilder sb = new StringBuilder();
+    // Identifier.
+    sb.append("<html><table><tr><td>Identifier</td><td>").append(getIdentifier()).append("</td></tr>");
+
+    // Description.
+    sb.append("<tr><td>Description</td><td>").append(getDescription()).append("</td></tr>");
+
+    // Source.
+    sb.append("<tr><td>Contiki source</td><td>");
+    final var source = getContikiSourceFile();
+    sb.append(source == null ? "[not specified]" : source.getAbsolutePath());
+    sb.append("</td></tr>");
+
+    // Firmware.
+    sb.append("<tr><td>Contiki firmware</td><td>").append(getContikiFirmwareFile().getAbsolutePath()).append("</td></tr>");
+
+    // Compile commands.
+    String compileCommands = getCompileCommands();
+    if (compileCommands == null) {
+      compileCommands = "";
+    }
+    sb.append("<tr><td valign=\"top\">Compile commands</td><td>")
+            .append(compileCommands.replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>")).append("</td></tr>");
+    // Add target-specific information.
+    appendVisualizerInfo(sb);
+    // Construct the label and set its icon.
+    JLabel label = new JLabel(sb.append("</table></html>").toString());
+    label.setVerticalTextPosition(JLabel.TOP);
+    Icon moteTypeIcon = getMoteTypeIcon();
+    if (moteTypeIcon != null) {
+      label.setIcon(moteTypeIcon);
+    }
+    return label;
+  }
+
+  private Icon getMoteTypeIcon() {
+    String imageName = getMoteImage();
+    if (imageName == null) {
+      return null;
+    }
+    URL imageURL = this.getClass().getClassLoader().getResource(imageName);
+    if (imageURL == null) {
+      return null;
+    }
+    ImageIcon icon = new ImageIcon(imageURL);
+    if (icon.getIconHeight() > 0 && icon.getIconWidth() > 0) {
+      Image image = icon.getImage().getScaledInstance(
+              (200 * icon.getIconWidth() / icon.getIconHeight()), 200,
+              Image.SCALE_DEFAULT);
+      return new ImageIcon(image);
+    }
+    return null;
   }
 
   /**
