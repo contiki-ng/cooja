@@ -164,7 +164,7 @@ public class ScriptRunner implements Plugin {
 
     logTextArea = new JTextArea(12,50);
     logTextArea.setMargin(new Insets(5,5,5,5));
-    logTextArea.setEditable(true);
+    logTextArea.setEditable(false);
     logTextArea.setCursor(null);
 
     engine.setScriptLogObserver((obs, obj) -> {
