@@ -194,6 +194,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
   public ContikiMoteType(Cooja gui) {
     this.gui = gui;
     javaClassName = CoreComm.getAvailableClassName();
+    projectConfig = gui.getProjectConfig().clone();
   }
 
   @Override
@@ -226,12 +227,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
     return new File(fileSource.getParentFile(), "build/cooja/" + identifier + extension);
   }
 
-  /**
-   * Configure the internal state of the mote, so it can be compiled.
-   *
-   * @return The compilation environment
-   */
-  public String[][] configureForCompilation() {
+  @Override
+  public String[][] getCompilationEnvironment() {
     var sources = new StringBuilder();
     var dirs = new StringBuilder();
     // Check whether Cooja projects include additional sources.
@@ -279,43 +276,26 @@ public class ContikiMoteType extends BaseContikiMoteType {
   }
 
   @Override
+  protected boolean showCompilationDialog(Simulation sim) {
+    return ContikiMoteCompileDialog.showDialog(Cooja.getTopParentContainer(), sim, this);
+  }
+
+  @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation,
                                   boolean visAvailable) throws MoteTypeCreationException {
     if (myCoreComm != null) {
       throw new MoteTypeCreationException("Core communicator already used: " + myCoreComm.getClass().getName());
     }
-
-    projectConfig = simulation.getCooja().getProjectConfig().clone();
-
     if (visAvailable && !simulation.isQuickSetup()) {
       if (getDescription() == null) {
-        setDescription("Cooja Mote Type #" + (simulation.getMoteTypes().length + 1));
+        setDescription(getMoteName() + " Mote Type #" + (simulation.getMoteTypes().length + 1));
       }
 
-      /* Compile Contiki from dialog */
-      if (!ContikiMoteCompileDialog.showDialog(parentContainer, simulation, this)) {
+      if (!showCompilationDialog(simulation)) {
         return false;
       }
     } else {
-      if (getIdentifier() == null) {
-        throw new MoteTypeCreationException("No identifier specified");
-      }
-      final var source = getContikiSourceFile();
-      if (source == null) {
-        throw new MoteTypeCreationException("No Contiki application specified");
-      }
-      final var commands = getCompileCommands();
-      if (commands == null) {
-        throw new MoteTypeCreationException("No compile commands specified");
-      }
-
-      var env = configureForCompilation();
-      String[] envOneDimension = new String[env.length];
-      for (int i = 0; i < env.length; i++) {
-        envOneDimension[i] = env[i][0] + "=" + env[i][1];
-      }
-
-      if (!compileMoteType(visAvailable, envOneDimension)) {
+      if (!compileMoteType(visAvailable, BaseContikiMoteType.oneDimensionalEnv(getCompilationEnvironment()))) {
         return false;
       }
     }
@@ -1041,6 +1021,19 @@ public class ContikiMoteType extends BaseContikiMoteType {
         default:
           logger.fatal("Unrecognized entry in loaded configuration: " + name);
           break;
+      }
+    }
+    if (!visAvailable || simulation.isQuickSetup()) {
+      if (getIdentifier() == null) {
+        throw new MoteTypeCreationException("No identifier specified");
+      }
+      final var source = getContikiSourceFile();
+      if (source == null) {
+        throw new MoteTypeCreationException("No Contiki application specified");
+      }
+      final var commands = getCompileCommands();
+      if (commands == null) {
+        throw new MoteTypeCreationException("No compile commands specified");
       }
     }
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
