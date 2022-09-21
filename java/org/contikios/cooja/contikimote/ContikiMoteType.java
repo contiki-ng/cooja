@@ -278,6 +278,10 @@ public class ContikiMoteType extends BaseContikiMoteType {
   @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation,
                                   boolean visAvailable) throws MoteTypeCreationException {
+    if (myCoreComm != null) {
+      throw new MoteTypeCreationException("Core communicator already used: " + myCoreComm.getClass().getName());
+    }
+
     projectConfig = simulation.getCooja().getProjectConfig().clone();
 
     if (visAvailable && !simulation.isQuickSetup()) {
@@ -323,10 +327,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     tmpDir.toFile().deleteOnExit();
 
     // Create, compile, and load the Java wrapper that loads the C library.
-    if (myCoreComm != null) {
-      throw new MoteTypeCreationException(
-              "Core communicator already used: " + myCoreComm.getClass().getName());
-    }
 
     // Allocate core communicator class
     final var firmwareFile = getContikiFirmwareFile();
