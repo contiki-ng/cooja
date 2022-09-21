@@ -281,6 +281,10 @@ public class ContikiMoteType extends BaseContikiMoteType {
   @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation,
                                   boolean visAvailable) throws MoteTypeCreationException {
+    if (myCoreComm != null) {
+      throw new MoteTypeCreationException("Core communicator already used: " + myCoreComm.getClass().getName());
+    }
+
     projectConfig = simulation.getCooja().getProjectConfig().clone();
 
     if (visAvailable && !simulation.isQuickSetup()) {
@@ -326,82 +330,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
     tmpDir.toFile().deleteOnExit();
 
     // Create, compile, and load the Java wrapper that loads the C library.
-    doInit(tmpDir, visAvailable);
-    return true;
-  }
-
-  public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
-    String[] ifNames = getConfig().getStringArrayValue(ContikiMoteType.class, "MOTE_INTERFACES");
-    ArrayList<Class<? extends MoteInterface>> classes = new ArrayList<>();
-
-    classes.add(Position.class);
-    classes.add(Battery.class);
-    classes.add(ContikiVib.class);
-    classes.add(ContikiMoteID.class);
-    classes.add(ContikiRS232.class);
-    classes.add(ContikiBeeper.class);
-    classes.add(RimeAddress.class);
-    classes.add(IPAddress.class);
-    classes.add(ContikiRadio.class);
-    classes.add(ContikiButton.class);
-    classes.add(ContikiPIR.class);
-    classes.add(ContikiClock.class);
-    classes.add(ContikiLED.class);
-    classes.add(ContikiCFS.class);
-    classes.add(ContikiEEPROM.class);
-    classes.add(Mote2MoteRelations.class);
-    classes.add(MoteAttributes.class);
-    // Load mote interface classes.
-    for (String ifName : ifNames) {
-      var ifClass = MoteInterfaceHandler.getInterfaceClass(gui, this, ifName);
-      if (ifClass == null) {
-        logger.warn("Failed to load mote interface class: " + ifName);
-        continue;
-      }
-      classes.add(ifClass);
-    }
-    return classes.toArray(new Class[0]);
-  }
-  /**
-   * Returns make target based on source file.
-   *
-   * @param source The source file
-   * @return Make target based on source file
-   */
-  public static File getMakeTargetName(File source) {
-    File parentDir = source.getParentFile();
-    String sourceNoExtension = source.getName().substring(0, source.getName().length() - 2);
-    return new File(parentDir, sourceNoExtension + librarySuffix);
-  }
-
-  @Override
-  public File getExpectedFirmwareFile(File source) {
-    return new File(source.getParentFile(), "build/cooja/" + identifier + ContikiMoteType.librarySuffix);
-  }
-
-  /**
-   * For internal use.
-   * <p>
-   * This method creates a core communicator linking a Contiki library and a
-   * Java class.
-   * It furthermore parses library Contiki memory addresses and creates the
-   * initial memory.
-   *
-   * @param tempDir Directory for temporary files
-   * @param withUI Specify if UI should be used for error output or not
-   * @throws MoteTypeCreationException if the mote type could not be created.
-   */
-  private void doInit(Path tempDir, boolean withUI) throws MoteTypeCreationException {
-
-    if (myCoreComm != null) {
-      throw new MoteTypeCreationException(
-              "Core communicator already used: " + myCoreComm.getClass().getName());
-    }
 
     // Allocate core communicator class
     final var firmwareFile = getContikiFirmwareFile();
     logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + firmwareFile.getPath() + "'");
-    myCoreComm = CoreComm.createCoreComm(tempDir, javaClassName, firmwareFile);
+    myCoreComm = CoreComm.createCoreComm(tmpDir, javaClassName, firmwareFile);
 
     /* Parse addresses using map file
      * or output of command specified in external tools settings (e.g. nm -a )
@@ -414,7 +347,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     if (useCommand) {
       /* Parse command output */
-      String[] output = loadCommandData(getContikiFirmwareFile(), withUI);
+      String[] output = loadCommandData(getContikiFirmwareFile(), visAvailable);
 
       dataSecParser = new CommandSectionParser(
               output,
@@ -505,6 +438,56 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
 
     getCoreMemory(initialMemory);
+    return true;
+  }
+
+  public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
+    String[] ifNames = getConfig().getStringArrayValue(ContikiMoteType.class, "MOTE_INTERFACES");
+    ArrayList<Class<? extends MoteInterface>> classes = new ArrayList<>();
+
+    classes.add(Position.class);
+    classes.add(Battery.class);
+    classes.add(ContikiVib.class);
+    classes.add(ContikiMoteID.class);
+    classes.add(ContikiRS232.class);
+    classes.add(ContikiBeeper.class);
+    classes.add(RimeAddress.class);
+    classes.add(IPAddress.class);
+    classes.add(ContikiRadio.class);
+    classes.add(ContikiButton.class);
+    classes.add(ContikiPIR.class);
+    classes.add(ContikiClock.class);
+    classes.add(ContikiLED.class);
+    classes.add(ContikiCFS.class);
+    classes.add(ContikiEEPROM.class);
+    classes.add(Mote2MoteRelations.class);
+    classes.add(MoteAttributes.class);
+    // Load mote interface classes.
+    for (String ifName : ifNames) {
+      var ifClass = MoteInterfaceHandler.getInterfaceClass(gui, this, ifName);
+      if (ifClass == null) {
+        logger.warn("Failed to load mote interface class: " + ifName);
+        continue;
+      }
+      classes.add(ifClass);
+    }
+    return classes.toArray(new Class[0]);
+  }
+  /**
+   * Returns make target based on source file.
+   *
+   * @param source The source file
+   * @return Make target based on source file
+   */
+  public static File getMakeTargetName(File source) {
+    File parentDir = source.getParentFile();
+    String sourceNoExtension = source.getName().substring(0, source.getName().length() - 2);
+    return new File(parentDir, sourceNoExtension + librarySuffix);
+  }
+
+  @Override
+  public File getExpectedFirmwareFile(File source) {
+    return new File(source.getParentFile(), "build/cooja/" + identifier + ContikiMoteType.librarySuffix);
   }
 
   /**
