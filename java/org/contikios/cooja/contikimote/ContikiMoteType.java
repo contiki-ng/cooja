@@ -275,6 +275,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
   }
 
   @Override
+  protected boolean showCompilationDialog(Simulation sim) {
+    return ContikiMoteCompileDialog.showDialog(Cooja.getTopParentContainer(), sim, this);
+  }
+
+  @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation,
                                   boolean visAvailable) throws MoteTypeCreationException {
     if (myCoreComm != null) {
@@ -288,8 +293,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
         setDescription("Cooja Mote Type #" + (simulation.getMoteTypes().length + 1));
       }
 
-      /* Compile Contiki from dialog */
-      if (!ContikiMoteCompileDialog.showDialog(parentContainer, simulation, this)) {
+      if (!showCompilationDialog(simulation)) {
         return false;
       }
     } else {

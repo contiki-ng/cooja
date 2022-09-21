@@ -53,6 +53,7 @@ import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.ProjectConfig;
+import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
 
@@ -225,6 +226,9 @@ public abstract class BaseContikiMoteType implements MoteType {
     }
     return null;
   }
+
+  /** Show a compilation dialog for this mote type. */
+  protected abstract boolean showCompilationDialog(Simulation sim);
 
   /** Return a two-dimensional compilation environment. */
   public String[][] getCompilationEnvironment() {

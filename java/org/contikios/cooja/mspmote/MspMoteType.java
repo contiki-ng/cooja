@@ -75,6 +75,11 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   protected abstract MspMote createMote(Simulation simulation) throws MoteTypeCreationException;
 
   @Override
+  protected boolean showCompilationDialog(Simulation sim) {
+    return MspCompileDialog.showDialog(Cooja.getTopParentContainer(), sim, this);
+  }
+
+  @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
           throws MoteTypeCreationException {
     // If visualized, show compile dialog and let user configure.
@@ -103,7 +108,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
       if (getDescription() == null) {
         setDescription(getMoteName() + " Mote Type #" + getIdentifier());
       }
-      return MspCompileDialog.showDialog(parentContainer, simulation, this);
+      return showCompilationDialog(simulation);
     }
 
     if (getIdentifier() == null) {
