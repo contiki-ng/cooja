@@ -84,29 +84,8 @@ public abstract class MspMoteType extends BaseContikiMoteType {
           throws MoteTypeCreationException {
     // If visualized, show compile dialog and let user configure.
     if (visAvailable && !simulation.isQuickSetup()) {
-      // Create unique identifier.
-      if (getIdentifier() == null) {
-        int counter = 0;
-        boolean identifierOK = false;
-        while (!identifierOK) {
-          identifierOK = true;
-          counter++;
-          setIdentifier(getMoteType() + counter);
-
-          for (MoteType existingMoteType : simulation.getMoteTypes()) {
-            if (existingMoteType == this) {
-              continue;
-            }
-            if (existingMoteType.getIdentifier().equals(getIdentifier())) {
-              identifierOK = false;
-              break;
-            }
-          }
-        }
-      }
-
       if (getDescription() == null) {
-        setDescription(getMoteName() + " Mote Type #" + getIdentifier());
+        setDescription(getMoteName() + " Mote Type #" + (simulation.getMoteTypes().length + 1));
       }
       return showCompilationDialog(simulation);
     }
