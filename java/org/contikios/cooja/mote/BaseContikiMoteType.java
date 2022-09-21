@@ -147,9 +147,10 @@ public abstract class BaseContikiMoteType implements MoteType {
    * Compile the mote type.
    *
    * @param visAvailable True if visualization is available.
+   * @param env Environment to compile in.
    * @return Returns true on success.
    */
-  protected boolean compileMoteType(boolean visAvailable) {
+  protected boolean compileMoteType(boolean visAvailable, String[] env) {
     // Handle multiple compilation commands one by one.
     final var compilationOutput = MessageContainer.createMessageList(visAvailable);
     for (String cmd : getCompileCommands().split("\n")) {
@@ -159,7 +160,7 @@ public abstract class BaseContikiMoteType implements MoteType {
       }
 
       try {
-        compile(cmd, null, getContikiSourceFile().getParentFile(), null, null,
+        compile(cmd, env, getContikiSourceFile().getParentFile(), null, null,
                 compilationOutput, true);
       } catch (MoteTypeCreationException e) {
         // Print last 10 compilation errors to console.
