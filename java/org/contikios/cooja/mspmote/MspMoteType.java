@@ -128,15 +128,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     }
 
     // Not visualized: Compile Contiki immediately.
-    if (!compileMoteType(visAvailable, null)) {
-      return false;
-    }
-    // FIXME: Contiki-NG build system guarantees the firmware exists if build was successful.
-    final var firmware = getContikiFirmwareFile();
-    if (firmware == null || !firmware.exists()) {
-      throw new MoteTypeCreationException("Contiki firmware file does not exist: " + firmware);
-    }
-    return true;
+    return compileMoteType(visAvailable, null);
   }
 
   @Override

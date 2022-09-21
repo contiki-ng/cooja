@@ -480,13 +480,6 @@ public abstract class AbstractCompileDialog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
         abortMenuItem.setEnabled(false);
-
-        /* Make sure firmware exists */
-        if (!contikiFirmware.exists()) {
-          logger.fatal("Contiki firmware does not exist: " + contikiFirmware.getAbsolutePath());
-          setDialogState(DialogState.AWAITING_COMPILATION);
-          return;
-        }
         setDialogState(DialogState.COMPILED_FIRMWARE);
       }
     };

@@ -384,12 +384,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
               "Core communicator already used: " + myCoreComm.getClass().getName());
     }
 
-    final var firmwareFile = getContikiFirmwareFile();
-    if (firmwareFile == null || !firmwareFile.exists()) {
-      throw new MoteTypeCreationException("Library file could not be found: " + firmwareFile);
-    }
-
     // Allocate core communicator class
+    final var firmwareFile = getContikiFirmwareFile();
     logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + firmwareFile.getPath() + "'");
     myCoreComm = CoreComm.createCoreComm(tempDir, javaClassName, firmwareFile);
 
