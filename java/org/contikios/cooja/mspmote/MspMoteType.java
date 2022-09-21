@@ -112,7 +112,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
       if (getDescription() == null) {
         setDescription(getMoteName() + " Mote Type #" + getIdentifier());
       }
-      return MspCompileDialog.showDialog(parentContainer, simulation, this, getMoteType());
+      return MspCompileDialog.showDialog(parentContainer, simulation, this);
     }
 
     if (getIdentifier() == null) {

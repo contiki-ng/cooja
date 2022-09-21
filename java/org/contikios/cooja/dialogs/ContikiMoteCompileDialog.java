@@ -260,10 +260,4 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   @Override
   public void writeSettingsToMoteType() {
   }
-
-  @Override
-  protected String getTargetName() {
-  	return "cooja";
-  }
-
 }
