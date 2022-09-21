@@ -295,18 +295,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
         return false;
       }
     } else {
-      if (getIdentifier() == null) {
-        throw new MoteTypeCreationException("No identifier specified");
-      }
-      final var source = getContikiSourceFile();
-      if (source == null) {
-        throw new MoteTypeCreationException("No Contiki application specified");
-      }
-      final var commands = getCompileCommands();
-      if (commands == null) {
-        throw new MoteTypeCreationException("No compile commands specified");
-      }
-
       if (!compileMoteType(visAvailable, BaseContikiMoteType.oneDimensionalEnv(getCompilationEnvironment()))) {
         return false;
       }
@@ -1033,6 +1021,19 @@ public class ContikiMoteType extends BaseContikiMoteType {
         default:
           logger.fatal("Unrecognized entry in loaded configuration: " + name);
           break;
+      }
+    }
+    if (!visAvailable || simulation.isQuickSetup()) {
+      if (getIdentifier() == null) {
+        throw new MoteTypeCreationException("No identifier specified");
+      }
+      final var source = getContikiSourceFile();
+      if (source == null) {
+        throw new MoteTypeCreationException("No Contiki application specified");
+      }
+      final var commands = getCompileCommands();
+      if (commands == null) {
+        throw new MoteTypeCreationException("No compile commands specified");
       }
     }
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
