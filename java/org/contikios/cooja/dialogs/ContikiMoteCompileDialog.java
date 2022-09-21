@@ -136,17 +136,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   }
 
   @Override
-  public File getExpectedFirmwareFile(File source) {
-    logger.fatal("Called getExpectedFirmwareFile(File)");
-    throw new RuntimeException("This method should not be called on ContikiMotes");
-  }
-
-  @Override
-  public File getExpectedFirmwareFile(String moteId, File source) {
-    return ContikiMoteType.getExpectedFirmwareFile(moteId, source);
-  }
-
-  @Override
   public Class<? extends MoteInterface>[] getAllMoteInterfaces() {
     return ((ContikiMoteType)moteType).getAllMoteInterfaceClasses();
   }

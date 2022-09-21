@@ -371,8 +371,9 @@ public class ContikiMoteType extends BaseContikiMoteType {
     return new File(parentDir, sourceNoExtension + librarySuffix);
   }
 
-  public static File getExpectedFirmwareFile(String moteId, File source) {
-    return new File(source.getParentFile(), "build/cooja/" + moteId + ContikiMoteType.librarySuffix);
+  @Override
+  public File getExpectedFirmwareFile(File source) {
+    return new File(source.getParentFile(), "build/cooja/" + identifier + ContikiMoteType.librarySuffix);
   }
 
   /**

@@ -93,11 +93,6 @@ public class MspCompileDialog extends AbstractCompileDialog {
   }
 
   @Override
-  public File getExpectedFirmwareFile(File source) {
-    return ((MspMoteType)moteType).getExpectedFirmwareFile(source);
-  }
-
-  @Override
   public void writeSettingsToMoteType() {
     /* Nothing to do */
   }

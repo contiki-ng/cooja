@@ -338,15 +338,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   public abstract Class<? extends MoteInterface>[] getAllMoteInterfaceClasses();
   public abstract Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses();
 
-  public File getExpectedFirmwareFile(File source) {
-    File parentDir = source.getParentFile();
-    String sourceNoExtension = source.getName();
-    if (sourceNoExtension.endsWith(".c")) {
-      sourceNoExtension = sourceNoExtension.substring(0, source.getName().length() - 2);
-    }
-    return new File(parentDir, "/build/" + getMoteType() + "/" + sourceNoExtension + '.' + getMoteType());
-  }
-
   private ELF elf; /* cached */
   public ELF getELF() throws IOException {
     if (elf == null) {
