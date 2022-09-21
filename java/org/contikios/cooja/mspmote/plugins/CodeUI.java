@@ -44,7 +44,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.BadLocationException;
@@ -255,15 +254,12 @@ public class CodeUI extends JPanel {
    * Remove any shown source code.
    */
   public void displayNoCode(final boolean markCurrent) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        displayedFile = null;
-        codeEditor.setText("[no source displayed]");
-        codeEditor.setEnabled(false);
-        codeEditorLines.clear();
-        displayLine(-1, markCurrent);
-      }
+    java.awt.EventQueue.invokeLater(() -> {
+      displayedFile = null;
+      codeEditor.setText("[no source displayed]");
+      codeEditor.setEnabled(false);
+      codeEditorLines.clear();
+      displayLine(-1, markCurrent);
     });
   }
 
@@ -296,13 +292,7 @@ public class CodeUI extends JPanel {
       updateBreakpoints();
     }
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        displayLine(lineNr, markCurrent);
-      }
-    });
-
+    java.awt.EventQueue.invokeLater(() -> displayLine(lineNr, markCurrent));
   }
 
   /**
@@ -329,16 +319,13 @@ public class CodeUI extends JPanel {
         }
 
         /* ensure visible */
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              Rectangle r = codeEditor.modelToView(start);
-              if (r != null) {
-                codeEditor.scrollRectToVisible(codeEditor.modelToView(start));
-              }
-            } catch (BadLocationException e) {
+        java.awt.EventQueue.invokeLater(() -> {
+          try {
+            Rectangle r = codeEditor.modelToView(start);
+            if (r != null) {
+              codeEditor.scrollRectToVisible(codeEditor.modelToView(start));
             }
+          } catch (BadLocationException e) {
           }
         });
       }
