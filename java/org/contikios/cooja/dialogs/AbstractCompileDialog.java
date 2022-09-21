@@ -79,6 +79,7 @@ import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
+import org.contikios.cooja.mote.BaseContikiMoteType;
 
 /**
  * Abstract configure mote type dialog used by Contiki-based mote type implementations.
@@ -280,7 +281,7 @@ public abstract class AbstractCompileDialog extends JDialog {
       public void actionPerformed(ActionEvent e) {
         createButton.setEnabled(false);
 				try {
-					currentCompilationProcess = CompileContiki.compile(
+					currentCompilationProcess = BaseContikiMoteType.compile(
 							"make clean TARGET=" + getTargetName(),
 							compilationEnvironment,
 							new File(contikiField.getText()).getParentFile(),
@@ -505,7 +506,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
         String command = commands.remove(0);
         try {
-          currentCompilationProcess = CompileContiki.compile(
+          currentCompilationProcess = BaseContikiMoteType.compile(
               command,
               compilationEnvironment,
               new File(contikiField.getText()).getParentFile(),
