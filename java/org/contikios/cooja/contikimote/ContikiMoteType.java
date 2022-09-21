@@ -39,7 +39,6 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,8 +57,6 @@ import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteInterfaceHandler;
-import org.contikios.cooja.MoteType;
-import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.interfaces.ContikiBeeper;
 import org.contikios.cooja.contikimote.interfaces.ContikiButton;
@@ -82,6 +79,7 @@ import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.RimeAddress;
+import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.mote.memory.ArrayMemory;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
@@ -111,7 +109,7 @@ import org.jdom.Element;
  */
 @ClassDescription("Cooja mote")
 @AbstractionLevelDescription("OS level")
-public class ContikiMoteType implements MoteType {
+public class ContikiMoteType extends BaseContikiMoteType {
 
   private static final Logger logger = LogManager.getLogger(ContikiMoteType.class);
 
@@ -178,20 +176,11 @@ public class ContikiMoteType implements MoteType {
     }
   }
 
-  private String identifier = null;
-  private String description = null;
-  private File fileSource = null;
-  private File fileFirmware = null;
-  private String compileCommands = null;
-
   private final String javaClassName; // Loading Java class name: Lib1.java.
-
-  private final ArrayList<Class<? extends MoteInterface>> moteInterfacesClasses = new ArrayList<>();
 
   private NetworkStack netStack = NetworkStack.DEFAULT;
 
   // Type specific class configuration
-  private ProjectConfig myConfig = null;
 
   private CoreComm myCoreComm = null;
 
@@ -280,7 +269,7 @@ public class ContikiMoteType implements MoteType {
   @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation,
                                   boolean visAvailable) throws MoteTypeCreationException {
-    myConfig = simulation.getCooja().getProjectConfig().clone();
+    projectConfig = simulation.getCooja().getProjectConfig().clone();
 
     if (visAvailable && !simulation.isQuickSetup()) {
       if (getDescription() == null) {
@@ -868,46 +857,6 @@ public class ContikiMoteType implements MoteType {
     }
   }
 
-  @Override
-  public String getIdentifier() {
-    return identifier;
-  }
-
-  @Override
-  public void setIdentifier(String identifier) {
-    this.identifier = identifier;
-  }
-
-  @Override
-  public File getContikiSourceFile() {
-    return fileSource;
-  }
-
-  @Override
-  public void setContikiSourceFile(File file) {
-    fileSource = file;
-  }
-
-  @Override
-  public File getContikiFirmwareFile() {
-    return fileFirmware;
-  }
-
-  @Override
-  public void setContikiFirmwareFile(File file) {
-    fileFirmware = file;
-  }
-
-  @Override
-  public String getCompileCommands() {
-    return compileCommands;
-  }
-
-  @Override
-  public void setCompileCommands(String commands) {
-    this.compileCommands = commands;
-  }
-
   /**
    * @param netStack Contiki network stack
    */
@@ -1001,37 +950,6 @@ public class ContikiMoteType implements MoteType {
     return e;
   }
 
-  @Override
-  public String getDescription() {
-    return description;
-  }
-
-  @Override
-  public void setDescription(String newDescription) {
-    description = newDescription;
-  }
-
-  @Override
-  public ProjectConfig getConfig() {
-    return myConfig;
-  }
-
-  @Override
-  public Class<? extends MoteInterface>[] getMoteInterfaceClasses() {
-    if (moteInterfacesClasses.isEmpty()) {
-      return null;
-    }
-    Class<? extends MoteInterface>[] arr = new Class[moteInterfacesClasses.size()];
-    moteInterfacesClasses.toArray(arr);
-    return arr;
-  }
-
-  @Override
-  public void setMoteInterfaceClasses(Class<? extends MoteInterface>[] moteInterfaces) {
-    moteInterfacesClasses.clear();
-    moteInterfacesClasses.addAll(Arrays.asList(moteInterfaces));
-  }
-
   /**
    * Generates a unique Cooja mote type ID.
    *
@@ -1081,7 +999,7 @@ public class ContikiMoteType implements MoteType {
 
     /* Mote interfaces */
     sb.append("<tr><td valign=\"top\">Mote interface</td><td>");
-    for (Class<? extends MoteInterface> moteInterface : moteInterfacesClasses) {
+    for (Class<? extends MoteInterface> moteInterface : moteInterfaceClasses) {
       sb.append(moteInterface.getSimpleName()).append("<br>");
     }
     sb.append("</td></tr>");
@@ -1113,7 +1031,7 @@ public class ContikiMoteType implements MoteType {
     element.setText(compileCommands);
     config.add(element);
 
-    for (var moteInterface : moteInterfacesClasses) {
+    for (var moteInterface : moteInterfaceClasses) {
       element = new Element("moteinterface");
       element.setText(moteInterface.getName());
       config.add(element);
@@ -1174,7 +1092,7 @@ public class ContikiMoteType implements MoteType {
           if (clazz == null) {
             logger.warn("Can't find mote interface class: " + intfClass);
           } else  {
-            moteInterfacesClasses.add(clazz);
+            moteInterfaceClasses.add(clazz);
           }
           break;
         case "contikibasedir":

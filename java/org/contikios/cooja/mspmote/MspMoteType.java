@@ -49,6 +49,7 @@ import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.dialogs.CompileContiki;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
+import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -56,7 +57,6 @@ import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteType;
-import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
@@ -72,84 +72,14 @@ import se.sics.mspsim.util.ELF;
  * @author Fredrik Osterlind, Joakim Eriksson, Niclas Finne
  */
 @ClassDescription("Msp Mote Type")
-public abstract class MspMoteType implements MoteType {
+public abstract class MspMoteType extends BaseContikiMoteType {
   private static final Logger logger = LogManager.getLogger(MspMoteType.class);
-
-  private String identifier = null;
-  private String description = null;
-
-  /* If source file is defined, the firmware is recompiled when loading simulations */
-  private File fileSource = null;
-  private String compileCommands = null;
-  private File fileFirmware = null;
-
-  private Class<? extends MoteInterface>[] moteInterfaceClasses = null;
 
   public abstract String getMoteType();
 
   public abstract String getMoteName();
 
   protected abstract String getMoteImage();
-
-  @Override
-  public String getIdentifier() {
-    return identifier;
-  }
-
-  @Override
-  public void setIdentifier(String identifier) {
-    this.identifier = identifier;
-  }
-
-  @Override
-  public String getDescription() {
-    return description;
-  }
-
-  @Override
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  @Override
-  public String getCompileCommands() {
-    return compileCommands;
-  }
-
-  @Override
-  public void setCompileCommands(String commands) {
-    this.compileCommands = commands;
-  }
-
-  @Override
-  public File getContikiSourceFile() {
-    return fileSource;
-  }
-
-  @Override
-  public File getContikiFirmwareFile() {
-    return fileFirmware;
-  }
-
-  @Override
-  public void setContikiSourceFile(File file) {
-    fileSource = file;
-  }
-
-  @Override
-  public void setContikiFirmwareFile(File file) {
-    this.fileFirmware = file;
-  }
-
-  @Override
-  public Class<? extends MoteInterface>[] getMoteInterfaceClasses() {
-    return moteInterfaceClasses;
-  }
-
-  @Override
-  public void setMoteInterfaceClasses(Class<? extends MoteInterface>[] classes) {
-    moteInterfaceClasses = classes;
-  }
 
   @Override
   public final Mote generateMote(Simulation simulation) throws MoteTypeCreationException {
@@ -288,12 +218,6 @@ public abstract class MspMoteType implements MoteType {
               Image.SCALE_DEFAULT);
       return new ImageIcon(image);
     }
-    return null;
-  }
-
-  @Override
-  public ProjectConfig getConfig() {
-    logger.warn("Msp mote type project config not implemented");
     return null;
   }
 
