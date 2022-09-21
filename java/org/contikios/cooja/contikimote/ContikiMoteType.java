@@ -194,6 +194,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
   public ContikiMoteType(Cooja gui) {
     this.gui = gui;
     javaClassName = CoreComm.getAvailableClassName();
+    projectConfig = gui.getProjectConfig().clone();
   }
 
   @Override
@@ -285,9 +286,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     if (myCoreComm != null) {
       throw new MoteTypeCreationException("Core communicator already used: " + myCoreComm.getClass().getName());
     }
-
-    projectConfig = simulation.getCooja().getProjectConfig().clone();
-
     if (visAvailable && !simulation.isQuickSetup()) {
       if (getDescription() == null) {
         setDescription(getMoteName() + " Mote Type #" + (simulation.getMoteTypes().length + 1));
