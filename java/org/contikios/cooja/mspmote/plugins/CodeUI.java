@@ -92,27 +92,12 @@ public class CodeUI extends JPanel {
   public CodeUI(WatchpointMote mote) {
     this.mote = mote;
 
-    {
-      /* Workaround to configure jsyntaxpane */
-      JEditorPane e = new JEditorPane();
-      new JScrollPane(e);
-      e.setContentType("text/c");
-      DefaultSyntaxKit kit = (DefaultSyntaxKit) e.getEditorKit();
-      kit.setProperty("Action.addbreakpoint", JSyntaxAddBreakpoint.class.getName());
-      kit.setProperty("Action.removebreakpoint", JSyntaxRemoveBreakpoint.class.getName());
-      kit.setProperty("PopupMenu", "copy-to-clipboard,-,find,find-next,goto-line,-,addbreakpoint,removebreakpoint");
-    }
-
     setLayout(new BorderLayout());
     codeEditor = new JEditorPane();
     add(new JScrollPane(codeEditor), BorderLayout.CENTER);
     doLayout();
 
     codeEditor.setContentType("text/c");
-    DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
-    kit.setProperty("Action.addbreakpoint", JSyntaxAddBreakpoint.class.getName());
-    kit.setProperty("Action.removebreakpoint", JSyntaxRemoveBreakpoint.class.getName());
-    kit.setProperty("PopupMenu", "copy-to-clipboard,-,find,find-next,goto-line,-,addbreakpoint,removebreakpoint");
 
     JPopupMenu p = codeEditor.getComponentPopupMenu();
     for (Component c: p.getComponents()) {
