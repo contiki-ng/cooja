@@ -246,10 +246,7 @@ public class ScriptRunner implements Plugin {
     centerPanel.setOneTouchExpandable(true);
     centerPanel.setResizeWeight(0.5);
 
-    JPanel buttonPanel = new JPanel(new BorderLayout());
     JPanel southPanel = new JPanel(new BorderLayout());
-    southPanel.add(BorderLayout.EAST, buttonPanel);
-
     frame.getContentPane().add(BorderLayout.CENTER, centerPanel);
     frame.getContentPane().add(BorderLayout.SOUTH, southPanel);
 
