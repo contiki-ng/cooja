@@ -122,8 +122,15 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     if (getIdentifier() == null) {
       throw new MoteTypeCreationException("No identifier");
     }
-    final var commands = getCompileCommands();
-    if (commands == null) {
+    if (getContikiSourceFile() == null) {
+      // Source file is null for firmware-only simulations, so just return true if firmware exists.
+      final var firmware = getContikiFirmwareFile();
+      if (firmware == null || !firmware.exists()) {
+        throw new MoteTypeCreationException("Contiki firmware file does not exist: " + firmware);
+      }
+      return true;
+    }
+    if (getCompileCommands() == null) {
       throw new MoteTypeCreationException("No compile commands specified");
     }
 
