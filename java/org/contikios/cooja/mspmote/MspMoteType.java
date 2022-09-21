@@ -30,18 +30,11 @@
 package org.contikios.cooja.mspmote;
 
 import java.awt.Container;
-import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -71,8 +64,6 @@ import se.sics.mspsim.util.ELF;
 @ClassDescription("Msp Mote Type")
 public abstract class MspMoteType extends BaseContikiMoteType {
   private static final Logger logger = LogManager.getLogger(MspMoteType.class);
-
-  protected abstract String getMoteImage();
 
   @Override
   public final Mote generateMote(Simulation simulation) throws MoteTypeCreationException {
@@ -135,65 +126,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   }
 
   @Override
-  public JComponent getTypeVisualizer() {
-    StringBuilder sb = new StringBuilder();
-    // Identifier
-    sb.append("<html><table><tr><td>Identifier</td><td>")
-    .append(getIdentifier()).append("</td></tr>");
-
-    // Description
-    sb.append("<tr><td>Description</td><td>")
-    .append(getDescription()).append("</td></tr>");
-
-    /* Contiki source */
-    sb.append("<tr><td>Contiki source</td><td>");
-    final var source = getContikiSourceFile();
-    if (source != null) {
-      sb.append(source.getAbsolutePath());
-    } else {
-      sb.append("[not specified]");
-    }
-    sb.append("</td></tr>");
-
-    /* Contiki firmware */
-    sb.append("<tr><td>Contiki firmware</td><td>")
-    .append(getContikiFirmwareFile().getAbsolutePath()).append("</td></tr>");
-
-    /* Compile commands */
-    String compileCommands = getCompileCommands();
-    if (compileCommands == null) {
-        compileCommands = "";
-    }
-    sb.append("<tr><td valign=top>Compile commands</td><td>")
-    .append(compileCommands.replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>")).append("</td></tr>");
-
-    JLabel label = new JLabel(sb.append("</table></html>").toString());
-    label.setVerticalTextPosition(JLabel.TOP);
-    /* Icon */
-    Icon moteTypeIcon = getMoteTypeIcon();
-    if (moteTypeIcon != null) {
-      label.setIcon(moteTypeIcon);
-    }
-    return label;
-  }
-
-  public Icon getMoteTypeIcon() {
-    String imageName = getMoteImage();
-    if (imageName == null) {
-      return null;
-    }
-    URL imageURL = this.getClass().getClassLoader().getResource(imageName);
-    if (imageURL == null) {
-      return null;
-    }
-    ImageIcon icon = new ImageIcon(imageURL);
-    if (icon.getIconHeight() > 0 && icon.getIconWidth() > 0) {
-      Image image = icon.getImage().getScaledInstance(
-              (200 * icon.getIconWidth() / icon.getIconHeight()), 200,
-              Image.SCALE_DEFAULT);
-      return new ImageIcon(image);
-    }
-    return null;
+  protected void appendVisualizerInfo(StringBuilder sb) {
   }
 
   @Override
