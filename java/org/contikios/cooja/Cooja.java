@@ -714,15 +714,17 @@ public class Cooja extends Observable {
       return;
     }
 
-    /* Update action state */
-    for (GUIAction a: guiActions) {
-      a.setEnabled(a.shouldBeEnabled());
-    }
+    java.awt.EventQueue.invokeLater(() -> {
+      // Update action state.
+      for (GUIAction a : guiActions) {
+        a.setEnabled(a.shouldBeEnabled());
+      }
 
-    // Mote and mote type menus.
-    menuMoteTypeClasses.setEnabled(getSimulation() != null);
-    menuMoteTypes.setEnabled(getSimulation() != null);
-    updateProgress(false);
+      // Mote and mote type menus.
+      menuMoteTypeClasses.setEnabled(getSimulation() != null);
+      menuMoteTypes.setEnabled(getSimulation() != null);
+      updateProgress(false);
+    });
   }
 
   private JMenuBar createMenuBar(JPanel desktop) {
