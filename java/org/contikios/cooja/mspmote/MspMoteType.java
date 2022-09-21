@@ -46,7 +46,6 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
@@ -80,29 +79,13 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   }
 
   @Override
-  public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
-          throws MoteTypeCreationException {
+  public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable) {
     // If visualized, show compile dialog and let user configure.
     if (visAvailable && !simulation.isQuickSetup()) {
       if (getDescription() == null) {
         setDescription(getMoteName() + " Mote Type #" + (simulation.getMoteTypes().length + 1));
       }
       return showCompilationDialog(simulation);
-    }
-
-    if (getIdentifier() == null) {
-      throw new MoteTypeCreationException("No identifier");
-    }
-    if (getContikiSourceFile() == null) {
-      // Source file is null for firmware-only simulations, so just return true if firmware exists.
-      final var firmware = getContikiFirmwareFile();
-      if (firmware == null || !firmware.exists()) {
-        throw new MoteTypeCreationException("Contiki firmware file does not exist: " + firmware);
-      }
-      return true;
-    }
-    if (getCompileCommands() == null) {
-      throw new MoteTypeCreationException("No compile commands specified");
     }
 
     // Not visualized: Compile Contiki immediately.
@@ -247,6 +230,23 @@ public abstract class MspMoteType extends BaseContikiMoteType {
       /* Backwards compatibility: Generate expected firmware file name from source */
       fileFirmware = getExpectedFirmwareFile(fileSource);
       logger.warn("Old simulation config detected: no firmware file specified, using '{}'", fileFirmware);
+    }
+
+    if (!visAvailable || simulation.isQuickSetup()) {
+      if (getIdentifier() == null) {
+        throw new MoteTypeCreationException("No identifier");
+      }
+      if (getContikiSourceFile() == null) {
+        // Source file is null for firmware-only simulations, so just return true if firmware exists.
+        final var firmware = getContikiFirmwareFile();
+        if (firmware == null || !firmware.exists()) {
+          throw new MoteTypeCreationException("Contiki firmware file does not exist: " + firmware);
+        }
+        return true;
+      }
+      if (getCompileCommands() == null) {
+        throw new MoteTypeCreationException("No compile commands specified");
+      }
     }
 
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
