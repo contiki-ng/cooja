@@ -74,8 +74,8 @@ public class CodeUI extends JPanel {
     DefaultSyntaxKit.initKit();
   }
 
-  private JEditorPane codeEditor;
-  private HashMap<Integer, Integer> codeEditorLines;
+  private final JEditorPane codeEditor;
+  private final HashMap<Integer, Integer> codeEditorLines = new HashMap<>();
   protected File displayedFile = null;
 
   private static final HighlightPainter CURRENT_LINE_MARKER = new Markers.SimpleMarker(Color.ORANGE);
@@ -109,7 +109,6 @@ public class CodeUI extends JPanel {
     add(new JScrollPane(codeEditor), BorderLayout.CENTER);
     doLayout();
 
-    codeEditorLines = new HashMap<>();
     codeEditor.setContentType("text/c");
     DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
     kit.setProperty("Action.addbreakpoint", JSyntaxAddBreakpoint.class.getName());
