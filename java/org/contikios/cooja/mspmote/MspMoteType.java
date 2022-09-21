@@ -46,8 +46,6 @@ import javax.swing.JLabel;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.MoteInterfaceHandler;
-import org.contikios.cooja.dialogs.MessageContainer;
-import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.jdom.Element;
 
@@ -124,33 +122,16 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     if (getIdentifier() == null) {
       throw new MoteTypeCreationException("No identifier");
     }
-
-    // Not visualized: Compile Contiki immediately.
-    final MessageList compilationOutput = MessageContainer.createMessageList(visAvailable);
     final var commands = getCompileCommands();
-    if (commands != null) {
-      // Handle multiple compilation commands one by one.
-      for (String cmd: commands.split("\n")) {
-        cmd = cmd.trim();
-        if (cmd.isEmpty()) {
-          continue;
-        }
-
-        try {
-          BaseContikiMoteType.compile(cmd, null, getContikiSourceFile().getParentFile(), null, null,
-                  compilationOutput, true);
-        } catch (Exception e) {
-          // Print last 10 compilation errors to console.
-          MessageContainer[] messages = compilationOutput.getMessages();
-          for (int i = Math.max(messages.length - 10, 0); i < messages.length; i++) {
-            logger.fatal(">> " + messages[i]);
-          }
-          logger.fatal("Compilation error: " + compilationOutput);
-          return false;
-        }
-      }
+    if (commands == null) {
+      throw new MoteTypeCreationException("No compile commands specified");
     }
 
+    // Not visualized: Compile Contiki immediately.
+    if (!compileMoteType(visAvailable)) {
+      return false;
+    }
+    // FIXME: Contiki-NG build system guarantees the firmware exists if build was successful.
     final var firmware = getContikiFirmwareFile();
     if (firmware == null || !firmware.exists()) {
       throw new MoteTypeCreationException("Contiki firmware file does not exist: " + firmware);
