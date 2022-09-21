@@ -90,40 +90,33 @@ public class CodeUI extends JPanel {
   private final WatchpointMote mote;
 
   public CodeUI(WatchpointMote mote) {
+    super(new BorderLayout());
+
     this.mote = mote;
 
-    setLayout(new BorderLayout());
     codeEditor = new JEditorPane();
-    add(new JScrollPane(codeEditor), BorderLayout.CENTER);
-    doLayout();
-
     codeEditor.setContentType("text/c");
-
-    JPopupMenu p = codeEditor.getComponentPopupMenu();
-    for (Component c: p.getComponents()) {
-      if (c instanceof JMenuItem) {
-        if (((JMenuItem) c).getAction() != null &&
-            ((JMenuItem) c).getAction() instanceof JSyntaxAddBreakpoint) {
-          actionAddBreakpoint = (JSyntaxAddBreakpoint)(((JMenuItem) c).getAction());
-          actionAddBreakpoint.setMenuText("Add breakpoint");
-        }
-        if (((JMenuItem) c).getAction() != null &&
-            ((JMenuItem) c).getAction() instanceof JSyntaxRemoveBreakpoint) {
-          actionRemoveBreakpoint = (JSyntaxRemoveBreakpoint)(((JMenuItem) c).getAction());
-          actionRemoveBreakpoint.setMenuText("Remove breakpoint");
-        }
-      }
-    }
-
     codeEditor.setText("");
-    codeEditorLines.clear();
     codeEditor.setEditable(false);
+    add(new JScrollPane(codeEditor), BorderLayout.CENTER);
 
     Highlighter hl = codeEditor.getHighlighter();
     currentLineTag = addHighlight(hl, 0, 0, CURRENT_LINE_MARKER);
     selectedLineTag = addHighlight(hl, 0, 0, SELECTED_LINE_MARKER);
 
-    codeEditor.getComponentPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+    JPopupMenu popupMenu = codeEditor.getComponentPopupMenu();
+    for (Component c: popupMenu.getComponents()) {
+      if (c instanceof JMenuItem item) {
+        var action = item.getAction();
+        if (action instanceof JSyntaxAddBreakpoint breakpoint) {
+          actionAddBreakpoint = breakpoint;
+        } else if (action instanceof JSyntaxRemoveBreakpoint breakpoint) {
+          actionRemoveBreakpoint = breakpoint;
+        }
+      }
+    }
+
+    popupMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
         /* Disable breakpoint actions */
