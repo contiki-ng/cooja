@@ -290,7 +290,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     if (visAvailable && !simulation.isQuickSetup()) {
       if (getDescription() == null) {
-        setDescription("Cooja Mote Type #" + (simulation.getMoteTypes().length + 1));
+        setDescription(getMoteName() + " Mote Type #" + (simulation.getMoteTypes().length + 1));
       }
 
       if (!showCompilationDialog(simulation)) {
