@@ -84,7 +84,7 @@ public class ScriptRunner implements Plugin {
 
   private final Cooja gui;
 
-  final String[] EXAMPLE_SCRIPTS = new String[] {
+  private static final String[] EXAMPLE_SCRIPTS = new String[] {
       "basic.js", "Various commands",
       "helloworld.js", "Wait for 'Hello, world'",
       "log_all.js", "Just log all printf()'s and timeout",
