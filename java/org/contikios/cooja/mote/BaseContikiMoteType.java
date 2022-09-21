@@ -144,6 +144,38 @@ public abstract class BaseContikiMoteType implements MoteType {
   }
 
   /**
+   * Compile the mote type.
+   *
+   * @param visAvailable True if visualization is available.
+   * @param env Environment to compile in.
+   * @return Returns true on success.
+   */
+  protected boolean compileMoteType(boolean visAvailable, String[] env) {
+    // Handle multiple compilation commands one by one.
+    final var compilationOutput = MessageContainer.createMessageList(visAvailable);
+    for (String cmd : getCompileCommands().split("\n")) {
+      cmd = cmd.trim();
+      if (cmd.isEmpty()) {
+        continue;
+      }
+
+      try {
+        compile(cmd, env, getContikiSourceFile().getParentFile(), null, null,
+                compilationOutput, true);
+      } catch (MoteTypeCreationException e) {
+        // Print last 10 compilation errors to console.
+        MessageContainer[] messages = compilationOutput.getMessages();
+        for (int i = Math.max(messages.length - 10, 0); i < messages.length; i++) {
+          logger.error(">> " + messages[i]);
+        }
+        logger.error("Compilation error: " + compilationOutput);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * Executes a Contiki compilation command.
    *
    * @param commandIn Command

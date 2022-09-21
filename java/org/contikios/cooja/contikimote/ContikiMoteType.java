@@ -298,40 +298,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
         envOneDimension[i] = env[i][0] + "=" + env[i][1];
       }
 
-      /* Compile Contiki (may consist of several commands) */
-      final MessageList compilationOutput = MessageContainer.createMessageList(visAvailable);
-      for (String cmd : commands.split("\n")) {
-        if (cmd.trim().isEmpty()) {
-          continue;
-        }
-
-        try {
-          BaseContikiMoteType.compile(
-                  cmd,
-                  envOneDimension,
-                  source.getParentFile(),
-                  null,
-                  null,
-                  compilationOutput,
-                  true
-          );
-        } catch (Exception e) {
-          var newException
-                  = new MoteTypeCreationException("Mote type creation failed: " + e.getMessage(), e);
-          newException.setCompilationOutput(compilationOutput);
-
-          /* Print last 10 compilation errors to console */
-          MessageContainer[] messages = compilationOutput.getMessages();
-          for (int i = messages.length - 10; i < messages.length; i++) {
-            if (i < 0) {
-              continue;
-            }
-            logger.fatal(">> " + messages[i]);
-          }
-
-          logger.fatal("Compilation error: " + e.getMessage());
-          throw newException;
-        }
+      if (!compileMoteType(visAvailable, envOneDimension)) {
+        return false;
       }
     }
 
