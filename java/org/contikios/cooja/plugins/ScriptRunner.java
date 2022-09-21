@@ -351,12 +351,12 @@ public class ScriptRunner implements Plugin {
   }
 
   private void updateTitle() {
-    String title = "Simulation script editor ";
+    String title = "Simulation script editor";
     if (linkedFile != null) {
-      title += "(" + linkedFile.getName() + ") ";
+      title += " (" + linkedFile.getName() + ")";
     }
     if (isActive()) {
-      title += "*active*";
+      title += " *active*";
     }
     frame.setTitle(title);
   }
