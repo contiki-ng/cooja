@@ -134,6 +134,15 @@ public abstract class BaseContikiMoteType implements MoteType {
     fileFirmware = file;
   }
 
+  public File getExpectedFirmwareFile(File source) {
+    File parentDir = source.getParentFile();
+    String sourceNoExtension = source.getName();
+    if (sourceNoExtension.endsWith(".c")) {
+      sourceNoExtension = sourceNoExtension.substring(0, source.getName().length() - 2);
+    }
+    return new File(parentDir, "/build/" + getMoteType() + "/" + sourceNoExtension + '.' + getMoteType());
+  }
+
   @Override
   public Class<? extends MoteInterface>[] getMoteInterfaceClasses() {
     if (moteInterfaceClasses.isEmpty()) {

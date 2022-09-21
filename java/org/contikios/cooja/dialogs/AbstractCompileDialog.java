@@ -75,7 +75,6 @@ import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
@@ -109,7 +108,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 
   protected final Simulation simulation;
   protected final Cooja gui;
-  protected final MoteType moteType;
+  protected final BaseContikiMoteType moteType;
 
   protected final JTabbedPane tabbedPane;
   protected Box moteIntfBox;
@@ -128,7 +127,7 @@ public abstract class AbstractCompileDialog extends JDialog {
   public File contikiSource = null;
   public File contikiFirmware = null;
 
-  public AbstractCompileDialog(Container parent, Simulation simulation, final MoteType moteType) {
+  public AbstractCompileDialog(Container parent, Simulation simulation, final BaseContikiMoteType moteType) {
     super(
         parent instanceof Dialog?(Dialog)parent:
           parent instanceof Window?(Window)parent:
@@ -574,7 +573,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     	createButton.setEnabled(false);
     	commandsArea.setEnabled(true);
       setCompileCommands(getDefaultCompileCommands(sourceFile));
-      contikiFirmware = getExpectedFirmwareFile(moteType.getIdentifier(), sourceFile);
+      contikiFirmware = moteType.getExpectedFirmwareFile(sourceFile);
       contikiSource = sourceFile;
       setDialogState(DialogState.AWAITING_COMPILATION);
       break;
@@ -803,24 +802,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    */
   public String getDefaultCompileCommands(File source) {
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-           getExpectedFirmwareFile(source).getName() + " TARGET=" + getTargetName();
-  }
-
-  /**
-   * @param source Contiki source
-   * @return Expected Contiki firmware compiled from source
-   */
-  public abstract File getExpectedFirmwareFile(File source);
-
-  /**
-   * Returns the Contiki firmware name for moteId and source.
-   *
-   * @param moteId The ID of the mote
-   * @param source Contiki source
-   * @return Expected Contiki firmware compiled from source
-   */
-  public File getExpectedFirmwareFile(String moteId, File source) {
-    return getExpectedFirmwareFile(source);
+           moteType.getExpectedFirmwareFile(source).getName() + " TARGET=" + getTargetName();
   }
 
   private void abortAnyCompilation() {
