@@ -3331,7 +3331,6 @@ public class Cooja extends Observable {
     for (COOJAProject project: currentProjects) {
       Element projectElement = new Element("project");
       projectElement.addContent(createPortablePath(project.dir).getPath().replaceAll("\\\\", "/"));
-      projectElement.setAttribute("EXPORT", "discard");
       root.addContent(projectElement);
     }
 

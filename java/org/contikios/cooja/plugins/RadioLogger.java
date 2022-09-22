@@ -953,9 +953,9 @@ public class RadioLogger extends VisPlugin {
 
     if (pcapFile != null) {
       element = new Element("pcap_file");
+      // FIXME: "file" is unused.
       File file = simulation.getCooja().createPortablePath(pcapFile);
       element.setText(pcapFile.getPath().replaceAll("\\\\", "/"));
-      element.setAttribute("EXPORT", "discard");
       config.add(element);
     }
 
