@@ -2643,13 +2643,7 @@ public class Cooja extends Observable {
             "Do you want to save the current simulation?",
             WINDOW_TITLE, JOptionPane.YES_NO_CANCEL_OPTION,
             JOptionPane.WARNING_MESSAGE, null, options, s1);
-        if (n == JOptionPane.YES_OPTION) {
-          if (cooja.doSaveConfig() == null) {
-            return;
-          }
-        } else if (n == JOptionPane.CANCEL_OPTION) {
-          return;
-        } else if (n != JOptionPane.NO_OPTION) {
+        if (n == JOptionPane.CANCEL_OPTION || n == JOptionPane.YES_OPTION && doSaveConfig() == null) {
           return;
         }
       }
