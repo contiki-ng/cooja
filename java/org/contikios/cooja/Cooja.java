@@ -1065,7 +1065,6 @@ public class Cooja extends Observable {
     guiActions.add(reloadSimulationAction);
     guiActions.add(reloadRandomSimulationAction);
     guiActions.add(saveSimulationAction);
-    /*    guiActions.add(closePluginsAction);*/
     guiActions.add(exitCoojaAction);
     guiActions.add(startStopSimulationAction);
     guiActions.add(removeAllMotesAction);
@@ -1140,13 +1139,7 @@ public class Cooja extends Observable {
     hasFileHistoryChanged = true;
 
     fileMenu.add(new JMenuItem(saveSimulationAction));
-
-    /*    menu.addSeparator();*/
-
-    /*    menu.add(new JMenuItem(closePluginsAction));*/
-
     fileMenu.addSeparator();
-
     fileMenu.add(new JMenuItem(exitCoojaAction));
 
     /* Simulation menu */
