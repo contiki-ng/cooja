@@ -3326,9 +3326,6 @@ public class Cooja extends Observable {
    */
   private Collection<Element> getPluginsConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
-    Element pluginElement, pluginSubElement;
-
-    /* Loop over all plugins */
     for (Plugin startedPlugin : startedPlugins) {
       int pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
 
@@ -3338,12 +3335,12 @@ public class Cooja extends Observable {
         continue;
       }
 
-      pluginElement = new Element("plugin");
+      var pluginElement = new Element("plugin");
       pluginElement.setText(startedPlugin.getClass().getName());
 
       // Create mote argument config (if mote plugin)
       if (pluginType == PluginType.MOTE_PLUGIN) {
-        pluginSubElement = new Element("mote_arg");
+        var pluginSubElement = new Element("mote_arg");
         Mote taggedMote = ((MotePlugin) startedPlugin).getMote();
         for (int moteNr = 0; moteNr < mySimulation.getMotesCount(); moteNr++) {
           if (mySimulation.getMote(moteNr) == taggedMote) {
@@ -3357,7 +3354,7 @@ public class Cooja extends Observable {
       // Create plugin specific configuration
       Collection<Element> pluginXML = startedPlugin.getConfigXML();
       if (pluginXML != null) {
-        pluginSubElement = new Element("plugin_config");
+        var pluginSubElement = new Element("plugin_config");
         pluginSubElement.addContent(pluginXML);
         pluginElement.addContent(pluginSubElement);
       }
@@ -3366,7 +3363,7 @@ public class Cooja extends Observable {
       if (startedPlugin.getCooja() != null) {
         JInternalFrame pluginFrame = startedPlugin.getCooja();
 
-        pluginSubElement = new Element("width");
+        var pluginSubElement = new Element("width");
         pluginSubElement.setText(String.valueOf(pluginFrame.getSize().width));
         pluginElement.addContent(pluginSubElement);
 
