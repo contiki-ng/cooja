@@ -3330,8 +3330,7 @@ public class Cooja extends Observable {
       int pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
 
       // Ignore GUI plugins
-      if (pluginType == PluginType.COOJA_PLUGIN
-          || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
+      if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
         continue;
       }
 
