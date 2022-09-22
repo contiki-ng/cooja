@@ -2632,8 +2632,8 @@ public class Cooja extends Observable {
   }
   
   public void doQuit(boolean askForConfirmation, int exitCode) {
-    if (askForConfirmation) {
-      if (getSimulation() != null) {
+    if (getSimulation() != null) {
+      if (askForConfirmation) {
         /* Save? */
         String s1 = "Yes";
         String s2 = "No";
@@ -2653,9 +2653,6 @@ public class Cooja extends Observable {
           return;
         }
       }
-    }
-
-    if (getSimulation() != null) {
       doRemoveSimulation(false);
     }
 
