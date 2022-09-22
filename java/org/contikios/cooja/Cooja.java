@@ -2626,8 +2626,8 @@ public class Cooja extends Observable {
   }
   
   public void doQuit(boolean askForConfirmation, int exitCode) {
-    if (askForConfirmation) {
-      if (getSimulation() != null) {
+    if (getSimulation() != null) {
+      if (askForConfirmation) {
         /* Save? */
         String s1 = "Yes";
         String s2 = "No";
@@ -2637,19 +2637,10 @@ public class Cooja extends Observable {
             "Do you want to save the current simulation?",
             WINDOW_TITLE, JOptionPane.YES_NO_CANCEL_OPTION,
             JOptionPane.WARNING_MESSAGE, null, options, s1);
-        if (n == JOptionPane.YES_OPTION) {
-          if (cooja.doSaveConfig() == null) {
-            return;
-          }
-        } else if (n == JOptionPane.CANCEL_OPTION) {
-          return;
-        } else if (n != JOptionPane.NO_OPTION) {
+        if (n == JOptionPane.CANCEL_OPTION || n == JOptionPane.YES_OPTION && doSaveConfig() == null) {
           return;
         }
       }
-    }
-
-    if (getSimulation() != null) {
       doRemoveSimulation(false);
     }
 
@@ -2664,13 +2655,9 @@ public class Cooja extends Observable {
       setExternalToolsSetting("FRAME_POS_X", String.valueOf(frame.getLocationOnScreen().x));
       setExternalToolsSetting("FRAME_POS_Y", String.valueOf(frame.getLocationOnScreen().y));
 
-      if (frame.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
-        setExternalToolsSetting("FRAME_WIDTH", "" + Integer.MAX_VALUE);
-        setExternalToolsSetting("FRAME_HEIGHT", "" + Integer.MAX_VALUE);
-      } else {
-        setExternalToolsSetting("FRAME_WIDTH", String.valueOf(frame.getWidth()));
-        setExternalToolsSetting("FRAME_HEIGHT", String.valueOf(frame.getHeight()));
-      }
+      var maximized = frame.getExtendedState() == JFrame.MAXIMIZED_BOTH;
+      setExternalToolsSetting("FRAME_WIDTH", String.valueOf(maximized ? Integer.MAX_VALUE : frame.getWidth()));
+      setExternalToolsSetting("FRAME_HEIGHT", String.valueOf(maximized ? Integer.MAX_VALUE : frame.getHeight()));
       saveExternalToolsUserSettings();
     }
     System.exit(exitCode);
