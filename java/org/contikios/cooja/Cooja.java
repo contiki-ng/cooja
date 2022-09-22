@@ -982,7 +982,7 @@ public class Cooja extends Observable {
     final var saveSimulationAction = new GUIAction("Save simulation as...", KeyEvent.VK_S) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        cooja.doSaveConfig(true);
+        cooja.doSaveConfig();
       }
       @Override
       public boolean shouldBeEnabled() {
@@ -2561,11 +2561,8 @@ public class Cooja extends Observable {
 
   /**
    * Save current simulation configuration to disk
-   *
-   * @param askForConfirmation
-   *          Ask for confirmation before overwriting file
    */
-  public File doSaveConfig(boolean askForConfirmation) {
+  public File doSaveConfig() {
     if (mySimulation == null) {
       return null;
     }
@@ -2581,18 +2578,15 @@ public class Cooja extends Observable {
         saveFile = new File(saveFile.getParent(), saveFile.getName() + fc.getFileFilter());
       }
       if (saveFile.exists()) {
-        if (askForConfirmation) {
-          String s1 = "Overwrite";
-          String s2 = "Cancel";
-          Object[] options = { s1, s2 };
-          int n = JOptionPane.showOptionDialog(
-              Cooja.getTopParentContainer(),
-              "A file with the same name already exists.\nDo you want to remove it?",
-              "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
-              JOptionPane.QUESTION_MESSAGE, null, options, s1);
-          if (n != JOptionPane.YES_OPTION) {
-            return null;
-          }
+        String s1 = "Overwrite";
+        String s2 = "Cancel";
+        Object[] options = {s1, s2};
+        if (JOptionPane.showOptionDialog(
+                Cooja.getTopParentContainer(),
+                "A file with the same name already exists.\nDo you want to remove it?",
+                "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, options, s1) != JOptionPane.YES_OPTION) {
+          return null;
         }
       }
       if (!saveFile.exists() || saveFile.canWrite()) {
@@ -2660,7 +2654,7 @@ public class Cooja extends Observable {
             WINDOW_TITLE, JOptionPane.YES_NO_CANCEL_OPTION,
             JOptionPane.WARNING_MESSAGE, null, options, s1);
         if (n == JOptionPane.YES_OPTION) {
-          if (cooja.doSaveConfig(true) == null) {
+          if (cooja.doSaveConfig() == null) {
             return;
           }
         } else if (n == JOptionPane.CANCEL_OPTION) {
