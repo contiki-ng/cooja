@@ -3314,17 +3314,6 @@ public class Cooja extends Observable {
     root.addContent(simulationElement);
 
     // Create started plugins config
-    root.addContent(getPluginsConfigXML());
-
-    return root;
-  }
-
-  /**
-   * Returns started plugins config.
-   *
-   * @return Config or null
-   */
-  private Collection<Element> getPluginsConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
     for (Plugin startedPlugin : startedPlugins) {
       int pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
@@ -3391,8 +3380,8 @@ public class Cooja extends Observable {
 
       config.add(pluginElement);
     }
-
-    return config;
+    root.addContent(config);
+    return root;
   }
 
   /** Verify project extension directories. */
