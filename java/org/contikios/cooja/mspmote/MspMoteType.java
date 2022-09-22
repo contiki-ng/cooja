@@ -115,11 +115,9 @@ public abstract class MspMoteType extends BaseContikiMoteType {
       element = new Element("source");
       File file = simulation.getCooja().createPortablePath(fileSource);
       element.setText(file.getPath().replaceAll("\\\\", "/"));
-      element.setAttribute("EXPORT", "discard");
       config.add(element);
       element = new Element("commands");
       element.setText(compileCommands);
-      element.setAttribute("EXPORT", "discard");
       config.add(element);
     }
 
@@ -127,7 +125,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     element = new Element("firmware");
     File file = simulation.getCooja().createPortablePath(fileFirmware);
     element.setText(file.getPath().replaceAll("\\\\", "/"));
-    element.setAttribute("EXPORT", "copy");
     config.add(element);
 
     // Mote interfaces
