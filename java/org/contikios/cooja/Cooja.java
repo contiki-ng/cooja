@@ -2589,16 +2589,16 @@ public class Cooja extends Observable {
           return null;
         }
       }
-      if (!saveFile.exists() || saveFile.canWrite()) {
-        saveSimulationConfig(saveFile);
-        addToFileHistory(saveFile);
-        return saveFile;
-      } else {
+      if (saveFile.exists() && !saveFile.canWrite()) {
       	JOptionPane.showMessageDialog(
       			getTopParentContainer(), "No write access to " + saveFile, "Save failed",
       			JOptionPane.ERROR_MESSAGE);
         logger.fatal("No write access to file: " + saveFile.getAbsolutePath());
+        return null;
       }
+      saveSimulationConfig(saveFile);
+      addToFileHistory(saveFile);
+      return saveFile;
     }
     return null;
   }
