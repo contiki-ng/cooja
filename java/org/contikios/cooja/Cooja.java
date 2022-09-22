@@ -3314,36 +3314,21 @@ public class Cooja extends Observable {
     root.addContent(simulationElement);
 
     // Create started plugins config
-    root.addContent(getPluginsConfigXML());
-
-    return root;
-  }
-
-  /**
-   * Returns started plugins config.
-   *
-   * @return Config or null
-   */
-  private Collection<Element> getPluginsConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
-    Element pluginElement, pluginSubElement;
-
-    /* Loop over all plugins */
     for (Plugin startedPlugin : startedPlugins) {
       int pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
 
       // Ignore GUI plugins
-      if (pluginType == PluginType.COOJA_PLUGIN
-          || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
+      if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
         continue;
       }
 
-      pluginElement = new Element("plugin");
+      var pluginElement = new Element("plugin");
       pluginElement.setText(startedPlugin.getClass().getName());
 
       // Create mote argument config (if mote plugin)
       if (pluginType == PluginType.MOTE_PLUGIN) {
-        pluginSubElement = new Element("mote_arg");
+        var pluginSubElement = new Element("mote_arg");
         Mote taggedMote = ((MotePlugin) startedPlugin).getMote();
         for (int moteNr = 0; moteNr < mySimulation.getMotesCount(); moteNr++) {
           if (mySimulation.getMote(moteNr) == taggedMote) {
@@ -3357,7 +3342,7 @@ public class Cooja extends Observable {
       // Create plugin specific configuration
       Collection<Element> pluginXML = startedPlugin.getConfigXML();
       if (pluginXML != null) {
-        pluginSubElement = new Element("plugin_config");
+        var pluginSubElement = new Element("plugin_config");
         pluginSubElement.addContent(pluginXML);
         pluginElement.addContent(pluginSubElement);
       }
@@ -3366,7 +3351,7 @@ public class Cooja extends Observable {
       if (startedPlugin.getCooja() != null) {
         JInternalFrame pluginFrame = startedPlugin.getCooja();
 
-        pluginSubElement = new Element("width");
+        var pluginSubElement = new Element("width");
         pluginSubElement.setText(String.valueOf(pluginFrame.getSize().width));
         pluginElement.addContent(pluginSubElement);
 
@@ -3395,8 +3380,8 @@ public class Cooja extends Observable {
 
       config.add(pluginElement);
     }
-
-    return config;
+    root.addContent(config);
+    return root;
   }
 
   /** Verify project extension directories. */
