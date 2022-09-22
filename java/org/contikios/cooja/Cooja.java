@@ -2424,13 +2424,7 @@ public class Cooja extends Observable {
     var worker = new SwingWorker<Simulation, SimulationCreationException>() {
       @Override
       public Simulation doInBackground() {
-        Element root = new Element("simconf");
-        if (cfgFile == null) {
-          var simElem = new Element("simulation");
-          simElem.addContent(getSimulation().getConfigXML());
-          root.addContent(simElem);
-          root.addContent(getPluginsConfigXML());
-        }
+        Element root = cfgFile == null ? extractSimulationConfig() : null;
         boolean shouldRetry;
         Simulation newSim = null;
         do {
@@ -3316,6 +3310,7 @@ public class Cooja extends Observable {
     }
   }
 
+  /** Returns a root element containing the simulation config. */
   private Element extractSimulationConfig() {
     // Create simulation config
     Element root = new Element("simconf");
