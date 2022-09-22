@@ -2661,13 +2661,9 @@ public class Cooja extends Observable {
       setExternalToolsSetting("FRAME_POS_X", String.valueOf(frame.getLocationOnScreen().x));
       setExternalToolsSetting("FRAME_POS_Y", String.valueOf(frame.getLocationOnScreen().y));
 
-      if (frame.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
-        setExternalToolsSetting("FRAME_WIDTH", "" + Integer.MAX_VALUE);
-        setExternalToolsSetting("FRAME_HEIGHT", "" + Integer.MAX_VALUE);
-      } else {
-        setExternalToolsSetting("FRAME_WIDTH", String.valueOf(frame.getWidth()));
-        setExternalToolsSetting("FRAME_HEIGHT", String.valueOf(frame.getHeight()));
-      }
+      var maximized = frame.getExtendedState() == JFrame.MAXIMIZED_BOTH;
+      setExternalToolsSetting("FRAME_WIDTH", String.valueOf(maximized ? Integer.MAX_VALUE : frame.getWidth()));
+      setExternalToolsSetting("FRAME_HEIGHT", String.valueOf(maximized ? Integer.MAX_VALUE : frame.getHeight()));
       saveExternalToolsUserSettings();
     }
     System.exit(exitCode);
