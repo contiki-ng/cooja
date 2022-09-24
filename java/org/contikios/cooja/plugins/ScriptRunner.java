@@ -38,8 +38,6 @@ import de.sciss.syntaxpane.DefaultSyntaxKit;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -47,8 +45,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Observable;
-import java.util.Observer;
 import javax.script.ScriptException;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JEditorPane;
@@ -86,7 +82,7 @@ public class ScriptRunner implements Plugin {
 
   private final Cooja gui;
 
-  final String[] EXAMPLE_SCRIPTS = new String[] {
+  private static final String[] EXAMPLE_SCRIPTS = new String[] {
       "basic.js", "Various commands",
       "helloworld.js", "Wait for 'Hello, world'",
       "log_all.js", "Just log all printf()'s and timeout",
@@ -105,7 +101,6 @@ public class ScriptRunner implements Plugin {
   private String headlessScript = null;
   private final JEditorPane codeEditor;
   private boolean codeEditorChanged = false;
-  private final ActionListener saveAsAction;
   private final JTextArea logTextArea;
 
   private File linkedFile = null;
@@ -119,21 +114,17 @@ public class ScriptRunner implements Plugin {
     if (!Cooja.isVisualized()) {
       frame = null;
       codeEditor = null;
-      saveAsAction = null;
       logTextArea = null;
-      engine.setScriptLogObserver(new Observer() {
-        @Override
-        public void update(Observable obs, Object obj) {
-          try {
-            if (logWriter != null) {
-              logWriter.write((String) obj);
-              logWriter.flush();
-            } else {
-              logger.fatal("No log writer: " + obj);
-            }
-          } catch (IOException e) {
-            logger.fatal("Error when writing to test log file: " + obj, e);
+      engine.setScriptLogObserver((obs, obj) -> {
+        try {
+          if (logWriter != null) {
+            logWriter.write((String) obj);
+            logWriter.flush();
+          } else {
+            logger.fatal("No log writer: " + obj);
           }
+        } catch (IOException e) {
+          logger.fatal("Error when writing to test log file: " + obj, e);
         }
       });
       return;
@@ -169,15 +160,12 @@ public class ScriptRunner implements Plugin {
 
     logTextArea = new JTextArea(12,50);
     logTextArea.setMargin(new Insets(5,5,5,5));
-    logTextArea.setEditable(true);
+    logTextArea.setEditable(false);
     logTextArea.setCursor(null);
 
-    engine.setScriptLogObserver(new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        logTextArea.append((String) obj);
-        logTextArea.setCaretPosition(logTextArea.getText().length());
-      }
+    engine.setScriptLogObserver((obs, obj) -> {
+      logTextArea.append((String) obj);
+      logTextArea.setCaretPosition(logTextArea.getText().length());
     });
 
     var open = new JMenuItem("Open...");
@@ -190,46 +178,27 @@ public class ScriptRunner implements Plugin {
     });
     fileMenu.add(open);
     var saveAs = new JMenuItem("Save as...");
-    saveAs.addActionListener(saveAsAction = l -> {
-      var f = l == null ? linkedFile : showFileChooser(false);
-      if (f == null) {
-        return;
-      }
-      try (var writer = Files.newBufferedWriter(f.toPath(), UTF_8)) {
-        writer.write(codeEditor.getText());
-        linkedFile = f;
-        codeEditorChanged = false;
-        updateTitle();
-      } catch (IOException e) {
-        logger.error("Failed saving file: " + e.getMessage());
-      }
-    });
+    saveAs.addActionListener(l -> saveScript(true));
     fileMenu.add(saveAs);
     /* Example scripts */
     final JMenu examplesMenu = new JMenu("Load example script");
     for (int i=0; i < EXAMPLE_SCRIPTS.length; i += 2) {
       final String file = EXAMPLE_SCRIPTS[i];
       JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
-      exampleItem.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          linkedFile = null;
-          updateScript(loadScript(file));
-        }
+      exampleItem.addActionListener(e -> {
+        linkedFile = null;
+        updateScript(loadScript(file));
       });
       examplesMenu.add(exampleItem);
     }
     fileMenu.add(examplesMenu);
 
     final JCheckBoxMenuItem activateMenuItem = new JCheckBoxMenuItem("Activate");
-    activateMenuItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent ev) {
-        if (isActive()) {
-          deactivateScript();
-        } else {
-          activateScript();
-        }
+    activateMenuItem.addActionListener(ev -> {
+      if (isActive()) {
+        deactivateScript();
+      } else {
+        activateScript();
       }
     });
     runMenu.add(activateMenuItem);
@@ -260,10 +229,7 @@ public class ScriptRunner implements Plugin {
     centerPanel.setOneTouchExpandable(true);
     centerPanel.setResizeWeight(0.5);
 
-    JPanel buttonPanel = new JPanel(new BorderLayout());
     JPanel southPanel = new JPanel(new BorderLayout());
-    southPanel.add(BorderLayout.EAST, buttonPanel);
-
     frame.getContentPane().add(BorderLayout.CENTER, centerPanel);
     frame.getContentPane().add(BorderLayout.SOUTH, southPanel);
 
@@ -278,6 +244,21 @@ public class ScriptRunner implements Plugin {
 
     /* Set default script */
     updateScript(loadScript(EXAMPLE_SCRIPTS[0]));
+  }
+
+  private void saveScript(boolean saveToLinkedFile) {
+    var f = !saveToLinkedFile ? linkedFile : showFileChooser(false);
+    if (f == null) {
+      return;
+    }
+    try (var writer = Files.newBufferedWriter(f.toPath(), UTF_8)) {
+      writer.write(codeEditor.getText());
+      linkedFile = f;
+      codeEditorChanged = false;
+      updateTitle();
+    } catch (IOException e) {
+      logger.error("Failed to save script file: {}", f, e);
+    }
   }
 
   @Override
@@ -365,12 +346,12 @@ public class ScriptRunner implements Plugin {
   }
 
   private void updateTitle() {
-    String title = "Simulation script editor ";
+    String title = "Simulation script editor";
     if (linkedFile != null) {
-      title += "(" + linkedFile.getName() + ") ";
+      title += " (" + linkedFile.getName() + ")";
     }
     if (isActive()) {
-      title += "*active*";
+      title += " *active*";
     }
     frame.setTitle(title);
   }
@@ -383,7 +364,7 @@ public class ScriptRunner implements Plugin {
     if (JOptionPane.showConfirmDialog(Cooja.getTopParentContainer(),
             "Do you want to save the changes to " + linkedFile.getAbsolutePath() + "?",
             "Save script changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-      saveAsAction.actionPerformed(null);
+      saveScript(false);
     }
     // User has chosen, do not ask again for the current modifications.
     codeEditorChanged = false;
