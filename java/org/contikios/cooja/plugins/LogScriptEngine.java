@@ -51,6 +51,7 @@ import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
+import org.openjdk.nashorn.api.scripting.NashornScriptEngine;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 
 /**
@@ -65,7 +66,7 @@ public class LogScriptEngine {
   private static final Logger logger = LogManager.getLogger(LogScriptEngine.class);
   private static final long DEFAULT_TIMEOUT = 20*60*1000*Simulation.MILLISECOND; /* 1200s = 20 minutes */
 
-  private final ScriptEngine engine = new NashornScriptEngineFactory().getScriptEngine();
+  private final NashornScriptEngine engine = (NashornScriptEngine) new NashornScriptEngineFactory().getScriptEngine();
 
   /* Log output listener */
   private final LogOutputListener logOutputListener = new LogOutputListener() {
@@ -243,7 +244,7 @@ public class LogScriptEngine {
       logger.info("Script timeout in " + (timeout/Simulation.MILLISECOND) + " ms");
     }
 
-    engine.eval(jsCode);
+    final var prog = engine.compile(jsCode);
 
     /* Setup script control */
     semaphoreScript = new Semaphore(1);
@@ -278,8 +279,8 @@ public class LogScriptEngine {
       @Override
       public void run() {
         try {
-          ((Invocable)engine).getInterface(Runnable.class).run();
-        } catch (RuntimeException e) {
+          prog.eval();
+        } catch (ScriptException | RuntimeException e) {
           Throwable throwable = e;
           while (throwable.getCause() != null) {
             throwable = throwable.getCause();
@@ -306,19 +307,16 @@ public class LogScriptEngine {
         }
       }
     }, "script");
-    scriptThread.start(); /* Starts by acquiring semaphore (blocks) */
 
     /* Setup simulation observers */
     simulation.getEventCentral().addLogOutputListener(logOutputListener);
 
     /* Create script output logger */
     engine.put("log", scriptLog);
-
     engine.put("global", new HashMap<>());
     engine.put("sim", simulation);
     engine.put("gui", simulation.getCooja());
     engine.put("msg", "");
-
     engine.put("node", new ScriptMote());
 
     Runnable activate = new Runnable() {
@@ -335,6 +333,8 @@ public class LogScriptEngine {
         simulation.scheduleEvent(timeoutEvent, endTime);
       }
     };
+    // Script context initialized (engine.put calls), start thread that runs script to the first semaphore.
+    scriptThread.start();
     // Wait for script thread to reach barrier in the beginning of the JavaScript run function.
     while (!semaphoreScript.hasQueuedThreads()) {
       try {

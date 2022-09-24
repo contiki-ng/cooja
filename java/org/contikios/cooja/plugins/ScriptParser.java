@@ -248,7 +248,8 @@ public class ScriptParser {
     "\n" +
     "function write(mote,msg) { " +
     " mote.getInterfaces().getLog().writeString(msg); " +
-    "};\n";
+    "};\n" +
+    "run();\n";
   }
 
   public long getTimeoutTime() {
