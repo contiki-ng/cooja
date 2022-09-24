@@ -140,19 +140,12 @@ public class CodeUI extends JPanel {
         int end = codeEditorLines.get(line+1);
         changeHighlight(codeEditor.getHighlighter(), selectedLineTag, start, end);
         boolean hasBreakpoint = CodeUI.this.mote.breakpointExists(address);
-        if (!hasBreakpoint) {
-          actionAddBreakpoint.setEnabled(true);
-          actionAddBreakpoint.putValue("WatchpointMote", CodeUI.this.mote);
-          actionAddBreakpoint.putValue("WatchpointFile", displayedFile);
-          actionAddBreakpoint.putValue("WatchpointLine", line);
-          actionAddBreakpoint.putValue("WatchpointAddress", address);
-        } else {
-          actionRemoveBreakpoint.setEnabled(true);
-          actionRemoveBreakpoint.putValue("WatchpointMote", CodeUI.this.mote);
-          actionRemoveBreakpoint.putValue("WatchpointFile", displayedFile);
-          actionRemoveBreakpoint.putValue("WatchpointLine", line);
-          actionRemoveBreakpoint.putValue("WatchpointAddress", address);
-        }
+        var breakPoint = hasBreakpoint ? actionRemoveBreakpoint : actionAddBreakpoint;
+        breakPoint.setEnabled(true);
+        breakPoint.putValue("WatchpointMote", CodeUI.this.mote);
+        breakPoint.putValue("WatchpointFile", displayedFile);
+        breakPoint.putValue("WatchpointLine", line);
+        breakPoint.putValue("WatchpointAddress", address);
       }
       @Override
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
