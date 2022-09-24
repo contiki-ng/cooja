@@ -392,30 +392,22 @@ public class LogScriptEngine {
       final TimeEvent generateEvent = new TimeEvent() {
         @Override
         public void execute(long t) {
-          if (scriptThread == null ||
-              !scriptThread.isAlive()) {
+          if (scriptThread == null || !scriptThread.isAlive()) {
             logger.info("script thread not alive. try deactivating script.");
-            /*scriptThread.isInterrupted()*/
             return;
           }
 
           /* Update script variables */
           engine.put("mote", currentMote);
           engine.put("id", currentMote.getID());
-          engine.put("time", currentMote.getSimulation().getSimulationTime());
+          engine.put("time", t);
           engine.put("msg", msg);
 
           stepScript();
         }
       };
-      simulation.invokeSimulationThread(new Runnable() {
-        @Override
-        public void run() {
-          simulation.scheduleEvent(
-              generateEvent,
-              simulation.getSimulationTime() + delay*Simulation.MILLISECOND);
-        }
-      });
+      simulation.invokeSimulationThread(() ->
+          simulation.scheduleEvent(generateEvent, simulation.getSimulationTime() + delay*Simulation.MILLISECOND));
     }
   };
 }
