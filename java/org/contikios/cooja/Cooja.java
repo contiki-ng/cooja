@@ -690,7 +690,7 @@ public class Cooja extends Observable {
     final var cfgFile = validateFileOrSelectNew(file);
     if (cfgFile == null) return;
 
-    new Thread(() -> cooja.doLoadConfig(cfgFile, quick, false, null), "asyncld").start();
+    createLoadSimWorker(cfgFile, quick, false, null).execute();
   }
 
   /**
@@ -2363,14 +2363,43 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Load a simulation configuration file from disk
+   * Load a simulation configuration file from disk and return the simulation.
    *
    * @param configFile Configuration file to load, reloads current sim if null
    * @param quick      Quick-load simulation
    * @param rewriteCsc Rewrite simulation config
    * @param manualRandomSeed The random seed to use for the simulation
+   * @return The simulation
    */
   private Simulation doLoadConfig(File configFile, final boolean quick, boolean rewriteCsc, Long manualRandomSeed) {
+    final var worker = new RunnableInEDT<SwingWorker<Simulation, SimulationCreationException>>() {
+      @Override
+      public SwingWorker<Simulation, SimulationCreationException> work() {
+        return createLoadSimWorker(configFile, quick, rewriteCsc, manualRandomSeed);
+      }
+    }.invokeAndWait();
+    worker.execute();
+    try {
+      return worker.get();
+    } catch (CancellationException | ExecutionException | InterruptedException e) {
+      cooja.doRemoveSimulation(false);
+      return null;
+    }
+  }
+
+  /**
+   * Create a worker that will load the simulation in the background, displaying
+   * a progress dialog if it is a quick-load.
+   *
+   * @param configFile Configuration file to load, reloads current sim if null
+   * @param quick      Quick-load simulation
+   * @param rewriteCsc Rewrite simulation config
+   * @param manualRandomSeed The random seed to use for the simulation
+   * @return The worker that will load the simulation.
+   */
+  private SwingWorker<Simulation, SimulationCreationException> createLoadSimWorker(File configFile, final boolean quick,
+                                                                                   boolean rewriteCsc, Long manualRandomSeed) {
+    assert java.awt.EventQueue.isDispatchThread() : "Call from AWT thread";
     final var autoStart = configFile == null && mySimulation.isRunning();
     if (configFile != null && !doRemoveSimulation(true)) {
       return null;
@@ -2380,40 +2409,33 @@ public class Cooja extends Observable {
       addToFileHistory(configFile);
     }
 
+    final JPanel progressPanel;
     final JDialog progressDialog;
     if (quick) {
       final String progressTitle = "Loading " + (configFile == null ? "" : configFile.getAbsolutePath());
+      progressDialog = new JDialog(Cooja.getTopParentContainer(), progressTitle, ModalityType.APPLICATION_MODAL);
 
-      progressDialog = new RunnableInEDT<JDialog>() {
-        @Override
-        public JDialog work() {
-          final JDialog progressDialog = new JDialog(Cooja.getTopParentContainer(), progressTitle, ModalityType.APPLICATION_MODAL);
+      progressPanel = new JPanel(new BorderLayout());
+      var progressBar = new JProgressBar(0, 100);
+      progressBar.setValue(0);
+      progressBar.setIndeterminate(true);
 
-          JPanel progressPanel = new JPanel(new BorderLayout());
-          var progressBar = new JProgressBar(0, 100);
-          progressBar.setValue(0);
-          progressBar.setIndeterminate(true);
+      PROGRESS_BAR = progressBar; /* Allow various parts of COOJA to show messages */
 
-          PROGRESS_BAR = progressBar; /* Allow various parts of COOJA to show messages */
+      var button = new JButton("Abort");
 
-          var button = new JButton("Abort");
+      progressPanel.add(BorderLayout.CENTER, progressBar);
+      progressPanel.add(BorderLayout.SOUTH, button);
+      progressPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-          progressPanel.add(BorderLayout.CENTER, progressBar);
-          progressPanel.add(BorderLayout.SOUTH, button);
-          progressPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+      progressDialog.getContentPane().add(progressPanel);
+      progressDialog.setSize(400, 200);
 
-          progressPanel.setVisible(true);
-
-          progressDialog.getContentPane().add(progressPanel);
-          progressDialog.setSize(400, 200);
-
-          progressDialog.getRootPane().setDefaultButton(button);
-          progressDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
-          progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-          return progressDialog;
-        }
-      }.invokeAndWait();
+      progressDialog.getRootPane().setDefaultButton(button);
+      progressDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
+      progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     } else {
+      progressPanel = null;
       progressDialog = null;
     }
 
@@ -2484,21 +2506,12 @@ public class Cooja extends Observable {
 
     if (progressDialog != null) {
       java.awt.EventQueue.invokeLater(() -> {
+        progressPanel.setVisible(true);
         progressDialog.getRootPane().getDefaultButton().addActionListener(e -> worker.cancel(true));
         progressDialog.setVisible(true);
       });
     }
-
-    worker.execute();
-    Simulation sim;
-    try {
-      sim = worker.get();
-    } catch (CancellationException | ExecutionException | InterruptedException e) {
-      cooja.doRemoveSimulation(false);
-      return null;
-    }
-
-    return sim;
+    return worker;
   }
 
   /**
@@ -2517,8 +2530,7 @@ public class Cooja extends Observable {
       return;
     }
 
-    final long randomSeed = sim.getRandomSeed();
-    new Thread(() -> cooja.doLoadConfig(null, true, false, randomSeed), "asyncld").start();
+    createLoadSimWorker(null, true, false, sim.getRandomSeed()).execute();
   }
 
   private static boolean warnMemory() {
