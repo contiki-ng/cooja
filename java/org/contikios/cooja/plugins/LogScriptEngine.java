@@ -322,13 +322,12 @@ public class LogScriptEngine {
     }
     startRealTime = System.currentTimeMillis();
     startTime = simulation.getSimulationTime();
-    long endTime = startTime + timeout;
-    nextProgress = startTime + (endTime - startTime)/20;
+    nextProgress = startTime + timeout / 20;
 
     timeoutProgressEvent.remove();
     simulation.scheduleEvent(timeoutProgressEvent, nextProgress);
     timeoutEvent.remove();
-    simulation.scheduleEvent(timeoutEvent, endTime);
+    simulation.scheduleEvent(timeoutEvent, startTime + timeout);
     return true;
   }
 
