@@ -154,6 +154,13 @@ public class ScriptRunner implements Plugin {
       logTextArea.setCaretPosition(logTextArea.getText().length());
     });
 
+    var newScript = new JMenuItem("New");
+    newScript.addActionListener(l -> {
+      checkForUpdatesAndSave();
+      linkedFile = null;
+      updateScript("");
+    });
+    fileMenu.add(newScript);
     var open = new JMenuItem("Open...");
     open.addActionListener(l -> {
       var f = showFileChooser(true);
