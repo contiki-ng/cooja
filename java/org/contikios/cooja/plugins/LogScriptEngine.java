@@ -292,7 +292,7 @@ public class LogScriptEngine {
             logger.fatal("Script error:", e);
             if (!Cooja.isVisualized()) {
               logger.fatal("Test script error, terminating Cooja.");
-              System.exit(1);
+              simulation.getCooja().doQuit(false, 1);
             }
 
             deactivateScript();
