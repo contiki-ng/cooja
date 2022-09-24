@@ -108,13 +108,12 @@ public class ScriptRunner implements Plugin {
   public ScriptRunner(Simulation simulation, Cooja gui) {
     this.gui = gui;
     this.simulation = simulation;
-    this.engine = new LogScriptEngine(simulation);
 
     if (!Cooja.isVisualized()) {
       frame = null;
       codeEditor = null;
       logTextArea = null;
-      engine.setScriptLogObserver((obs, obj) -> {
+      engine = new LogScriptEngine(simulation, (obs, obj) -> {
         try {
           if (logWriter != null) {
             logWriter.write((String) obj);
@@ -150,8 +149,7 @@ public class ScriptRunner implements Plugin {
     logTextArea.setMargin(new Insets(5,5,5,5));
     logTextArea.setEditable(false);
     logTextArea.setCursor(null);
-
-    engine.setScriptLogObserver((obs, obj) -> {
+    engine = new LogScriptEngine(simulation, (obs, obj) -> {
       logTextArea.append((String) obj);
       logTextArea.setCaretPosition(logTextArea.getText().length());
     });
