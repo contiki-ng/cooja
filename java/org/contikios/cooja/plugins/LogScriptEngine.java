@@ -406,14 +406,8 @@ public class LogScriptEngine {
           stepScript();
         }
       };
-      simulation.invokeSimulationThread(new Runnable() {
-        @Override
-        public void run() {
-          simulation.scheduleEvent(
-              generateEvent,
-              simulation.getSimulationTime() + delay*Simulation.MILLISECOND);
-        }
-      });
+      simulation.invokeSimulationThread(() ->
+          simulation.scheduleEvent(generateEvent, simulation.getSimulationTime() + delay*Simulation.MILLISECOND));
     }
   };
 }
