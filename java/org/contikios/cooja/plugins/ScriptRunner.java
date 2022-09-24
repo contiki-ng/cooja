@@ -437,12 +437,9 @@ public class ScriptRunner implements Plugin {
     for (Element element : configXML) {
       String name = element.getName();
       if ("script".equals(name)) {
-        if (!element.getText().isEmpty()) {
-          updateScript(element.getText());
-        }
+        updateScript(element.getText());
       } else if ("scriptfile".equals(name)) {
-        File file = simulation.getCooja().restorePortablePath(new File(element.getText().trim()));
-        if (!setLinkFile(file)) {
+        if (!setLinkFile(gui.restorePortablePath(new File(element.getText().trim())))) {
           return false;
         }
       } else if ("active".equals(name)) {
