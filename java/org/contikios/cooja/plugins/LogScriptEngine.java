@@ -153,11 +153,6 @@ public class LogScriptEngine {
     // Check if testOK()/testFailed() were called from the script in headless mode.
     if (quitCooja) {
       new Thread(() -> simulation.getCooja().doQuit(false, exitCode), "Cooja.doQuit").start();
-      new Thread(() -> {
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
-        logger.warn("Killing Cooja");
-        System.exit(exitCode);
-      }, "System.exit").start();
     }
     quitCooja = false;
   }
