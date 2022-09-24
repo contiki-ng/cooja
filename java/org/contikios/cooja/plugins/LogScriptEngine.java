@@ -197,20 +197,6 @@ public class LogScriptEngine {
     }
     scriptActive = true;
 
-    if (semaphoreScript != null) {
-      logger.fatal("semaphoreScript was not reset correctly");
-      semaphoreScript.release(100);
-      semaphoreScript = null;
-      throw new RuntimeException("semaphoreScript was not reset correctly");
-    }
-    if (semaphoreSim != null) {
-      logger.fatal("semaphoreSim was not reset correctly");
-      semaphoreSim.release(100);
-      semaphoreSim = null;
-      throw new RuntimeException("semaphoreSim was not reset correctly");
-    }
-    scriptThread = null;
-
     /* Parse current script */
     ScriptParser parser = new ScriptParser(scriptCode);
     String jsCode = parser.getJSCode();
