@@ -402,7 +402,7 @@ public class LogScriptEngine {
           /* Update script variables */
           engine.put("mote", currentMote);
           engine.put("id", currentMote.getID());
-          engine.put("time", currentMote.getSimulation().getSimulationTime());
+          engine.put("time", t);
           engine.put("msg", msg);
 
           stepScript();
