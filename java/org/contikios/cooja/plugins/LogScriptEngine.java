@@ -121,8 +121,6 @@ public class LogScriptEngine {
   private long startTime;
   private long startRealTime;
 
-  private int exitCode = 0;
-  
   public LogScriptEngine(Simulation simulation) {
     this.simulation = simulation;
   }
@@ -327,7 +325,6 @@ public class LogScriptEngine {
       if (!scriptActive) {
         return;
       }
-      exitCode = 2;
       logger.info("Timeout event @ " + t);
       engine.put("TIMEOUT", true);
       stepScript();
@@ -372,19 +369,17 @@ public class LogScriptEngine {
 
     @Override
     public void testOK() {
-      exitCode = 0;
       logger.info("TEST OK\n");
       log("TEST OK\n");
-      deactive();
+      deactive(0);
     }
     @Override
     public void testFailed() {
-      exitCode = 1;
       logger.warn("TEST FAILED\n");
       log("TEST FAILED\n");
-      deactive();
+      deactive(1);
     }
-    private void deactive() {
+    private void deactive(final int exitCode) {
       deactivateScript();
       simulation.stopSimulation(false);
       if (!Cooja.isVisualized()) {
