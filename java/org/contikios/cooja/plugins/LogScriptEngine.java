@@ -289,13 +289,12 @@ public class LogScriptEngine {
               throwable.getMessage().contains("test script killed") ) {
             logger.debug("Test script finished");
           } else {
+            logger.fatal("Script error:", e);
             if (!Cooja.isVisualized()) {
               logger.fatal("Test script error, terminating Cooja.");
-              logger.fatal("Script error:", e);
               System.exit(1);
             }
 
-            logger.fatal("Script error:", e);
             deactivateScript();
             simulation.stopSimulation();
             if (Cooja.isVisualized()) {
