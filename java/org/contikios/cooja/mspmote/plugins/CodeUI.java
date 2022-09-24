@@ -44,7 +44,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.text.BadLocationException;
@@ -74,8 +73,8 @@ public class CodeUI extends JPanel {
     DefaultSyntaxKit.initKit();
   }
 
-  private JEditorPane codeEditor;
-  private HashMap<Integer, Integer> codeEditorLines;
+  private final JEditorPane codeEditor;
+  private final HashMap<Integer, Integer> codeEditorLines = new HashMap<>();
   protected File displayedFile = null;
 
   private static final HighlightPainter CURRENT_LINE_MARKER = new Markers.SimpleMarker(Color.ORANGE);
@@ -109,7 +108,6 @@ public class CodeUI extends JPanel {
     add(new JScrollPane(codeEditor), BorderLayout.CENTER);
     doLayout();
 
-    codeEditorLines = new HashMap<>();
     codeEditor.setContentType("text/c");
     DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
     kit.setProperty("Action.addbreakpoint", JSyntaxAddBreakpoint.class.getName());
@@ -137,19 +135,8 @@ public class CodeUI extends JPanel {
     codeEditor.setEditable(false);
 
     Highlighter hl = codeEditor.getHighlighter();
-    Object o = null;
-    try {
-      o = hl.addHighlight(0, 0, CURRENT_LINE_MARKER);
-    } catch (BadLocationException e1) {
-    }
-    currentLineTag = o;
-
-    o = null;
-    try {
-      o = hl.addHighlight(0, 0, SELECTED_LINE_MARKER);
-    } catch (BadLocationException e1) {
-    }
-    selectedLineTag = o;
+    currentLineTag = addHighlight(hl, 0, 0, CURRENT_LINE_MARKER);
+    selectedLineTag = addHighlight(hl, 0, 0, SELECTED_LINE_MARKER);
 
     codeEditor.getComponentPopupMenu().addPopupMenuListener(new PopupMenuListener() {
       @Override
@@ -173,13 +160,8 @@ public class CodeUI extends JPanel {
         }
         final int start = codeEditorLines.get(line);
         int end = codeEditorLines.get(line+1);
-        Highlighter hl = codeEditor.getHighlighter();
-        try {
-          hl.changeHighlight(selectedLineTag, start, end);
-        } catch (BadLocationException e1) {
-        }
-        boolean hasBreakpoint =
-          CodeUI.this.mote.breakpointExists(address);
+        changeHighlight(codeEditor.getHighlighter(), selectedLineTag, start, end);
+        boolean hasBreakpoint = CodeUI.this.mote.breakpointExists(address);
         if (!hasBreakpoint) {
           actionAddBreakpoint.setEnabled(true);
           actionAddBreakpoint.putValue("WatchpointMote", CodeUI.this.mote);
@@ -196,11 +178,7 @@ public class CodeUI extends JPanel {
       }
       @Override
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        Highlighter hl = codeEditor.getHighlighter();
-        try {
-          hl.changeHighlight(selectedLineTag, 0, 0);
-        } catch (BadLocationException e1) {
-        }
+        changeHighlight(codeEditor.getHighlighter(), selectedLineTag, 0, 0);
       }
       @Override
       public void popupMenuCanceled(PopupMenuEvent e) {
@@ -208,6 +186,21 @@ public class CodeUI extends JPanel {
     });
 
     displayNoCode(true);
+  }
+
+  private Object addHighlight(Highlighter hl, int start, int end, HighlightPainter currentLineMarker) {
+    try {
+      return hl.addHighlight(start, end, currentLineMarker);
+    } catch (BadLocationException ignored) {
+      return null;
+    }
+  }
+
+  private void changeHighlight(Highlighter highlighter, Object selectedLineTag, int start, int end) {
+    try {
+      highlighter.changeHighlight(selectedLineTag, start, end);
+    } catch (BadLocationException ignored) {
+    }
   }
 
   public void updateBreakpoints() {
@@ -225,9 +218,9 @@ public class CodeUI extends JPanel {
 
       final int start = codeEditorLines.get(w.getLineNumber());
       int end = codeEditorLines.get(w.getLineNumber()+1);
-      try {
-        breakpointsLineTags.add(hl.addHighlight(start, end, BREAKPOINTS_MARKER));
-      } catch (BadLocationException e1) {
+      Object lineTag = addHighlight(hl, start, end, BREAKPOINTS_MARKER);
+      if (lineTag != null) {
+        breakpointsLineTags.add(lineTag);
       }
     }
   }
@@ -256,15 +249,12 @@ public class CodeUI extends JPanel {
    * Remove any shown source code.
    */
   public void displayNoCode(final boolean markCurrent) {
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        displayedFile = null;
-        codeEditor.setText("[no source displayed]");
-        codeEditor.setEnabled(false);
-        codeEditorLines.clear();
-        displayLine(-1, markCurrent);
-      }
+    java.awt.EventQueue.invokeLater(() -> {
+      displayedFile = null;
+      codeEditor.setText("[no source displayed]");
+      codeEditor.setEnabled(false);
+      codeEditorLines.clear();
+      displayLine(-1, markCurrent);
     });
   }
 
@@ -297,13 +287,7 @@ public class CodeUI extends JPanel {
       updateBreakpoints();
     }
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        displayLine(lineNr, markCurrent);
-      }
-    });
-
+    java.awt.EventQueue.invokeLater(() -> displayLine(lineNr, markCurrent));
   }
 
   /**
@@ -313,38 +297,29 @@ public class CodeUI extends JPanel {
    * @param lineNumber Line number
    */
   private void displayLine(int lineNumber, boolean markCurrent) {
-    try {
+    if (markCurrent) {
+      /* remove previous highlight */
+      changeHighlight(codeEditor.getHighlighter(), currentLineTag, 0, 0);
+    }
+
+    if (lineNumber >= 0) {
+      final int start = codeEditorLines.get(lineNumber);
+      int end = codeEditorLines.get(lineNumber+1);
       if (markCurrent) {
-        /* remove previous highlight */
-        Highlighter hl = codeEditor.getHighlighter();
-        hl.changeHighlight(currentLineTag, 0, 0);
+        /* highlight code */
+        changeHighlight(codeEditor.getHighlighter(), currentLineTag, start, end);
       }
 
-      if (lineNumber >= 0) {
-        final int start = codeEditorLines.get(lineNumber);
-        int end = codeEditorLines.get(lineNumber+1);
-        if (markCurrent) {
-          /* highlight code */
-          Highlighter hl = codeEditor.getHighlighter();
-          hl.changeHighlight(currentLineTag, start, end);
-        }
-
-        /* ensure visible */
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              Rectangle r = codeEditor.modelToView(start);
-              if (r != null) {
-                codeEditor.scrollRectToVisible(codeEditor.modelToView(start));
-              }
-            } catch (BadLocationException e) {
-            }
+      /* ensure visible */
+      java.awt.EventQueue.invokeLater(() -> {
+        try {
+          Rectangle r = codeEditor.modelToView(start);
+          if (r != null) {
+            codeEditor.scrollRectToVisible(codeEditor.modelToView(start));
           }
-        });
-      }
-    } catch (Exception e) {
-      logger.warn("Error when highlighting current line: " + e.getMessage(), e);
+        } catch (BadLocationException ignored) {
+        }
+      });
     }
   }
 }
