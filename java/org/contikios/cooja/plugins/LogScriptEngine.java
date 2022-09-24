@@ -109,7 +109,7 @@ public class LogScriptEngine {
   private Semaphore semaphoreScript = null; /* Semaphores blocking script/simulation */
   private Semaphore semaphoreSim = null;
   private Thread scriptThread = null; /* Script thread */
-  private Observer scriptLogObserver = null;
+  private final Observer scriptLogObserver;
 
   private final Simulation simulation;
 
@@ -119,8 +119,9 @@ public class LogScriptEngine {
   private long startTime;
   private long startRealTime;
 
-  public LogScriptEngine(Simulation simulation) {
+  public LogScriptEngine(Simulation simulation, Observer scriptLogObserver) {
     this.simulation = simulation;
+    this.scriptLogObserver = scriptLogObserver;
   }
 
   /* Only called from the simulation loop */
@@ -143,10 +144,6 @@ public class LogScriptEngine {
     }
 
     /* ... script is now again waiting for script semaphore ... */
-  }
-
-  public void setScriptLogObserver(Observer observer) {
-    scriptLogObserver = observer;
   }
 
   /**
