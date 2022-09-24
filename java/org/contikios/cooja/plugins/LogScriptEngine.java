@@ -122,7 +122,6 @@ public class LogScriptEngine {
   private long timeout;
   private long startTime;
   private long startRealTime;
-  private long nextProgress;
 
   private int exitCode = 0;
   
@@ -322,10 +321,9 @@ public class LogScriptEngine {
     }
     startRealTime = System.currentTimeMillis();
     startTime = simulation.getSimulationTime();
-    nextProgress = startTime + timeout / 20;
 
     timeoutProgressEvent.remove();
-    simulation.scheduleEvent(timeoutProgressEvent, nextProgress);
+    simulation.scheduleEvent(timeoutProgressEvent, startTime + timeout / 20);
     timeoutEvent.remove();
     simulation.scheduleEvent(timeoutEvent, startTime + timeout);
     return true;
@@ -346,8 +344,7 @@ public class LogScriptEngine {
   private final TimeEvent timeoutProgressEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
-      nextProgress = t + timeout/20;
-      simulation.scheduleEvent(this, nextProgress);
+      simulation.scheduleEvent(this, t + timeout / 20);
 
       double progress = 1.0*(t - startTime)/timeout;
       long realDuration = System.currentTimeMillis()-startRealTime;
