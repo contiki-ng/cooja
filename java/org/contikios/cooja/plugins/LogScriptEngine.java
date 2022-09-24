@@ -297,10 +297,7 @@ public class LogScriptEngine {
 
             deactivateScript();
             simulation.stopSimulation();
-            if (Cooja.isVisualized()) {
-              Cooja.showErrorDialog(Cooja.getTopParentContainer(),
-                  "Script error", e, false);
-            }
+            Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Script error", e, false);
           }
         }
       }
