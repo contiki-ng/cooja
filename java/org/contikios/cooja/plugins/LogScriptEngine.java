@@ -392,10 +392,8 @@ public class LogScriptEngine {
       final TimeEvent generateEvent = new TimeEvent() {
         @Override
         public void execute(long t) {
-          if (scriptThread == null ||
-              !scriptThread.isAlive()) {
+          if (scriptThread == null || !scriptThread.isAlive()) {
             logger.info("script thread not alive. try deactivating script.");
-            /*scriptThread.isInterrupted()*/
             return;
           }
 
