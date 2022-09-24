@@ -58,7 +58,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.MenuEvent;
@@ -146,17 +145,6 @@ public class ScriptRunner implements Plugin {
     /* Script area */
     frame.setLayout(new BorderLayout());
     codeEditor = newEditor();
-    if (codeEditor.getEditorKit() instanceof DefaultSyntaxKit) {
-      DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
-      kit.setProperty(DefaultSyntaxKit.CONFIG_MENU, "copy-to-clipboard,-,find,find-next,goto-line");
-      kit.install(codeEditor);
-      // Recover control-R (reload simulation) key binding from DefaultSyntaxKit.
-      var event = KeyStroke.getKeyStroke("control R");
-      var inputMap = codeEditor.getInputMap();
-      // Stored both in the input map and the parent of the input map.
-      inputMap.getParent().remove(event);
-      inputMap.remove(event);
-    }
 
     logTextArea = new JTextArea(12,50);
     logTextArea.setMargin(new Insets(5,5,5,5));

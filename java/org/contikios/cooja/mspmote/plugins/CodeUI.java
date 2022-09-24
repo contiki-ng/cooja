@@ -90,55 +90,33 @@ public class CodeUI extends JPanel {
   private final WatchpointMote mote;
 
   public CodeUI(WatchpointMote mote) {
+    super(new BorderLayout());
+
     this.mote = mote;
 
-    {
-      /* Workaround to configure jsyntaxpane */
-      JEditorPane e = new JEditorPane();
-      new JScrollPane(e);
-      e.setContentType("text/c");
-      DefaultSyntaxKit kit = (DefaultSyntaxKit) e.getEditorKit();
-      kit.setProperty("Action.addbreakpoint", JSyntaxAddBreakpoint.class.getName());
-      kit.setProperty("Action.removebreakpoint", JSyntaxRemoveBreakpoint.class.getName());
-      kit.setProperty("PopupMenu", "copy-to-clipboard,-,find,find-next,goto-line,-,addbreakpoint,removebreakpoint");
-    }
-
-    setLayout(new BorderLayout());
     codeEditor = new JEditorPane();
-    add(new JScrollPane(codeEditor), BorderLayout.CENTER);
-    doLayout();
-
     codeEditor.setContentType("text/c");
-    DefaultSyntaxKit kit = (DefaultSyntaxKit) codeEditor.getEditorKit();
-    kit.setProperty("Action.addbreakpoint", JSyntaxAddBreakpoint.class.getName());
-    kit.setProperty("Action.removebreakpoint", JSyntaxRemoveBreakpoint.class.getName());
-    kit.setProperty("PopupMenu", "copy-to-clipboard,-,find,find-next,goto-line,-,addbreakpoint,removebreakpoint");
-
-    JPopupMenu p = codeEditor.getComponentPopupMenu();
-    for (Component c: p.getComponents()) {
-      if (c instanceof JMenuItem) {
-        if (((JMenuItem) c).getAction() != null &&
-            ((JMenuItem) c).getAction() instanceof JSyntaxAddBreakpoint) {
-          actionAddBreakpoint = (JSyntaxAddBreakpoint)(((JMenuItem) c).getAction());
-          actionAddBreakpoint.setMenuText("Add breakpoint");
-        }
-        if (((JMenuItem) c).getAction() != null &&
-            ((JMenuItem) c).getAction() instanceof JSyntaxRemoveBreakpoint) {
-          actionRemoveBreakpoint = (JSyntaxRemoveBreakpoint)(((JMenuItem) c).getAction());
-          actionRemoveBreakpoint.setMenuText("Remove breakpoint");
-        }
-      }
-    }
-
     codeEditor.setText("");
-    codeEditorLines.clear();
     codeEditor.setEditable(false);
+    add(new JScrollPane(codeEditor), BorderLayout.CENTER);
 
     Highlighter hl = codeEditor.getHighlighter();
     currentLineTag = addHighlight(hl, 0, 0, CURRENT_LINE_MARKER);
     selectedLineTag = addHighlight(hl, 0, 0, SELECTED_LINE_MARKER);
 
-    codeEditor.getComponentPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+    JPopupMenu popupMenu = codeEditor.getComponentPopupMenu();
+    for (Component c: popupMenu.getComponents()) {
+      if (c instanceof JMenuItem item) {
+        var action = item.getAction();
+        if (action instanceof JSyntaxAddBreakpoint breakpoint) {
+          actionAddBreakpoint = breakpoint;
+        } else if (action instanceof JSyntaxRemoveBreakpoint breakpoint) {
+          actionRemoveBreakpoint = breakpoint;
+        }
+      }
+    }
+
+    popupMenu.addPopupMenuListener(new PopupMenuListener() {
       @Override
       public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
         /* Disable breakpoint actions */
@@ -162,19 +140,12 @@ public class CodeUI extends JPanel {
         int end = codeEditorLines.get(line+1);
         changeHighlight(codeEditor.getHighlighter(), selectedLineTag, start, end);
         boolean hasBreakpoint = CodeUI.this.mote.breakpointExists(address);
-        if (!hasBreakpoint) {
-          actionAddBreakpoint.setEnabled(true);
-          actionAddBreakpoint.putValue("WatchpointMote", CodeUI.this.mote);
-          actionAddBreakpoint.putValue("WatchpointFile", displayedFile);
-          actionAddBreakpoint.putValue("WatchpointLine", line);
-          actionAddBreakpoint.putValue("WatchpointAddress", address);
-        } else {
-          actionRemoveBreakpoint.setEnabled(true);
-          actionRemoveBreakpoint.putValue("WatchpointMote", CodeUI.this.mote);
-          actionRemoveBreakpoint.putValue("WatchpointFile", displayedFile);
-          actionRemoveBreakpoint.putValue("WatchpointLine", line);
-          actionRemoveBreakpoint.putValue("WatchpointAddress", address);
-        }
+        var breakPoint = hasBreakpoint ? actionRemoveBreakpoint : actionAddBreakpoint;
+        breakPoint.setEnabled(true);
+        breakPoint.putValue("WatchpointMote", CodeUI.this.mote);
+        breakPoint.putValue("WatchpointFile", displayedFile);
+        breakPoint.putValue("WatchpointLine", line);
+        breakPoint.putValue("WatchpointAddress", address);
       }
       @Override
       public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
