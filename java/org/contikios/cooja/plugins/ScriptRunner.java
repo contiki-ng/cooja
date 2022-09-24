@@ -266,7 +266,6 @@ public class ScriptRunner implements Plugin {
     updateScript(script);
     if (Cooja.isVisualized()) {
       Cooja.setExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", source.getAbsolutePath());
-      updateTitle();
     }
     return true;
   }
@@ -384,6 +383,7 @@ public class ScriptRunner implements Plugin {
       codeEditor.setText(script);
       codeEditorChanged = false;
       logTextArea.setText("");
+      updateTitle();
     } else {
       headlessScript = script;
     }
