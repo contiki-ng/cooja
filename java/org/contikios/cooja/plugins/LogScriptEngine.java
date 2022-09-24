@@ -387,9 +387,7 @@ public class LogScriptEngine {
     private void deactive() {
       deactivateScript();
       simulation.stopSimulation(false);
-      if (Cooja.isVisualized()) {
-        log("[if test was run without visualization, Cooja would now have been terminated]\n");
-      } else {
+      if (!Cooja.isVisualized()) {
         new Thread(() -> simulation.getCooja().doQuit(false, exitCode), "Cooja.doQuit").start();
       }
       throw new RuntimeException("test script killed");
