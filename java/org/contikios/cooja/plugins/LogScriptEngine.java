@@ -306,10 +306,7 @@ public class LogScriptEngine {
     }
     startRealTime = System.currentTimeMillis();
     startTime = simulation.getSimulationTime();
-
-    timeoutProgressEvent.remove();
     simulation.scheduleEvent(timeoutProgressEvent, startTime + Math.max(1000, timeout / 20));
-    timeoutEvent.remove();
     simulation.scheduleEvent(timeoutEvent, startTime + timeout);
     return true;
   }
