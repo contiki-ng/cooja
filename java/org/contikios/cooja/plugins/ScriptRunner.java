@@ -154,12 +154,20 @@ public class ScriptRunner implements Plugin {
       logTextArea.setCaretPosition(logTextArea.getText().length());
     });
 
+    var newScript = new JMenuItem("New");
+    newScript.addActionListener(l -> {
+      checkForUpdatesAndSave();
+      linkedFile = null;
+      updateScript("");
+    });
+    fileMenu.add(newScript);
     var open = new JMenuItem("Open...");
     open.addActionListener(l -> {
       var f = showFileChooser(true);
       if (f == null) {
         return;
       }
+      checkForUpdatesAndSave();
       setLinkFile(f);
     });
     fileMenu.add(open);
@@ -172,6 +180,7 @@ public class ScriptRunner implements Plugin {
       final String file = EXAMPLE_SCRIPTS[i];
       JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
       exampleItem.addActionListener(e -> {
+        checkForUpdatesAndSave();
         linkedFile = null;
         updateScript(loadScript(file));
       });
@@ -266,7 +275,6 @@ public class ScriptRunner implements Plugin {
     updateScript(script);
     if (Cooja.isVisualized()) {
       Cooja.setExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", source.getAbsolutePath());
-      updateTitle();
     }
     return true;
   }
@@ -384,6 +392,7 @@ public class ScriptRunner implements Plugin {
       codeEditor.setText(script);
       codeEditorChanged = false;
       logTextArea.setText("");
+      updateTitle();
     } else {
       headlessScript = script;
     }
