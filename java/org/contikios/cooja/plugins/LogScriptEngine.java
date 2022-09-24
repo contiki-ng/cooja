@@ -40,8 +40,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Observer;
 import java.util.concurrent.Semaphore;
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -371,15 +369,15 @@ public class LogScriptEngine {
     public void testOK() {
       logger.info("TEST OK\n");
       log("TEST OK\n");
-      deactive(0);
+      deactivate(0);
     }
     @Override
     public void testFailed() {
       logger.warn("TEST FAILED\n");
       log("TEST FAILED\n");
-      deactive(1);
+      deactivate(1);
     }
-    private void deactive(final int exitCode) {
+    private void deactivate(final int exitCode) {
       deactivateScript();
       simulation.stopSimulation(false);
       if (!Cooja.isVisualized()) {
