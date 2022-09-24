@@ -38,8 +38,6 @@ import de.sciss.syntaxpane.DefaultSyntaxKit;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -103,7 +101,6 @@ public class ScriptRunner implements Plugin {
   private String headlessScript = null;
   private final JEditorPane codeEditor;
   private boolean codeEditorChanged = false;
-  private final ActionListener saveAsAction;
   private final JTextArea logTextArea;
 
   private File linkedFile = null;
@@ -117,7 +114,6 @@ public class ScriptRunner implements Plugin {
     if (!Cooja.isVisualized()) {
       frame = null;
       codeEditor = null;
-      saveAsAction = null;
       logTextArea = null;
       engine.setScriptLogObserver((obs, obj) -> {
         try {
@@ -182,20 +178,7 @@ public class ScriptRunner implements Plugin {
     });
     fileMenu.add(open);
     var saveAs = new JMenuItem("Save as...");
-    saveAs.addActionListener(saveAsAction = l -> {
-      var f = l == null ? linkedFile : showFileChooser(false);
-      if (f == null) {
-        return;
-      }
-      try (var writer = Files.newBufferedWriter(f.toPath(), UTF_8)) {
-        writer.write(codeEditor.getText());
-        linkedFile = f;
-        codeEditorChanged = false;
-        updateTitle();
-      } catch (IOException e) {
-        logger.error("Failed saving file: " + e.getMessage());
-      }
-    });
+    saveAs.addActionListener(l -> saveScript(true));
     fileMenu.add(saveAs);
     /* Example scripts */
     final JMenu examplesMenu = new JMenu("Load example script");
@@ -261,6 +244,21 @@ public class ScriptRunner implements Plugin {
 
     /* Set default script */
     updateScript(loadScript(EXAMPLE_SCRIPTS[0]));
+  }
+
+  private void saveScript(boolean saveToLinkedFile) {
+    var f = !saveToLinkedFile ? linkedFile : showFileChooser(false);
+    if (f == null) {
+      return;
+    }
+    try (var writer = Files.newBufferedWriter(f.toPath(), UTF_8)) {
+      writer.write(codeEditor.getText());
+      linkedFile = f;
+      codeEditorChanged = false;
+      updateTitle();
+    } catch (IOException e) {
+      logger.error("Failed to save script file: {}", f, e);
+    }
   }
 
   @Override
@@ -366,7 +364,7 @@ public class ScriptRunner implements Plugin {
     if (JOptionPane.showConfirmDialog(Cooja.getTopParentContainer(),
             "Do you want to save the changes to " + linkedFile.getAbsolutePath() + "?",
             "Save script changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-      saveAsAction.actionPerformed(null);
+      saveScript(false);
     }
     // User has chosen, do not ask again for the current modifications.
     codeEditorChanged = false;
