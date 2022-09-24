@@ -236,7 +236,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     this.myCpu.getLogger().addLogListener(ll);
 
-    logger.info("Loading firmware from: " + fileELF.getAbsolutePath());
     Cooja.setProgressMessage("Loading " + fileELF.getName());
     node.loadFirmware(((MspMoteType)getType()).getELF());
 
