@@ -25,8 +25,7 @@ public class MessageListText implements MessageList {
 
     @Override
     public void addMessage(String string) {
-        // TODO Auto-generated method stub
-        addMessage(string, MessageList.NORMAL);
+        System.out.println(string);
     }
 
     @Override
