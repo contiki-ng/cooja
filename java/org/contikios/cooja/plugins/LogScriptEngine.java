@@ -310,20 +310,6 @@ public class LogScriptEngine {
     engine.put("msg", "");
     engine.put("node", new ScriptMote());
 
-    Runnable activate = new Runnable() {
-      @Override
-      public void run() {
-        startRealTime = System.currentTimeMillis();
-        startTime = simulation.getSimulationTime();
-        long endTime = startTime + timeout;
-        nextProgress = startTime + (endTime - startTime)/20;
-
-        timeoutProgressEvent.remove();
-        simulation.scheduleEvent(timeoutProgressEvent, nextProgress);
-        timeoutEvent.remove();
-        simulation.scheduleEvent(timeoutEvent, endTime);
-      }
-    };
     // Script context initialized (engine.put calls), start thread that runs script to the first semaphore.
     scriptThread.start();
     // Wait for script thread to reach barrier in the beginning of the JavaScript run function.
@@ -334,11 +320,15 @@ public class LogScriptEngine {
         // FIXME: Something called interrupt() on this thread, stop the computation.
       }
     }
-    if (simulation.isRunning()) {
-      simulation.invokeSimulationThread(activate);
-    } else {
-      activate.run();
-    }
+    startRealTime = System.currentTimeMillis();
+    startTime = simulation.getSimulationTime();
+    long endTime = startTime + timeout;
+    nextProgress = startTime + (endTime - startTime)/20;
+
+    timeoutProgressEvent.remove();
+    simulation.scheduleEvent(timeoutProgressEvent, nextProgress);
+    timeoutEvent.remove();
+    simulation.scheduleEvent(timeoutEvent, endTime);
     return true;
   }
 
