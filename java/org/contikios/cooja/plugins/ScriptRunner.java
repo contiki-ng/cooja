@@ -160,6 +160,7 @@ public class ScriptRunner implements Plugin {
       if (f == null) {
         return;
       }
+      checkForUpdatesAndSave();
       setLinkFile(f);
     });
     fileMenu.add(open);
@@ -172,6 +173,7 @@ public class ScriptRunner implements Plugin {
       final String file = EXAMPLE_SCRIPTS[i];
       JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
       exampleItem.addActionListener(e -> {
+        checkForUpdatesAndSave();
         linkedFile = null;
         updateScript(loadScript(file));
       });
