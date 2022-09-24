@@ -593,19 +593,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
                            final long focusTime,
                            final double focusCenter) {
     currentPixelDivisor = zoomDivisor;
-    String note = "";
     if (ZOOM_LEVELS[0] >= zoomDivisor) {
       currentPixelDivisor = ZOOM_LEVELS[0];
-      note = " (MIN)";
     } else if (ZOOM_LEVELS[ZOOM_LEVELS.length-1] <= zoomDivisor) {
       currentPixelDivisor = ZOOM_LEVELS[ZOOM_LEVELS.length-1];
-      note = " (MAX)";
     }
     if (zoomDivisor != currentPixelDivisor) {
       logger.info("Zoom level: adjusted out-of-range " + zoomDivisor + " us/pixel");
     }
-    logger.info("Zoom level: " + currentPixelDivisor + " microseconds/pixel " + note);
-
     forceRepaintAndFocus(focusTime, focusCenter);
   }
 
