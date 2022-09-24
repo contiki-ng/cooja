@@ -430,8 +430,7 @@ public class ScriptRunner implements Plugin {
       if ("script".equals(name)) {
         updateScript(element.getText());
       } else if ("scriptfile".equals(name)) {
-        File file = simulation.getCooja().restorePortablePath(new File(element.getText().trim()));
-        if (!setLinkFile(file)) {
+        if (!setLinkFile(gui.restorePortablePath(new File(element.getText().trim())))) {
           return false;
         }
       } else if ("active".equals(name)) {
