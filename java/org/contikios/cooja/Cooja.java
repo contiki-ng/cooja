@@ -2641,12 +2641,16 @@ public class Cooja extends Observable {
           return;
         }
       }
-      doRemoveSimulation(false);
     }
 
-    // Clean up resources
-    for (var plugin : startedPlugins.toArray(new Plugin[0])) {
-      removePlugin(plugin, false);
+    // Clean up resources. Catch all exceptions to ensure that System.exit will be called.
+    try {
+      doRemoveSimulation(false);
+      for (var plugin : startedPlugins.toArray(new Plugin[0])) {
+        removePlugin(plugin, false);
+      }
+    } catch (Exception e) {
+      logger.error("Failed to remove simulation/plugins on shutdown.", e);
     }
 
     /* Store frame size and position */
