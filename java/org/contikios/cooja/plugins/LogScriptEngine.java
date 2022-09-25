@@ -40,6 +40,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Observer;
 import java.util.concurrent.Semaphore;
+import javax.script.CompiledScript;
 import javax.script.ScriptException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -184,20 +185,20 @@ public class LogScriptEngine {
     scriptThread = null;
   }
 
-  public boolean activateScript(String scriptCode) throws ScriptException {
-    ScriptParser parser = new ScriptParser(scriptCode);
-    String jsCode = parser.getJSCode();
+  /** Take a user script and return a compiled script that can be activated.
+   *  Does not alter internal engine state that is difficult to undo. */
+  public CompiledScript compileScript(String code) throws ScriptException {
+    ScriptParser parser = new ScriptParser(code);
     timeout = parser.getTimeoutTime();
     if (timeout < 0) {
       timeout = DEFAULT_TIMEOUT;
-      logger.info("Default script timeout in " + (timeout/Simulation.MILLISECOND) + " ms");
-    } else {
-      logger.info("Script timeout in " + (timeout/Simulation.MILLISECOND) + " ms");
     }
+    logger.info("Script timeout in " + (timeout/Simulation.MILLISECOND) + " ms");
+    return engine.compile(parser.getJSCode());
+  }
 
-    final var prog = engine.compile(jsCode);
-
-    /* Setup script control */
+  /** Allocate semaphores, set up the internal state of the engine, and start the script thread. */
+  public boolean activateScript(final CompiledScript script) {
     semaphoreScript = new Semaphore(1);
     semaphoreSim = new Semaphore(1);
     engine.put("TIMEOUT", false);
@@ -229,7 +230,7 @@ public class LogScriptEngine {
       @Override
       public void run() {
         try {
-          prog.eval();
+          script.eval();
         } catch (ScriptException | RuntimeException e) {
           Throwable throwable = e;
           while (throwable.getCause() != null) {
