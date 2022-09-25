@@ -151,17 +151,11 @@ public abstract class MspMoteType extends BaseContikiMoteType {
       } else if (name.equals("description")) {
         description = element.getText();
       } else if (name.equals("source")) {
-        fileSource = new File(element.getText());
-        if (!fileSource.exists()) {
-          fileSource = simulation.getCooja().restorePortablePath(fileSource);
-        }
+        fileSource = simulation.getCooja().restorePortablePath(new File(element.getText()));
       } else if (name.equals("command") || name.equals("commands")) {
         compileCommands = element.getText();
       } else if (name.equals("firmware") || name.equals("elf")) {
-        fileFirmware = new File(element.getText());
-        if (!fileFirmware.exists()) {
-          fileFirmware = simulation.getCooja().restorePortablePath(fileFirmware);
-        }
+        fileFirmware = simulation.getCooja().restorePortablePath(new File(element.getText()));
       } else if (name.equals("moteinterface")) {
         String intfClass = element.getText().trim();
 

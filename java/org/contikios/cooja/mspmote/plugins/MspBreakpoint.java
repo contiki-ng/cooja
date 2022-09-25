@@ -215,8 +215,7 @@ public class MspBreakpoint implements Watchpoint {
 
     for (Element element : configXML) {
       if (element.getName().equals("codefile")) {
-        File file = new File(element.getText());
-        file = mspMote.getSimulation().getCooja().restorePortablePath(file);
+        var file = mspMote.getSimulation().getCooja().restorePortablePath(new File(element.getText()));
 
         try {
           codeFile = file.getCanonicalFile();
