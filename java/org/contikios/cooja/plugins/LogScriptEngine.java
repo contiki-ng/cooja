@@ -34,6 +34,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -42,6 +44,7 @@ import java.util.Observer;
 import java.util.concurrent.Semaphore;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
+import javax.swing.JTextArea;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.Cooja;
@@ -67,7 +70,9 @@ public class LogScriptEngine {
 
   private final NashornScriptEngine engine = (NashornScriptEngine) new NashornScriptEngineFactory().getScriptEngine();
 
-  /* Log output listener */
+  private final BufferedWriter logWriter; // For non-GUI tests.
+  private static int engineInstances = 0;
+
   private final LogOutputListener logOutputListener = new LogOutputListener() {
     @Override
     public void moteWasAdded(Mote mote) {
@@ -118,9 +123,34 @@ public class LogScriptEngine {
   private long startTime;
   private long startRealTime;
 
-  public LogScriptEngine(Simulation simulation, Observer scriptLogObserver) {
+  public LogScriptEngine(Simulation simulation, JTextArea logTextArea) {
     this.simulation = simulation;
-    this.scriptLogObserver = scriptLogObserver;
+    if (!Cooja.isVisualized()) {
+      var logName = engineInstances++ == 0 ? "COOJA.testlog" : String.format("COOJA-%02d.testlog", engineInstances);
+      var logFile = Paths.get(simulation.getCooja().logDirectory, logName);
+      try {
+        logWriter = Files.newBufferedWriter(logFile, UTF_8);
+        logWriter.write("Random seed: " + simulation.getRandomSeed() + "\n");
+        logWriter.flush();
+      } catch (IOException e) {
+        logger.fatal("Could not create {}: {}", logFile, e.toString());
+        throw new RuntimeException(e);
+      }
+      scriptLogObserver = (obs, obj) -> {
+        try {
+          logWriter.write((String) obj);
+          logWriter.flush();
+        } catch (IOException e) {
+          logger.fatal("Error when writing to test log file: " + obj, e);
+        }
+      };
+      return;
+    }
+    logWriter = null;
+    scriptLogObserver = (obs, obj) -> {
+      logTextArea.append((String) obj);
+      logTextArea.setCaretPosition(logTextArea.getText().length());
+    };
   }
 
   /* Only called from the simulation loop */
@@ -143,6 +173,18 @@ public class LogScriptEngine {
     }
 
     /* ... script is now again waiting for script semaphore ... */
+  }
+
+  public void closeLog() {
+    if (Cooja.isVisualized()) {
+      return;
+    }
+    try {
+      logWriter.write("Test ended at simulation time: " + simulation.getSimulationTime() + "\n");
+      logWriter.close();
+    } catch (IOException e) {
+      logger.error("Could not close log file:", e);
+    }
   }
 
   /**
@@ -307,9 +349,7 @@ public class LogScriptEngine {
   private final ScriptLog scriptLog = new ScriptLog() {
     @Override
     public void log(String msg) {
-      if (scriptLogObserver != null) {
-        scriptLogObserver.update(null, msg);
-      }
+      scriptLogObserver.update(null, msg);
     }
     @Override
     public void append(String filename, String msg) {

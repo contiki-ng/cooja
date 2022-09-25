@@ -35,11 +35,9 @@ import de.sciss.syntaxpane.DefaultSyntaxKit;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.script.CompiledScript;
@@ -92,9 +90,6 @@ public class ScriptRunner implements Plugin {
 
   private boolean activated = false;
 
-  private final BufferedWriter logWriter; // For non-GUI tests.
-  private static int scriptRunnerInstances = 0;
-
   /** The script text when running in headless mode. */
   private String headlessScript = null;
   private final JEditorPane codeEditor;
@@ -112,24 +107,7 @@ public class ScriptRunner implements Plugin {
       frame = null;
       codeEditor = null;
       logTextArea = null;
-      var logName = scriptRunnerInstances++ == 0 ? "COOJA.testlog" : String.format("COOJA-%02d.testlog", scriptRunnerInstances);
-      var logFile = Paths.get(gui.logDirectory, logName);
-      try {
-        logWriter = Files.newBufferedWriter(logFile, UTF_8);
-        logWriter.write("Random seed: " + simulation.getRandomSeed() + "\n");
-        logWriter.flush();
-      } catch (IOException e) {
-        logger.fatal("Could not create {}: {}", logFile, e.toString());
-        throw new RuntimeException(e);
-      }
-      engine = new LogScriptEngine(simulation, (obs, obj) -> {
-        try {
-          logWriter.write((String) obj);
-          logWriter.flush();
-        } catch (IOException e) {
-          logger.fatal("Error when writing to test log file: " + obj, e);
-        }
-      });
+      engine = new LogScriptEngine(simulation, null);
       return;
     }
 
@@ -154,11 +132,7 @@ public class ScriptRunner implements Plugin {
     logTextArea.setMargin(new Insets(5,5,5,5));
     logTextArea.setEditable(false);
     logTextArea.setCursor(null);
-    logWriter = null;
-    engine = new LogScriptEngine(simulation, (obs, obj) -> {
-      logTextArea.append((String) obj);
-      logTextArea.setCaretPosition(logTextArea.getText().length());
-    });
+    engine = new LogScriptEngine(simulation, logTextArea);
 
     var newScript = new JMenuItem("New");
     newScript.addActionListener(l -> {
@@ -408,14 +382,7 @@ public class ScriptRunner implements Plugin {
   public void closePlugin() {
     checkForUpdatesAndSave();
     deactivateScript();
-    if (!Cooja.isVisualized()) {
-      try {
-        logWriter.write("Test ended at simulation time: " + simulation.getSimulationTime() + "\n");
-        logWriter.close();
-      } catch (IOException e) {
-        logger.error("Could not close log file:", e);
-      }
-    }
+    engine.closeLog();
   }
 
   @Override
