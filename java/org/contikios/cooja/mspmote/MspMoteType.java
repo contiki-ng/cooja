@@ -157,7 +157,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
         }
       } else if (name.equals("command")) {
         /* Backwards compatibility: command is now commands */
-        logger.warn("Old simulation config detected: old version only supports a single compile command");
         compileCommands = element.getText();
       } else if (name.equals("commands")) {
         compileCommands = element.getText();
@@ -168,7 +167,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
         }
       } else if (name.equals("elf")) {
         /* Backwards compatibility: elf is now firmware */
-        logger.warn("Old simulation config detected: firmware specified as elf");
         fileFirmware = new File(element.getText());
       } else if (name.equals("moteinterface")) {
         String intfClass = element.getText().trim();
