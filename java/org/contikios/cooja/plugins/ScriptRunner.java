@@ -299,7 +299,7 @@ public class ScriptRunner implements Plugin {
     }
   }
 
-  private void activateScript() {
+  private boolean activateScript() {
     deactivateScript();
     activated = true;
     if (!Cooja.isVisualized()) {
@@ -315,7 +315,7 @@ public class ScriptRunner implements Plugin {
       } catch (Exception e) {
         logger.fatal("Create log writer error: ", e);
         deactivateScript();
-        return;
+        return false;
       }
     }
 
@@ -330,13 +330,14 @@ public class ScriptRunner implements Plugin {
         Cooja.showErrorDialog(Cooja.getTopParentContainer(),
                 "Script error", e, false);
       }
-      return;
+      return false;
     }
     if (active && Cooja.isVisualized()) {
       logTextArea.setText("");
       codeEditor.setEnabled(false);
       updateTitle();
     }
+    return active;
   }
 
   private void updateTitle() {
@@ -449,7 +450,7 @@ public class ScriptRunner implements Plugin {
 
     // Automatically activate script in headless mode.
     if (activate || !Cooja.isVisualized()) {
-      activateScript();
+      return activateScript();
     }
 
     return true;
