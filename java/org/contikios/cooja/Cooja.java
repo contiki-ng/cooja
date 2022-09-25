@@ -2059,7 +2059,9 @@ public class Cooja extends Observable {
 
     if (root != null) {
       for (var cfg : root.getChildren("plugin_config")) {
-        plugin.setConfigXML(((Element)cfg).getChildren(), isVisualized());
+        if (!plugin.setConfigXML(((Element)cfg).getChildren(), isVisualized())) {
+          throw new PluginConstructionException("Failed to set config for " + pluginClass.getName());
+        }
       }
     }
 
