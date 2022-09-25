@@ -151,25 +151,11 @@ public abstract class MspMoteType extends BaseContikiMoteType {
       } else if (name.equals("description")) {
         description = element.getText();
       } else if (name.equals("source")) {
-        fileSource = new File(element.getText());
-        if (!fileSource.exists()) {
-          fileSource = simulation.getCooja().restorePortablePath(fileSource);
-        }
-      } else if (name.equals("command")) {
-        /* Backwards compatibility: command is now commands */
-        logger.warn("Old simulation config detected: old version only supports a single compile command");
+        fileSource = simulation.getCooja().restorePortablePath(new File(element.getText()));
+      } else if (name.equals("command") || name.equals("commands")) {
         compileCommands = element.getText();
-      } else if (name.equals("commands")) {
-        compileCommands = element.getText();
-      } else if (name.equals("firmware")) {
-        fileFirmware = new File(element.getText());
-        if (!fileFirmware.exists()) {
-          fileFirmware = simulation.getCooja().restorePortablePath(fileFirmware);
-        }
-      } else if (name.equals("elf")) {
-        /* Backwards compatibility: elf is now firmware */
-        logger.warn("Old simulation config detected: firmware specified as elf");
-        fileFirmware = new File(element.getText());
+      } else if (name.equals("firmware") || name.equals("elf")) {
+        fileFirmware = simulation.getCooja().restorePortablePath(new File(element.getText()));
       } else if (name.equals("moteinterface")) {
         String intfClass = element.getText().trim();
 
@@ -177,27 +163,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
         if (intfClass.startsWith("se.sics")) {
         	intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
         }
-
-        /* Backwards compatibility: MspIPAddress -> IPAddress */
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.MspIPAddress")) {
-        	logger.warn("Old simulation config detected: IP address interface was moved");
-        	intfClass = IPAddress.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.ESBLog")) {
-        	logger.warn("Old simulation config detected: ESBLog was replaced by MspSerial");
-        	intfClass = MspSerial.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.SkyByteRadio")) {
-        	logger.warn("Old simulation config detected: SkyByteRadio was replaced by Msp802154Radio");
-        	intfClass = Msp802154Radio.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.SkySerial")) {
-        	logger.warn("Old simulation config detected: SkySerial was replaced by MspSerial");
-        	intfClass = MspSerial.class.getName();
-        }
-
         var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
-
         if (moteInterfaceClass == null) {
           logger.warn("Can't find mote interface class: " + intfClass);
         } else {

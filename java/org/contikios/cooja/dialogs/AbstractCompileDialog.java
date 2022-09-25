@@ -189,8 +189,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         if (lastFile == null) {
           String path = Cooja.getExternalToolsSetting("COMPILE_LAST_FILE", null);
           if (path != null) {
-            lastFile = new File(path);
-            lastFile = gui.restorePortablePath(lastFile);
+            lastFile = gui.restorePortablePath(new File(path));
           }
         }
 

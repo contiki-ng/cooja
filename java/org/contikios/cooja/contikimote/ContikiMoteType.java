@@ -975,11 +975,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
           break;
         case "contikiapp":
         case "source":
-          File file = new File(element.getText());
-          if (!file.exists()) {
-            file = simulation.getCooja().restorePortablePath(file);
-          }
-          fileSource = file;
+          fileSource = simulation.getCooja().restorePortablePath(new File(element.getText()));
           fileFirmware = getMoteFile(librarySuffix);
           break;
         case "commands":
