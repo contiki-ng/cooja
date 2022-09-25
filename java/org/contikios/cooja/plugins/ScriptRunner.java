@@ -45,6 +45,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.script.CompiledScript;
 import javax.script.ScriptException;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JEditorPane;
@@ -280,7 +281,6 @@ public class ScriptRunner implements Plugin {
   }
 
   private void deactivateScript() {
-    activated = false;
     engine.deactivateScript();
 
     if (logWriter != null) {
@@ -297,11 +297,22 @@ public class ScriptRunner implements Plugin {
       codeEditor.setEnabled(true);
       updateTitle();
     }
+    activated = false;
   }
 
   private boolean activateScript() {
     deactivateScript();
-    activated = true;
+    CompiledScript script;
+    try {
+      script = engine.compileScript(Cooja.isVisualized() ? codeEditor.getText() : headlessScript);
+    } catch (ScriptException e) {
+      logger.fatal("Test script error: ", e);
+      if (Cooja.isVisualized()) {
+        Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Script error", e, false);
+      }
+      return false;
+    }
+
     if (!Cooja.isVisualized()) {
       try {
         /* Continuously write test output to file */
@@ -314,30 +325,21 @@ public class ScriptRunner implements Plugin {
         }
       } catch (Exception e) {
         logger.fatal("Create log writer error: ", e);
-        deactivateScript();
+        // The logWriter is in an unknown state, but setConfigXML will fail from this return, so it does not matter.
         return false;
       }
     }
 
-    /* Activate engine */
-    boolean active;
-    try {
-      active = engine.activateScript(Cooja.isVisualized() ? codeEditor.getText() : headlessScript);
-    } catch (RuntimeException | ScriptException e) {
-      logger.fatal("Test script error: ", e);
-      deactivateScript();
-      if (Cooja.isVisualized()) {
-        Cooja.showErrorDialog(Cooja.getTopParentContainer(),
-                "Script error", e, false);
-      }
+    if (!engine.activateScript(script)) {
       return false;
     }
-    if (active && Cooja.isVisualized()) {
+    if (Cooja.isVisualized()) {
       logTextArea.setText("");
       codeEditor.setEnabled(false);
       updateTitle();
     }
-    return active;
+    activated = true;
+    return true;
   }
 
   private void updateTitle() {
