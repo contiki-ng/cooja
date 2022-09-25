@@ -177,27 +177,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
         if (intfClass.startsWith("se.sics")) {
         	intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
         }
-
-        /* Backwards compatibility: MspIPAddress -> IPAddress */
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.MspIPAddress")) {
-        	logger.warn("Old simulation config detected: IP address interface was moved");
-        	intfClass = IPAddress.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.ESBLog")) {
-        	logger.warn("Old simulation config detected: ESBLog was replaced by MspSerial");
-        	intfClass = MspSerial.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.SkyByteRadio")) {
-        	logger.warn("Old simulation config detected: SkyByteRadio was replaced by Msp802154Radio");
-        	intfClass = Msp802154Radio.class.getName();
-        }
-        if (intfClass.equals("org.contikios.cooja.mspmote.interfaces.SkySerial")) {
-        	logger.warn("Old simulation config detected: SkySerial was replaced by MspSerial");
-        	intfClass = MspSerial.class.getName();
-        }
-
         var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
-
         if (moteInterfaceClass == null) {
           logger.warn("Can't find mote interface class: " + intfClass);
         } else {
