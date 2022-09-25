@@ -113,8 +113,6 @@ public class LogScriptEngine {
 
   private final Simulation simulation;
 
-  private boolean scriptActive = false;
-
   private long timeout;
   private long startTime;
   private long startRealTime;
@@ -150,11 +148,6 @@ public class LogScriptEngine {
    * Deactivate script
    */
   public void deactivateScript() {
-    if (!scriptActive) {
-      return;
-    }
-    scriptActive = false;
-
     timeoutEvent.remove();
     timeoutProgressEvent.remove();
 
@@ -192,15 +185,8 @@ public class LogScriptEngine {
   }
 
   public boolean activateScript(String scriptCode) throws ScriptException {
-    if (scriptActive) {
-      return false;
-    }
-    scriptActive = true;
-
-    /* Parse current script */
     ScriptParser parser = new ScriptParser(scriptCode);
     String jsCode = parser.getJSCode();
-
     timeout = parser.getTimeoutTime();
     if (timeout < 0) {
       timeout = DEFAULT_TIMEOUT;
@@ -223,7 +209,6 @@ public class LogScriptEngine {
       semaphoreScript.acquire();
     } catch (InterruptedException e) {
       logger.fatal("Error when creating engine: " + e.getMessage(), e);
-      scriptActive = false;
       return false;
     }
     ThreadGroup group = new ThreadGroup("script") {
@@ -300,9 +285,6 @@ public class LogScriptEngine {
   private final TimeEvent timeoutEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
-      if (!scriptActive) {
-        return;
-      }
       logger.info("Timeout event @ " + t);
       engine.put("TIMEOUT", true);
       stepScript();
