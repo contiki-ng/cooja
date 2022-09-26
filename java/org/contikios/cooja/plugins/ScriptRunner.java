@@ -63,6 +63,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
+import org.contikios.cooja.LogScriptEngine;
 import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;

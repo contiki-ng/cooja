@@ -28,7 +28,7 @@
  *
  */
 
-package org.contikios.cooja.plugins;
+package org.contikios.cooja;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.APPEND;
@@ -47,12 +47,12 @@ import javax.script.ScriptException;
 import javax.swing.JTextArea;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.contikios.cooja.Cooja;
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
-import org.contikios.cooja.Simulation;
-import org.contikios.cooja.TimeEvent;
+import org.contikios.cooja.plugins.ScriptRunner;
+import org.contikios.cooja.script.ScriptLog;
+import org.contikios.cooja.script.ScriptMote;
+import org.contikios.cooja.script.ScriptParser;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngine;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 

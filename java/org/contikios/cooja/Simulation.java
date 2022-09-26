@@ -44,7 +44,6 @@ import org.contikios.cooja.motes.DisturberMoteType;
 import org.contikios.cooja.motes.ImportAppMoteType;
 import org.contikios.cooja.mspmote.SkyMoteType;
 import org.contikios.cooja.mspmote.Z1MoteType;
-import org.contikios.cooja.plugins.LogScriptEngine;
 import org.jdom.Element;
 
 import org.contikios.cooja.dialogs.CreateSimDialog;
