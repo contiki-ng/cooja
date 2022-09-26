@@ -30,9 +30,6 @@
 package org.contikios.cooja.plugins;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
 
 import de.sciss.syntaxpane.DefaultSyntaxKit;
 import java.awt.BorderLayout;
@@ -95,7 +92,8 @@ public class ScriptRunner implements Plugin {
 
   private boolean activated = false;
 
-  private static BufferedWriter logWriter = null; /* For non-GUI tests */
+  private final BufferedWriter logWriter; // For non-GUI tests.
+  private static int scriptRunnerInstances = 0;
 
   /** The script text when running in headless mode. */
   private String headlessScript = null;
@@ -114,14 +112,20 @@ public class ScriptRunner implements Plugin {
       frame = null;
       codeEditor = null;
       logTextArea = null;
+      var logName = scriptRunnerInstances++ == 0 ? "COOJA.testlog" : String.format("COOJA-%02d.testlog", scriptRunnerInstances);
+      var logFile = Paths.get(gui.logDirectory, logName);
+      try {
+        logWriter = Files.newBufferedWriter(logFile, UTF_8);
+        logWriter.write("Random seed: " + simulation.getRandomSeed() + "\n");
+        logWriter.flush();
+      } catch (IOException e) {
+        logger.fatal("Could not create {}: {}", logFile, e.toString());
+        throw new RuntimeException(e);
+      }
       engine = new LogScriptEngine(simulation, (obs, obj) -> {
         try {
-          if (logWriter != null) {
-            logWriter.write((String) obj);
-            logWriter.flush();
-          } else {
-            logger.fatal("No log writer: " + obj);
-          }
+          logWriter.write((String) obj);
+          logWriter.flush();
         } catch (IOException e) {
           logger.fatal("Error when writing to test log file: " + obj, e);
         }
@@ -150,6 +154,7 @@ public class ScriptRunner implements Plugin {
     logTextArea.setMargin(new Insets(5,5,5,5));
     logTextArea.setEditable(false);
     logTextArea.setCursor(null);
+    logWriter = null;
     engine = new LogScriptEngine(simulation, (obs, obj) -> {
       logTextArea.append((String) obj);
       logTextArea.setCaretPosition(logTextArea.getText().length());
@@ -282,17 +287,6 @@ public class ScriptRunner implements Plugin {
 
   private void deactivateScript() {
     engine.deactivateScript();
-
-    if (logWriter != null) {
-      try {
-        logWriter.write("Test ended at simulation time: " + simulation.getSimulationTime() + "\n");
-        logWriter.flush();
-        logWriter.close();
-      } catch (IOException e) {
-      }
-      logWriter = null;
-    }
-
     if (Cooja.isVisualized()) {
       codeEditor.setEnabled(true);
       updateTitle();
@@ -301,7 +295,6 @@ public class ScriptRunner implements Plugin {
   }
 
   private boolean activateScript() {
-    deactivateScript();
     CompiledScript script;
     try {
       script = engine.compileScript(Cooja.isVisualized() ? codeEditor.getText() : headlessScript);
@@ -311,23 +304,6 @@ public class ScriptRunner implements Plugin {
         Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Script error", e, false);
       }
       return false;
-    }
-
-    if (!Cooja.isVisualized()) {
-      try {
-        /* Continuously write test output to file */
-        if (logWriter == null) {
-          /* Warning: static variable, used by all active test editor plugins */
-          var logFile = Paths.get(gui.logDirectory, "COOJA.testlog");
-          logWriter = Files.newBufferedWriter(logFile, UTF_8, WRITE, CREATE, TRUNCATE_EXISTING);
-          logWriter.write("Random seed: " + simulation.getRandomSeed() + "\n");
-          logWriter.flush();
-        }
-      } catch (Exception e) {
-        logger.fatal("Create log writer error: ", e);
-        // The logWriter is in an unknown state, but setConfigXML will fail from this return, so it does not matter.
-        return false;
-      }
     }
 
     if (!engine.activateScript(script)) {
@@ -432,6 +408,14 @@ public class ScriptRunner implements Plugin {
   public void closePlugin() {
     checkForUpdatesAndSave();
     deactivateScript();
+    if (!Cooja.isVisualized()) {
+      try {
+        logWriter.write("Test ended at simulation time: " + simulation.getSimulationTime() + "\n");
+        logWriter.close();
+      } catch (IOException e) {
+        logger.error("Could not close log file:", e);
+      }
+    }
   }
 
   @Override
