@@ -35,8 +35,6 @@ package org.contikios.cooja.script;
 
 public interface ScriptLog {
     void log(String log);
-    void testOK();
-    void testFailed();
     void generateMessage(long delay, String msg);
     void append(String filename, String msg);
     void writeFile(String filename, String msg);

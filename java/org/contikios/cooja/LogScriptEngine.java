@@ -260,39 +260,42 @@ public class LogScriptEngine {
         while (e.getCause() != null) {
           e = e.getCause();
         }
-        if (e.getMessage() != null &&
-            e.getMessage().contains("test script killed") ) {
-          /* Ignore normal shutdown exceptions */
-        } else {
-          logger.fatal("Script error:", e);
-        }
+        logger.fatal("Script error:", e);
       }
     };
     scriptThread = new Thread(group, new Runnable() {
       @Override
       public void run() {
         try {
-          script.eval();
+          var obj = script.eval();
+          int rv = obj == null ? 1 : (int) obj;
+          switch (rv) {
+            case -1:
+              // Something else is shutting down Cooja, for example the SerialSocket commands in 17-tun-rpl-br.
+              break;
+            case 0:
+              logger.info("TEST OK\n");
+              scriptLogObserver.update(null, "TEST OK\n");
+              break;
+            default:
+              logger.warn("TEST FAILED\n");
+              scriptLogObserver.update(null, "TEST FAILED\n");
+              break;
+          }
+          deactivateScript();
+          simulation.stopSimulation(false);
+          if (!Cooja.isVisualized() && rv >= 0) {
+            simulation.getCooja().doQuit(false, rv);
+          }
         } catch (ScriptException | RuntimeException e) {
-          Throwable throwable = e;
-          while (throwable.getCause() != null) {
-            throwable = throwable.getCause();
+          logger.fatal("Script error:", e);
+          if (!Cooja.isVisualized()) {
+            logger.fatal("Test script error, terminating Cooja.");
+            simulation.getCooja().doQuit(false, 1);
           }
-
-          if (throwable.getMessage() != null &&
-              throwable.getMessage().contains("test script killed") ) {
-            logger.debug("Test script finished");
-          } else {
-            logger.fatal("Script error:", e);
-            if (!Cooja.isVisualized()) {
-              logger.fatal("Test script error, terminating Cooja.");
-              simulation.getCooja().doQuit(false, 1);
-            }
-
-            deactivateScript();
-            simulation.stopSimulation();
-            Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Script error", e, false);
-          }
+          deactivateScript();
+          simulation.stopSimulation();
+          Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Script error", e, false);
         }
       }
     }, "script");
@@ -305,6 +308,7 @@ public class LogScriptEngine {
     engine.put("global", new HashMap<>());
     engine.put("sim", simulation);
     engine.put("gui", simulation.getCooja());
+    engine.put("mote", null);
     engine.put("msg", "");
     engine.put("node", new ScriptMote());
 
@@ -331,6 +335,8 @@ public class LogScriptEngine {
       logger.info("Timeout event @ " + t);
       engine.put("TIMEOUT", true);
       stepScript();
+      deactivateScript();
+      simulation.stopSimulation();
     }
   };
   private final TimeEvent timeoutProgressEvent = new TimeEvent() {
@@ -366,27 +372,6 @@ public class LogScriptEngine {
       } catch (Exception e) {
         logger.warn("Write file failed: " + filename + ": " + e.getMessage());
       }
-    }
-
-    @Override
-    public void testOK() {
-      logger.info("TEST OK\n");
-      log("TEST OK\n");
-      deactivate(0);
-    }
-    @Override
-    public void testFailed() {
-      logger.warn("TEST FAILED\n");
-      log("TEST FAILED\n");
-      deactivate(1);
-    }
-    private void deactivate(final int exitCode) {
-      deactivateScript();
-      simulation.stopSimulation(false);
-      if (!Cooja.isVisualized()) {
-        new Thread(() -> simulation.getCooja().doQuit(false, exitCode), "Cooja.doQuit").start();
-      }
-      throw new RuntimeException("test script killed");
     }
 
     @Override
