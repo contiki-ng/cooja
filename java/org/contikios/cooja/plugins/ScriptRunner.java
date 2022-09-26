@@ -107,7 +107,7 @@ public class ScriptRunner implements Plugin {
       frame = null;
       codeEditor = null;
       logTextArea = null;
-      engine = new LogScriptEngine(simulation, null);
+      engine = simulation.newScriptEngine(null);
       return;
     }
 
@@ -132,7 +132,7 @@ public class ScriptRunner implements Plugin {
     logTextArea.setMargin(new Insets(5,5,5,5));
     logTextArea.setEditable(false);
     logTextArea.setCursor(null);
-    engine = new LogScriptEngine(simulation, logTextArea);
+    engine = simulation.newScriptEngine(logTextArea);
 
     var newScript = new JMenuItem("New");
     newScript.addActionListener(l -> {
@@ -382,7 +382,7 @@ public class ScriptRunner implements Plugin {
   public void closePlugin() {
     checkForUpdatesAndSave();
     deactivateScript();
-    engine.closeLog();
+    simulation.removeScriptEngine(engine);
   }
 
   @Override

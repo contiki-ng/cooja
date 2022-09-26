@@ -36,6 +36,7 @@ import java.util.Random;
 
 import javax.swing.JOptionPane;
 
+import javax.swing.JTextArea;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.contikimote.ContikiMoteType;
@@ -43,6 +44,7 @@ import org.contikios.cooja.motes.DisturberMoteType;
 import org.contikios.cooja.motes.ImportAppMoteType;
 import org.contikios.cooja.mspmote.SkyMoteType;
 import org.contikios.cooja.mspmote.Z1MoteType;
+import org.contikios.cooja.plugins.LogScriptEngine;
 import org.jdom.Element;
 
 import org.contikios.cooja.dialogs.CreateSimDialog;
@@ -101,6 +103,9 @@ public class Simulation extends Observable implements Runnable {
 
   /* Event queue */
   private final EventQueue eventQueue = new EventQueue();
+
+  /** List of active script engines. */
+  private final ArrayList<LogScriptEngine> scriptEngines = new ArrayList<>();
 
   /* Poll requests */
   private boolean hasPollRequests = false;
@@ -272,6 +277,20 @@ public class Simulation extends Observable implements Runnable {
   public Simulation(Cooja cooja) {
     this.cooja = cooja;
     randomGenerator = new SafeRandom(this);
+  }
+
+  /** Create a new script engine that logs to the logTextArea and add it to the list
+   *  of active script engines. */
+  public LogScriptEngine newScriptEngine(JTextArea logTextArea) {
+    var engine = new LogScriptEngine(this, logTextArea);
+    scriptEngines.add(engine);
+    return engine;
+  }
+
+  /** Remove a script engine from the list of active script engines. */
+  public void removeScriptEngine(LogScriptEngine engine) {
+    engine.closeLog();
+    scriptEngines.remove(engine);
   }
 
   /**
