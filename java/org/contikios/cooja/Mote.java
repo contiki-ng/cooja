@@ -73,7 +73,6 @@ public interface Mote {
   /**
    * Returns simulation which holds this mote.
    *
-   * @see org.contikios.cooja.contikimote.ContikiMote#setSimulation(Simulation)
    * @return Simulation
    */
   Simulation getSimulation();
@@ -97,8 +96,12 @@ public interface Mote {
    *          Simulation holding this mote
    * @param configXML
    *          Config XML elements
+   * @param visAvailable
+   *          True if simulation is allowed to show visualizers
    *
    * @see #getConfigXML()
+   * @return True if the mote was successfully configured and False otherwise.
+   * @throws org.contikios.cooja.MoteType.MoteTypeCreationException if the mote failed to process the configuration
    */
   boolean setConfigXML(Simulation simulation,
       Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException;
