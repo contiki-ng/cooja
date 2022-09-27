@@ -28,7 +28,7 @@
  *
  */
 
-package org.contikios.cooja.plugins;
+package org.contikios.cooja.script;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

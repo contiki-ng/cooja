@@ -28,7 +28,7 @@
  *
  */
 
-package org.contikios.cooja.plugins;
+package org.contikios.cooja.script;
 
 
 /* Morty: This interface must be public, otherwise openjdk will fail */

@@ -63,6 +63,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
+import org.contikios.cooja.LogScriptEngine;
 import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
@@ -107,7 +108,7 @@ public class ScriptRunner implements Plugin {
       frame = null;
       codeEditor = null;
       logTextArea = null;
-      engine = new LogScriptEngine(simulation, null);
+      engine = simulation.newScriptEngine(null);
       return;
     }
 
@@ -132,7 +133,7 @@ public class ScriptRunner implements Plugin {
     logTextArea.setMargin(new Insets(5,5,5,5));
     logTextArea.setEditable(false);
     logTextArea.setCursor(null);
-    engine = new LogScriptEngine(simulation, logTextArea);
+    engine = simulation.newScriptEngine(logTextArea);
 
     var newScript = new JMenuItem("New");
     newScript.addActionListener(l -> {
@@ -382,7 +383,7 @@ public class ScriptRunner implements Plugin {
   public void closePlugin() {
     checkForUpdatesAndSave();
     deactivateScript();
-    engine.closeLog();
+    simulation.removeScriptEngine(engine);
   }
 
   @Override
