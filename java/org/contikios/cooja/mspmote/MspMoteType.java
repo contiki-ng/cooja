@@ -165,9 +165,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
         }
         intfClassList.add(moteInterfaceClass);
       } else {
-        logger.fatal("Unrecognized entry in loaded configuration: " + name);
-        throw new MoteTypeCreationException(
-            "Unrecognized entry in loaded configuration: " + name);
+        logger.warn("Unrecognized entry in loaded configuration: " + name);
       }
     }
 
