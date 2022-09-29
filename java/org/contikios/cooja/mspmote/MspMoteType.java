@@ -152,6 +152,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
         description = element.getText();
       } else if (name.equals("source")) {
         fileSource = simulation.getCooja().restorePortablePath(new File(element.getText()));
+        fileFirmware = getExpectedFirmwareFile(fileSource);
       } else if (name.equals("command") || name.equals("commands")) {
         compileCommands = element.getText();
       } else if (name.equals("firmware") || name.equals("elf")) {
@@ -178,11 +179,8 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     }
     setMoteInterfaceClasses(intfClasses);
 
-    if (fileFirmware == null) {
-      if (fileSource == null) {
-        throw new MoteTypeCreationException("Neither source or firmware specified");
-      }
-      fileFirmware = getExpectedFirmwareFile(fileSource);
+    if (fileFirmware == null && fileSource == null) {
+      throw new MoteTypeCreationException("Neither source or firmware specified");
     }
 
     if (!visAvailable || simulation.isQuickSetup()) {
