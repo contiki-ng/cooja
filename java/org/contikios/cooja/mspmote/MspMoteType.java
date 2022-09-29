@@ -33,6 +33,7 @@ import java.awt.Container;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -141,8 +142,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   public boolean setConfigXML(Simulation simulation,
       Collection<Element> configXML, boolean visAvailable)
       throws MoteTypeCreationException {
-
-    ArrayList<Class<? extends MoteInterface>> intfClassList = new ArrayList<>();
     for (Element element : configXML) {
       String name = element.getName();
 
@@ -164,20 +163,17 @@ public abstract class MspMoteType extends BaseContikiMoteType {
           logger.warn("Can't find mote interface class: " + intfClass);
           return false;
         }
-        intfClassList.add(moteInterfaceClass);
+        moteInterfaceClasses.add(moteInterfaceClass);
       } else {
         logger.warn("Unrecognized entry in loaded configuration: " + name);
       }
     }
 
-    Class<? extends MoteInterface>[] intfClasses = intfClassList.toArray(new Class[0]);
-
-    if (intfClasses.length == 0) {
+    if (moteInterfaceClasses.isEmpty()) {
       /* Backwards compatibility: No interfaces specified */
       logger.warn("Old simulation config detected: no mote interfaces specified, assuming all.");
-      intfClasses = getAllMoteInterfaceClasses();
+      moteInterfaceClasses.addAll(Arrays.asList(getAllMoteInterfaceClasses()));
     }
-    setMoteInterfaceClasses(intfClasses);
 
     if (fileFirmware == null && fileSource == null) {
       throw new MoteTypeCreationException("Neither source or firmware specified");
