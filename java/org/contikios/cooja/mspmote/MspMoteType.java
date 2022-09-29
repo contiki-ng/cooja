@@ -189,10 +189,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
       if (fileSource == null) {
         throw new MoteTypeCreationException("Neither source or firmware specified");
       }
-
-      /* Backwards compatibility: Generate expected firmware file name from source */
       fileFirmware = getExpectedFirmwareFile(fileSource);
-      logger.warn("Old simulation config detected: no firmware file specified, using '{}'", fileFirmware);
     }
 
     if (!visAvailable || simulation.isQuickSetup()) {
