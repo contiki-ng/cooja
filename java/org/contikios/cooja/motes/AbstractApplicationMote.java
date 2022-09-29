@@ -139,10 +139,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
 
     for (Element element : configXML) {
       String name = element.getName();
-
-      if (name.equals("motetype_identifier")) {
-        /* Ignored: handled by simulation */
-      } else if (name.equals("interface_config")) {
+      if (name.equals("interface_config")) {
         String intfClass = element.getText().trim();
 
         /* Backwards compatibility: se.sics -> org.contikios */
