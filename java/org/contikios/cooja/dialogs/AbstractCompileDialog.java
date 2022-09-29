@@ -680,30 +680,27 @@ public abstract class AbstractCompileDialog extends JDialog {
     JPanel panel = new JPanel(new BorderLayout());
     JLabel label = new JLabel("Cooja interacts with simulated motes via mote interfaces. These settings normally do not need to be changed.");
     Box b = Box.createHorizontalBox();
-    b.add(new JButton(defaultAction));
+    b.add(new JButton(new AbstractAction("Use default") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        // Unselect everything.
+        for (Component c : moteIntfBox.getComponents()) {
+          if (c instanceof JCheckBox checkbox) {
+            checkbox.setSelected(false);
+          }
+        }
+
+        // Select default.
+        for (Class<? extends MoteInterface> moteIntf : getDefaultMoteInterfaces()) {
+          addMoteInterface(moteIntf, true);
+        }
+      }
+    }));
     b.add(label);
     panel.add(BorderLayout.NORTH, b);
     panel.add(BorderLayout.CENTER, new JScrollPane(moteIntfBox));
     parent.addTab("Mote interfaces", null, panel, "Mote interfaces");
   }
-
-  private final Action defaultAction = new AbstractAction("Use default") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      /* Unselect all */
-      for (Component c : moteIntfBox.getComponents()) {
-        if (!(c instanceof JCheckBox)) {
-          continue;
-        }
-        ((JCheckBox) c).setSelected(false);
-      }
-
-      /* Select default */
-      for (Class<? extends MoteInterface> moteIntf : getDefaultMoteInterfaces()) {
-        addMoteInterface(moteIntf, true);
-      }
-    }
-  };
 
   public abstract Class<? extends MoteInterface>[] getDefaultMoteInterfaces();
   public abstract Class<? extends MoteInterface>[] getAllMoteInterfaces();
