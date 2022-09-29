@@ -161,9 +161,9 @@ public abstract class MspMoteType extends BaseContikiMoteType {
         var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
         if (moteInterfaceClass == null) {
           logger.warn("Can't find mote interface class: " + intfClass);
-        } else {
-          intfClassList.add(moteInterfaceClass);
+          return false;
         }
+        intfClassList.add(moteInterfaceClass);
       } else {
         logger.fatal("Unrecognized entry in loaded configuration: " + name);
         throw new MoteTypeCreationException(
