@@ -994,10 +994,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
           break;
         case "moteinterface":
           String intfClass = element.getText().trim();
-          /* Backwards compatibility: se.sics -> org.contikios */
-          if (intfClass.startsWith("se.sics")) {
-            intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
-          }
           var clazz = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
           if (clazz == null) {
             logger.warn("Can't find mote interface class: " + intfClass);

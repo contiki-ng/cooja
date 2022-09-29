@@ -195,14 +195,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
 
       if (name.equals("interface_config")) {
         String intfClass = element.getText().trim();
-
-        /* Backwards compatibility: se.sics -> org.contikios */
-        if (intfClass.startsWith("se.sics")) {
-          intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
-        }
-
         var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
-
         if (moteInterfaceClass == null) {
           logger.fatal("Could not load mote interface class: " + intfClass);
           return false;

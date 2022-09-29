@@ -158,11 +158,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
         fileFirmware = simulation.getCooja().restorePortablePath(new File(element.getText()));
       } else if (name.equals("moteinterface")) {
         String intfClass = element.getText().trim();
-
-        /* Backwards compatibility: se.sics -> org.contikios */
-        if (intfClass.startsWith("se.sics")) {
-        	intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
-        }
         var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
         if (moteInterfaceClass == null) {
           logger.warn("Can't find mote interface class: " + intfClass);
