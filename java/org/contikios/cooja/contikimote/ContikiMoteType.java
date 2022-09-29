@@ -997,9 +997,9 @@ public class ContikiMoteType extends BaseContikiMoteType {
           var clazz = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
           if (clazz == null) {
             logger.warn("Can't find mote interface class: " + intfClass);
-          } else  {
-            moteInterfaceClasses.add(clazz);
+            return false;
           }
+          moteInterfaceClasses.add(clazz);
           break;
         case "contikibasedir":
         case "contikicoredir":
