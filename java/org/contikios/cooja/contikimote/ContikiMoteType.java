@@ -1019,12 +1019,10 @@ public class ContikiMoteType extends BaseContikiMoteType {
       if (getIdentifier() == null) {
         throw new MoteTypeCreationException("No identifier specified");
       }
-      final var source = getContikiSourceFile();
-      if (source == null) {
+      if (getContikiSourceFile() == null) {
         throw new MoteTypeCreationException("No Contiki application specified");
       }
-      final var commands = getCompileCommands();
-      if (commands == null) {
+      if (getCompileCommands() == null) {
         throw new MoteTypeCreationException("No compile commands specified");
       }
     }
