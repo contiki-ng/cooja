@@ -294,7 +294,12 @@ public abstract class AbstractCompileDialog extends JDialog {
         }
         setDialogState(DialogState.IS_COMPILING);
         final MessageListUI taskOutput = new MessageListUI();
-        createNewCompilationTab(taskOutput);
+        abortAnyCompilation(); // FIXME: button is disabled by DialogState.IS_COMPILING.
+        tabbedPane.remove(currentCompilationOutput);
+        JScrollPane scrollOutput = new JScrollPane(taskOutput);
+        tabbedPane.addTab("Compilation output", null, scrollOutput, "Shows Contiki compilation output");
+        tabbedPane.setSelectedComponent(scrollOutput);
+        currentCompilationOutput = scrollOutput;
         taskOutput.addPopupMenuItem(abortMenuItem, true);
 
         // Called once per command.
@@ -771,14 +776,4 @@ public abstract class AbstractCompileDialog extends JDialog {
     currentCompilationProcess = null;
   }
 
-  private void createNewCompilationTab(MessageListUI output) {
-    abortAnyCompilation();
-    tabbedPane.remove(currentCompilationOutput);
-
-    JScrollPane scrollOutput = new JScrollPane(output);
-    tabbedPane.addTab("Compilation output", null, scrollOutput, "Shows Contiki compilation output");
-
-    tabbedPane.setSelectedComponent(scrollOutput);
-    currentCompilationOutput = scrollOutput;
-  }
 }
