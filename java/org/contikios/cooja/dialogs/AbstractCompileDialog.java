@@ -259,6 +259,29 @@ public abstract class AbstractCompileDialog extends JDialog {
         AbstractCompileDialog.this.dispose();
       }
     };
+
+    final JMenuItem abortMenuItem = new JMenuItem("Abort compilation");
+    abortMenuItem.setEnabled(true);
+    abortMenuItem.addActionListener(e1 -> abortAnyCompilation());
+
+    // Called when last command has finished (success only).
+    final Action compilationSuccessAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e1) {
+        abortMenuItem.setEnabled(false);
+        setDialogState(DialogState.COMPILED_FIRMWARE);
+      }
+    };
+
+    // Called immediately if any command fails.
+    final Action compilationFailureAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e1) {
+        abortMenuItem.setEnabled(false);
+        setDialogState(DialogState.AWAITING_COMPILATION);
+      }
+    };
+
     Action compileAction = new AbstractAction("Compile") {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -272,30 +295,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         setDialogState(DialogState.IS_COMPILING);
         final MessageListUI taskOutput = new MessageListUI();
         createNewCompilationTab(taskOutput);
-
-        // Add abort compilation menu item.
-        final JMenuItem abortMenuItem = new JMenuItem("Abort compilation");
-        abortMenuItem.setEnabled(true);
-        abortMenuItem.addActionListener(e1 -> abortAnyCompilation());
         taskOutput.addPopupMenuItem(abortMenuItem, true);
-
-        // Called when last command has finished (success only).
-        final Action compilationSuccessAction = new AbstractAction() {
-          @Override
-          public void actionPerformed(ActionEvent e1) {
-            abortMenuItem.setEnabled(false);
-            setDialogState(DialogState.COMPILED_FIRMWARE);
-          }
-        };
-
-        // Called immediately if any command fails.
-        final Action compilationFailureAction = new AbstractAction() {
-          @Override
-          public void actionPerformed(ActionEvent e1) {
-            abortMenuItem.setEnabled(false);
-            setDialogState(DialogState.AWAITING_COMPILATION);
-          }
-        };
 
         // Called once per command.
         final Action nextCommandAction = new AbstractAction() {
