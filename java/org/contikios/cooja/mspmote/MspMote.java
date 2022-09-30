@@ -204,11 +204,10 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   /**
    * Prepares CPU, memory and ELF module.
    *
-   * @param fileELF ELF file
    * @param node MSP430 cpu
    * @throws IOException Preparing mote failed
    */
-  protected void prepareMote(File fileELF, GenericNode node) throws IOException {
+  protected void prepareMote(GenericNode node) throws IOException {
     this.mspNode = node;
 
     node.setCommandHandler(commandHandler);
@@ -234,7 +233,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     this.myCpu.getLogger().addLogListener(ll);
 
-    Cooja.setProgressMessage("Loading " + fileELF.getName());
+    Cooja.setProgressMessage("Loading " + myMoteType.getContikiFirmwareFile().getName());
     node.loadFirmware(((MspMoteType)getType()).getELF());
 
     /* Throw exceptions at bad memory access */

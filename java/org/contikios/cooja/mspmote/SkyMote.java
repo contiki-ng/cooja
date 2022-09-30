@@ -53,7 +53,7 @@ public class SkyMote extends MspMote {
     registry = skyNode.getRegistry();
     skyNode.setFlash(new CoojaM25P80(skyNode.getCPU()));
     try {
-      prepareMote(moteType.getContikiFirmwareFile(), skyNode);
+      prepareMote(skyNode);
     } catch (Exception e) {
       logger.fatal("Error when creating Sky mote: ", e);
       throw new MoteType.MoteTypeCreationException("Error when creating Sky mote: " + e.getMessage());
