@@ -93,7 +93,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     Visualizer.registerVisualizerSkin(CodeVisualizerSkin.class);
   }
 
-  private CommandHandler commandHandler;
+  private final CommandHandler commandHandler;
   private MSP430 myCpu = null;
   private final MspMoteType myMoteType;
   private MspMoteMemory myMemory = null;
@@ -113,6 +113,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     } catch (IOException e) {
       throw new MoteType.MoteTypeCreationException("Error: " + e.getMessage(), e);
     }
+    commandHandler = new CommandHandler(System.out, System.err);
     /* Schedule us immediately */
     requestImmediateWakeup();
   }
@@ -208,8 +209,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
    * @throws IOException Preparing mote failed
    */
   protected void prepareMote(File fileELF, GenericNode node) throws IOException {
-    this.commandHandler = new CommandHandler(System.out, System.err);
-
     this.mspNode = node;
 
     node.setCommandHandler(commandHandler);
