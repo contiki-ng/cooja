@@ -306,7 +306,21 @@ public abstract class AbstractCompileDialog extends JDialog {
       	moteType.setDescription(descriptionField.getText());
       	moteType.setContikiSourceFile(contikiSource);
       	moteType.setContikiFirmwareFile(contikiFirmware);
-      	moteType.setMoteInterfaceClasses(getSelectedMoteInterfaceClasses());
+        ArrayList<Class<? extends MoteInterface>> selected = new ArrayList<>();
+        for (Component c : moteIntfBox.getComponents()) {
+          if (c instanceof JCheckBox checkbox) {
+            if (!checkbox.isSelected()) {
+              continue;
+            }
+            Class<? extends MoteInterface> clazz =
+                    (Class<? extends MoteInterface>) checkbox.getClientProperty("class");
+            if (clazz != null) { // FIXME: this should never be null.
+              selected.add(clazz);
+            }
+          }
+        }
+        Class<? extends MoteInterface>[] arr = new Class[selected.size()];
+        moteType.setMoteInterfaceClasses(selected.toArray(arr));
       	moteType.setCompileCommands(getCompileCommands());
 
       	/* Write mote type settings (mote type specific) */
@@ -666,63 +680,30 @@ public abstract class AbstractCompileDialog extends JDialog {
     JPanel panel = new JPanel(new BorderLayout());
     JLabel label = new JLabel("Cooja interacts with simulated motes via mote interfaces. These settings normally do not need to be changed.");
     Box b = Box.createHorizontalBox();
-    b.add(new JButton(defaultAction));
+    b.add(new JButton(new AbstractAction("Use default") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        // Unselect everything.
+        for (Component c : moteIntfBox.getComponents()) {
+          if (c instanceof JCheckBox checkbox) {
+            checkbox.setSelected(false);
+          }
+        }
+
+        // Select default.
+        for (Class<? extends MoteInterface> moteIntf : getDefaultMoteInterfaces()) {
+          addMoteInterface(moteIntf, true);
+        }
+      }
+    }));
     b.add(label);
     panel.add(BorderLayout.NORTH, b);
     panel.add(BorderLayout.CENTER, new JScrollPane(moteIntfBox));
     parent.addTab("Mote interfaces", null, panel, "Mote interfaces");
   }
 
-  private final Action defaultAction = new AbstractAction("Use default") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      /* Unselect all */
-      for (Component c : moteIntfBox.getComponents()) {
-        if (!(c instanceof JCheckBox)) {
-          continue;
-        }
-        ((JCheckBox) c).setSelected(false);
-      }
-
-      /* Select default */
-      for (Class<? extends MoteInterface> moteIntf : getDefaultMoteInterfaces()) {
-        addMoteInterface(moteIntf, true);
-      }
-    }
-  };
-
   public abstract Class<? extends MoteInterface>[] getDefaultMoteInterfaces();
   public abstract Class<? extends MoteInterface>[] getAllMoteInterfaces();
-
-  /**
-   * @return Currently selected mote interface classes
-   */
-  public Class<? extends MoteInterface>[] getSelectedMoteInterfaceClasses() {
-    ArrayList<Class<? extends MoteInterface>> selected = new ArrayList<>();
-
-    for (Component c : moteIntfBox.getComponents()) {
-      if (!(c instanceof JCheckBox)) {
-        continue;
-      }
-
-      if (!((JCheckBox) c).isSelected()) {
-        continue;
-      }
-
-      Class<? extends MoteInterface> intfClass =
-        (Class<? extends MoteInterface>)
-        ((JCheckBox) c).getClientProperty("class");
-
-      if (intfClass == null) {
-        continue;
-      }
-
-      selected.add(intfClass);
-    }
-
-    Class<? extends MoteInterface>[] arr = new Class[selected.size()];
-    return selected.toArray(arr);
-  }
 
   /**
    * Adds given mote interface to mote interface list, represented by a checkbox.
