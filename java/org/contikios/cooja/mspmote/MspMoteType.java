@@ -62,15 +62,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   private static final Logger logger = LogManager.getLogger(MspMoteType.class);
 
   @Override
-  public final Mote generateMote(Simulation simulation) throws MoteTypeCreationException {
-    MspMote mote = createMote(simulation);
-    mote.initMote();
-    return mote;
-  }
-
-  protected abstract MspMote createMote(Simulation simulation) throws MoteTypeCreationException;
-
-  @Override
   protected boolean showCompilationDialog(Simulation sim) {
     return MspCompileDialog.showDialog(Cooja.getTopParentContainer(), sim, this);
   }

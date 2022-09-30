@@ -50,7 +50,7 @@ public class Z1Mote extends MspMote {
         registry = z1Node.getRegistry();
         z1Node.setFlash(new CoojaM25P80(z1Node.getCPU()));
         try {
-            prepareMote(moteType.getContikiFirmwareFile(), z1Node);
+            prepareMote(z1Node);
         } catch (Exception e) {
             logger.fatal("Error when creating Z1 mote: ", e);
             throw new MoteType.MoteTypeCreationException("Error when creating Z1 mote: " + e.getMessage());

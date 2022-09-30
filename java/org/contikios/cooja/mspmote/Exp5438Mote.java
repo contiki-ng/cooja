@@ -80,7 +80,7 @@ public class Exp5438Mote extends MspMote {
 
     try {
       registry = exp5438Node.getRegistry();
-      prepareMote(fileELF, exp5438Node);
+      prepareMote(exp5438Node);
     } catch (Exception e) {
       logger.fatal("Error when creating Exp5438 mote: ", e);
       throw new MoteType.MoteTypeCreationException("Error creating Exp5438 mote: " + e.getMessage());

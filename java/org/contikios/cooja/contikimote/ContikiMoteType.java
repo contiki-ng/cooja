@@ -312,7 +312,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     if (useCommand) {
       /* Parse command output */
-      String[] output = loadCommandData(getContikiFirmwareFile(), vis);
+      String[] output = loadCommandData(firmwareFile, vis);
 
       dataSecParser = new CommandSectionParser(
               output,

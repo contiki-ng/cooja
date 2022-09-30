@@ -93,7 +93,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     Visualizer.registerVisualizerSkin(CodeVisualizerSkin.class);
   }
 
-  private CommandHandler commandHandler;
+  private final CommandHandler commandHandler;
   private MSP430 myCpu = null;
   private final MspMoteType myMoteType;
   private MspMoteMemory myMemory = null;
@@ -103,8 +103,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   /* Stack monitoring variables */
   private boolean stopNextInstruction = false;
 
-  public GenericNode mspNode = null;
-
   public MspMote(MspMoteType moteType, Simulation simulation) throws MoteType.MoteTypeCreationException {
     super(simulation);
     myMoteType = moteType;
@@ -113,11 +111,12 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     } catch (IOException e) {
       throw new MoteType.MoteTypeCreationException("Error: " + e.getMessage(), e);
     }
+    commandHandler = new CommandHandler(System.out, System.err);
     /* Schedule us immediately */
     requestImmediateWakeup();
   }
 
-  protected void initMote() {
+  private void initMote() {
     /* TODO Create COOJA-specific window manager */
     registry.removeComponent("windowManager");
     registry.registerComponent("windowManager", new WindowManager() {
@@ -191,10 +190,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return myCpu;
   }
 
-  public void setCPU(MSP430 cpu) {
-    myCpu = cpu;
-  }
-
   @Override
   public MemoryInterface getMemory() {
     return myMemory;
@@ -203,19 +198,13 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   /**
    * Prepares CPU, memory and ELF module.
    *
-   * @param fileELF ELF file
    * @param node MSP430 cpu
    * @throws IOException Preparing mote failed
    */
-  protected void prepareMote(File fileELF, GenericNode node) throws IOException {
-    this.commandHandler = new CommandHandler(System.out, System.err);
-
-    this.mspNode = node;
-
+  protected void prepareMote(GenericNode node) throws IOException {
     node.setCommandHandler(commandHandler);
 
-    ConfigManager config = new ConfigManager();
-    node.setup(config);
+    node.setup(new ConfigManager());
 
     this.myCpu = node.getCPU();
     this.myCpu.setMonitorExec(true);
@@ -236,7 +225,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     this.myCpu.getLogger().addLogListener(ll);
 
-    Cooja.setProgressMessage("Loading " + fileELF.getName());
+    Cooja.setProgressMessage("Loading " + myMoteType.getContikiFirmwareFile().getName());
     node.loadFirmware(((MspMoteType)getType()).getELF());
 
     /* Throw exceptions at bad memory access */
@@ -244,10 +233,10 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     /* Create mote address memory */
     MapTable map = ((MspMoteType)getType()).getELF().getMap();
-    MapEntry[] allEntries = map.getAllEntries();
-    myMemory = new MspMoteMemory(this, allEntries, myCpu);
+    myMemory = new MspMoteMemory(this, map.getAllEntries(), myCpu);
 
     myCpu.reset();
+    initMote();
   }
 
   public CommandHandler getCLICommandHandler() {
