@@ -31,7 +31,6 @@ package org.contikios.cooja.contikimote;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.awt.Container;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -280,26 +279,12 @@ public class ContikiMoteType extends BaseContikiMoteType {
     return ContikiMoteCompileDialog.showDialog(Cooja.getTopParentContainer(), sim, this);
   }
 
+  /** Load LibN.java and the corresponding .cooja file into memory. */
   @Override
-  public boolean configureAndInit(Container parentContainer, Simulation simulation,
-                                  boolean visAvailable) throws MoteTypeCreationException {
+  public boolean loadMoteFirmware(boolean vis) throws MoteTypeCreationException {
     if (myCoreComm != null) {
       throw new MoteTypeCreationException("Core communicator already used: " + myCoreComm.getClass().getName());
     }
-    if (visAvailable && !simulation.isQuickSetup()) {
-      if (getDescription() == null) {
-        setDescription(getMoteName() + " Mote Type #" + (simulation.getMoteTypes().length + 1));
-      }
-
-      if (!showCompilationDialog(simulation)) {
-        return false;
-      }
-    } else {
-      if (!compileMoteType(visAvailable, BaseContikiMoteType.oneDimensionalEnv(getCompilationEnvironment()))) {
-        return false;
-      }
-    }
-
     Path tmpDir;
     try {
       tmpDir = Files.createTempDirectory("cooja");
@@ -327,7 +312,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     if (useCommand) {
       /* Parse command output */
-      String[] output = loadCommandData(getContikiFirmwareFile(), visAvailable);
+      String[] output = loadCommandData(getContikiFirmwareFile(), vis);
 
       dataSecParser = new CommandSectionParser(
               output,

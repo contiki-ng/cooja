@@ -29,7 +29,6 @@
 
 package org.contikios.cooja.mspmote;
 
-import java.awt.Container;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,9 +46,6 @@ import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.interfaces.IPAddress;
-import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
-import org.contikios.cooja.mspmote.interfaces.MspSerial;
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
 
@@ -76,20 +72,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   @Override
   protected boolean showCompilationDialog(Simulation sim) {
     return MspCompileDialog.showDialog(Cooja.getTopParentContainer(), sim, this);
-  }
-
-  @Override
-  public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable) {
-    // If visualized, show compile dialog and let user configure.
-    if (visAvailable && !simulation.isQuickSetup()) {
-      if (getDescription() == null) {
-        setDescription(getMoteName() + " Mote Type #" + (simulation.getMoteTypes().length + 1));
-      }
-      return showCompilationDialog(simulation);
-    }
-
-    // Not visualized: Compile Contiki immediately.
-    return compileMoteType(visAvailable, BaseContikiMoteType.oneDimensionalEnv(getCompilationEnvironment()));
   }
 
   @Override

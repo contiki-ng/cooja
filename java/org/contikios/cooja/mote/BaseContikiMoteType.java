@@ -32,6 +32,7 @@ package org.contikios.cooja.mote;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.awt.Container;
 import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.File;
@@ -225,6 +226,29 @@ public abstract class BaseContikiMoteType implements MoteType {
       return new ImageIcon(image);
     }
     return null;
+  }
+
+  @Override
+  public boolean configureAndInit(Container top, Simulation sim, boolean vis) throws MoteTypeCreationException {
+    if (vis && !sim.isQuickSetup()) {
+      if (getDescription() == null) {
+        setDescription(getMoteName() + " Mote Type #" + (sim.getMoteTypes().length + 1));
+      }
+
+      if (!showCompilationDialog(sim)) {
+        return false;
+      }
+    } else {
+      if (!compileMoteType(vis, BaseContikiMoteType.oneDimensionalEnv(getCompilationEnvironment()))) {
+        return false;
+      }
+    }
+    return loadMoteFirmware(vis);
+  }
+
+  /** Load the mote firmware into memory. */
+  public boolean loadMoteFirmware(boolean vis) throws MoteTypeCreationException {
+    return true;
   }
 
   /** Show a compilation dialog for this mote type. */
