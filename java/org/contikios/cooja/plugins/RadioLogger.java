@@ -45,6 +45,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -584,14 +585,14 @@ public class RadioLogger extends VisPlugin {
         Class<? extends RadioLoggerAnalyzerSuite> suiteClass
                 = gui.tryLoadClass(RadioLogger.this, RadioLoggerAnalyzerSuite.class, suiteName);
         try {
-          RadioLoggerAnalyzerSuite suite = suiteClass.newInstance();
+          RadioLoggerAnalyzerSuite suite = suiteClass.getDeclaredConstructor().newInstance();
           ArrayList<PacketAnalyzer> suiteAnalyzers = suite.getAnalyzers();
           rbMenuItem = new JRadioButtonMenuItem(createAnalyzerAction(
                   suite.getDescription(), suiteName, suiteAnalyzers, false));
           group.add(rbMenuItem);
           analyzerMenu.add(rbMenuItem);
           logger.debug("Loaded radio logger analyzers: " + suite.getDescription());
-        } catch (InstantiationException | IllegalAccessException e1) {
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e1) {
           logger.warn("Failed to load analyzer suite '" + suiteName + "': " + e1.getMessage());
         }
       }
