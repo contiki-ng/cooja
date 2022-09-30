@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -79,6 +80,7 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.mote.BaseContikiMoteType;
+import org.contikios.cooja.util.StringUtils;
 
 /**
  * Abstract configure mote type dialog used by Contiki-based mote type implementations.
@@ -264,12 +266,12 @@ public abstract class AbstractCompileDialog extends JDialog {
     		if (!compileButton.isEnabled()) {
     			return;
     		}
-    		try {
-    			setDialogState(DialogState.AWAITING_COMPILATION);
-    			compileContiki();
-    		} catch (Exception e1) {
-    			logger.fatal("Error while compiling Contiki: " + e1.getMessage());
-    		}
+        final var commands = StringUtils.splitOnNewline(getCompileCommands());
+        if (commands.isEmpty()) {
+          return;
+        }
+        setDialogState(DialogState.AWAITING_COMPILATION);
+        compileContiki(commands);
     	}
     };
     cleanButton = new JButton("Clean");
@@ -457,22 +459,8 @@ public abstract class AbstractCompileDialog extends JDialog {
   public abstract boolean canLoadFirmware(File file);
 
   protected String[] compilationEnvironment = null; /* Default environment: inherit from current process */
-  public void compileContiki() throws Exception {
+  public void compileContiki(List<String> commands) {
     final MessageListUI taskOutput = new MessageListUI();
-
-    /* Handle multiple compilation commands one by one */
-    final ArrayList<String> commands = new ArrayList<>();
-    for (String cmd: getCompileCommands().split("\n")) {
-      if (cmd.trim().isEmpty()) {
-        continue;
-      }
-
-      commands.add(cmd);
-    }
-    if (commands.isEmpty()) {
-      throw new Exception("No compile commands specified");
-    }
-
     setDialogState(DialogState.IS_COMPILING);
     createNewCompilationTab(taskOutput);
 

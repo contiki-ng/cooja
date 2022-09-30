@@ -57,6 +57,7 @@ import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
+import org.contikios.cooja.util.StringUtils;
 
 /**
  * The common parts of mote types based on compiled Contiki-NG targets.
@@ -281,12 +282,7 @@ public abstract class BaseContikiMoteType implements MoteType {
   protected boolean compileMoteType(boolean visAvailable, String[] env) {
     // Handle multiple compilation commands one by one.
     final var compilationOutput = MessageContainer.createMessageList(visAvailable);
-    for (String cmd : getCompileCommands().split("\n")) {
-      cmd = cmd.trim();
-      if (cmd.isEmpty()) {
-        continue;
-      }
-
+    for (String cmd : StringUtils.splitOnNewline(getCompileCommands())) {
       try {
         compile(cmd, env, getContikiSourceFile().getParentFile(), null, null,
                 compilationOutput, true);
