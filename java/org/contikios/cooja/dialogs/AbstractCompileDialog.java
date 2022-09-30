@@ -467,12 +467,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     /* Add abort compilation menu item */
     final JMenuItem abortMenuItem = new JMenuItem("Abort compilation");
     abortMenuItem.setEnabled(true);
-    abortMenuItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        abortAnyCompilation();
-      }
-    });
+    abortMenuItem.addActionListener(e -> abortAnyCompilation());
     taskOutput.addPopupMenuItem(abortMenuItem, true);
 
     /* Called when last command has finished (success only) */
