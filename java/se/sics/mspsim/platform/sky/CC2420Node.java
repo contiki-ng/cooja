@@ -60,10 +60,6 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
         return cpu.getDebug();
     }
 
-    public ELF getElfInfo() {
-        return elf;
-    }
-
     public void setNodeID(int id) {
         ds2411.setMACID(id & 0xff, id & 0xff, id & 0xff, (id >> 8) & 0xff, id & 0xff, id & 0xff);
     }
