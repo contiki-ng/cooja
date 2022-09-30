@@ -192,10 +192,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return myCpu;
   }
 
-  public void setCPU(MSP430 cpu) {
-    myCpu = cpu;
-  }
-
   @Override
   public MemoryInterface getMemory() {
     return myMemory;
