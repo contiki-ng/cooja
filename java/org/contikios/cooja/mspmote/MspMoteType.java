@@ -32,6 +32,7 @@ package org.contikios.cooja.mspmote;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -123,8 +124,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   public boolean setConfigXML(Simulation simulation,
       Collection<Element> configXML, boolean visAvailable)
       throws MoteTypeCreationException {
-
-    ArrayList<Class<? extends MoteInterface>> intfClassList = new ArrayList<>();
     for (Element element : configXML) {
       String name = element.getName();
 
@@ -134,47 +133,32 @@ public abstract class MspMoteType extends BaseContikiMoteType {
         description = element.getText();
       } else if (name.equals("source")) {
         fileSource = simulation.getCooja().restorePortablePath(new File(element.getText()));
+        fileFirmware = getExpectedFirmwareFile(fileSource);
       } else if (name.equals("command") || name.equals("commands")) {
         compileCommands = element.getText();
       } else if (name.equals("firmware") || name.equals("elf")) {
         fileFirmware = simulation.getCooja().restorePortablePath(new File(element.getText()));
       } else if (name.equals("moteinterface")) {
         String intfClass = element.getText().trim();
-
-        /* Backwards compatibility: se.sics -> org.contikios */
-        if (intfClass.startsWith("se.sics")) {
-        	intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
-        }
         var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
         if (moteInterfaceClass == null) {
           logger.warn("Can't find mote interface class: " + intfClass);
-        } else {
-          intfClassList.add(moteInterfaceClass);
+          return false;
         }
+        moteInterfaceClasses.add(moteInterfaceClass);
       } else {
-        logger.fatal("Unrecognized entry in loaded configuration: " + name);
-        throw new MoteTypeCreationException(
-            "Unrecognized entry in loaded configuration: " + name);
+        logger.warn("Unrecognized entry in loaded configuration: " + name);
       }
     }
 
-    Class<? extends MoteInterface>[] intfClasses = intfClassList.toArray(new Class[0]);
-
-    if (intfClasses.length == 0) {
+    if (moteInterfaceClasses.isEmpty()) {
       /* Backwards compatibility: No interfaces specified */
       logger.warn("Old simulation config detected: no mote interfaces specified, assuming all.");
-      intfClasses = getAllMoteInterfaceClasses();
+      moteInterfaceClasses.addAll(Arrays.asList(getAllMoteInterfaceClasses()));
     }
-    setMoteInterfaceClasses(intfClasses);
 
-    if (fileFirmware == null) {
-      if (fileSource == null) {
-        throw new MoteTypeCreationException("Neither source or firmware specified");
-      }
-
-      /* Backwards compatibility: Generate expected firmware file name from source */
-      fileFirmware = getExpectedFirmwareFile(fileSource);
-      logger.warn("Old simulation config detected: no firmware file specified, using '{}'", fileFirmware);
+    if (fileFirmware == null && fileSource == null) {
+      throw new MoteTypeCreationException("Neither source or firmware specified");
     }
 
     if (!visAvailable || simulation.isQuickSetup()) {

@@ -979,16 +979,12 @@ public class ContikiMoteType extends BaseContikiMoteType {
           break;
         case "moteinterface":
           String intfClass = element.getText().trim();
-          /* Backwards compatibility: se.sics -> org.contikios */
-          if (intfClass.startsWith("se.sics")) {
-            intfClass = intfClass.replaceFirst("se\\.sics", "org.contikios");
-          }
           var clazz = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
           if (clazz == null) {
             logger.warn("Can't find mote interface class: " + intfClass);
-          } else  {
-            moteInterfaceClasses.add(clazz);
+            return false;
           }
+          moteInterfaceClasses.add(clazz);
           break;
         case "contikibasedir":
         case "contikicoredir":
@@ -1008,12 +1004,10 @@ public class ContikiMoteType extends BaseContikiMoteType {
       if (getIdentifier() == null) {
         throw new MoteTypeCreationException("No identifier specified");
       }
-      final var source = getContikiSourceFile();
-      if (source == null) {
+      if (getContikiSourceFile() == null) {
         throw new MoteTypeCreationException("No Contiki application specified");
       }
-      final var commands = getCompileCommands();
-      if (commands == null) {
+      if (getCompileCommands() == null) {
         throw new MoteTypeCreationException("No compile commands specified");
       }
     }

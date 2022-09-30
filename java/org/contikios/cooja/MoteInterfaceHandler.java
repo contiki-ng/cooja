@@ -156,6 +156,9 @@ public class MoteInterfaceHandler {
    * @return Found class or null
    */
   public static Class<? extends MoteInterface> getInterfaceClass(Cooja gui, Object caller, String name) {
+    if (name.startsWith("se.sics")) {
+      name = name.replaceFirst("se\\.sics", "org.contikios");
+    }
     var clazz = builtinInterfaces.get(name);
     if (clazz != null) {
       return clazz;
