@@ -1149,18 +1149,4 @@ public class RadioLogger extends VisPlugin {
       rebuildAllEntries();
     }
   };
-
-  public String getConnectionsString() {
-    StringBuilder sb = new StringBuilder();
-    RadioConnectionLog[] cs = connections.toArray(new RadioConnectionLog[0]);
-    for (RadioConnectionLog c : cs) {
-      sb.append(c.toString()).append("\n");
-    }
-    return sb.toString();
-  }
-
-  public void saveConnectionsToFile(String fileName) {
-    StringUtils.saveToFile(new File(fileName), getConnectionsString());
-  }
-
 }
