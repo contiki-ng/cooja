@@ -103,8 +103,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   /* Stack monitoring variables */
   private boolean stopNextInstruction = false;
 
-  public GenericNode mspNode = null;
-
   public MspMote(MspMoteType moteType, Simulation simulation) throws MoteType.MoteTypeCreationException {
     super(simulation);
     myMoteType = moteType;
@@ -204,8 +202,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
    * @throws IOException Preparing mote failed
    */
   protected void prepareMote(GenericNode node) throws IOException {
-    this.mspNode = node;
-
     node.setCommandHandler(commandHandler);
 
     node.setup(new ConfigManager());
