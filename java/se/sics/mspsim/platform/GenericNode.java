@@ -80,7 +80,6 @@ public abstract class GenericNode extends Chip implements Runnable {
   protected ConfigManager config;
 
   protected String firmwareFile = null;
-  protected ELF elf;
   protected OperatingModeStatistics stats;
 
 
@@ -319,7 +318,6 @@ public abstract class GenericNode extends Chip implements Runnable {
     if (cpu.isRunning()) {
         stop();
     }
-    this.elf = elf;
     elf.loadPrograms(cpu.memory);
     MapTable map = elf.getMap();
     cpu.getDisAsm().setMap(map);
