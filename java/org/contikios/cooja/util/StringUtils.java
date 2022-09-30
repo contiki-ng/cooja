@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -191,5 +193,17 @@ public class StringUtils {
     } catch (Exception ex) {
       return false;
     }
+  }
+
+  public static List<String> splitOnNewline(String commands) {
+    final ArrayList<String> cmdList = new ArrayList<>();
+    for (String cmd: commands.split("\n")) {
+      cmd = cmd.trim();
+      if (cmd.isEmpty()) {
+        continue;
+      }
+      cmdList.add(cmd);
+    }
+    return cmdList;
   }
 }
