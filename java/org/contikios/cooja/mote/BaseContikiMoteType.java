@@ -287,12 +287,6 @@ public abstract class BaseContikiMoteType implements MoteType {
         compile(cmd, env, getContikiSourceFile().getParentFile(), null, null,
                 compilationOutput, true);
       } catch (MoteTypeCreationException e) {
-        // Print last 10 compilation errors to console.
-        MessageContainer[] messages = compilationOutput.getMessages();
-        for (int i = Math.max(messages.length - 10, 0); i < messages.length; i++) {
-          logger.error(">> " + messages[i]);
-        }
-        logger.error("Compilation error: " + compilationOutput);
         return false;
       }
     }
@@ -381,57 +375,37 @@ public abstract class BaseContikiMoteType implements MoteType {
         }
       }, "read error stream thread");
 
-      final MoteTypeCreationException syncException = new MoteTypeCreationException("");
-      Thread handleCompilationResultThread = new Thread(new Runnable() {
+      final var compile = new Runnable() {
         @Override
         public void run() {
           try {
             compileProcess.waitFor();
           } catch (Exception e) {
             messageDialog.addMessage(e.getMessage(), MessageList.ERROR);
-            syncException.setCompilationOutput(MessageContainer.createMessageList(true));
-            syncException.fillInStackTrace();
             return;
           }
 
           if (compileProcess.exitValue() != 0) {
-            messageDialog.addMessage("Process returned error code " + compileProcess.exitValue(), MessageList.ERROR);
+            messageDialog.addMessage("Compilation process returned error code " + compileProcess.exitValue(), MessageList.ERROR);
             if (onFailure != null) {
               java.awt.EventQueue.invokeLater(() -> onFailure.actionPerformed(null));
             }
-            syncException.setCompilationOutput(MessageContainer.createMessageList(true));
-            syncException.fillInStackTrace();
-            return;
-          }
-
-          if (onSuccess != null) {
+          } else if (onSuccess != null) {
             java.awt.EventQueue.invokeLater(() -> onSuccess.actionPerformed(null));
           }
         }
-      }, "handle compilation results");
+      };
 
       readInput.start();
       readError.start();
-      handleCompilationResultThread.start();
-
       if (synchronous) {
-        try {
-          handleCompilationResultThread.join();
-        } catch (Exception e) {
-          // Make sure process has exited.
-          compileProcess.destroy();
-
-          String msg = e.getMessage();
-          if (e instanceof InterruptedException) {
-            msg = "Aborted by user";
-          }
-          throw new MoteTypeCreationException("Compilation error: " + msg, e);
+        compile.run();
+        // Errors are already printed to messageDialog, so just throw a non-descriptive exception on error.
+        if (compileProcess.exitValue() != 0) {
+          throw new MoteTypeCreationException("Compilation failed");
         }
-
-        // Detect error manually.
-        if (syncException.hasCompilationOutput()) {
-          throw new MoteTypeCreationException("Bad return value", syncException);
-        }
+      } else {
+        new Thread(compile, "handle compilation results").start();
       }
     } catch (IOException ex) {
       if (onFailure != null) {
