@@ -240,8 +240,15 @@ public abstract class BaseContikiMoteType implements MoteType {
         return false;
       }
     } else {
-      if (!compileMoteType(vis, BaseContikiMoteType.oneDimensionalEnv(getCompilationEnvironment()))) {
-        return false;
+      // Handle multiple compilation commands one by one.
+      final var output = MessageContainer.createMessageList(vis);
+      final var env = oneDimensionalEnv(getCompilationEnvironment());
+      for (String cmd : StringUtils.splitOnNewline(getCompileCommands())) {
+        try {
+          compile(cmd, env, fileSource.getParentFile(), null, null, output, true);
+        } catch (MoteTypeCreationException e) {
+          return false;
+        }
       }
     }
     return loadMoteFirmware(vis);
@@ -270,27 +277,6 @@ public abstract class BaseContikiMoteType implements MoteType {
       envOneDimension[i] = env[i][0] + "=" + env[i][1];
     }
     return envOneDimension;
-  }
-
-  /**
-   * Compile the mote type.
-   *
-   * @param visAvailable True if visualization is available.
-   * @param env Environment to compile in.
-   * @return Returns true on success.
-   */
-  protected boolean compileMoteType(boolean visAvailable, String[] env) {
-    // Handle multiple compilation commands one by one.
-    final var compilationOutput = MessageContainer.createMessageList(visAvailable);
-    for (String cmd : StringUtils.splitOnNewline(getCompileCommands())) {
-      try {
-        compile(cmd, env, getContikiSourceFile().getParentFile(), null, null,
-                compilationOutput, true);
-      } catch (MoteTypeCreationException e) {
-        return false;
-      }
-    }
-    return true;
   }
 
   /**
