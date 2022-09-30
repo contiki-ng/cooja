@@ -67,7 +67,7 @@ public class Z1MoteType extends MspMoteType {
     }
 
     @Override
-    protected MspMote createMote(Simulation simulation) throws MoteTypeCreationException {
+    public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
         return new Z1Mote(this, simulation);
     }
 

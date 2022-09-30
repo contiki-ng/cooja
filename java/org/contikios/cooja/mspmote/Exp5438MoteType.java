@@ -52,7 +52,7 @@ import org.contikios.cooja.mspmote.interfaces.UsciA1Serial;
 public class Exp5438MoteType extends MspMoteType {
 
   @Override
-  protected MspMote createMote(Simulation simulation) throws MoteTypeCreationException {
+  public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
     return new Exp5438Mote(this, simulation);
   }
 

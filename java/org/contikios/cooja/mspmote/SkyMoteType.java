@@ -56,7 +56,7 @@ import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
 public class SkyMoteType extends MspMoteType {
 
   @Override
-  protected MspMote createMote(Simulation simulation) throws MoteTypeCreationException {
+  public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
     return new SkyMote(this, simulation);
   }
 
