@@ -213,8 +213,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     node.setCommandHandler(commandHandler);
 
-    ConfigManager config = new ConfigManager();
-    node.setup(config);
+    node.setup(new ConfigManager());
 
     this.myCpu = node.getCPU();
     this.myCpu.setMonitorExec(true);
@@ -243,8 +242,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     /* Create mote address memory */
     MapTable map = ((MspMoteType)getType()).getELF().getMap();
-    MapEntry[] allEntries = map.getAllEntries();
-    myMemory = new MspMoteMemory(this, allEntries, myCpu);
+    myMemory = new MspMoteMemory(this, map.getAllEntries(), myCpu);
 
     myCpu.reset();
   }
