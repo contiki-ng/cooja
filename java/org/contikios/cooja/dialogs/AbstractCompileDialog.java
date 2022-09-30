@@ -47,7 +47,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -271,8 +270,59 @@ public abstract class AbstractCompileDialog extends JDialog {
           return;
         }
         setDialogState(DialogState.AWAITING_COMPILATION);
-        compileContiki(commands);
-    	}
+        setDialogState(DialogState.IS_COMPILING);
+        final MessageListUI taskOutput = new MessageListUI();
+        createNewCompilationTab(taskOutput);
+
+        // Add abort compilation menu item.
+        final JMenuItem abortMenuItem = new JMenuItem("Abort compilation");
+        abortMenuItem.setEnabled(true);
+        abortMenuItem.addActionListener(e1 -> abortAnyCompilation());
+        taskOutput.addPopupMenuItem(abortMenuItem, true);
+
+        // Called when last command has finished (success only).
+        final Action compilationSuccessAction = new AbstractAction() {
+          @Override
+          public void actionPerformed(ActionEvent e1) {
+            abortMenuItem.setEnabled(false);
+            setDialogState(DialogState.COMPILED_FIRMWARE);
+          }
+        };
+
+        // Called immediately if any command fails.
+        final Action compilationFailureAction = new AbstractAction() {
+          @Override
+          public void actionPerformed(ActionEvent e1) {
+            abortMenuItem.setEnabled(false);
+            setDialogState(DialogState.AWAITING_COMPILATION);
+          }
+        };
+
+        // Called once per command.
+        final Action nextCommandAction = new AbstractAction() {
+          @Override
+          public void actionPerformed(ActionEvent e1) {
+            String command = commands.remove(0);
+            try {
+              currentCompilationProcess = BaseContikiMoteType.compile(
+                  command,
+                  compilationEnvironment,
+                  new File(contikiField.getText()).getParentFile(),
+                  commands.isEmpty() ? compilationSuccessAction : this,
+                  compilationFailureAction,
+                  taskOutput,
+                  false
+              );
+            } catch (Exception ex) {
+              logger.fatal("Exception when compiling: " + ex.getMessage());
+              taskOutput.addMessage(ex.getMessage(), MessageList.ERROR);
+              ex.printStackTrace();
+              compilationFailureAction.actionPerformed(null);
+            }
+          }
+        };
+        nextCommandAction.actionPerformed(null); /* Recursive calls for all commands */
+      }
     };
     cleanButton = new JButton("Clean");
     cleanButton.setToolTipText("make clean TARGET=" + moteType.getMoteType());
@@ -459,60 +509,6 @@ public abstract class AbstractCompileDialog extends JDialog {
   public abstract boolean canLoadFirmware(File file);
 
   protected String[] compilationEnvironment = null; /* Default environment: inherit from current process */
-  public void compileContiki(List<String> commands) {
-    final MessageListUI taskOutput = new MessageListUI();
-    setDialogState(DialogState.IS_COMPILING);
-    createNewCompilationTab(taskOutput);
-
-    /* Add abort compilation menu item */
-    final JMenuItem abortMenuItem = new JMenuItem("Abort compilation");
-    abortMenuItem.setEnabled(true);
-    abortMenuItem.addActionListener(e -> abortAnyCompilation());
-    taskOutput.addPopupMenuItem(abortMenuItem, true);
-
-    /* Called when last command has finished (success only) */
-    final Action compilationSuccessAction = new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-        abortMenuItem.setEnabled(false);
-        setDialogState(DialogState.COMPILED_FIRMWARE);
-      }
-    };
-
-    /* Called immediately if any command fails */
-    final Action compilationFailureAction = new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-        abortMenuItem.setEnabled(false);
-        setDialogState(DialogState.AWAITING_COMPILATION);
-      }
-    };
-
-    /* Called once per command */
-    final Action nextCommandAction = new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-        String command = commands.remove(0);
-        try {
-          currentCompilationProcess = BaseContikiMoteType.compile(
-              command,
-              compilationEnvironment,
-              new File(contikiField.getText()).getParentFile(),
-              commands.isEmpty() ? compilationSuccessAction : this,
-              compilationFailureAction,
-              taskOutput,
-              false
-          );
-        } catch (Exception ex) {
-          logger.fatal("Exception when compiling: " + ex.getMessage());
-          taskOutput.addMessage(ex.getMessage(), MessageList.ERROR);
-          ex.printStackTrace();
-          compilationFailureAction.actionPerformed(null);
-        }
-      }
-    };
-    nextCommandAction.actionPerformed(null); /* Recursive calls for all commands */
-  }
 
   private void setContikiSelection(File file) {
     if (!file.exists()) {
