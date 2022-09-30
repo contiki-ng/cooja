@@ -62,9 +62,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
 
   @Override
   public final Mote generateMote(Simulation simulation) throws MoteTypeCreationException {
-    MspMote mote = createMote(simulation);
-    mote.initMote();
-    return mote;
+    return createMote(simulation);
   }
 
   protected abstract MspMote createMote(Simulation simulation) throws MoteTypeCreationException;

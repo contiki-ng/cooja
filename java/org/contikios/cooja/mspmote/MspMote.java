@@ -116,7 +116,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     requestImmediateWakeup();
   }
 
-  protected void initMote() {
+  private void initMote() {
     /* TODO Create COOJA-specific window manager */
     registry.removeComponent("windowManager");
     registry.registerComponent("windowManager", new WindowManager() {
@@ -236,6 +236,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     myMemory = new MspMoteMemory(this, map.getAllEntries(), myCpu);
 
     myCpu.reset();
+    initMote();
   }
 
   public CommandHandler getCLICommandHandler() {
