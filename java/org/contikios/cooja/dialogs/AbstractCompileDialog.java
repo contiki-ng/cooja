@@ -252,14 +252,6 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     topPanel.add(sourcePanel);
 
-    
-    Action cancelAction = new AbstractAction("Cancel") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        AbstractCompileDialog.this.dispose();
-      }
-    };
-
     final JMenuItem abortMenuItem = new JMenuItem("Abort compilation");
     abortMenuItem.setEnabled(true);
     abortMenuItem.addActionListener(e1 -> abortAnyCompilation());
@@ -440,7 +432,12 @@ public abstract class AbstractCompileDialog extends JDialog {
     inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK, false), "recompile");
     inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "dispose");
     getRootPane().getActionMap().put("recompile", compileAction);
-    getRootPane().getActionMap().put("dispose", cancelAction);
+    getRootPane().getActionMap().put("dispose", new AbstractAction("Cancel") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        AbstractCompileDialog.this.dispose();
+      }
+    });
 
     pack();
     setLocationRelativeTo(parent);
