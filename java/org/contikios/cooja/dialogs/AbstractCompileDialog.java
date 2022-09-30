@@ -269,7 +269,6 @@ public abstract class AbstractCompileDialog extends JDialog {
         if (commands.isEmpty()) {
           return;
         }
-        setDialogState(DialogState.AWAITING_COMPILATION);
         setDialogState(DialogState.IS_COMPILING);
         final MessageListUI taskOutput = new MessageListUI();
         createNewCompilationTab(taskOutput);
