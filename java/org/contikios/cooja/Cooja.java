@@ -3253,8 +3253,9 @@ public class Cooja extends Observable {
       }
 
       // Restart plugins from config
-      setPluginsConfigXML(root, newSim);
-
+      if (!setPluginsConfigXML(root, newSim)) {
+        throw new Exception("Failed to configure plugins");
+      }
     } catch (JDOMException e) {
       throw new SimulationCreationException("Configuration file not wellformed: " + e.getMessage(), e);
     } catch (IOException e) {
