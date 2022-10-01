@@ -288,9 +288,10 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       throw new RuntimeException("Bad event ordering: " + lastExecute + " < " + t);
     }
     final var deviation = clock.getDeviation();
+    // FIXME: merge regularExecute/driftExecute methods.
     long nextExecute = deviation == 1.0
             ? regularExecute(deviation, t, duration) : driftExecute(deviation, t, duration);
-
+    lastExecute = t;
     // Schedule wakeup.
     if (nextExecute < t) {
       throw new RuntimeException(t + ": MSPSim requested early wakeup: " + nextExecute);
@@ -312,7 +313,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     long nextExecute;
     try {
       nextExecute = myCpu.stepMicros(Math.max(0, t - lastExecute), duration) + duration + t;
-      lastExecute = t;
     } catch (EmulationException e) {
       throw new ContikiError(e.getMessage(), getStackTrace(), e);
     }
@@ -335,7 +335,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     long executeDelta;
     try {
       executeDelta = myCpu.stepMicros(jump, duration) + duration;
-      lastExecute = t;
     } catch (EmulationException e) {
       throw new ContikiError(e.getMessage(), getStackTrace(), e);
     }
