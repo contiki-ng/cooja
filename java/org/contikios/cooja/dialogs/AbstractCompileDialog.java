@@ -167,15 +167,25 @@ public abstract class AbstractCompileDialog extends JDialog {
     DocumentListener contikiFieldListener = new DocumentListener() {
       @Override
       public void changedUpdate(DocumentEvent e) {
-        setContikiSelection(contikiField.getText());
+        fileSelected(contikiField.getText());
       }
       @Override
       public void insertUpdate(DocumentEvent e) {
-        setContikiSelection(contikiField.getText());
+        fileSelected(contikiField.getText());
       }
       @Override
       public void removeUpdate(DocumentEvent e) {
-        setContikiSelection(contikiField.getText());
+        fileSelected(contikiField.getText());
+      }
+      private void fileSelected(String name) {
+        if (!Files.exists(Path.of(name))) {
+          setDialogState(DialogState.NO_SELECTION);
+          return;
+        }
+        lastFile = new File(name);
+        Cooja.setExternalToolsSetting("COMPILE_LAST_FILE", gui.createPortablePath(lastFile).getPath());
+        setDialogState(name.endsWith(".c") || !canLoadFirmware(name)
+                ? DialogState.SELECTED_SOURCE : DialogState.SELECTED_FIRMWARE);
       }
     };
     sourcePanel.add(contikiField);
@@ -511,19 +521,6 @@ public abstract class AbstractCompileDialog extends JDialog {
   public abstract boolean canLoadFirmware(String name);
 
   protected String[] compilationEnvironment = null; /* Default environment: inherit from current process */
-
-  private void setContikiSelection(String name) {
-    if (!Files.exists(Path.of(name))) {
-      setDialogState(DialogState.NO_SELECTION);
-      return;
-    }
-
-    lastFile = new File(name);
-    Cooja.setExternalToolsSetting("COMPILE_LAST_FILE", gui.createPortablePath(lastFile).getPath());
-
-    setDialogState(name.endsWith(".c") || !canLoadFirmware(name)
-            ? DialogState.SELECTED_SOURCE : DialogState.SELECTED_FIRMWARE);
-  }
 
   /**
    * @see DialogState
