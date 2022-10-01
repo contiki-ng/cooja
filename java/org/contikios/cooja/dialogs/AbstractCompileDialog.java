@@ -521,17 +521,8 @@ public abstract class AbstractCompileDialog extends JDialog {
     lastFile = new File(name);
     Cooja.setExternalToolsSetting("COMPILE_LAST_FILE", gui.createPortablePath(lastFile).getPath());
 
-    if (name.endsWith(".c")) {
-      setDialogState(DialogState.SELECTED_SOURCE);
-      return;
-    }
-
-    if (canLoadFirmware(name)) {
-      setDialogState(DialogState.SELECTED_FIRMWARE);
-      return;
-    }
-
-    setDialogState(DialogState.SELECTED_SOURCE);
+    setDialogState(name.endsWith(".c") || !canLoadFirmware(name)
+            ? DialogState.SELECTED_SOURCE : DialogState.SELECTED_FIRMWARE);
   }
 
   /**
