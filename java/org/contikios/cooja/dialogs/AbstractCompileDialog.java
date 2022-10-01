@@ -529,7 +529,6 @@ public abstract class AbstractCompileDialog extends JDialog {
   protected void setDialogState(DialogState dialogState) {
     final var input = contikiField.getText();
     final Path inputPath = Path.of(input);
-    File sourceFile = new File(input);
     compileButton.setText("Compile");
     getRootPane().setDefaultButton(compileButton);
 
@@ -547,7 +546,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         return;
       }
       if (!Files.exists(inputPath)) {
-        logger.warn("Could not find Contiki source: " + sourceFile.getAbsolutePath());
+        logger.warn("Could not find Contiki source: " + new File(input).getAbsolutePath());
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
@@ -558,7 +557,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     	commandsArea.setEnabled(true);
       setCompileCommands(getDefaultCompileCommands(input));
       contikiFirmware = moteType.getExpectedFirmwareFile(input);
-      contikiSource = sourceFile;
+      contikiSource = new File(input);
       setDialogState(DialogState.AWAITING_COMPILATION);
       break;
 
@@ -568,7 +567,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         return;
       }
       if (!Files.exists(inputPath)) {
-        logger.warn("Could not find Contiki source: " + sourceFile.getAbsolutePath());
+        logger.warn("Could not find Contiki source: " + new File(input).getAbsolutePath());
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
