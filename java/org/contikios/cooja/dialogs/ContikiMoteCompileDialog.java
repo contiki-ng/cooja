@@ -38,6 +38,8 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -84,7 +86,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
     if (contikiSource != null) {
       /* Make sure compilation variables are updated */
-      getDefaultCompileCommands(contikiSource);
+      getDefaultCompileCommands(contikiSource.getName());
     }
 
     /* Add Contiki mote type specifics */
@@ -97,8 +99,8 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   }
 
   @Override
-  public String getDefaultCompileCommands(final File source) {
-    if (source == null || !source.exists()) {
+  public String getDefaultCompileCommands(String name) {
+    if (name == null || !Files.exists(Path.of(name))) {
       return ""; // Not ready to compile yet.
     }
 
@@ -110,7 +112,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       moteType.setIdentifier(ContikiMoteType.generateUniqueMoteTypeID(usedNames));
     }
 
-    moteType.setContikiSourceFile(source);
+    moteType.setContikiSourceFile(new File(name));
     var env = moteType.getCompilationEnvironment();
     compilationEnvironment = BaseContikiMoteType.oneDimensionalEnv(env);
     if (SwingUtilities.isEventDispatchThread()) {
@@ -119,7 +121,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       try {
         SwingUtilities.invokeAndWait(() -> createEnvironmentTab(tabbedPane, env));
       } catch (InvocationTargetException | InterruptedException e) {
-        logger.fatal("Error when updating for source " + source + ": " + e.getMessage(), e);
+        logger.fatal("Error when updating for source " + name + ": " + e.getMessage(), e);
       }
     }
 
@@ -129,7 +131,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     }
 
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-            ContikiMoteType.getMakeTargetName(source.getName()).getName() + " TARGET=cooja" + defines;
+            ContikiMoteType.getMakeTargetName(name).getName() + " TARGET=cooja" + defines;
   }
 
   @Override
@@ -235,7 +237,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            getDefaultCompileCommands(moteType.getContikiSourceFile());
+            getDefaultCompileCommands(moteType.getContikiSourceFile().getName());
             for (int i=0; i < tabbedPane.getTabCount(); i++) {
               if (tabbedPane.getTitleAt(i).equals("Environment")) {
                 tabbedPane.setSelectedIndex(i);
