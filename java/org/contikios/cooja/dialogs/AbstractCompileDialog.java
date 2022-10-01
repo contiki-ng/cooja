@@ -596,8 +596,6 @@ public abstract class AbstractCompileDialog extends JDialog {
       break;
 
     case SELECTED_FIRMWARE:
-      contikiSource = null;
-      contikiFirmware = new File(input);
       if (!Files.exists(inputPath)) {
         setDialogState(DialogState.NO_SELECTION);
         return;
@@ -606,7 +604,8 @@ public abstract class AbstractCompileDialog extends JDialog {
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
-
+      contikiSource = null;
+      contikiFirmware = new File(input);
     	cleanButton.setEnabled(true);
     	compileButton.setEnabled(false);
     	createButton.setEnabled(true);
