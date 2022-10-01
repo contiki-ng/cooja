@@ -2906,7 +2906,7 @@ public class Cooja extends Observable {
         cooja.mySimulation.stopSimulation();
         newMoteType = (MoteType) ((JMenuItem) e.getSource()).getClientProperty("motetype");
       } else if (cmd.equals("edit paths")) {
-        ExternalToolsDialog.showDialog(Cooja.getTopParentContainer());
+        ExternalToolsDialog.showDialog();
       } else if (cmd.equals("manage extensions")) {
         COOJAProject[] newProjects = ProjectDirectoriesDialog.showDialog(
             Cooja.getTopParentContainer(),

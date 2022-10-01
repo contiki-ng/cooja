@@ -229,7 +229,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       @Override
       public void actionPerformed(ActionEvent e) {
         /* Show external tools dialog */
-        ExternalToolsDialog.showDialog(Cooja.getTopParentContainer());
+        ExternalToolsDialog.showDialog();
 
         /* Update and select environment tab */
         SwingUtilities.invokeLater(new Runnable() {
