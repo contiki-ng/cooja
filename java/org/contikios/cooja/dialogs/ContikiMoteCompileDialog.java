@@ -109,7 +109,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       moteType.setIdentifier(ContikiMoteType.generateUniqueMoteTypeID(usedNames));
     }
 
-    moteType.setContikiSourceFile(new File(name));
     var env = moteType.getCompilationEnvironment();
     compilationEnvironment = BaseContikiMoteType.oneDimensionalEnv(env);
     if (SwingUtilities.isEventDispatchThread()) {
