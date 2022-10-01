@@ -849,7 +849,7 @@ public class Cooja extends Observable {
       private static final long TIME_MINUTE = 60 * TIME_SECOND;
       private static final long TIME_HOUR = 60 * TIME_MINUTE;
 
-      public String getTimeString(Simulation sim) {
+      public static String getTimeString(Simulation sim) {
         if (sim == null) {
           return "Time:";
         }
