@@ -701,9 +701,7 @@ public class Cooja extends Observable {
     if (!isVisualized()) {
       return;
     }
-    java.awt.EventQueue.invokeLater(() -> {
-      toolbarListener.updateToolbar(stoppedSimulation);
-    });
+    java.awt.EventQueue.invokeLater(() -> toolbarListener.updateToolbar(stoppedSimulation));
   }
 
   /**
