@@ -130,9 +130,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   }
 
   private void addAdvancedTab(JTabbedPane parent) {
-
-    /* TODO System symbols */
-
     /* Communication stack */
     JLabel label = new JLabel("Default network stack header");
     label.setPreferredSize(LABEL_DIMENSION);
