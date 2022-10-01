@@ -235,7 +235,7 @@ public abstract class AbstractCompileDialog extends JDialog {
               return true;
             }
 
-            return canLoadFirmware(f);
+            return canLoadFirmware(filename);
           }
 
           @Override
@@ -508,7 +508,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    */
   public abstract void writeSettingsToMoteType();
 
-  public abstract boolean canLoadFirmware(File file);
+  public abstract boolean canLoadFirmware(String name);
 
   protected String[] compilationEnvironment = null; /* Default environment: inherit from current process */
 
@@ -526,7 +526,7 @@ public abstract class AbstractCompileDialog extends JDialog {
       return;
     }
 
-    if (canLoadFirmware(file)) {
+    if (canLoadFirmware(file.getName())) {
       setDialogState(DialogState.SELECTED_FIRMWARE);
       return;
     }
@@ -614,7 +614,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
-      if (!canLoadFirmware(contikiFirmware)) {
+      if (!canLoadFirmware(input)) {
         setDialogState(DialogState.NO_SELECTION);
         return;
       }

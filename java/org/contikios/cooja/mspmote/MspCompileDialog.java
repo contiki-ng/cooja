@@ -31,7 +31,6 @@
 package org.contikios.cooja.mspmote;
 
 import java.awt.Container;
-import java.io.File;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -81,11 +80,11 @@ public class MspCompileDialog extends AbstractCompileDialog {
   }
 
   @Override
-  public boolean canLoadFirmware(File file) {
-    if (file.getName().endsWith("." + moteType.getMoteType())) {
+  public boolean canLoadFirmware(String name) {
+    if (name.endsWith("." + moteType.getMoteType())) {
       return true;
     }
-    return file.getName().equals("main.exe");
+    return name.equals("main.exe");
   }
 
   @Override

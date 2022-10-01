@@ -92,7 +92,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   }
 
   @Override
-  public boolean canLoadFirmware(File file) {
+  public boolean canLoadFirmware(String name) {
     return false; // Always recompile, CoreComm needs fresh names.
   }
 
