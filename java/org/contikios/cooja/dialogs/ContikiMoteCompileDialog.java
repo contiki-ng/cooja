@@ -214,14 +214,13 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            getDefaultCompileCommands(moteType.getContikiSourceFile().getName());
             for (int i=0; i < tabbedPane.getTabCount(); i++) {
               if (tabbedPane.getTitleAt(i).equals("Environment")) {
                 tabbedPane.setSelectedIndex(i);
                 break;
               }
             }
-            setDialogState(DialogState.AWAITING_COMPILATION);
+            setDialogState(DialogState.SELECTED_SOURCE);
           }
         });
 
