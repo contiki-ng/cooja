@@ -541,6 +541,7 @@ public abstract class AbstractCompileDialog extends JDialog {
       break;
 
     case SELECTED_SOURCE:
+    case AWAITING_COMPILATION:
       if (!input.endsWith(".c")) {
         setDialogState(DialogState.NO_SELECTION);
         return;
@@ -555,27 +556,11 @@ public abstract class AbstractCompileDialog extends JDialog {
     	compileButton.setEnabled(true);
     	createButton.setEnabled(false);
     	commandsArea.setEnabled(true);
-      setCompileCommands(getDefaultCompileCommands(input));
-      contikiFirmware = moteType.getExpectedFirmwareFile(input);
-      contikiSource = new File(input);
-      setDialogState(DialogState.AWAITING_COMPILATION);
-      break;
-
-    case AWAITING_COMPILATION:
-      if (!input.endsWith(".c")) {
-        setDialogState(DialogState.NO_SELECTION);
-        return;
+      if (dialogState == DialogState.SELECTED_SOURCE) {
+        setCompileCommands(getDefaultCompileCommands(input));
+        contikiFirmware = moteType.getExpectedFirmwareFile(input);
+        contikiSource = new File(input);
       }
-      if (!Files.exists(inputPath)) {
-        logger.warn("Could not find Contiki source: " + new File(input).getAbsolutePath());
-        setDialogState(DialogState.NO_SELECTION);
-        return;
-      }
-
-      cleanButton.setEnabled(true);
-      compileButton.setEnabled(true);
-      createButton.setEnabled(false);
-      commandsArea.setEnabled(true);
       break;
 
     case IS_COMPILING:
