@@ -45,6 +45,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
@@ -538,6 +540,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    */
   protected void setDialogState(DialogState dialogState) {
     final var input = contikiField.getText();
+    final Path inputPath = Path.of(input);
     File sourceFile = new File(input);
     compileButton.setText("Compile");
     getRootPane().setDefaultButton(compileButton);
@@ -551,11 +554,11 @@ public abstract class AbstractCompileDialog extends JDialog {
       break;
 
     case SELECTED_SOURCE:
-      if (!sourceFile.getName().endsWith(".c")) {
+      if (!input.endsWith(".c")) {
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
-      if (!sourceFile.exists()) {
+      if (!Files.exists(inputPath)) {
         logger.warn("Could not find Contiki source: " + sourceFile.getAbsolutePath());
         setDialogState(DialogState.NO_SELECTION);
         return;
@@ -572,11 +575,11 @@ public abstract class AbstractCompileDialog extends JDialog {
       break;
 
     case AWAITING_COMPILATION:
-      if (!sourceFile.getName().endsWith(".c")) {
+      if (!input.endsWith(".c")) {
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
-      if (!sourceFile.exists()) {
+      if (!Files.exists(inputPath)) {
         logger.warn("Could not find Contiki source: " + sourceFile.getAbsolutePath());
         setDialogState(DialogState.NO_SELECTION);
         return;
@@ -607,7 +610,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     case SELECTED_FIRMWARE:
       contikiSource = null;
       contikiFirmware = new File(input);
-      if (!contikiFirmware.exists()) {
+      if (!Files.exists(inputPath)) {
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
