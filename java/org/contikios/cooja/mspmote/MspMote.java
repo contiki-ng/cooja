@@ -290,25 +290,10 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     if (t < lastExecute) {
       throw new RuntimeException("Bad event ordering: " + lastExecute + " < " + t);
     }
+    long nextExecute = clock.getDeviation() == 1.0
+            ? regularExecute(clock, t, duration) : driftExecute(clock, t, duration);
 
-    if(clock.getDeviation() == 1.0)
-      regularExecute(clock, t, duration);
-    else
-      driftExecute(clock, t, duration);
-  }
-
-  private void regularExecute(MspClock clock, long t, int duration) {
-    /* Execute MSPSim-based mote */
-    /* TODO Try-catch overhead */
-    long nextExecute;
-    try {
-      nextExecute = myCpu.stepMicros(Math.max(0, t - lastExecute), duration) + duration + t;
-      lastExecute = t;
-    } catch (EmulationException e) {
-      throw new ContikiError(e.getMessage(), getStackTrace(), e);
-    }
-
-    /* Schedule wakeup */
+    // Schedule wakeup.
     if (nextExecute < t) {
       throw new RuntimeException(t + ": MSPSim requested early wakeup: " + nextExecute);
     }
@@ -320,10 +305,23 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       throw new RuntimeException("MSPSim requested simulation stop");
     }
 
-    /* XXX TODO Reimplement stack monitoring using MSPSim internals */
+    // TODO: Reimplement stack monitoring using MSPSim internals.
   }
 
-  private void driftExecute(MspClock clock, long t, int duration) {
+  private long regularExecute(MspClock clock, long t, int duration) {
+    /* Execute MSPSim-based mote */
+    /* TODO Try-catch overhead */
+    long nextExecute;
+    try {
+      nextExecute = myCpu.stepMicros(Math.max(0, t - lastExecute), duration) + duration + t;
+      lastExecute = t;
+    } catch (EmulationException e) {
+      throw new ContikiError(e.getMessage(), getStackTrace(), e);
+    }
+    return nextExecute;
+  }
+
+  private long driftExecute(MspClock clock, long t, int duration) {
     long jump = Math.max(0, t - lastExecute);
     double deviation = clock.getDeviation();
     double exactJump = jump * deviation;
@@ -348,22 +346,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     double invDeviation = 1.0 / deviation;
     double exactExecuteDelta = executeDelta * invDeviation;
     executeDelta = (int)Math.floor(exactExecuteDelta);
-
-    var nextExecute = executeDelta + t;
-
-    /* Schedule wakeup */
-    if (nextExecute < t) {
-      throw new RuntimeException(t + ": MSPSim requested early wakeup: " + nextExecute);
-    }
-
-    scheduleNextWakeup(nextExecute);
-
-    if (stopNextInstruction) {
-      stopNextInstruction = false;
-      throw new RuntimeException("MSPSim requested simulation stop");
-    }
-
-    /* XXX TODO Reimplement stack monitoring using MSPSim internals */
+    return executeDelta + t;
   }
 
   @Override
