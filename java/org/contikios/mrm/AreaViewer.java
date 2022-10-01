@@ -35,7 +35,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -47,7 +46,6 @@ import java.awt.MediaTracker;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -958,20 +956,8 @@ public class AreaViewer extends VisPlugin {
       /**
        * Creates a new dialog for settings background parameters
        */
-      protected ImageSettingsDialog(File imageFile, Image image, Frame frame) {
-        super(frame, "Image settings");
-        setupDialog();
-      }
-      protected ImageSettingsDialog(File imageFile, Image image, Dialog dialog) {
-        super(dialog, "Image settings");
-        setupDialog();
-      }
-      protected ImageSettingsDialog(File imageFile, Image image, Window window) {
-        super(window, "Image settings");
-        setupDialog();
-      }
-
-      private void setupDialog() {
+      private ImageSettingsDialog() {
+        super(Cooja.getTopParentContainer(), "Image settings");
         JPanel mainPanel, tempPanel;
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         doubleFormat.setMinimumIntegerDigits(1);
@@ -1154,13 +1140,7 @@ public class AreaViewer extends VisPlugin {
       }
 
       /* Set virtual size of image */
-      var topParent = Cooja.getTopParentContainer();
-      if (topParent == null) {
-        logger.fatal("Unknown parent container, aborting");
-        return false;
-      }
-      var dialog = new ImageSettingsDialog(file, image, topParent);
-
+      var dialog = new ImageSettingsDialog();
       if (!dialog.terminatedOK()) {
         logger.fatal("User canceled, aborting");
         return false;
