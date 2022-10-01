@@ -126,7 +126,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
 
     if (visAvailable) {
       /* Select mote class file */
-      ImportAppMoteDialog dialog = new ImportAppMoteDialog(parentContainer, simulation, this);
+      ImportAppMoteDialog dialog = new ImportAppMoteDialog(simulation, this);
       if (!dialog.waitForUserResponse()) {
         return false;
       }
