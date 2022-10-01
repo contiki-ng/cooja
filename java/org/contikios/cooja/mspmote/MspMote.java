@@ -356,12 +356,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   public String executeCLICommand(String cmd) {
     final StringBuilder sb = new StringBuilder();
-    LineListener ll = new LineListener() {
-      @Override
-      public void lineRead(String line) {
-        sb.append(line).append("\n");
-      }
-    };
+    LineListener ll = line -> sb.append(line).append("\n");
     PrintStream po = new PrintStream(new LineOutputStream(ll));
     CommandContext c = new CommandContext(commandHandler, null, "", new String[0], 1, null);
     c.out = po;
