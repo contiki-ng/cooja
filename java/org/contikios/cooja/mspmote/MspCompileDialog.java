@@ -81,10 +81,7 @@ public class MspCompileDialog extends AbstractCompileDialog {
 
   @Override
   public boolean canLoadFirmware(String name) {
-    if (name.endsWith("." + moteType.getMoteType())) {
-      return true;
-    }
-    return name.equals("main.exe");
+    return name.endsWith("." + moteType.getMoteType()) || name.equals("main.exe");
   }
 
   @Override
