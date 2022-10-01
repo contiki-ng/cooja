@@ -313,7 +313,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       throw new RuntimeException(t + ": MSPSim requested early wakeup: " + nextExecute);
     }
 
-    /*logger.debug(t + ": Schedule next wakeup at " + nextExecute);*/
     scheduleNextWakeup(nextExecute);
 
     if (stopNextInstruction) {
@@ -357,7 +356,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       throw new RuntimeException(t + ": MSPSim requested early wakeup: " + nextExecute);
     }
 
-    /*logger.debug(t + ": Schedule next wakeup at " + nextExecute);*/
     scheduleNextWakeup(nextExecute);
 
     if (stopNextInstruction) {
