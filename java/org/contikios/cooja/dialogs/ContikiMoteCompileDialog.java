@@ -81,11 +81,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   private ContikiMoteCompileDialog(Simulation sim, ContikiMoteType moteType) {
     super(sim, moteType);
-    if (contikiSource != null) {
-      /* Make sure compilation variables are updated */
-      getDefaultCompileCommands(contikiSource.getName());
-    }
-
     /* Add Contiki mote type specifics */
     addAdvancedTab(tabbedPane);
   }
