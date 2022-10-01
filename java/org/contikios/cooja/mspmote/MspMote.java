@@ -270,14 +270,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   public void execute(long t, int duration) {
     MspClock clock = ((MspClock) (myMoteInterfaceHandler.getClock()));
-    if(clock.getDeviation() == 1.0)
-      regularExecute(clock, t, duration);
-    else
-      driftExecute(clock, t, duration);
-  }
-
-  private void regularExecute(MspClock clock, long t, int duration) {
-    /* Wait until mote boots */
+    // Wait until mote boots.
     if (!booted && clock.getTime() < 0) {
       scheduleNextWakeup(t - clock.getTime());
       return;
@@ -291,13 +284,20 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     if (lastExecute < 0) {
-      /* Always execute one microsecond the first time */
+      // Always execute one microsecond the first time.
       lastExecute = t;
     }
     if (t < lastExecute) {
       throw new RuntimeException("Bad event ordering: " + lastExecute + " < " + t);
     }
 
+    if(clock.getDeviation() == 1.0)
+      regularExecute(clock, t, duration);
+    else
+      driftExecute(clock, t, duration);
+  }
+
+  private void regularExecute(MspClock clock, long t, int duration) {
     /* Execute MSPSim-based mote */
     /* TODO Try-catch overhead */
     long nextExecute;
@@ -325,27 +325,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   private void driftExecute(MspClock clock, long t, int duration) {
-    /* Wait until mote boots */
-    if (!booted && clock.getTime() < 0) {
-      scheduleNextWakeup(t - clock.getTime());
-      return;
-    }
-    booted = true;
-
-    if (stopNextInstruction) {
-      stopNextInstruction = false;
-      scheduleNextWakeup(t);
-      throw new RuntimeException("MSPSim requested simulation stop");
-    }
-
-    if (lastExecute < 0) {
-      /* Always execute one microsecond the first time */
-      lastExecute = t;
-    }
-    if (t < lastExecute) {
-      throw new RuntimeException("Bad event ordering: " + lastExecute + " < " + t);
-    }
-
     long jump = Math.max(0, t - lastExecute);
     double deviation = clock.getDeviation();
     double exactJump = jump * deviation;
