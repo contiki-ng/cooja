@@ -126,8 +126,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       defines = " DEFINES=NETSTACK_CONF_H=" + ((ContikiMoteType) moteType).getNetworkStack().getHeaderFile();
     }
 
-    return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-            moteType.getMakeTargetName(name) + " TARGET=cooja" + defines;
+    return super.getDefaultCompileCommands(name) + defines;
   }
 
   private void addAdvancedTab(JTabbedPane parent) {
