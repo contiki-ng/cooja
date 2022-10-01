@@ -537,7 +537,8 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @param dialogState New dialog state
    */
   protected void setDialogState(DialogState dialogState) {
-    File sourceFile = new File(contikiField.getText());
+    final var input = contikiField.getText();
+    File sourceFile = new File(input);
     compileButton.setText("Compile");
     getRootPane().setDefaultButton(compileButton);
 
@@ -605,7 +606,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     case SELECTED_FIRMWARE:
       contikiSource = null;
-      contikiFirmware = new File(contikiField.getText());
+      contikiFirmware = new File(input);
       if (!contikiFirmware.exists()) {
         setDialogState(DialogState.NO_SELECTION);
         return;
