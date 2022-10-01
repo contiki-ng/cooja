@@ -287,8 +287,9 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     if (t < lastExecute) {
       throw new RuntimeException("Bad event ordering: " + lastExecute + " < " + t);
     }
-    long nextExecute = clock.getDeviation() == 1.0
-            ? regularExecute(clock, t, duration) : driftExecute(clock, t, duration);
+    final var deviation = clock.getDeviation();
+    long nextExecute = deviation == 1.0
+            ? regularExecute(deviation, t, duration) : driftExecute(deviation, t, duration);
 
     // Schedule wakeup.
     if (nextExecute < t) {
@@ -305,7 +306,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     // TODO: Reimplement stack monitoring using MSPSim internals.
   }
 
-  private long regularExecute(MspClock clock, long t, int duration) {
+  private long regularExecute(double deviation, long t, int duration) {
     /* Execute MSPSim-based mote */
     /* TODO Try-catch overhead */
     long nextExecute;
@@ -318,9 +319,8 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return nextExecute;
   }
 
-  private long driftExecute(MspClock clock, long t, int duration) {
+  private long driftExecute(double deviation, long t, int duration) {
     long jump = Math.max(0, t - lastExecute);
-    double deviation = clock.getDeviation();
     double exactJump = jump * deviation;
     jump = (int)Math.floor(exactJump);
     jumpError += exactJump - jump;
