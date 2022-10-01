@@ -557,7 +557,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     	createButton.setEnabled(false);
     	commandsArea.setEnabled(true);
       setCompileCommands(getDefaultCompileCommands(sourceFile));
-      contikiFirmware = moteType.getExpectedFirmwareFile(sourceFile);
+      contikiFirmware = moteType.getExpectedFirmwareFile(input);
       contikiSource = sourceFile;
       setDialogState(DialogState.AWAITING_COMPILATION);
       break;
@@ -752,7 +752,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    */
   public String getDefaultCompileCommands(File source) {
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-           moteType.getExpectedFirmwareFile(source).getName() + " TARGET=" + moteType.getMoteType();
+           moteType.getExpectedFirmwareFile(source.getName()).getName() + " TARGET=" + moteType.getMoteType();
   }
 
   private void abortAnyCompilation() {
