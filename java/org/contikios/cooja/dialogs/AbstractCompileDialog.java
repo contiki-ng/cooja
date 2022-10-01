@@ -701,7 +701,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    */
   public String getDefaultCompileCommands(String name) {
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-           moteType.getExpectedFirmwareFile(name).getName() + " TARGET=" + moteType.getMoteType();
+           moteType.getMakeTargetName(name) + " TARGET=" + moteType.getMoteType();
   }
 
   private void abortAnyCompilation() {

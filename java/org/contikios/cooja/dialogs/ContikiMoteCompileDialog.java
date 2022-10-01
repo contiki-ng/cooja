@@ -127,7 +127,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     }
 
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-            ContikiMoteType.getMakeTargetName(name).getName() + " TARGET=cooja" + defines;
+            moteType.getMakeTargetName(name) + " TARGET=cooja" + defines;
   }
 
   private void addAdvancedTab(JTabbedPane parent) {
