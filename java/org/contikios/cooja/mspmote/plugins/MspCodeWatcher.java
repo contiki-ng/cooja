@@ -32,7 +32,6 @@ package org.contikios.cooja.mspmote.plugins;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -485,7 +484,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
 
     /* table with rules */
     rulesDebuggingOutput.clearMessages();
-    final JDialog dialog = new JDialog((Window)Cooja.getTopParentContainer(), "Locate source files");
+    final JDialog dialog = new JDialog(Cooja.getTopParentContainer(), "Locate source files");
     dialog.setModal(true);
     updateRulesUsage();
     AbstractTableModel model = new AbstractTableModel() {
