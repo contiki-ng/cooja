@@ -277,7 +277,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   private void regularExecute(MspClock clock, long t, int duration) {
-    long nextExecute;
     /* Wait until mote boots */
     if (!booted && clock.getTime() < 0) {
       scheduleNextWakeup(t - clock.getTime());
@@ -301,6 +300,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     /* Execute MSPSim-based mote */
     /* TODO Try-catch overhead */
+    long nextExecute;
     try {
       nextExecute = myCpu.stepMicros(Math.max(0, t - lastExecute), duration) + duration + t;
       lastExecute = t;
@@ -325,11 +325,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   private void driftExecute(MspClock clock, long t, int duration) {
-    double deviation = clock.getDeviation();
-    double invDeviation = 1.0 / deviation;
-    long jump, executeDelta;
-    double exactJump, exactExecuteDelta;
-
     /* Wait until mote boots */
     if (!booted && clock.getTime() < 0) {
       scheduleNextWakeup(t - clock.getTime());
@@ -351,8 +346,9 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       throw new RuntimeException("Bad event ordering: " + lastExecute + " < " + t);
     }
 
-    jump = Math.max(0, t - lastExecute);
-    exactJump = jump * deviation;
+    long jump = Math.max(0, t - lastExecute);
+    double deviation = clock.getDeviation();
+    double exactJump = jump * deviation;
     jump = (int)Math.floor(exactJump);
     jumpError += exactJump - jump;
 
@@ -363,6 +359,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     /* Execute MSPSim-based mote */
     /* TODO Try-catch overhead */
+    long executeDelta;
     try {
       executeDelta = myCpu.stepMicros(jump, duration) + duration;
       lastExecute = t;
@@ -370,7 +367,8 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       throw new ContikiError(e.getMessage(), getStackTrace(), e);
     }
 
-    exactExecuteDelta = executeDelta * invDeviation;
+    double invDeviation = 1.0 / deviation;
+    double exactExecuteDelta = executeDelta * invDeviation;
     executeDelta = (int)Math.floor(exactExecuteDelta);
 
     var nextExecute = executeDelta + t;
