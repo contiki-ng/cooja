@@ -83,7 +83,7 @@ public class CreateSimDialog extends JDialog {
   private final JCheckBox randomSeedGenerated;
 
   private final JTextField title;
-  private final JComboBox radioMediumBox;
+  private final JComboBox<String> radioMediumBox;
 
   private final JButton cancelButton;
 
@@ -123,7 +123,7 @@ public class CreateSimDialog extends JDialog {
       String currentDescription = Cooja.getDescriptionOf(radioMediumClass);
 
       for (int i=0; i < dialog.radioMediumBox.getItemCount(); i++) {
-        String menuDescription = (String) dialog.radioMediumBox.getItemAt(i);
+        String menuDescription = dialog.radioMediumBox.getItemAt(i);
         if (menuDescription.equals(currentDescription)) {
           dialog.radioMediumBox.setSelectedIndex(i);
           break;
@@ -175,7 +175,6 @@ public class CreateSimDialog extends JDialog {
     JTextField textField;
     Box horizBox;
     JButton button;
-    JComboBox comboBox;
     JFormattedTextField numberField;
     NumberFormat integerFormat = NumberFormat.getIntegerInstance();
 
@@ -275,8 +274,7 @@ public class CreateSimDialog extends JDialog {
       radioMediumDescriptions.add(description);
     }
 
-    comboBox = new JComboBox(radioMediumDescriptions);
-
+    JComboBox<String> comboBox = new JComboBox<>(radioMediumDescriptions);
     comboBox.setSelectedIndex(0);
     radioMediumBox = comboBox;
     label.setLabelFor(comboBox);
