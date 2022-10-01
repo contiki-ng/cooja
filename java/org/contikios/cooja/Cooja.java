@@ -1051,7 +1051,7 @@ public class Cooja extends Observable {
         if (mySimulation == null) {
           return;
         }
-        BufferSettings.showDialog(myDesktopPane, mySimulation);
+        BufferSettings.showDialog(mySimulation);
       }
       @Override
       public boolean shouldBeEnabled() {

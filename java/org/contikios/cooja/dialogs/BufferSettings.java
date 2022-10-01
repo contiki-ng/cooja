@@ -44,7 +44,6 @@ import javax.swing.Box;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -60,9 +59,9 @@ public class BufferSettings extends JDialog {
 
   private final SimEventCentral central;
 
-  public static void showDialog(JDesktopPane parent, Simulation simulation) {
+  public static void showDialog(Simulation simulation) {
     BufferSettings dialog = new BufferSettings(simulation);
-    dialog.setLocationRelativeTo(parent); 
+    dialog.setLocationRelativeTo(Cooja.getTopParentContainer());
     dialog.setVisible(true);
   }
 
