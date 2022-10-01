@@ -2932,7 +2932,7 @@ public class Cooja extends Observable {
         logger.warn("Unhandled action: " + cmd);
       }
       if (newMoteType != null) {
-        for (var mote : AddMoteDialog.showDialog(frame, cooja.mySimulation, newMoteType)) {
+        for (var mote : AddMoteDialog.showDialog(cooja.mySimulation, newMoteType)) {
           cooja.mySimulation.addMote(mote);
         }
       }
