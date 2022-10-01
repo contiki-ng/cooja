@@ -129,7 +129,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     }
 
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-            ContikiMoteType.getMakeTargetName(source).getName() + " TARGET=cooja" + defines;
+            ContikiMoteType.getMakeTargetName(source.getName()).getName() + " TARGET=cooja" + defines;
   }
 
   @Override
