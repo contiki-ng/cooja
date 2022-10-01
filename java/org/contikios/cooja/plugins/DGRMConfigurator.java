@@ -100,7 +100,7 @@ public class DGRMConfigurator extends VisPlugin {
   private final DirectedGraphMedium radioMedium;
   private final Observer radioMediumObserver;
   private final JTable graphTable;
-  private final JComboBox combo = new JComboBox();
+  private final JComboBox<Number> combo = new JComboBox<>();
 	private final JButton removeButton;
 
   public DGRMConfigurator(Simulation sim, Cooja gui) {
@@ -225,8 +225,8 @@ public class DGRMConfigurator extends VisPlugin {
   }
 
   private void doAddLink() {
-    JComboBox source = new JComboBox();
-    JComboBox dest = new JComboBox();
+    var source = new JComboBox<Mote>();
+    var dest = new JComboBox<Mote>();
     for (Mote m: gui.getSimulation().getMotes()) {
       source.addItem(m);
       dest.addItem(m);

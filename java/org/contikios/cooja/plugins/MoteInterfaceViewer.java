@@ -69,7 +69,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
   private final Mote mote;
   private MoteInterface selectedMoteInterface = null;
   private JPanel currentInterfaceVisualizer = null;
-  private final JComboBox selectInterfaceComboBox;
+  private final JComboBox<String> selectInterfaceComboBox = new JComboBox<>();
   private final JScrollPane mainScrollPane;
 
   /**
@@ -91,7 +91,6 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
 
     label = new JLabel("Select interface:");
 
-    selectInterfaceComboBox = new JComboBox();
     final JPanel interfacePanel = new JPanel(new BorderLayout());
 
     Collection<MoteInterface> intfs = mote.getInterfaces().getInterfaces();
