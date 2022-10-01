@@ -44,7 +44,6 @@ import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.util.DebugInfo;
@@ -63,7 +62,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
 
   @Override
   protected boolean showCompilationDialog(Simulation sim) {
-    return MspCompileDialog.showDialog(Cooja.getTopParentContainer(), sim, this);
+    return MspCompileDialog.showDialog(sim, this);
   }
 
   @Override
