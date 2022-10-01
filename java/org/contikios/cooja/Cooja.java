@@ -924,7 +924,7 @@ public class Cooja extends Observable {
         }
 
         var sim = new Simulation(cooja);
-        if (CreateSimDialog.showDialog(Cooja.getTopParentContainer(), sim)) {
+        if (CreateSimDialog.showDialog(sim)) {
           // Start GUI plugins.
           for (var pluginClass : pluginClasses) {
             int type = pluginClass.getAnnotation(PluginType.class).value();
