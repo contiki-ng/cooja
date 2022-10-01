@@ -2908,11 +2908,7 @@ public class Cooja extends Observable {
       } else if (cmd.equals("edit paths")) {
         ExternalToolsDialog.showDialog();
       } else if (cmd.equals("manage extensions")) {
-        COOJAProject[] newProjects = ProjectDirectoriesDialog.showDialog(
-            Cooja.getTopParentContainer(),
-            Cooja.this,
-            getProjects()
-        );
+        COOJAProject[] newProjects = ProjectDirectoriesDialog.showDialog(Cooja.this, getProjects());
         if (newProjects != null) {
         	currentProjects.clear();
           currentProjects.addAll(Arrays.asList(newProjects));
