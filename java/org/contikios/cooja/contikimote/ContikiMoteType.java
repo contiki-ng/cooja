@@ -441,18 +441,17 @@ public class ContikiMoteType extends BaseContikiMoteType {
   /**
    * Returns make target based on source file.
    *
-   * @param source The source file
+   * @param name The source file
    * @return Make target based on source file
    */
-  public static File getMakeTargetName(File source) {
-    File parentDir = source.getParentFile();
-    String sourceNoExtension = source.getName().substring(0, source.getName().length() - 2);
-    return new File(parentDir, sourceNoExtension + librarySuffix);
+  public static File getMakeTargetName(String name) {
+    String sourceNoExtension = name.substring(0, name.length() - 2);
+    return new File(new File(name).getParentFile(), sourceNoExtension + librarySuffix);
   }
 
   @Override
-  public File getExpectedFirmwareFile(File source) {
-    return new File(source.getParentFile(), "build/cooja/" + identifier + ContikiMoteType.librarySuffix);
+  public File getExpectedFirmwareFile(String name) {
+    return new File(new File(name).getParentFile(), "build/cooja/" + identifier + ContikiMoteType.librarySuffix);
   }
 
   /**

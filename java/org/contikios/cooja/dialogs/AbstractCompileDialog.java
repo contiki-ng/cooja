@@ -45,6 +45,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
@@ -165,15 +167,25 @@ public abstract class AbstractCompileDialog extends JDialog {
     DocumentListener contikiFieldListener = new DocumentListener() {
       @Override
       public void changedUpdate(DocumentEvent e) {
-        setContikiSelection(new File(contikiField.getText()));
+        fileSelected(contikiField.getText());
       }
       @Override
       public void insertUpdate(DocumentEvent e) {
-        setContikiSelection(new File(contikiField.getText()));
+        fileSelected(contikiField.getText());
       }
       @Override
       public void removeUpdate(DocumentEvent e) {
-        setContikiSelection(new File(contikiField.getText()));
+        fileSelected(contikiField.getText());
+      }
+      private void fileSelected(String name) {
+        if (!Files.exists(Path.of(name))) {
+          setDialogState(DialogState.NO_SELECTION);
+          return;
+        }
+        lastFile = new File(name);
+        Cooja.setExternalToolsSetting("COMPILE_LAST_FILE", gui.createPortablePath(lastFile).getPath());
+        setDialogState(name.endsWith(".c") || !canLoadFirmware(name)
+                ? DialogState.SELECTED_SOURCE : DialogState.SELECTED_FIRMWARE);
       }
     };
     sourcePanel.add(contikiField);
@@ -220,20 +232,16 @@ public abstract class AbstractCompileDialog extends JDialog {
         fc.setFileFilter(new FileFilter() {
           @Override
           public boolean accept(File f) {
-            if (f.isDirectory()) {
+            String filename = f.getName();
+            if (f.isDirectory() || filename.endsWith(".c")) {
               return true;
             }
 
-            String filename = f.getName();
             if (filename.isEmpty()) {
               return false;
             }
 
-            if (filename.endsWith(".c")) {
-              return true;
-            }
-
-            return canLoadFirmware(f);
+            return canLoadFirmware(filename);
           }
 
           @Override
@@ -505,38 +513,17 @@ public abstract class AbstractCompileDialog extends JDialog {
    */
   public abstract void writeSettingsToMoteType();
 
-  public abstract boolean canLoadFirmware(File file);
+  public abstract boolean canLoadFirmware(String name);
 
   protected String[] compilationEnvironment = null; /* Default environment: inherit from current process */
-
-  private void setContikiSelection(File file) {
-    if (!file.exists()) {
-      setDialogState(DialogState.NO_SELECTION);
-      return;
-    }
-
-    lastFile = file;
-    Cooja.setExternalToolsSetting("COMPILE_LAST_FILE", gui.createPortablePath(lastFile).getPath());
-
-    if (file.getName().endsWith(".c")) {
-      setDialogState(DialogState.SELECTED_SOURCE);
-      return;
-    }
-
-    if (canLoadFirmware(file)) {
-      setDialogState(DialogState.SELECTED_FIRMWARE);
-      return;
-    }
-
-    setDialogState(DialogState.SELECTED_SOURCE);
-  }
 
   /**
    * @see DialogState
    * @param dialogState New dialog state
    */
   protected void setDialogState(DialogState dialogState) {
-    File sourceFile = new File(contikiField.getText());
+    final var input = contikiField.getText();
+    final Path inputPath = Path.of(input);
     compileButton.setText("Compile");
     getRootPane().setDefaultButton(compileButton);
 
@@ -549,12 +536,13 @@ public abstract class AbstractCompileDialog extends JDialog {
       break;
 
     case SELECTED_SOURCE:
-      if (!sourceFile.getName().endsWith(".c")) {
+    case AWAITING_COMPILATION:
+      if (!input.endsWith(".c")) {
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
-      if (!sourceFile.exists()) {
-        logger.warn("Could not find Contiki source: " + sourceFile.getAbsolutePath());
+      if (!Files.exists(inputPath)) {
+        logger.warn("Could not find Contiki source: " + new File(input).getAbsolutePath());
         setDialogState(DialogState.NO_SELECTION);
         return;
       }
@@ -563,27 +551,11 @@ public abstract class AbstractCompileDialog extends JDialog {
     	compileButton.setEnabled(true);
     	createButton.setEnabled(false);
     	commandsArea.setEnabled(true);
-      setCompileCommands(getDefaultCompileCommands(sourceFile));
-      contikiFirmware = moteType.getExpectedFirmwareFile(sourceFile);
-      contikiSource = sourceFile;
-      setDialogState(DialogState.AWAITING_COMPILATION);
-      break;
-
-    case AWAITING_COMPILATION:
-      if (!sourceFile.getName().endsWith(".c")) {
-        setDialogState(DialogState.NO_SELECTION);
-        return;
+      if (dialogState == DialogState.SELECTED_SOURCE) {
+        setCompileCommands(getDefaultCompileCommands(input));
+        contikiFirmware = moteType.getExpectedFirmwareFile(input);
+        contikiSource = new File(input);
       }
-      if (!sourceFile.exists()) {
-        logger.warn("Could not find Contiki source: " + sourceFile.getAbsolutePath());
-        setDialogState(DialogState.NO_SELECTION);
-        return;
-      }
-
-      cleanButton.setEnabled(true);
-      compileButton.setEnabled(true);
-      createButton.setEnabled(false);
-      commandsArea.setEnabled(true);
       break;
 
     case IS_COMPILING:
@@ -603,17 +575,16 @@ public abstract class AbstractCompileDialog extends JDialog {
       break;
 
     case SELECTED_FIRMWARE:
+      if (!Files.exists(inputPath)) {
+        setDialogState(DialogState.NO_SELECTION);
+        return;
+      }
+      if (!canLoadFirmware(input)) {
+        setDialogState(DialogState.NO_SELECTION);
+        return;
+      }
       contikiSource = null;
-      contikiFirmware = new File(contikiField.getText());
-      if (!contikiFirmware.exists()) {
-        setDialogState(DialogState.NO_SELECTION);
-        return;
-      }
-      if (!canLoadFirmware(contikiFirmware)) {
-        setDialogState(DialogState.NO_SELECTION);
-        return;
-      }
-
+      contikiFirmware = new File(input);
     	cleanButton.setEnabled(true);
     	compileButton.setEnabled(false);
     	createButton.setEnabled(true);
@@ -755,12 +726,12 @@ public abstract class AbstractCompileDialog extends JDialog {
   }
 
   /**
-   * @param source Contiki source
+   * @param name Contiki source
    * @return Suggested compile commands for compiling source
    */
-  public String getDefaultCompileCommands(File source) {
+  public String getDefaultCompileCommands(String name) {
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-           moteType.getExpectedFirmwareFile(source).getName() + " TARGET=" + moteType.getMoteType();
+           moteType.getExpectedFirmwareFile(name).getName() + " TARGET=" + moteType.getMoteType();
   }
 
   private void abortAnyCompilation() {
