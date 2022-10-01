@@ -232,17 +232,13 @@ public abstract class AbstractCompileDialog extends JDialog {
         fc.setFileFilter(new FileFilter() {
           @Override
           public boolean accept(File f) {
-            if (f.isDirectory()) {
+            String filename = f.getName();
+            if (f.isDirectory() || filename.endsWith(".c")) {
               return true;
             }
 
-            String filename = f.getName();
             if (filename.isEmpty()) {
               return false;
-            }
-
-            if (filename.endsWith(".c")) {
-              return true;
             }
 
             return canLoadFirmware(filename);
