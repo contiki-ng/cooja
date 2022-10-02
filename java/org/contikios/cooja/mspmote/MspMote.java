@@ -143,14 +143,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     // Create mote address memory.
     myMemory = new MspMoteMemory(this, elf.getMap().getAllEntries(), myCpu);
     myCpu.reset();
-    initMote();
-
-    /* Schedule us immediately */
-    requestImmediateWakeup();
-  }
-
-  private void initMote() {
-    /* TODO Create COOJA-specific window manager */
     registry.removeComponent("windowManager");
     registry.registerComponent("windowManager", new WindowManager() {
       @Override
@@ -205,6 +197,8 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
         };
       }
     });
+    // Schedule us immediately.
+    requestImmediateWakeup();
   }
 
   /**
