@@ -956,7 +956,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
         case "commstack":
           logger.warn("The Cooja communication stack config was removed: " + element.getText());
           logger.warn("Instead assuming default network stack.");
-          netStack = NetworkStack.DEFAULT;
           break;
         case "netstack":
           netStack = NetworkStack.parseConfig(element.getText());
