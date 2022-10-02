@@ -36,11 +36,6 @@ import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.platform.GenericNode;
-import se.sics.mspsim.platform.ti.Exp1101Node;
-import se.sics.mspsim.platform.ti.Exp1120Node;
-import se.sics.mspsim.platform.ti.Exp5438Node;
-import se.sics.mspsim.platform.ti.Trxeb1120Node;
-import se.sics.mspsim.platform.ti.Trxeb2520Node;
 
 /**
  * @author Fredrik Osterlind
@@ -49,37 +44,15 @@ public class Exp5438Mote extends MspMote {
   private static final Logger logger = LogManager.getLogger(Exp5438Mote.class);
 
   public final GenericNode exp5438Node;
-  private String desc = "";
+  private final String description;
   
-  public Exp5438Mote(MspMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
+  public Exp5438Mote(MspMoteType moteType, Simulation sim, GenericNode node, String desc)
+          throws MoteType.MoteTypeCreationException {
     super(moteType, sim);
-    final var fileELF = moteType.getContikiFirmwareFile();
-    // Hack: Try to figure out what type of MSPSim-node we should be used by checking file extension.
-    String filename = fileELF.getName();
-    if (filename.endsWith(".exp1101")) {
-      exp5438Node = new Exp1101Node();
-      desc = "Exp5438+CC1101";
-    } else if (filename.endsWith(".exp1120")) {
-      exp5438Node = new Exp1120Node();
-      desc = "Exp5438+CC1120";
-    } else if (filename.endsWith(".trxeb2520")) {
-      exp5438Node = new Trxeb2520Node();
-      desc = "Trxeb2520";
-    } else if (filename.endsWith(".trxeb1120")) {
-      exp5438Node = new Trxeb1120Node(false);
-      desc = "Trxeb1120";
-    } else if (filename.endsWith(".eth1120")) {
-      exp5438Node = new Trxeb1120Node(true);
-      desc = "Eth1120";
-    } else if (filename.endsWith(".exp2420") || filename.endsWith(".exp5438")) {
-      exp5438Node = new Exp5438Node();
-      desc = "Exp5438+CC2420";
-    } else {
-      throw new IllegalStateException("unknown file extension, cannot figure out what MSPSim node type to use: " + filename);
-    }
-
+    exp5438Node = node;
+    description = desc;
+    registry = exp5438Node.getRegistry();
     try {
-      registry = exp5438Node.getRegistry();
       prepareMote(exp5438Node);
     } catch (Exception e) {
       logger.fatal("Error when creating Exp5438 mote: ", e);
@@ -94,7 +67,7 @@ public class Exp5438Mote extends MspMote {
 
   @Override
   public String toString() {
-    return desc + " " + getID();
+    return description + " " + getID();
   }
 
 }

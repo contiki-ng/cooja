@@ -46,6 +46,12 @@ import org.contikios.cooja.mspmote.interfaces.MspClock;
 import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
 import org.contikios.cooja.mspmote.interfaces.MspMoteID;
 import org.contikios.cooja.mspmote.interfaces.UsciA1Serial;
+import se.sics.mspsim.platform.GenericNode;
+import se.sics.mspsim.platform.ti.Exp1101Node;
+import se.sics.mspsim.platform.ti.Exp1120Node;
+import se.sics.mspsim.platform.ti.Exp5438Node;
+import se.sics.mspsim.platform.ti.Trxeb1120Node;
+import se.sics.mspsim.platform.ti.Trxeb2520Node;
 
 @ClassDescription("EXP430F5438 mote")
 @AbstractionLevelDescription("Emulated level")
@@ -53,7 +59,33 @@ public class Exp5438MoteType extends MspMoteType {
 
   @Override
   public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
-    return new Exp5438Mote(this, simulation);
+    final var fileELF = getContikiFirmwareFile();
+    // Hack: Try to figure out what type of MSPSim-node we should be used by checking file extension.
+    String filename = fileELF.getName();
+    final GenericNode exp5438Node;
+    final String desc;
+    if (filename.endsWith(".exp1101")) {
+      exp5438Node = new Exp1101Node();
+      desc = "Exp5438+CC1101";
+    } else if (filename.endsWith(".exp1120")) {
+      exp5438Node = new Exp1120Node();
+      desc = "Exp5438+CC1120";
+    } else if (filename.endsWith(".trxeb2520")) {
+      exp5438Node = new Trxeb2520Node();
+      desc = "Trxeb2520";
+    } else if (filename.endsWith(".trxeb1120")) {
+      exp5438Node = new Trxeb1120Node(false);
+      desc = "Trxeb1120";
+    } else if (filename.endsWith(".eth1120")) {
+      exp5438Node = new Trxeb1120Node(true);
+      desc = "Eth1120";
+    } else if (filename.endsWith(".exp2420") || filename.endsWith(".exp5438")) {
+      exp5438Node = new Exp5438Node();
+      desc = "Exp5438+CC2420";
+    } else {
+      throw new IllegalStateException("Unknown file extension, cannot figure out what MSPSim node type to use: " + filename);
+    }
+    return new Exp5438Mote(this, simulation, exp5438Node, desc);
   }
 
   @Override
