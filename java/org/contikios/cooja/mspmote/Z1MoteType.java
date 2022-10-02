@@ -39,6 +39,7 @@ import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.RimeAddress;
+import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
 import org.contikios.cooja.mspmote.interfaces.MspButton;
 import org.contikios.cooja.mspmote.interfaces.MspClock;
@@ -46,6 +47,7 @@ import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
 import org.contikios.cooja.mspmote.interfaces.MspDefaultSerial;
 import org.contikios.cooja.mspmote.interfaces.MspLED;
 import org.contikios.cooja.mspmote.interfaces.MspMoteID;
+import se.sics.mspsim.platform.z1.Z1Node;
 
 @ClassDescription("Z1 mote")
 @AbstractionLevelDescription("Emulated level")
@@ -68,7 +70,9 @@ public class Z1MoteType extends MspMoteType {
 
     @Override
     public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
-        return new Z1Mote(this, simulation);
+        var node = new Z1Node();
+        node.setFlash(new CoojaM25P80(node.getCPU()));
+        return new Z1Mote(this, simulation, node);
     }
 
     @Override
