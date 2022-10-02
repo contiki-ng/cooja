@@ -36,7 +36,6 @@ import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
 import se.sics.mspsim.platform.sky.SkyNode;
 
 /**
@@ -47,11 +46,10 @@ public class SkyMote extends MspMote {
 
   public final SkyNode skyNode;
 
-  public SkyMote(MspMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
+  public SkyMote(MspMoteType moteType, Simulation sim, SkyNode node) throws MoteType.MoteTypeCreationException {
     super(moteType, sim);
-    skyNode = new SkyNode();
+    skyNode = node;
     registry = skyNode.getRegistry();
-    skyNode.setFlash(new CoojaM25P80(skyNode.getCPU()));
     try {
       prepareMote(skyNode);
     } catch (Exception e) {
