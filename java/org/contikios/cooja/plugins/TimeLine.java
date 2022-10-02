@@ -124,7 +124,9 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private static final long[] ZOOM_LEVELS = {
   	1, 2, 5, 10,
   	20, 50, 100, 200, 500, 1000,
-  	2000, 5000, 10000, 20000, 50000, 100000 };
+  	2000, 5000, 10000, 20000, 50000, 100000, 
+  	100000*2, 100000*5, 100000*10
+  	};
 
   private boolean needZoomOut = false;
 
@@ -589,11 +591,21 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     return ZOOM_LEVELS[zoomLevel];
   }
 
-  private void zoomFinish (final double zoomDivisor,
+  private void zoomFinish (double zoomDivisor,
                            final long focusTime,
-                           final double focusCenter) {
-    currentPixelDivisor = zoomDivisor;
+                           final double focusCenter) 
+  {
     String note = "";
+  
+    long now = simulation.getSimulationTime();
+    if (now/zoomDivisor > Integer.MAX_VALUE) {
+        // limit zoom to fits sim-time in timeline
+        int min_level = zoomGetLevel( now/Integer.MAX_VALUE );
+        zoomDivisor = zoomLevelToDivisor( min_level );
+        note = " (LIM)";
+    }
+    
+    currentPixelDivisor = zoomDivisor;
     if (ZOOM_LEVELS[0] >= zoomDivisor) {
       currentPixelDivisor = ZOOM_LEVELS[0];
       note = " (MIN)";
@@ -604,6 +616,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     if (zoomDivisor != currentPixelDivisor) {
       logger.info("Zoom level: adjusted out-of-range " + zoomDivisor + " us/pixel");
     }
+    
+    if (note != "")
     logger.info("Zoom level: " + currentPixelDivisor + " microseconds/pixel " + note);
 
     forceRepaintAndFocus(focusTime, focusCenter);
@@ -2550,9 +2564,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       /* Update timeline size */
       int newWidth;
       if (now/currentPixelDivisor > Integer.MAX_VALUE) {
-        /* Need zoom out */
-        newWidth = 1;
-        needZoomOut = true;
+          // if zoom not fits in timeline, try zoomout to apropriate level 
+          int level = zoomGetLevel( now/Integer.MAX_VALUE );
+          zoomFinishLevel(level, getCenterPointTime(), 0.5);
+      }
+      if (now/currentPixelDivisor > Integer.MAX_VALUE) {
+          /* Need zoom out */
+          newWidth = 1;
+          needZoomOut = true;
       } else {
         newWidth = (int) (now/currentPixelDivisor);
         needZoomOut = false;
