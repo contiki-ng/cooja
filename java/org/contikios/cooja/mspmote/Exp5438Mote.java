@@ -29,7 +29,6 @@
 
 package org.contikios.cooja.mspmote;
 
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.platform.GenericNode;
@@ -46,7 +45,6 @@ public class Exp5438Mote extends MspMote {
     super(moteType, sim, node);
     exp5438Node = node;
     description = desc;
-    myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
   }
 
   @Override

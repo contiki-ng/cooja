@@ -29,7 +29,6 @@
  */
 
 package org.contikios.cooja.mspmote;
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.platform.z1.Z1Node;
@@ -41,7 +40,6 @@ public class Z1Mote extends MspMote {
 
     public Z1Mote(MspMoteType moteType, Simulation sim, Z1Node node) throws MoteType.MoteTypeCreationException {
         super(moteType, sim, node);
-        myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     }
 
     @Override

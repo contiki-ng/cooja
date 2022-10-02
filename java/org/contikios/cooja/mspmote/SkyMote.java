@@ -30,7 +30,6 @@
 
 package org.contikios.cooja.mspmote;
 
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.platform.sky.SkyNode;
@@ -44,7 +43,6 @@ public class SkyMote extends MspMote {
   public SkyMote(MspMoteType moteType, Simulation sim, SkyNode node) throws MoteType.MoteTypeCreationException {
     super(moteType, sim, node);
     skyNode = node;
-    myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
   }
 
   /*private void configureWithMacAddressesTxt(int id) {
