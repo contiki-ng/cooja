@@ -115,33 +115,9 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   public boolean setConfigXML(Simulation simulation,
       Collection<Element> configXML, boolean visAvailable)
       throws MoteTypeCreationException {
-    for (Element element : configXML) {
-      String name = element.getName();
-
-      if (name.equals("identifier")) {
-        identifier = element.getText();
-      } else if (name.equals("description")) {
-        description = element.getText();
-      } else if (name.equals("source")) {
-        fileSource = simulation.getCooja().restorePortablePath(new File(element.getText()));
-        fileFirmware = getExpectedFirmwareFile(fileSource.getName());
-      } else if (name.equals("command") || name.equals("commands")) {
-        compileCommands = element.getText();
-      } else if (name.equals("firmware") || name.equals("elf")) {
-        fileFirmware = simulation.getCooja().restorePortablePath(new File(element.getText()));
-      } else if (name.equals("moteinterface")) {
-        String intfClass = element.getText().trim();
-        var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
-        if (moteInterfaceClass == null) {
-          logger.warn("Can't find mote interface class: " + intfClass);
-          return false;
-        }
-        moteInterfaceClasses.add(moteInterfaceClass);
-      } else {
-        logger.warn("Unrecognized entry in loaded configuration: " + name);
-      }
+    if (!setBaseConfigXML(simulation, configXML)) {
+      return false;
     }
-
     if (moteInterfaceClasses.isEmpty()) {
       /* Backwards compatibility: No interfaces specified */
       logger.warn("Old simulation config detected: no mote interfaces specified, assuming all.");

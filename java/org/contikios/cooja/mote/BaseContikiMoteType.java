@@ -41,6 +41,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,12 +53,14 @@ import javax.swing.JLabel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.MoteInterface;
+import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.util.StringUtils;
+import org.jdom.Element;
 
 /**
  * The common parts of mote types based on compiled Contiki-NG targets.
@@ -227,6 +230,51 @@ public abstract class BaseContikiMoteType implements MoteType {
       return new ImageIcon(image);
     }
     return null;
+  }
+
+  protected boolean setBaseConfigXML(Simulation sim, Collection<Element> configXML)  {
+    for (Element element : configXML) {
+      switch (element.getName()) {
+        case "identifier":
+          identifier = element.getText();
+          break;
+        case "description":
+          description = element.getText();
+          break;
+        case "contikiapp":
+        case "source":
+          fileSource = sim.getCooja().restorePortablePath(new File(element.getText()));
+          fileFirmware = getExpectedFirmwareFile(fileSource.getName());
+          break;
+        case "elf":
+        case "firmware":
+          fileFirmware = sim.getCooja().restorePortablePath(new File(element.getText()));
+          break;
+        case "command":
+        case "commands":
+          compileCommands = element.getText();
+          break;
+        case "moteinterface":
+          var name = element.getText().trim();
+          var clazz = MoteInterfaceHandler.getInterfaceClass(sim.getCooja(), this, name);
+          if (clazz == null) {
+            logger.warn("Can't find mote interface class: " + name);
+            return false;
+          }
+          moteInterfaceClasses.add(clazz);
+          break;
+        case "contikibasedir":
+        case "contikicoredir":
+        case "projectdir":
+        case "compilefile":
+        case "process":
+        case "sensor":
+        case "coreinterface":
+          logger.fatal("Old Cooja mote type detected, aborting..");
+          return false;
+      }
+    }
+    return true;
   }
 
   @Override
