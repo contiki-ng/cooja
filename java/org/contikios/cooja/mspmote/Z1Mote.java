@@ -29,8 +29,6 @@
  */
 
 package org.contikios.cooja.mspmote;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
@@ -41,17 +39,8 @@ import se.sics.mspsim.platform.z1.Z1Node;
  */
 public class Z1Mote extends MspMote {
 
-    private static final Logger logger = LogManager.getLogger(Z1Mote.class);
-
     public Z1Mote(MspMoteType moteType, Simulation sim, Z1Node node) throws MoteType.MoteTypeCreationException {
-        super(moteType, sim);
-        registry = node.getRegistry();
-        try {
-            prepareMote(node);
-        } catch (Exception e) {
-            logger.fatal("Error when creating Z1 mote: ", e);
-            throw new MoteType.MoteTypeCreationException("Error when creating Z1 mote: " + e.getMessage());
-        }
+        super(moteType, sim, node);
         myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     }
 

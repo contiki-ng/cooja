@@ -29,9 +29,6 @@
 
 package org.contikios.cooja.mspmote;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
@@ -41,23 +38,14 @@ import se.sics.mspsim.platform.GenericNode;
  * @author Fredrik Osterlind
  */
 public class Exp5438Mote extends MspMote {
-  private static final Logger logger = LogManager.getLogger(Exp5438Mote.class);
-
   public final GenericNode exp5438Node;
   private final String description;
   
   public Exp5438Mote(MspMoteType moteType, Simulation sim, GenericNode node, String desc)
           throws MoteType.MoteTypeCreationException {
-    super(moteType, sim);
+    super(moteType, sim, node);
     exp5438Node = node;
     description = desc;
-    registry = exp5438Node.getRegistry();
-    try {
-      prepareMote(exp5438Node);
-    } catch (Exception e) {
-      logger.fatal("Error when creating Exp5438 mote: ", e);
-      throw new MoteType.MoteTypeCreationException("Error creating Exp5438 mote: " + e.getMessage());
-    }
     myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
   }
 

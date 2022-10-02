@@ -98,18 +98,25 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   private final MspMoteType myMoteType;
   private MspMoteMemory myMemory = null;
   protected MoteInterfaceHandler myMoteInterfaceHandler;
-  public ComponentRegistry registry = null;
+  public final ComponentRegistry registry;
 
   /* Stack monitoring variables */
   private boolean stopNextInstruction = false;
 
-  public MspMote(MspMoteType moteType, Simulation simulation) throws MoteType.MoteTypeCreationException {
-    super(simulation);
+  public MspMote(MspMoteType moteType, Simulation sim, GenericNode node) throws MoteType.MoteTypeCreationException {
+    super(sim);
     myMoteType = moteType;
     try {
       debuggingInfo = moteType.getFirmwareDebugInfo();
     } catch (IOException e) {
       throw new MoteType.MoteTypeCreationException("Error: " + e.getMessage(), e);
+    }
+    registry = node.getRegistry();
+    try {
+      prepareMote(node);
+    } catch (Exception e) {
+      logger.fatal("Error when creating MSP430 mote: ", e);
+      throw new MoteType.MoteTypeCreationException("Error when creating MSP430 mote: " + e.getMessage());
     }
     /* Schedule us immediately */
     requestImmediateWakeup();
@@ -200,7 +207,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
    * @param node MSP430 cpu
    * @throws IOException Preparing mote failed
    */
-  protected void prepareMote(GenericNode node) throws IOException {
+  public void prepareMote(GenericNode node) throws IOException {
     node.setCommandHandler(commandHandler);
 
     node.setup(new ConfigManager());
