@@ -31,9 +31,7 @@
 package org.contikios.cooja.dialogs;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -76,9 +74,8 @@ public class ImportAppMoteDialog extends JDialog {
   private final JButton cancelButton;
   private boolean hasSelected = false;
 
-  public ImportAppMoteDialog(Container parent, final Simulation simulation, final ImportAppMoteType moteType) {
-    super((Window)parent, "Create Mote Type: Application Mote", ModalityType.APPLICATION_MODAL);
-
+  public ImportAppMoteDialog(final Simulation simulation, final ImportAppMoteType moteType) {
+    super(Cooja.getTopParentContainer(), "Create Mote Type: Application Mote", ModalityType.APPLICATION_MODAL);
     JPanel mainPanel = new JPanel(new BorderLayout());
 
     JPanel topPanel = new JPanel();
@@ -235,7 +232,7 @@ public class ImportAppMoteDialog extends JDialog {
     descriptionField.selectAll();
 
     pack();
-    setLocationRelativeTo(parent);
+    setLocationRelativeTo(Cooja.getTopParentContainer());
   }
 
   private boolean trySetClass(Simulation simulation, ImportAppMoteType moteType, File classFile) {

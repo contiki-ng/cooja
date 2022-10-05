@@ -924,7 +924,7 @@ public class Cooja extends Observable {
         }
 
         var sim = new Simulation(cooja);
-        if (CreateSimDialog.showDialog(Cooja.getTopParentContainer(), sim)) {
+        if (CreateSimDialog.showDialog(sim)) {
           // Start GUI plugins.
           for (var pluginClass : pluginClasses) {
             int type = pluginClass.getAnnotation(PluginType.class).value();
@@ -1051,7 +1051,7 @@ public class Cooja extends Observable {
         if (mySimulation == null) {
           return;
         }
-        BufferSettings.showDialog(myDesktopPane, mySimulation);
+        BufferSettings.showDialog(mySimulation);
       }
       @Override
       public boolean shouldBeEnabled() {
@@ -2906,13 +2906,9 @@ public class Cooja extends Observable {
         cooja.mySimulation.stopSimulation();
         newMoteType = (MoteType) ((JMenuItem) e.getSource()).getClientProperty("motetype");
       } else if (cmd.equals("edit paths")) {
-        ExternalToolsDialog.showDialog(Cooja.getTopParentContainer());
+        ExternalToolsDialog.showDialog();
       } else if (cmd.equals("manage extensions")) {
-        COOJAProject[] newProjects = ProjectDirectoriesDialog.showDialog(
-            Cooja.getTopParentContainer(),
-            Cooja.this,
-            getProjects()
-        );
+        COOJAProject[] newProjects = ProjectDirectoriesDialog.showDialog(Cooja.this, getProjects());
         if (newProjects != null) {
         	currentProjects.clear();
           currentProjects.addAll(Arrays.asList(newProjects));
@@ -2932,7 +2928,7 @@ public class Cooja extends Observable {
         logger.warn("Unhandled action: " + cmd);
       }
       if (newMoteType != null) {
-        for (var mote : AddMoteDialog.showDialog(frame, cooja.mySimulation, newMoteType)) {
+        for (var mote : AddMoteDialog.showDialog(cooja.mySimulation, newMoteType)) {
           cooja.mySimulation.addMote(mote);
         }
       }

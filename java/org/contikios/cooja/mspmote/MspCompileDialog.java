@@ -30,8 +30,6 @@
 
 package org.contikios.cooja.mspmote;
 
-import java.awt.Container;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
@@ -41,20 +39,15 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.AbstractCompileDialog;
 
 public class MspCompileDialog extends AbstractCompileDialog {
-  public static boolean showDialog(
-      Container parent,
-      Simulation simulation,
-      MspMoteType moteType) {
-
-    final AbstractCompileDialog dialog = new MspCompileDialog(parent, simulation, moteType);
-
+  public static boolean showDialog(Simulation sim, MspMoteType moteType) {
+    final AbstractCompileDialog dialog = new MspCompileDialog(sim, moteType);
     /* Show dialog and wait for user */
     dialog.setVisible(true); /* BLOCKS */
     return dialog.createdOK();
   }
 
-  private MspCompileDialog(Container parent, Simulation simulation, MspMoteType moteType) {
-    super(parent, simulation, moteType);
+  private MspCompileDialog(Simulation sim, MspMoteType moteType) {
+    super(sim, moteType);
     setTitle("Create Mote Type: Compile Contiki for " + moteType.getMoteType());
     addCompilationTipsTab(tabbedPane);
   }

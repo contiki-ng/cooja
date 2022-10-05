@@ -52,7 +52,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -101,25 +100,20 @@ public class AddMoteDialog extends JDialog {
    * Shows a dialog which enables a user to create and add motes of the given
    * type.
    *
-   * @param parentContainer
-   *          Parent container for dialog
-   * @param simulation
-   *          Simulation
-   * @param moteType
-   *          Mote type
+   * @param sim Simulation
+   * @param moteType Mote type
    * @return New motes or null if aborted
    */
-  public static ArrayList<Mote> showDialog(JFrame parentContainer,
-      Simulation simulation, MoteType moteType) {
-    var myDialog = new AddMoteDialog(parentContainer, simulation, moteType);
-    myDialog.setLocationRelativeTo(parentContainer);
+  public static ArrayList<Mote> showDialog(Simulation sim, MoteType moteType) {
+    var myDialog = new AddMoteDialog(sim, moteType);
+    myDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
     myDialog.checkSettings();
     myDialog.setVisible(true);
     return myDialog.newMotes;
   }
 
-  private AddMoteDialog(JFrame window, Simulation simulation, MoteType moteType) {
-    super(window, "Add motes (" + moteType.getDescription() + ")", ModalityType.APPLICATION_MODAL);
+  private AddMoteDialog(Simulation simulation, MoteType moteType) {
+    super(Cooja.getTopParentContainer(), "Add motes (" + moteType.getDescription() + ")", ModalityType.APPLICATION_MODAL);
     this.moteType = moteType;
     this.simulation = simulation;
 

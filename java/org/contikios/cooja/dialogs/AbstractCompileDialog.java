@@ -31,13 +31,9 @@ package org.contikios.cooja.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -130,14 +126,10 @@ public abstract class AbstractCompileDialog extends JDialog {
   public File contikiSource = null;
   public File contikiFirmware = null;
 
-  public AbstractCompileDialog(Container parent, Simulation simulation, final BaseContikiMoteType moteType) {
-    super(
-        parent instanceof Dialog?(Dialog)parent:
-          parent instanceof Window?(Window)parent:
-            (Frame)parent, "Create Mote Type: Compile Contiki", ModalityType.APPLICATION_MODAL);
-
-    this.simulation = simulation;
-    this.gui = simulation.getCooja();
+  public AbstractCompileDialog(Simulation sim, final BaseContikiMoteType moteType) {
+    super(Cooja.getTopParentContainer(), "Create Mote Type: Compile Contiki", ModalityType.APPLICATION_MODAL);
+    this.simulation = sim;
+    this.gui = sim.getCooja();
     this.moteType = moteType;
 
     JPanel mainPanel = new JPanel(new BorderLayout());
@@ -443,7 +435,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     });
 
     pack();
-    setLocationRelativeTo(parent);
+    setLocationRelativeTo(Cooja.getTopParentContainer());
     
     tryRestoreMoteType();
   }

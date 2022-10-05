@@ -34,10 +34,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -70,49 +67,19 @@ public class ExternalToolsDialog extends JDialog {
   private final static int LABEL_WIDTH = 220;
   private final static int LABEL_HEIGHT = 15;
 
-  private ExternalToolsDialog myDialog;
+  private final ExternalToolsDialog myDialog;
 
-  private JTextField[] textFields;
+  private final JTextField[] textFields;
 
-  /**
-   * Creates a dialog for viewing/editing external tools settings.
-   *
-   * @param parentContainer
-   *          Parent container for dialog
-   */
-  public static void showDialog(Container parentContainer) {
-    ExternalToolsDialog myDialog;
-    if (parentContainer instanceof Window) {
-      myDialog = new ExternalToolsDialog((Window) parentContainer);
-    } else if (parentContainer instanceof Dialog) {
-      myDialog = new ExternalToolsDialog((Dialog) parentContainer);
-    } else if (parentContainer instanceof Frame) {
-      myDialog = new ExternalToolsDialog((Frame) parentContainer);
-    } else {
-      logger.fatal("Unknown parent container type: " + parentContainer);
-      return;
-    }
-    myDialog.setLocationRelativeTo(parentContainer);
-
-    if (myDialog != null) {
-      myDialog.setVisible(true);
-    }
+  /** Creates a dialog for viewing/editing external tools settings. */
+  public static void showDialog() {
+    var myDialog = new ExternalToolsDialog();
+    myDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
+    myDialog.setVisible(true);
   }
 
-  private ExternalToolsDialog(Dialog dialog) {
-    super(dialog, "Edit Settings", ModalityType.APPLICATION_MODAL);
-    setupDialog();
-  }
-  private ExternalToolsDialog(Window window) {
-    super(window, "Edit Settings", ModalityType.APPLICATION_MODAL);
-    setupDialog();
-  }
-  private ExternalToolsDialog(Frame frame) {
-    super(frame, "Edit Settings", ModalityType.APPLICATION_MODAL);
-    setupDialog();
-  }
-
-  private void setupDialog() {
+  private ExternalToolsDialog() {
+    super(Cooja.getTopParentContainer(), "Edit Settings", ModalityType.APPLICATION_MODAL);
     myDialog = this;
 
     JLabel label;

@@ -34,7 +34,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -90,12 +89,11 @@ public class CreateSimDialog extends JDialog {
   /**
    * Shows a dialog for configuring a simulation.
    *
-   * @param parent Parent container for dialog
    * @param simulation Simulation to configure
    * @return True if simulation configured correctly
    */
-  public static boolean showDialog(Container parent, Simulation simulation) {
-    final CreateSimDialog dialog = new CreateSimDialog((Window) parent, simulation.getCooja());
+  public static boolean showDialog(Simulation simulation) {
+    final CreateSimDialog dialog = new CreateSimDialog(simulation.getCooja());
     dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     dialog.addWindowListener(new WindowAdapter() {
       @Override
@@ -146,7 +144,7 @@ public class CreateSimDialog extends JDialog {
 
 
     // Set position and focus of dialog
-    dialog.setLocationRelativeTo(parent);
+    dialog.setLocationRelativeTo(Cooja.getTopParentContainer());
     dialog.title.requestFocus();
     dialog.title.select(0, dialog.title.getText().length());
 
@@ -167,8 +165,8 @@ public class CreateSimDialog extends JDialog {
     return dialog.mySimulation != null;
   }
 
-  private CreateSimDialog(Window window, Cooja gui) {
-    super(window, "Create new simulation", ModalityType.APPLICATION_MODAL);
+  private CreateSimDialog(Cooja gui) {
+    super(Cooja.getTopParentContainer(), "Create new simulation", ModalityType.APPLICATION_MODAL);
     Box vertBox = Box.createVerticalBox();
 
     JLabel label;

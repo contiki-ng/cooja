@@ -32,7 +32,6 @@ package org.contikios.cooja.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -75,15 +74,14 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   private final JComboBox<?> netStackComboBox = new JComboBox<>(NetworkStack.values());
 
-  public static boolean showDialog(Container parent, Simulation sim, ContikiMoteType mote) {
-    final var dialog = new ContikiMoteCompileDialog(parent, sim, mote);
+  public static boolean showDialog(Simulation sim, ContikiMoteType mote) {
+    final var dialog = new ContikiMoteCompileDialog(sim, mote);
     dialog.setVisible(true); // Blocks.
     return dialog.createdOK();
   }
 
-  private ContikiMoteCompileDialog(Container parent, Simulation simulation, ContikiMoteType moteType) {
-    super(parent, simulation, moteType);
-
+  private ContikiMoteCompileDialog(Simulation sim, ContikiMoteType moteType) {
+    super(sim, moteType);
     if (contikiSource != null) {
       /* Make sure compilation variables are updated */
       getDefaultCompileCommands(contikiSource.getName());
@@ -231,7 +229,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       @Override
       public void actionPerformed(ActionEvent e) {
         /* Show external tools dialog */
-        ExternalToolsDialog.showDialog(Cooja.getTopParentContainer());
+        ExternalToolsDialog.showDialog();
 
         /* Update and select environment tab */
         SwingUtilities.invokeLater(new Runnable() {
