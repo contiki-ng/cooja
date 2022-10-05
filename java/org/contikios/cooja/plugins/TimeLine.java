@@ -720,12 +720,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         return;
       }
 
-      try {
-        BufferedWriter outStream = new BufferedWriter(
-            new OutputStreamWriter(
-                new FileOutputStream(
-                    saveFile), UTF_8));
-
+      try (var outStream = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(saveFile), UTF_8))) {
         /* Output all events (sorted per mote) */
         for (MoteEvents events: allMoteEvents) {
           for (MoteEvent ev: events.ledEvents) {
@@ -747,8 +742,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
           }
         }
-
-        outStream.close();
       } catch (Exception ex) {
         logger.fatal("Could not write to file: " + saveFile);
       }
