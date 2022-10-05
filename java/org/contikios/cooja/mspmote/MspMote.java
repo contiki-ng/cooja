@@ -50,11 +50,8 @@ import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.Watchpoint;
 import org.contikios.cooja.WatchpointMote;
-import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
-import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
-import org.contikios.cooja.mspmote.interfaces.MspSerial;
 import org.contikios.cooja.mspmote.plugins.CodeVisualizerSkin;
 import org.contikios.cooja.mspmote.plugins.MspBreakpoint;
 import org.contikios.cooja.plugins.Visualizer;
@@ -270,15 +267,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   public void execute(long t, int duration) {
     MspClock clock = ((MspClock) (myMoteInterfaceHandler.getClock()));
-    if(clock.getDeviation() == 1.0)
-      regularExecute(clock, t, duration);
-    else
-      driftExecute(clock, t, duration);
-  }
-
-  private void regularExecute(MspClock clock, long t, int duration) {
-    long nextExecute;
-    /* Wait until mote boots */
+    // Wait until mote boots.
     if (!booted && clock.getTime() < 0) {
       scheduleNextWakeup(t - clock.getTime());
       return;
@@ -292,28 +281,22 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     if (lastExecute < 0) {
-      /* Always execute one microsecond the first time */
+      // Always execute one microsecond the first time.
       lastExecute = t;
     }
     if (t < lastExecute) {
       throw new RuntimeException("Bad event ordering: " + lastExecute + " < " + t);
     }
-
-    /* Execute MSPSim-based mote */
-    /* TODO Try-catch overhead */
-    try {
-      nextExecute = myCpu.stepMicros(Math.max(0, t - lastExecute), duration) + duration + t;
-      lastExecute = t;
-    } catch (EmulationException e) {
-      throw new ContikiError(e.getMessage(), getStackTrace(), e);
-    }
-
-    /* Schedule wakeup */
+    final var deviation = clock.getDeviation();
+    // FIXME: merge regularExecute/driftExecute methods.
+    long nextExecute = deviation == 1.0
+            ? regularExecute(deviation, t, duration) : driftExecute(deviation, t, duration);
+    lastExecute = t;
+    // Schedule wakeup.
     if (nextExecute < t) {
       throw new RuntimeException(t + ": MSPSim requested early wakeup: " + nextExecute);
     }
 
-    /*logger.debug(t + ": Schedule next wakeup at " + nextExecute);*/
     scheduleNextWakeup(nextExecute);
 
     if (stopNextInstruction) {
@@ -321,38 +304,24 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       throw new RuntimeException("MSPSim requested simulation stop");
     }
 
-    /* XXX TODO Reimplement stack monitoring using MSPSim internals */
+    // TODO: Reimplement stack monitoring using MSPSim internals.
   }
 
-  private void driftExecute(MspClock clock, long t, int duration) {
-    double deviation = clock.getDeviation();
-    double invDeviation = 1.0 / deviation;
-    long jump, executeDelta;
-    double exactJump, exactExecuteDelta;
-
-    /* Wait until mote boots */
-    if (!booted && clock.getTime() < 0) {
-      scheduleNextWakeup(t - clock.getTime());
-      return;
+  private long regularExecute(double deviation, long t, int duration) {
+    /* Execute MSPSim-based mote */
+    /* TODO Try-catch overhead */
+    long nextExecute;
+    try {
+      nextExecute = myCpu.stepMicros(Math.max(0, t - lastExecute), duration) + duration + t;
+    } catch (EmulationException e) {
+      throw new ContikiError(e.getMessage(), getStackTrace(), e);
     }
-    booted = true;
+    return nextExecute;
+  }
 
-    if (stopNextInstruction) {
-      stopNextInstruction = false;
-      scheduleNextWakeup(t);
-      throw new RuntimeException("MSPSim requested simulation stop");
-    }
-
-    if (lastExecute < 0) {
-      /* Always execute one microsecond the first time */
-      lastExecute = t;
-    }
-    if (t < lastExecute) {
-      throw new RuntimeException("Bad event ordering: " + lastExecute + " < " + t);
-    }
-
-    jump = Math.max(0, t - lastExecute);
-    exactJump = jump * deviation;
+  private long driftExecute(double deviation, long t, int duration) {
+    long jump = Math.max(0, t - lastExecute);
+    double exactJump = jump * deviation;
     jump = (int)Math.floor(exactJump);
     jumpError += exactJump - jump;
 
@@ -363,32 +332,17 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     /* Execute MSPSim-based mote */
     /* TODO Try-catch overhead */
+    long executeDelta;
     try {
       executeDelta = myCpu.stepMicros(jump, duration) + duration;
-      lastExecute = t;
     } catch (EmulationException e) {
       throw new ContikiError(e.getMessage(), getStackTrace(), e);
     }
 
-    exactExecuteDelta = executeDelta * invDeviation;
+    double invDeviation = 1.0 / deviation;
+    double exactExecuteDelta = executeDelta * invDeviation;
     executeDelta = (int)Math.floor(exactExecuteDelta);
-
-    var nextExecute = executeDelta + t;
-
-    /* Schedule wakeup */
-    if (nextExecute < t) {
-      throw new RuntimeException(t + ": MSPSim requested early wakeup: " + nextExecute);
-    }
-
-    /*logger.debug(t + ": Schedule next wakeup at " + nextExecute);*/
-    scheduleNextWakeup(nextExecute);
-
-    if (stopNextInstruction) {
-      stopNextInstruction = false;
-      throw new RuntimeException("MSPSim requested simulation stop");
-    }
-
-    /* XXX TODO Reimplement stack monitoring using MSPSim internals */
+    return executeDelta + t;
   }
 
   @Override
@@ -402,12 +356,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   public String executeCLICommand(String cmd) {
     final StringBuilder sb = new StringBuilder();
-    LineListener ll = new LineListener() {
-      @Override
-      public void lineRead(String line) {
-        sb.append(line).append("\n");
-      }
-    };
+    LineListener ll = line -> sb.append(line).append("\n");
     PrintStream po = new PrintStream(new LineOutputStream(ll));
     CommandContext c = new CommandContext(commandHandler, null, "", new String[0], 1, null);
     c.out = po;
