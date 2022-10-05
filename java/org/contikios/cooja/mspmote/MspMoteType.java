@@ -172,9 +172,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
   }
 
-  public abstract Class<? extends MoteInterface>[] getAllMoteInterfaceClasses();
-  public abstract Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses();
-
   private ELF elf; /* cached */
   public ELF getELF() throws IOException {
     if (elf == null) {

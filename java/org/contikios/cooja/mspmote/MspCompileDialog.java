@@ -36,7 +36,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.AbstractCompileDialog;
 
@@ -57,15 +56,6 @@ public class MspCompileDialog extends AbstractCompileDialog {
     super(parent, simulation, moteType);
     setTitle("Create Mote Type: Compile Contiki for " + moteType.getMoteType());
     addCompilationTipsTab(tabbedPane);
-  }
-
-  @Override
-  public Class<? extends MoteInterface>[] getAllMoteInterfaces() {
-	  return ((MspMoteType)moteType).getAllMoteInterfaceClasses();
-  }
-  @Override
-  public Class<? extends MoteInterface>[] getDefaultMoteInterfaces() {
-	  return ((MspMoteType)moteType).getDefaultMoteInterfaceClasses();
   }
 
   private static void addCompilationTipsTab(JTabbedPane parent) {
