@@ -61,7 +61,6 @@ import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.contikimote.ContikiMoteType.NetworkStack;
-import org.contikios.cooja.mote.BaseContikiMoteType;
 
 /**
  * Contiki Mote Type compile dialog.
@@ -103,9 +102,9 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       }
       moteType.setIdentifier(ContikiMoteType.generateUniqueMoteTypeID(usedNames));
     }
-
-    var env = moteType.getCompilationEnvironment();
-    compilationEnvironment = BaseContikiMoteType.oneDimensionalEnv(env);
+    compilationEnvironment = moteType.getCompilationEnvironment();
+    var env = compilationEnvironment.entrySet().stream()
+            .map(e -> new Object[]{e.getKey(), e.getValue()}).toArray(Object[][]::new);
     if (SwingUtilities.isEventDispatchThread()) {
       createEnvironmentTab(tabbedPane, env);
     } else {

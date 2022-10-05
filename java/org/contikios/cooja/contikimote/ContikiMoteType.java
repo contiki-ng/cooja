@@ -40,6 +40,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -227,7 +228,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
   }
 
   @Override
-  public String[][] getCompilationEnvironment() {
+  public LinkedHashMap<String, String> getCompilationEnvironment() {
     var sources = new StringBuilder();
     var dirs = new StringBuilder();
     // Check whether Cooja projects include additional sources.
@@ -249,29 +250,29 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     // Create the compilation environment.
     String ccFlags = Cooja.getExternalToolsSetting("COMPILER_ARGS", "");
-    ArrayList<String[]> env = new ArrayList<>();
-    env.add(new String[] { "LIBNAME", "$(BUILD_DIR_BOARD)/" + getIdentifier() + ".cooja" });
-    env.add(new String[] { "COOJA_VERSION",  Cooja.CONTIKI_NG_BUILD_VERSION });
-    env.add(new String[] { "CLASSNAME", javaClassName});
-    env.add(new String[] { "COOJA_SOURCEDIRS", dirs.toString().replace("\\", "/") });
-    env.add(new String[] { "COOJA_SOURCEFILES", sources.toString() });
-    env.add(new String[] { "CC", Cooja.getExternalToolsSetting("PATH_C_COMPILER") });
-    env.add(new String[] { "EXTRA_CC_ARGS", ccFlags });
-    env.add(new String[] { "PATH", System.getenv("PATH") });
+    var env = new LinkedHashMap<String, String>();
+    env.put("LIBNAME", "$(BUILD_DIR_BOARD)/" + getIdentifier() + ".cooja");
+    env.put("COOJA_VERSION",  Cooja.CONTIKI_NG_BUILD_VERSION);
+    env.put("CLASSNAME", javaClassName);
+    env.put("COOJA_SOURCEDIRS", dirs.toString().replace("\\", "/"));
+    env.put("COOJA_SOURCEFILES", sources.toString());
+    env.put("CC", Cooja.getExternalToolsSetting("PATH_C_COMPILER"));
+    env.put("EXTRA_CC_ARGS", ccFlags);
+    env.put("PATH", System.getenv("PATH"));
     // Pass through environment variables for the Contiki-NG CI.
     String ci = System.getenv("CI");
     if (ci != null) {
-      env.add(new String[] { "CI", ci });
+      env.put("CI", ci);
     }
     String relstr = System.getenv("RELSTR");
     if (relstr != null) {
-      env.add(new String[] { "RELSTR", relstr });
+      env.put("RELSTR", relstr);
     }
     String quiet = System.getenv("QUIET");
     if (quiet != null) {
-      env.add(new String[] { "QUIET", quiet });
+      env.put("QUIET", quiet);
     }
-    return env.toArray(new String[0][0]);
+    return env;
   }
 
   @Override

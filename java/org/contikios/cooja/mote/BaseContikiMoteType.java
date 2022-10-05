@@ -42,6 +42,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -304,7 +306,7 @@ public abstract class BaseContikiMoteType implements MoteType {
     } else {
       // Handle multiple compilation commands one by one.
       final var output = MessageContainer.createMessageList(vis);
-      final var env = oneDimensionalEnv(getCompilationEnvironment());
+      final var env = getCompilationEnvironment();
       for (String cmd : StringUtils.splitOnNewline(getCompileCommands())) {
         try {
           compile(cmd, env, fileSource.getParentFile(), null, null, output, true);
@@ -324,21 +326,9 @@ public abstract class BaseContikiMoteType implements MoteType {
   /** Show a compilation dialog for this mote type. */
   protected abstract boolean showCompilationDialog(Simulation sim);
 
-  /** Return a two-dimensional compilation environment. */
-  public String[][] getCompilationEnvironment() {
+  /** Return a compilation environment. */
+  public LinkedHashMap<String, String> getCompilationEnvironment() {
     return null;
-  }
-
-  /** Turn a two-dimensional environment into a one-dimensional environment. */
-  public static String[] oneDimensionalEnv(String[][] env) {
-    if (env == null) {
-      return null;
-    }
-    String[] envOneDimension = new String[env.length];
-    for (int i = 0; i < env.length; i++) {
-      envOneDimension[i] = env[i][0] + "=" + env[i][1];
-    }
-    return envOneDimension;
   }
 
   /**
@@ -356,7 +346,7 @@ public abstract class BaseContikiMoteType implements MoteType {
    */
   public static Process compile(
           final String commandIn,
-          final String[] env,
+          final Map<String, String> env,
           final File directory,
           final Action onSuccess,
           final Action onFailure,
@@ -364,7 +354,9 @@ public abstract class BaseContikiMoteType implements MoteType {
           boolean synchronous)
           throws MoteTypeCreationException {
     Pattern p = Pattern.compile("([^\\s\"']+|\"[^\"]*\"|'[^']*')");
-    Matcher m = p.matcher(commandIn);
+    // Perform compile command variable expansions.
+    String cpus = Integer.toString(Runtime.getRuntime().availableProcessors());
+    Matcher m = p.matcher(commandIn.replace("$(CPUS)", cpus));
     ArrayList<String> commandList = new ArrayList<>();
     while (m.find()) {
       String arg = m.group();
@@ -376,23 +368,23 @@ public abstract class BaseContikiMoteType implements MoteType {
 
     final MessageList messageDialog =
             Objects.requireNonNullElseGet(compilationOutput, () -> MessageContainer.createMessageList(true));
-    String cpus = Integer.toString(Runtime.getRuntime().availableProcessors());
-    // Perform compile command variable expansions.
-    String[] command = new String[commandList.size()];
-    for (int i = 0; i < commandList.size(); i++) {
-      command[i] = commandList.get(i).replace("$(CPUS)", cpus);
-    }
     {
       var cmd = new StringBuilder();
-      for (String c : command) {
+      for (String c : commandList) {
         cmd.append(c).append(" ");
       }
       messageDialog.addMessage("> " + cmd, MessageList.NORMAL);
     }
 
+    final var pb = new ProcessBuilder(commandList).directory(directory);
+    if (env != null) {
+      var environment = pb.environment();
+      environment.clear();
+      environment.putAll(env);
+    }
     final Process compileProcess;
     try {
-      compileProcess = Runtime.getRuntime().exec(command, env, directory);
+      compileProcess = pb.start();
 
       Thread readInput = new Thread(new Runnable() {
         @Override

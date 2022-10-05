@@ -45,6 +45,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
+import java.util.LinkedHashMap;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -493,7 +494,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 
   public abstract boolean canLoadFirmware(String name);
 
-  protected String[] compilationEnvironment = null; /* Default environment: inherit from current process */
+  protected LinkedHashMap<String, String> compilationEnvironment = null; // Default environment: inherit from current process.
 
   /**
    * @see DialogState
