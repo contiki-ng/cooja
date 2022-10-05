@@ -100,8 +100,8 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
   private final static int LABEL_HEIGHT = 15;
 
   private final JComboBox varNameCombo;
-  private final JComboBox varTypeCombo;
-  private final JComboBox varFormatCombo;
+  private final JComboBox<VarTypes> varTypeCombo;
+  private final JComboBox<VarFormats> varFormatCombo;
   private final JFormattedTextField varAddressField;
   private final JTextField varSizeField;
   private final JPanel valuePane;
@@ -289,7 +289,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     valueTypes[4].setBytes(moteToView.getMemory().getLayout().addrSize);
 
     JPanel reprPanel = new JPanel(new BorderLayout());
-    varTypeCombo = new JComboBox(valueTypes);
+    varTypeCombo = new JComboBox<>(valueTypes);
     varTypeCombo.addItemListener(new ItemListener() {
 
       @Override
@@ -301,7 +301,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       }
     });
 
-    varFormatCombo = new JComboBox(valueFormats);
+    varFormatCombo = new JComboBox<>(valueFormats);
     varFormatCombo.setSelectedItem(VarFormats.HEX);
     varFormatCombo.addItemListener(new ItemListener() {
 

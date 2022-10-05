@@ -311,7 +311,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     final JLabel ssLabel = new JLabel("");
     final JButton updateButton = new JButton("Update SS");
 
-    JComboBox channelMenu = new JComboBox(new String[] {
+    JComboBox<String> channelMenu = new JComboBox<>(new String[] {
         "ALL",
         "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
         "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
@@ -320,7 +320,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     channelMenu.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        JComboBox m = (JComboBox) e.getSource();
+        var m = (JComboBox<?>) e.getSource();
         String s = (String) m.getSelectedItem();
         if (s == null || s.equals("ALL")) {
           setChannel(-1);
