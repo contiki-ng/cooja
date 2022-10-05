@@ -944,62 +944,30 @@ public class ContikiMoteType extends BaseContikiMoteType {
   public boolean setConfigXML(Simulation simulation,
                               Collection<Element> configXML, boolean visAvailable)
           throws MoteTypeCreationException {
+    if (!setBaseConfigXML(simulation, configXML)) {
+      return false;
+    }
     for (Element element : configXML) {
-      String name = element.getName();
-      switch (name) {
-        case "identifier":
-          identifier = element.getText();
-          break;
-        case "description":
-          description = element.getText();
-          break;
-        case "contikiapp":
-        case "source":
-          fileSource = simulation.getCooja().restorePortablePath(new File(element.getText()));
-          fileFirmware = getMoteFile(librarySuffix);
-          break;
-        case "commands":
-          compileCommands = element.getText();
-          break;
-        case "symbols":
-          // Ignored, this information has never been used.
-          break;
+      switch (element.getName()) {
         case "commstack":
           logger.warn("The Cooja communication stack config was removed: " + element.getText());
           logger.warn("Instead assuming default network stack.");
-          netStack = NetworkStack.DEFAULT;
           break;
         case "netstack":
           netStack = NetworkStack.parseConfig(element.getText());
           break;
-        case "moteinterface":
-          String intfClass = element.getText().trim();
-          var clazz = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
-          if (clazz == null) {
-            logger.warn("Can't find mote interface class: " + intfClass);
-            return false;
-          }
-          moteInterfaceClasses.add(clazz);
-          break;
-        case "contikibasedir":
-        case "contikicoredir":
-        case "projectdir":
-        case "compilefile":
-        case "process":
-        case "sensor":
-        case "coreinterface":
-          logger.fatal("Old Cooja mote type detected, aborting..");
-          return false;
-        default:
-          logger.fatal("Unrecognized entry in loaded configuration: " + name);
-          break;
       }
     }
+    final var sourceFile = getContikiSourceFile();
+    if (sourceFile != null) { // Compensate for non-standard naming rules.
+      fileFirmware = getMoteFile(librarySuffix);
+    }
+    // FIXME: These checks should always be on.
     if (!visAvailable || simulation.isQuickSetup()) {
       if (getIdentifier() == null) {
         throw new MoteTypeCreationException("No identifier specified");
       }
-      if (getContikiSourceFile() == null) {
+      if (sourceFile == null) {
         throw new MoteTypeCreationException("No Contiki application specified");
       }
       if (getCompileCommands() == null) {
