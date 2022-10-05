@@ -40,6 +40,7 @@ import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.RimeAddress;
+import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
 import org.contikios.cooja.mspmote.interfaces.MspClock;
 import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
@@ -50,6 +51,7 @@ import org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem;
 import org.contikios.cooja.mspmote.interfaces.SkyFlash;
 import org.contikios.cooja.mspmote.interfaces.SkyLED;
 import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
+import se.sics.mspsim.platform.sky.SkyNode;
 
 @ClassDescription("Sky mote")
 @AbstractionLevelDescription("Emulated level")
@@ -57,7 +59,9 @@ public class SkyMoteType extends MspMoteType {
 
   @Override
   public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
-    return new SkyMote(this, simulation);
+    var node = new SkyNode();
+    node.setFlash(new CoojaM25P80(node.getCPU()));
+    return new SkyMote(this, simulation, node);
   }
 
   @Override

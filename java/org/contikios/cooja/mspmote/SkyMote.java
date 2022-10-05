@@ -30,35 +30,19 @@
 
 package org.contikios.cooja.mspmote;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
 import se.sics.mspsim.platform.sky.SkyNode;
 
 /**
  * @author Fredrik Osterlind
  */
 public class SkyMote extends MspMote {
-  private static final Logger logger = LogManager.getLogger(SkyMote.class);
-
   public final SkyNode skyNode;
 
-  public SkyMote(MspMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
-    super(moteType, sim);
-    skyNode = new SkyNode();
-    registry = skyNode.getRegistry();
-    skyNode.setFlash(new CoojaM25P80(skyNode.getCPU()));
-    try {
-      prepareMote(skyNode);
-    } catch (Exception e) {
-      logger.fatal("Error when creating Sky mote: ", e);
-      throw new MoteType.MoteTypeCreationException("Error when creating Sky mote: " + e.getMessage());
-    }
-    myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
+  public SkyMote(MspMoteType moteType, Simulation sim, SkyNode node) throws MoteType.MoteTypeCreationException {
+    super(moteType, sim, node);
+    skyNode = node;
   }
 
   /*private void configureWithMacAddressesTxt(int id) {

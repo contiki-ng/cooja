@@ -73,7 +73,6 @@ import se.sics.mspsim.util.ConfigManager;
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.MapEntry;
-import se.sics.mspsim.util.MapTable;
 import se.sics.mspsim.profiler.SimpleProfiler;
 
 import org.contikios.cooja.mspmote.interfaces.MspClock;
@@ -90,31 +89,58 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     Visualizer.registerVisualizerSkin(CodeVisualizerSkin.class);
   }
 
-  private final CommandHandler commandHandler;
-  private MSP430 myCpu = null;
+  private final CommandHandler commandHandler = new CommandHandler(System.out, System.err);
+  private final MSP430 myCpu;
   private final MspMoteType myMoteType;
-  private MspMoteMemory myMemory = null;
-  protected MoteInterfaceHandler myMoteInterfaceHandler;
-  public ComponentRegistry registry = null;
+  private final MspMoteMemory myMemory;
+  private final MoteInterfaceHandler myMoteInterfaceHandler;
+  public final ComponentRegistry registry;
 
   /* Stack monitoring variables */
   private boolean stopNextInstruction = false;
 
-  public MspMote(MspMoteType moteType, Simulation simulation) throws MoteType.MoteTypeCreationException {
-    super(simulation);
+  public MspMote(MspMoteType moteType, Simulation sim, GenericNode node) throws MoteType.MoteTypeCreationException {
+    super(sim);
     myMoteType = moteType;
     try {
       debuggingInfo = moteType.getFirmwareDebugInfo();
     } catch (IOException e) {
       throw new MoteType.MoteTypeCreationException("Error: " + e.getMessage(), e);
     }
-    commandHandler = new CommandHandler(System.out, System.err);
-    /* Schedule us immediately */
-    requestImmediateWakeup();
-  }
+    registry = node.getRegistry();
+    node.setCommandHandler(commandHandler);
+    node.setup(new ConfigManager());
+    myCpu = node.getCPU();
+    myCpu.setMonitorExec(true);
+    myCpu.setTrace(0); /* TODO Enable */
+    myCpu.getLogger().addLogListener(new LogListener() {
+      private final Logger mlogger = LogManager.getLogger("MSPSim");
+      @Override
+      public void log(Loggable source, String message) {
+        mlogger.debug(getID() + ": " + source.getID() + ": " + message);
+      }
 
-  private void initMote() {
-    /* TODO Create COOJA-specific window manager */
+      @Override
+      public void logw(Loggable source, WarningType type, String message) throws EmulationException {
+        mlogger.warn(getID() + ": " + "# " + source.getID() + "[" + type + "]: " + message);
+      }
+    });
+    Cooja.setProgressMessage("Loading " + myMoteType.getContikiFirmwareFile().getName());
+    ELF elf;
+    try {
+      elf = moteType.getELF();
+    } catch (Exception e) {
+      logger.fatal("Error when reading firmware: ", e);
+      throw new MoteType.MoteTypeCreationException("Error when reading firmware: " + e.getMessage());
+    }
+    node.loadFirmware(elf);
+    // Throw exceptions at bad memory access.
+    //myCpu.setThrowIfWarning(true);
+
+    // Create mote address memory.
+    myMemory = new MspMoteMemory(this, elf.getMap().getAllEntries(), myCpu);
+    myCpu.reset();
+    myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     registry.removeComponent("windowManager");
     registry.registerComponent("windowManager", new WindowManager() {
       @Override
@@ -169,6 +195,8 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
         };
       }
     });
+    // Schedule us immediately.
+    requestImmediateWakeup();
   }
 
   /**
@@ -190,50 +218,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   @Override
   public MemoryInterface getMemory() {
     return myMemory;
-  }
-
-  /**
-   * Prepares CPU, memory and ELF module.
-   *
-   * @param node MSP430 cpu
-   * @throws IOException Preparing mote failed
-   */
-  protected void prepareMote(GenericNode node) throws IOException {
-    node.setCommandHandler(commandHandler);
-
-    node.setup(new ConfigManager());
-
-    this.myCpu = node.getCPU();
-    this.myCpu.setMonitorExec(true);
-    this.myCpu.setTrace(0); /* TODO Enable */
-
-    LogListener ll = new LogListener() {
-      private final Logger mlogger = LogManager.getLogger("MSPSim");
-      @Override
-      public void log(Loggable source, String message) {
-        mlogger.debug(getID() + ": " + source.getID() + ": " + message);
-      }
-
-      @Override
-      public void logw(Loggable source, WarningType type, String message) throws EmulationException {
-        mlogger.warn(getID() + ": " + "# " + source.getID() + "[" + type + "]: " + message);
-      }
-    };
-
-    this.myCpu.getLogger().addLogListener(ll);
-
-    Cooja.setProgressMessage("Loading " + myMoteType.getContikiFirmwareFile().getName());
-    node.loadFirmware(((MspMoteType)getType()).getELF());
-
-    /* Throw exceptions at bad memory access */
-    /*myCpu.setThrowIfWarning(true);*/
-
-    /* Create mote address memory */
-    MapTable map = ((MspMoteType)getType()).getELF().getMap();
-    myMemory = new MspMoteMemory(this, map.getAllEntries(), myCpu);
-
-    myCpu.reset();
-    initMote();
   }
 
   public CommandHandler getCLICommandHandler() {
