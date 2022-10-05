@@ -325,7 +325,6 @@ public abstract class BaseContikiMoteType implements MoteType {
       for (String c : command) {
         cmd.append(c).append(" ");
       }
-      messageDialog.addMessage("", MessageList.NORMAL);
       messageDialog.addMessage("> " + cmd, MessageList.NORMAL);
     }
 
