@@ -255,8 +255,4 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
     parent.addTab("Environment", null, panel, "Environment variables");
   }
-
-  @Override
-  public void writeSettingsToMoteType() {
-  }
 }

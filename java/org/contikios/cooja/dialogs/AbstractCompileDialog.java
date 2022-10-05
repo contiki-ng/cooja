@@ -376,10 +376,6 @@ public abstract class AbstractCompileDialog extends JDialog {
         Class<? extends MoteInterface>[] arr = new Class[selected.size()];
         moteType.setMoteInterfaceClasses(selected.toArray(arr));
       	moteType.setCompileCommands(getCompileCommands());
-
-      	/* Write mote type settings (mote type specific) */
-      	writeSettingsToMoteType();
-
       	AbstractCompileDialog.this.dispose();
       }
     });
@@ -502,16 +498,6 @@ public abstract class AbstractCompileDialog extends JDialog {
     }
     return contikiFirmware.exists();
   }
-
-  /**
-   * Called when user is closing the dialog.
-   * Should immediately write mote type specific settings
-   * to the current mote type.
-   * <p>
-   * Note that generic mote type settings are already written,
-   * such as description, Contiki source, compile commands, and mote interfaces.
-   */
-  public abstract void writeSettingsToMoteType();
 
   public abstract boolean canLoadFirmware(String name);
 
