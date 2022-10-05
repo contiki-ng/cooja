@@ -36,17 +36,18 @@ import javax.swing.JTextArea;
 
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.AbstractCompileDialog;
+import org.contikios.cooja.mote.BaseContikiMoteType;
 
 public class MspCompileDialog extends AbstractCompileDialog {
-  public static boolean showDialog(Simulation sim, MspMoteType moteType) {
-    final AbstractCompileDialog dialog = new MspCompileDialog(sim, moteType);
+  public static boolean showDialog(Simulation sim, MspMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
+    final var dialog = new MspCompileDialog(sim, moteType, cfg);
     /* Show dialog and wait for user */
     dialog.setVisible(true); /* BLOCKS */
     return dialog.createdOK();
   }
 
-  private MspCompileDialog(Simulation sim, MspMoteType moteType) {
-    super(sim, moteType);
+  private MspCompileDialog(Simulation sim, MspMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
+    super(sim, moteType, cfg);
     setTitle("Create Mote Type: Compile Contiki for " + moteType.getMoteType());
     addCompilationTipsTab(tabbedPane);
   }

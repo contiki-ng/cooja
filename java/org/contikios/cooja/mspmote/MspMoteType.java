@@ -44,7 +44,6 @@ import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
@@ -61,8 +60,8 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   private static final Logger logger = LogManager.getLogger(MspMoteType.class);
 
   @Override
-  protected boolean showCompilationDialog(Simulation sim) {
-    return MspCompileDialog.showDialog(sim, this);
+  protected boolean showCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
+    return MspCompileDialog.showDialog(sim, this, cfg);
   }
 
   @Override
