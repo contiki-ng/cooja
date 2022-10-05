@@ -81,11 +81,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   private ContikiMoteCompileDialog(Simulation sim, ContikiMoteType moteType) {
     super(sim, moteType);
-    if (contikiSource != null) {
-      /* Make sure compilation variables are updated */
-      getDefaultCompileCommands(contikiSource.getName());
-    }
-
     /* Add Contiki mote type specifics */
     addAdvancedTab(tabbedPane);
   }
@@ -109,7 +104,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       moteType.setIdentifier(ContikiMoteType.generateUniqueMoteTypeID(usedNames));
     }
 
-    moteType.setContikiSourceFile(new File(name));
     var env = moteType.getCompilationEnvironment();
     compilationEnvironment = BaseContikiMoteType.oneDimensionalEnv(env);
     if (SwingUtilities.isEventDispatchThread()) {
@@ -127,14 +121,10 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
       defines = " DEFINES=NETSTACK_CONF_H=" + ((ContikiMoteType) moteType).getNetworkStack().getHeaderFile();
     }
 
-    return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-            ContikiMoteType.getMakeTargetName(name).getName() + " TARGET=cooja" + defines;
+    return super.getDefaultCompileCommands(name) + defines;
   }
 
   private void addAdvancedTab(JTabbedPane parent) {
-
-    /* TODO System symbols */
-
     /* Communication stack */
     JLabel label = new JLabel("Default network stack header");
     label.setPreferredSize(LABEL_DIMENSION);
@@ -224,14 +214,13 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            getDefaultCompileCommands(moteType.getContikiSourceFile().getName());
             for (int i=0; i < tabbedPane.getTabCount(); i++) {
               if (tabbedPane.getTitleAt(i).equals("Environment")) {
                 tabbedPane.setSelectedIndex(i);
                 break;
               }
             }
-            setDialogState(DialogState.AWAITING_COMPILATION);
+            setDialogState(DialogState.SELECTED_SOURCE);
           }
         });
 

@@ -280,7 +280,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     		if (!compileButton.isEnabled()) {
     			return;
     		}
-        final var commands = StringUtils.splitOnNewline(getCompileCommands());
+        final var commands = StringUtils.splitOnNewline(commandsArea.getText());
         if (commands.isEmpty()) {
           return;
         }
@@ -367,7 +367,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         }
         Class<? extends MoteInterface>[] arr = new Class[selected.size()];
         moteType.setMoteInterfaceClasses(selected.toArray(arr));
-      	moteType.setCompileCommands(getCompileCommands());
+        moteType.setCompileCommands(commandsArea.getText());
       	AbstractCompileDialog.this.dispose();
       }
     });
@@ -475,7 +475,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     /* Restore compile commands */
     final var commands = moteType.getCompileCommands();
     if (commands != null) {
-      setCompileCommands(commands);
+      commandsArea.setText(commands);
       dialogState = DialogState.AWAITING_COMPILATION;
     }
     setDialogState(dialogState);
@@ -530,9 +530,10 @@ public abstract class AbstractCompileDialog extends JDialog {
     	createButton.setEnabled(false);
     	commandsArea.setEnabled(true);
       if (dialogState == DialogState.SELECTED_SOURCE) {
-        setCompileCommands(getDefaultCompileCommands(input));
-        contikiFirmware = moteType.getExpectedFirmwareFile(input);
         contikiSource = new File(input);
+        moteType.setContikiSourceFile(contikiSource);
+        commandsArea.setText(getDefaultCompileCommands(input));
+        contikiFirmware = moteType.getExpectedFirmwareFile(input);
       }
       break;
 
@@ -568,7 +569,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     	createButton.setEnabled(true);
     	commandsArea.setEnabled(false);
       getRootPane().setDefaultButton(createButton);
-      setCompileCommands("");
+      commandsArea.setText("");
       break;
 
     default:
@@ -695,26 +696,12 @@ public abstract class AbstractCompileDialog extends JDialog {
   }
 
   /**
-   * @param commands User configured compile commands
-   */
-  public void setCompileCommands(String commands) {
-    commandsArea.setText(commands);
-  }
-
-  /**
-   * @return User configured compile commands
-   */
-  public String getCompileCommands() {
-    return commandsArea.getText();
-  }
-
-  /**
    * @param name Contiki source
    * @return Suggested compile commands for compiling source
    */
   public String getDefaultCompileCommands(String name) {
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-           moteType.getExpectedFirmwareFile(name).getName() + " TARGET=" + moteType.getMoteType();
+           moteType.getMakeTargetName(name) + " TARGET=" + moteType.getMoteType();
   }
 
   private void abortAnyCompilation() {
