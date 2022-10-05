@@ -701,9 +701,7 @@ public class Cooja extends Observable {
     if (!isVisualized()) {
       return;
     }
-    java.awt.EventQueue.invokeLater(() -> {
-      toolbarListener.updateToolbar(stoppedSimulation);
-    });
+    java.awt.EventQueue.invokeLater(() -> toolbarListener.updateToolbar(stoppedSimulation));
   }
 
   /**
@@ -851,7 +849,7 @@ public class Cooja extends Observable {
       private static final long TIME_MINUTE = 60 * TIME_SECOND;
       private static final long TIME_HOUR = 60 * TIME_MINUTE;
 
-      public String getTimeString(Simulation sim) {
+      public static String getTimeString(Simulation sim) {
         if (sim == null) {
           return "Time:";
         }
@@ -3249,8 +3247,9 @@ public class Cooja extends Observable {
       }
 
       // Restart plugins from config
-      setPluginsConfigXML(root, newSim);
-
+      if (!setPluginsConfigXML(root, newSim)) {
+        throw new Exception("Failed to configure plugins");
+      }
     } catch (JDOMException e) {
       throw new SimulationCreationException("Configuration file not wellformed: " + e.getMessage(), e);
     } catch (IOException e) {
