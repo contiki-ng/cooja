@@ -30,9 +30,6 @@
 
 package org.contikios.cooja.mspmote;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.MoteTimeEvent;
 
 /**
@@ -41,8 +38,6 @@ import org.contikios.cooja.MoteTimeEvent;
  * @author Fredrik Osterlind
  */
 public abstract class MspMoteTimeEvent extends MoteTimeEvent {
-  private static final Logger logger = LogManager.getLogger(MspMoteTimeEvent.class);
-
   private final MspMote mote;
 
   public MspMoteTimeEvent(MspMote mote) {
