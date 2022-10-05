@@ -406,6 +406,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     return true;
   }
 
+  @Override
   public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
     String[] ifNames = getConfig().getStringArrayValue(ContikiMoteType.class, "MOTE_INTERFACES");
     ArrayList<Class<? extends MoteInterface>> classes = new ArrayList<>();
@@ -438,6 +439,12 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
     return classes.toArray(new Class[0]);
   }
+
+  @Override
+  public Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses() {
+    return getAllMoteInterfaceClasses();
+  }
+
   /**
    * Returns make target based on source file.
    *

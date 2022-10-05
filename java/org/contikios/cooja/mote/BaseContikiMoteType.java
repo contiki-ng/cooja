@@ -170,6 +170,9 @@ public abstract class BaseContikiMoteType implements MoteType {
     moteInterfaceClasses.addAll(Arrays.asList(moteInterfaces));
   }
 
+  public abstract Class<? extends MoteInterface>[] getAllMoteInterfaceClasses();
+  public abstract Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses();
+
   /** Target hook for adding additional information to view. */
   protected abstract void appendVisualizerInfo(StringBuilder sb);
 

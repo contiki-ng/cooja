@@ -629,8 +629,13 @@ public abstract class AbstractCompileDialog extends JDialog {
     parent.addTab("Mote interfaces", null, panel, "Mote interfaces");
   }
 
-  public abstract Class<? extends MoteInterface>[] getDefaultMoteInterfaces();
-  public abstract Class<? extends MoteInterface>[] getAllMoteInterfaces();
+  public Class<? extends MoteInterface>[] getAllMoteInterfaces() {
+    return moteType.getAllMoteInterfaceClasses();
+  }
+
+  public Class<? extends MoteInterface>[] getDefaultMoteInterfaces() {
+    return moteType.getDefaultMoteInterfaceClasses();
+  }
 
   /**
    * Adds given mote interface to mote interface list, represented by a checkbox.

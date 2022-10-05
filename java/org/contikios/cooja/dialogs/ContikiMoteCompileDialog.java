@@ -58,7 +58,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.contikimote.ContikiMoteType.NetworkStack;
@@ -130,16 +129,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
             ContikiMoteType.getMakeTargetName(name).getName() + " TARGET=cooja" + defines;
-  }
-
-  @Override
-  public Class<? extends MoteInterface>[] getAllMoteInterfaces() {
-    return ((ContikiMoteType)moteType).getAllMoteInterfaceClasses();
-  }
-
-  @Override
-  public Class<? extends MoteInterface>[] getDefaultMoteInterfaces() {
-	  return getAllMoteInterfaces();
   }
 
   private void addAdvancedTab(JTabbedPane parent) {
