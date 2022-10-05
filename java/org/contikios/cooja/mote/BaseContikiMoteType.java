@@ -368,14 +368,7 @@ public abstract class BaseContikiMoteType implements MoteType {
 
     final MessageList messageDialog =
             Objects.requireNonNullElseGet(compilationOutput, () -> MessageContainer.createMessageList(true));
-    {
-      var cmd = new StringBuilder();
-      for (String c : commandList) {
-        cmd.append(c).append(" ");
-      }
-      messageDialog.addMessage("> " + cmd, MessageList.NORMAL);
-    }
-
+    messageDialog.addMessage("> " + String.join(" ", commandList), MessageList.NORMAL);
     final var pb = new ProcessBuilder(commandList).directory(directory);
     if (env != null) {
       var environment = pb.environment();
