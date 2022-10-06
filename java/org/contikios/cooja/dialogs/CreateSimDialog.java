@@ -168,14 +168,7 @@ public class CreateSimDialog extends JDialog {
   private CreateSimDialog(Cooja gui) {
     super(Cooja.getTopParentContainer(), "Create new simulation", ModalityType.APPLICATION_MODAL);
     Box vertBox = Box.createVerticalBox();
-
-    JLabel label;
-    JTextField textField;
-    Box horizBox;
-    JButton button;
-    JFormattedTextField numberField;
     NumberFormat integerFormat = NumberFormat.getIntegerInstance();
-
 
     // BOTTOM BUTTON PART
     Box buttonBox = Box.createHorizontalBox();
@@ -193,7 +186,7 @@ public class CreateSimDialog extends JDialog {
     });
     buttonBox.add(cancelButton);
 
-    button = new JButton("Create");
+    var button = new JButton("Create");
     var createSimulationListener = new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -237,13 +230,13 @@ public class CreateSimDialog extends JDialog {
     // MAIN PART
 
     // Title
-    horizBox = Box.createHorizontalBox();
+    var horizBox = Box.createHorizontalBox();
     horizBox.setMaximumSize(new Dimension(Integer.MAX_VALUE,LABEL_HEIGHT));
     horizBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-    label = new JLabel("Simulation name");
+    var label = new JLabel("Simulation name");
     label.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT));
 
-    textField = new JTextField();
+    var textField = new JTextField();
     textField.setText("[no title]");
     textField.setColumns(25);
     title = textField;
@@ -292,7 +285,7 @@ public class CreateSimDialog extends JDialog {
     label = new JLabel("Mote startup delay (ms)");
     label.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT));
 
-    numberField = new JFormattedTextField(integerFormat);
+    var numberField = new JFormattedTextField(integerFormat);
     numberField.setValue(10000);
     numberField.setColumns(4);
     delayedStartup = numberField;
