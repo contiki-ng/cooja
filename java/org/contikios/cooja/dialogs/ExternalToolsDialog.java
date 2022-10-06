@@ -196,13 +196,9 @@ public class ExternalToolsDialog extends JDialog {
               .trim());
         }
         Cooja.saveExternalToolsUserSettings();
-        if (myDialog != null && myDialog.isDisplayable()) {
-          myDialog.dispose();
-        }
+        myDialog.dispose();
       } else if (e.getActionCommand().equals("cancel")) {
-        if (myDialog != null && myDialog.isDisplayable()) {
-          myDialog.dispose();
-        }
+        myDialog.dispose();
       } else {
         logger.debug("Unhandled command: " + e.getActionCommand());
       }
