@@ -34,7 +34,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -46,12 +45,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import javax.swing.table.DefaultTableModel;
 
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMoteType;
@@ -64,8 +60,6 @@ import org.contikios.cooja.mote.BaseContikiMoteType;
  * @author Fredrik Osterlind
  */
 public class ContikiMoteCompileDialog extends AbstractCompileDialog {
-  private static final Logger logger = LogManager.getLogger(ContikiMoteCompileDialog.class);
-
   private final JComboBox<?> netStackComboBox = new JComboBox<>(NetworkStack.values());
 
   public static boolean showDialog(Simulation sim, ContikiMoteType mote, BaseContikiMoteType.MoteTypeConfig cfg) {
@@ -78,6 +72,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     super(sim, moteType, cfg);
     /* Add Contiki mote type specifics */
     addAdvancedTab(tabbedPane);
+    createEnvironmentTab(tabbedPane);
   }
 
   @Override
@@ -87,19 +82,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   @Override
   public String getDefaultCompileCommands(String name) {
-    compilationEnvironment = moteType.getCompilationEnvironment();
-    var env = compilationEnvironment.entrySet().stream()
-            .map(e -> new Object[]{e.getKey(), e.getValue()}).toArray(Object[][]::new);
-    if (SwingUtilities.isEventDispatchThread()) {
-      createEnvironmentTab(tabbedPane, env);
-    } else {
-      try {
-        SwingUtilities.invokeAndWait(() -> createEnvironmentTab(tabbedPane, env));
-      } catch (InvocationTargetException | InterruptedException e) {
-        logger.fatal("Error when updating for source " + name + ": " + e.getMessage(), e);
-      }
-    }
-
     String defines = "";
     if (((ContikiMoteType) moteType).getNetworkStack().getHeaderFile() != null) {
       defines = " DEFINES=NETSTACK_CONF_H=" + ((ContikiMoteType) moteType).getNetworkStack().getHeaderFile();
@@ -169,45 +151,33 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     parent.addTab("Advanced", null, new JScrollPane(container), "Advanced Contiki Mote Type settings");
   }
 
-  private void createEnvironmentTab(JTabbedPane parent, Object[][] env) {
-    /* Remove any existing environment tabs */
-    for (int i=0; i < tabbedPane.getTabCount(); i++) {
-      if (tabbedPane.getTitleAt(i).equals("Environment")) {
-        tabbedPane.removeTabAt(i--);
-      }
-    }
-
+  private void createEnvironmentTab(JTabbedPane parent) {
     /* Create new tab, fill with current environment data */
-    String[] columnNames = { "Variable", "Value" };
-    JTable table = new JTable(env, columnNames) {
+    JTable table = new JTable(0, 2) {
       @Override
       public boolean isCellEditable(int row, int column) {
         return false;
       }
     };
-
+    final var model = (DefaultTableModel) table.getModel();
+    String[] columnNames = { "Variable", "Value" };
+    model.setColumnIdentifiers(columnNames);
+    for (var entry : moteType.getCompilationEnvironment().entrySet()) {
+      model.addRow(new Object[] { entry.getKey(), entry.getValue() });
+    }
     JPanel panel = new JPanel(new BorderLayout());
     JButton button = new JButton("Change environment variables: Open external tools dialog");
     button.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        /* Show external tools dialog */
         ExternalToolsDialog.showDialog();
-
-        /* Update and select environment tab */
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            for (int i=0; i < tabbedPane.getTabCount(); i++) {
-              if (tabbedPane.getTitleAt(i).equals("Environment")) {
-                tabbedPane.setSelectedIndex(i);
-                break;
-              }
-            }
-            setDialogState(DialogState.SELECTED_SOURCE);
-          }
-        });
-
+        // Update data in the table.
+        model.setRowCount(0);
+        for (var entry : moteType.getCompilationEnvironment().entrySet()) {
+          model.addRow(new Object[]{entry.getKey(), entry.getValue()});
+        }
+        // User might have changed compiler, force recompile.
+        setDialogState(DialogState.SELECTED_SOURCE);
       }
     });
     panel.add(BorderLayout.NORTH, button);
