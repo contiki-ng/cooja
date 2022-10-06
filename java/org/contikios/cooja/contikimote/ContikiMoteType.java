@@ -228,7 +228,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
   }
 
   @Override
-  public LinkedHashMap<String, String> getCompilationEnvironment() {
+  public Map<String, String> getCompilationEnvironment() {
     var sources = new StringBuilder();
     var dirs = new StringBuilder();
     // Check whether Cooja projects include additional sources.

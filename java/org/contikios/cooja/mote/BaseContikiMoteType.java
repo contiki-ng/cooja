@@ -42,7 +42,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -306,7 +305,7 @@ public abstract class BaseContikiMoteType implements MoteType {
     } else {
       // Handle multiple compilation commands one by one.
       final var output = MessageContainer.createMessageList(vis);
-      final var env = getCompilationEnvironment();
+      final Map<String, String> env = getCompilationEnvironment();
       for (String cmd : StringUtils.splitOnNewline(getCompileCommands())) {
         try {
           compile(cmd, env, fileSource.getParentFile(), null, null, output, true);
@@ -326,8 +325,10 @@ public abstract class BaseContikiMoteType implements MoteType {
   /** Show a compilation dialog for this mote type. */
   protected abstract boolean showCompilationDialog(Simulation sim);
 
-  /** Return a compilation environment. */
-  public LinkedHashMap<String, String> getCompilationEnvironment() {
+  /**
+   * Return a compilation environment.
+   */
+  public Map<String, String> getCompilationEnvironment() {
     return null;
   }
 
