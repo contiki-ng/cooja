@@ -301,7 +301,7 @@ public abstract class AbstractCompileDialog extends JDialog {
             try {
               currentCompilationProcess = BaseContikiMoteType.compile(
                   command,
-                  compilationEnvironment,
+                  moteType.getCompilationEnvironment(),
                   new File(contikiField.getText()).getParentFile(),
                   commands.isEmpty() ? compilationSuccessAction : this,
                   compilationFailureAction,
@@ -328,7 +328,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 				try {
 					currentCompilationProcess = BaseContikiMoteType.compile(
 							"make clean TARGET=" + moteType.getMoteType(),
-							compilationEnvironment,
+              moteType.getCompilationEnvironment(),
 							new File(contikiField.getText()).getParentFile(),
 							null,
 							null,
@@ -467,8 +467,6 @@ public abstract class AbstractCompileDialog extends JDialog {
   }
 
   public abstract boolean canLoadFirmware(String name);
-
-  protected LinkedHashMap<String, String> compilationEnvironment = null; // Default environment: inherit from current process.
 
   /**
    * @see DialogState
