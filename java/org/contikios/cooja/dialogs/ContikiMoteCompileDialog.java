@@ -90,10 +90,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   @Override
   public String getDefaultCompileCommands(String name) {
-    if (name == null || !Files.exists(Path.of(name))) {
-      return ""; // Not ready to compile yet.
-    }
-
     if (moteType.getIdentifier() == null) {
       var usedNames = new HashSet<String>();
       for (var mote : simulation.getMoteTypes()) {
