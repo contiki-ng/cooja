@@ -38,6 +38,7 @@ import java.util.HashMap;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.dialogs.AbstractCompileDialog;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.jdom.Element;
 
@@ -59,8 +60,8 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   private static final Logger logger = LogManager.getLogger(MspMoteType.class);
 
   @Override
-  protected boolean showCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
-    return MspCompileDialog.showDialog(sim, this, cfg);
+  protected AbstractCompileDialog createCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
+    return new MspCompileDialog(sim, this, cfg);
   }
 
   @Override

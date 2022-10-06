@@ -68,6 +68,7 @@ import org.contikios.cooja.contikimote.interfaces.ContikiPIR;
 import org.contikios.cooja.contikimote.interfaces.ContikiRS232;
 import org.contikios.cooja.contikimote.interfaces.ContikiRadio;
 import org.contikios.cooja.contikimote.interfaces.ContikiVib;
+import org.contikios.cooja.dialogs.AbstractCompileDialog;
 import org.contikios.cooja.dialogs.ContikiMoteCompileDialog;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
@@ -277,7 +278,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
   }
 
   @Override
-  protected boolean showCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
+  protected AbstractCompileDialog createCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
     if (getIdentifier() == null) {
       var usedNames = new HashSet<String>();
       for (var mote : sim.getMoteTypes()) {
@@ -285,7 +286,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
       }
       setIdentifier(generateUniqueMoteTypeID(usedNames));
     }
-    return ContikiMoteCompileDialog.showDialog(sim, this, cfg);
+    return new ContikiMoteCompileDialog(sim, this, cfg);
   }
 
   /** Load LibN.java and the corresponding .cooja file into memory. */

@@ -58,6 +58,7 @@ import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
+import org.contikios.cooja.dialogs.AbstractCompileDialog;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.util.StringUtils;
@@ -330,8 +331,15 @@ public abstract class BaseContikiMoteType implements MoteType {
   /** Compilation-relevant parts of mote type configuration. */
   public record MoteTypeConfig(String desc, String file, String commands, Class<? extends MoteInterface>[] interfaces) {}
 
+  /** Create a compilation dialog for this mote type. */
+  protected abstract AbstractCompileDialog createCompilationDialog(Simulation sim, MoteTypeConfig cfg);
+
   /** Show a compilation dialog for this mote type. */
-  protected abstract boolean showCompilationDialog(Simulation sim, MoteTypeConfig cfg);
+  protected boolean showCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
+    final var dialog = createCompilationDialog(sim, cfg);
+    dialog.setVisible(true); // Blocks.
+    return dialog.createdOK();
+  }
 
   /** Return a compilation environment. */
   public LinkedHashMap<String, String> getCompilationEnvironment() {
