@@ -40,6 +40,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
@@ -277,6 +278,13 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
   @Override
   protected boolean showCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
+    if (getIdentifier() == null) {
+      var usedNames = new HashSet<String>();
+      for (var mote : sim.getMoteTypes()) {
+        usedNames.add(mote.getIdentifier());
+      }
+      setIdentifier(generateUniqueMoteTypeID(usedNames));
+    }
     return ContikiMoteCompileDialog.showDialog(sim, this, cfg);
   }
 
