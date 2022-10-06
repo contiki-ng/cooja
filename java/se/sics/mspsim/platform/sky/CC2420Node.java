@@ -13,7 +13,6 @@ import se.sics.mspsim.extutil.jfreechart.DataChart;
 import se.sics.mspsim.extutil.jfreechart.DataSourceSampler;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.ui.SerialMon;
-import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.NetworkConnection;
 import se.sics.mspsim.util.OperatingModeStatistics;
 

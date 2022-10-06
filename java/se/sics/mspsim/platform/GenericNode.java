@@ -34,13 +34,10 @@
  */
 
 package se.sics.mspsim.platform;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
-import java.net.URL;
 import javax.swing.JFrame;
 import se.sics.mspsim.cli.CommandHandler;
 import se.sics.mspsim.cli.DebugCommands;

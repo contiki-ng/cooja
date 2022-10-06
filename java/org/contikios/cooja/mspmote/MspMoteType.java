@@ -38,13 +38,11 @@ import java.util.HashMap;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;

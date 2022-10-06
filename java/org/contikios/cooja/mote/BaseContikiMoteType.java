@@ -368,14 +368,7 @@ public abstract class BaseContikiMoteType implements MoteType {
 
     final MessageList messageDialog =
             Objects.requireNonNullElseGet(compilationOutput, () -> MessageContainer.createMessageList(true));
-    {
-      var cmd = new StringBuilder();
-      for (String c : commandList) {
-        cmd.append(c).append(" ");
-      }
-      messageDialog.addMessage("> " + cmd, MessageList.NORMAL);
-    }
-
+    messageDialog.addMessage("> " + String.join(" ", commandList), MessageList.NORMAL);
     final var pb = new ProcessBuilder(commandList).directory(directory);
     if (env != null) {
       var environment = pb.environment();
@@ -386,31 +379,25 @@ public abstract class BaseContikiMoteType implements MoteType {
     try {
       compileProcess = pb.start();
 
-      Thread readInput = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try (var stdout = new BufferedReader(new InputStreamReader(compileProcess.getInputStream(), UTF_8))) {
-            String readLine;
-            while ((readLine = stdout.readLine()) != null) {
-              messageDialog.addMessage(readLine, MessageList.NORMAL);
-            }
-          } catch (IOException e) {
-            logger.warn("Error while reading from process");
+      Thread readInput = new Thread(() -> {
+        try (var stdout = new BufferedReader(new InputStreamReader(compileProcess.getInputStream(), UTF_8))) {
+          String readLine;
+          while ((readLine = stdout.readLine()) != null) {
+            messageDialog.addMessage(readLine, MessageList.NORMAL);
           }
+        } catch (IOException e) {
+          logger.warn("Error while reading from process");
         }
       }, "read input stream thread");
 
-      Thread readError = new Thread(new Runnable() {
-        @Override
-        public void run() {
-          try (var stderr = new BufferedReader(new InputStreamReader(compileProcess.getErrorStream(), UTF_8))) {
-            String readLine;
-            while ((readLine = stderr.readLine()) != null) {
-              messageDialog.addMessage(readLine, MessageList.ERROR);
-            }
-          } catch (IOException e) {
-            logger.warn("Error while reading from process");
+      Thread readError = new Thread(() -> {
+        try (var stderr = new BufferedReader(new InputStreamReader(compileProcess.getErrorStream(), UTF_8))) {
+          String readLine;
+          while ((readLine = stderr.readLine()) != null) {
+            messageDialog.addMessage(readLine, MessageList.ERROR);
           }
+        } catch (IOException e) {
+          logger.warn("Error while reading from process");
         }
       }, "read error stream thread");
 

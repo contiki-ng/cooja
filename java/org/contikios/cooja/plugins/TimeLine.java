@@ -611,27 +611,19 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     zoomFinish(cpd, focusTime, focusCenter);
   }
 
-  private void zoomIn(final long focusTime) {
-    zoomFinishLevel(zoomGetLevel()-1, focusTime, 0.5);
-  }
-
-  private void zoomOut(final long focusTime) {
-    zoomFinishLevel(zoomGetLevel()+1, focusTime, 0.5);
-  }
-
   private final Action zoomInAction = new AbstractAction("Zoom in (Ctrl+)") {
     @Override
     public void actionPerformed(ActionEvent e) {
-      final long centerTime = getCenterPointTime(); 
-      zoomIn(centerTime);
+      final long centerTime = getCenterPointTime();
+      zoomFinishLevel(zoomGetLevel() - 1, centerTime, 0.5);
     }
   };
 
   private final Action zoomOutAction = new AbstractAction("Zoom out (Ctrl-)") {
     @Override
     public void actionPerformed(ActionEvent e) {
-      final long centerTime = getCenterPointTime(); 
-      zoomOut(centerTime);
+      final long centerTime = getCenterPointTime();
+      zoomFinishLevel(zoomGetLevel() + 1, centerTime, 0.5);
     }
   };
 
