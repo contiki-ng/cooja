@@ -110,15 +110,15 @@ public abstract class AbstractCompileDialog extends JDialog {
   protected final Cooja gui;
   protected final BaseContikiMoteType moteType;
 
-  protected final JTabbedPane tabbedPane;
-  protected Box moteIntfBox;
+  protected final JTabbedPane tabbedPane = new JTabbedPane();
+  protected final Box moteIntfBox = Box.createVerticalBox();
 
-  protected final JTextField contikiField;
-  private final JTextField descriptionField;
-  private JTextArea commandsArea;
-  private final JButton cleanButton;
+  protected final JTextField contikiField = new JTextField(40);
+  private final JTextField descriptionField = new JTextField(40);
+  private final JTextArea commandsArea = new JTextArea(10, 1);
+  private final JButton cleanButton = new JButton("Clean");
   private final JButton compileButton;
-  private final JButton createButton;
+  private final JButton createButton = new JButton("Create");
 
   private Component currentCompilationOutput = null;
   private Process currentCompilationProcess = null;
@@ -145,7 +145,6 @@ public abstract class AbstractCompileDialog extends JDialog {
     label = new JLabel("Description:");
     label.setPreferredSize(LABEL_DIMENSION);
     descriptionBox.add(label);
-    descriptionField = new JTextField(40);
     descriptionField.setText("[enter mote type description]");
     descriptionBox.add(descriptionField);
 
@@ -156,7 +155,6 @@ public abstract class AbstractCompileDialog extends JDialog {
     label = new JLabel("Contiki process / Firmware:");
     label.setPreferredSize(LABEL_DIMENSION);
     sourcePanel.add(label);
-    contikiField = new JTextField(40);
     DocumentListener contikiFieldListener = new DocumentListener() {
       @Override
       public void changedUpdate(DocumentEvent e) {
@@ -319,7 +317,6 @@ public abstract class AbstractCompileDialog extends JDialog {
         nextCommandAction.actionPerformed(null); /* Recursive calls for all commands */
       }
     };
-    cleanButton = new JButton("Clean");
     cleanButton.setToolTipText("make clean TARGET=" + moteType.getMoteType());
     cleanButton.addActionListener(new ActionListener() {
       @Override
@@ -344,8 +341,6 @@ public abstract class AbstractCompileDialog extends JDialog {
     compileButton = new JButton(compileAction);
     getRootPane().setDefaultButton(compileButton);
 
-
-    createButton = new JButton("Create");
     createButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -386,7 +381,6 @@ public abstract class AbstractCompileDialog extends JDialog {
     topPanel.add(buttonPanel);
 
     /* Center: Tabs showing configuration, compilation output, ... */
-    tabbedPane = new JTabbedPane();
     addCompileCommandTab(tabbedPane);
     addMoteInterfacesTab(tabbedPane);
 
@@ -551,7 +545,6 @@ public abstract class AbstractCompileDialog extends JDialog {
   }
 
   private void addCompileCommandTab(JTabbedPane parent) {
-    commandsArea = new JTextArea(10, 1);
     // Loading firmware sets the create button to default, so do not update dialog state after that.
     commandsArea.getDocument().addDocumentListener(new DocumentListener() {
       @Override
@@ -577,7 +570,6 @@ public abstract class AbstractCompileDialog extends JDialog {
   }
 
   private void addMoteInterfacesTab(JTabbedPane parent) {
-    moteIntfBox = Box.createVerticalBox();
     JPanel panel = new JPanel(new BorderLayout());
     JLabel label = new JLabel("Cooja interacts with simulated motes via mote interfaces. These settings normally do not need to be changed.");
     Box b = Box.createHorizontalBox();
