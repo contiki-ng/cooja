@@ -437,31 +437,17 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     pack();
     setLocationRelativeTo(Cooja.getTopParentContainer());
-    
-    tryRestoreMoteType(cfg);
-  }
 
-  private void tryRestoreMoteType(BaseContikiMoteType.MoteTypeConfig cfg) {
+    // Set default values of text fields from the MoteTypeConfig contents.
     descriptionField.setText(cfg.desc());
     var file = cfg.file();
     contikiField.setText(file == null ? "" : file);
     var dialogState = file == null
             ? DialogState.NO_SELECTION
             : file.endsWith(".c") ? DialogState.SELECTED_SOURCE : DialogState.SELECTED_FIRMWARE;
-    /* Restore mote interface classes */
-    for (Component c : moteIntfBox.getComponents()) {
-      if (c instanceof JCheckBox box) {
-        box.setSelected(false);
-      }
-    }
-    for (var intf : getAllMoteInterfaces()) {
-      addMoteInterface(intf, false);
-    }
     for (var intf : cfg.interfaces()) {
       addMoteInterface(intf, true);
     }
-
-    /* Restore compile commands */
     final var commands = cfg.commands();
     if (commands != null) {
       commandsArea.setText(commands);
@@ -608,7 +594,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         }
 
         // Select default.
-        for (Class<? extends MoteInterface> moteIntf : getDefaultMoteInterfaces()) {
+        for (var moteIntf : moteType.getDefaultMoteInterfaceClasses()) {
           addMoteInterface(moteIntf, true);
         }
       }
@@ -617,14 +603,9 @@ public abstract class AbstractCompileDialog extends JDialog {
     panel.add(BorderLayout.NORTH, b);
     panel.add(BorderLayout.CENTER, new JScrollPane(moteIntfBox));
     parent.addTab("Mote interfaces", null, panel, "Mote interfaces");
-  }
-
-  public Class<? extends MoteInterface>[] getAllMoteInterfaces() {
-    return moteType.getAllMoteInterfaceClasses();
-  }
-
-  public Class<? extends MoteInterface>[] getDefaultMoteInterfaces() {
-    return moteType.getDefaultMoteInterfaceClasses();
+    for (var moteInterfaces : moteType.getAllMoteInterfaceClasses()) {
+      addMoteInterface(moteInterfaces, false);
+    }
   }
 
   /**
