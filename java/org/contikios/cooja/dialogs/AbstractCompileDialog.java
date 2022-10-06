@@ -600,7 +600,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         }
 
         // Select default.
-        for (Class<? extends MoteInterface> moteIntf : getDefaultMoteInterfaces()) {
+        for (var moteIntf : moteType.getDefaultMoteInterfaceClasses()) {
           addMoteInterface(moteIntf, true);
         }
       }
@@ -609,17 +609,9 @@ public abstract class AbstractCompileDialog extends JDialog {
     panel.add(BorderLayout.NORTH, b);
     panel.add(BorderLayout.CENTER, new JScrollPane(moteIntfBox));
     parent.addTab("Mote interfaces", null, panel, "Mote interfaces");
-    for (var moteInterfaces : getAllMoteInterfaces()) {
+    for (var moteInterfaces : moteType.getAllMoteInterfaceClasses()) {
       addMoteInterface(moteInterfaces, false);
     }
-  }
-
-  public Class<? extends MoteInterface>[] getAllMoteInterfaces() {
-    return moteType.getAllMoteInterfaceClasses();
-  }
-
-  public Class<? extends MoteInterface>[] getDefaultMoteInterfaces() {
-    return moteType.getDefaultMoteInterfaceClasses();
   }
 
   /**
