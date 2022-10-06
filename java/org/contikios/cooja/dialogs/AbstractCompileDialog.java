@@ -106,7 +106,6 @@ public abstract class AbstractCompileDialog extends JDialog {
     SELECTED_FIRMWARE,
   }
 
-  protected final Simulation simulation;
   protected final Cooja gui;
   protected final BaseContikiMoteType moteType;
 
@@ -129,7 +128,6 @@ public abstract class AbstractCompileDialog extends JDialog {
 
   public AbstractCompileDialog(Simulation sim, final BaseContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
     super(Cooja.getTopParentContainer(), "Create Mote Type: Compile Contiki", ModalityType.APPLICATION_MODAL);
-    this.simulation = sim;
     this.gui = sim.getCooja();
     this.moteType = moteType;
 
