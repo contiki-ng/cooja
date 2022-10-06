@@ -62,12 +62,8 @@ import org.contikios.cooja.Cooja;
 public class ExternalToolsDialog extends JDialog {
   private static final Logger logger = LogManager.getLogger(ExternalToolsDialog.class);
 
-  private final ExternalToolsEventHandler myEventHandler = new ExternalToolsEventHandler();
-
   private final static int LABEL_WIDTH = 220;
   private final static int LABEL_HEIGHT = 15;
-
-  private final ExternalToolsDialog myDialog;
 
   private final JTextField[] textFields;
 
@@ -80,14 +76,8 @@ public class ExternalToolsDialog extends JDialog {
 
   private ExternalToolsDialog() {
     super(Cooja.getTopParentContainer(), "Edit Settings", ModalityType.APPLICATION_MODAL);
-    myDialog = this;
-
-    JLabel label;
     JPanel mainPane = new JPanel();
     mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
-    JPanel smallPane;
-    JButton button;
-    JTextField textField;
 
     // BOTTOM BUTTON PART
     JPanel buttonPane = new JPanel();
@@ -96,8 +86,9 @@ public class ExternalToolsDialog extends JDialog {
 
     buttonPane.add(Box.createHorizontalGlue());
 
-    button = new JButton("Cancel");
+    var button = new JButton("Cancel");
     button.setActionCommand("cancel");
+    var myEventHandler = new ExternalToolsEventHandler();
     button.addActionListener(myEventHandler);
     buttonPane.add(button);
 
@@ -117,13 +108,13 @@ public class ExternalToolsDialog extends JDialog {
     textFields = new JTextField[Cooja.getExternalToolsSettingsCount()];
     for (int i = 0; i < textFields.length; i++) {
       // Add text fields for every changeable property
-      smallPane = new JPanel();
+      var smallPane = new JPanel();
       smallPane.setAlignmentX(Component.LEFT_ALIGNMENT);
       smallPane.setLayout(new BoxLayout(smallPane, BoxLayout.X_AXIS));
-      label = new JLabel(Cooja.getExternalToolsSettingName(i));
+      var label = new JLabel(Cooja.getExternalToolsSettingName(i));
       label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-      textField = new JTextField(35);
+      var textField = new JTextField(35);
       textField.setText("");
       textField.addFocusListener(myEventHandler);
       textFields[i] = textField;
@@ -197,15 +188,11 @@ public class ExternalToolsDialog extends JDialog {
               .trim());
         }
         Cooja.saveExternalToolsUserSettings();
-        if (myDialog != null && myDialog.isDisplayable()) {
-          myDialog.dispose();
-        }
+        ExternalToolsDialog.this.dispose();
       } else if (e.getActionCommand().equals("cancel")) {
-        if (myDialog != null && myDialog.isDisplayable()) {
-          myDialog.dispose();
-        }
+        ExternalToolsDialog.this.dispose();
       } else {
-        logger.debug("Unhandled command: " + e.getActionCommand());
+        logger.error("Unhandled command: " + e.getActionCommand());
       }
     }
   }
