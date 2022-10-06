@@ -332,7 +332,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 							new File(contikiField.getText()).getParentFile(),
 							null,
 							null,
-							null,
+              new MessageListUI(),
 							true
 					);
 				} catch (Exception e1) {

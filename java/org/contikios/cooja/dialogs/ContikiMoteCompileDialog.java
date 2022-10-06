@@ -59,6 +59,7 @@ import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.contikimote.ContikiMoteType.NetworkStack;
+import org.contikios.cooja.mote.BaseContikiMoteType;
 
 /**
  * Contiki Mote Type compile dialog.

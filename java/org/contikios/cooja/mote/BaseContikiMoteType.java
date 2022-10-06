@@ -44,7 +44,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.Action;
@@ -347,7 +346,7 @@ public abstract class BaseContikiMoteType implements MoteType {
    * @param directory Directory in which to execute command
    * @param onSuccess Action called if compilation succeeds
    * @param onFailure Action called if compilation fails
-   * @param compilationOutput Is written both std and err process output
+   * @param messageDialog Is written both std and err process output
    * @param synchronous If true, method blocks until process completes
    * @return Sub-process if called asynchronously
    * @throws MoteTypeCreationException If process returns error, or outputFile does not exist
@@ -358,7 +357,7 @@ public abstract class BaseContikiMoteType implements MoteType {
           final File directory,
           final Action onSuccess,
           final Action onFailure,
-          final MessageList compilationOutput,
+          final MessageList messageDialog,
           boolean synchronous)
           throws MoteTypeCreationException {
     Pattern p = Pattern.compile("([^\\s\"']+|\"[^\"]*\"|'[^']*')");
@@ -373,9 +372,6 @@ public abstract class BaseContikiMoteType implements MoteType {
       }
       commandList.add(arg);
     }
-
-    final MessageList messageDialog =
-            Objects.requireNonNullElseGet(compilationOutput, () -> MessageContainer.createMessageList(true));
     messageDialog.addMessage("> " + String.join(" ", commandList), MessageList.NORMAL);
     final var pb = new ProcessBuilder(commandList).directory(directory);
     if (env != null) {
