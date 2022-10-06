@@ -205,7 +205,7 @@ public class CreateSimDialog extends JDialog {
 
           if (currentRadioMediumDescription.equals(radioMediumDescription)) {
             try {
-              RadioMedium radioMedium = RadioMedium.generateRadioMedium(radioMediumClass, mySimulation);
+              var radioMedium = radioMediumClass.getConstructor(Simulation.class).newInstance(mySimulation);
               mySimulation.setRadioMedium(radioMedium);
             } catch (Exception ex) {
               logger.fatal("Error generating radio medium: " + ex.getMessage(), ex);
