@@ -437,23 +437,17 @@ public abstract class AbstractCompileDialog extends JDialog {
 
     pack();
     setLocationRelativeTo(Cooja.getTopParentContainer());
-    
-    tryRestoreMoteType(cfg);
-  }
 
-  private void tryRestoreMoteType(BaseContikiMoteType.MoteTypeConfig cfg) {
+    // Set default values of text fields from the MoteTypeConfig contents.
     descriptionField.setText(cfg.desc());
     var file = cfg.file();
     contikiField.setText(file == null ? "" : file);
     var dialogState = file == null
             ? DialogState.NO_SELECTION
             : file.endsWith(".c") ? DialogState.SELECTED_SOURCE : DialogState.SELECTED_FIRMWARE;
-    /* Restore mote interface classes */
     for (var intf : cfg.interfaces()) {
       addMoteInterface(intf, true);
     }
-
-    /* Restore compile commands */
     final var commands = cfg.commands();
     if (commands != null) {
       commandsArea.setText(commands);
