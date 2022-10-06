@@ -76,12 +76,8 @@ public class ExternalToolsDialog extends JDialog {
 
   private ExternalToolsDialog() {
     super(Cooja.getTopParentContainer(), "Edit Settings", ModalityType.APPLICATION_MODAL);
-    JLabel label;
     JPanel mainPane = new JPanel();
     mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
-    JPanel smallPane;
-    JButton button;
-    JTextField textField;
 
     // BOTTOM BUTTON PART
     JPanel buttonPane = new JPanel();
@@ -90,7 +86,7 @@ public class ExternalToolsDialog extends JDialog {
 
     buttonPane.add(Box.createHorizontalGlue());
 
-    button = new JButton("Cancel");
+    var button = new JButton("Cancel");
     button.setActionCommand("cancel");
     var myEventHandler = new ExternalToolsEventHandler();
     button.addActionListener(myEventHandler);
@@ -112,13 +108,13 @@ public class ExternalToolsDialog extends JDialog {
     textFields = new JTextField[Cooja.getExternalToolsSettingsCount()];
     for (int i = 0; i < textFields.length; i++) {
       // Add text fields for every changeable property
-      smallPane = new JPanel();
+      var smallPane = new JPanel();
       smallPane.setAlignmentX(Component.LEFT_ALIGNMENT);
       smallPane.setLayout(new BoxLayout(smallPane, BoxLayout.X_AXIS));
-      label = new JLabel(Cooja.getExternalToolsSettingName(i));
+      var label = new JLabel(Cooja.getExternalToolsSettingName(i));
       label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-      textField = new JTextField(35);
+      var textField = new JTextField(35);
       textField.setText("");
       textField.addFocusListener(myEventHandler);
       textFields[i] = textField;
