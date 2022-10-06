@@ -62,8 +62,6 @@ import org.contikios.cooja.Cooja;
 public class ExternalToolsDialog extends JDialog {
   private static final Logger logger = LogManager.getLogger(ExternalToolsDialog.class);
 
-  private final ExternalToolsEventHandler myEventHandler = new ExternalToolsEventHandler();
-
   private final static int LABEL_WIDTH = 220;
   private final static int LABEL_HEIGHT = 15;
 
@@ -98,6 +96,7 @@ public class ExternalToolsDialog extends JDialog {
 
     button = new JButton("Cancel");
     button.setActionCommand("cancel");
+    var myEventHandler = new ExternalToolsEventHandler();
     button.addActionListener(myEventHandler);
     buttonPane.add(button);
 
