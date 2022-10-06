@@ -65,8 +65,6 @@ public class ExternalToolsDialog extends JDialog {
   private final static int LABEL_WIDTH = 220;
   private final static int LABEL_HEIGHT = 15;
 
-  private final ExternalToolsDialog myDialog;
-
   private final JTextField[] textFields;
 
   /** Creates a dialog for viewing/editing external tools settings. */
@@ -78,8 +76,6 @@ public class ExternalToolsDialog extends JDialog {
 
   private ExternalToolsDialog() {
     super(Cooja.getTopParentContainer(), "Edit Settings", ModalityType.APPLICATION_MODAL);
-    myDialog = this;
-
     JLabel label;
     JPanel mainPane = new JPanel();
     mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
@@ -196,9 +192,9 @@ public class ExternalToolsDialog extends JDialog {
               .trim());
         }
         Cooja.saveExternalToolsUserSettings();
-        myDialog.dispose();
+        ExternalToolsDialog.this.dispose();
       } else if (e.getActionCommand().equals("cancel")) {
-        myDialog.dispose();
+        ExternalToolsDialog.this.dispose();
       } else {
         logger.error("Unhandled command: " + e.getActionCommand());
       }
