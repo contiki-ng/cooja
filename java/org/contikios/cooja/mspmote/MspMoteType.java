@@ -59,8 +59,8 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   private static final Logger logger = LogManager.getLogger(MspMoteType.class);
 
   @Override
-  protected boolean showCompilationDialog(Simulation sim) {
-    return MspCompileDialog.showDialog(sim, this);
+  protected boolean showCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
+    return MspCompileDialog.showDialog(sim, this, cfg);
   }
 
   @Override

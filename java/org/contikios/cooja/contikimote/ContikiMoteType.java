@@ -276,8 +276,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
   }
 
   @Override
-  protected boolean showCompilationDialog(Simulation sim) {
-    return ContikiMoteCompileDialog.showDialog(sim, this);
+  protected boolean showCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
+    return ContikiMoteCompileDialog.showDialog(sim, this, cfg);
   }
 
   /** Load LibN.java and the corresponding .cooja file into memory. */

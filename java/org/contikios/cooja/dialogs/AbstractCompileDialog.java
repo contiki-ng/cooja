@@ -127,7 +127,7 @@ public abstract class AbstractCompileDialog extends JDialog {
   public File contikiSource = null;
   public File contikiFirmware = null;
 
-  public AbstractCompileDialog(Simulation sim, final BaseContikiMoteType moteType) {
+  public AbstractCompileDialog(Simulation sim, final BaseContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
     super(Cooja.getTopParentContainer(), "Create Mote Type: Compile Contiki", ModalityType.APPLICATION_MODAL);
     this.simulation = sim;
     this.gui = sim.getCooja();
@@ -438,27 +438,16 @@ public abstract class AbstractCompileDialog extends JDialog {
     pack();
     setLocationRelativeTo(Cooja.getTopParentContainer());
     
-    tryRestoreMoteType();
+    tryRestoreMoteType(cfg);
   }
 
-  private void tryRestoreMoteType() {
-    var dialogState = DialogState.NO_SELECTION;
-    /* Restore description */
-    if (moteType.getDescription() != null) {
-      descriptionField.setText(moteType.getDescription());
-    }
-
-    /* Restore Contiki source or firmware */
-    final var source = moteType.getContikiSourceFile();
-    final var firmware = moteType.getContikiFirmwareFile();
-    if (source != null) {
-      contikiField.setText(source.getAbsolutePath());
-      dialogState = DialogState.SELECTED_SOURCE;
-    } else if (firmware != null) {
-      contikiField.setText(firmware.getAbsolutePath());
-      dialogState = DialogState.SELECTED_FIRMWARE;
-    }
-
+  private void tryRestoreMoteType(BaseContikiMoteType.MoteTypeConfig cfg) {
+    descriptionField.setText(cfg.desc());
+    var file = cfg.file();
+    contikiField.setText(file == null ? "" : file);
+    var dialogState = file == null
+            ? DialogState.NO_SELECTION
+            : file.endsWith(".c") ? DialogState.SELECTED_SOURCE : DialogState.SELECTED_FIRMWARE;
     /* Restore mote interface classes */
     for (Component c : moteIntfBox.getComponents()) {
       if (c instanceof JCheckBox box) {
@@ -468,13 +457,12 @@ public abstract class AbstractCompileDialog extends JDialog {
     for (var intf : getAllMoteInterfaces()) {
       addMoteInterface(intf, false);
     }
-    var moteClasses = moteType.getMoteInterfaceClasses();
-    for (var intf : moteClasses == null ? getDefaultMoteInterfaces() : moteClasses) {
+    for (var intf : cfg.interfaces()) {
       addMoteInterface(intf, true);
     }
 
     /* Restore compile commands */
-    final var commands = moteType.getCompileCommands();
+    final var commands = cfg.commands();
     if (commands != null) {
       commandsArea.setText(commands);
       dialogState = DialogState.AWAITING_COMPILATION;
