@@ -36,9 +36,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashSet;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -90,17 +87,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   @Override
   public String getDefaultCompileCommands(String name) {
-    if (name == null || !Files.exists(Path.of(name))) {
-      return ""; // Not ready to compile yet.
-    }
-
-    if (moteType.getIdentifier() == null) {
-      var usedNames = new HashSet<String>();
-      for (var mote : simulation.getMoteTypes()) {
-        usedNames.add(mote.getIdentifier());
-      }
-      moteType.setIdentifier(ContikiMoteType.generateUniqueMoteTypeID(usedNames));
-    }
     compilationEnvironment = moteType.getCompilationEnvironment();
     var env = compilationEnvironment.entrySet().stream()
             .map(e -> new Object[]{e.getKey(), e.getValue()}).toArray(Object[][]::new);
