@@ -2881,8 +2881,10 @@ public class Cooja extends Observable {
         // Create mote type
         var clazz = (Class<? extends MoteType>) ((JMenuItem) e.getSource()).getClientProperty("class");
         try {
-          newMoteType = clazz == ContikiMoteType.class
-                  ? new ContikiMoteType(cooja) : clazz.getDeclaredConstructor().newInstance();
+          newMoteType = MoteInterfaceHandler.createMoteType(Cooja.this, clazz.getName());
+          if (newMoteType == null) {
+            newMoteType = clazz.getDeclaredConstructor().newInstance();
+          }
           if (!newMoteType.configureAndInit(Cooja.getTopParentContainer(), cooja.mySimulation, isVisualized())) {
             return;
           }

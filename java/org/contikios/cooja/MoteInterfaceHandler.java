@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.contikimote.interfaces.ContikiBeeper;
 import org.contikios.cooja.contikimote.interfaces.ContikiButton;
 import org.contikios.cooja.contikimote.interfaces.ContikiCFS;
@@ -62,6 +63,10 @@ import org.contikios.cooja.interfaces.PIR;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.interfaces.RimeAddress;
+import org.contikios.cooja.motes.DisturberMoteType;
+import org.contikios.cooja.motes.ImportAppMoteType;
+import org.contikios.cooja.mspmote.SkyMoteType;
+import org.contikios.cooja.mspmote.Z1MoteType;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
 import org.contikios.cooja.mspmote.interfaces.MspClock;
 import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
@@ -146,6 +151,22 @@ public class MoteInterfaceHandler {
         throw new MoteType.MoteTypeCreationException("Exception when calling constructor of " + interfaceClass, e);
       }
     }
+  }
+
+  /** Fast translation from class name to object for builtin mote types.
+   * @param cooja Cooja
+   * @param name Name of mote type to create
+   * @return Object or null
+   */
+  public static MoteType createMoteType(Cooja cooja, String name) {
+    return switch (name) {
+      case "org.contikios.cooja.motes.ImportAppMoteType" -> new ImportAppMoteType();
+      case "org.contikios.cooja.motes.DisturberMoteType" -> new DisturberMoteType();
+      case "org.contikios.cooja.contikimote.ContikiMoteType" -> new ContikiMoteType(cooja);
+      case "org.contikios.cooja.mspmote.SkyMoteType" -> new SkyMoteType();
+      case "org.contikios.cooja.mspmote.Z1MoteType" -> new Z1MoteType();
+      default -> null;
+    };
   }
 
   /** Fast translation from class name to class file for builtin interfaces. Uses the classloader
