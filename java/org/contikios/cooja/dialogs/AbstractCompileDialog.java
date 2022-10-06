@@ -45,7 +45,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-import java.util.LinkedHashMap;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -349,26 +348,6 @@ public abstract class AbstractCompileDialog extends JDialog {
     createButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-      	/* Write mote type settings (generic) */
-      	moteType.setDescription(descriptionField.getText());
-      	moteType.setContikiSourceFile(contikiSource);
-      	moteType.setContikiFirmwareFile(contikiFirmware);
-        ArrayList<Class<? extends MoteInterface>> selected = new ArrayList<>();
-        for (Component c : moteIntfBox.getComponents()) {
-          if (c instanceof JCheckBox checkbox) {
-            if (!checkbox.isSelected()) {
-              continue;
-            }
-            Class<? extends MoteInterface> clazz =
-                    (Class<? extends MoteInterface>) checkbox.getClientProperty("class");
-            if (clazz != null) { // FIXME: this should never be null.
-              selected.add(clazz);
-            }
-          }
-        }
-        Class<? extends MoteInterface>[] arr = new Class[selected.size()];
-        moteType.setMoteInterfaceClasses(selected.toArray(arr));
-        moteType.setCompileCommands(commandsArea.getText());
       	AbstractCompileDialog.this.dispose();
       }
     });
@@ -456,14 +435,21 @@ public abstract class AbstractCompileDialog extends JDialog {
     setDialogState(dialogState);
   }
 
-  /**
-   * @return Mote type was created without errors
-   */
-  public boolean createdOK() {
-    if (contikiFirmware == null) {
-      return false;
+  /** Returns the results as a mote type configuration, or null on failure. */
+  public BaseContikiMoteType.MoteTypeConfig results() {
+    if (contikiFirmware == null || !contikiFirmware.exists()) {
+      return null;
     }
-    return contikiFirmware.exists();
+    ArrayList<Class<? extends MoteInterface>> selected = new ArrayList<>();
+    for (var c : moteIntfBox.getComponents()) {
+      if (c instanceof JCheckBox checkbox) {
+        if (checkbox.isSelected()) {
+          selected.add((Class<? extends MoteInterface>) checkbox.getClientProperty("class"));
+        }
+      }
+    }
+    Class<? extends MoteInterface>[] arr = new Class[selected.size()];
+    return new BaseContikiMoteType.MoteTypeConfig(descriptionField.getText(), contikiField.getText(), commandsArea.getText(), selected.toArray(arr));
   }
 
   public abstract boolean canLoadFirmware(String name);

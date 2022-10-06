@@ -305,9 +305,19 @@ public abstract class BaseContikiMoteType implements MoteType {
       String file = source != null ? source.getAbsolutePath() : firmware != null ? firmware.getAbsolutePath() : null;
       var moteClasses = getMoteInterfaceClasses();
       var interfaces = moteClasses == null ? getDefaultMoteInterfaceClasses() : moteClasses;
-      if (!showCompilationDialog(sim, new MoteTypeConfig(getDescription(), file, getCompileCommands(), interfaces))) {
+      var cfg = showCompilationDialog(sim, new MoteTypeConfig(getDescription(), file, getCompileCommands(), interfaces));
+      if (cfg == null) {
         return false;
       }
+      setDescription(cfg.desc);
+      if (cfg.file.endsWith(".c")) {
+        fileSource = new File(cfg.file);
+        fileFirmware = getExpectedFirmwareFile(fileSource.getAbsolutePath());
+      } else {
+        fileFirmware = new File(cfg.file);
+      }
+      setCompileCommands(cfg.commands);
+      setMoteInterfaceClasses(cfg.interfaces);
     } else {
       // Handle multiple compilation commands one by one.
       final var output = MessageContainer.createMessageList(vis);
@@ -335,10 +345,10 @@ public abstract class BaseContikiMoteType implements MoteType {
   protected abstract AbstractCompileDialog createCompilationDialog(Simulation sim, MoteTypeConfig cfg);
 
   /** Show a compilation dialog for this mote type. */
-  protected boolean showCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
+  protected MoteTypeConfig showCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
     final var dialog = createCompilationDialog(sim, cfg);
     dialog.setVisible(true); // Blocks.
-    return dialog.createdOK();
+    return dialog.results();
   }
 
   /** Return a compilation environment. */
