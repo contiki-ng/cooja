@@ -75,7 +75,7 @@ public class CreateSimDialog extends JDialog {
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 25;
 
-  private Simulation mySimulation = null;
+  private Simulation mySimulation;
 
   private final JFormattedTextField randomSeed;
   private final JFormattedTextField delayedStartup;
@@ -93,7 +93,7 @@ public class CreateSimDialog extends JDialog {
    * @return True if simulation configured correctly
    */
   public static boolean showDialog(Simulation simulation) {
-    final CreateSimDialog dialog = new CreateSimDialog(simulation.getCooja());
+    final var dialog = new CreateSimDialog(simulation.getCooja(), simulation);
     dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
     dialog.addWindowListener(new WindowAdapter() {
       @Override
@@ -101,9 +101,6 @@ public class CreateSimDialog extends JDialog {
         dialog.cancelButton.doClick();
       }
     });
-
-    dialog.mySimulation = simulation;
-
     // Set title
     if (simulation.getTitle() != null) {
       // Title already preset
@@ -165,8 +162,9 @@ public class CreateSimDialog extends JDialog {
     return dialog.mySimulation != null;
   }
 
-  private CreateSimDialog(Cooja gui) {
+  private CreateSimDialog(Cooja gui, Simulation sim) {
     super(Cooja.getTopParentContainer(), "Create new simulation", ModalityType.APPLICATION_MODAL);
+    mySimulation = sim;
     Box vertBox = Box.createVerticalBox();
     NumberFormat integerFormat = NumberFormat.getIntegerInstance();
 
