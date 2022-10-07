@@ -2802,10 +2802,8 @@ public class Cooja extends Observable {
                 "Could not find " + filename + ", jar file seems broken", "Cooja", "");
       }
       settings.load(in);
-
       currentExternalToolsSettings = settings;
       defaultExternalToolsSettings = (Properties) currentExternalToolsSettings.clone();
-      logger.info("External tools default settings: " + filename);
     } catch (IOException e) {
       throw new MissingResourceException(e.getMessage(), "Cooja", "");
     }
