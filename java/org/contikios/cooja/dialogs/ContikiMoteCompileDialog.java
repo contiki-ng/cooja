@@ -62,13 +62,7 @@ import org.contikios.cooja.mote.BaseContikiMoteType;
 public class ContikiMoteCompileDialog extends AbstractCompileDialog {
   private final JComboBox<?> netStackComboBox = new JComboBox<>(NetworkStack.values());
 
-  public static boolean showDialog(Simulation sim, ContikiMoteType mote, BaseContikiMoteType.MoteTypeConfig cfg) {
-    final var dialog = new ContikiMoteCompileDialog(sim, mote, cfg);
-    dialog.setVisible(true); // Blocks.
-    return dialog.createdOK();
-  }
-
-  private ContikiMoteCompileDialog(Simulation sim, ContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
+  public ContikiMoteCompileDialog(Simulation sim, ContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
     super(sim, moteType, cfg);
     /* Add Contiki mote type specifics */
     addAdvancedTab(tabbedPane);

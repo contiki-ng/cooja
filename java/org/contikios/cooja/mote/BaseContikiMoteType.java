@@ -58,6 +58,7 @@ import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
+import org.contikios.cooja.dialogs.AbstractCompileDialog;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.util.StringUtils;
@@ -304,9 +305,19 @@ public abstract class BaseContikiMoteType implements MoteType {
       String file = source != null ? source.getAbsolutePath() : firmware != null ? firmware.getAbsolutePath() : null;
       var moteClasses = getMoteInterfaceClasses();
       var interfaces = moteClasses == null ? getDefaultMoteInterfaceClasses() : moteClasses;
-      if (!showCompilationDialog(sim, new MoteTypeConfig(getDescription(), file, getCompileCommands(), interfaces))) {
+      var cfg = showCompilationDialog(sim, new MoteTypeConfig(getDescription(), file, getCompileCommands(), interfaces));
+      if (cfg == null) {
         return false;
       }
+      setDescription(cfg.desc);
+      if (cfg.file.endsWith(".c")) {
+        fileSource = new File(cfg.file);
+        fileFirmware = getExpectedFirmwareFile(fileSource.getAbsolutePath());
+      } else {
+        fileFirmware = new File(cfg.file);
+      }
+      setCompileCommands(cfg.commands);
+      setMoteInterfaceClasses(cfg.interfaces);
     } else {
       // Handle multiple compilation commands one by one.
       final var output = MessageContainer.createMessageList(vis);
@@ -330,8 +341,15 @@ public abstract class BaseContikiMoteType implements MoteType {
   /** Compilation-relevant parts of mote type configuration. */
   public record MoteTypeConfig(String desc, String file, String commands, Class<? extends MoteInterface>[] interfaces) {}
 
+  /** Create a compilation dialog for this mote type. */
+  protected abstract AbstractCompileDialog createCompilationDialog(Simulation sim, MoteTypeConfig cfg);
+
   /** Show a compilation dialog for this mote type. */
-  protected abstract boolean showCompilationDialog(Simulation sim, MoteTypeConfig cfg);
+  protected MoteTypeConfig showCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
+    final var dialog = createCompilationDialog(sim, cfg);
+    dialog.setVisible(true); // Blocks.
+    return dialog.results();
+  }
 
   /** Return a compilation environment. */
   public LinkedHashMap<String, String> getCompilationEnvironment() {
