@@ -2826,7 +2826,6 @@ public class Cooja extends Observable {
         String key = (String) en.nextElement();
         setExternalToolsSetting(key, settings.getProperty(key));
       }
-      logger.info("External tools user settings: " + externalToolsUserSettingsFile);
     } catch (IOException e) {
       logger.warn("Error when reading user settings from: " + externalToolsUserSettingsFile);
     }
