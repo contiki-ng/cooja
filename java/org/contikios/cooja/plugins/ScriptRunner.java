@@ -171,8 +171,11 @@ public class ScriptRunner implements Plugin {
 
     final JCheckBoxMenuItem activateMenuItem = new JCheckBoxMenuItem("Activate");
     activateMenuItem.addActionListener(ev -> {
-      if (isActive()) {
-        deactivateScript();
+      if (activated) {
+        engine.deactivateScript();
+        activated = false;
+        codeEditor.setEnabled(true);
+        updateTitle();
       } else {
         activateScript();
       }
@@ -189,8 +192,8 @@ public class ScriptRunner implements Plugin {
     MenuListener toggleMenuItems = new MenuListener() {
       @Override
       public void menuSelected(MenuEvent e) {
-        activateMenuItem.setSelected(isActive());
-        examplesMenu.setEnabled(!isActive());
+        activateMenuItem.setSelected(activated);
+        examplesMenu.setEnabled(!activated);
       }
       @Override
       public void menuDeselected(MenuEvent e) {
@@ -260,15 +263,6 @@ public class ScriptRunner implements Plugin {
     return true;
   }
 
-  private void deactivateScript() {
-    engine.deactivateScript();
-    if (Cooja.isVisualized()) {
-      codeEditor.setEnabled(true);
-      updateTitle();
-    }
-    activated = false;
-  }
-
   private boolean activateScript() {
     CompiledScript script;
     try {
@@ -284,12 +278,12 @@ public class ScriptRunner implements Plugin {
     if (!engine.activateScript(script)) {
       return false;
     }
+    activated = true;
     if (Cooja.isVisualized()) {
       logTextArea.setText("");
       codeEditor.setEnabled(false);
       updateTitle();
     }
-    activated = true;
     return true;
   }
 
@@ -298,7 +292,7 @@ public class ScriptRunner implements Plugin {
     if (linkedFile != null) {
       title += " (" + linkedFile.getName() + ")";
     }
-    if (isActive()) {
+    if (activated) {
       title += " *active*";
     }
     frame.setTitle(title);
@@ -366,7 +360,7 @@ public class ScriptRunner implements Plugin {
       config.add(element);
     }
 
-    if (isActive()) {
+    if (activated) {
       Element element = new Element("active");
       element.setText(String.valueOf(true));
       config.add(element);
@@ -375,14 +369,9 @@ public class ScriptRunner implements Plugin {
     return config;
   }
 
-  public boolean isActive() {
-    return activated;
-  }
-
   @Override
   public void closePlugin() {
     checkForUpdatesAndSave();
-    deactivateScript();
     simulation.removeScriptEngine(engine);
   }
 

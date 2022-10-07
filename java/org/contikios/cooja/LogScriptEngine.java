@@ -123,7 +123,7 @@ public class LogScriptEngine {
   private long startTime;
   private long startRealTime;
 
-  public LogScriptEngine(Simulation simulation, JTextArea logTextArea) {
+  protected LogScriptEngine(Simulation simulation, JTextArea logTextArea) {
     this.simulation = simulation;
     if (!Cooja.isVisualized()) {
       var logName = engineInstances++ == 0 ? "COOJA.testlog" : String.format("COOJA-%02d.testlog", engineInstances);
@@ -175,7 +175,7 @@ public class LogScriptEngine {
     /* ... script is now again waiting for script semaphore ... */
   }
 
-  public void closeLog() {
+  protected void closeLog() {
     if (Cooja.isVisualized()) {
       return;
     }

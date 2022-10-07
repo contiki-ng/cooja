@@ -284,6 +284,7 @@ public class Simulation extends Observable implements Runnable {
 
   /** Remove a script engine from the list of active script engines. */
   public void removeScriptEngine(LogScriptEngine engine) {
+    engine.deactivateScript();
     engine.closeLog();
     scriptEngines.remove(engine);
   }
