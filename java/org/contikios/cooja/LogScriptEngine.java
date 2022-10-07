@@ -243,17 +243,26 @@ public class LogScriptEngine {
   public boolean activateScript(final CompiledScript script) {
     semaphoreScript = new Semaphore(1);
     semaphoreSim = new Semaphore(1);
-    engine.put("TIMEOUT", false);
-    engine.put("SHUTDOWN", false);
-    engine.put("SEMAPHORE_SCRIPT", semaphoreScript);
-    engine.put("SEMAPHORE_SIM", semaphoreSim);
-
     try {
       semaphoreScript.acquire();
     } catch (InterruptedException e) {
       logger.fatal("Error when creating engine: " + e.getMessage(), e);
       return false;
     }
+    // Setup simulation observers.
+    simulation.getEventCentral().addLogOutputListener(logOutputListener);
+    // Setup script variables.
+    engine.put("TIMEOUT", false);
+    engine.put("SHUTDOWN", false);
+    engine.put("SEMAPHORE_SCRIPT", semaphoreScript);
+    engine.put("SEMAPHORE_SIM", semaphoreSim);
+    engine.put("log", scriptLog);
+    engine.put("global", new HashMap<>());
+    engine.put("sim", simulation);
+    engine.put("gui", simulation.getCooja());
+    engine.put("mote", null);
+    engine.put("msg", "");
+    engine.put("node", new ScriptMote());
     scriptThread = new Thread(new Runnable() {
       @Override
       public void run() {
@@ -290,20 +299,6 @@ public class LogScriptEngine {
         }
       }
     }, "script");
-
-    /* Setup simulation observers */
-    simulation.getEventCentral().addLogOutputListener(logOutputListener);
-
-    /* Create script output logger */
-    engine.put("log", scriptLog);
-    engine.put("global", new HashMap<>());
-    engine.put("sim", simulation);
-    engine.put("gui", simulation.getCooja());
-    engine.put("mote", null);
-    engine.put("msg", "");
-    engine.put("node", new ScriptMote());
-
-    // Script context initialized (engine.put calls), start thread that runs script to the first semaphore.
     scriptThread.start();
     // Wait for script thread to reach barrier in the beginning of the JavaScript run function.
     while (!semaphoreScript.hasQueuedThreads()) {
