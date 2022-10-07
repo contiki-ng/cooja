@@ -40,11 +40,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.contikios.cooja.contikimote.ContikiMoteType;
-import org.contikios.cooja.motes.DisturberMoteType;
-import org.contikios.cooja.motes.ImportAppMoteType;
-import org.contikios.cooja.mspmote.SkyMoteType;
-import org.contikios.cooja.mspmote.Z1MoteType;
 import org.jdom.Element;
 
 import org.contikios.cooja.dialogs.CreateSimDialog;
@@ -635,34 +630,17 @@ public class Simulation extends Observable implements Runnable {
             }
           }
 
-          MoteType moteType;
-          switch (moteTypeClassName) {
-            case "org.contikios.cooja.motes.ImportAppMoteType":
-              moteType = new ImportAppMoteType();
-              break;
-            case "org.contikios.cooja.motes.DisturberMoteType":
-              moteType = new DisturberMoteType();
-              break;
-            case "org.contikios.cooja.contikimote.ContikiMoteType":
-              moteType = new ContikiMoteType(getCooja());
-              break;
-            case "org.contikios.cooja.mspmote.SkyMoteType":
-              moteType = new SkyMoteType();
-              break;
-            case "org.contikios.cooja.mspmote.Z1MoteType":
-              moteType = new Z1MoteType();
-              break;
-            default:
-              Class<? extends MoteType> moteTypeClass = null;
-              for (int i = 0; i < availableMoteTypes.length; i++) {
-                if (moteTypeClassName.equals(availableMoteTypes[i])) {
-                  moteTypeClass = availableMoteTypesObjs.get(i);
-                  break;
-                }
+          var moteType = MoteInterfaceHandler.createMoteType(getCooja(), moteTypeClassName);
+          if (moteType == null) {
+            Class<? extends MoteType> moteTypeClass = null;
+            for (int i = 0; i < availableMoteTypes.length; i++) {
+              if (moteTypeClassName.equals(availableMoteTypes[i])) {
+                moteTypeClass = availableMoteTypesObjs.get(i);
+                break;
               }
-              assert moteTypeClass != null : "Selected MoteType class is null";
-              moteType = moteTypeClass.getConstructor((Class<? extends MoteType>[]) null).newInstance();
-              break;
+            }
+            assert moteTypeClass != null : "Selected MoteType class is null";
+            moteType = moteTypeClass.getConstructor((Class<? extends MoteType>[]) null).newInstance();
           }
           if (!moteType.setConfigXML(this, element.getChildren(), visAvailable)) {
             logger.fatal("Mote type was not created: " + element.getText().trim());
