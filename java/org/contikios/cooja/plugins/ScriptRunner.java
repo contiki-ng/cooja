@@ -171,7 +171,7 @@ public class ScriptRunner implements Plugin {
 
     final JCheckBoxMenuItem activateMenuItem = new JCheckBoxMenuItem("Activate");
     activateMenuItem.addActionListener(ev -> {
-      if (isActive()) {
+      if (activated) {
         deactivateScript();
       } else {
         activateScript();
@@ -189,8 +189,8 @@ public class ScriptRunner implements Plugin {
     MenuListener toggleMenuItems = new MenuListener() {
       @Override
       public void menuSelected(MenuEvent e) {
-        activateMenuItem.setSelected(isActive());
-        examplesMenu.setEnabled(!isActive());
+        activateMenuItem.setSelected(activated);
+        examplesMenu.setEnabled(!activated);
       }
       @Override
       public void menuDeselected(MenuEvent e) {
@@ -298,7 +298,7 @@ public class ScriptRunner implements Plugin {
     if (linkedFile != null) {
       title += " (" + linkedFile.getName() + ")";
     }
-    if (isActive()) {
+    if (activated) {
       title += " *active*";
     }
     frame.setTitle(title);
@@ -366,17 +366,13 @@ public class ScriptRunner implements Plugin {
       config.add(element);
     }
 
-    if (isActive()) {
+    if (activated) {
       Element element = new Element("active");
       element.setText(String.valueOf(true));
       config.add(element);
     }
 
     return config;
-  }
-
-  public boolean isActive() {
-    return activated;
   }
 
   @Override
