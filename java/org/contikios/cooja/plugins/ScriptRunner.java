@@ -173,9 +173,9 @@ public class ScriptRunner implements Plugin {
     activateMenuItem.addActionListener(ev -> {
       if (activated) {
         engine.deactivateScript();
+        activated = false;
         codeEditor.setEnabled(true);
         updateTitle();
-        activated = false;
       } else {
         activateScript();
       }
@@ -278,12 +278,12 @@ public class ScriptRunner implements Plugin {
     if (!engine.activateScript(script)) {
       return false;
     }
+    activated = true;
     if (Cooja.isVisualized()) {
       logTextArea.setText("");
       codeEditor.setEnabled(false);
       updateTitle();
     }
-    activated = true;
     return true;
   }
 
