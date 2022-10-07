@@ -270,10 +270,10 @@ public class SerialSocketClient implements Plugin, MotePlugin {
       serialPort.addSerialDataObserver(serialDataObserver = new Observer() {
         @Override
         public void update(Observable obs, Object obj) {
+          if (out == null) {
+            return;
+          }
           try {
-            if (out == null) {
-              return;
-            }
             out.write(serialPort.getLastSerialData());
             out.flush();
             outBytes++;

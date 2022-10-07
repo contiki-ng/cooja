@@ -545,15 +545,12 @@ public class SerialSocketServer implements Plugin, MotePlugin {
 
     @Override
     public void update(Observable obs, Object obj) {
+      if (out == null) {
+        return;
+      }
       try {
-        if (out == null) {
-          /*logger.debug("out is null");*/
-          return;
-        }
-
         out.write(serialPort.getLastSerialData());
         out.flush();
-
         outBytes++;
       } catch (IOException ex) {
         logger.error(ex);
