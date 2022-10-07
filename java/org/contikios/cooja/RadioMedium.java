@@ -30,7 +30,6 @@
 
 package org.contikios.cooja;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
@@ -148,23 +147,6 @@ public abstract class RadioMedium {
    */
   public abstract boolean setConfigXML(Collection<Element> configXML, boolean visAvailable);
 
-  /**
-   * This method creates an instance of the given class with the given
-   * simulation constructor argument. Instead of calling the constructors
-   * directly this method may be used.
-   *
-   * @return Radio medium instance
-   */
-  public static RadioMedium generateRadioMedium(
-      Class<? extends RadioMedium> radioMediumClass, Simulation simulation)
-      throws NoSuchMethodException, InvocationTargetException,
-      IllegalAccessException, InstantiationException {
-
-    // Generating radio medium
-    var constr = radioMediumClass.getConstructor(Simulation.class);
-    return constr.newInstance(simulation);
-  }
-  
   /**
    * Called when radio medium is removed. 
    */
