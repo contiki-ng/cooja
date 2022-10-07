@@ -378,7 +378,6 @@ public class ScriptRunner implements Plugin {
   @Override
   public void closePlugin() {
     checkForUpdatesAndSave();
-    deactivateScript();
     simulation.removeScriptEngine(engine);
   }
 
