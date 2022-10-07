@@ -254,16 +254,7 @@ public class LogScriptEngine {
       logger.fatal("Error when creating engine: " + e.getMessage(), e);
       return false;
     }
-    ThreadGroup group = new ThreadGroup("script") {
-      @Override
-      public void uncaughtException(Thread t, Throwable e) {
-        while (e.getCause() != null) {
-          e = e.getCause();
-        }
-        logger.fatal("Script error:", e);
-      }
-    };
-    scriptThread = new Thread(group, new Runnable() {
+    scriptThread = new Thread(new Runnable() {
       @Override
       public void run() {
         try {
@@ -287,7 +278,7 @@ public class LogScriptEngine {
           if (!Cooja.isVisualized() && rv >= 0) {
             simulation.getCooja().doQuit(false, rv);
           }
-        } catch (ScriptException | RuntimeException e) {
+        } catch (Exception e) {
           logger.fatal("Script error:", e);
           if (!Cooja.isVisualized()) {
             logger.fatal("Test script error, terminating Cooja.");
