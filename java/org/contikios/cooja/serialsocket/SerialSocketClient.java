@@ -285,50 +285,47 @@ public class SerialSocketClient implements Plugin, MotePlugin {
         }
       }
     });
+    addClientListener(new ClientListener() {
 
-    if (Cooja.isVisualized()) {
-      addClientListener(new ClientListener() {
+      @Override
+      public void onError(final String msg) {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            socketStatusLabel.setForeground(ST_COLOR_FAILED);
+            socketStatusLabel.setText(msg);
+          }
+        });
+      }
 
-        @Override
-        public void onError(final String msg) {
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              socketStatusLabel.setForeground(ST_COLOR_FAILED);
-              socketStatusLabel.setText(msg);
-            }
-          });
-        }
+      @Override
+      public void onConnected() {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            socketStatusLabel.setText("Connected");
+            socketStatusLabel.setForeground(ST_COLOR_CONNECTED);
+            serverHostField.setEnabled(false);
+            serverPortField.setEnabled(false);
+            serverSelectButton.setText("Disconnect");
+          }
+        });
+      }
 
-        @Override
-        public void onConnected() {
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              socketStatusLabel.setText("Connected");
-              socketStatusLabel.setForeground(ST_COLOR_CONNECTED);
-              serverHostField.setEnabled(false);
-              serverPortField.setEnabled(false);
-              serverSelectButton.setText("Disconnect");
-            }
-          });
-        }
-
-        @Override
-        public void onDisconnected() {
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              socketStatusLabel.setForeground(ST_COLOR_UNCONNECTED);
-              socketStatusLabel.setText("Disconnected");
-              serverHostField.setEnabled(true);
-              serverPortField.setEnabled(true);
-              serverSelectButton.setText("Connect");
-            }
-          });
-        }
-      });
-    }
+      @Override
+      public void onDisconnected() {
+        SwingUtilities.invokeLater(new Runnable() {
+          @Override
+          public void run() {
+            socketStatusLabel.setForeground(ST_COLOR_UNCONNECTED);
+            socketStatusLabel.setText("Disconnected");
+            serverHostField.setEnabled(true);
+            serverPortField.setEnabled(true);
+            serverSelectButton.setText("Connect");
+          }
+        });
+      }
+    });
     frame.pack();
   }
 
