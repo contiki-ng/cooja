@@ -172,7 +172,10 @@ public class ScriptRunner implements Plugin {
     final JCheckBoxMenuItem activateMenuItem = new JCheckBoxMenuItem("Activate");
     activateMenuItem.addActionListener(ev -> {
       if (activated) {
-        deactivateScript();
+        engine.deactivateScript();
+        codeEditor.setEnabled(true);
+        updateTitle();
+        activated = false;
       } else {
         activateScript();
       }
@@ -258,15 +261,6 @@ public class ScriptRunner implements Plugin {
       Cooja.setExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", source.getAbsolutePath());
     }
     return true;
-  }
-
-  private void deactivateScript() {
-    engine.deactivateScript();
-    if (Cooja.isVisualized()) {
-      codeEditor.setEnabled(true);
-      updateTitle();
-    }
-    activated = false;
   }
 
   private boolean activateScript() {
