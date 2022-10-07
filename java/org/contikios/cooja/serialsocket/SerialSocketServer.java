@@ -137,204 +137,201 @@ public class SerialSocketServer implements Plugin, MotePlugin {
       return;
     }
     frame = new VisPlugin("Serial Socket (SERVER) (" + mote + ")", gui, this);
+    updateTimer.start();
+    frame.setResizable(false);
+    frame.setLayout(new BorderLayout());
 
-    if (Cooja.isVisualized()) {
-      updateTimer.start();
-      frame.setResizable(false);
-      frame.setLayout(new BorderLayout());
+    // --- Server Port setup
 
-      // --- Server Port setup
-      
-      GridBagConstraints c = new GridBagConstraints();
-      JPanel socketPanel = new JPanel(new GridBagLayout());
-      socketPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-      
-      JLabel label = new JLabel("Listen port: ");
-      c.gridx = 0;
-      c.gridy = 0;
-      c.weightx = 0.1;
-      c.anchor = GridBagConstraints.EAST;
-      socketPanel.add(label, c);
-      
-      NumberFormat nf = NumberFormat.getIntegerInstance();
-      nf.setGroupingUsed(false);
-      listenPortField = new JFormattedTextField(new NumberFormatter(nf));
-      listenPortField.setColumns(5);
-      listenPortField.setText(String.valueOf(SERVER_DEFAULT_PORT));
-      c.gridx++;
-      c.weightx = 0.0;
-      socketPanel.add(listenPortField, c);
+    GridBagConstraints c = new GridBagConstraints();
+    JPanel socketPanel = new JPanel(new GridBagLayout());
+    socketPanel.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
-      serverStartButton = new JButton("Start") { // Button for label toggling
-        @Override
-        public Dimension getPreferredSize() {
-          String origText = getText();
-          Dimension origDim = super.getPreferredSize();
-          setText("Stop");
-          Dimension altDim = super.getPreferredSize();
-          setText(origText);
-          return new Dimension(Math.max(origDim.width, altDim.width), origDim.height);
-        }
-      };
-      c.gridx++;
-      c.weightx = 0.1;
-      c.anchor = GridBagConstraints.EAST;
-      socketPanel.add(serverStartButton, c);
+    JLabel label = new JLabel("Listen port: ");
+    c.gridx = 0;
+    c.gridy = 0;
+    c.weightx = 0.1;
+    c.anchor = GridBagConstraints.EAST;
+    socketPanel.add(label, c);
 
-      c.gridx = 0;
-      c.gridy++;
-      c.gridwidth = GridBagConstraints.REMAINDER;
-      c.fill = GridBagConstraints.HORIZONTAL;
-      socketPanel.add(new JSeparator(JSeparator.HORIZONTAL), c);
-      
-      frame.add(BorderLayout.NORTH, socketPanel);
-      
-      // --- Incoming / outgoing info
+    NumberFormat nf = NumberFormat.getIntegerInstance();
+    nf.setGroupingUsed(false);
+    listenPortField = new JFormattedTextField(new NumberFormatter(nf));
+    listenPortField.setColumns(5);
+    listenPortField.setText(String.valueOf(SERVER_DEFAULT_PORT));
+    c.gridx++;
+    c.weightx = 0.0;
+    socketPanel.add(listenPortField, c);
 
-      JPanel connectionInfoPanel = new JPanel(new GridLayout(0, 2));
-      connectionInfoPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-      c = new GridBagConstraints();
+    serverStartButton = new JButton("Start") { // Button for label toggling
+      @Override
+      public Dimension getPreferredSize() {
+        String origText = getText();
+        Dimension origDim = super.getPreferredSize();
+        setText("Stop");
+        Dimension altDim = super.getPreferredSize();
+        setText(origText);
+        return new Dimension(Math.max(origDim.width, altDim.width), origDim.height);
+      }
+    };
+    c.gridx++;
+    c.weightx = 0.1;
+    c.anchor = GridBagConstraints.EAST;
+    socketPanel.add(serverStartButton, c);
 
-      label = new JLabel("socket -> mote: ");
-      label.setHorizontalAlignment(JLabel.RIGHT);
-      c.gridx = 0;
-      c.gridy = 0;
-      c.anchor = GridBagConstraints.EAST;
-      connectionInfoPanel.add(label);
+    c.gridx = 0;
+    c.gridy++;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    c.fill = GridBagConstraints.HORIZONTAL;
+    socketPanel.add(new JSeparator(JSeparator.HORIZONTAL), c);
 
-      socketToMoteLabel = new JLabel("0 bytes");
-      c.gridx++;
-      c.anchor = GridBagConstraints.WEST;
-      connectionInfoPanel.add(socketToMoteLabel);
+    frame.add(BorderLayout.NORTH, socketPanel);
 
-      label = new JLabel("mote -> socket: ");
-      label.setHorizontalAlignment(JLabel.RIGHT);
-      c.gridx = 0;
-      c.gridy++;
-      c.anchor = GridBagConstraints.EAST;
-      connectionInfoPanel.add(label);
+    // --- Incoming / outgoing info
 
-      moteToSocketLabel = new JLabel("0 bytes");
-      c.gridx++;
-      c.anchor = GridBagConstraints.WEST;
-      connectionInfoPanel.add(moteToSocketLabel);
+    JPanel connectionInfoPanel = new JPanel(new GridLayout(0, 2));
+    connectionInfoPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    c = new GridBagConstraints();
 
-      frame.add(BorderLayout.CENTER, connectionInfoPanel);
+    label = new JLabel("socket -> mote: ");
+    label.setHorizontalAlignment(JLabel.RIGHT);
+    c.gridx = 0;
+    c.gridy = 0;
+    c.anchor = GridBagConstraints.EAST;
+    connectionInfoPanel.add(label);
 
-      // --- Status bar
-      
-      JPanel statusBarPanel = new JPanel(new BorderLayout()) {
-        @Override
-        public Dimension getPreferredSize() {
-          Dimension d = super.getPreferredSize();
-          return new Dimension(STATUSBAR_WIDTH, d.height);
-        }
-      };
-      statusBarPanel.setLayout(new BoxLayout(statusBarPanel, BoxLayout.LINE_AXIS));
-      statusBarPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
-      label = new JLabel("Status: ");
-      statusBarPanel.add(label);
-      
-      socketStatusLabel = new JLabel("Idle");
-      socketStatusLabel.setForeground(Color.DARK_GRAY);
-      statusBarPanel.add(socketStatusLabel);
-      
-      frame.add(BorderLayout.SOUTH, statusBarPanel);
+    socketToMoteLabel = new JLabel("0 bytes");
+    c.gridx++;
+    c.anchor = GridBagConstraints.WEST;
+    connectionInfoPanel.add(socketToMoteLabel);
 
-      serverStartButton.addActionListener(new ActionListener() {
+    label = new JLabel("mote -> socket: ");
+    label.setHorizontalAlignment(JLabel.RIGHT);
+    c.gridx = 0;
+    c.gridy++;
+    c.anchor = GridBagConstraints.EAST;
+    connectionInfoPanel.add(label);
 
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          if (e.getActionCommand().equals("Start")) {
-            try {
-              listenPortField.commitEdit();
-            } catch (ParseException ex) {
-              logger.error(ex);
-            }
-            startServer(((Long) listenPortField.getValue()).intValue());
-          } else {
-            stopServer();
+    moteToSocketLabel = new JLabel("0 bytes");
+    c.gridx++;
+    c.anchor = GridBagConstraints.WEST;
+    connectionInfoPanel.add(moteToSocketLabel);
+
+    frame.add(BorderLayout.CENTER, connectionInfoPanel);
+
+    // --- Status bar
+
+    JPanel statusBarPanel = new JPanel(new BorderLayout()) {
+      @Override
+      public Dimension getPreferredSize() {
+        Dimension d = super.getPreferredSize();
+        return new Dimension(STATUSBAR_WIDTH, d.height);
+      }
+    };
+    statusBarPanel.setLayout(new BoxLayout(statusBarPanel, BoxLayout.LINE_AXIS));
+    statusBarPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+    label = new JLabel("Status: ");
+    statusBarPanel.add(label);
+
+    socketStatusLabel = new JLabel("Idle");
+    socketStatusLabel.setForeground(Color.DARK_GRAY);
+    statusBarPanel.add(socketStatusLabel);
+
+    frame.add(BorderLayout.SOUTH, statusBarPanel);
+
+    serverStartButton.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("Start")) {
+          try {
+            listenPortField.commitEdit();
+          } catch (ParseException ex) {
+            logger.error(ex);
           }
+          startServer(((Long) listenPortField.getValue()).intValue());
+        } else {
+          stopServer();
         }
-      });
-      
-      frame.pack();
+      }
+    });
 
-      // gui updates for server status updates
-      addServerListener(new ServerListener() {
+    frame.pack();
 
-        @Override
-        public void onServerStarted(final int port) {
-          SwingUtilities.invokeLater(new Runnable() {
+    // gui updates for server status updates
+    addServerListener(new ServerListener() {
 
-            @Override
-            public void run() {
-              System.out.println("onServerStarted");
+      @Override
+      public void onServerStarted(final int port) {
+        SwingUtilities.invokeLater(new Runnable() {
+
+          @Override
+          public void run() {
+            System.out.println("onServerStarted");
+            socketStatusLabel.setForeground(COLOR_NEUTRAL);
+            socketStatusLabel.setText("Listening on port " + port);
+            listenPortField.setEnabled(false);
+            serverStartButton.setText("Stop");
+          }
+        });
+      }
+
+      @Override
+      public void onClientConnected(final Socket client) {
+        SwingUtilities.invokeLater(new Runnable() {
+
+          @Override
+          public void run() {
+            socketStatusLabel.setForeground(COLOR_POSITIVE);
+            socketStatusLabel.setText("Client "
+                    + client.getInetAddress() + ":" + client.getPort()
+                    + " connected.");
+          }
+        });
+      }
+
+      @Override
+      public void onClientDisconnected() {
+        SwingUtilities.invokeLater(new Runnable() {
+
+          @Override
+          public void run() {
+            // XXX check why needed
+            if (serverSocket != null) {
               socketStatusLabel.setForeground(COLOR_NEUTRAL);
-              socketStatusLabel.setText("Listening on port " + port);
-              listenPortField.setEnabled(false);
-              serverStartButton.setText("Stop");
+              socketStatusLabel.setText("Listening on port " + serverSocket.getLocalPort());
             }
-          });
-        }
+          }
+        });
+      }
 
-        @Override
-        public void onClientConnected(final Socket client) {
-          SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void onServerStopped() {
+        SwingUtilities.invokeLater(new Runnable() {
 
-            @Override
-            public void run() {
-              socketStatusLabel.setForeground(COLOR_POSITIVE);
-              socketStatusLabel.setText("Client "
-                      + client.getInetAddress() + ":" + client.getPort()
-                      + " connected.");
-            }
-          });
-        }
+          @Override
+          public void run() {
+            listenPortField.setEnabled(true);
+            serverStartButton.setText("Start");
+            socketStatusLabel.setForeground(COLOR_NEUTRAL);
+            socketStatusLabel.setText("Idle");
+          }
+        });
+      }
 
-        @Override
-        public void onClientDisconnected() {
-          SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void onServerError(final String msg) {
+        SwingUtilities.invokeLater(new Runnable() {
 
-            @Override
-            public void run() {
-              // XXX check why needed
-              if (serverSocket != null) {
-                socketStatusLabel.setForeground(COLOR_NEUTRAL);
-                socketStatusLabel.setText("Listening on port " + serverSocket.getLocalPort());
-              }
-            }
-          });
-        }
+          @Override
+          public void run() {
+            socketStatusLabel.setForeground(COLOR_NEGATIVE);
+            socketStatusLabel.setText(msg);
+          }
+        });
+      }
 
-        @Override
-        public void onServerStopped() {
-          SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-              listenPortField.setEnabled(true);
-              serverStartButton.setText("Start");
-              socketStatusLabel.setForeground(COLOR_NEUTRAL);
-              socketStatusLabel.setText("Idle");
-            }
-          });
-        }
-
-        @Override
-        public void onServerError(final String msg) {
-          SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-              socketStatusLabel.setForeground(COLOR_NEGATIVE);
-              socketStatusLabel.setText(msg);
-            }
-          });
-        }
-
-      });
-    }
+    });
   }
 
   private final List<ServerListener> listeners = new LinkedList<>();
