@@ -428,16 +428,13 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private final Action removeMoteAction = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
-      JComponent b = (JComponent) e.getSource();
-      Mote m = (Mote) b.getClientProperty("mote");
-      removeMote(m);
+      removeMote((Mote) ((JComponent) e.getSource()).getClientProperty("mote"));
     }
   };
   private final Action removeAllOtherMotesAction = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
-  		JComponent b = (JComponent) e.getSource();
-  		Mote m = (Mote) b.getClientProperty("mote");
+      Mote m = (Mote) ((JComponent) e.getSource()).getClientProperty("mote");
   		MoteEvents[] mes = allMoteEvents.toArray(new MoteEvents[0]);
   		for (MoteEvents me: mes) {
   			if (me.mote == m) {
@@ -450,8 +447,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private final Action sortMoteAction = new AbstractAction() {
     @Override
     public void actionPerformed(ActionEvent e) {
-      JComponent b = (JComponent) e.getSource();
-      Mote m = (Mote) b.getClientProperty("mote");
+      Mote m = (Mote) ((JComponent) e.getSource()).getClientProperty("mote");
 
       /* Sort by distance */
       ArrayList<MoteEvents> sortedMoteEvents = new ArrayList<>();
@@ -475,8 +471,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private final Action topMoteAction = new AbstractAction() {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-  		JComponent b = (JComponent) e.getSource();
-  		Mote m = (Mote) b.getClientProperty("mote");
+      Mote m = (Mote) ((JComponent) e.getSource()).getClientProperty("mote");
 
   		/* Sort by distance */
   		MoteEvents mEvent = null;
@@ -595,23 +590,20 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     } else if (ZOOM_LEVELS.length <= zoomLevel) {
       zoomLevel1 = ZOOM_LEVELS.length - 1;
     }
-    final double cpd = (double) ZOOM_LEVELS[zoomLevel1];
-    zoomFinish(cpd, focusTime, focusCenter);
+    zoomFinish((double) ZOOM_LEVELS[zoomLevel1], focusTime, focusCenter);
   }
 
   private final Action zoomInAction = new AbstractAction("Zoom in (Ctrl+)") {
     @Override
     public void actionPerformed(ActionEvent e) {
-      final long centerTime = getCenterPointTime();
-      zoomFinishLevel(zoomGetLevel() - 1, centerTime, 0.5);
+      zoomFinishLevel(zoomGetLevel() - 1, getCenterPointTime(), 0.5);
     }
   };
 
   private final Action zoomOutAction = new AbstractAction("Zoom out (Ctrl-)") {
     @Override
     public void actionPerformed(ActionEvent e) {
-      final long centerTime = getCenterPointTime();
-      zoomFinishLevel(zoomGetLevel() + 1, centerTime, 0.5);
+      zoomFinishLevel(zoomGetLevel() + 1, getCenterPointTime(), 0.5);
     }
   };
 
