@@ -1976,10 +1976,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       super(time);
       this.state = ev;
     }
-    public RadioRXTXEvent(long time, RXTXRadioEvent ev, String details) {
-      this(time, ev);
-      this.details = details;
-    }
     @Override
     public Color getEventColor() {
       if (state == RXTXRadioEvent.IDLE) {
