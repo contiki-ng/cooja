@@ -332,10 +332,6 @@ public class IPAddress extends MoteInterface {
       return isGlobal;
     }
 
-    public byte[] getIP() {
-      return ip;
-    }
-    
     @Override
     public String toString() {
       return cprString;
