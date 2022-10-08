@@ -326,8 +326,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK), "zoomOut");
     getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, KeyEvent.CTRL_DOWN_MASK), "zoomOut");
     getActionMap().put("zoomOut", zoomOutAction);
-
-    /*    getContentPane().add(splitPane);*/
     getContentPane().add(timelineScrollPane);
 
     recalculateMoteHeight();
@@ -335,8 +333,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     numberMotesWasUpdated();
 
-    /* Automatically add/delete motes.
-     * This listener also observes mote log outputs. */
+    // Automatically add/delete motes. This listener also observes mote log outputs.
     simulation.getEventCentral().addLogOutputListener(newMotesListener = new LogOutputListener() {
       @Override
       public void moteWasAdded(Mote mote) {
