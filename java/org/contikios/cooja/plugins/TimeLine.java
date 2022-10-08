@@ -851,8 +851,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       	}
 
         /* Select simulation time */
-      	RadioLogger plugin = (RadioLogger) p;
-        plugin.trySelectTime(time);
+        ((RadioLogger) p).trySelectTime(time);
       }
     }
   };
@@ -871,8 +870,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       	}
 
         /* Select simulation time */
-        LogListener plugin = (LogListener) p;
-        plugin.trySelectTime(time);
+        ((LogListener) p).trySelectTime(time);
       }
     }
   };
@@ -1192,12 +1190,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
-    Element element;
-
     /* Remember observed motes */
     Mote[] allMotes = simulation.getMotes();
     for (MoteEvents moteEvents: allMoteEvents) {
-      element = new Element("mote");
+      var element = new Element("mote");
       for (int i=0; i < allMotes.length; i++) {
         if (allMotes[i] == moteEvents.mote) {
           element.setText(String.valueOf(i));
@@ -1206,38 +1202,30 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         }
       }
     }
-
     if (showRadioRXTX) {
-      element = new Element("showRadioRXTX");
-      config.add(element);
+      config.add(new Element("showRadioRXTX"));
     }
     if (showRadioChannels) {
-      element = new Element("showRadioChannels");
-      config.add(element);
+      config.add(new Element("showRadioChannels"));
     }
     if (showRadioOnoff) {
-      element = new Element("showRadioHW");
-      config.add(element);
+      config.add(new Element("showRadioHW"));
     }
     if (showLeds) {
-      element = new Element("showLEDs");
-      config.add(element);
+      config.add(new Element("showLEDs"));
     }
     if (showLogOutputs) {
-      element = new Element("showLogOutput");
-      config.add(element);
+      config.add(new Element("showLogOutput"));
     }
     if (showWatchpoints) {
-      element = new Element("showWatchpoints");
-      config.add(element);
+      config.add(new Element("showWatchpoints"));
     }
 
     if (executionDetails) {
-      element = new Element("executionDetails");
-      config.add(element);
+      config.add(new Element("executionDetails"));
     }
 
-    element = new Element("zoomfactor");
+    var element = new Element("zoomfactor");
     element.addContent(String.valueOf(currentPixelDivisor));
     config.add(element);
 
@@ -1278,17 +1266,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         showLogOutputs = true;
       } else if ("showWatchpoints".equals(name)) {
         showWatchpoints = true;
-
       } else if ("executionDetails".equals(name)) {
       	executionDetails = true;
       } else if ("zoom".equals(name)) {
         /* NB: Historically this is a one-based not zero-based index */
-        final int zl = Integer.parseInt(element.getText())-1;
-        zoomFinishLevel(zl, 0, 0);
+        zoomFinishLevel(Integer.parseInt(element.getText())-1, 0, 0);
       } else if ("zoomfactor".equals(name)) {
         /* NB: Historically no validation on this option */
-        final double cpd = Double.parseDouble(element.getText());
-        zoomFinish(cpd, 0, 0);
+        zoomFinish(Double.parseDouble(element.getText()), 0, 0);
       }
     }
 
@@ -1350,8 +1335,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             		continue;
             	}
               /* Select simulation time */
-            	TimeLine plugin = (TimeLine) p;
-              plugin.trySelectTime(time);
+              ((TimeLine) p).trySelectTime(time);
             }
 
           }
