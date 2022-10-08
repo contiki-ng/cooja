@@ -1068,8 +1068,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
 
     /* Watchpoints */
-    if (mote instanceof WatchpointMote) {
-      final WatchpointMote watchpointMote = ((WatchpointMote)mote);
+    if (mote instanceof WatchpointMote watchpointMote) {
       WatchpointListener listener = new WatchpointListener() {
         @Override
         public void watchpointTriggered(Watchpoint watchpoint) {
