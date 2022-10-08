@@ -1483,8 +1483,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     @Override
     public void paintComponent(Graphics g) {
       Rectangle bounds = g.getClipBounds();
-      /*logger.info("Clip bounds: " + bounds);*/
-
       if (needZoomOut) {
         /* Need zoom out */
         g.setColor(Color.RED);
@@ -1508,8 +1506,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       if (intervalEnd > simulation.getSimulationTime()) {
         intervalEnd = simulation.getSimulationTime();
       }
-
-      /*logger.info("Painting interval: " + intervalStart + " -> " + intervalEnd);*/
       if (bounds.x > Integer.MAX_VALUE - 1000) {
         /* Strange bounds */
         return;
