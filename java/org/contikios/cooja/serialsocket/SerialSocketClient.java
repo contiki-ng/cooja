@@ -99,7 +99,7 @@ public class SerialSocketClient implements Plugin, MotePlugin {
   private static final Color ST_COLOR_CONNECTED = new Color(0, 161, 83);
   private static final Color ST_COLOR_FAILED = Color.RED;
   
-  private SerialPort serialPort;
+  private final SerialPort serialPort;
   private Observer serialDataObserver;
 
   private JLabel socketToMoteLabel;
@@ -123,6 +123,11 @@ public class SerialSocketClient implements Plugin, MotePlugin {
   public SerialSocketClient(Mote mote, Simulation simulation, final Cooja gui) {
     this.mote = mote;
     this.simulation = simulation;
+
+    serialPort = (SerialPort) mote.getInterfaces().getLog();
+    if (serialPort == null) {
+      throw new RuntimeException("No mote serial port");
+    }
 
     if (!Cooja.isVisualized()) {
       frame = null;
@@ -238,12 +243,6 @@ public class SerialSocketClient implements Plugin, MotePlugin {
     statusBarPanel.add(socketStatusLabel);
 
     frame.add(BorderLayout.SOUTH, statusBarPanel);
-
-    /* Mote serial port */
-    serialPort = (SerialPort) mote.getInterfaces().getLog();
-    if (serialPort == null) {
-      throw new RuntimeException("No mote serial port");
-    }
 
     serverSelectButton.addActionListener(new ActionListener() {
 
