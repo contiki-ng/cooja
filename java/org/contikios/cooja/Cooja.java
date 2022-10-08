@@ -212,11 +212,6 @@ public class Cooja extends Observable {
   private static String specifiedContikiPath = null;
 
   /**
-   * Default extension configuration filename.
-   */
-  public static final String PROJECT_DEFAULT_CONFIG_FILENAME = "/cooja_default.config";
-
-  /**
    * User extension configuration filename.
    */
   public static final String PROJECT_CONFIG_FILENAME = "cooja.config";
@@ -325,13 +320,17 @@ public class Cooja extends Observable {
    * @param logDirectory Directory for log files
    * @param vis          True if running in visual mode
    */
-  public static Cooja makeCooja(final String logDirectory, final boolean vis) {
+  public static Cooja makeCooja(final String logDirectory, final boolean vis) throws ParseProjectsException {
     if (vis) {
       assert !java.awt.EventQueue.isDispatchThread() : "Call from regular context";
       return new RunnableInEDT<Cooja>() {
         @Override
         public Cooja work() {
-          return new Cooja(logDirectory, vis);
+          try {
+            return new Cooja(logDirectory, vis);
+          } catch (ParseProjectsException e) {
+            throw new RuntimeException("Cooja constructor should never throw ParseProjectsException in GUI mode", e);
+          }
         }
       }.invokeAndWait();
     }
@@ -345,7 +344,7 @@ public class Cooja extends Observable {
    * @param logDirectory Directory for log files
    * @param vis          True if running in visual mode
    */
-  private Cooja(String logDirectory, boolean vis) {
+  private Cooja(String logDirectory, boolean vis) throws ParseProjectsException {
     cooja = this;
     this.logDirectory = logDirectory;
     mySimulation = null;
@@ -387,11 +386,7 @@ public class Cooja extends Observable {
       menuMoteTypes = null;
       moteHighlightObservable = null;
       moteRelationObservable = null;
-      try {
-        parseProjectConfig();
-      } catch (ParseProjectsException e) {
-        logger.fatal("Error when loading extensions: " + e.getMessage(), e);
-      }
+      parseProjectConfig();
       return;
     }
 
@@ -1672,13 +1667,9 @@ public class Cooja extends Observable {
     try {
       projectConfig = new ProjectConfig(true);
     } catch (FileNotFoundException e) {
-      logger.fatal("Could not find default extension config file: " + PROJECT_DEFAULT_CONFIG_FILENAME);
-      throw new ParseProjectsException(
-          "Could not find default extension config file: " + PROJECT_DEFAULT_CONFIG_FILENAME, e);
+      throw new ParseProjectsException("Could not find default extension config file: " + e.getMessage(), e);
     } catch (IOException e) {
-      logger.fatal("Error when reading default extension config file: " + PROJECT_DEFAULT_CONFIG_FILENAME);
-      throw new ParseProjectsException(
-          "Error when reading default extension config file: " + PROJECT_DEFAULT_CONFIG_FILENAME, e);
+      throw new ParseProjectsException("Error when reading default extension config file: " + e.getMessage(), e);
     }
     for (COOJAProject project: currentProjects) {
       try {
