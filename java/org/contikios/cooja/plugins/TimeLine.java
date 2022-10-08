@@ -2155,9 +2155,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       super(time);
       this.on = on;
     }
-    public RadioHWEvent(long time, boolean on, int channel) {
-    	this(time, on);
-    }
     @Override
     public Color getEventColor() {
     	if (on) {
