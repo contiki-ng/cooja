@@ -554,16 +554,13 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     });
   }
 
-  private static int zoomGetLevel(final double zoomDivisor) {
+  private int zoomGetLevel () {
     int zoomLevel = 0;
     while (zoomLevel < ZOOM_LEVELS.length) {
-      if (zoomDivisor <= ZOOM_LEVELS[zoomLevel]) break;
+      if (currentPixelDivisor <= ZOOM_LEVELS[zoomLevel]) break;
       zoomLevel++;
     }
     return zoomLevel;
-  }
-  private int zoomGetLevel () {
-    return zoomGetLevel(currentPixelDivisor);
   }
 
   private void zoomFinish (final double zoomDivisor,
