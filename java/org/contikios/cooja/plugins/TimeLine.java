@@ -139,7 +139,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private boolean     logEventFilterChanged = true;
   private boolean     logEventColorOfMote   = false;
 
-  private final JScrollPane timelineScrollPane;
   private final MoteRuler timelineMoteRuler;
   private final JComponent timeline;
 
@@ -309,7 +308,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     /* Panel: timeline canvas w. scroll pane and add mote button */
     timeline = new Timeline();
-    timelineScrollPane = new JScrollPane(
+    var timelineScrollPane = new JScrollPane(
         timeline,
         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
