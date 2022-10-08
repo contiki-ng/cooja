@@ -308,7 +308,7 @@ public class IPAddress extends MoteInterface {
    */
   public class IPContainer {
 
-    private boolean isGlobal;
+    private final boolean isGlobal;
     private final int addrIdx;
     private final String cprString;
 
