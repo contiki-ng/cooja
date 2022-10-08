@@ -193,8 +193,37 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     menuBar.add(motesMenu);
 
     this.setJMenuBar(menuBar);
+    motesMenu.add(new JMenuItem(new AbstractAction("Show motes...") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JComboBox<Object> source = new JComboBox<>();
+        source.addItem("All motes");
+        for (Mote m1 : simulation.getMotes()) {
+          source.addItem(m1);
+        }
+        Object[] description = {source};
+        JOptionPane optionPane = new JOptionPane();
+        optionPane.setMessage(description);
+        optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
+        String[] options = new String[]{"Cancel", "Show"};
+        optionPane.setOptions(options);
+        optionPane.setInitialValue(options[1]);
+        JDialog dialog = optionPane.createDialog(Cooja.getTopParentContainer(), "Show mote in timeline");
+        dialog.setVisible(true);
 
-    motesMenu.add(new JMenuItem(addMoteAction));
+        if (optionPane.getValue() == null || !optionPane.getValue().equals("Show")) {
+          return;
+        }
+
+        if ("All motes".equals(source.getSelectedItem())) {
+          for (Mote m1 : simulation.getMotes()) {
+            addMote(m1);
+          }
+        } else {
+          addMote((Mote) source.getSelectedItem());
+        }
+      }
+    }));
     zoomMenu.add(new JMenuItem(zoomInAction));
     zoomMenu.add(new JMenuItem(zoomOutAction));
     viewMenu.add(new JCheckBoxMenuItem(executionDetailsAction) {
@@ -220,7 +249,16 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     fileMenu.add(new JMenuItem(saveDataAction));
     fileMenu.add(new JMenuItem(statisticsAction));
-    editMenu.add(new JMenuItem(clearAction));
+    editMenu.add(new JMenuItem(new AbstractAction("Clear all timeline data") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (simulation.isRunning()) {
+          simulation.invokeSimulationThread(() -> clear());
+        } else {
+          clear();
+        }
+      }
+    }));
 
     showRadioTXRXCheckbox = createEventCheckbox("Radio traffic", "Show radio transmissions, receptions, and collisions");
     showRadioTXRXCheckbox.setName("showRadioRXTX");
@@ -425,102 +463,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     return checkBox;
   }
 
-  private final Action removeMoteAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      removeMote((Mote) ((JComponent) e.getSource()).getClientProperty("mote"));
-    }
-  };
-  private final Action removeAllOtherMotesAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Mote m = (Mote) ((JComponent) e.getSource()).getClientProperty("mote");
-  		MoteEvents[] mes = allMoteEvents.toArray(new MoteEvents[0]);
-  		for (MoteEvents me: mes) {
-  			if (me.mote == m) {
-  				continue;
-  			}
-  			removeMote(me.mote);
-  		}
-  	}
-  };
-  private final Action sortMoteAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Mote m = (Mote) ((JComponent) e.getSource()).getClientProperty("mote");
-
-      /* Sort by distance */
-      ArrayList<MoteEvents> sortedMoteEvents = new ArrayList<>();
-      for (MoteEvents me: allMoteEvents.toArray(new MoteEvents[0])) {
-        double d = me.mote.getInterfaces().getPosition().getDistanceTo(m);
-
-        int i;
-        for (i=0; i < sortedMoteEvents.size(); i++) {
-          double d2 = m.getInterfaces().getPosition().getDistanceTo(sortedMoteEvents.get(i).mote);
-          if (d < d2) {
-            break;
-          }
-        }
-        sortedMoteEvents.add(i, me);
-
-      }
-      allMoteEvents = sortedMoteEvents;
-      numberMotesWasUpdated();
-    }
-  };
-  private final Action topMoteAction = new AbstractAction() {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-      Mote m = (Mote) ((JComponent) e.getSource()).getClientProperty("mote");
-
-  		/* Sort by distance */
-  		MoteEvents mEvent = null;
-  		for (MoteEvents me: allMoteEvents.toArray(new MoteEvents[0])) {
-  			if (me.mote == m) {
-  				mEvent = me;
-  				break;
-  			}
-  		}
-  		allMoteEvents.remove(mEvent);
-  		allMoteEvents.add(0, mEvent);
-  		numberMotesWasUpdated();
-  	}
-  };
-  private final Action addMoteAction = new AbstractAction("Show motes...") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-      JComboBox<Object> source = new JComboBox<>();
-      source.addItem("All motes");
-      for (Mote m: simulation.getMotes()) {
-        source.addItem(m);
-      }
-      Object[] description = {
-          source
-      };
-      JOptionPane optionPane = new JOptionPane();
-      optionPane.setMessage(description);
-      optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-      String[] options = new String[] {"Cancel", "Show"};
-      optionPane.setOptions(options);
-      optionPane.setInitialValue(options[1]);
-      JDialog dialog = optionPane.createDialog(Cooja.getTopParentContainer(), "Show mote in timeline");
-      dialog.setVisible(true);
-
-      if (optionPane.getValue() == null || !optionPane.getValue().equals("Show")) {
-        return;
-      }
-
-      if ("All motes".equals(source.getSelectedItem())) {
-        for (Mote m: simulation.getMotes()) {
-          addMote(m);
-        }
-      } else {
-        addMote((Mote) source.getSelectedItem());
-      }
-    }
-  };
-
   private void forceRepaintAndFocus(final long focusTime, final double focusCenter) {
     forceRepaintAndFocus(focusTime, focusCenter, true);
   }
@@ -688,17 +630,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         logger.fatal("Could not write to file: " + saveFile);
       }
 
-    }
-  };
-
-  private final Action clearAction = new AbstractAction("Clear all timeline data") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      if (simulation.isRunning()) {
-        simulation.invokeSimulationThread(() -> clear());
-      } else {
-        clear();
-      }
     }
   };
 
@@ -1865,16 +1796,69 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       setBackground(COLOR_BACKGROUND);
 
       final JPopupMenu popupMenu = new JPopupMenu();
-      final JMenuItem topItem = new JMenuItem(topMoteAction);
+      final JMenuItem topItem = new JMenuItem(new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          Mote m = (Mote) ((JComponent) e.getSource()).getClientProperty("mote");
+          // Sort by distance.
+          MoteEvents mEvent = null;
+          for (MoteEvents me : allMoteEvents.toArray(new MoteEvents[0])) {
+            if (me.mote == m) {
+              mEvent = me;
+              break;
+            }
+          }
+          allMoteEvents.remove(mEvent);
+          allMoteEvents.add(0, mEvent);
+          numberMotesWasUpdated();
+        }
+      });
       topItem.setText("Move to top");
       popupMenu.add(topItem);
-      final JMenuItem sortItem = new JMenuItem(sortMoteAction);
+      final JMenuItem sortItem = new JMenuItem(new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          Mote m = (Mote) ((JComponent) e.getSource()).getClientProperty("mote");
+          // Sort by distance.
+          ArrayList<MoteEvents> sortedMoteEvents = new ArrayList<>();
+          for (MoteEvents me : allMoteEvents.toArray(new MoteEvents[0])) {
+            double d = me.mote.getInterfaces().getPosition().getDistanceTo(m);
+            int i;
+            for (i = 0; i < sortedMoteEvents.size(); i++) {
+              double d2 = m.getInterfaces().getPosition().getDistanceTo(sortedMoteEvents.get(i).mote);
+              if (d < d2) {
+                break;
+              }
+            }
+            sortedMoteEvents.add(i, me);
+          }
+          allMoteEvents = sortedMoteEvents;
+          numberMotesWasUpdated();
+        }
+      });
       sortItem.setText("Sort by distance");
       popupMenu.add(sortItem);
-      final JMenuItem removeItem = new JMenuItem(removeMoteAction);
+      final JMenuItem removeItem = new JMenuItem(new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          removeMote((Mote) ((JComponent) e.getSource()).getClientProperty("mote"));
+        }
+      });
       removeItem.setText("Remove from timeline");
       popupMenu.add(removeItem);
-      final JMenuItem keepMoteOnlyItem = new JMenuItem(removeAllOtherMotesAction);
+      final JMenuItem keepMoteOnlyItem = new JMenuItem(new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          Mote m = (Mote) ((JComponent) e.getSource()).getClientProperty("mote");
+          MoteEvents[] mes = allMoteEvents.toArray(new MoteEvents[0]);
+          for (MoteEvents me : mes) {
+            if (me.mote == m) {
+              continue;
+            }
+            removeMote(me.mote);
+          }
+        }
+      });
       keepMoteOnlyItem.setText("Remove all motes from timeline but");
       popupMenu.add(keepMoteOnlyItem);
 
