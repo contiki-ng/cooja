@@ -571,15 +571,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     return zoomGetLevel(currentPixelDivisor);
   }
 
-  private static double zoomLevelToDivisor(int zoomLevel) {
-    if (0 > zoomLevel) {
-      zoomLevel = 0;
-    } else if (ZOOM_LEVELS.length <= zoomLevel) {
-      zoomLevel = ZOOM_LEVELS.length - 1;
-    }
-    return ZOOM_LEVELS[zoomLevel];
-  }
-
   private void zoomFinish (final double zoomDivisor,
                            final long focusTime,
                            final double focusCenter) {
@@ -598,7 +589,13 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private void zoomFinishLevel (final int zoomLevel,
                                 final long focusTime,
                                 final double focusCenter) {
-    final double cpd = zoomLevelToDivisor(zoomLevel);
+    int zoomLevel1 = zoomLevel;
+    if (0 > zoomLevel) {
+      zoomLevel1 = 0;
+    } else if (ZOOM_LEVELS.length <= zoomLevel) {
+      zoomLevel1 = ZOOM_LEVELS.length - 1;
+    }
+    final double cpd = (double) ZOOM_LEVELS[zoomLevel1];
     zoomFinish(cpd, focusTime, focusCenter);
   }
 
