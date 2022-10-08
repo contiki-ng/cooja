@@ -309,13 +309,11 @@ public class IPAddress extends MoteInterface {
   public class IPContainer {
 
     private boolean isGlobal;
-    private final byte[] ip;
     private final int addrIdx;
     private final String cprString;
 
     public IPContainer(int addidx, byte[] ip, boolean global) {
       this.addrIdx = addidx;
-      this.ip = ip;
       this.isGlobal = global;
       if (ipVersion == IPv.IPv6) {
         cprString = IPUtils.getCompressedIPv6AddressString(ip);
