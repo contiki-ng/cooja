@@ -2190,8 +2190,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     @Override
     public Color getEventColor() {
-      if (logEventColorOfMote)
-      if (logEventFilterPlugin != null) {
+      if (logEventColorOfMote && logEventFilterPlugin != null) {
         /* Ask log listener for event color to use */
         return logEventFilterPlugin.getColorOfEntry(logEvent);
       }
