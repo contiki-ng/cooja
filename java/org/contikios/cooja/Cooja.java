@@ -2545,8 +2545,7 @@ public class Cooja extends Observable {
           new String[] { "Continue", "Abort"}, "Abort");
       return n != JOptionPane.YES_OPTION;
     }
-
-    return false;
+    return true;
   }
 
   /**
