@@ -244,7 +244,12 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       		return executionDetails;
 	    }
     });
-    viewMenu.add(new JCheckBoxMenuItem(logEventMoteColorAction) {
+    viewMenu.add(new JCheckBoxMenuItem(new AbstractAction("Use Mote colors") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        logEventColorOfMote = !logEventColorOfMote;
+        timeline.repaint();
+      }}) {
         @Override
         public boolean isSelected() {
             return logEventColorOfMote;
@@ -259,8 +264,68 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         viewMenu.add(evwidthMenuItemN);
     }
 
-    fileMenu.add(new JMenuItem(saveDataAction));
-    fileMenu.add(new JMenuItem(statisticsAction));
+    fileMenu.add(new JMenuItem(new AbstractAction("Save to file...") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JFileChooser fc = new JFileChooser();
+        int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+          return;
+        }
+        File saveFile = fc.getSelectedFile();
+        if (saveFile.exists()) {
+          String s1 = "Overwrite";
+          String s2 = "Cancel";
+          Object[] options = {s1, s2};
+          int n = JOptionPane.showOptionDialog(
+                  Cooja.getTopParentContainer(),
+                  "A file with the same name already exists.\nDo you want to remove it?",
+                  "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
+                  JOptionPane.QUESTION_MESSAGE, null, options, s1);
+          if (n != JOptionPane.YES_OPTION) {
+            return;
+          }
+        }
+
+        if (saveFile.exists() && !saveFile.canWrite()) {
+          logger.fatal("No write access to file");
+          return;
+        }
+
+        try (var outStream = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(saveFile), UTF_8))) {
+          // Output all events (sorted per mote).
+          for (MoteEvents events : allMoteEvents) {
+            for (MoteEvent ev : events.ledEvents) {
+              outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
+            }
+            for (MoteEvent ev : events.logEvents) {
+              outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
+            }
+            for (MoteEvent ev : events.radioChannelEvents) {
+              outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
+            }
+            for (MoteEvent ev : events.radioHWEvents) {
+              outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
+            }
+            for (MoteEvent ev : events.radioRXTXEvents) {
+              outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
+            }
+            for (MoteEvent ev : events.watchpointEvents) {
+              outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
+            }
+          }
+        } catch (Exception ex) {
+          logger.fatal("Could not write to file: " + saveFile);
+        }
+      }
+    }));
+    fileMenu.add(new JMenuItem(new AbstractAction("Print statistics to console") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        TimeLine.this.simulation.stopSimulation();
+        logger.info(extractStatistics(true, true, true, true));
+      }
+    }));
     editMenu.add(new JMenuItem(new AbstractAction("Clear all timeline data") {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -570,67 +635,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
   }
 
-  /**
-   * Save logged raw data to file for post-processing.
-   */
-  private final Action saveDataAction = new AbstractAction("Save to file...") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      JFileChooser fc = new JFileChooser();
-      int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
-      if (returnVal != JFileChooser.APPROVE_OPTION) {
-        return;
-      }
-      File saveFile = fc.getSelectedFile();
-
-      if (saveFile.exists()) {
-        String s1 = "Overwrite";
-        String s2 = "Cancel";
-        Object[] options = { s1, s2 };
-        int n = JOptionPane.showOptionDialog(
-            Cooja.getTopParentContainer(),
-            "A file with the same name already exists.\nDo you want to remove it?",
-            "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE, null, options, s1);
-        if (n != JOptionPane.YES_OPTION) {
-          return;
-        }
-      }
-
-      if (saveFile.exists() && !saveFile.canWrite()) {
-        logger.fatal("No write access to file");
-        return;
-      }
-
-      try (var outStream = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(saveFile), UTF_8))) {
-        /* Output all events (sorted per mote) */
-        for (MoteEvents events: allMoteEvents) {
-          for (MoteEvent ev: events.ledEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
-          }
-          for (MoteEvent ev: events.logEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
-          }
-          for (MoteEvent ev: events.radioChannelEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
-          }
-          for (MoteEvent ev: events.radioHWEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
-          }
-          for (MoteEvent ev: events.radioRXTXEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
-          }
-          for (MoteEvent ev: events.watchpointEvents) {
-            outStream.write(events.mote + "\t" + ev.time + "\t" + ev + "\n");
-          }
-        }
-      } catch (Exception ex) {
-        logger.fatal("Could not write to file: " + saveFile);
-      }
-
-    }
-  };
-
   public void clear() {
     for (MoteEvents me : allMoteEvents) {
       me.clear();
@@ -680,17 +684,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       return sb.toString();
     }
   }
-  private final Action statisticsAction = new AbstractAction("Print statistics to console") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      simulation.stopSimulation();
-      logger.info(extractStatistics());
-    }
-  };
 
-  public String extractStatistics() {
-    return extractStatistics(true, true, true, true);
-  }
   public synchronized String extractStatistics(
       boolean logs, boolean leds, boolean radioHW, boolean radioRXTX) {
     StringBuilder output = new StringBuilder();
@@ -898,14 +892,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     	executionDetails = !executionDetails;
     }
   };
-
-  private final Action logEventMoteColorAction = new AbstractAction("use Mote colors") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-          logEventColorOfMote = !logEventColorOfMote;
-          timeline.repaint();
-      }
-    };
 
   private void numberMotesWasUpdated() {
     /* Plugin title */
