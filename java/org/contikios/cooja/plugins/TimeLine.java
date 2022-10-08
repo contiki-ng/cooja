@@ -68,15 +68,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JToolTip;
 import javax.swing.KeyStroke;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
@@ -201,7 +198,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     motesMenu.add(new JMenuItem(addMoteAction));
     zoomMenu.add(new JMenuItem(zoomInAction));
     zoomMenu.add(new JMenuItem(zoomOutAction));
-    zoomMenu.add(new JMenuItem(zoomSliderAction));
     viewMenu.add(new JCheckBoxMenuItem(executionDetailsAction) {
 	    @Override
 	    public boolean isSelected() {
@@ -623,33 +619,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public void actionPerformed(ActionEvent e) {
       final long centerTime = getCenterPointTime();
       zoomFinishLevel(zoomGetLevel() + 1, centerTime, 0.5);
-    }
-  };
-
-  private final Action zoomSliderAction = new AbstractAction("Zoom slider (Ctrl+Mouse)") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-      final int zoomLevel = zoomGetLevel();
-      final JSlider zoomSlider = new JSlider(JSlider.VERTICAL, 0, ZOOM_LEVELS.length-1, zoomLevel);
-      zoomSlider.setInverted(true);
-      zoomSlider.setPaintTicks(true);
-      zoomSlider.setPaintLabels(false);
-
-      final long centerTime = getCenterPointTime(); 
-
-      zoomSlider.addChangeListener(new ChangeListener() {
-        @Override
-        public void stateChanged(ChangeEvent e) {
-          final int zoomLevel = zoomSlider.getValue();
-          zoomFinishLevel(zoomLevel, centerTime, 0.5);
-        }
-      });
-
-      final JPopupMenu zoomPopup = new JPopupMenu();
-      zoomPopup.add(zoomSlider);
-      zoomPopup.show(TimeLine.this, TimeLine.this.getWidth()/2, 0);
-      zoomSlider.requestFocus();
     }
   };
 
