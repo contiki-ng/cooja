@@ -224,7 +224,19 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         }
       }
     }));
+    var zoomInAction = new AbstractAction("Zoom in (Ctrl+)") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        zoomFinishLevel(zoomGetLevel() - 1, getCenterPointTime(), 0.5);
+      }
+    };
     zoomMenu.add(new JMenuItem(zoomInAction));
+    var zoomOutAction = new AbstractAction("Zoom out (Ctrl-)") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        zoomFinishLevel(zoomGetLevel() + 1, getCenterPointTime(), 0.5);
+      }
+    };
     zoomMenu.add(new JMenuItem(zoomOutAction));
     viewMenu.add(new JCheckBoxMenuItem(executionDetailsAction) {
 	    @Override
@@ -531,20 +543,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
     zoomFinish((double) ZOOM_LEVELS[zoomLevel1], focusTime, focusCenter);
   }
-
-  private final Action zoomInAction = new AbstractAction("Zoom in (Ctrl+)") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      zoomFinishLevel(zoomGetLevel() - 1, getCenterPointTime(), 0.5);
-    }
-  };
-
-  private final Action zoomOutAction = new AbstractAction("Zoom out (Ctrl-)") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      zoomFinishLevel(zoomGetLevel() + 1, getCenterPointTime(), 0.5);
-    }
-  };
 
   private long getCenterPointTime() {
       Rectangle r = timeline.getVisibleRect();
