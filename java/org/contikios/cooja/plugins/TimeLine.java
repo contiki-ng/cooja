@@ -511,7 +511,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         return;
       }
 
-      if (source.getSelectedItem().equals("All motes")) {
+      if ("All motes".equals(source.getSelectedItem())) {
         for (Mote m: simulation.getMotes()) {
           addMote(m);
         }
