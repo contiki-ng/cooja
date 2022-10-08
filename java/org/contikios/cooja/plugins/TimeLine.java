@@ -139,8 +139,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private boolean     logEventFilterChanged = true;
   private boolean     logEventColorOfMote   = false;
 
-  private final MoteRuler timelineMoteRuler;
-  private final JComponent timeline;
+  private final MoteRuler timelineMoteRuler = new MoteRuler();
+  private final JComponent timeline = new Timeline();
 
   private final Observer moteHighlightObserver;
   private final ArrayList<Mote> highlightedMotes = new ArrayList<>();
@@ -422,14 +422,11 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     /* Box: events to observe */
 
     /* Panel: timeline canvas w. scroll pane and add mote button */
-    timeline = new Timeline();
     var timelineScrollPane = new JScrollPane(
         timeline,
         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     timelineScrollPane.getHorizontalScrollBar().setUnitIncrement(50);
-
-    timelineMoteRuler = new MoteRuler();
     timelineScrollPane.setRowHeaderView(timelineMoteRuler);
     timelineScrollPane.setBackground(Color.WHITE);
 
@@ -2285,12 +2282,12 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
   class MoteEvents {
     final Mote mote;
-    final ArrayList<MoteEvent> radioRXTXEvents;
-    final ArrayList<MoteEvent> radioChannelEvents;
-    final ArrayList<MoteEvent> radioHWEvents;
-    final ArrayList<MoteEvent> ledEvents;
-    final ArrayList<MoteEvent> logEvents;
-    final ArrayList<MoteEvent> watchpointEvents;
+    final ArrayList<MoteEvent> radioRXTXEvents = new ArrayList<>();
+    final ArrayList<MoteEvent> radioChannelEvents = new ArrayList<>();
+    final ArrayList<MoteEvent> radioHWEvents = new ArrayList<>();
+    final ArrayList<MoteEvent> ledEvents = new ArrayList<>();
+    final ArrayList<MoteEvent> logEvents = new ArrayList<>();
+    final ArrayList<MoteEvent> watchpointEvents = new ArrayList<>();
 
     private MoteEvent lastRadioRXTXEvent = null;
     private MoteEvent lastRadioChannelEvent = null;
@@ -2301,13 +2298,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     public MoteEvents(Mote mote) {
       this.mote = mote;
-      this.radioRXTXEvents = new ArrayList<>();
-      this.radioChannelEvents = new ArrayList<>();
-      this.radioHWEvents = new ArrayList<>();
-      this.ledEvents = new ArrayList<>();
-      this.logEvents = new ArrayList<>();
-      this.watchpointEvents = new ArrayList<>();
-
       if (mote.getSimulation().getSimulationTime() > 0) {
         /* Create no history events */
         lastRadioRXTXEvent = new NoHistoryEvent(0);
