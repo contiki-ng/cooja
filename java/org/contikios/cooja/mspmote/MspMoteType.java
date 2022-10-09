@@ -125,10 +125,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     if (fileFirmware == null && fileSource == null) {
       throw new MoteTypeCreationException("Neither source or firmware specified");
     }
-
-    if (getIdentifier() == null) {
-      throw new MoteTypeCreationException("No identifier");
-    }
     if (getContikiSourceFile() == null) {
       // Source file is null for firmware-only simulations, so just return true if firmware exists.
       final var firmware = getContikiFirmwareFile();

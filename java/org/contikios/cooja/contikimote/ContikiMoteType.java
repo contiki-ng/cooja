@@ -972,9 +972,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     if (sourceFile != null) { // Compensate for non-standard naming rules.
       fileFirmware = getMoteFile(librarySuffix);
     }
-    if (getIdentifier() == null) {
-      throw new MoteTypeCreationException("No identifier specified");
-    }
     if (sourceFile == null) {
       throw new MoteTypeCreationException("No Contiki application specified");
     }

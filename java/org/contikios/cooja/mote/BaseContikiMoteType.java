@@ -248,7 +248,7 @@ public abstract class BaseContikiMoteType implements MoteType {
     return null;
   }
 
-  protected boolean setBaseConfigXML(Simulation sim, Collection<Element> configXML)  {
+  protected boolean setBaseConfigXML(Simulation sim, Collection<Element> configXML) throws MoteTypeCreationException {
     for (Element element : configXML) {
       switch (element.getName()) {
         case "identifier":
@@ -289,6 +289,9 @@ public abstract class BaseContikiMoteType implements MoteType {
           logger.fatal("Old Cooja mote type detected, aborting..");
           return false;
       }
+    }
+    if (getIdentifier() == null) {
+      throw new MoteTypeCreationException("No identifier specified");
     }
     return true;
   }
