@@ -131,7 +131,18 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     }
     if (moteClassPath == null) {
       // No class path. Check if path is available in the class name.
-      convertPathToClass();
+      if (moteClassName.indexOf('/') >= 0 || moteClassName.indexOf(File.separatorChar) >= 0) {
+        File moteClassFile = new File(moteClassName);
+        if (moteClassFile.canRead()) {
+          try (var test = createTestLoader(moteClassFile)) {
+            // Successfully found the class
+            moteClassPath = test.getTestClassPath();
+            moteClassName = test.getTestClassName();
+          } catch (Exception | LinkageError e) {
+            // Ignore
+          }
+        }
+      }
     }
     try {
       ClassLoader parentLoader = getParentClassLoader();
@@ -147,19 +158,14 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
       var moteClass = loader.loadClass(moteClassName).asSubclass(AbstractApplicationMote.class);
       moteConstructor = moteClass.getConstructor(MoteType.class, Simulation.class);
     } catch (Exception | LinkageError e) {
-      throw createError(e);
+      throw new MoteTypeCreationException("Error when loading class from: "
+              + (moteClassPath != null ? moteClassPath.getAbsolutePath() : "") + " " + moteClassName, e);
     }
 
     if (getDescription() == null || getDescription().length() == 0) {
       setDescription("Imported Mote Type #" + moteClassName);
     }
     return true;
-  }
-
-  private MoteTypeCreationException createError(Throwable e) {
-    return new MoteTypeCreationException("Error when loading class from: "
-        + (moteClassPath != null ? moteClassPath.getAbsolutePath() : "") + " "
-        + moteClassName, e);
   }
 
   @Override
@@ -185,23 +191,6 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
 
   public String getMoteClassName() {
     return moteClassName;
-  }
-
-  private void convertPathToClass() {
-    if (moteClassName.indexOf('/') < 0 && moteClassName.indexOf(File.separatorChar) < 0) {
-      // No conversion possible
-      return;
-    }
-    File moteClassFile = new File(moteClassName);
-    if (moteClassFile.canRead()) {
-      try (var test = createTestLoader(moteClassFile)) {
-        // Successfully found the class
-        moteClassPath = test.getTestClassPath();
-        moteClassName = test.getTestClassName();
-      } catch (Exception | LinkageError e) {
-        // Ignore
-      }
-    }
   }
 
   private ClassLoader getParentClassLoader() {
