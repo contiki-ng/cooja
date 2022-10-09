@@ -42,7 +42,6 @@ public class ArrayMemory implements MemoryInterface {
   private final byte[] memory;
   private final long startAddress;
   private final MemoryLayout layout;
-  private final boolean readonly;
   private final Map<String, Symbol> symbols;// XXX Allow to set symbols
 
   public ArrayMemory(long address, int size, MemoryLayout layout, Map<String, Symbol> symbols) {
@@ -50,14 +49,9 @@ public class ArrayMemory implements MemoryInterface {
   }
 
   public ArrayMemory(long address, MemoryLayout layout, byte[] memory, Map<String, Symbol> symbols) {
-    this(address, layout, memory, false, symbols);
-  }
-
-  public ArrayMemory(long address, MemoryLayout layout, byte[] memory, boolean readonly, Map<String, Symbol> symbols) {
     this.startAddress = address;
     this.layout = layout;
     this.memory = memory;
-    this.readonly = readonly;
     this.symbols = symbols;
   }
 
@@ -82,9 +76,6 @@ public class ArrayMemory implements MemoryInterface {
 
   @Override
   public void setMemorySegment(long addr, byte[] data) throws MoteMemoryException {
-    if (readonly) {
-      throw new MoteMemoryException("Invalid write access for readonly memory");
-    }
     System.arraycopy(data, 0, memory, (int) (addr - startAddress), data.length);
   }
 
