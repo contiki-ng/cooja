@@ -56,9 +56,9 @@ public class GDBStubs implements Runnable {
 
     ServerSocket serverSocket;
     OutputStream output;
-    MSP430Core cpu;
+    final MSP430Core cpu;
 
-    public void setupServer(MSP430Core cpu, int port) {
+    public GDBStubs(MSP430Core cpu, int port) {
         this.cpu = cpu;
         try {
             serverSocket = new ServerSocket(port);

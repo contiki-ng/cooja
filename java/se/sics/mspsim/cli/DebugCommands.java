@@ -621,9 +621,7 @@ public class DebugCommands implements CommandBundle {
             if (stubs != null) {
               context.err.println("GDBStubs already open");
             } else {
-              int port = context.getArgumentAsInt(0);
-              stubs = new GDBStubs();
-              stubs.setupServer(cpu, port);
+              stubs = new GDBStubs(cpu, context.getArgumentAsInt(0));
             }
             return 0;
           }
