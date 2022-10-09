@@ -126,23 +126,20 @@ public abstract class MspMoteType extends BaseContikiMoteType {
       throw new MoteTypeCreationException("Neither source or firmware specified");
     }
 
-    if (!visAvailable || simulation.isQuickSetup()) {
-      if (getIdentifier() == null) {
-        throw new MoteTypeCreationException("No identifier");
-      }
-      if (getContikiSourceFile() == null) {
-        // Source file is null for firmware-only simulations, so just return true if firmware exists.
-        final var firmware = getContikiFirmwareFile();
-        if (firmware == null || !firmware.exists()) {
-          throw new MoteTypeCreationException("Contiki firmware file does not exist: " + firmware);
-        }
-        return true;
-      }
-      if (getCompileCommands() == null) {
-        throw new MoteTypeCreationException("No compile commands specified");
-      }
+    if (getIdentifier() == null) {
+      throw new MoteTypeCreationException("No identifier");
     }
-
+    if (getContikiSourceFile() == null) {
+      // Source file is null for firmware-only simulations, so just return true if firmware exists.
+      final var firmware = getContikiFirmwareFile();
+      if (firmware == null || !firmware.exists()) {
+        throw new MoteTypeCreationException("Contiki firmware file does not exist: " + firmware);
+      }
+      return true;
+    }
+    if (getCompileCommands() == null) {
+      throw new MoteTypeCreationException("No compile commands specified");
+    }
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
   }
 
