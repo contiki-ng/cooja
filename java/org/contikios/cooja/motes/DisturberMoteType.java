@@ -33,9 +33,6 @@ package org.contikios.cooja.motes;
 
 import java.awt.Container;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.COOJARadioPacket;
 import org.contikios.cooja.ClassDescription;
@@ -44,7 +41,6 @@ import org.contikios.cooja.MoteTimeEvent;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.RadioPacket;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.interfaces.ApplicationRadio;
 
 /**
@@ -60,8 +56,6 @@ import org.contikios.cooja.interfaces.ApplicationRadio;
 @ClassDescription("Disturber mote")
 @AbstractionLevelDescription("Application level")
 public class DisturberMoteType extends AbstractApplicationMoteType {
-  private static final Logger logger = LogManager.getLogger(DisturberMoteType.class);
-
   public DisturberMoteType() {
     super();
   }
@@ -102,7 +96,6 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
       }
       
       /* Start sending interfering traffic */
-      /*logger.info("Sending radio packet on channel: " + radio.getChannel());*/
       radio.startTransmittingPacket(radioPacket, DURATION);
     }
 
@@ -116,7 +109,6 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
       getSimulation().scheduleEvent(new MoteTimeEvent(this) {
         @Override
         public void execute(long t) {
-          /*logger.info("Sending another radio packet on channel: " + radio.getChannel());*/
           radio.startTransmittingPacket(radioPacket, DURATION);
         }
       }, getSimulation().getSimulationTime() + DELAY);
