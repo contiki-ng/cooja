@@ -188,21 +188,6 @@ public class IPAddress extends MoteInterface {
   }
 
   /**
-   * Returns IP address string.
-   *
-   * @param idx
-   * @return IP address string
-   */
-  public IPContainer getIP(int idx) {
-    try {
-      return ipList.get(idx);
-    } catch (IndexOutOfBoundsException ex) {
-      logger.warn("Invalid IP index " + idx);
-      return null;
-    }
-  }
-
-  /**
    * Rereads IP addresses from memory and updates localIP entry.
    */
   private void updateIPAddresses() {
@@ -323,14 +308,12 @@ public class IPAddress extends MoteInterface {
    */
   public class IPContainer {
 
-    private boolean isGlobal;
-    private final byte[] ip;
+    private final boolean isGlobal;
     private final int addrIdx;
     private final String cprString;
 
     public IPContainer(int addidx, byte[] ip, boolean global) {
       this.addrIdx = addidx;
-      this.ip = ip;
       this.isGlobal = global;
       if (ipVersion == IPv.IPv6) {
         cprString = IPUtils.getCompressedIPv6AddressString(ip);
@@ -347,20 +330,9 @@ public class IPAddress extends MoteInterface {
       return isGlobal;
     }
 
-    public byte[] getIP() {
-      return ip;
-    }
-    
     @Override
     public String toString() {
       return cprString;
-    }
-    
-    public String toUncompressedString() {
-      if (ipVersion == IPv.IPv6) {
-        return IPUtils.getUncompressedIPv6AddressString(ip);
-      }
-      return "";
     }
   }
 }
