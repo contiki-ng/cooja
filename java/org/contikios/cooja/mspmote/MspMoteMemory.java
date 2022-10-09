@@ -44,22 +44,18 @@ import se.sics.mspsim.core.Memory.AccessType;
 import se.sics.mspsim.util.MapEntry;
 
 public class MspMoteMemory implements MemoryInterface {
-  private final ArrayList<MapEntry> mapEntries;
-  private final MemoryLayout memLayout;
+  private final ArrayList<MapEntry> mapEntries = new ArrayList<>();
+  private final MemoryLayout memLayout = new MemoryLayout(ByteOrder.LITTLE_ENDIAN, MemoryLayout.ARCH_16BIT, 2);
 
   private final MSP430 cpu;
 
   public MspMoteMemory(MapEntry[] allEntries, MSP430 cpu) {
-    this.mapEntries = new ArrayList<>();
-
     for (MapEntry entry: allEntries) {
       if (entry.getType() == MapEntry.TYPE.variable) {
         mapEntries.add(entry);
       }
     }
-
     this.cpu = cpu;
-    memLayout = new MemoryLayout(ByteOrder.LITTLE_ENDIAN, MemoryLayout.ARCH_16BIT, 2);
   }
 
   @Override
