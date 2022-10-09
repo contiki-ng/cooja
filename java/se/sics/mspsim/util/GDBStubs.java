@@ -84,7 +84,7 @@ public class GDBStubs implements Runnable {
                 StringBuilder cmd = new StringBuilder();
                 boolean readCmd = false;
                 int c;
-                while (s != null && ((c = input.read()) != -1)) {
+                while ((c = input.read()) != -1) {
                     System.out.println("GDBStubs: Read  " + c + " => "
                             + (char) c);
                     if (c == '#') {
