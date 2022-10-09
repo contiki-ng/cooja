@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor.EventType;
 import org.contikios.cooja.mote.memory.MemoryLayout;
@@ -50,7 +49,7 @@ public class MspMoteMemory implements MemoryInterface {
 
   private final MSP430 cpu;
 
-  public MspMoteMemory(Mote mote, MapEntry[] allEntries, MSP430 cpu) {
+  public MspMoteMemory(MapEntry[] allEntries, MSP430 cpu) {
     this.mapEntries = new ArrayList<>();
 
     for (MapEntry entry: allEntries) {

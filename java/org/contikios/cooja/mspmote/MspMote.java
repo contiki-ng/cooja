@@ -138,7 +138,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     //myCpu.setThrowIfWarning(true);
 
     // Create mote address memory.
-    myMemory = new MspMoteMemory(this, elf.getMap().getAllEntries(), myCpu);
+    myMemory = new MspMoteMemory(elf.getMap().getAllEntries(), myCpu);
     myCpu.reset();
     myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     registry.removeComponent("windowManager");
