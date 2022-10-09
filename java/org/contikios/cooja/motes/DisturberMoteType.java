@@ -102,7 +102,6 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
       }
       
       /* Start sending interfering traffic */
-      /*logger.info("Sending radio packet on channel: " + radio.getChannel());*/
       radio.startTransmittingPacket(radioPacket, DURATION);
     }
 
@@ -116,7 +115,6 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
       getSimulation().scheduleEvent(new MoteTimeEvent(this) {
         @Override
         public void execute(long t) {
-          /*logger.info("Sending another radio packet on channel: " + radio.getChannel());*/
           radio.startTransmittingPacket(radioPacket, DURATION);
         }
       }, getSimulation().getSimulationTime() + DELAY);
