@@ -233,16 +233,8 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
       this.testClass = defineClass(null, data, 0, data.length);
     }
 
-    public File getTestClassFile() {
-      return classFile;
-    }
-
     public boolean isTestSubclass(Class<?> type) {
       return type.isAssignableFrom(testClass);
-    }
-
-    public Class<?> getTestClass() {
-      return testClass;
     }
 
     public String getTestClassName() {
