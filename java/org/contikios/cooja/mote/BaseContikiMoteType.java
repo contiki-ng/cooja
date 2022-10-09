@@ -299,16 +299,14 @@ public abstract class BaseContikiMoteType implements MoteType {
   @Override
   public boolean configureAndInit(Container top, Simulation sim, boolean vis) throws MoteTypeCreationException {
     if (vis && !sim.isQuickSetup()) {
-      if (getDescription() == null) {
-        setDescription(getMoteName() + " Mote Type #" + (sim.getMoteTypes().length + 1));
-      }
-
+      var currDesc = getDescription();
+      var desc = currDesc == null ? getMoteName() + " Mote Type #" + (sim.getMoteTypes().length + 1) : currDesc;
       final var source = getContikiSourceFile();
       final var firmware = getContikiFirmwareFile();
       String file = source != null ? source.getAbsolutePath() : firmware != null ? firmware.getAbsolutePath() : null;
       var moteClasses = getMoteInterfaceClasses();
       var interfaces = moteClasses == null ? getDefaultMoteInterfaceClasses() : moteClasses;
-      var cfg = showCompilationDialog(sim, new MoteTypeConfig(getDescription(), file, getCompileCommands(), interfaces));
+      var cfg = showCompilationDialog(sim, new MoteTypeConfig(desc, file, getCompileCommands(), interfaces));
       if (cfg == null) {
         return false;
       }
