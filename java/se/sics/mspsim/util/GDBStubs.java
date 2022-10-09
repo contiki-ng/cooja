@@ -91,7 +91,7 @@ public class GDBStubs implements Runnable {
                         readCmd = false;
                         /* ack the message */
                         output.write('+');
-                        handleCmd(cmd.toString(), buffer, len);
+                        handleCmd(cmd.toString(), buffer);
                         cmd = new StringBuilder();
                         len = 0;
                     }
@@ -109,7 +109,7 @@ public class GDBStubs implements Runnable {
         }
     }
 
-    private void handleCmd(String cmd, int[] cmdBytes, int cmdLen)
+    private void handleCmd(String cmd, int[] cmdBytes)
     throws IOException, EmulationException {
         System.out.println("cmd: " + cmd);
         char c = cmd.charAt(0);
