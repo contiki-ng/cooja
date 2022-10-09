@@ -75,12 +75,6 @@ public abstract class AbstractApplicationMoteType implements MoteType {
     super();
   }
 
-  public AbstractApplicationMoteType(String identifier) {
-    super();
-    this.identifier = identifier;
-    this.description = "Application Mote Type #" + identifier;
-  }
-
   @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
   throws MoteTypeCreationException {
