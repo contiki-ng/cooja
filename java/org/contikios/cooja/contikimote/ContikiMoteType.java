@@ -968,17 +968,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
     if (sourceFile != null) { // Compensate for non-standard naming rules.
       fileFirmware = getMoteFile(librarySuffix);
     }
-    // FIXME: These checks should always be on.
-    if (!visAvailable || simulation.isQuickSetup()) {
-      if (getIdentifier() == null) {
-        throw new MoteTypeCreationException("No identifier specified");
-      }
-      if (sourceFile == null) {
-        throw new MoteTypeCreationException("No Contiki application specified");
-      }
-      if (getCompileCommands() == null) {
-        throw new MoteTypeCreationException("No compile commands specified");
-      }
+    if (sourceFile == null) {
+      throw new MoteTypeCreationException("No Contiki application specified");
+    }
+    if (getCompileCommands() == null) {
+      throw new MoteTypeCreationException("No compile commands specified");
     }
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
   }
