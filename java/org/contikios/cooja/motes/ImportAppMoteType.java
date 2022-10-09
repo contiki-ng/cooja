@@ -129,13 +129,11 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     if (moteClassName == null) {
       throw new MoteTypeCreationException("Unknown mote class file");
     }
-
+    if (moteClassPath == null) {
+      // No class path. Check if path is available in the class name.
+      convertPathToClass();
+    }
     try {
-      if (moteClassPath == null) {
-        // No class path. Check if path is available in the class name.
-        convertPathToClass();
-      }
-
       ClassLoader parentLoader = getParentClassLoader();
       ClassLoader loader;
       if (moteClassPath != null) {
