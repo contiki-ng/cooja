@@ -321,8 +321,16 @@ public class ContikiMoteType extends BaseContikiMoteType {
     SectionParser commonSecParser = null;
 
     if (useCommand) {
+      String command = Cooja.getExternalToolsSetting("PARSE_COMMAND");
+      if (command != null) {
+        command = Cooja.resolvePathIdentifiers(command);
+      }
+      if (command == null) {
+        throw new MoteTypeCreationException("No parse command configured!");
+      }
+      command = command.replace("$(LIBFILE)", firmwareFile.getName().replace(File.separatorChar, '/'));
       /* Parse command output */
-      String[] output = loadCommandData(firmwareFile, vis);
+      String[] output = loadCommandData(command, firmwareFile, vis);
 
       dataSecParser = new CommandSectionParser(
               output,
@@ -804,26 +812,14 @@ public class ContikiMoteType extends BaseContikiMoteType {
   /**
    * Executes configured command on given file and returns the result.
    *
+   * @param command Command to execute
    * @param libraryFile Contiki library
    * @param withUI Specifies if UI should be used or not for error output
    * @return Command execution output
    * @throws org.contikios.cooja.MoteType.MoteTypeCreationException if any error occurred or command gave no output
    */
-  private static String[] loadCommandData(File libraryFile, boolean withUI) throws MoteTypeCreationException {
+  private static String[] loadCommandData(String command, File libraryFile, boolean withUI) throws MoteTypeCreationException {
     ArrayList<String> output = new ArrayList<>();
-
-    String command = Cooja.getExternalToolsSetting("PARSE_COMMAND");
-    if (command != null) {
-      command = Cooja.resolvePathIdentifiers(command);
-    }
-    if (command == null) {
-      throw new MoteTypeCreationException("No parse command configured!");
-    }
-
-    /* Prepare command */
-    command = command.replace("$(LIBFILE)",
-                              libraryFile.getName().replace(File.separatorChar, '/'));
-
     final MessageList commandOutput = MessageContainer.createMessageList(withUI);
     try {
       /* Execute command, read response */
