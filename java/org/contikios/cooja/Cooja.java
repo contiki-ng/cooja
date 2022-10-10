@@ -211,11 +211,6 @@ public class Cooja extends Observable {
   private static String specifiedCoojaPath = null;
   private static String specifiedContikiPath = null;
 
-  /**
-   * User extension configuration filename.
-   */
-  public static final String PROJECT_CONFIG_FILENAME = "cooja.config";
-
   // External tools setting names
   public static Properties defaultExternalToolsSettings;
   public static Properties currentExternalToolsSettings;

@@ -762,7 +762,7 @@ class DirectoryTreePanel extends JPanel {
 			return false;
 		}
 		boolean containsConfig() {
-			return new File(dir, Cooja.PROJECT_CONFIG_FILENAME).exists();
+			return new File(dir, ProjectConfig.PROJECT_CONFIG_FILENAME).exists();
 		}
 		boolean subtreeContainsProject() {
 			try {

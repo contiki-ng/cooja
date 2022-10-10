@@ -64,7 +64,7 @@ public class COOJAProject {
 					Collections.addAll(dirs, newf);
 				}
 			}
-			if(subf.getName().equals(Cooja.PROJECT_CONFIG_FILENAME)){
+			if(subf.getName().equals(ProjectConfig.PROJECT_CONFIG_FILENAME)){
 				try{
 					dirs.add(folder);
 				} catch(Exception e){
@@ -85,7 +85,7 @@ public class COOJAProject {
 	public COOJAProject(File dir) {
 		try {
 			this.dir = dir;
-			configFile = new File(dir.getPath(), Cooja.PROJECT_CONFIG_FILENAME);
+			configFile = new File(dir.getPath(), ProjectConfig.PROJECT_CONFIG_FILENAME);
 			config = new ProjectConfig(false);
 			config.appendConfigFile(configFile);
 		} catch (Exception e) {
