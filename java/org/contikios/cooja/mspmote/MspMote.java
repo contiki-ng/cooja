@@ -271,10 +271,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     if (t < lastExecute) {
       throw new RuntimeException("Bad event ordering: " + lastExecute + " < " + t);
     }
-    final var deviation = clock.getDeviation();
-    // FIXME: merge regularExecute/driftExecute methods.
-    long nextExecute = deviation == 1.0
-            ? regularExecute(deviation, t, duration) : driftExecute(deviation, t, duration);
+    long nextExecute = driftExecute(clock.getDeviation(), t, duration);
     lastExecute = t;
     // Schedule wakeup.
     if (nextExecute < t) {
@@ -291,29 +288,18 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     // TODO: Reimplement stack monitoring using MSPSim internals.
   }
 
-  private long regularExecute(double deviation, long t, int duration) {
-    /* Execute MSPSim-based mote */
-    /* TODO Try-catch overhead */
-    long nextExecute;
-    try {
-      nextExecute = myCpu.stepMicros(Math.max(0, t - lastExecute), duration) + duration + t;
-    } catch (EmulationException e) {
-      throw new ContikiError(e.getMessage(), getStackTrace(), e);
-    }
-    return nextExecute;
-  }
-
   private long driftExecute(double deviation, long t, int duration) {
     long jump = Math.max(0, t - lastExecute);
-    double exactJump = jump * deviation;
-    jump = (int)Math.floor(exactJump);
-    jumpError += exactJump - jump;
+    if (deviation != 1.0) {
+      double exactJump = jump * deviation;
+      jump = (int) Math.floor(exactJump);
+      jumpError += exactJump - jump;
 
-    if(jumpError > 1.0) {
-      jump++;
-      jumpError -= 1.0;
+      if (jumpError > 1.0) {
+        jump++;
+        jumpError -= 1.0;
+      }
     }
-
     /* Execute MSPSim-based mote */
     /* TODO Try-catch overhead */
     long executeDelta;
@@ -323,9 +309,11 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       throw new ContikiError(e.getMessage(), getStackTrace(), e);
     }
 
-    double invDeviation = 1.0 / deviation;
-    double exactExecuteDelta = executeDelta * invDeviation;
-    executeDelta = (int)Math.floor(exactExecuteDelta);
+    if (deviation != 1.0) {
+      double invDeviation = 1.0 / deviation;
+      double exactExecuteDelta = executeDelta * invDeviation;
+      executeDelta = (int) Math.floor(exactExecuteDelta);
+    }
     return executeDelta + t;
   }
 
