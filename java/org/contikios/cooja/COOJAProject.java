@@ -29,6 +29,7 @@
 package org.contikios.cooja;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,22 +77,17 @@ public class COOJAProject {
 		
 	}
 
-	
-	public File dir = null;
-	public File configFile = null;
-	public ProjectConfig config = null;
-	
 
-	public COOJAProject(File dir) {
-		try {
-			this.dir = dir;
-			configFile = new File(dir.getPath(), ProjectConfig.PROJECT_CONFIG_FILENAME);
-			config = new ProjectConfig(false);
-			config.appendConfigFile(configFile);
-		} catch (Exception e) {
-			logger.fatal("Error when loading COOJA project: " + e.getMessage());
-		}
-	}
+  public final File dir;
+  public final File configFile;
+  public final ProjectConfig config;
+
+  public COOJAProject(File dir) throws IOException {
+    this.dir = dir;
+    configFile = new File(dir.getPath(), ProjectConfig.PROJECT_CONFIG_FILENAME);
+    config = new ProjectConfig(false);
+    config.appendConfigFile(configFile);
+  }
 
 	public boolean directoryExists() {
 		return dir.exists();

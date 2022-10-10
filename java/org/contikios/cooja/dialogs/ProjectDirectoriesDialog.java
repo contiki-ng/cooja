@@ -463,8 +463,12 @@ public class ProjectDirectoriesDialog extends JDialog {
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 	}
 	protected void addProjectDir(File dir) {
-		currentProjects.add(new COOJAProject(dir));
-		((AbstractTableModel)table.getModel()).fireTableDataChanged();
+    try {
+      currentProjects.add(new COOJAProject(dir));
+      ((AbstractTableModel) table.getModel()).fireTableDataChanged();
+    } catch (IOException e) {
+      logger.error("Failed to parse Cooja project: {}", dir, e);
+    }
 	}
 	protected void addProjectDir(COOJAProject project, int index) {
 		currentProjects.add(index, project);
