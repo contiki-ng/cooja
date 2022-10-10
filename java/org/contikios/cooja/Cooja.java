@@ -3106,7 +3106,10 @@ public class Cooja extends Observable {
       }
       if (!vis) {
         sim.setSpeedLimit(null);
-        sim.startSimulation();
+        var rv = sim.startSimulation(true);
+        if (rv != null) {
+          gui.doQuit(false, rv);
+        }
       }
     }
   }
