@@ -77,7 +77,7 @@ public class ELF {
 
   private ELFSection[] sections;
   private ELFProgram[] programs;
-  private ArrayList<FileInfo> files = new ArrayList<>();
+  private final ArrayList<FileInfo> files = new ArrayList<>();
 
   ELFSection strTable;
   ELFSection symTable;
