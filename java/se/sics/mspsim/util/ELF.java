@@ -36,13 +36,10 @@
  */
 
 package se.sics.mspsim.util;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 import se.sics.mspsim.debug.DwarfReader;
@@ -89,24 +86,6 @@ public class ELF {
   public ELF(byte[] data) {
     elfData = data;
     setPos(0);
-  }
-
-  /* check if the file exists and is an ELF file */
-  public static boolean isELF(File file) {
-    try {
-      InputStream input = new BufferedInputStream(new FileInputStream(file));
-      for (int j : MAGIC) {
-        if (j != input.read()) {
-          input.close();
-          return false;
-        }
-      }
-      input.close();
-      return true;
-    } catch(IOException ioe) {
-      // ignore and return false - this is not an elf.
-      return false;
-    }
   }
 
   private void readHeader() throws ELFException {
