@@ -35,10 +35,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor.EventType;
 import org.contikios.cooja.mote.memory.MemoryLayout;
@@ -48,23 +44,18 @@ import se.sics.mspsim.core.Memory.AccessType;
 import se.sics.mspsim.util.MapEntry;
 
 public class MspMoteMemory implements MemoryInterface {
-  private static final Logger logger = LogManager.getLogger(MspMoteMemory.class);
-  private final ArrayList<MapEntry> mapEntries;
-  private final MemoryLayout memLayout;
+  private final ArrayList<MapEntry> mapEntries = new ArrayList<>();
+  private final MemoryLayout memLayout = new MemoryLayout(ByteOrder.LITTLE_ENDIAN, MemoryLayout.ARCH_16BIT, 2);
 
   private final MSP430 cpu;
 
-  public MspMoteMemory(Mote mote, MapEntry[] allEntries, MSP430 cpu) {
-    this.mapEntries = new ArrayList<>();
-
+  public MspMoteMemory(MapEntry[] allEntries, MSP430 cpu) {
     for (MapEntry entry: allEntries) {
       if (entry.getType() == MapEntry.TYPE.variable) {
         mapEntries.add(entry);
       }
     }
-
     this.cpu = cpu;
-    memLayout = new MemoryLayout(ByteOrder.LITTLE_ENDIAN, MemoryLayout.ARCH_16BIT, 2);
   }
 
   @Override
