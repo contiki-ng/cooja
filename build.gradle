@@ -65,6 +65,10 @@ application {
     '--enable-native-access', 'ALL-UNNAMED', '--add-modules', 'jdk.incubator.foreign']
 }
 
+tasks.withType(JavaCompile) {
+  options.compilerArgs += ['--add-modules', 'jdk.incubator.foreign']
+}
+
 jar {
   reproducibleFileOrder = true
   manifest {

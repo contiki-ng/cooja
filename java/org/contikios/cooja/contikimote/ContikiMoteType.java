@@ -406,8 +406,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
       try {
         long referenceVar = tmp.getSymbolMap().get("referenceVar").addr;
-        myCoreComm.setReferenceAddress(referenceVar);
         offset = myCoreComm.getReferenceAddress() - referenceVar;
+        myCoreComm.setReferenceOffset(offset);
       } catch (Exception e) {
         throw new MoteTypeCreationException("Error setting reference variable: " + e.getMessage(), e);
       }

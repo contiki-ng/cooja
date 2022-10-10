@@ -59,7 +59,4 @@ public class CoreCommTemplate extends CoreComm {
   public long getReferenceAddress() {
     return symbols.lookup("referenceVar").get().address().toRawLongValue();
   }
-  public native void setReferenceAddress(long addr);
-  public native void getMemory(long rel_addr, int length, byte[] mem);
-  public native void setMemory(long rel_addr, int length, byte[] mem);
 }
