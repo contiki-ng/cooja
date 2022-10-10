@@ -190,15 +190,13 @@ public class MapTable {
   }
 
   public void loadMap(String file) throws IOException {
-    FileInputStream fInput = new FileInputStream(file);
-    BufferedReader bInput = new BufferedReader(new InputStreamReader(fInput, UTF_8));
-    HashMap<String,MapEntry> moduleTable = new HashMap<>();
-    String line;
-    while ((line = bInput.readLine()) != null) {
-      parseMapLine(moduleTable, line);
+    HashMap<String, MapEntry> moduleTable = new HashMap<>();
+    try (var bInput = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8))) {
+      String line;
+      while ((line = bInput.readLine()) != null) {
+        parseMapLine(moduleTable, line);
+      }
     }
-    bInput.close();
-    fInput.close();
   }
 
   public String getFunctionName(int address) {
