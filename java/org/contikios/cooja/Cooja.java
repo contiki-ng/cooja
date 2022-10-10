@@ -211,11 +211,6 @@ public class Cooja extends Observable {
   private static String specifiedCoojaPath = null;
   private static String specifiedContikiPath = null;
 
-  /**
-   * User extension configuration filename.
-   */
-  public static final String PROJECT_CONFIG_FILENAME = "cooja.config";
-
   // External tools setting names
   public static Properties defaultExternalToolsSettings;
   public static Properties currentExternalToolsSettings;
@@ -329,7 +324,7 @@ public class Cooja extends Observable {
           try {
             return new Cooja(logDirectory, vis);
           } catch (ParseProjectsException e) {
-            throw new RuntimeException("Cooja constructor should never throw ParseProjectsException in GUI mode", e);
+            throw new RuntimeException("Could not parse projects", e);
           }
         }
       }.invokeAndWait();
@@ -360,8 +355,11 @@ public class Cooja extends Observable {
     if (defaultProjectDirs != null && defaultProjectDirs.length() > 0) {
       String[] arr = defaultProjectDirs.split(";");
       for (String p : arr) {
-        File projectDir = restorePortablePath(new File(p));
-        currentProjects.add(new COOJAProject(projectDir));
+        try {
+          currentProjects.add(new COOJAProject(restorePortablePath(new File(p))));
+        } catch (IOException e) {
+          throw new ParseProjectsException("Failed to parse project: " + p, e);
+        }
       }
     }
 
@@ -374,7 +372,11 @@ public class Cooja extends Observable {
         File[] projects = COOJAProject.searchProjects(searchDir, 3);
         if(projects == null) continue;
         for(File p : projects){
-          currentProjects.add(new COOJAProject(p));
+          try {
+            currentProjects.add(new COOJAProject(p));
+          } catch (IOException e) {
+            throw new ParseProjectsException("Failed to parse project: " + p, e);
+          }
         }
       }
     }

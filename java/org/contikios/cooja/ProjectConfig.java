@@ -97,6 +97,11 @@ public class ProjectConfig {
    */
   public static final String PROJECT_DEFAULT_CONFIG_FILENAME = "/cooja_default.config";
 
+  /**
+   * User extension configuration filename.
+   */
+  public static final String PROJECT_CONFIG_FILENAME = "cooja.config";
+
   private Properties myConfig = new Properties();
   private ArrayList<File> myProjectDirHistory = new ArrayList<>();
 
@@ -145,7 +150,7 @@ public class ProjectConfig {
       throw new FileNotFoundException("Project directory does not exist: " + projectDir.getAbsolutePath());
     }
     
-    File projectConfig = new File(projectDir.getPath(), Cooja.PROJECT_CONFIG_FILENAME);
+    File projectConfig = new File(projectDir.getPath(), PROJECT_CONFIG_FILENAME);
     if (!projectConfig.exists()) {
       throw new FileNotFoundException("Project config does not exist: " + projectConfig.getAbsolutePath());
     }
