@@ -47,7 +47,6 @@ public interface MemoryInterface {
 
     public final Type type;
     public final String name;
-    public final String section;
     public final long addr;
     public final int size;
 
@@ -57,23 +56,17 @@ public interface MemoryInterface {
       FUNCTION
     }
 
-    public Symbol(Type type, String name, String section, long addr, int size) {
+    public Symbol(Type type, String name, long addr, int size) {
       this.type = type;
       this.name = name;
-      this.section = section;
       this.addr = addr;
       this.size = size;
-    }
-
-    public Symbol(Type type, String name, long addr, int size) {
-      this(type, name, null, addr, size);
     }
 
     @Override
     public String toString() {
       return "Symbol(" + (type == null ? "N/A" : type.toString()) +
               ") '" + name +
-              "' in '" + (section == null ? "N/A" : section) +
               "' at 0x" + (addr == -1 ? "N/A" : Long.toHexString(addr)) +
               " size " + (size == -1 ? "N/A" : String.valueOf(size));
     }
