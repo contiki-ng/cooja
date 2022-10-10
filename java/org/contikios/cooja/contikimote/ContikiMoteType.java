@@ -388,7 +388,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     HashMap<String, Symbol> variables = new HashMap<>();
     {
       SectionMoteMemory tmp = new SectionMoteMemory(variables);
-      VarMemory varMem = new VarMemory(tmp);
       tmp.addMemorySection("tmp.data", dataSecParser.parse(0));
       tmp.addMemorySection("tmp.bss", bssSecParser.parse(0));
       if (commonSecParser != null) {
@@ -396,7 +395,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
       }
 
       try {
-        long referenceVar = varMem.getVariable("referenceVar").addr;
+        long referenceVar = tmp.getSymbolMap().get("referenceVar").addr;
         myCoreComm.setReferenceAddress(referenceVar);
         offset = myCoreComm.getReferenceAddress() - referenceVar;
       } catch (Exception e) {
