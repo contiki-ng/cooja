@@ -464,21 +464,19 @@ public class ELF {
   }
 
   public static ELF readELF(String file) throws IOException {
-    DataInputStream input = new DataInputStream(new FileInputStream(file));
-    ByteArrayOutputStream baous = new ByteArrayOutputStream();
-    byte[] buf = new byte[2048];
-    for(int read; (read = input.read(buf)) != -1; baous.write(buf, 0, read)) {
+    try (var input = new DataInputStream(new FileInputStream(file));
+         var baous = new ByteArrayOutputStream(65536)) {
+      byte[] buf = new byte[2048];
+      for (int read; (read = input.read(buf)) != -1; baous.write(buf, 0, read)) {
+      }
+      byte[] data = baous.toByteArray();
+      if (DEBUG) {
+        System.out.println("Length of data: " + data.length);
+      }
+      ELF elf = new ELF(data);
+      elf.readAll();
+      return elf;
     }
-    input.close();
-    byte[] data = baous.toByteArray();
-    if (DEBUG) {
-      System.out.println("Length of data: " + data.length);
-    }
-
-    ELF elf = new ELF(data);
-    elf.readAll();
-
-    return elf;
   }
 
   public static void main(String[] args) throws Exception {
