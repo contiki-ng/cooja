@@ -405,14 +405,13 @@ public class AddMoteDialog extends JDialog {
         newMotes.clear();
         dispose();
       } else if (e.getActionCommand().equals("add")) {
+        // Validate input
+        if (!checkSettings()) {
+          return;
+        }
+        int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
         try {
-	  // Validate input
-	  if (!checkSettings()) {
-	    return;
-	  }
-
-	  // Create new motes
-          int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
+          // Create new motes
           while (newMotes.size() < motesToAdd) {
             Mote newMote = moteType.generateMote(simulation);
             newMotes.add(newMote);
