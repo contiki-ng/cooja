@@ -211,7 +211,6 @@ public class Simulation extends Observable implements Runnable {
     assert isRunning : "Did not set isRunning before starting";
     lastStartRealTime = System.currentTimeMillis();
     lastStartSimulationTime = getSimulationTimeMillis();
-    logger.debug("Simulation started, system time: {}", lastStartRealTime);
     speedLimitLastRealtime = lastStartRealTime;
     speedLimitLastSimtime = lastStartSimulationTime;
 
@@ -584,7 +583,6 @@ public class Simulation extends Observable implements Runnable {
           if (visAvailable && !quick) {
             // FIXME: this should run from the AWT thread.
             if (!CreateSimDialog.showDialog(this, getSimConfig())) {
-              logger.debug("Simulation not created, aborting");
               throw new Exception("Load aborted by user");
             }
           }
