@@ -410,80 +410,73 @@ public class AddMoteDialog extends JDialog {
           return;
         }
         int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
-        try {
-          // Create new motes
-          while (newMotes.size() < motesToAdd) {
+        // Create new motes
+        while (newMotes.size() < motesToAdd) {
+          try {
             Mote newMote = moteType.generateMote(simulation);
             newMotes.add(newMote);
-          }
-
-          // Position new motes
-          Class<? extends Positioner> positionerClass = null;
-          for (Class<? extends Positioner> positioner : simulation.getCooja()
-              .getRegisteredPositioners()) {
-            if (Cooja.getDescriptionOf(positioner).equals(
-                positionDistributionBox.getSelectedItem())) {
-              positionerClass = positioner;
-            }
-          }
-
-          Positioner positioner = Positioner.generateInterface(positionerClass,
-              motesToAdd,
-              ((Number) startX.getValue()).doubleValue(), ((Number) endX
-                  .getValue()).doubleValue(), ((Number) startY.getValue())
-                  .doubleValue(), ((Number) endY.getValue()).doubleValue(),
-                  ((Number) startZ.getValue()).doubleValue(), ((Number) endZ
-                      .getValue()).doubleValue());
-
-          if (positioner == null) {
-            logger.fatal("Could not create positioner");
+          } catch (MoteType.MoteTypeCreationException e2) {
+            newMotes.clear();
+            JOptionPane.showMessageDialog(AddMoteDialog.this,
+                    "Could not create mote.\nException message: \"" + e2.getMessage() + "\"\n\n",
+                    "Mote creation failed", JOptionPane.ERROR_MESSAGE);
             return;
           }
-
-          for (Mote newMote : newMotes) {
-            Position newPosition = newMote.getInterfaces().getPosition();
-            if (newPosition != null) {
-              double[] newPositionArray = positioner.getNextPosition();
-              if (newPositionArray.length >= 3) {
-                newPosition.setCoordinates(newPositionArray[0],
-                    newPositionArray[1], newPositionArray[2]);
-              } else if (newPositionArray.length == 2) {
-                newPosition.setCoordinates(newPositionArray[0],
-                    newPositionArray[1], 0);
-              } else if (newPositionArray.length == 1) {
-                newPosition.setCoordinates(newPositionArray[0], 0, 0);
-              } else {
-                newPosition.setCoordinates(0, 0, 0);
-              }
-            }
-          }
-
-          /* Set unique mote id's for all new motes
-           * TODO ID should be provided differently; not rely on the unsafe MoteID interface */
-          int nextMoteID = 1;
-          for (Mote m: simulation.getMotes()) {
-            int existing = m.getID();
-            if (existing >= nextMoteID) {
-              nextMoteID = existing + 1;
-            }
-          }
-          for (Mote m: newMotes) {
-            MoteID moteID = m.getInterfaces().getMoteID();
-            if (moteID != null) {
-              moteID.setMoteID(nextMoteID++);
-            } else {
-              logger.warn("Can't set mote ID (no mote ID interface): " + m);
-            }
-          }
-          dispose();
-        } catch (MoteType.MoteTypeCreationException e2) {
-          newMotes.clear();
-          JOptionPane.showMessageDialog(
-                  AddMoteDialog.this,
-                  "Could not create mote.\nException message: \"" + e2.getMessage() + "\"\n\n",
-                  "Mote creation failed", JOptionPane.ERROR_MESSAGE
-          );
         }
+
+        // Position new motes
+        Class<? extends Positioner> positionerClass = null;
+        for (var positioner : simulation.getCooja().getRegisteredPositioners()) {
+          if (Cooja.getDescriptionOf(positioner).equals(positionDistributionBox.getSelectedItem())) {
+            positionerClass = positioner;
+          }
+        }
+
+        var positioner = Positioner.generateInterface(positionerClass,
+                motesToAdd,
+                ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
+                ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
+                ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
+
+        if (positioner == null) {
+          logger.fatal("Could not create positioner");
+          return;
+        }
+
+        for (Mote newMote : newMotes) {
+          Position newPosition = newMote.getInterfaces().getPosition();
+          if (newPosition != null) {
+            double[] next = positioner.getNextPosition();
+            if (next.length >= 3) {
+              newPosition.setCoordinates(next[0], next[1], next[2]);
+            } else if (next.length == 2) {
+              newPosition.setCoordinates(next[0], next[1], 0);
+            } else if (next.length == 1) {
+              newPosition.setCoordinates(next[0], 0, 0);
+            } else {
+              newPosition.setCoordinates(0, 0, 0);
+            }
+          }
+        }
+
+        /* Set unique mote id's for all new motes
+         * TODO ID should be provided differently; not rely on the unsafe MoteID interface */
+        int nextMoteID = 1;
+        for (Mote m : simulation.getMotes()) {
+          int existing = m.getID();
+          if (existing >= nextMoteID) {
+            nextMoteID = existing + 1;
+          }
+        }
+        for (Mote m : newMotes) {
+          MoteID moteID = m.getInterfaces().getMoteID();
+          if (moteID != null) {
+            moteID.setMoteID(nextMoteID++);
+          } else {
+            logger.warn("Can't set mote ID (no mote ID interface): " + m);
+          }
+        }
+        dispose();
       }
     }
   }
