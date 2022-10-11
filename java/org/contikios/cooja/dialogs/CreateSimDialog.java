@@ -112,10 +112,10 @@ public class CreateSimDialog extends JDialog {
     });
     buttonBox.add(cancelButton);
 
-    var button = new JButton("Create");
+    var createButton = new JButton("Create");
     buttonBox.add(Box.createHorizontalStrut(5));
-    getRootPane().setDefaultButton(button);
-    buttonBox.add(button);
+    getRootPane().setDefaultButton(createButton);
+    buttonBox.add(createButton);
 
 
     // MAIN PART
@@ -279,7 +279,7 @@ public class CreateSimDialog extends JDialog {
     // Set delayed mote startup time (ms)
     delayedStartup.setValue(sim.getDelayedMoteStartupTime() / Simulation.MILLISECOND);
 
-    button.addActionListener(new ActionListener() {
+    createButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         mySimulation.setTitle(title.getText());
@@ -292,6 +292,7 @@ public class CreateSimDialog extends JDialog {
               mySimulation.setRadioMedium(radioMedium);
             } catch (Exception ex) {
               logger.fatal("Error generating radio medium: " + ex.getMessage(), ex);
+              // FIXME: This should not proceed with a success.
               mySimulation.setRadioMedium(null);
             }
             break;
