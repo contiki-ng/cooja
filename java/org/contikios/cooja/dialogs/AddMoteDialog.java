@@ -409,7 +409,26 @@ public class AddMoteDialog extends JDialog {
         if (!checkSettings()) {
           return;
         }
+        Class<? extends Positioner> positionerClass = null;
+        for (var positioner : simulation.getCooja().getRegisteredPositioners()) {
+          if (Cooja.getDescriptionOf(positioner).equals(positionDistributionBox.getSelectedItem())) {
+            positionerClass = positioner;
+          }
+        }
+
+        // FIXME: inline generateInterface().
         int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
+        var positioner = Positioner.generateInterface(positionerClass,
+                motesToAdd,
+                ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
+                ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
+                ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
+
+        if (positioner == null) {
+          logger.fatal("Could not create positioner");
+          return;
+        }
+
         // Create new motes
         while (newMotes.size() < motesToAdd) {
           try {
@@ -423,26 +442,7 @@ public class AddMoteDialog extends JDialog {
             return;
           }
         }
-
         // Position new motes
-        Class<? extends Positioner> positionerClass = null;
-        for (var positioner : simulation.getCooja().getRegisteredPositioners()) {
-          if (Cooja.getDescriptionOf(positioner).equals(positionDistributionBox.getSelectedItem())) {
-            positionerClass = positioner;
-          }
-        }
-
-        var positioner = Positioner.generateInterface(positionerClass,
-                motesToAdd,
-                ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
-                ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
-                ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
-
-        if (positioner == null) {
-          logger.fatal("Could not create positioner");
-          return;
-        }
-
         for (Mote newMote : newMotes) {
           Position newPosition = newMote.getInterfaces().getPosition();
           if (newPosition != null) {
