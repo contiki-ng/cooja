@@ -77,15 +77,6 @@ public class CreateSimDialog extends JDialog {
 
   private Simulation mySimulation;
 
-  private final JFormattedTextField randomSeed;
-  private final JFormattedTextField delayedStartup;
-  private final JCheckBox randomSeedGenerated;
-
-  private final JTextField title;
-  private final JComboBox<String> radioMediumBox;
-
-  private final JButton cancelButton;
-
   /**
    * Shows a dialog for configuring a simulation.
    *
@@ -111,7 +102,7 @@ public class CreateSimDialog extends JDialog {
 
     buttonBox.add(Box.createHorizontalGlue());
 
-    cancelButton = new JButton("Cancel");
+    final var cancelButton = new JButton("Cancel");
     cancelButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -121,45 +112,10 @@ public class CreateSimDialog extends JDialog {
     });
     buttonBox.add(cancelButton);
 
-    var button = new JButton("Create");
-    var createSimulationListener = new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        mySimulation.setTitle(title.getText());
-
-        String currentRadioMediumDescription = (String) radioMediumBox.getSelectedItem();
-        for (var radioMediumClass : mySimulation.getCooja().getRegisteredRadioMediums()) {
-          String radioMediumDescription = Cooja.getDescriptionOf(radioMediumClass);
-
-          if (currentRadioMediumDescription.equals(radioMediumDescription)) {
-            try {
-              var radioMedium = radioMediumClass.getConstructor(Simulation.class).newInstance(mySimulation);
-              mySimulation.setRadioMedium(radioMedium);
-            } catch (Exception ex) {
-              logger.fatal("Error generating radio medium: " + ex.getMessage(), ex);
-              mySimulation.setRadioMedium(null);
-            }
-            break;
-          }
-        }
-
-        if (randomSeedGenerated.isSelected()) {
-          mySimulation.setRandomSeedGenerated(true);
-          mySimulation.setRandomSeed(new Random().nextLong());
-        } else {
-          mySimulation.setRandomSeedGenerated(false);
-          mySimulation.setRandomSeed(((Number) randomSeed.getValue()).longValue());
-        }
-
-        mySimulation.setDelayedMoteStartupTime(((Number) delayedStartup.getValue()).intValue() * Simulation.MILLISECOND);
-
-        dispose();
-      }
-    };
-    button.addActionListener(createSimulationListener);
+    var createButton = new JButton("Create");
     buttonBox.add(Box.createHorizontalStrut(5));
-    getRootPane().setDefaultButton(button);
-    buttonBox.add(button);
+    getRootPane().setDefaultButton(createButton);
+    buttonBox.add(createButton);
 
 
     // MAIN PART
@@ -171,14 +127,12 @@ public class CreateSimDialog extends JDialog {
     var label = new JLabel("Simulation name");
     label.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT));
 
-    var textField = new JTextField();
-    textField.setText("[no title]");
-    textField.setColumns(25);
-    title = textField;
+    final var title = new JTextField();
+    title.setColumns(25);
 
     horizBox.add(label);
     horizBox.add(Box.createHorizontalStrut(10));
-    horizBox.add(textField);
+    horizBox.add(title);
 
     vertBox.add(horizBox);
     vertBox.add(Box.createRigidArea(new Dimension(0,5)));
@@ -200,14 +154,13 @@ public class CreateSimDialog extends JDialog {
       radioMediumDescriptions.add(description);
     }
 
-    JComboBox<String> comboBox = new JComboBox<>(radioMediumDescriptions);
-    comboBox.setSelectedIndex(0);
-    radioMediumBox = comboBox;
-    label.setLabelFor(comboBox);
+    final var radioMediumBox = new JComboBox<>(radioMediumDescriptions);
+    radioMediumBox.setSelectedIndex(0);
+    label.setLabelFor(radioMediumBox);
 
     horizBox.add(label);
     horizBox.add(Box.createHorizontalStrut(10));
-    horizBox.add(comboBox);
+    horizBox.add(radioMediumBox);
     horizBox.setToolTipText("Determines the radio surroundings behaviour");
 
     advancedBox.add(horizBox);
@@ -220,14 +173,13 @@ public class CreateSimDialog extends JDialog {
     label = new JLabel("Mote startup delay (ms)");
     label.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT));
 
-    var numberField = new JFormattedTextField(integerFormat);
-    numberField.setValue(10000);
-    numberField.setColumns(4);
-    delayedStartup = numberField;
+    final var delayedStartup = new JFormattedTextField(integerFormat);
+    delayedStartup.setValue(10000);
+    delayedStartup.setColumns(4);
 
     horizBox.add(label);
     horizBox.add(Box.createHorizontalStrut(150));
-    horizBox.add(numberField);
+    horizBox.add(delayedStartup);
     horizBox.setToolTipText("Maximum mote startup delay (random interval: [0, time])");
 
     advancedBox.add(horizBox);
@@ -240,14 +192,13 @@ public class CreateSimDialog extends JDialog {
     label = new JLabel("Random seed");
     label.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT));
 
-    numberField = new JFormattedTextField(integerFormat);
-    numberField.setValue(123456);
-    numberField.setColumns(4);
-    randomSeed = numberField;
+    final var randomSeed = new JFormattedTextField(integerFormat);
+    randomSeed.setValue(123456);
+    randomSeed.setColumns(4);
 
     horizBox.add(label);
     horizBox.add(Box.createHorizontalStrut(150));
-    horizBox.add(numberField);
+    horizBox.add(randomSeed);
     horizBox.setToolTipText("Simulation random seed. Controls the random behavior such as mote startup delays, node positions etc.");
 
     advancedBox.add(horizBox);
@@ -258,7 +209,7 @@ public class CreateSimDialog extends JDialog {
     horizBox.setAlignmentX(Component.LEFT_ALIGNMENT);
     label = new JLabel("New random seed on reload");
     label.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT));
-    randomSeedGenerated = new JCheckBox();
+    final var randomSeedGenerated = new JCheckBox();
     randomSeedGenerated.setToolTipText("Automatically generate random seed at simulation load");
     randomSeedGenerated.addActionListener(new ActionListener() {
       @Override
@@ -327,6 +278,38 @@ public class CreateSimDialog extends JDialog {
 
     // Set delayed mote startup time (ms)
     delayedStartup.setValue(sim.getDelayedMoteStartupTime() / Simulation.MILLISECOND);
+
+    createButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        mySimulation.setTitle(title.getText());
+        String currentRadioMediumDescription = (String) radioMediumBox.getSelectedItem();
+        for (var radioMediumClass : mySimulation.getCooja().getRegisteredRadioMediums()) {
+          String radioMediumDescription = Cooja.getDescriptionOf(radioMediumClass);
+          if (radioMediumDescription.equals(currentRadioMediumDescription)) {
+            try {
+              var radioMedium = radioMediumClass.getConstructor(Simulation.class).newInstance(mySimulation);
+              mySimulation.setRadioMedium(radioMedium);
+            } catch (Exception ex) {
+              logger.fatal("Error generating radio medium: " + ex.getMessage(), ex);
+              // FIXME: This should not proceed with a success.
+              mySimulation.setRadioMedium(null);
+            }
+            break;
+          }
+        }
+
+        if (randomSeedGenerated.isSelected()) {
+          mySimulation.setRandomSeedGenerated(true);
+          mySimulation.setRandomSeed(new Random().nextLong());
+        } else {
+          mySimulation.setRandomSeedGenerated(false);
+          mySimulation.setRandomSeed(((Number) randomSeed.getValue()).longValue());
+        }
+        mySimulation.setDelayedMoteStartupTime(((Number) delayedStartup.getValue()).intValue() * Simulation.MILLISECOND);
+        dispose();
+      }
+    });
 
     // Set position and focus of dialog
     setLocationRelativeTo(Cooja.getTopParentContainer());
