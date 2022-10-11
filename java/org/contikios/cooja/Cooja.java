@@ -4192,7 +4192,7 @@ public class Cooja extends Observable {
       // Stop the simulation if it is running.
       Simulation simulation = cooja.getSimulation();
       if (simulation != null) {
-        simulation.stopSimulation(true);
+        simulation.stopSimulation();
       }
     }
   }
