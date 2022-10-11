@@ -475,16 +475,7 @@ public class AddMoteDialog extends JDialog {
               logger.warn("Can't set mote ID (no mote ID interface): " + m);
             }
           }
-
           dispose();
-        } catch (OutOfMemoryError e2) {
-          newMotes.clear();
-          JOptionPane.showMessageDialog(
-              AddMoteDialog.this,
-              "Out of memory.\nException message: \"" + e2.getMessage() + "\"\n\n" +
-              "Reduce number of nodes or start Cooja with more memory (\">ant run_bigmem\").",
-              "Not enough heap memory.", JOptionPane.ERROR_MESSAGE
-          );
         } catch (MoteType.MoteTypeCreationException e2) {
           newMotes.clear();
           JOptionPane.showMessageDialog(
