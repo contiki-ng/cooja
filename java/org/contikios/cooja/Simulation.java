@@ -278,6 +278,15 @@ public class Simulation extends Observable implements Runnable {
     randomSeed = seed;
   }
 
+  /** Basic simulation configuration. */
+  public record SimConfig(String title, String radioMedium, boolean generatedSeed, long randomSeed, long moteStartDelay) {}
+
+  public SimConfig getSimConfig() {
+    return new Simulation.SimConfig(title,
+            currentRadioMedium == null ? null : Cooja.getDescriptionOf(currentRadioMedium),
+            randomSeedGenerated, randomSeed, maxMoteStartupDelay / MILLISECOND);
+  }
+
   /** Create a new script engine that logs to the logTextArea and add it to the list
    *  of active script engines. */
   public LogScriptEngine newScriptEngine(JTextArea logTextArea) {
@@ -574,7 +583,7 @@ public class Simulation extends Observable implements Runnable {
           // Show configure simulation dialog
           if (visAvailable && !quick) {
             // FIXME: this should run from the AWT thread.
-            if (!CreateSimDialog.showDialog(this)) {
+            if (!CreateSimDialog.showDialog(this, getSimConfig())) {
               logger.debug("Simulation not created, aborting");
               throw new Exception("Load aborted by user");
             }
