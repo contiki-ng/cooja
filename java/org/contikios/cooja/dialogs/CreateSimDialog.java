@@ -128,7 +128,6 @@ public class CreateSimDialog extends JDialog {
     label.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT));
 
     final var title = new JTextField();
-    title.setText("[no title]");
     title.setColumns(25);
 
     horizBox.add(label);
