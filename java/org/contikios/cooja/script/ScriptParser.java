@@ -243,8 +243,8 @@ public class ScriptParser {
     "function run() { try {" +
     "SEMAPHORE_SIM.acquire(); " +
     "SEMAPHORE_SCRIPT.acquire(); " + /* STARTUP BLOCKS HERE! */
-    "if (SHUTDOWN) { throw new Shutdown(); } " +
     "if (TIMEOUT) { SCRIPT_TIMEOUT(); } " +
+    "if (SHUTDOWN) { throw new Shutdown(); } " +
     "msg = new java.lang.String(msg); " +
     "node.setMoteMsg(mote, msg); " +
     code + 
@@ -272,8 +272,8 @@ public class ScriptParser {
     "function SCRIPT_SWITCH() { " +
     " SEMAPHORE_SIM.release(); " +
     " SEMAPHORE_SCRIPT.acquire(); " /* SWITCH BLOCKS HERE! */ +
-    " if (SHUTDOWN) { throw new Shutdown(); } " +
     " if (TIMEOUT) { SCRIPT_TIMEOUT(); } " +
+    " if (SHUTDOWN) { throw new Shutdown(); } " +
     " msg = new java.lang.String(msg); " +
     " node.setMoteMsg(mote, msg); " +
     "};\n" +
