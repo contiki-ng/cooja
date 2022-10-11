@@ -106,8 +106,6 @@ public class AddMoteDialog extends JDialog {
    */
   public static ArrayList<Mote> showDialog(Simulation sim, MoteType moteType) {
     var myDialog = new AddMoteDialog(sim, moteType);
-    myDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
-    myDialog.checkSettings();
     myDialog.setVisible(true);
     return myDialog.newMotes;
   }
@@ -324,6 +322,8 @@ public class AddMoteDialog extends JDialog {
     contentPane.add(buttonPane, BorderLayout.SOUTH);
 
     pack();
+    setLocationRelativeTo(Cooja.getTopParentContainer());
+    checkSettings();
   }
 
   private boolean checkSettings() {
