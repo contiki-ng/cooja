@@ -122,41 +122,6 @@ public class CreateSimDialog extends JDialog {
     buttonBox.add(cancelButton);
 
     var button = new JButton("Create");
-    var createSimulationListener = new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        mySimulation.setTitle(title.getText());
-
-        String currentRadioMediumDescription = (String) radioMediumBox.getSelectedItem();
-        for (var radioMediumClass : mySimulation.getCooja().getRegisteredRadioMediums()) {
-          String radioMediumDescription = Cooja.getDescriptionOf(radioMediumClass);
-
-          if (currentRadioMediumDescription.equals(radioMediumDescription)) {
-            try {
-              var radioMedium = radioMediumClass.getConstructor(Simulation.class).newInstance(mySimulation);
-              mySimulation.setRadioMedium(radioMedium);
-            } catch (Exception ex) {
-              logger.fatal("Error generating radio medium: " + ex.getMessage(), ex);
-              mySimulation.setRadioMedium(null);
-            }
-            break;
-          }
-        }
-
-        if (randomSeedGenerated.isSelected()) {
-          mySimulation.setRandomSeedGenerated(true);
-          mySimulation.setRandomSeed(new Random().nextLong());
-        } else {
-          mySimulation.setRandomSeedGenerated(false);
-          mySimulation.setRandomSeed(((Number) randomSeed.getValue()).longValue());
-        }
-
-        mySimulation.setDelayedMoteStartupTime(((Number) delayedStartup.getValue()).intValue() * Simulation.MILLISECOND);
-
-        dispose();
-      }
-    };
-    button.addActionListener(createSimulationListener);
     buttonBox.add(Box.createHorizontalStrut(5));
     getRootPane().setDefaultButton(button);
     buttonBox.add(button);
@@ -327,6 +292,37 @@ public class CreateSimDialog extends JDialog {
 
     // Set delayed mote startup time (ms)
     delayedStartup.setValue(sim.getDelayedMoteStartupTime() / Simulation.MILLISECOND);
+
+    button.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        mySimulation.setTitle(title.getText());
+        String currentRadioMediumDescription = (String) radioMediumBox.getSelectedItem();
+        for (var radioMediumClass : mySimulation.getCooja().getRegisteredRadioMediums()) {
+          String radioMediumDescription = Cooja.getDescriptionOf(radioMediumClass);
+          if (currentRadioMediumDescription.equals(radioMediumDescription)) {
+            try {
+              var radioMedium = radioMediumClass.getConstructor(Simulation.class).newInstance(mySimulation);
+              mySimulation.setRadioMedium(radioMedium);
+            } catch (Exception ex) {
+              logger.fatal("Error generating radio medium: " + ex.getMessage(), ex);
+              mySimulation.setRadioMedium(null);
+            }
+            break;
+          }
+        }
+
+        if (randomSeedGenerated.isSelected()) {
+          mySimulation.setRandomSeedGenerated(true);
+          mySimulation.setRandomSeed(new Random().nextLong());
+        } else {
+          mySimulation.setRandomSeedGenerated(false);
+          mySimulation.setRandomSeed(((Number) randomSeed.getValue()).longValue());
+        }
+        mySimulation.setDelayedMoteStartupTime(((Number) delayedStartup.getValue()).intValue() * Simulation.MILLISECOND);
+        dispose();
+      }
+    });
 
     // Set position and focus of dialog
     setLocationRelativeTo(Cooja.getTopParentContainer());
