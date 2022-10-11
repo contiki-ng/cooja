@@ -35,7 +35,7 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Radio;
 
 /**
- * UDGM with constant loss probablity.
+ * UDGM with constant loss probability.
  *  
  * @see UDGM
  * @author Fredrik Osterlind
