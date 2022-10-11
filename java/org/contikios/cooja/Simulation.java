@@ -566,15 +566,13 @@ public class Simulation extends Observable implements Runnable {
           }
 
           var radioMediumClass = cooja.tryLoadClass(this, RadioMedium.class, radioMediumClassName);
-
-          if (radioMediumClass != null) {
-            // Create radio medium specified in config
-            try {
-              currentRadioMedium = radioMediumClass.getConstructor(Simulation.class).newInstance(this);
-            } catch (Exception e) {
-              currentRadioMedium = null;
-              logger.warn("Could not load radio medium class: " + radioMediumClassName);
-            }
+          if (radioMediumClass == null) {
+            throw new MoteType.MoteTypeCreationException("Could not load " + radioMediumClassName);
+          }
+          try {
+            currentRadioMedium = radioMediumClass.getConstructor(Simulation.class).newInstance(this);
+          } catch (Exception e) {
+            throw new MoteType.MoteTypeCreationException("Could not create " + radioMediumClassName, e);
           }
 
           // Show configure simulation dialog
