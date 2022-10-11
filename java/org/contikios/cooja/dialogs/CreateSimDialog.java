@@ -300,7 +300,7 @@ public class CreateSimDialog extends JDialog {
         String currentRadioMediumDescription = (String) radioMediumBox.getSelectedItem();
         for (var radioMediumClass : mySimulation.getCooja().getRegisteredRadioMediums()) {
           String radioMediumDescription = Cooja.getDescriptionOf(radioMediumClass);
-          if (currentRadioMediumDescription.equals(radioMediumDescription)) {
+          if (radioMediumDescription.equals(currentRadioMediumDescription)) {
             try {
               var radioMedium = radioMediumClass.getConstructor(Simulation.class).newInstance(mySimulation);
               mySimulation.setRadioMedium(radioMedium);
