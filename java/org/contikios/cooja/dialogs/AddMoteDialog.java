@@ -81,7 +81,7 @@ public class AddMoteDialog extends JDialog {
 
   private final ArrayList<Mote> newMotes = new ArrayList<>();
 
-  private final JButton addButton;
+  private final JButton addButton = new JButton("Add motes");
 
   private final MoteType moteType;
   private final Simulation simulation;
@@ -133,13 +133,11 @@ public class AddMoteDialog extends JDialog {
     button.addActionListener(myEventHandler);
     buttonPane.add(button);
 
-    button = new JButton("Add motes");
-    button.setActionCommand("add");
-    button.addActionListener(myEventHandler);
-    this.getRootPane().setDefaultButton(button);
-    addButton = button;
+    addButton.setActionCommand("add");
+    addButton.addActionListener(myEventHandler);
+    this.getRootPane().setDefaultButton(addButton);
     buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
-    buttonPane.add(button);
+    buttonPane.add(addButton);
 
     // MAIN PART
 
@@ -150,17 +148,16 @@ public class AddMoteDialog extends JDialog {
     var label = new JLabel("Number of new motes");
     label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-    var numberField = new JFormattedTextField(integerFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(1);
-    numberField.setColumns(10);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    numberOfMotesField = numberField;
+    numberOfMotesField = new JFormattedTextField(integerFormat);
+    numberOfMotesField.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    numberOfMotesField.setValue(1);
+    numberOfMotesField.setColumns(10);
+    numberOfMotesField.addFocusListener(myEventHandler);
+    numberOfMotesField.addPropertyChangeListener("value", myEventHandler);
 
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
-    smallPane.add(numberField);
+    smallPane.add(numberOfMotesField);
 
     mainPane.add(smallPane);
     mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -178,16 +175,15 @@ public class AddMoteDialog extends JDialog {
       posDistributions[i] = Cooja.getDescriptionOf(positioners.get(i));
     }
 
-    var comboBox = new JComboBox<>(posDistributions);
-    comboBox.setSelectedIndex(0);
-    comboBox.addActionListener(myEventHandler);
-    comboBox.addFocusListener(myEventHandler);
-    positionDistributionBox = comboBox;
-    label.setLabelFor(comboBox);
+    positionDistributionBox = new JComboBox<>(posDistributions);
+    positionDistributionBox.setSelectedIndex(0);
+    positionDistributionBox.addActionListener(myEventHandler);
+    positionDistributionBox.addFocusListener(myEventHandler);
+    label.setLabelFor(positionDistributionBox);
 
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
-    smallPane.add(comboBox);
+    smallPane.add(positionDistributionBox);
 
     mainPane.add(smallPane);
     mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -206,28 +202,26 @@ public class AddMoteDialog extends JDialog {
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(0.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    startX = numberField;
-    smallPane.add(numberField);
+    startX = new JFormattedTextField(doubleFormat);
+    startX.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    startX.setValue(0.0);
+    startX.setColumns(4);
+    startX.addFocusListener(myEventHandler);
+    startX.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(startX);
     smallPane.add(Box.createHorizontalStrut(10));
 
     label = new JLabel("<->");
     label.setPreferredSize(new Dimension(LABEL_WIDTH / 4, LABEL_HEIGHT));
     smallPane.add(label);
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(100.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    endX = numberField;
-    smallPane.add(numberField);
+    endX = new JFormattedTextField(doubleFormat);
+    endX.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    endX.setValue(100.0);
+    endX.setColumns(4);
+    endX.addFocusListener(myEventHandler);
+    endX.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(endX);
     smallPane.add(Box.createHorizontalStrut(10));
 
     mainPane.add(smallPane);
@@ -247,28 +241,26 @@ public class AddMoteDialog extends JDialog {
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(0.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    startY = numberField;
-    smallPane.add(numberField);
+    startY = new JFormattedTextField(doubleFormat);
+    startY.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    startY.setValue(0.0);
+    startY.setColumns(4);
+    startY.addFocusListener(myEventHandler);
+    startY.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(startY);
     smallPane.add(Box.createHorizontalStrut(10));
 
     label = new JLabel("<->");
     label.setPreferredSize(new Dimension(LABEL_WIDTH / 4, LABEL_HEIGHT));
     smallPane.add(label);
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(100.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    endY = numberField;
-    smallPane.add(numberField);
+    endY = new JFormattedTextField(doubleFormat);
+    endY.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    endY.setValue(100.0);
+    endY.setColumns(4);
+    endY.addFocusListener(myEventHandler);
+    endY.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(endY);
     smallPane.add(Box.createHorizontalStrut(10));
 
     mainPane.add(smallPane);
@@ -288,28 +280,26 @@ public class AddMoteDialog extends JDialog {
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(0.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    startZ = numberField;
-    smallPane.add(numberField);
+    startZ = new JFormattedTextField(doubleFormat);
+    startZ.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    startZ.setValue(0.0);
+    startZ.setColumns(4);
+    startZ.addFocusListener(myEventHandler);
+    startZ.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(startZ);
     smallPane.add(Box.createHorizontalStrut(10));
 
     label = new JLabel("<->");
     label.setPreferredSize(new Dimension(LABEL_WIDTH / 4, LABEL_HEIGHT));
     smallPane.add(label);
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(0.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    endZ = numberField;
-    smallPane.add(numberField);
+    endZ = new JFormattedTextField(doubleFormat);
+    endZ.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    endZ.setValue(0.0);
+    endZ.setColumns(4);
+    endZ.addFocusListener(myEventHandler);
+    endZ.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(endZ);
     smallPane.add(Box.createHorizontalStrut(10));
 
     mainPane.add(smallPane);
