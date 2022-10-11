@@ -3231,15 +3231,10 @@ public class Cooja extends Observable {
         logger.info("Simulation not loaded");
         return null;
       }
-
       // Restart plugins from config
       if (!setPluginsConfigXML(root, newSim)) {
         throw new Exception("Failed to configure plugins");
       }
-    } catch (JDOMException e) {
-      throw new SimulationCreationException("Configuration file not wellformed: " + e.getMessage(), e);
-    } catch (IOException e) {
-      throw new SimulationCreationException("No access to configuration file: " + e.getMessage(), e);
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Mote type creation error: " + e.getMessage(), e);
     } catch (Exception e) {
