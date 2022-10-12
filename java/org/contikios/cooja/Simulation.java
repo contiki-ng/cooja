@@ -956,19 +956,6 @@ public class Simulation extends Observable implements Runnable {
   }
 
   /**
-   * Set simulation time to simulationTime.
-   *
-   * @param simulationTime
-   *          New simulation time (ms)
-   */
-  public void setSimulationTime(long simulationTime) {
-    currentSimulationTime = simulationTime;
-
-    this.setChanged();
-    this.notifyObservers(this);
-  }
-
-  /**
    * Returns current simulation time.
    *
    * @return Simulation time (microseconds)
