@@ -1444,10 +1444,7 @@ public class Cooja extends Observable {
         @Override
         public void run() {
           JCheckBoxMenuItem checkBox = ((JCheckBoxMenuItem)showQuickHelpAction.getValue("checkbox"));
-          if (checkBox == null) {
-            return;
-          }
-          if (checkBox.isSelected()) {
+          if (checkBox == null || checkBox.isSelected()) {
             return;
           }
           checkBox.doClick();
