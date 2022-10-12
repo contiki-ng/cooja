@@ -102,6 +102,9 @@ public class Simulation extends Observable implements Runnable {
   /** List of active script engines. */
   private final ArrayList<LogScriptEngine> scriptEngines = new ArrayList<>();
 
+  /** The return value from startSimulation. */
+  private volatile Integer returnValue = null;
+
   /* Poll requests */
   private boolean hasPollRequests = false;
   private final ArrayDeque<Runnable> pollRequests = new ArrayDeque<>();
@@ -293,24 +296,44 @@ public class Simulation extends Observable implements Runnable {
    * Starts this simulation (notifies observers).
    */
   public void startSimulation() {
+    startSimulation(false);
+  }
+
+  public Integer startSimulation(boolean block) {
     if (!isRunning()) {
       isRunning = true;
       simulationThread = new Thread(this, "sim");
       simulationThread.start();
+      if (block) {
+        try {
+          simulationThread.join();
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+        return returnValue;
+      }
     }
+    return null;
+  }
+
+  /**
+   * Stop simulation (blocks) by calling stopSimulation(true, null).
+   */
+  public void stopSimulation() {
+    stopSimulation(true, null);
   }
 
   /**
    * Stop simulation
    *
    * @param block Block until simulation has stopped, with timeout (100ms)
-   *
-   * @see #stopSimulation()
+   * @param rv Return value from startSimulation
    */
-  public void stopSimulation(boolean block) {
+  public void stopSimulation(boolean block, Integer rv) {
     if (!isRunning()) {
       return;
     }
+    returnValue = rv;
     stopSimulation = true;
 
     if (block) {
@@ -328,16 +351,6 @@ public class Simulation extends Observable implements Runnable {
       }
     }
     cooja.updateProgress(true);
-  }
-
-  /**
-   * Stop simulation (blocks).
-   * Calls stopSimulation(true).
-   *
-   * @see #stopSimulation(boolean)
-   */
-  public void stopSimulation() {
-    stopSimulation(true);
   }
 
   /**

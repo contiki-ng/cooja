@@ -283,10 +283,7 @@ public class LogScriptEngine {
               break;
           }
           deactivateScript();
-          simulation.stopSimulation(false);
-          if (!Cooja.isVisualized() && rv >= 0) {
-            simulation.getCooja().doQuit(false, rv);
-          }
+          simulation.stopSimulation(false, rv >= 0 ? rv : null);
         } catch (Exception e) {
           logger.fatal("Script error:", e);
           if (!Cooja.isVisualized()) {
