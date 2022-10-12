@@ -556,10 +556,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     registerMoteMenuAction(MoveMoteMenuAction.class);
     registerMoteMenuAction(DeleteMoteMenuAction.class);
 
-    /* Register simulation menu actions */
-    registerSimulationMenuAction(ResetViewportAction.class);
-    registerSimulationMenuAction(ToggleDecorationsMenuAction.class);
-
     /* Drag and drop files to motes */
     DropTargetListener dTargetListener = new DropTargetListener() {
       @Override
@@ -814,6 +810,23 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     /* Simulation specific actions */
     menu.add(new JSeparator());
+    var resetItem = new JMenuItem("Reset viewport");
+    resetItem.addActionListener(e -> {
+      resetViewport = 1;
+      repaint();
+    });
+    menu.add(resetItem);
+    if (getUI() instanceof BasicInternalFrameUI myUI) {
+      final var northPane = myUI.getNorthPane();
+      final var shouldRestore = northPane.getPreferredSize() == null || northPane.getPreferredSize().height == 0;
+      var decorationItem = new JMenuItem((shouldRestore ? "Restore" : "Hide") + " window decorations");
+      decorationItem.addActionListener(e -> {
+        northPane.setPreferredSize(shouldRestore ? null : new Dimension(0, 0));
+        revalidate();
+        repaint();
+      });
+      menu.add(decorationItem);
+    }
     for (Class<? extends SimulationMenuAction> menuActionClass : simulationMenuActions) {
       try {
         final SimulationMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
@@ -1784,67 +1797,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         visualizer.getSelectedMotes().add(mote);
       }
       visualizer.beginMoveRequest(mote);
-    }
-  }
-
-  protected static class ResetViewportAction implements SimulationMenuAction {
-
-    @Override
-    public void doAction(Visualizer visualizer, Simulation simulation) {
-      visualizer.resetViewport = 1;
-      visualizer.repaint();
-    }
-
-    @Override
-    public String getDescription(Visualizer visualizer, Simulation simulation) {
-      return "Reset viewport";
-    }
-
-    @Override
-    public boolean isEnabled(Visualizer visualizer, Simulation simulation) {
-      return true;
-    }
-  }
-
-  protected static class ToggleDecorationsMenuAction implements SimulationMenuAction {
-
-    @Override
-    public void doAction(final Visualizer visualizer, Simulation simulation) {
-      if (!(visualizer.getUI() instanceof BasicInternalFrameUI)) {
-        return;
-      }
-      BasicInternalFrameUI ui = (BasicInternalFrameUI) visualizer.getUI();
-
-      if (ui.getNorthPane().getPreferredSize() == null
-              || ui.getNorthPane().getPreferredSize().height == 0) {
-        /* Restore window decorations */
-        ui.getNorthPane().setPreferredSize(null);
-      }
-      else {
-        /* Hide window decorations */
-        ui.getNorthPane().setPreferredSize(new Dimension(0, 0));
-      }
-      visualizer.revalidate();
-      SwingUtilities.invokeLater(visualizer::repaint);
-    }
-
-    @Override
-    public String getDescription(Visualizer visualizer, Simulation simulation) {
-      if (!(visualizer.getUI() instanceof BasicInternalFrameUI)) {
-        return "Hide window decorations";
-      }
-      BasicInternalFrameUI ui = (BasicInternalFrameUI) visualizer.getUI();
-
-      if (ui.getNorthPane().getPreferredSize() == null
-              || ui.getNorthPane().getPreferredSize().height == 0) {
-        return "Restore window decorations";
-      }
-      return "Hide window decorations";
-    }
-
-    @Override
-    public boolean isEnabled(Visualizer visualizer, Simulation simulation) {
-      return visualizer.getUI() instanceof BasicInternalFrameUI;
     }
   }
 
