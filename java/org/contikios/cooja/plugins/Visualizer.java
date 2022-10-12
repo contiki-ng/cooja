@@ -311,12 +311,9 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     zoomMenu.add(zoomOutItem);
 
     JMenuItem resetViewportItem = new JMenuItem("Reset viewport");
-    resetViewportItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        resetViewport = 1;
-        repaint();
-      }
+    resetViewportItem.addActionListener(e -> {
+      resetViewport = 1;
+      repaint();
     });
     zoomMenu.add(resetViewportItem);
 
@@ -803,12 +800,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
             final MoteMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
             if (menuAction.isEnabled(this, mote)) {
               JMenuItem menuItem = new JMenuItem(menuAction.getDescription(this, mote));
-              menuItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                  menuAction.doAction(Visualizer.this, mote);
-                }
-              });
+              menuItem.addActionListener(e -> menuAction.doAction(Visualizer.this, mote));
               menu.add(menuItem);
             }
           }
@@ -827,12 +819,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         final SimulationMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
         if (menuAction.isEnabled(this, simulation)) {
           JMenuItem menuItem = new JMenuItem(menuAction.getDescription(this, simulation));
-          menuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              menuAction.doAction(Visualizer.this, simulation);
-            }
-          });
+          menuItem.addActionListener(e -> menuAction.doAction(Visualizer.this, simulation));
           menu.add(menuItem);
         }
       }
