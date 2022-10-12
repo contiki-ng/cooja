@@ -870,7 +870,7 @@ public class Cooja extends Observable {
         if (source == stepButton) {
           getSimulation().stepMillisecondSimulation();
         } else if (source == reloadButton) {
-          reloadCurrentSimulation();
+          reloadCurrentSimulation(getSimulation().getRandomSeed());
         }
         java.awt.EventQueue.invokeLater(() -> toolbarListener.updateToolbar(source == reloadButton));
       }
@@ -951,7 +951,7 @@ public class Cooja extends Observable {
           doLoadConfigAsync(true, file);
           return;
         }
-        reloadCurrentSimulation();
+        reloadCurrentSimulation(getSimulation().getRandomSeed());
       }
       @Override
       public boolean shouldBeEnabled() {
@@ -962,8 +962,7 @@ public class Cooja extends Observable {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (getSimulation() != null) {
-          getSimulation().setRandomSeed(getSimulation().getRandomSeed()+1);
-          reloadCurrentSimulation();
+          reloadCurrentSimulation(getSimulation().getRandomSeed() + 1);
         }
       }
       @Override
@@ -2505,10 +2504,10 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Reload currently configured simulation.
-   * Reloading a simulation may include recompiling Contiki.
+   * Reload currently configured simulation, which may include recompiling Contiki-NG.
+   * @param seed Seed to use for reloaded simulation.
    */
-  public void reloadCurrentSimulation() {
+  public void reloadCurrentSimulation(long seed) {
     final Simulation sim = getSimulation();
     if (sim == null) {
       logger.fatal("No simulation to reload");
@@ -2520,7 +2519,7 @@ public class Cooja extends Observable {
       return;
     }
 
-    createLoadSimWorker(null, true, false, sim.getRandomSeed()).execute();
+    createLoadSimWorker(null, true, false, seed).execute();
   }
 
   private static boolean warnMemory() {
