@@ -257,7 +257,7 @@ public class MessageListUI extends JList implements MessageList {
             MessageContainer[] messages = getMessages();
             logger.info("\nCOMPILATION OUTPUT:\n");
             for (MessageContainer msg: messages) {
-              if (hideNormal && msg.type == NORMAL) {
+              if (hideNormal && msg.type() == NORMAL) {
                 continue;
               }
               logger.info(msg);
@@ -277,7 +277,7 @@ public class MessageListUI extends JList implements MessageList {
             StringBuilder sb = new StringBuilder();
             MessageContainer[] messages = getMessages();
             for (MessageContainer msg: messages) {
-              if (hideNormal && msg.type == NORMAL) {
+              if (hideNormal && msg.type() == NORMAL) {
                 continue;
               }
               sb.append(msg).append("\n");
@@ -324,14 +324,14 @@ public class MessageListUI extends JList implements MessageList {
 					 cellHasFocus);
       MessageContainer msg = (MessageContainer) value;
 
-      if (hideNormal && msg.type == NORMAL && index != MessageListUI.this.getModel().getSize()-1) {
+      if (hideNormal && msg.type() == NORMAL && index != MessageListUI.this.getModel().getSize()-1) {
         setPreferredSize(nullDimension);
         return this;
       }
 
       setPreferredSize(null);
-      setForeground(((MessageListUI) list).getForeground(msg.type));
-      setBackground(((MessageListUI) list).getBackground(msg.type));
+      setForeground(((MessageListUI) list).getForeground(msg.type()));
+      setBackground(((MessageListUI) list).getBackground(msg.type()));
       return this;
     }
 
