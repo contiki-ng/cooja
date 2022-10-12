@@ -1438,28 +1438,18 @@ public class Cooja extends Observable {
       }
     };
     loadQuickHelp("GETTING_STARTED");
+    final var checkBox = new JCheckBoxMenuItem(showQuickHelpAction);
     final boolean showQuickhelp = getExternalToolsSetting("SHOW_QUICKHELP", "true").equalsIgnoreCase("true");
     if (showQuickhelp) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          JCheckBoxMenuItem checkBox = ((JCheckBoxMenuItem)showQuickHelpAction.getValue("checkbox"));
-          if (checkBox == null || checkBox.isSelected()) {
-            return;
-          }
-          checkBox.doClick();
-        }
-      });
+      checkBox.doClick();
     }
     final var showGettingStartedAction = new GUIAction("Getting started") {
       @Override
       public void actionPerformed(ActionEvent e) {
         loadQuickHelp("GETTING_STARTED");
-        var checkBox = ((JCheckBoxMenuItem)showQuickHelpAction.getValue("checkbox"));
-        if (checkBox == null || checkBox.isSelected()) {
-          return;
+        if (!checkBox.isSelected()) {
+          checkBox.doClick();
         }
-        checkBox.doClick();
       }
 
       @Override
@@ -1472,11 +1462,9 @@ public class Cooja extends Observable {
       @Override
       public void actionPerformed(ActionEvent e) {
         loadQuickHelp("KEYBOARD_SHORTCUTS");
-        var checkBox = ((JCheckBoxMenuItem)showQuickHelpAction.getValue("checkbox"));
-        if (checkBox == null || checkBox.isSelected()) {
-          return;
+        if (!checkBox.isSelected()) {
+          checkBox.doClick();
         }
-        checkBox.doClick();
       }
 
       @Override
@@ -1485,8 +1473,6 @@ public class Cooja extends Observable {
       }
     };
     helpMenu.add(new JMenuItem(showKeyboardShortcutsAction));
-    JCheckBoxMenuItem checkBox = new JCheckBoxMenuItem(showQuickHelpAction);
-    showQuickHelpAction.putValue("checkbox", checkBox);
     helpMenu.add(checkBox);
 
     helpMenu.addSeparator();
