@@ -1439,10 +1439,6 @@ public class Cooja extends Observable {
     };
     loadQuickHelp("GETTING_STARTED");
     final var checkBox = new JCheckBoxMenuItem(showQuickHelpAction);
-    final boolean showQuickhelp = getExternalToolsSetting("SHOW_QUICKHELP", "true").equalsIgnoreCase("true");
-    if (showQuickhelp) {
-      checkBox.doClick();
-    }
     final var showGettingStartedAction = new GUIAction("Getting started") {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -1458,6 +1454,9 @@ public class Cooja extends Observable {
       }
     };
     helpMenu.add(new JMenuItem(showGettingStartedAction));
+    if (getExternalToolsSetting("SHOW_QUICKHELP", "true").equalsIgnoreCase("true")) {
+      showGettingStartedAction.actionPerformed(null);
+    }
     final var showKeyboardShortcutsAction = new GUIAction("Keyboard shortcuts") {
       @Override
       public void actionPerformed(ActionEvent e) {
