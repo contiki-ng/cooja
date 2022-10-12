@@ -8,9 +8,7 @@ public record MessageContainer(String message, int type) {
         return message;
     }
 
-    /* This will select UI based or not UI based depending on withUI in combination with
-     * headless info.
-     */
+    /** Select UI based on withUI in combination with Cooja.isVisualized. */
     public static MessageList createMessageList(boolean withUI) {
         if (withUI && Cooja.isVisualized()) {
             return new Cooja.RunnableInEDT<MessageList>() {
