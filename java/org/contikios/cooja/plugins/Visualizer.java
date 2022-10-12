@@ -1611,20 +1611,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     return true;
   }
 
-  private final AbstractAction makeSkinsDefaultAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      StringBuilder sb = new StringBuilder();
-      for (VisualizerSkin skin : currentSkins) {
-        if (sb.length() > 0) {
-          sb.append(';');
-        }
-        sb.append(skin.getClass().getName());
-      }
-      Cooja.setExternalToolsSetting("VISUALIZER_DEFAULT_SKINS", sb.toString());
-    }
-  };
-
   protected static class ButtonClickMoteMenuAction implements MoteMenuAction {
 
     @Override
