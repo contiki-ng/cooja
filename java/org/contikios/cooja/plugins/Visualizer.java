@@ -1317,7 +1317,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     yDest = ySource - (int) (dy * len);
     g.drawLine(xDest, yDest, xSource, ySource);
 
-    final int size = 8;
     arrowPoly.reset();
     arrowPoly.addPoint(xDest, yDest);
     arrowPoly.addPoint(xDest + xCor(dir + 0.5), yDest + yCor(dir + 0.5));
