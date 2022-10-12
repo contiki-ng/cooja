@@ -1254,23 +1254,16 @@ public class Cooja extends Observable {
       }
     });
 
-
     // Mote types sub menu
     menuMoteTypes.addMenuListener(new MenuListener() {
       @Override
       public void menuSelected(MenuEvent e) {
         // Clear menu
         menuMoteTypes.removeAll();
-
-
-
         if (mySimulation != null) {
-
           // Recreate menu items
-          JMenuItem menuItem;
-
           for (MoteType moteType : mySimulation.getMoteTypes()) {
-            menuItem = new JMenuItem(moteType.getDescription());
+            var menuItem = new JMenuItem(moteType.getDescription());
             menuItem.setActionCommand("add motes");
             menuItem.setToolTipText(getDescriptionOf(moteType.getClass()));
             menuItem.putClientProperty("motetype", moteType);
@@ -1282,8 +1275,6 @@ public class Cooja extends Observable {
             menuMoteTypes.add(new JSeparator());
           }
         }
-
-
         menuMoteTypes.add(menuMoteTypeClasses);
       }
 
