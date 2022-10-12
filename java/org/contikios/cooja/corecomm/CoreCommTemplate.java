@@ -30,6 +30,11 @@
 package org.contikios.cooja.corecomm;
 
 import java.io.File;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
+import jdk.incubator.foreign.CLinker;
+import jdk.incubator.foreign.FunctionDescriptor;
+import jdk.incubator.foreign.MemoryLayout;
 import jdk.incubator.foreign.SymbolLookup;
 import org.contikios.cooja.CoreComm;
 
@@ -42,6 +47,7 @@ import org.contikios.cooja.CoreComm;
  */
 public class CoreCommTemplate extends CoreComm {
   private final SymbolLookup symbols;
+  private final MethodHandle coojaTick;
   /**
    * Loads library libFile.
    *
@@ -51,11 +57,28 @@ public class CoreCommTemplate extends CoreComm {
   public CoreCommTemplate(File libFile) {
     System.load(libFile.getAbsolutePath());
     symbols = SymbolLookup.loaderLookup();
-    init();
+    coojaTick = CLinker.getInstance().downcallHandle(symbols.lookup("cooja_tick").get(),
+            MethodType.methodType(void.class), FunctionDescriptor.ofVoid());
+    // Call cooja_init() in Contiki-NG.
+    var coojaInit = CLinker.getInstance().downcallHandle(symbols.lookup("cooja_init").get(),
+            MethodType.methodType(void.class), FunctionDescriptor.ofVoid());
+    try {
+      coojaInit.invokeExact();
+    } catch (Throwable e) {
+      throw new RuntimeException("Calling cooja_init failed: " + e.getMessage(), e);
+    }
   }
 
-  public native void tick();
-  public native void init();
+  @Override
+  public void tick() {
+    try {
+      coojaTick.invokeExact();
+    } catch (Throwable e) {
+      throw new RuntimeException("Calling cooja_tick failed: " + e.getMessage(), e);
+    }
+  }
+
+  @Override
   public long getReferenceAddress() {
     return symbols.lookup("referenceVar").get().address().toRawLongValue();
   }
