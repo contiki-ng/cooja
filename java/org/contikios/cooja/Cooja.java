@@ -3169,78 +3169,71 @@ public class Cooja extends Observable {
   throws SimulationCreationException {
     boolean projectsOk = verifyProjects(root);
 
+    // GENERATE UNIQUE MOTE TYPE IDENTIFIERS.
+
+    // Locate Contiki mote types in config.
+    var readNames = new ArrayList<String>();
+    var moteTypes = root.getDescendants(new ElementFilter("motetype"));
+    while (moteTypes.hasNext()) {
+      var e = (Element)moteTypes.next();
+      if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
+        readNames.add(e.getChild("identifier").getValue());
+      }
+    }
+    // Only renumber motes if their names can collide with existing motes.
+    if (!rewriteCsc) {
+      // Create old to new identifier mappings.
+      var moteTypeIDMappings = new HashMap<String, String>();
+      var reserved = new HashSet<>(readNames);
+      var existingMoteTypes = mySimulation == null ? null : mySimulation.getMoteTypes();
+      if (existingMoteTypes != null) {
+        for (var mote : existingMoteTypes) {
+          reserved.add(mote.getIdentifier());
+        }
+      }
+      for (var existingIdentifier : readNames) {
+        String newID = ContikiMoteType.generateUniqueMoteTypeID(reserved);
+        moteTypeIDMappings.put(existingIdentifier, newID);
+        reserved.add(newID);
+      }
+
+      // Replace all <motetype>..ContikiMoteType.class<identifier>mtypeXXX</identifier>...
+      // in the config with the new identifiers.
+      moteTypes = root.getDescendants(new ElementFilter("motetype"));
+      while (moteTypes.hasNext()) {
+        var e = (Element) moteTypes.next();
+        if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
+          var idNode = e.getChild("identifier");
+          var newName = moteTypeIDMappings.get(idNode.getValue());
+          idNode.setText(newName);
+        }
+      }
+      // Replace all <mote>...<motetype_identifier>mtypeXXX</motetype_identifier>...
+      // in the config with the new identifiers.
+      var motes = root.getDescendants(new ElementFilter("mote"));
+      while (motes.hasNext()) {
+        var e = (Element) motes.next();
+        var idNode = e.getChild("motetype_identifier");
+        if (idNode == null) {
+          continue;
+        }
+        var newName = moteTypeIDMappings.get(idNode.getValue());
+        if (newName != null) {
+          idNode.setText(newName);
+        }
+      }
+    }
+    System.gc();
     Simulation newSim = new Simulation(this);
     try {
-      /* GENERATE UNIQUE MOTE TYPE IDENTIFIERS */
-
-      /* Locate Contiki mote types in config */
-      var readNames = new ArrayList<String>();
-      var motetypes = root.getDescendants(new ElementFilter("motetype"));
-      while (motetypes.hasNext()) {
-        var e = (Element)motetypes.next();
-        if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
-          readNames.add(e.getChild("identifier").getValue());
-        }
-      }
-
-      // Only renumber motes if their names can collide with existing motes.
-      if (!rewriteCsc) {
-        // Create old to new identifier mappings.
-        var moteTypeIDMappings = new HashMap<String, String>();
-        var reserved = new HashSet<>(readNames);
-        var existingMoteTypes = mySimulation == null ? null : mySimulation.getMoteTypes();
-        if (existingMoteTypes != null) {
-          for (var mote : existingMoteTypes) {
-            reserved.add(mote.getIdentifier());
-          }
-        }
-        for (var existingIdentifier : readNames) {
-          String newID = ContikiMoteType.generateUniqueMoteTypeID(reserved);
-          moteTypeIDMappings.put(existingIdentifier, newID);
-          reserved.add(newID);
-        }
-
-        // Replace all <motetype>..ContikiMoteType.class<identifier>mtypeXXX</identifier>...
-        // in the config with the new identifiers.
-        motetypes = root.getDescendants(new ElementFilter("motetype"));
-        while (motetypes.hasNext()) {
-          var e = (Element) motetypes.next();
-          if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
-            var idNode = e.getChild("identifier");
-            var newName = moteTypeIDMappings.get(idNode.getValue());
-            idNode.setText(newName);
-          }
-        }
-        // Replace all <mote>...<motetype_identifier>mtypeXXX</motetype_identifier>...
-        // in the config with the new identifiers.
-        var motes = root.getDescendants(new ElementFilter("mote"));
-        while (motes.hasNext()) {
-          var e = (Element) motes.next();
-          var idNode = e.getChild("motetype_identifier");
-          if (idNode == null) {
-            continue;
-          }
-          var newName = moteTypeIDMappings.get(idNode.getValue());
-          if (newName != null) {
-            idNode.setText(newName);
-          }
-        }
-      }
-      System.gc();
-
       if (!newSim.setConfigXML(root.getChild("simulation"), isVisualized(), quick, manualRandomSeed)) {
         logger.info("Simulation not loaded");
         return null;
       }
-
       // Restart plugins from config
       if (!setPluginsConfigXML(root, newSim)) {
         throw new Exception("Failed to configure plugins");
       }
-    } catch (JDOMException e) {
-      throw new SimulationCreationException("Configuration file not wellformed: " + e.getMessage(), e);
-    } catch (IOException e) {
-      throw new SimulationCreationException("No access to configuration file: " + e.getMessage(), e);
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Mote type creation error: " + e.getMessage(), e);
     } catch (Exception e) {
