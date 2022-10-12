@@ -173,7 +173,7 @@ public class UDGM extends AbstractRadioMedium {
     RadioConnection newConnection = new RadioConnection(sender);
 
     /* Fail radio transmission randomly - no radios will hear this transmission */
-    if (getTxSuccessProbability(sender) < 1.0 && random.nextDouble() > getTxSuccessProbability(sender)) {
+    if (getTxSuccessProbability() < 1.0 && random.nextDouble() > getTxSuccessProbability()) {
       return newConnection;
     }
 
@@ -263,9 +263,9 @@ public class UDGM extends AbstractRadioMedium {
   }
   
   public double getSuccessProbability(Radio source, Radio dest) {
-  	return getTxSuccessProbability(source) * getRxSuccessProbability(source, dest);
+    return getTxSuccessProbability() * getRxSuccessProbability(source, dest);
   }
-  public double getTxSuccessProbability(Radio source) {
+  public double getTxSuccessProbability() {
     return SUCCESS_RATIO_TX;
   }
   public double getRxSuccessProbability(Radio source, Radio dest) {

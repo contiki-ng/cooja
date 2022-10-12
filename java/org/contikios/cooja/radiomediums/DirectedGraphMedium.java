@@ -405,7 +405,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
               dest = new DGRMDestinationRadio(destRadio);
             } else {
               String destClassName = edgeElement.getText().trim();
-              if (destClassName == null || destClassName.isEmpty()) {
+              if (destClassName.isEmpty()) {
                 continue;
               }
               /* Backwards compatibility: se.sics -> org.contikios */
