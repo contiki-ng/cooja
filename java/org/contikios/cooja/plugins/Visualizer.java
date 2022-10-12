@@ -378,12 +378,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     this.add(BorderLayout.CENTER, canvas);
 
     /* Observe simulation and mote positions */
-    posObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        repaint();
-      }
-    };
+    posObserver = (obs, obj) -> repaint();
     simulation.getEventCentral().addMoteCountListener(newMotesListener = new MoteCountListener() {
       @Override
       public void moteWasAdded(Mote mote) {
@@ -453,12 +448,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     });
 
     /* Observe mote relations */
-    gui.addMoteRelationsObserver(moteRelationsObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        repaint();
-      }
-    });
+    gui.addMoteRelationsObserver(moteRelationsObserver = (obs, obj) -> repaint());
 
     canvas.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "abort_action");
     canvas.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "delete_motes");
