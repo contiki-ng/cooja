@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -369,12 +370,21 @@ public class ContikiMoteType extends BaseContikiMoteType {
         throw new MoteTypeCreationException("No map data could be loaded: " + mapFile);
       }
       String[] mapData = lines.toArray(new String[0]);
+      String command = Cooja.getExternalToolsSetting("READELF_COMMAND");
+      if (command != null) {
+        command = Cooja.resolvePathIdentifiers(command);
+      }
+      if (command == null) {
+        throw new MoteTypeCreationException("No readelf command configured!");
+      }
+      command = command.replace("$(LIBFILE)", firmwareFile.getName().replace(File.separatorChar, '/'));
+      var symbols = String.join("\n", loadCommandData(command, firmwareFile, vis));
       dataSecParser = new MapSectionParser(
-              mapData,
+              mapData, symbols,
               Cooja.getExternalToolsSetting("MAPFILE_DATA_START"),
               Cooja.getExternalToolsSetting("MAPFILE_DATA_SIZE"));
       bssSecParser = new MapSectionParser(
-              mapData,
+              mapData, symbols,
               Cooja.getExternalToolsSetting("MAPFILE_BSS_START"),
               Cooja.getExternalToolsSetting("MAPFILE_BSS_SIZE"));
     }
@@ -538,8 +548,9 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     private final String startRegExp;
     private final String sizeRegExp;
+    private final String readelfData;
 
-    public MapSectionParser(String[] mapFileData, String startRegExp, String sizeRegExp) {
+    public MapSectionParser(String[] mapFileData, String readelfData, String startRegExp, String sizeRegExp) {
       super(mapFileData);
       assert startRegExp != null : "Section start regexp must be specified";
       assert !startRegExp.isEmpty() : "Section start regexp must contain characters";
@@ -547,6 +558,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
       assert !sizeRegExp.isEmpty() : "Section size regexp must contain characters";
       this.startRegExp = startRegExp;
       this.sizeRegExp = sizeRegExp;
+      this.readelfData = readelfData;
     }
 
     @Override
@@ -572,58 +584,28 @@ public class ContikiMoteType extends BaseContikiMoteType {
     @Override
     public Map<String, Symbol> parseSymbols(long offset) {
       Map<String, Symbol> varNames = new HashMap<>();
-
-      Pattern pattern = Pattern.compile(Cooja.getExternalToolsSetting("MAPFILE_VAR_NAME"));
-      final var secStart = getStartAddr();
-      final var secSize = getSize();
-      final var varAddrRegexp1 = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_1");
-      final var varAddrRegexp2 = Cooja.getExternalToolsSetting("MAPFILE_VAR_ADDRESS_2");
-      final var varSizeRegexp1 = Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_1");
-      final var varSizeRegexp2 = Cooja.getExternalToolsSetting("MAPFILE_VAR_SIZE_2");
-      final String[] mapFileData = getData();
-      for (String line : mapFileData) {
-        Matcher matcher = pattern.matcher(line);
-        if (matcher.find()) {
-          final long varAddr = Long.decode(matcher.group(1));
-          if (varAddr >= secStart && varAddr <= secStart + secSize) {
-            String varName = matcher.group(2);
-            String regExp = varAddrRegexp1 + varName + varAddrRegexp2;
-            String retString = null;
-            Pattern pattern2 = Pattern.compile(regExp);
-            for (String line1 : mapFileData) {
-              Matcher matcher2 = pattern2.matcher(line1);
-              if (matcher2.find()) {
-                retString = matcher2.group(1);
-                break;
-              }
-            }
-            long mapFileVarAddress = retString == null ? -1 : Long.parseUnsignedLong(retString.trim(), 16);
-            int mapFileVarSize = -1;
-            Pattern pattern1 = Pattern.compile(varSizeRegexp1 + varName + varSizeRegexp2);
-            for (int idx = 0; idx < mapFileData.length; idx++) {
-              String parseString = mapFileData[idx];
-              Matcher matcher1 = pattern1.matcher(parseString);
-              if (matcher1.find()) {
-                mapFileVarSize = Integer.decode(matcher1.group(1));
-                break;
-              }
-              // second approach with lines joined
-              if (idx < mapFileData.length - 1) {
-                parseString += mapFileData[idx + 1];
-              }
-              matcher1 = pattern1.matcher(parseString);
-              if (matcher1.find()) {
-                mapFileVarSize = Integer.decode(matcher1.group(1));
-                break;
-              }
-            }
-            varNames.put(varName, new Symbol(
-                    Symbol.Type.VARIABLE,
-                    varName,
-                    mapFileVarAddress + offset,
-                    mapFileVarSize));
-          }
+      var s = new Scanner(readelfData);
+      s.nextLine(); // Skip first blank line.
+      while (s.hasNext()) {
+        var symbolNum = s.next();
+        if (!symbolNum.endsWith(":") || "Num:".equals(symbolNum)) {
+          s.nextLine(); // Skip until line starts with "1:" token.
+          continue;
         }
+        var addr = s.nextLong(16);
+        var size = s.nextInt();
+        var type = s.next();
+        if (!"OBJECT".equals(type)) {
+          s.nextLine(); // Skip lines that do not define variables.
+          continue;
+        }
+        // Skip 3 tokens that are not required.
+        s.next();
+        s.next();
+        s.next();
+        var name = s.next();
+        varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr + offset, size));
+        s.nextLine(); // Skip rest of line.
       }
       return varNames;
     }
