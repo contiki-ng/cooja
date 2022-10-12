@@ -149,8 +149,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   public static final int MOTE_RADIUS = 8;
   private static final Color[] DEFAULT_MOTE_COLORS = {Color.WHITE};
 
-  private Cooja gui;
-  private Simulation simulation;
+  private final Cooja gui;
+  private final Simulation simulation;
   private final JPanel canvas;
   private boolean loadedConfig = false;
 
