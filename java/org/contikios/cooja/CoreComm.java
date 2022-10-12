@@ -85,7 +85,6 @@ import org.contikios.cooja.dialogs.MessageList;
 public abstract class CoreComm {
   private final static ArrayList<File> coreCommFiles = new ArrayList<>();
 
-  protected long offset = 0;
   private static int fileCounter = 1;
 
   /**
@@ -259,15 +258,6 @@ public abstract class CoreComm {
   public abstract long getReferenceAddress();
 
   /**
-   * Set the offset between absolute and relative memory addresses.
-   *
-   * @param offset Offset between absolute and relative addresses
-   */
-  public void setReferenceOffset(long offset) {
-    this.offset = offset;
-  }
-
-  /**
    * Fills a byte array with memory segment identified by start and length.
    *
    * @param relAddr Relative memory start address
@@ -275,7 +265,7 @@ public abstract class CoreComm {
    * @param mem Array to fill with memory segment
    */
   public void getMemory(long relAddr, int length, byte[] mem) {
-    final var addr = MemoryAddress.ofLong(relAddr + offset);
+    final var addr = MemoryAddress.ofLong(relAddr);
     addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().get(0, mem, 0, length);
   }
 
@@ -287,7 +277,7 @@ public abstract class CoreComm {
    * @param mem New memory segment data
    */
   public void setMemory(long relAddr, int length, byte[] mem) {
-    final var addr = MemoryAddress.ofLong(relAddr + offset);
+    final var addr = MemoryAddress.ofLong(relAddr);
     addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().put(0, mem, 0, length);
   }
 }

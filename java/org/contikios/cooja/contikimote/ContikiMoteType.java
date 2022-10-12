@@ -166,9 +166,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
   // Initial memory for all motes of this type
   private SectionMoteMemory initialMemory = null;
 
-  /** Offset between native (cooja) and contiki address space */
-  long offset;
-
   /**
    * Creates a new uninitialized Cooja mote type. This mote type needs to load
    * a library file and parse a map file before it can be used.
@@ -330,6 +327,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
      *
      * This offset will be used in Cooja in the memory abstraction to match
      * Contiki's and Cooja's address spaces */
+    long offset;
     HashMap<String, Symbol> variables = new HashMap<>();
     {
       SectionMoteMemory tmp = new SectionMoteMemory(variables);
@@ -342,7 +340,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
       try {
         long referenceVar = tmp.getSymbolMap().get("referenceVar").addr;
         offset = myCoreComm.getReferenceAddress() - referenceVar;
-        myCoreComm.setReferenceOffset(offset);
       } catch (Exception e) {
         throw new MoteTypeCreationException("Error setting reference variable: " + e.getMessage(), e);
       }
@@ -664,7 +661,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   protected void getCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
-      myCoreComm.getMemory(sec.getStartAddr() - offset, sec.getTotalSize(), sec.getMemory());
+      myCoreComm.getMemory(sec.getStartAddr(), sec.getTotalSize(), sec.getMemory());
     }
   }
 
@@ -676,7 +673,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   protected void setCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
-      myCoreComm.setMemory(sec.getStartAddr() - offset, sec.getTotalSize(), sec.getMemory());
+      myCoreComm.setMemory(sec.getStartAddr(), sec.getTotalSize(), sec.getMemory());
     }
   }
 
