@@ -53,9 +53,6 @@ import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.util.Utils;
 
 public class DebugUI extends JPanel {
-
-  private static final long serialVersionUID = 2123628878332126912L;
-
   private JList<DbgInstruction> disList;
   private DbgListModel listModel;
   private JLabel[] regsLabel;
@@ -104,8 +101,6 @@ public class DebugUI extends JPanel {
   }
 
   private class DbgListModel extends AbstractListModel<DbgInstruction> {
-    private static final long serialVersionUID = -2856626511548201481L;
-
     int startPos = -1;
     int endPos = -1;
     static final int size = 21;
@@ -158,9 +153,6 @@ public class DebugUI extends JPanel {
   }
 
   class MyCellRenderer extends JLabel implements ListCellRenderer<DbgInstruction> {
-
-    private static final long serialVersionUID = -2633138712695105181L;
-
     public MyCellRenderer() {
       setOpaque(true);
     }

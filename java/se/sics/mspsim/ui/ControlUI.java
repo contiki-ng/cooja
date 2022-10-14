@@ -66,9 +66,6 @@ import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.ServiceComponent;
 
 public class ControlUI extends JPanel implements ActionListener, SimEventListener, ServiceComponent {
-
-  private static final long serialVersionUID = -2431892192775232653L;
-
   private static final String TITLE = "MSPSim monitor";
 
   private ManagedWindow window;
@@ -125,8 +122,6 @@ public class ControlUI extends JPanel implements ActionListener, SimEventListene
     add(stepsPanel);
 
     stepAction = new AbstractAction("Step") {
-      private static final long serialVersionUID = 1L;
-
       @Override
       public void actionPerformed(ActionEvent e) {
         stepButton.setEnabled(false);

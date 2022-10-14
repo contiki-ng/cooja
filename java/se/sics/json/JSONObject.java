@@ -56,9 +56,6 @@ import org.json.simple.parser.JSONParser;
  *
  */
 public class JSONObject extends HashMap<String,Object> implements JSONAware, JSONStreamAware {
-
-    private static final long serialVersionUID = -4565653621517131043L;
-
     private void checkForCycles(Object value) {
         if (this == value) {
             throw new IllegalArgumentException("cycle detected");

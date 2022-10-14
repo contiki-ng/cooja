@@ -50,9 +50,6 @@ import se.sics.mspsim.core.StateChangeListener;
 import se.sics.mspsim.platform.AbstractNodeGUI;
 
 public class JCreateGui extends AbstractNodeGUI {
-
-    private static final long serialVersionUID = -1377998375300964966L;
-
     private static final Color RED_TRANS = new Color(0xff, 0x40, 0x40, 0xa0);
     private static final Color RED_O = new Color(0xff,0x40,0x40,0xff);
     private static final Color RED_I = new Color(0xff,0x60,0x60,0xff);

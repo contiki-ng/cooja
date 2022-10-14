@@ -16,9 +16,6 @@ import se.sics.mspsim.core.MemoryMonitor;
 import se.sics.mspsim.core.MSP430Core;
 
 public class CPUHeatMap extends JComponent implements MemoryMonitor {
-
-    private static final long serialVersionUID = -7964848220064713887L;
-
     private final Timer ticker;
 
     private ManagedWindow window;

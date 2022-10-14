@@ -44,9 +44,6 @@ package se.sics.json;
  *
  */
 public class ParseException extends Exception {
-
-    private static final long serialVersionUID = -7187769778260624049L;
-
     public ParseException(String message) {
         super(message);
     }

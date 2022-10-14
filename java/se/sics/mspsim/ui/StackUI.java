@@ -51,9 +51,6 @@ import se.sics.mspsim.util.MapTable;
 import se.sics.mspsim.util.ServiceComponent;
 
 public class StackUI extends JPanel implements ServiceComponent {
-
-  private static final long serialVersionUID = 8648239617509299768L;
-
   private static final int STACK_FRAME = 1024;
   private int updateCyclePeriod;
 

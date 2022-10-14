@@ -16,9 +16,6 @@ import javax.swing.border.AbstractBorder;
  * @author Paul Durbin (McDurby@yahoo.com)
  */
 public class LineNumberedBorder extends AbstractBorder {
-
-  private static final long serialVersionUID = -3812536735962506061L;
-
   /**
    * The line numbers should be drawn on the left side of the component.
    */
