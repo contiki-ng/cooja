@@ -39,9 +39,6 @@ import se.sics.mspsim.core.StateChangeListener;
 import se.sics.mspsim.platform.AbstractNodeGUI;
 
 public class Z1Gui extends AbstractNodeGUI {
-
-    private static final long serialVersionUID = 7016480889484768582L;
-
     private static final int GREEN_Y = 88;
     private static final int BLUE_Y = 99;
     private static final int RED_Y = 77;

@@ -30,10 +30,6 @@ import javax.swing.text.StyledDocument;
  * are done in small bursts to make sure the user interface doesn't freeze.
  */
 public class SyntaxHighlighter extends JTextPane implements DocumentListener, TokenTypes {
-
-
-  private static final long serialVersionUID = -1801145479677890566L;
-
   private StyledDocument doc;
   private Scanner scanner;
   private int rows, columns;

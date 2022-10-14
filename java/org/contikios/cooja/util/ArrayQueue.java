@@ -49,10 +49,10 @@ import java.util.RandomAccess;
  * @author  Joakim Eriksson (joakime@sics.se)
  * @author  Niclas Finne    (nfi@sics.se)
  */
-public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Cloneable, java.io.Serializable {
-  private transient E[] queueData;
-  private transient int first = 0;
-  private transient int last = 0;
+public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Cloneable {
+  private E[] queueData;
+  private int first = 0;
+  private int last = 0;
   private int size = 0;
 
   public ArrayQueue() {
@@ -357,34 +357,4 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
     sb.append("]]");
     return sb.toString();
   }
-
-  // -------------------------------------------------------------------
-  //  Serialization
-  // -------------------------------------------------------------------
-
-  private void writeObject(java.io.ObjectOutputStream out)
-    throws java.io.IOException
-  {
-    int queueLen = queueData.length;
-    out.defaultWriteObject();
-    out.writeInt(queueLen);
-    for (int i = 0, index = first; i < size; i++) {
-      out.writeObject(queueData[index]);
-      index = (index + 1) % queueLen;
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private void readObject(java.io.ObjectInputStream in)
-    throws java.io.IOException, ClassNotFoundException
-  {
-    in.defaultReadObject();
-    queueData = (E[]) new Object[in.readInt()];
-    for (int i = 0; i < size; i++) {
-      queueData[i] = (E) in.readObject();
-    }
-    first = 0;
-    last = size;
-  }
-
 } // ArrayQueue

@@ -70,9 +70,6 @@ import se.sics.mspsim.cli.CommandHandler;
  *
  */
 public class ConsoleUI extends JComponent {
-
-  private static final long serialVersionUID = -4398393961025971500L;
-
   private Timer timer;
 
   private String[] history = new String[200];

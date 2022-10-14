@@ -50,9 +50,6 @@ import se.sics.mspsim.core.StateChangeListener;
 import se.sics.mspsim.platform.AbstractNodeGUI;
 
 public class SkyGui extends AbstractNodeGUI {
-
-  private static final long serialVersionUID = 7753659717805292786L;
-
   public static final int GREEN_Y = 40;
   public static final int BLUE_Y = 46;
   public static final int RED_Y = 34;

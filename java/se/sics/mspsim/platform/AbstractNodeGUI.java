@@ -56,9 +56,6 @@ import se.sics.mspsim.util.ComponentRegistry;
 import se.sics.mspsim.util.ServiceComponent;
 
 public abstract class AbstractNodeGUI extends JComponent implements ServiceComponent {
-
-    private static final long serialVersionUID = 1435276301923987019L;
-
     private final String windowName;
     private final String nodeImageName;
 

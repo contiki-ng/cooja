@@ -43,8 +43,6 @@ import se.sics.mspsim.platform.AbstractNodeGUI;
  * @author Niclas Finne
  */
 public class WismoteGui extends AbstractNodeGUI {
-
-    private static final long serialVersionUID = -8713047619139235630L;
     private static final int RED1_X = 172;
     private static final int GREEN_X = 182;
     private static final int RED2_X = 192;

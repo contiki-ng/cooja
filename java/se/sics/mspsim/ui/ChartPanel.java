@@ -58,9 +58,6 @@ import se.sics.mspsim.util.ArrayUtils;
  *
  */
 public class ChartPanel extends JComponent {
-
-  private static final long serialVersionUID = 7243446493049199594L;
-
   public static final String COLOR_TICK = "color.tick";
 
   private static final Border DEFAULT_BORDER =

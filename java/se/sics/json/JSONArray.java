@@ -49,9 +49,6 @@ import java.util.Collection;
  *
  */
 public class JSONArray extends ArrayList<Object> implements JSONAware, JSONStreamAware {
-
-    private static final long serialVersionUID = 396701954050866614L;
-
     private void checkForCycles(Object value) {
         if (this == value) {
             throw new IllegalArgumentException("cycle detected");

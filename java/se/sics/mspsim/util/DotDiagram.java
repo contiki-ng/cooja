@@ -51,9 +51,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class DotDiagram extends JComponent {
-
-  private static final long serialVersionUID = -2284181166518780931L;
-
   public static final int NORMAL = 0;
   public static final int ADDITIVE = 1;
   public static final int FILLED_ADDITIVE = 2;

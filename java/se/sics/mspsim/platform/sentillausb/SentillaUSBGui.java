@@ -50,9 +50,6 @@ import se.sics.mspsim.core.StateChangeListener;
 import se.sics.mspsim.platform.AbstractNodeGUI;
 
 public class SentillaUSBGui extends AbstractNodeGUI {
-
-    private static final long serialVersionUID = -692114865639672141L;
-
     private static final Color[] RED = new Color[] {
         new Color(0xff, 0x40, 0x40, 0xa0),
         new Color(0xff,0x40,0x40,0xff),

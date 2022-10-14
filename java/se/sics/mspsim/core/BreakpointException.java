@@ -30,9 +30,6 @@
 package se.sics.mspsim.core;
 
 public class BreakpointException extends EmulationException {
-
-    private static final long serialVersionUID = 49958825510873400L;
-
     BreakpointException() {
         super("breakpoint");
     }
