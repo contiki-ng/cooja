@@ -104,7 +104,8 @@ public class LogScriptEngine {
               e.getMessage(),
               e, false);
         }
-        simulation.stopSimulation();
+        deactivateScript();
+        simulation.stopSimulation(false, 1);
       }
     }
     @Override
@@ -266,9 +267,10 @@ public class LogScriptEngine {
     scriptThread = new Thread(new Runnable() {
       @Override
       public void run() {
+        int rv;
         try {
           var obj = script.eval();
-          int rv = obj == null ? 1 : (int) obj;
+          rv = obj == null ? 1 : (int) obj;
           switch (rv) {
             case -1:
               // Something else is shutting down Cooja, for example the SerialSocket commands in 17-tun-rpl-br.
@@ -282,18 +284,15 @@ public class LogScriptEngine {
               scriptLogObserver.update(null, "TEST FAILED\n");
               break;
           }
-          deactivateScript();
-          simulation.stopSimulation(false, rv >= 0 ? rv : null);
         } catch (Exception e) {
+          rv = 1;
           logger.fatal("Script error:", e);
-          if (!Cooja.isVisualized()) {
-            logger.fatal("Test script error, terminating Cooja.");
-            simulation.getCooja().doQuit(false, 1);
+          if (Cooja.isVisualized()) {
+            Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Script error", e, false);
           }
-          deactivateScript();
-          simulation.stopSimulation();
-          Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Script error", e, false);
         }
+        deactivateScript();
+        simulation.stopSimulation(false, rv >= 0 ? rv : null);
       }
     }, "script");
     scriptThread.start();
@@ -319,7 +318,7 @@ public class LogScriptEngine {
       engine.put("TIMEOUT", true);
       stepScript();
       deactivateScript();
-      simulation.stopSimulation();
+      simulation.stopSimulation(false, 1);
     }
   };
   private final TimeEvent timeoutProgressEvent = new TimeEvent() {
