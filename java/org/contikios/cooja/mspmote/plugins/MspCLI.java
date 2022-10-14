@@ -90,12 +90,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
 
     JPopupMenu popupMenu = new JPopupMenu();
     JMenuItem clearItem = new JMenuItem("Clear");
-    clearItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        logArea.setText("");
-      }
-    });
+    clearItem.addActionListener(e -> logArea.setText(""));
     popupMenu.add(clearItem);
     logArea.setComponentPopupMenu(popupMenu);
 

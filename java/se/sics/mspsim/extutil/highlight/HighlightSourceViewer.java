@@ -158,13 +158,10 @@ public class HighlightSourceViewer implements SourceViewer {
   @Override
   public void viewLine(final int line) {
     if (highlighter != null) {
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          highlighter.viewLine(line - 1);
-          if (!window.isVisible()) {
-            window.setVisible(true);
-          }
+      SwingUtilities.invokeLater(() -> {
+        highlighter.viewLine(line - 1);
+        if (!window.isVisible()) {
+          window.setVisible(true);
         }
       });
     }

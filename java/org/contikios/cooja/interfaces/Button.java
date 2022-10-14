@@ -80,12 +80,9 @@ public abstract class Button extends MoteInterface {
    * released.
    */
   public void clickButton() {
-    sim.invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        sim.scheduleEvent(pressButtonEvent, sim.getSimulationTime());
-        sim.scheduleEvent(releaseButtonEvent, sim.getSimulationTime() + Simulation.MILLISECOND);
-      }      
+    sim.invokeSimulationThread(() -> {
+      sim.scheduleEvent(pressButtonEvent, sim.getSimulationTime());
+      sim.scheduleEvent(releaseButtonEvent, sim.getSimulationTime() + Simulation.MILLISECOND);
     });
   }
 
@@ -93,12 +90,7 @@ public abstract class Button extends MoteInterface {
    * Presses button.
    */
   public void pressButton() {
-    sim.invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        sim.scheduleEvent(pressButtonEvent, sim.getSimulationTime());
-      }      
-    });
+    sim.invokeSimulationThread(() -> sim.scheduleEvent(pressButtonEvent, sim.getSimulationTime()));
   }
 
   /**
@@ -110,12 +102,7 @@ public abstract class Button extends MoteInterface {
    * Releases button.
    */
   public void releaseButton() {
-    sim.invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        sim.scheduleEvent(releaseButtonEvent, sim.getSimulationTime());
-      }
-    });
+    sim.invokeSimulationThread(() -> sim.scheduleEvent(releaseButtonEvent, sim.getSimulationTime()));
   }
 
   /**

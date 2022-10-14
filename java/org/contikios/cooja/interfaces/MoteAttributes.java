@@ -179,12 +179,7 @@ public class MoteAttributes extends MoteInterface {
     attributes.setText(getText());
 
     Observer observer;
-    this.addObserver(observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-          attributes.setText(getText());
-      }
-    });
+    this.addObserver(observer = (obs, obj) -> attributes.setText(getText()));
 
     // Saving observer reference for releaseInterfaceVisualizer
     panel.putClientProperty("intf_obs", observer);

@@ -247,12 +247,7 @@ public class Mote2MoteRelations extends MoteInterface {
     panel.add(countLabel);
 
     Observer observer;
-    this.addObserver(observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        countLabel.setText("Mote has " + relations.size() + " mote relations");
-      }
-    });
+    this.addObserver(observer = (obs, obj) -> countLabel.setText("Mote has " + relations.size() + " mote relations"));
 
     // Saving observer reference for releaseInterfaceVisualizer
     panel.putClientProperty("intf_obs", observer);

@@ -269,12 +269,7 @@ public class ConsoleUI extends JComponent {
       }
     });
     output('>');
-    timer = new Timer(500, new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent arg0) {
-        flashCursor();
-      }
-    });
+    timer = new Timer(500, arg0 -> flashCursor());
     timer.start();
   }
 

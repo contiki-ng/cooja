@@ -64,12 +64,7 @@ public class JCreateGui extends AbstractNodeGUI {
         LEDS_X[LEDS_X.length - 1] + 10 - LEDS_X[0], 10);
 
     private final JCreateNode node;
-    private final StateChangeListener ledsListener = new StateChangeListener() {
-        @Override
-        public void stateChanged(Object source, int oldState, int newState) {
-            repaint(LEDS_CLIP);
-        }
-    };
+    private final StateChangeListener ledsListener = (source, oldState, newState) -> repaint(LEDS_CLIP);
 
     public JCreateGui(JCreateNode node) {
         super("JCreateGui", "images/jcreate.jpg");

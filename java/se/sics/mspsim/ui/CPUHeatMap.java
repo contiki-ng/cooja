@@ -43,12 +43,7 @@ public class CPUHeatMap extends JComponent implements MemoryMonitor {
         setOpaque(true);
         window.add(this);
 
-        ticker = new Timer(50, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                repaint();
-            }
-        });
+        ticker = new Timer(50, arg0 -> repaint());
         ticker.start();
 
         setFocusable(true);
