@@ -149,14 +149,7 @@ public class NetworkConnection implements Runnable {
     return true;
   }
 
-  private static class SendEvent {
-    public final byte[] data;
-    public final ConnectionThread source;
-    public SendEvent(byte[] data, ConnectionThread source) {
-      this.data = data;
-      this.source = source;
-    }
-  }
+  private record SendEvent(byte[] data, ConnectionThread source) {}
 
   class SendThread implements Runnable {
 

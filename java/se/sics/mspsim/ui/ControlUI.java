@@ -247,7 +247,7 @@ public class ControlUI extends JPanel implements ActionListener, SimEventListene
 
   @Override
   public void simChanged(SimEvent event) {
-    switch (event.getType()) {
+    switch (event.type()) {
     case START:
     case STOP:
       java.awt.EventQueue.invokeLater(() -> {
