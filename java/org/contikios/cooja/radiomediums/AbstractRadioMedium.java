@@ -273,14 +273,12 @@ public abstract class AbstractRadioMedium extends RadioMedium {
                 r.signalReceptionStart();
               } else {
                 /* EXPERIMENTAL: Simulating propagation delay */
-                final Radio delayedRadio = r;
-                TimeEvent delayedEvent = new TimeEvent() {
+                simulation.scheduleEvent(new TimeEvent() {
                   @Override
                   public void execute(long t) {
-                    delayedRadio.signalReceptionStart();
+                    r.signalReceptionStart();
                   }
-                };
-                simulation.scheduleEvent(delayedEvent, simulation.getSimulationTime() + newConnection.getDestinationDelay(r));
+                }, simulation.getSimulationTime() + newConnection.getDestinationDelay(r));
               }
             }
           }
