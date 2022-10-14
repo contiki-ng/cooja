@@ -88,7 +88,7 @@ public class Simulation extends Observable implements Runnable {
 
   private final Cooja cooja;
 
-  private long randomSeed = 123456;
+  private long randomSeed;
 
   private boolean randomSeedGenerated = false;
 
@@ -272,9 +272,10 @@ public class Simulation extends Observable implements Runnable {
   /**
    * Creates a new simulation
    */
-  public Simulation(Cooja cooja) {
+  public Simulation(Cooja cooja, long seed) {
     this.cooja = cooja;
     randomGenerator = new SafeRandom(this);
+    randomSeed = seed;
   }
 
   /** Create a new script engine that logs to the logTextArea and add it to the list
@@ -529,12 +530,10 @@ public class Simulation extends Observable implements Runnable {
    *
    * @param root Simulation configuration
    * @param visAvailable True if simulation is allowed to show visualizers
-   * @param manualRandomSeed Simulation random seed. May be null, in which case the configuration is used
    * @return True if simulation was configured successfully
    * @throws Exception If configuration could not be loaded
    */
-  public boolean setConfigXML(Element root,
-      boolean visAvailable, boolean quick, Long manualRandomSeed) throws Exception {
+  public boolean setConfigXML(Element root, boolean visAvailable, boolean quick) throws Exception {
     this.quick = quick;
     // Parse elements
     for (var element : (List<Element>) root.getChildren()) {
@@ -552,17 +551,11 @@ public class Simulation extends Observable implements Runnable {
           break;
         }
         case "randomseed": {
-          long newSeed;
           if (element.getText().equals("generated")) {
             randomSeedGenerated = true;
-            newSeed = new Random().nextLong();
-          } else {
-            newSeed = Long.parseLong(element.getText());
           }
-          if (manualRandomSeed != null) {
-            newSeed = manualRandomSeed;
-          }
-          setRandomSeed(newSeed);
+          // Seed already passed into the constructor, init random generator.
+          setRandomSeed(randomSeed);
           break;
         }
         case "motedelay":

@@ -75,6 +75,7 @@ import java.util.MissingResourceException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
+import java.util.Random;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.SynchronousQueue;
@@ -912,7 +913,7 @@ public class Cooja extends Observable {
           return;
         }
 
-        var sim = new Simulation(Cooja.this);
+        var sim = new Simulation(Cooja.this, 123456);
         if (CreateSimDialog.showDialog(sim)) {
           // Start GUI plugins.
           for (var pluginClass : pluginClasses) {
@@ -3224,9 +3225,12 @@ public class Cooja extends Observable {
       }
     }
     System.gc();
-    Simulation newSim = new Simulation(this);
+    var cfgSeed = root.getChild("simulation").getChild("randomseed").getText();
+    long seed = manualRandomSeed != null ? manualRandomSeed
+            : "generated".equals(cfgSeed) ? new Random().nextLong() : Long.parseLong(cfgSeed);
+    var newSim = new Simulation(this, seed);
     try {
-      if (!newSim.setConfigXML(root.getChild("simulation"), isVisualized(), quick, manualRandomSeed)) {
+      if (!newSim.setConfigXML(root.getChild("simulation"), isVisualized(), quick)) {
         logger.info("Simulation not loaded");
         return null;
       }
