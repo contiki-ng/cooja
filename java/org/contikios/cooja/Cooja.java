@@ -292,16 +292,7 @@ public class Cooja extends Observable {
   /**
    * Mote relation (directed).
    */
-  public static class MoteRelation {
-    public final Mote source;
-    public final Mote dest;
-    public final Color color;
-    public MoteRelation(Mote source, Mote dest, Color color) {
-      this.source = source;
-      this.dest = dest;
-      this.color = color;
-    }
-  }
+  public record MoteRelation(Mote source, Mote dest, Color color) {}
   private final ArrayList<MoteRelation> moteRelations = new ArrayList<>();
 
   /**

@@ -1242,13 +1242,13 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     if (showMoteToMoteRelations) {
       MoteRelation[] relations = simulation.getCooja().getMoteRelations();
       for (MoteRelation r : relations) {
-        Position sourcePos = r.source.getInterfaces().getPosition();
-        Position destPos = r.dest.getInterfaces().getPosition();
+        Position sourcePos = r.source().getInterfaces().getPosition();
+        Position destPos = r.dest().getInterfaces().getPosition();
 
         Point sourcePoint = transformPositionToPixel(sourcePos);
         Point destPoint = transformPositionToPixel(destPos);
 
-        g.setColor(r.color == null ? Color.black : r.color);
+        g.setColor(r.color() == null ? Color.black : r.color());
         drawArrow(g, sourcePoint.x, sourcePoint.y, destPoint.x, destPoint.y);
       }
     }
