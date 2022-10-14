@@ -287,15 +287,9 @@ public class CreateSimDialog extends JDialog {
           mySimulation.setRandomSeed(((Number) randomSeed.getValue()).longValue());
         }
         mySimulation.setDelayedMoteStartupTime(((Number) delayedStartup.getValue()).intValue() * Simulation.MILLISECOND);
-        String radioMediumName = (String) radioMediumBox.getSelectedItem();
-        RadioMedium radioMedium = null;
-        for (var radioMediumClass: gui.getRegisteredRadioMediums()) {
-          if (Cooja.getDescriptionOf(radioMediumClass).equals(radioMediumName)) {
-            radioMedium = MoteInterfaceHandler.createRadioMedium(mySimulation, radioMediumClass.getName());
-            mySimulation.setRadioMedium(radioMedium);
-            break;
-          }
-        }
+        var radioMediumName = gui.getRegisteredRadioMediums().get(radioMediumBox.getSelectedIndex()).getName();
+        var radioMedium = MoteInterfaceHandler.createRadioMedium(mySimulation, radioMediumName);
+        mySimulation.setRadioMedium(radioMedium);
         if (radioMedium == null) {
           mySimulation = null;
         }
