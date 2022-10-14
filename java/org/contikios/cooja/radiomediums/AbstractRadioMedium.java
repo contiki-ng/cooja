@@ -297,8 +297,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 					/* Connection */
 					RadioConnection connection = getActiveConnectionFrom(radio);
 					if (connection == null) {
-						logger.fatal("No radio connection found");
-						return;
+						return; // SilentRadioMedium will return here.
 					}
 					
 					activeConnections.remove(connection);
@@ -385,8 +384,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 					/* Connection */
 					RadioConnection connection = getActiveConnectionFrom(radio);
 					if (connection == null) {
-						logger.fatal("No radio connection found");
-						return;
+						return; // SilentRadioMedium will return here.
 					}
 					
 					/* Radio packet */
