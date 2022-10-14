@@ -211,7 +211,6 @@ public class Simulation extends Observable implements Runnable {
     assert isRunning : "Did not set isRunning before starting";
     lastStartRealTime = System.currentTimeMillis();
     lastStartSimulationTime = getSimulationTimeMillis();
-    logger.debug("Simulation started, system time: {}", lastStartRealTime);
     speedLimitLastRealtime = lastStartRealTime;
     speedLimitLastSimtime = lastStartSimulationTime;
 
@@ -276,6 +275,15 @@ public class Simulation extends Observable implements Runnable {
     this.cooja = cooja;
     randomGenerator = new SafeRandom(this);
     randomSeed = seed;
+  }
+
+  /** Basic simulation configuration. */
+  public record SimConfig(String title, String radioMedium, boolean generatedSeed, long randomSeed, long moteStartDelay) {}
+
+  public SimConfig getSimConfig() {
+    return new Simulation.SimConfig(title,
+            currentRadioMedium == null ? null : Cooja.getDescriptionOf(currentRadioMedium),
+            randomSeedGenerated, randomSeed, maxMoteStartupDelay / MILLISECOND);
   }
 
   /** Create a new script engine that logs to the logTextArea and add it to the list
@@ -574,8 +582,7 @@ public class Simulation extends Observable implements Runnable {
           // Show configure simulation dialog
           if (visAvailable && !quick) {
             // FIXME: this should run from the AWT thread.
-            if (!CreateSimDialog.showDialog(this)) {
-              logger.debug("Simulation not created, aborting");
+            if (!CreateSimDialog.showDialog(this, getSimConfig())) {
               throw new Exception("Load aborted by user");
             }
           }
