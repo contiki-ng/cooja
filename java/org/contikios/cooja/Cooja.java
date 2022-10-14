@@ -1211,7 +1211,6 @@ public class Cooja extends Observable {
           menuItem = new JMenuItem(description + "...");
           menuItem.setActionCommand("create mote type");
           menuItem.putClientProperty("class", moteTypeClass);
-        /*  menuItem.setToolTipText(abstractionLevelDescription);*/
           menuItem.addActionListener(guiEventHandler);
 
           /* Add new item directly after cross level separator */
