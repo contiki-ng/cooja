@@ -165,6 +165,8 @@ public abstract class CoreComm {
       String[] cmd = new String[] {
           Cooja.getExternalToolsSetting("PATH_JAVAC"),
           "-cp", System.getProperty("java.class.path"), "--release", "17",
+          // Disable warnings to avoid 3 lines of "warning: using incubating module(s): jdk.incubator.foreign".
+          "-nowarn", "--add-modules", "jdk.incubator.foreign",
           tempDir + "/org/contikios/cooja/corecomm/" + className + ".java" };
 
       ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -246,6 +248,11 @@ public abstract class CoreComm {
    * run once, at the same time as the library is loaded)
    */
   protected abstract void init();
+
+  /**
+   * Returns the absolute memory address of the reference variable.
+   */
+  public abstract long getReferenceAddress();
 
   /**
    * Sets the relative memory address of the reference variable.

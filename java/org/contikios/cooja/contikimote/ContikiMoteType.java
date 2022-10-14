@@ -398,7 +398,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     HashMap<String, Symbol> variables = new HashMap<>();
     {
       SectionMoteMemory tmp = new SectionMoteMemory(variables);
-      VarMemory varMem = new VarMemory(tmp);
       tmp.addMemorySection("tmp.data", dataSecParser.parse(0));
       tmp.addMemorySection("tmp.bss", bssSecParser.parse(0));
       if (commonSecParser != null) {
@@ -406,15 +405,12 @@ public class ContikiMoteType extends BaseContikiMoteType {
       }
 
       try {
-        long referenceVar = varMem.getVariable("referenceVar").addr;
+        long referenceVar = tmp.getSymbolMap().get("referenceVar").addr;
         myCoreComm.setReferenceAddress(referenceVar);
-      } catch (RuntimeException e) {
+        offset = myCoreComm.getReferenceAddress() - referenceVar;
+      } catch (Exception e) {
         throw new MoteTypeCreationException("Error setting reference variable: " + e.getMessage(), e);
       }
-
-      getCoreMemory(tmp);
-
-      offset = varMem.getAddrValueOf("referenceVar");
       logger.debug(firmwareFile.getName()
               + ": offsetting Cooja mote address space: 0x" + Long.toHexString(offset));
     }

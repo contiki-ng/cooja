@@ -30,6 +30,7 @@
 package org.contikios.cooja.corecomm;
 
 import java.io.File;
+import jdk.incubator.foreign.SymbolLookup;
 import org.contikios.cooja.CoreComm;
 
 /**
@@ -40,7 +41,7 @@ import org.contikios.cooja.CoreComm;
  * @author Fredrik Osterlind
  */
 public class CoreCommTemplate extends CoreComm {
-
+  private final SymbolLookup symbols;
   /**
    * Loads library libFile.
    *
@@ -49,11 +50,15 @@ public class CoreCommTemplate extends CoreComm {
    */
   public CoreCommTemplate(File libFile) {
     System.load(libFile.getAbsolutePath());
+    symbols = SymbolLookup.loaderLookup();
     init();
   }
 
   public native void tick();
   public native void init();
+  public long getReferenceAddress() {
+    return symbols.lookup("referenceVar").get().address().toRawLongValue();
+  }
   public native void setReferenceAddress(long addr);
   public native void getMemory(long rel_addr, int length, byte[] mem);
   public native void setMemory(long rel_addr, int length, byte[] mem);
