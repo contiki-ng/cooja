@@ -286,6 +286,22 @@ public class Simulation extends Observable implements Runnable {
             randomSeedGenerated, randomSeed, maxMoteStartupDelay / MILLISECOND);
   }
 
+  public boolean setSimConfig(SimConfig cfg) throws MoteType.MoteTypeCreationException {
+    if (cfg == null) {
+      return false;
+    }
+    title = cfg.title;
+    var radioMedium = MoteInterfaceHandler.createRadioMedium(this, cfg.radioMedium);
+    if (radioMedium == null) {
+      throw new MoteType.MoteTypeCreationException("Could not load " + cfg.radioMedium);
+    }
+    setRadioMedium(radioMedium);
+    randomSeedGenerated = cfg.generatedSeed;
+    setRandomSeed(cfg.randomSeed);
+    maxMoteStartupDelay = Math.max(0, cfg.moteStartDelay);
+    return true;
+  }
+
   /** Create a new script engine that logs to the logTextArea and add it to the list
    *  of active script engines. */
   public LogScriptEngine newScriptEngine(JTextArea logTextArea) {
@@ -582,8 +598,8 @@ public class Simulation extends Observable implements Runnable {
           // Show configure simulation dialog
           if (visAvailable && !quick) {
             // FIXME: this should run from the AWT thread.
-            if (!CreateSimDialog.showDialog(this, getSimConfig())) {
-              throw new Exception("Load aborted by user");
+            if (!setSimConfig(CreateSimDialog.showDialog(getCooja(), getSimConfig()))) {
+              return false;
             }
           }
 
