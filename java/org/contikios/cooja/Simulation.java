@@ -566,19 +566,9 @@ public class Simulation extends Observable implements Runnable {
           break;
         case "radiomedium": {
           String radioMediumClassName = element.getText().trim();
-          /* Backwards compatibility: se.sics -> org.contikios */
-          if (radioMediumClassName.startsWith("se.sics")) {
-            radioMediumClassName = radioMediumClassName.replaceFirst("se\\.sics", "org.contikios");
-          }
-
-          var radioMediumClass = cooja.tryLoadClass(this, RadioMedium.class, radioMediumClassName);
-          if (radioMediumClass == null) {
+          currentRadioMedium = MoteInterfaceHandler.createRadioMedium(this, radioMediumClassName);
+          if (currentRadioMedium == null) {
             throw new MoteType.MoteTypeCreationException("Could not load " + radioMediumClassName);
-          }
-          try {
-            currentRadioMedium = radioMediumClass.getConstructor(Simulation.class).newInstance(this);
-          } catch (Exception e) {
-            throw new MoteType.MoteTypeCreationException("Could not create " + radioMediumClassName, e);
           }
 
           // Show configure simulation dialog
