@@ -266,24 +266,24 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 					}
 					
 					RadioConnection newConnection = createConnections(radio);
-					activeConnections.add(newConnection);
-					
-					for (Radio r : newConnection.getAllDestinations()) {
-						if (newConnection.getDestinationDelay(r) == 0) {
-							r.signalReceptionStart();
-						} else {
-							/* EXPERIMENTAL: Simulating propagation delay */
-							final Radio delayedRadio = r;
-							TimeEvent delayedEvent = new TimeEvent() {
-								@Override
-								public void execute(long t) {
-									delayedRadio.signalReceptionStart();
-								}
-							};
-							simulation.scheduleEvent(delayedEvent, simulation.getSimulationTime() + newConnection.getDestinationDelay(r));
-							
-						}
-					} /* Update signal strengths */
+          if (newConnection != null) {
+            activeConnections.add(newConnection);
+            for (var r : newConnection.getAllDestinations()) {
+              if (newConnection.getDestinationDelay(r) == 0) {
+                r.signalReceptionStart();
+              } else {
+                /* EXPERIMENTAL: Simulating propagation delay */
+                final Radio delayedRadio = r;
+                TimeEvent delayedEvent = new TimeEvent() {
+                  @Override
+                  public void execute(long t) {
+                    delayedRadio.signalReceptionStart();
+                  }
+                };
+                simulation.scheduleEvent(delayedEvent, simulation.getSimulationTime() + newConnection.getDestinationDelay(r));
+              }
+            }
+          }
 					updateSignalStrengths();
 					
 					/* Notify observers */
