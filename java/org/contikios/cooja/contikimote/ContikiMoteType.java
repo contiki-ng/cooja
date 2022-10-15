@@ -432,9 +432,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
   @Override
   public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
-    String[] ifNames = getConfig().getStringArrayValue(ContikiMoteType.class, "MOTE_INTERFACES");
     ArrayList<Class<? extends MoteInterface>> classes = new ArrayList<>();
-
     classes.add(Position.class);
     classes.add(Battery.class);
     classes.add(ContikiVib.class);
@@ -453,7 +451,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     classes.add(Mote2MoteRelations.class);
     classes.add(MoteAttributes.class);
     // Load mote interface classes.
-    for (String ifName : ifNames) {
+    for (var ifName : getConfig().getStringArrayValue(ContikiMoteType.class, "MOTE_INTERFACES")) {
       var ifClass = MoteInterfaceHandler.getInterfaceClass(gui, this, ifName);
       if (ifClass == null) {
         logger.warn("Failed to load mote interface class: " + ifName);
