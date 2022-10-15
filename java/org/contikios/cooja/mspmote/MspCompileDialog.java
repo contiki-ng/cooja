@@ -31,7 +31,6 @@
 package org.contikios.cooja.mspmote;
 
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
 import org.contikios.cooja.Simulation;
@@ -42,18 +41,13 @@ public class MspCompileDialog extends AbstractCompileDialog {
   public MspCompileDialog(Simulation sim, MspMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
     super(sim, moteType, cfg);
     setTitle("Create Mote Type: Compile Contiki for " + moteType.getMoteType());
-    addCompilationTipsTab(tabbedPane);
-  }
-
-  private static void addCompilationTipsTab(JTabbedPane parent) {
-    JTextArea textArea = new JTextArea();
+    var textArea = new JTextArea();
     textArea.setEditable(false);
     textArea.append("# Without low-power radio:\n" +
     		"DEFINES=NETSTACK_MAC=nullmac_driver,NETSTACK_RDC=nullrdc_noframer_driver,CC2420_CONF_AUTOACK=0\n" +
     		"# (remember to \"make clean\" after changing compilation flags)"
     );
-
-    parent.addTab("Tips", null, new JScrollPane(textArea), "Compilation tips");
+    tabbedPane.addTab("Tips", null, new JScrollPane(textArea), "Compilation tips");
   }
 
   @Override
