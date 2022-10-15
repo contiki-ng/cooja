@@ -497,10 +497,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
       return size;
     }
 
-    public Map<String, Symbol> getVariables(){
-      return variables;
-    }
-
     protected abstract boolean parseStartAddrAndSize();
 
     abstract Map<String, Symbol> parseSymbols(long offset);
