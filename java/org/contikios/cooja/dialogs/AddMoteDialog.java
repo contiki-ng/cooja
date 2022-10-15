@@ -81,7 +81,7 @@ public class AddMoteDialog extends JDialog {
 
   private final ArrayList<Mote> newMotes = new ArrayList<>();
 
-  private final JButton addButton;
+  private final JButton addButton = new JButton("Add motes");
 
   private final MoteType moteType;
   private final Simulation simulation;
@@ -106,8 +106,6 @@ public class AddMoteDialog extends JDialog {
    */
   public static ArrayList<Mote> showDialog(Simulation sim, MoteType moteType) {
     var myDialog = new AddMoteDialog(sim, moteType);
-    myDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
-    myDialog.checkSettings();
     myDialog.setVisible(true);
     return myDialog.newMotes;
   }
@@ -135,13 +133,11 @@ public class AddMoteDialog extends JDialog {
     button.addActionListener(myEventHandler);
     buttonPane.add(button);
 
-    button = new JButton("Add motes");
-    button.setActionCommand("add");
-    button.addActionListener(myEventHandler);
-    this.getRootPane().setDefaultButton(button);
-    addButton = button;
+    addButton.setActionCommand("add");
+    addButton.addActionListener(myEventHandler);
+    this.getRootPane().setDefaultButton(addButton);
     buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
-    buttonPane.add(button);
+    buttonPane.add(addButton);
 
     // MAIN PART
 
@@ -152,17 +148,16 @@ public class AddMoteDialog extends JDialog {
     var label = new JLabel("Number of new motes");
     label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-    var numberField = new JFormattedTextField(integerFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(1);
-    numberField.setColumns(10);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    numberOfMotesField = numberField;
+    numberOfMotesField = new JFormattedTextField(integerFormat);
+    numberOfMotesField.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    numberOfMotesField.setValue(1);
+    numberOfMotesField.setColumns(10);
+    numberOfMotesField.addFocusListener(myEventHandler);
+    numberOfMotesField.addPropertyChangeListener("value", myEventHandler);
 
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
-    smallPane.add(numberField);
+    smallPane.add(numberOfMotesField);
 
     mainPane.add(smallPane);
     mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -180,16 +175,15 @@ public class AddMoteDialog extends JDialog {
       posDistributions[i] = Cooja.getDescriptionOf(positioners.get(i));
     }
 
-    var comboBox = new JComboBox<>(posDistributions);
-    comboBox.setSelectedIndex(0);
-    comboBox.addActionListener(myEventHandler);
-    comboBox.addFocusListener(myEventHandler);
-    positionDistributionBox = comboBox;
-    label.setLabelFor(comboBox);
+    positionDistributionBox = new JComboBox<>(posDistributions);
+    positionDistributionBox.setSelectedIndex(0);
+    positionDistributionBox.addActionListener(myEventHandler);
+    positionDistributionBox.addFocusListener(myEventHandler);
+    label.setLabelFor(positionDistributionBox);
 
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
-    smallPane.add(comboBox);
+    smallPane.add(positionDistributionBox);
 
     mainPane.add(smallPane);
     mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -208,28 +202,26 @@ public class AddMoteDialog extends JDialog {
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(0.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    startX = numberField;
-    smallPane.add(numberField);
+    startX = new JFormattedTextField(doubleFormat);
+    startX.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    startX.setValue(0.0);
+    startX.setColumns(4);
+    startX.addFocusListener(myEventHandler);
+    startX.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(startX);
     smallPane.add(Box.createHorizontalStrut(10));
 
     label = new JLabel("<->");
     label.setPreferredSize(new Dimension(LABEL_WIDTH / 4, LABEL_HEIGHT));
     smallPane.add(label);
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(100.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    endX = numberField;
-    smallPane.add(numberField);
+    endX = new JFormattedTextField(doubleFormat);
+    endX.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    endX.setValue(100.0);
+    endX.setColumns(4);
+    endX.addFocusListener(myEventHandler);
+    endX.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(endX);
     smallPane.add(Box.createHorizontalStrut(10));
 
     mainPane.add(smallPane);
@@ -249,28 +241,26 @@ public class AddMoteDialog extends JDialog {
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(0.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    startY = numberField;
-    smallPane.add(numberField);
+    startY = new JFormattedTextField(doubleFormat);
+    startY.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    startY.setValue(0.0);
+    startY.setColumns(4);
+    startY.addFocusListener(myEventHandler);
+    startY.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(startY);
     smallPane.add(Box.createHorizontalStrut(10));
 
     label = new JLabel("<->");
     label.setPreferredSize(new Dimension(LABEL_WIDTH / 4, LABEL_HEIGHT));
     smallPane.add(label);
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(100.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    endY = numberField;
-    smallPane.add(numberField);
+    endY = new JFormattedTextField(doubleFormat);
+    endY.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    endY.setValue(100.0);
+    endY.setColumns(4);
+    endY.addFocusListener(myEventHandler);
+    endY.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(endY);
     smallPane.add(Box.createHorizontalStrut(10));
 
     mainPane.add(smallPane);
@@ -290,28 +280,26 @@ public class AddMoteDialog extends JDialog {
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(0.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    startZ = numberField;
-    smallPane.add(numberField);
+    startZ = new JFormattedTextField(doubleFormat);
+    startZ.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    startZ.setValue(0.0);
+    startZ.setColumns(4);
+    startZ.addFocusListener(myEventHandler);
+    startZ.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(startZ);
     smallPane.add(Box.createHorizontalStrut(10));
 
     label = new JLabel("<->");
     label.setPreferredSize(new Dimension(LABEL_WIDTH / 4, LABEL_HEIGHT));
     smallPane.add(label);
 
-    numberField = new JFormattedTextField(doubleFormat);
-    numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
-    numberField.setValue(0.0);
-    numberField.setColumns(4);
-    numberField.addFocusListener(myEventHandler);
-    numberField.addPropertyChangeListener("value", myEventHandler);
-    endZ = numberField;
-    smallPane.add(numberField);
+    endZ = new JFormattedTextField(doubleFormat);
+    endZ.setFocusLostBehavior(JFormattedTextField.PERSIST);
+    endZ.setValue(0.0);
+    endZ.setColumns(4);
+    endZ.addFocusListener(myEventHandler);
+    endZ.addPropertyChangeListener("value", myEventHandler);
+    smallPane.add(endZ);
     smallPane.add(Box.createHorizontalStrut(10));
 
     mainPane.add(smallPane);
@@ -324,6 +312,8 @@ public class AddMoteDialog extends JDialog {
     contentPane.add(buttonPane, BorderLayout.SOUTH);
 
     pack();
+    setLocationRelativeTo(Cooja.getTopParentContainer());
+    checkSettings();
   }
 
   private boolean checkSettings() {
@@ -405,95 +395,78 @@ public class AddMoteDialog extends JDialog {
         newMotes.clear();
         dispose();
       } else if (e.getActionCommand().equals("add")) {
-        try {
-	  // Validate input
-	  if (!checkSettings()) {
-	    return;
-	  }
+        // Validate input
+        if (!checkSettings()) {
+          return;
+        }
+        Class<? extends Positioner> positionerClass = null;
+        for (var positioner : simulation.getCooja().getRegisteredPositioners()) {
+          if (Cooja.getDescriptionOf(positioner).equals(positionDistributionBox.getSelectedItem())) {
+            positionerClass = positioner;
+          }
+        }
 
-	  // Create new motes
-          int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
-          while (newMotes.size() < motesToAdd) {
+        // FIXME: inline generateInterface().
+        int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
+        var positioner = Positioner.generateInterface(positionerClass,
+                motesToAdd,
+                ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
+                ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
+                ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
+
+        if (positioner == null) {
+          logger.fatal("Could not create positioner");
+          return;
+        }
+
+        // Create new motes
+        while (newMotes.size() < motesToAdd) {
+          try {
             Mote newMote = moteType.generateMote(simulation);
             newMotes.add(newMote);
-          }
-
-          // Position new motes
-          Class<? extends Positioner> positionerClass = null;
-          for (Class<? extends Positioner> positioner : simulation.getCooja()
-              .getRegisteredPositioners()) {
-            if (Cooja.getDescriptionOf(positioner).equals(
-                positionDistributionBox.getSelectedItem())) {
-              positionerClass = positioner;
-            }
-          }
-
-          Positioner positioner = Positioner.generateInterface(positionerClass,
-              motesToAdd,
-              ((Number) startX.getValue()).doubleValue(), ((Number) endX
-                  .getValue()).doubleValue(), ((Number) startY.getValue())
-                  .doubleValue(), ((Number) endY.getValue()).doubleValue(),
-                  ((Number) startZ.getValue()).doubleValue(), ((Number) endZ
-                      .getValue()).doubleValue());
-
-          if (positioner == null) {
-            logger.fatal("Could not create positioner");
+          } catch (MoteType.MoteTypeCreationException e2) {
+            newMotes.clear();
+            JOptionPane.showMessageDialog(AddMoteDialog.this,
+                    "Could not create mote.\nException message: \"" + e2.getMessage() + "\"\n\n",
+                    "Mote creation failed", JOptionPane.ERROR_MESSAGE);
             return;
           }
-
-          for (Mote newMote : newMotes) {
-            Position newPosition = newMote.getInterfaces().getPosition();
-            if (newPosition != null) {
-              double[] newPositionArray = positioner.getNextPosition();
-              if (newPositionArray.length >= 3) {
-                newPosition.setCoordinates(newPositionArray[0],
-                    newPositionArray[1], newPositionArray[2]);
-              } else if (newPositionArray.length == 2) {
-                newPosition.setCoordinates(newPositionArray[0],
-                    newPositionArray[1], 0);
-              } else if (newPositionArray.length == 1) {
-                newPosition.setCoordinates(newPositionArray[0], 0, 0);
-              } else {
-                newPosition.setCoordinates(0, 0, 0);
-              }
-            }
-          }
-
-          /* Set unique mote id's for all new motes
-           * TODO ID should be provided differently; not rely on the unsafe MoteID interface */
-          int nextMoteID = 1;
-          for (Mote m: simulation.getMotes()) {
-            int existing = m.getID();
-            if (existing >= nextMoteID) {
-              nextMoteID = existing + 1;
-            }
-          }
-          for (Mote m: newMotes) {
-            MoteID moteID = m.getInterfaces().getMoteID();
-            if (moteID != null) {
-              moteID.setMoteID(nextMoteID++);
-            } else {
-              logger.warn("Can't set mote ID (no mote ID interface): " + m);
-            }
-          }
-
-          dispose();
-        } catch (OutOfMemoryError e2) {
-          newMotes.clear();
-          JOptionPane.showMessageDialog(
-              AddMoteDialog.this,
-              "Out of memory.\nException message: \"" + e2.getMessage() + "\"\n\n" +
-              "Reduce number of nodes or start Cooja with more memory (\">ant run_bigmem\").",
-              "Not enough heap memory.", JOptionPane.ERROR_MESSAGE
-          );
-        } catch (MoteType.MoteTypeCreationException e2) {
-          newMotes.clear();
-          JOptionPane.showMessageDialog(
-                  AddMoteDialog.this,
-                  "Could not create mote.\nException message: \"" + e2.getMessage() + "\"\n\n",
-                  "Mote creation failed", JOptionPane.ERROR_MESSAGE
-          );
         }
+        // Position new motes
+        for (Mote newMote : newMotes) {
+          Position newPosition = newMote.getInterfaces().getPosition();
+          if (newPosition != null) {
+            double[] next = positioner.getNextPosition();
+            if (next.length >= 3) {
+              newPosition.setCoordinates(next[0], next[1], next[2]);
+            } else if (next.length == 2) {
+              newPosition.setCoordinates(next[0], next[1], 0);
+            } else if (next.length == 1) {
+              newPosition.setCoordinates(next[0], 0, 0);
+            } else {
+              newPosition.setCoordinates(0, 0, 0);
+            }
+          }
+        }
+
+        /* Set unique mote id's for all new motes
+         * TODO ID should be provided differently; not rely on the unsafe MoteID interface */
+        int nextMoteID = 1;
+        for (Mote m : simulation.getMotes()) {
+          int existing = m.getID();
+          if (existing >= nextMoteID) {
+            nextMoteID = existing + 1;
+          }
+        }
+        for (Mote m : newMotes) {
+          MoteID moteID = m.getInterfaces().getMoteID();
+          if (moteID != null) {
+            moteID.setMoteID(nextMoteID++);
+          } else {
+            logger.warn("Can't set mote ID (no mote ID interface): " + m);
+          }
+        }
+        dispose();
       }
     }
   }
