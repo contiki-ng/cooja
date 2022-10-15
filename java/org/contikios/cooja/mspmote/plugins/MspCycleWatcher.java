@@ -43,9 +43,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -61,7 +58,6 @@ import se.sics.mspsim.core.MSP430;
 @PluginType(PluginType.MOTE_PLUGIN)
 @SupportedArguments(motes = {MspMote.class})
 public class MspCycleWatcher extends VisPlugin implements MotePlugin {
-  private static final Logger logger = LogManager.getLogger(MspStackWatcher.class);
   private final MspMote mspMote;
   private final MSP430 cpu;
   private final Simulation simulation;
