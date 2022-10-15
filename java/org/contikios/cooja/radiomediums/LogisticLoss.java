@@ -32,7 +32,6 @@ package org.contikios.cooja.radiomediums;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 import java.util.Map;

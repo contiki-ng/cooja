@@ -2,7 +2,6 @@ package org.contikios.cooja.interfaces;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JPanel;

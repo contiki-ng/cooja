@@ -31,7 +31,6 @@
 package org.contikios.cooja.plugins;
 
 import java.awt.BorderLayout;
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.DefaultCellEditor;
