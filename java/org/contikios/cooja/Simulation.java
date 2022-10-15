@@ -591,10 +591,6 @@ public class Simulation extends Observable implements Runnable {
         case "radiomedium": {
           String radioMediumClassName = element.getText().trim();
           currentRadioMedium = MoteInterfaceHandler.createRadioMedium(this, radioMediumClassName);
-          if (currentRadioMedium == null) {
-            throw new MoteType.MoteTypeCreationException("Could not load " + radioMediumClassName);
-          }
-
           // Show configure simulation dialog
           if (visAvailable && !quick) {
             // FIXME: this should run from the AWT thread.
@@ -602,7 +598,9 @@ public class Simulation extends Observable implements Runnable {
               return false;
             }
           }
-
+          if (currentRadioMedium == null) {
+            throw new MoteType.MoteTypeCreationException("Could not load " + radioMediumClassName);
+          }
           // Check if radio medium specific config should be applied
           if (radioMediumClassName.equals(currentRadioMedium.getClass().getName())) {
             currentRadioMedium.setConfigXML(element.getChildren(), visAvailable);
