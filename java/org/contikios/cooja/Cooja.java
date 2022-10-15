@@ -673,7 +673,9 @@ public class Cooja extends Observable {
     final var cfgFile = validateFileOrSelectNew(file);
     if (cfgFile == null) return;
 
-    createLoadSimWorker(cfgFile, quick, false, null).execute();
+    var worker = createLoadSimWorker(cfgFile, quick, false, null);
+    if (worker == null) return;
+    worker.execute();
   }
 
   /**
@@ -2513,7 +2515,9 @@ public class Cooja extends Observable {
       return;
     }
 
-    createLoadSimWorker(null, true, false, seed).execute();
+    var worker = createLoadSimWorker(null, true, false, seed);
+    if (worker == null) return;
+    worker.execute();
   }
 
   private static boolean warnMemory() {
