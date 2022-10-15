@@ -33,7 +33,6 @@ package org.contikios.cooja.plugins.skins;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.util.Observable;
 import java.util.Observer;
 
 import org.contikios.cooja.ClassDescription;

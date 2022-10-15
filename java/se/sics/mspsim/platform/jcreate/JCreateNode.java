@@ -46,7 +46,6 @@ import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.chip.MMA7260QT;
 import se.sics.mspsim.core.ADC12;
-import se.sics.mspsim.core.ADCInput;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.platform.sky.CC2420Node;

@@ -85,7 +85,6 @@ import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.mote.memory.MemoryLayout;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
-import org.contikios.cooja.mote.memory.VarMemory;
 import org.jdom.Element;
 
 /**
@@ -496,10 +495,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     public int getSize() {
       return size;
-    }
-
-    public Map<String, Symbol> getVariables(){
-      return variables;
     }
 
     protected abstract boolean parseStartAddrAndSize();

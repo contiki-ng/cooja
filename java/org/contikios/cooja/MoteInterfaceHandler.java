@@ -191,7 +191,7 @@ public class MoteInterfaceHandler {
       case "org.contikios.cooja.radiomediums.SilentRadioMedium": return new SilentRadioMedium(sim);
       case "org.contikios.cooja.radiomediums.LogisticLoss": return new LogisticLoss(sim);
       case "org.contikios.cooja.mrm.MRM": return new MRM(sim);
-    };
+    }
     var clazz = sim.getCooja().tryLoadClass(sim, RadioMedium.class, name);
     if (clazz == null) {
       return null;

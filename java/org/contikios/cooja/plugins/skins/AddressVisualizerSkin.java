@@ -37,7 +37,6 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.util.Observable;
 import java.util.Observer;
 
 import org.contikios.cooja.ClassDescription;
