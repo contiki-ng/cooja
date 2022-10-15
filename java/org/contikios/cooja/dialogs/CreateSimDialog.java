@@ -58,7 +58,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.RadioMedium;
 import org.contikios.cooja.Simulation;
 
@@ -71,25 +70,24 @@ public class CreateSimDialog extends JDialog {
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 25;
 
-  private Simulation mySimulation;
+  private Simulation.SimConfig config = null;
 
   /**
    * Shows a dialog for configuring a simulation.
    *
-   * @param sim Simulation to configure
+   * @param gui Cooja
    * @param cfg Initial configuration
-   * @return True if simulation configured correctly
+   * @return Configuration selected by user, null if dialog is cancelled.
    */
-  public static boolean showDialog(Simulation sim, Simulation.SimConfig cfg) {
-    final var dialog = new CreateSimDialog(sim.getCooja(), sim, cfg);
+  public static Simulation.SimConfig showDialog(Cooja gui, Simulation.SimConfig cfg) {
+    final var dialog = new CreateSimDialog(gui, cfg);
     dialog.setVisible(true);
     // Simulation configured correctly
-    return dialog.mySimulation != null;
+    return dialog.config;
   }
 
-  private CreateSimDialog(Cooja gui, Simulation sim, Simulation.SimConfig cfg) {
+  private CreateSimDialog(Cooja gui, Simulation.SimConfig cfg) {
     super(Cooja.getTopParentContainer(), "Create new simulation", ModalityType.APPLICATION_MODAL);
-    mySimulation = sim;
     Box vertBox = Box.createVerticalBox();
     NumberFormat integerFormat = NumberFormat.getIntegerInstance();
 
@@ -103,7 +101,6 @@ public class CreateSimDialog extends JDialog {
     cancelButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mySimulation = null;
         dispose();
       }
     });
@@ -278,27 +275,12 @@ public class CreateSimDialog extends JDialog {
     createButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        mySimulation.setTitle(title.getText());
-        if (randomSeedGenerated.isSelected()) {
-          mySimulation.setRandomSeedGenerated(true);
-          mySimulation.setRandomSeed(new Random().nextLong());
-        } else {
-          mySimulation.setRandomSeedGenerated(false);
-          mySimulation.setRandomSeed(((Number) randomSeed.getValue()).longValue());
-        }
-        mySimulation.setDelayedMoteStartupTime(((Number) delayedStartup.getValue()).intValue() * Simulation.MILLISECOND);
-        String radioMediumName = (String) radioMediumBox.getSelectedItem();
-        RadioMedium radioMedium = null;
-        for (var radioMediumClass: gui.getRegisteredRadioMediums()) {
-          if (Cooja.getDescriptionOf(radioMediumClass).equals(radioMediumName)) {
-            radioMedium = MoteInterfaceHandler.createRadioMedium(mySimulation, radioMediumClass.getName());
-            mySimulation.setRadioMedium(radioMedium);
-            break;
-          }
-        }
-        if (radioMedium == null) {
-          mySimulation = null;
-        }
+        config = new Simulation.SimConfig(title.getText(),
+                gui.getRegisteredRadioMediums().get(radioMediumBox.getSelectedIndex()).getName(),
+                randomSeedGenerated.isSelected(),
+                randomSeedGenerated.isSelected()
+                        ? new Random().nextLong() : ((Number) randomSeed.getValue()).longValue(),
+                ((Number) delayedStartup.getValue()).intValue() * Simulation.MILLISECOND);
         dispose();
       }
     });
