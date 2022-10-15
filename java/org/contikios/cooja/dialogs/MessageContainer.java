@@ -2,24 +2,13 @@ package org.contikios.cooja.dialogs;
 
 import org.contikios.cooja.Cooja;
 
-public class MessageContainer {
-
-    public final int type;
-    public final String message;
-
-    public MessageContainer(String message, int type) {
-        this.message = message;
-        this.type = type;
-    }
-
+public record MessageContainer(String message, int type) {
     @Override
     public String toString() {
         return message;
     }
-    
-    /* This will select UI based or not UI based depending on withUI in combination with
-     * headless info.
-     */
+
+    /** Select UI based on withUI in combination with Cooja.isVisualized. */
     public static MessageList createMessageList(boolean withUI) {
         if (withUI && Cooja.isVisualized()) {
             return new Cooja.RunnableInEDT<MessageList>() {
