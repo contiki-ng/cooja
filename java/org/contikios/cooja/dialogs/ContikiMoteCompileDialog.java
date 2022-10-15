@@ -130,7 +130,6 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     /* Advanced tab */
     Box box = Box.createVerticalBox();
     box.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-    /*box.add(symbolsCheckBox);*/
     box.add(netStackBox);
     box.add(netStackHeaderBox);
     box.add(Box.createVerticalGlue());
