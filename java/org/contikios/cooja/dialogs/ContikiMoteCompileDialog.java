@@ -32,9 +32,6 @@ package org.contikios.cooja.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -117,13 +114,10 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     label.setPreferredSize(LABEL_DIMENSION);
     netStackComboBox.setSelectedItem(((ContikiMoteType)moteType).getNetworkStack());
     netStackComboBox.setEnabled(true);
-    netStackComboBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        ((ContikiMoteType)moteType).setNetworkStack((NetworkStack)netStackComboBox.getSelectedItem());
-        netStackHeaderBox.setVisible(netStackComboBox.getSelectedItem() == NetworkStack.MANUAL);
-        setDialogState(DialogState.SELECTED_SOURCE);
-      }
+    netStackComboBox.addActionListener(e -> {
+      ((ContikiMoteType)moteType).setNetworkStack((NetworkStack)netStackComboBox.getSelectedItem());
+      netStackHeaderBox.setVisible(netStackComboBox.getSelectedItem() == NetworkStack.MANUAL);
+      setDialogState(DialogState.SELECTED_SOURCE);
     });
     Box netStackBox = Box.createHorizontalBox();
     netStackBox.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -161,18 +155,15 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     }
     JPanel panel = new JPanel(new BorderLayout());
     JButton button = new JButton("Change environment variables: Open external tools dialog");
-    button.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        ExternalToolsDialog.showDialog();
-        // Update data in the table.
-        model.setRowCount(0);
-        for (var entry : moteType.getCompilationEnvironment().entrySet()) {
-          model.addRow(new Object[]{entry.getKey(), entry.getValue()});
-        }
-        // User might have changed compiler, force recompile.
-        setDialogState(DialogState.SELECTED_SOURCE);
+    button.addActionListener(e -> {
+      ExternalToolsDialog.showDialog();
+      // Update data in the table.
+      model.setRowCount(0);
+      for (var entry : moteType.getCompilationEnvironment().entrySet()) {
+        model.addRow(new Object[]{entry.getKey(), entry.getValue()});
       }
+      // User might have changed compiler, force recompile.
+      setDialogState(DialogState.SELECTED_SOURCE);
     });
     panel.add(BorderLayout.NORTH, button);
     panel.add(BorderLayout.CENTER, new JScrollPane(table));
