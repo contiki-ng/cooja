@@ -149,8 +149,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   public static final int MOTE_RADIUS = 8;
   private static final Color[] DEFAULT_MOTE_COLORS = {Color.WHITE};
 
-  private Cooja gui;
-  private Simulation simulation;
+  private final Cooja gui;
+  private final Simulation simulation;
   private final JPanel canvas;
   private boolean loadedConfig = false;
 
@@ -311,12 +311,9 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     zoomMenu.add(zoomOutItem);
 
     JMenuItem resetViewportItem = new JMenuItem("Reset viewport");
-    resetViewportItem.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        resetViewport = 1;
-        repaint();
-      }
+    resetViewportItem.addActionListener(e -> {
+      resetViewport = 1;
+      repaint();
     });
     zoomMenu.add(resetViewportItem);
 
@@ -381,12 +378,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     this.add(BorderLayout.CENTER, canvas);
 
     /* Observe simulation and mote positions */
-    posObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        repaint();
-      }
-    };
+    posObserver = (obs, obj) -> repaint();
     simulation.getEventCentral().addMoteCountListener(newMotesListener = new MoteCountListener() {
       @Override
       public void moteWasAdded(Mote mote) {
@@ -456,12 +448,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     });
 
     /* Observe mote relations */
-    gui.addMoteRelationsObserver(moteRelationsObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        repaint();
-      }
-    });
+    gui.addMoteRelationsObserver(moteRelationsObserver = (obs, obj) -> repaint());
 
     canvas.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "abort_action");
     canvas.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "delete_motes");
@@ -558,10 +545,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     registerMoteMenuAction(MoveMoteMenuAction.class);
     registerMoteMenuAction(DeleteMoteMenuAction.class);
-
-    /* Register simulation menu actions */
-    registerSimulationMenuAction(ResetViewportAction.class);
-    registerSimulationMenuAction(ToggleDecorationsMenuAction.class);
 
     /* Drag and drop files to motes */
     DropTargetListener dTargetListener = new DropTargetListener() {
@@ -803,12 +786,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
             final MoteMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
             if (menuAction.isEnabled(this, mote)) {
               JMenuItem menuItem = new JMenuItem(menuAction.getDescription(this, mote));
-              menuItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                  menuAction.doAction(Visualizer.this, mote);
-                }
-              });
+              menuItem.addActionListener(e -> menuAction.doAction(Visualizer.this, mote));
               menu.add(menuItem);
             }
           }
@@ -822,17 +800,29 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     /* Simulation specific actions */
     menu.add(new JSeparator());
+    var resetItem = new JMenuItem("Reset viewport");
+    resetItem.addActionListener(e -> {
+      resetViewport = 1;
+      repaint();
+    });
+    menu.add(resetItem);
+    if (getUI() instanceof BasicInternalFrameUI myUI) {
+      final var northPane = myUI.getNorthPane();
+      final var shouldRestore = northPane.getPreferredSize() == null || northPane.getPreferredSize().height == 0;
+      var decorationItem = new JMenuItem((shouldRestore ? "Restore" : "Hide") + " window decorations");
+      decorationItem.addActionListener(e -> {
+        northPane.setPreferredSize(shouldRestore ? null : new Dimension(0, 0));
+        revalidate();
+        repaint();
+      });
+      menu.add(decorationItem);
+    }
     for (Class<? extends SimulationMenuAction> menuActionClass : simulationMenuActions) {
       try {
         final SimulationMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
         if (menuAction.isEnabled(this, simulation)) {
           JMenuItem menuItem = new JMenuItem(menuAction.getDescription(this, simulation));
-          menuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              menuAction.doAction(Visualizer.this, simulation);
-            }
-          });
+          menuItem.addActionListener(e -> menuAction.doAction(Visualizer.this, simulation));
           menu.add(menuItem);
         }
       }
@@ -1327,7 +1317,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     yDest = ySource - (int) (dy * len);
     g.drawLine(xDest, yDest, xSource, ySource);
 
-    final int size = 8;
     arrowPoly.reset();
     arrowPoly.addPoint(xDest, yDest);
     arrowPoly.addPoint(xDest + xCor(dir + 0.5), yDest + yCor(dir + 0.5));
@@ -1622,20 +1611,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     return true;
   }
 
-  private final AbstractAction makeSkinsDefaultAction = new AbstractAction() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      StringBuilder sb = new StringBuilder();
-      for (VisualizerSkin skin : currentSkins) {
-        if (sb.length() > 0) {
-          sb.append(';');
-        }
-        sb.append(skin.getClass().getName());
-      }
-      Cooja.setExternalToolsSetting("VISUALIZER_DEFAULT_SKINS", sb.toString());
-    }
-  };
-
   protected static class ButtonClickMoteMenuAction implements MoteMenuAction {
 
     @Override
@@ -1797,67 +1772,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         visualizer.getSelectedMotes().add(mote);
       }
       visualizer.beginMoveRequest(mote);
-    }
-  }
-
-  protected static class ResetViewportAction implements SimulationMenuAction {
-
-    @Override
-    public void doAction(Visualizer visualizer, Simulation simulation) {
-      visualizer.resetViewport = 1;
-      visualizer.repaint();
-    }
-
-    @Override
-    public String getDescription(Visualizer visualizer, Simulation simulation) {
-      return "Reset viewport";
-    }
-
-    @Override
-    public boolean isEnabled(Visualizer visualizer, Simulation simulation) {
-      return true;
-    }
-  }
-
-  protected static class ToggleDecorationsMenuAction implements SimulationMenuAction {
-
-    @Override
-    public void doAction(final Visualizer visualizer, Simulation simulation) {
-      if (!(visualizer.getUI() instanceof BasicInternalFrameUI)) {
-        return;
-      }
-      BasicInternalFrameUI ui = (BasicInternalFrameUI) visualizer.getUI();
-
-      if (ui.getNorthPane().getPreferredSize() == null
-              || ui.getNorthPane().getPreferredSize().height == 0) {
-        /* Restore window decorations */
-        ui.getNorthPane().setPreferredSize(null);
-      }
-      else {
-        /* Hide window decorations */
-        ui.getNorthPane().setPreferredSize(new Dimension(0, 0));
-      }
-      visualizer.revalidate();
-      SwingUtilities.invokeLater(visualizer::repaint);
-    }
-
-    @Override
-    public String getDescription(Visualizer visualizer, Simulation simulation) {
-      if (!(visualizer.getUI() instanceof BasicInternalFrameUI)) {
-        return "Hide window decorations";
-      }
-      BasicInternalFrameUI ui = (BasicInternalFrameUI) visualizer.getUI();
-
-      if (ui.getNorthPane().getPreferredSize() == null
-              || ui.getNorthPane().getPreferredSize().height == 0) {
-        return "Restore window decorations";
-      }
-      return "Hide window decorations";
-    }
-
-    @Override
-    public boolean isEnabled(Visualizer visualizer, Simulation simulation) {
-      return visualizer.getUI() instanceof BasicInternalFrameUI;
     }
   }
 
