@@ -3216,7 +3216,7 @@ public class Cooja extends Observable {
             : "generated".equals(cfgSeed) ? new Random().nextLong() : Long.parseLong(cfgSeed);
     var newSim = new Simulation(this, seed);
     try {
-      if (!newSim.setConfigXML(root.getChild("simulation"), isVisualized(), quick)) {
+      if (!newSim.setConfigXML(root.getChild("simulation"), quick)) {
         logger.info("Simulation not loaded");
         return null;
       }
