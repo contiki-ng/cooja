@@ -553,11 +553,10 @@ public class Simulation extends Observable implements Runnable {
    * Sets the current simulation config depending on the given configuration.
    *
    * @param root Simulation configuration
-   * @param visAvailable True if simulation is allowed to show visualizers
    * @return True if simulation was configured successfully
    * @throws Exception If configuration could not be loaded
    */
-  public boolean setConfigXML(Element root, boolean visAvailable, boolean quick) throws Exception {
+  public boolean setConfigXML(Element root, boolean quick) throws Exception {
     this.quick = quick;
     // Parse elements
     for (var element : (List<Element>) root.getChildren()) {
@@ -592,7 +591,7 @@ public class Simulation extends Observable implements Runnable {
           String radioMediumClassName = element.getText().trim();
           currentRadioMedium = MoteInterfaceHandler.createRadioMedium(this, radioMediumClassName);
           // Show configure simulation dialog
-          if (visAvailable && !quick) {
+          if (Cooja.isVisualized() && !quick) {
             // FIXME: this should run from the AWT thread.
             if (!setSimConfig(CreateSimDialog.showDialog(getCooja(), getSimConfig()))) {
               return false;
@@ -603,14 +602,14 @@ public class Simulation extends Observable implements Runnable {
           }
           // Check if radio medium specific config should be applied
           if (radioMediumClassName.equals(currentRadioMedium.getClass().getName())) {
-            currentRadioMedium.setConfigXML(element.getChildren(), visAvailable);
+            currentRadioMedium.setConfigXML(element.getChildren(), Cooja.isVisualized());
           } else {
             logger.info("Radio Medium changed - ignoring radio medium specific config");
           }
           break;
         }
         case "events":
-          eventCentral.setConfigXML(this, element.getChildren(), visAvailable);
+          eventCentral.setConfigXML(this, element.getChildren(), Cooja.isVisualized());
           break;
         case "motetype": {
           String moteTypeClassName = element.getText().trim();
@@ -626,7 +625,7 @@ public class Simulation extends Observable implements Runnable {
           }
 
           /* Try to recreate simulation using a different mote type */
-          if (visAvailable && !quick) {
+          if (Cooja.isVisualized() && !quick) {
             String newClass = (String) JOptionPane.showInputDialog(
                     Cooja.getTopParentContainer(),
                     "The simulation is about to load '" + moteTypeClassName + "'\n" +
@@ -658,7 +657,7 @@ public class Simulation extends Observable implements Runnable {
             assert moteTypeClass != null : "Selected MoteType class is null";
             moteType = moteTypeClass.getConstructor((Class<? extends MoteType>[]) null).newInstance();
           }
-          if (!moteType.setConfigXML(this, element.getChildren(), visAvailable)) {
+          if (!moteType.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
             logger.fatal("Mote type was not created: " + element.getText().trim());
             return false;
           }
@@ -680,7 +679,7 @@ public class Simulation extends Observable implements Runnable {
             throw new Exception("No mote type specified for mote");
           }
           Mote mote = moteType.generateMote(this);
-          if (!mote.setConfigXML(this, element.getChildren(), visAvailable)) {
+          if (!mote.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
             logger.fatal("Mote was not created: " + element.getText().trim());
             throw new Exception("All motes were not recreated");
           }
