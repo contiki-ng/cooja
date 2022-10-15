@@ -45,21 +45,9 @@ package se.sics.mspsim.core;
 /**
  *
  */
-public class SimEvent {
-
+public record SimEvent(SimEvent.Type type) {
   public enum Type {
     START,
     STOP
   }
-
-  private final Type type;
-
-  public SimEvent(Type type) {
-    this.type = type;
-  }
-
-  public Type getType() {
-    return type;
-  }
-
 }

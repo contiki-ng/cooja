@@ -159,14 +159,5 @@ public class ComponentRegistry {
         }
     }
 
-    private static class ComponentEntry {
-        public final String name;
-        public final Object component;
-
-        private ComponentEntry(String name, Object component) {
-            this.name = name;
-            this.component = component;
-        }
-    }
-
+    private record ComponentEntry(String name, Object component) {}
 }

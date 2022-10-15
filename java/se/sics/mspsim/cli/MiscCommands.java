@@ -396,12 +396,7 @@ public class MiscCommands implements CommandBundle {
         if ("output".equals(inout)) {
           if (chip instanceof RFSource) {
             source = (RFSource) chip;
-            listener = new RFListener() {
-                @Override
-                public void receivedByte(byte data) {
-                    context.out.println(Utils.hex8(data));
-                }
-            };
+            listener = data -> context.out.println(Utils.hex8(data));
             source.addRFListener(listener);
           } else {
             context.err.println("Error: chip is not an RF source");

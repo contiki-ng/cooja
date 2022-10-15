@@ -89,18 +89,8 @@ public class BaseRSSIconf extends VisPlugin {
 		this.gui = gui;
 		this.sim = sim;
 		radioMedium = (AbstractRadioMedium) sim.getRadioMedium();
-
-		changeObserver = new Observer() {
-			@Override
-			public void update(Observable obs, Object obj) {
-				logger.debug("Changed");
-				model.fireTableDataChanged();
-				
-			}
-		};
-		
+		changeObserver = (obs, obj) -> model.fireTableDataChanged();
 		radioMedium.addRadioMediumObserver(changeObserver);
-		
 		sim.addObserver(changeObserver);
 
 		/* Represent motes and RSSI by table */

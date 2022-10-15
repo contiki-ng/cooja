@@ -111,13 +111,7 @@ public class ApplicationLED extends LED {
        };
 
        Observer observer;
-       this.addObserver(observer = new Observer() {
-         @Override
-         public void update(Observable obs, Object obj) {
-           panel.repaint();
-         }
-       });
-
+       this.addObserver(observer = (obs, obj) -> panel.repaint());
        // Saving observer reference for releaseInterfaceVisualizer
        panel.putClientProperty("intf_obs", observer);
 

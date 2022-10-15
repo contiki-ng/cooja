@@ -206,12 +206,7 @@ public class LogisticLoss extends AbstractRadioMedium {
 
         /* Register as position observer.
          * If any positions change, re-analyze potential receivers. */
-        final Observer positionObserver = new Observer() {
-                @Override
-                public void update(Observable o, Object arg) {
-                    dgrm.requestEdgeAnalysis();
-                }
-            };
+        final Observer positionObserver = (o, arg) -> dgrm.requestEdgeAnalysis();
         /* Re-analyze potential receivers if radios are added/removed. */
         simulation.getEventCentral().addMoteCountListener(new MoteCountListener() {
                 @Override

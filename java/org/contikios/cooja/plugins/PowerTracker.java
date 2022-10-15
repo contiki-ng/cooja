@@ -249,12 +249,7 @@ public class PowerTracker implements Plugin {
   private final Action resetAction = new AbstractAction("Reset") {
     @Override
     public void actionPerformed(ActionEvent e) {
-      Runnable r = new Runnable() {
-        @Override
-        public void run() {
-          reset();
-        }
-      };
+      Runnable r = PowerTracker.this::reset;
       if (simulation.isRunning()) {
         simulation.invokeSimulationThread(r);
       } else {
