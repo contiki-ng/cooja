@@ -39,7 +39,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -57,36 +56,14 @@ import org.contikios.cooja.mote.BaseContikiMoteType;
  * @author Fredrik Osterlind
  */
 public class ContikiMoteCompileDialog extends AbstractCompileDialog {
-  private final JComboBox<?> netStackComboBox = new JComboBox<>(NetworkStack.values());
-
   public ContikiMoteCompileDialog(Simulation sim, ContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
     super(sim, moteType, cfg);
-    /* Add Contiki mote type specifics */
-    addAdvancedTab(tabbedPane);
-    createEnvironmentTab(tabbedPane);
-  }
-
-  @Override
-  public boolean canLoadFirmware(String name) {
-    return false; // Always recompile, CoreComm needs fresh names.
-  }
-
-  @Override
-  public String getDefaultCompileCommands(String name) {
-    String defines = "";
-    if (((ContikiMoteType) moteType).getNetworkStack().getHeaderFile() != null) {
-      defines = " DEFINES=NETSTACK_CONF_H=" + ((ContikiMoteType) moteType).getNetworkStack().getHeaderFile();
-    }
-
-    return super.getDefaultCompileCommands(name) + defines;
-  }
-
-  private void addAdvancedTab(JTabbedPane parent) {
-    /* Communication stack */
+    // Add Contiki mote type specifics.
+    // Communication stack.
     JLabel label = new JLabel("Default network stack header");
     label.setPreferredSize(LABEL_DIMENSION);
-    final JTextField headerTextField = new JTextField();
-    headerTextField.setText(((ContikiMoteType)moteType).getNetworkStack().manualHeader);
+    final var headerTextField = new JTextField();
+    headerTextField.setText(moteType.getNetworkStack().manualHeader);
     headerTextField.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       public void insertUpdate(DocumentEvent e) {
@@ -101,7 +78,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
         updateHeader();
       }
       private void updateHeader() {
-        ((ContikiMoteType)moteType).getNetworkStack().manualHeader = headerTextField.getText();
+        moteType.getNetworkStack().manualHeader = headerTextField.getText();
       }
     });
     final Box netStackHeaderBox = Box.createHorizontalBox();
@@ -112,10 +89,11 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
     label = new JLabel("Default network stack");
     label.setPreferredSize(LABEL_DIMENSION);
-    netStackComboBox.setSelectedItem(((ContikiMoteType)moteType).getNetworkStack());
+    final var netStackComboBox = new JComboBox<>(NetworkStack.values());
+    netStackComboBox.setSelectedItem(moteType.getNetworkStack());
     netStackComboBox.setEnabled(true);
     netStackComboBox.addActionListener(e -> {
-      ((ContikiMoteType)moteType).setNetworkStack((NetworkStack)netStackComboBox.getSelectedItem());
+      moteType.setNetworkStack((NetworkStack)netStackComboBox.getSelectedItem());
       netStackHeaderBox.setVisible(netStackComboBox.getSelectedItem() == NetworkStack.MANUAL);
       setDialogState(DialogState.SELECTED_SOURCE);
     });
@@ -126,8 +104,7 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     netStackBox.add(netStackComboBox);
     netStackHeaderBox.setVisible(netStackComboBox.getSelectedItem() == NetworkStack.MANUAL);
 
-
-    /* Advanced tab */
+    // Advanced tab.
     Box box = Box.createVerticalBox();
     box.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
     box.add(netStackBox);
@@ -135,12 +112,9 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     box.add(Box.createVerticalGlue());
     JPanel container = new JPanel(new BorderLayout());
     container.add(BorderLayout.NORTH, box);
-    parent.addTab("Advanced", null, new JScrollPane(container), "Advanced Contiki Mote Type settings");
-  }
-
-  private void createEnvironmentTab(JTabbedPane parent) {
-    /* Create new tab, fill with current environment data */
-    JTable table = new JTable(0, 2) {
+    tabbedPane.addTab("Advanced", null, new JScrollPane(container), "Advanced Contiki Mote Type settings");
+    // Create new tab, fill with current environment data.
+    var table = new JTable(0, 2) {
       @Override
       public boolean isCellEditable(int row, int column) {
         return false;
@@ -166,7 +140,22 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     });
     panel.add(BorderLayout.NORTH, button);
     panel.add(BorderLayout.CENTER, new JScrollPane(table));
-
-    parent.addTab("Environment", null, panel, "Environment variables");
+    tabbedPane.addTab("Environment", null, panel, "Environment variables");
   }
+
+  @Override
+  public boolean canLoadFirmware(String name) {
+    return false; // Always recompile, CoreComm needs fresh names.
+  }
+
+  @Override
+  public String getDefaultCompileCommands(String name) {
+    String defines = "";
+    if (((ContikiMoteType) moteType).getNetworkStack().getHeaderFile() != null) {
+      defines = " DEFINES=NETSTACK_CONF_H=" + ((ContikiMoteType) moteType).getNetworkStack().getHeaderFile();
+    }
+
+    return super.getDefaultCompileCommands(name) + defines;
+  }
+
 }
