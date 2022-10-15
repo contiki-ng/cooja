@@ -352,13 +352,16 @@ public class Simulation extends Observable implements Runnable {
    * Stop simulation
    *
    * @param block Block until simulation has stopped, with timeout (100ms)
-   * @param rv Return value from startSimulation
+   * @param rv Return value from startSimulation, should be null unless > 0
    */
   public void stopSimulation(boolean block, Integer rv) {
     if (!isRunning()) {
       return;
     }
-    returnValue = rv;
+    assert rv == null || rv > 0 : "Pass in rv = null or rv > 0";
+    if (rv != null) {
+      returnValue = rv;
+    }
     stopSimulation = true;
 
     if (block) {
