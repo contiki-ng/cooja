@@ -266,24 +266,22 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 					}
 					
 					RadioConnection newConnection = createConnections(radio);
-					activeConnections.add(newConnection);
-					
-					for (Radio r : newConnection.getAllDestinations()) {
-						if (newConnection.getDestinationDelay(r) == 0) {
-							r.signalReceptionStart();
-						} else {
-							/* EXPERIMENTAL: Simulating propagation delay */
-							final Radio delayedRadio = r;
-							TimeEvent delayedEvent = new TimeEvent() {
-								@Override
-								public void execute(long t) {
-									delayedRadio.signalReceptionStart();
-								}
-							};
-							simulation.scheduleEvent(delayedEvent, simulation.getSimulationTime() + newConnection.getDestinationDelay(r));
-							
-						}
-					} /* Update signal strengths */
+          if (newConnection != null) {
+            activeConnections.add(newConnection);
+            for (var r : newConnection.getAllDestinations()) {
+              if (newConnection.getDestinationDelay(r) == 0) {
+                r.signalReceptionStart();
+              } else {
+                /* EXPERIMENTAL: Simulating propagation delay */
+                simulation.scheduleEvent(new TimeEvent() {
+                  @Override
+                  public void execute(long t) {
+                    r.signalReceptionStart();
+                  }
+                }, simulation.getSimulationTime() + newConnection.getDestinationDelay(r));
+              }
+            }
+          }
 					updateSignalStrengths();
 					
 					/* Notify observers */
@@ -297,8 +295,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 					/* Connection */
 					RadioConnection connection = getActiveConnectionFrom(radio);
 					if (connection == null) {
-						logger.fatal("No radio connection found");
-						return;
+						return; // SilentRadioMedium will return here.
 					}
 					
 					activeConnections.remove(connection);
@@ -385,8 +382,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 					/* Connection */
 					RadioConnection connection = getActiveConnectionFrom(radio);
 					if (connection == null) {
-						logger.fatal("No radio connection found");
-						return;
+						return; // SilentRadioMedium will return here.
 					}
 					
 					/* Radio packet */
