@@ -1970,18 +1970,15 @@ public class Cooja extends Observable {
     // Construct plugin depending on plugin type
     Plugin plugin;
     try {
-      if (pluginType == PluginType.MOTE_PLUGIN) {
-        plugin =
-          pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class)
-          .newInstance(argMote, argSimulation, this);
-      } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN
-    		  || pluginType == PluginType.SIM_CONTROL_PLUGIN) {
-        plugin = pluginClass.getConstructor(Simulation.class, Cooja.class).newInstance(argSimulation, this);
-      } else if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
-        plugin = pluginClass.getConstructor(Cooja.class).newInstance(this);
-      } else {
-        throw new PluginConstructionException("Bad plugin type: " + pluginType);
-      }
+      plugin = switch (pluginType) {
+        case PluginType.MOTE_PLUGIN -> pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class)
+                .newInstance(argMote, argSimulation, this);
+        case PluginType.SIM_PLUGIN, PluginType.SIM_STANDARD_PLUGIN, PluginType.SIM_CONTROL_PLUGIN ->
+                pluginClass.getConstructor(Simulation.class, Cooja.class).newInstance(argSimulation, this);
+        case PluginType.COOJA_PLUGIN, PluginType.COOJA_STANDARD_PLUGIN ->
+                pluginClass.getConstructor(Cooja.class).newInstance(this);
+        default -> throw new PluginConstructionException("Bad plugin type: " + pluginType);
+      };
     } catch (PluginRequiresVisualizationException e) {
       throw new PluginConstructionException("Tool class requires visualization: " + pluginClass.getName(), e);
     } catch (Exception e) {
