@@ -143,12 +143,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
 
     public String getHeaderFile() {
-      if (this == DEFAULT) {
-        return null;
-      } else if (this == MANUAL) {
-        return manualHeader;
-      }
-      return null;
+      return this == MANUAL ? manualHeader : null;
     }
 
     public String getConfig() {
