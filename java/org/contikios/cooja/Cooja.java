@@ -1940,14 +1940,13 @@ public class Cooja extends Observable {
    *
    * @see PluginType
    * @param pluginClass Plugin class
-   * @param argSimulation Plugin simulation argument
+   * @param sim Plugin simulation argument
    * @param argMote Plugin mote argument
    * @param root XML root element for plugin config
    * @return Started plugin
    * @throws PluginConstructionException At errors
    */
-  private Plugin startPlugin(final Class<? extends Plugin> pluginClass,
-      Simulation argSimulation, Mote argMote, Element root)
+  private Plugin startPlugin(final Class<? extends Plugin> pluginClass, Simulation sim, Mote argMote, Element root)
   throws PluginConstructionException
   {
     // Check that plugin class is registered
@@ -1956,8 +1955,7 @@ public class Cooja extends Observable {
     }
 
     int pluginType = pluginClass.getAnnotation(PluginType.class).value();
-    if (pluginType != PluginType.COOJA_PLUGIN && pluginType != PluginType.COOJA_STANDARD_PLUGIN &&
-            argSimulation == null) {
+    if (pluginType != PluginType.COOJA_PLUGIN && pluginType != PluginType.COOJA_STANDARD_PLUGIN && sim == null) {
       throw new PluginConstructionException("No simulation argument for plugin");
     }
     if (pluginType == PluginType.MOTE_PLUGIN && argMote == null) {
@@ -1972,9 +1970,9 @@ public class Cooja extends Observable {
     try {
       plugin = switch (pluginType) {
         case PluginType.MOTE_PLUGIN -> pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class)
-                .newInstance(argMote, argSimulation, this);
+                .newInstance(argMote, sim, this);
         case PluginType.SIM_PLUGIN, PluginType.SIM_STANDARD_PLUGIN, PluginType.SIM_CONTROL_PLUGIN ->
-                pluginClass.getConstructor(Simulation.class, Cooja.class).newInstance(argSimulation, this);
+                pluginClass.getConstructor(Simulation.class, Cooja.class).newInstance(sim, this);
         case PluginType.COOJA_PLUGIN, PluginType.COOJA_STANDARD_PLUGIN ->
                 pluginClass.getConstructor(Cooja.class).newInstance(this);
         default -> throw new PluginConstructionException("Bad plugin type: " + pluginType);
