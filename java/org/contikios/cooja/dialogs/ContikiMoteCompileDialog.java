@@ -150,12 +150,8 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
 
   @Override
   public String getDefaultCompileCommands(String name) {
-    String defines = "";
-    if (((ContikiMoteType) moteType).getNetworkStack().getHeaderFile() != null) {
-      defines = " DEFINES=NETSTACK_CONF_H=" + ((ContikiMoteType) moteType).getNetworkStack().getHeaderFile();
-    }
-
-    return super.getDefaultCompileCommands(name) + defines;
+    var headerFile = ((ContikiMoteType) moteType).getNetworkStack().getHeaderFile();
+    return super.getDefaultCompileCommands(name) + (headerFile == null ? "" :  " DEFINES=NETSTACK_CONF_H=" + headerFile);
   }
 
 }
