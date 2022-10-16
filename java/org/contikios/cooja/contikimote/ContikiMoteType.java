@@ -919,13 +919,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
     for (Element element : configXML) {
       switch (element.getName()) {
-        case "commstack":
+        case "commstack" -> {
           logger.warn("The Cooja communication stack config was removed: " + element.getText());
           logger.warn("Instead assuming default network stack.");
-          break;
-        case "netstack":
-          netStack = NetworkStack.parseConfig(element.getText());
-          break;
+        }
+        case "netstack" -> netStack = NetworkStack.parseConfig(element.getText());
       }
     }
     final var sourceFile = getContikiSourceFile();
