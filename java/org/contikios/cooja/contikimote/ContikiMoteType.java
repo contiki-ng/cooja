@@ -703,12 +703,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
           if (!addresses.containsKey(symbol)) {
 	    logger.debug("Put symbol " + symbol + " with address " + varAddr + " and size " + varSize);
             addresses.put(symbol, new Symbol(Symbol.Type.VARIABLE, symbol, varAddr, varSize));
-          } else {
-            long oldAddress = addresses.get(symbol).addr;
-            if (oldAddress != varAddr) {
-              /*logger.warn("Warning, command response not matching previous entry of: "
-               + varName);*/
-            }
           }
         }
       }
