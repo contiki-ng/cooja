@@ -482,7 +482,6 @@ public abstract class AbstractCompileDialog extends JDialog {
     	commandsArea.setEnabled(true);
       if (dialogState == DialogState.SELECTED_SOURCE) {
         contikiSource = new File(input);
-        moteType.setContikiSourceFile(contikiSource);
         commandsArea.setText(getDefaultCompileCommands(input));
         contikiFirmware = moteType.getExpectedFirmwareFile(input);
       }
