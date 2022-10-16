@@ -877,9 +877,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
   @Override
   public Collection<Element> getConfigXML(Simulation simulation) {
     ArrayList<Element> config = new ArrayList<>();
-    Element element;
 
-    element = new Element("identifier");
+    var element = new Element("identifier");
     element.setText(getIdentifier());
     config.add(element);
 
