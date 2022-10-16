@@ -1955,29 +1955,27 @@ public class Cooja extends Observable {
       throw new PluginConstructionException("Tool class not registered: " + pluginClass);
     }
 
-    // Construct plugin depending on plugin type
     int pluginType = pluginClass.getAnnotation(PluginType.class).value();
-    Plugin plugin;
+    if (pluginType != PluginType.COOJA_PLUGIN && pluginType != PluginType.COOJA_STANDARD_PLUGIN &&
+            argSimulation == null) {
+      throw new PluginConstructionException("No simulation argument for plugin");
+    }
+    if (pluginType == PluginType.MOTE_PLUGIN && argMote == null) {
+      throw new PluginConstructionException("No mote argument for mote plugin");
+    }
+    if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
+      throw new PluginConstructionException("Plugin " + pluginClass.getName() + " requires visualization");
+    }
 
+    // Construct plugin depending on plugin type
+    Plugin plugin;
     try {
-      if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
-        throw new PluginRequiresVisualizationException();
-      }
       if (pluginType == PluginType.MOTE_PLUGIN) {
-        if (argSimulation == null) {
-          throw new PluginConstructionException("No simulation argument for mote plugin");
-        }
-        if (argMote == null) {
-          throw new PluginConstructionException("No mote argument for mote plugin");
-        }
         plugin =
           pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class)
           .newInstance(argMote, argSimulation, this);
       } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN
     		  || pluginType == PluginType.SIM_CONTROL_PLUGIN) {
-        if (argSimulation == null) {
-          throw new PluginConstructionException("No simulation argument for simulation plugin");
-        }
         plugin = pluginClass.getConstructor(Simulation.class, Cooja.class).newInstance(argSimulation, this);
       } else if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
         plugin = pluginClass.getConstructor(Cooja.class).newInstance(this);
