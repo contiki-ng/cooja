@@ -156,16 +156,14 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
 
     public static NetworkStack parseConfig(String config) {
-      if (config.equals("DEFAULT")) {
-        return DEFAULT;
-      } else if (config.startsWith("MANUAL")) {
+      if (config.startsWith("MANUAL")) {
         NetworkStack st = MANUAL;
         st.manualHeader = config.split(":")[1];
         return st;
       }
-
-      /* TODO Backwards compatibility */
-      logger.warn("Bad network stack config: '" + config + "', using default");
+      if (!config.equals("DEFAULT")) {
+        logger.warn("Bad network stack config: '" + config + "', using default");
+      }
       return DEFAULT;
     }
   }
