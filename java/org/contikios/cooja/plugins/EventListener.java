@@ -137,8 +137,7 @@ public class EventListener extends VisPlugin {
         @Override
         public void actionPerformed(ActionEvent e) {
           MoteInterfaceViewer plugin =
-            (MoteInterfaceViewer) mySimulation.getCooja().tryStartPlugin(
-                MoteInterfaceViewer.class, mySimulation.getCooja(), mySimulation, myMote);
+            (MoteInterfaceViewer) mySimulation.getCooja().tryStartPlugin(MoteInterfaceViewer.class, mySimulation, myMote);
           plugin.setSelectedInterface(Cooja.getDescriptionOf(moteInterface.getClass()));
         }
       });

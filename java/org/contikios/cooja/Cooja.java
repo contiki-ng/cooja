@@ -450,7 +450,7 @@ public class Cooja extends Observable {
     for (Class<? extends Plugin> pluginClass : pluginClasses) {
       int pluginType = pluginClass.getAnnotation(PluginType.class).value();
       if (pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
-        tryStartPlugin(pluginClass, this, null, null);
+        tryStartPlugin(pluginClass, null, null);
       }
     }
 
@@ -918,7 +918,7 @@ public class Cooja extends Observable {
           for (var pluginClass : pluginClasses) {
             int type = pluginClass.getAnnotation(PluginType.class).value();
             if (type == PluginType.SIM_STANDARD_PLUGIN) {
-              tryStartPlugin(pluginClass, Cooja.this, sim, null);
+              tryStartPlugin(pluginClass, sim, null);
             }
           }
           setSimulation(sim);
@@ -1299,7 +1299,7 @@ public class Cooja extends Observable {
         public void actionPerformed(ActionEvent e) {
           Object pluginClass = ((JMenuItem)e.getSource()).getClientProperty("class");
           Object mote = ((JMenuItem)e.getSource()).getClientProperty("mote");
-          tryStartPlugin((Class<? extends Plugin>) pluginClass, Cooja.this, getSimulation(), (Mote)mote);
+          tryStartPlugin((Class<? extends Plugin>) pluginClass, getSimulation(), (Mote)mote);
         }
       };
       private JMenuItem createMenuItem(Class<? extends Plugin> newPluginClass) {
@@ -1898,22 +1898,20 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Same as the {@link #startPlugin(Class, Cooja, Simulation, Mote, Element)} method,
+   * Same as the {@link #startPlugin(Class, Simulation, Mote, Element)} method,
    * but does not throw exceptions. If COOJA is visualised, an error dialog
    * is shown if plugin could not be started.
    *
-   * @see #startPlugin(Class, Cooja, Simulation, Mote, Element)
+   * @see #startPlugin(Class, Simulation, Mote, Element)
    * @param pluginClass Plugin class
-   * @param argGUI Plugin GUI argument
-   * @param argSimulation Plugin simulation argument
+   * @param sim Plugin simulation argument
    * @param argMote Plugin mote argument
    * @param root XML root element for plugin config
    * @return Started plugin
    */
-  private Plugin tryStartPlugin(final Class<? extends Plugin> pluginClass,
-     final Cooja argGUI, final Simulation argSimulation, final Mote argMote, Element root) {
+  private Plugin tryStartPlugin(Class<? extends Plugin> pluginClass, Simulation sim, Mote argMote, Element root) {
     try {
-      return startPlugin(pluginClass, argGUI, argSimulation, argMote, root);
+      return startPlugin(pluginClass, sim, argMote, root);
     } catch (PluginConstructionException ex) {
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Error when starting plugin", ex, false);
@@ -1933,9 +1931,8 @@ public class Cooja extends Observable {
     return null;
   }
 
-  public Plugin tryStartPlugin(final Class<? extends Plugin> pluginClass,
-      final Cooja argGUI, final Simulation argSimulation, final Mote argMote) {
-    return tryStartPlugin(pluginClass, argGUI, argSimulation, argMote, null);
+  public Plugin tryStartPlugin(Class<? extends Plugin> pluginClass, Simulation argSimulation, Mote argMote) {
+    return tryStartPlugin(pluginClass, argSimulation, argMote, null);
   }
 
   /**
@@ -1943,7 +1940,6 @@ public class Cooja extends Observable {
    *
    * @see PluginType
    * @param pluginClass Plugin class
-   * @param argGUI Plugin GUI argument
    * @param argSimulation Plugin simulation argument
    * @param argMote Plugin mote argument
    * @param root XML root element for plugin config
@@ -1951,7 +1947,7 @@ public class Cooja extends Observable {
    * @throws PluginConstructionException At errors
    */
   private Plugin startPlugin(final Class<? extends Plugin> pluginClass,
-      final Cooja argGUI, final Simulation argSimulation, final Mote argMote, Element root)
+      Simulation argSimulation, Mote argMote, Element root)
   throws PluginConstructionException
   {
     // Check that plugin class is registered
@@ -1968,9 +1964,6 @@ public class Cooja extends Observable {
         throw new PluginRequiresVisualizationException();
       }
       if (pluginType == PluginType.MOTE_PLUGIN) {
-        if (argGUI == null) {
-          throw new PluginConstructionException("No GUI argument for mote plugin");
-        }
         if (argSimulation == null) {
           throw new PluginConstructionException("No simulation argument for mote plugin");
         }
@@ -1979,21 +1972,15 @@ public class Cooja extends Observable {
         }
         plugin =
           pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class)
-          .newInstance(argMote, argSimulation, argGUI);
+          .newInstance(argMote, argSimulation, this);
       } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN
     		  || pluginType == PluginType.SIM_CONTROL_PLUGIN) {
-        if (argGUI == null) {
-          throw new PluginConstructionException("No GUI argument for simulation plugin");
-        }
         if (argSimulation == null) {
           throw new PluginConstructionException("No simulation argument for simulation plugin");
         }
-        plugin = pluginClass.getConstructor(Simulation.class, Cooja.class).newInstance(argSimulation, argGUI);
+        plugin = pluginClass.getConstructor(Simulation.class, Cooja.class).newInstance(argSimulation, this);
       } else if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
-        if (argGUI == null) {
-          throw new PluginConstructionException("No GUI argument for GUI plugin");
-        }
-        plugin = pluginClass.getConstructor(Cooja.class).newInstance(argGUI);
+        plugin = pluginClass.getConstructor(Cooja.class).newInstance(this);
       } else {
         throw new PluginConstructionException("Bad plugin type: " + pluginType);
       }
@@ -2163,7 +2150,7 @@ public class Cooja extends Observable {
       public void actionPerformed(ActionEvent e) {
         Object pluginClass = ((JMenuItem)e.getSource()).getClientProperty("class");
         Object mote = ((JMenuItem)e.getSource()).getClientProperty("mote");
-        tryStartPlugin((Class<? extends Plugin>) pluginClass, Cooja.this, getSimulation(), (Mote)mote);
+        tryStartPlugin((Class<? extends Plugin>) pluginClass, getSimulation(), (Mote)mote);
       }
     };
 
@@ -3424,7 +3411,7 @@ public class Cooja extends Observable {
         }
       }
 
-      tryStartPlugin(pluginClass, this, sim, mote, pluginElement);
+      tryStartPlugin(pluginClass, sim, mote, pluginElement);
     }
 
     if (!isVisualized()) {
@@ -4113,7 +4100,7 @@ public class Cooja extends Observable {
           Class<Plugin> pluginClass =
             (Class<Plugin>) ((JMenuItem) e.getSource()).getClientProperty("class");
           Mote mote = (Mote) ((JMenuItem) e.getSource()).getClientProperty("mote");
-          tryStartPlugin(pluginClass, Cooja.this, mySimulation, mote);
+          tryStartPlugin(pluginClass, mySimulation, mote);
         }
       }, "StartPluginGUIAction").start();
     }

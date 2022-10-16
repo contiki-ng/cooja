@@ -1687,7 +1687,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       MoteInterfaceViewer viewer
               = (MoteInterfaceViewer) simulation.getCooja().tryStartPlugin(
                       MoteInterfaceViewer.class,
-                      simulation.getCooja(),
                       simulation,
                       mote);
       if (viewer == null) {
@@ -1736,7 +1735,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       MoteInterfaceViewer viewer
               = (MoteInterfaceViewer) simulation.getCooja().tryStartPlugin(
                       MoteInterfaceViewer.class,
-                      simulation.getCooja(),
                       simulation,
                       mote);
       if (viewer == null) {
