@@ -646,8 +646,9 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @return Suggested compile commands for compiling source
    */
   public String getDefaultCompileCommands(String name) {
+    String sourceNoExtension = new File(name.substring(0, name.length() - 2)).getName();
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-           moteType.getMakeTargetName(name) + " TARGET=" + targetName;
+            sourceNoExtension + "." + targetName + " TARGET=" + targetName;
   }
 
   private void abortAnyCompilation() {

@@ -159,17 +159,6 @@ public abstract class BaseContikiMoteType implements MoteType {
             "/build/" + getMoteType() + "/" + sourceNoExtension + '.' + getMoteType());
   }
 
-  /**
-   * Returns make target based on source file name.
-   *
-   * @param name Name of source file.
-   * @return Make target based on source file
-   */
-  public String getMakeTargetName(String name) {
-    String sourceNoExtension = new File(name.substring(0, name.length() - 2)).getName();
-    return sourceNoExtension + "." + getMoteType();
-  }
-
   @Override
   public Class<? extends MoteInterface>[] getMoteInterfaceClasses() {
     if (moteInterfaceClasses.isEmpty()) {
