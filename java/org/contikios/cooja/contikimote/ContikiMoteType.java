@@ -879,8 +879,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     config.add(element);
 
     element = new Element("source");
-    File file = simulation.getCooja().createPortablePath(getContikiSourceFile());
-    element.setText(file.getPath().replaceAll("\\\\", "/"));
+    element.setText(gui.createPortablePath(getContikiSourceFile()).getPath().replaceAll("\\\\", "/"));
     config.add(element);
 
     element = new Element("commands");
