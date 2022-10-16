@@ -306,7 +306,8 @@ public abstract class BaseContikiMoteType implements MoteType {
       String file = source != null ? source.getAbsolutePath() : firmware != null ? firmware.getAbsolutePath() : null;
       var moteClasses = getMoteInterfaceClasses();
       var interfaces = moteClasses == null ? getDefaultMoteInterfaceClasses() : moteClasses;
-      var cfg = showCompilationDialog(sim, new MoteTypeConfig(desc, file, getCompileCommands(), interfaces));
+      var cfg = showCompilationDialog(sim, new MoteTypeConfig(desc, getMoteType(), file,
+              getCompileCommands(), interfaces));
       if (cfg == null) {
         return false;
       }
@@ -340,7 +341,8 @@ public abstract class BaseContikiMoteType implements MoteType {
   }
 
   /** Compilation-relevant parts of mote type configuration. */
-  public record MoteTypeConfig(String desc, String file, String commands, Class<? extends MoteInterface>[] interfaces) {}
+  public record MoteTypeConfig(String desc, String targetName, String file, String commands,
+                               Class<? extends MoteInterface>[] interfaces) {}
 
   /** Create a compilation dialog for this mote type. */
   protected abstract AbstractCompileDialog createCompilationDialog(Simulation sim, MoteTypeConfig cfg);
