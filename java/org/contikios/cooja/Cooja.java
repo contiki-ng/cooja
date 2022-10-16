@@ -1967,7 +1967,6 @@ public class Cooja extends Observable {
       if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
         throw new PluginRequiresVisualizationException();
       }
-
       if (pluginType == PluginType.MOTE_PLUGIN) {
         if (argGUI == null) {
           throw new PluginConstructionException("No GUI argument for mote plugin");
@@ -1978,11 +1977,9 @@ public class Cooja extends Observable {
         if (argMote == null) {
           throw new PluginConstructionException("No mote argument for mote plugin");
         }
-
         plugin =
           pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class)
           .newInstance(argMote, argSimulation, argGUI);
-
       } else if (pluginType == PluginType.SIM_PLUGIN || pluginType == PluginType.SIM_STANDARD_PLUGIN
     		  || pluginType == PluginType.SIM_CONTROL_PLUGIN) {
         if (argGUI == null) {
@@ -1991,19 +1988,12 @@ public class Cooja extends Observable {
         if (argSimulation == null) {
           throw new PluginConstructionException("No simulation argument for simulation plugin");
         }
-
-        plugin =
-          pluginClass.getConstructor(Simulation.class, Cooja.class)
-          .newInstance(argSimulation, argGUI);
-
-      } else if (pluginType == PluginType.COOJA_PLUGIN
-          || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
+        plugin = pluginClass.getConstructor(Simulation.class, Cooja.class).newInstance(argSimulation, argGUI);
+      } else if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
         if (argGUI == null) {
           throw new PluginConstructionException("No GUI argument for GUI plugin");
         }
-
         plugin = pluginClass.getConstructor(Cooja.class).newInstance(argGUI);
-
       } else {
         throw new PluginConstructionException("Bad plugin type: " + pluginType);
       }
