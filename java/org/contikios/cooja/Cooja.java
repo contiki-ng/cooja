@@ -2023,9 +2023,8 @@ public class Cooja extends Observable {
                 location.y = Integer.parseInt(cfgElem.getText());
                 plugin.getCooja().setLocation(location);
               } else if (cfgElem.getName().equals("minimized")) {
-                boolean minimized = Boolean.parseBoolean(cfgElem.getText());
                 final var pluginGUI = plugin.getCooja();
-                if (minimized && pluginGUI != null) {
+                if (Boolean.parseBoolean(cfgElem.getText()) && pluginGUI != null) {
                   SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
