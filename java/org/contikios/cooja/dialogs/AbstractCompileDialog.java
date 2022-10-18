@@ -118,6 +118,7 @@ public abstract class AbstractCompileDialog extends JDialog {
   private final JButton compileButton;
   private final JButton createButton = new JButton("Create");
 
+  protected final String targetName;
   private Component currentCompilationOutput = null;
   private Process currentCompilationProcess = null;
 
@@ -129,6 +130,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     super(Cooja.getTopParentContainer(), "Create Mote Type: Compile Contiki", ModalityType.APPLICATION_MODAL);
     this.gui = sim.getCooja();
     this.moteType = moteType;
+    this.targetName = cfg.targetName();
 
     JPanel mainPanel = new JPanel(new BorderLayout());
     JLabel label;
@@ -314,14 +316,14 @@ public abstract class AbstractCompileDialog extends JDialog {
         nextCommandAction.actionPerformed(null); /* Recursive calls for all commands */
       }
     };
-    cleanButton.setToolTipText("make clean TARGET=" + moteType.getMoteType());
+    cleanButton.setToolTipText("make clean TARGET=" + targetName);
     cleanButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         createButton.setEnabled(false);
 				try {
 					currentCompilationProcess = BaseContikiMoteType.compile(
-							"make clean TARGET=" + moteType.getMoteType(),
+							"make clean TARGET=" + targetName,
               moteType.getCompilationEnvironment(),
 							new File(contikiField.getText()).getParentFile(),
 							null,
@@ -441,7 +443,8 @@ public abstract class AbstractCompileDialog extends JDialog {
       }
     }
     Class<? extends MoteInterface>[] arr = new Class[selected.size()];
-    return new BaseContikiMoteType.MoteTypeConfig(descriptionField.getText(), contikiField.getText(), commandsArea.getText(), selected.toArray(arr));
+    return new BaseContikiMoteType.MoteTypeConfig(descriptionField.getText(), null, contikiField.getText(),
+            commandsArea.getText(), selected.toArray(arr));
   }
 
   public abstract boolean canLoadFirmware(String name);
@@ -482,7 +485,6 @@ public abstract class AbstractCompileDialog extends JDialog {
     	commandsArea.setEnabled(true);
       if (dialogState == DialogState.SELECTED_SOURCE) {
         contikiSource = new File(input);
-        moteType.setContikiSourceFile(contikiSource);
         commandsArea.setText(getDefaultCompileCommands(input));
         contikiFirmware = moteType.getExpectedFirmwareFile(input);
       }
@@ -644,8 +646,9 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @return Suggested compile commands for compiling source
    */
   public String getDefaultCompileCommands(String name) {
+    String sourceNoExtension = new File(name.substring(0, name.length() - 2)).getName();
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
-           moteType.getMakeTargetName(name) + " TARGET=" + moteType.getMoteType();
+            sourceNoExtension + "." + targetName + " TARGET=" + targetName;
   }
 
   private void abortAnyCompilation() {

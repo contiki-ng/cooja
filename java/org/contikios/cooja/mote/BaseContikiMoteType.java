@@ -159,17 +159,6 @@ public abstract class BaseContikiMoteType implements MoteType {
             "/build/" + getMoteType() + "/" + sourceNoExtension + '.' + getMoteType());
   }
 
-  /**
-   * Returns make target based on source file name.
-   *
-   * @param name Name of source file.
-   * @return Make target based on source file
-   */
-  public String getMakeTargetName(String name) {
-    String sourceNoExtension = new File(name.substring(0, name.length() - 2)).getName();
-    return sourceNoExtension + "." + getMoteType();
-  }
-
   @Override
   public Class<? extends MoteInterface>[] getMoteInterfaceClasses() {
     if (moteInterfaceClasses.isEmpty()) {
@@ -306,7 +295,8 @@ public abstract class BaseContikiMoteType implements MoteType {
       String file = source != null ? source.getAbsolutePath() : firmware != null ? firmware.getAbsolutePath() : null;
       var moteClasses = getMoteInterfaceClasses();
       var interfaces = moteClasses == null ? getDefaultMoteInterfaceClasses() : moteClasses;
-      var cfg = showCompilationDialog(sim, new MoteTypeConfig(desc, file, getCompileCommands(), interfaces));
+      var cfg = showCompilationDialog(sim, new MoteTypeConfig(desc, getMoteType(), file,
+              getCompileCommands(), interfaces));
       if (cfg == null) {
         return false;
       }
@@ -340,7 +330,8 @@ public abstract class BaseContikiMoteType implements MoteType {
   }
 
   /** Compilation-relevant parts of mote type configuration. */
-  public record MoteTypeConfig(String desc, String file, String commands, Class<? extends MoteInterface>[] interfaces) {}
+  public record MoteTypeConfig(String desc, String targetName, String file, String commands,
+                               Class<? extends MoteInterface>[] interfaces) {}
 
   /** Create a compilation dialog for this mote type. */
   protected abstract AbstractCompileDialog createCompilationDialog(Simulation sim, MoteTypeConfig cfg);
