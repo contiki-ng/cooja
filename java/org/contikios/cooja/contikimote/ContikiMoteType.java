@@ -582,7 +582,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
           continue;
         }
         var addr = s.nextLong(16);
-        var size = s.nextInt();
+        // Size is output in decimal if below 100000, hex otherwise. The command line option --sym-base=10 gives
+        // a decimal output, but readelf 2.34 does not have the option.
+        var sizeString = s.next();
+        var hex = sizeString.startsWith("0x");
+        var size = Integer.parseInt(hex ? sizeString.substring(2) : sizeString, hex ? 16 : 10);
         var type = s.next();
         if (!"OBJECT".equals(type)) {
           s.nextLine(); // Skip lines that do not define variables.
