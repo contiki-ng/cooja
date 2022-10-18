@@ -57,8 +57,6 @@ public class Simulation extends Observable implements Runnable {
   public static final long MICROSECOND = 1L;
   public static final long MILLISECOND = 1000*MICROSECOND;
 
-  /*private static long EVENT_COUNTER = 0;*/
-
   private final ArrayList<Mote> motes = new ArrayList<>();
   private final ArrayList<MoteType> moteTypes = new ArrayList<>();
 
