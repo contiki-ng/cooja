@@ -143,12 +143,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
 
     public String getHeaderFile() {
-      if (this == DEFAULT) {
-        return null;
-      } else if (this == MANUAL) {
-        return manualHeader;
-      }
-      return null;
+      return this == MANUAL ? manualHeader : null;
     }
 
     public String getConfig() {
@@ -161,16 +156,14 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
 
     public static NetworkStack parseConfig(String config) {
-      if (config.equals("DEFAULT")) {
-        return DEFAULT;
-      } else if (config.startsWith("MANUAL")) {
+      if (config.startsWith("MANUAL")) {
         NetworkStack st = MANUAL;
         st.manualHeader = config.split(":")[1];
         return st;
       }
-
-      /* TODO Backwards compatibility */
-      logger.warn("Bad network stack config: '" + config + "', using default");
+      if (!config.equals("DEFAULT")) {
+        logger.warn("Bad network stack config: '" + config + "', using default");
+      }
       return DEFAULT;
     }
   }
@@ -712,12 +705,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
           if (!addresses.containsKey(symbol)) {
 	    logger.debug("Put symbol " + symbol + " with address " + varAddr + " and size " + varSize);
             addresses.put(symbol, new Symbol(Symbol.Type.VARIABLE, symbol, varAddr, varSize));
-          } else {
-            long oldAddress = addresses.get(symbol).addr;
-            if (oldAddress != varAddr) {
-              /*logger.warn("Warning, command response not matching previous entry of: "
-               + varName);*/
-            }
           }
         }
       }
@@ -873,12 +860,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
   @Override
   protected void appendVisualizerInfo(StringBuilder sb) {
     /* JNI class */
-    sb.append("<tr><td>JNI library</td><td>")
-            .append(this.javaClassName).append("</td></tr>");
+    sb.append("<tr><td>JNI library</td><td>").append(javaClassName).append("</td></tr>");
 
     /* Mote interfaces */
     sb.append("<tr><td valign=\"top\">Mote interface</td><td>");
-    for (Class<? extends MoteInterface> moteInterface : moteInterfaceClasses) {
+    for (var moteInterface : moteInterfaceClasses) {
       sb.append(moteInterface.getSimpleName()).append("<br>");
     }
     sb.append("</td></tr>");
@@ -887,9 +873,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
   @Override
   public Collection<Element> getConfigXML(Simulation simulation) {
     ArrayList<Element> config = new ArrayList<>();
-    Element element;
 
-    element = new Element("identifier");
+    var element = new Element("identifier");
     element.setText(getIdentifier());
     config.add(element);
 
@@ -898,8 +883,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     config.add(element);
 
     element = new Element("source");
-    File file = simulation.getCooja().createPortablePath(getContikiSourceFile());
-    element.setText(file.getPath().replaceAll("\\\\", "/"));
+    element.setText(gui.createPortablePath(getContikiSourceFile()).getPath().replaceAll("\\\\", "/"));
     config.add(element);
 
     element = new Element("commands");
@@ -930,13 +914,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
     for (Element element : configXML) {
       switch (element.getName()) {
-        case "commstack":
+        case "commstack" -> {
           logger.warn("The Cooja communication stack config was removed: " + element.getText());
           logger.warn("Instead assuming default network stack.");
-          break;
-        case "netstack":
-          netStack = NetworkStack.parseConfig(element.getText());
-          break;
+        }
+        case "netstack" -> netStack = NetworkStack.parseConfig(element.getText());
       }
     }
     final var sourceFile = getContikiSourceFile();
