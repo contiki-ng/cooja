@@ -591,7 +591,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
         s.next();
         var name = s.next();
         varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr + offset, size));
-        s.nextLine(); // Skip rest of line.
       }
       return varNames;
     }
