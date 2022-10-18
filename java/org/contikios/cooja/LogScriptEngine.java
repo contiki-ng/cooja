@@ -356,8 +356,7 @@ public class LogScriptEngine {
     }
 
     @Override
-    public void generateMessage(final long delay, final String msg) {
-      final Mote currentMote = (Mote) engine.get("mote");
+    public void generateMsg(final Mote currentMote, final long delay, final String msg) {
       final TimeEvent generateEvent = new TimeEvent() {
         @Override
         public void execute(long t) {
