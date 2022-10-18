@@ -41,6 +41,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Observer;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
@@ -264,6 +265,8 @@ public class LogScriptEngine {
     engine.put("mote", null);
     engine.put("msg", "");
     engine.put("node", new ScriptMote());
+    var barrier = new CountDownLatch(1);
+    engine.put("BARRIER", barrier);
     scriptThread = new Thread(new Runnable() {
       @Override
       public void run() {
@@ -296,13 +299,10 @@ public class LogScriptEngine {
       }
     }, "script");
     scriptThread.start();
-    // Wait for script thread to reach barrier in the beginning of the JavaScript run function.
-    while (!semaphoreScript.hasQueuedThreads()) {
-      try {
-        Thread.sleep(50);
-      } catch (InterruptedException e) {
-        // FIXME: Something called interrupt() on this thread, stop the computation.
-      }
+    try {
+      barrier.await();
+    } catch (InterruptedException e) {
+      // FIXME: Something called interrupt() on this thread, stop the computation.
     }
     startRealTime = System.currentTimeMillis();
     startTime = simulation.getSimulationTime();
