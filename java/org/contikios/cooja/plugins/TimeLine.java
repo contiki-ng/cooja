@@ -209,7 +209,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 	    }
     });
     viewMenu.add(new JCheckBoxMenuItem(logEventMoteColorAction) {
-        private static final long serialVersionUID = 8314556794750277114L;
         @Override
         public boolean isSelected() {
             return logEventColorOfMote;
@@ -1021,8 +1020,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   };
 
   private final Action logEventMoteColorAction = new AbstractAction("use Mote colors") {
-      private static final long serialVersionUID = -8626118368774023257L;
-      
       @Override
       public void actionPerformed(ActionEvent e) {
           logEventColorOfMote = !logEventColorOfMote;
