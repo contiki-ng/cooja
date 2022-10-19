@@ -42,7 +42,6 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -189,7 +188,7 @@ public class BufferListener extends VisPlugin {
 
   private final Simulation simulation;
 
-  private JTextField filterTextField;
+  private final JTextField filterTextField;
   private final JLabel filterLabel = new JLabel("Filter: ");
   private final Color filterTextFieldBackground;
 
@@ -519,77 +518,174 @@ public class BufferListener extends VisPlugin {
     popupMenu.add(parserMenu);
     popupMenu.addSeparator();
     JMenu copyClipboard = new JMenu("Copy to clipboard");
-    copyClipboard.add(new JMenuItem(copyAllAction));
-    copyClipboard.add(new JMenuItem(copyAction));
+    copyClipboard.add(new JMenuItem(new AbstractAction("All") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < logTable.getRowCount(); i++) {
+          sb.append(logTable.getValueAt(i, COLUMN_TIME)).append("\t");
+          sb.append(logTable.getValueAt(i, COLUMN_FROM)).append("\t");
+          sb.append(logTable.getValueAt(i, COLUMN_TYPE)).append("\t");
+          if (parser instanceof GraphicalParser) {
+            BufferAccess ba = (BufferAccess) logTable.getValueAt(i, COLUMN_DATA);
+            sb.append(ba.getAsHex());
+          } else {
+            sb.append(logTable.getValueAt(i, COLUMN_DATA));
+          }
+          sb.append("\t");
+          sb.append(logTable.getValueAt(i, COLUMN_SOURCE)).append("\n");
+        }
+        StringSelection stringSelection = new StringSelection(sb.toString());
+        clipboard.setContents(stringSelection, null);
+      }
+    }));
+    copyClipboard.add(new JMenuItem(new AbstractAction("Selected") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        var clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        int[] selectedRows = logTable.getSelectedRows();
+        StringBuilder sb = new StringBuilder();
+        for (int i : selectedRows) {
+          sb.append(logTable.getValueAt(i, COLUMN_TIME)).append("\t");
+          sb.append(logTable.getValueAt(i, COLUMN_FROM)).append("\t");
+          sb.append(logTable.getValueAt(i, COLUMN_TYPE)).append("\t");
+          if (parser instanceof GraphicalParser) {
+            BufferAccess ba = (BufferAccess) logTable.getValueAt(i, COLUMN_DATA);
+            sb.append(ba.getAsHex());
+          } else {
+            sb.append(logTable.getValueAt(i, COLUMN_DATA));
+          }
+          sb.append("\t");
+          sb.append(logTable.getValueAt(i, COLUMN_SOURCE)).append("\n");
+        }
+        StringSelection stringSelection = new StringSelection(sb.toString());
+        clipboard.setContents(stringSelection, null);
+      }
+    }));
     popupMenu.add(copyClipboard);
     popupMenu.add(new JMenuItem(clearAction));
     popupMenu.addSeparator();
-    popupMenu.add(new JMenuItem(saveAction));
+    popupMenu.add(new JMenuItem(new AbstractAction("Save to file") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        JFileChooser fc = new JFileChooser();
+        File suggest = new File(Cooja.getExternalToolsSetting("BUFFER_LISTENER_SAVEFILE", "BufferAccessLogger.txt"));
+        fc.setSelectedFile(suggest);
+        int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
+        if (returnVal != JFileChooser.APPROVE_OPTION) {
+          return;
+        }
+        File saveFile = fc.getSelectedFile();
+        if (saveFile.exists()) {
+          String s1 = "Overwrite";
+          String s2 = "Cancel";
+          Object[] options = {s1, s2};
+          int n = JOptionPane.showOptionDialog(
+                  Cooja.getTopParentContainer(),
+                  "A file with the same name already exists.\nDo you want to remove it?",
+                  "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
+                  JOptionPane.QUESTION_MESSAGE, null, options, s1);
+          if (n != JOptionPane.YES_OPTION) {
+            return;
+          }
+        }
+        Cooja.setExternalToolsSetting("BUFFER_LISTENER_SAVEFILE", saveFile.getPath());
+        if (saveFile.exists() && !saveFile.canWrite()) {
+          logger.fatal("No write access to file: " + saveFile);
+          return;
+        }
+        try (var outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8))) {
+          StringBuilder sb = new StringBuilder();
+          for (int i = 0; i < logTable.getRowCount(); i++) {
+            sb.append(logTable.getValueAt(i, COLUMN_TIME)).append("\t");
+            sb.append(logTable.getValueAt(i, COLUMN_FROM)).append("\t");
+            sb.append(logTable.getValueAt(i, COLUMN_TYPE)).append("\t");
+            if (parser instanceof GraphicalParser) {
+              BufferAccess ba = (BufferAccess) logTable.getValueAt(i, COLUMN_DATA);
+              sb.append(ba.getAsHex());
+            } else {
+              sb.append(logTable.getValueAt(i, COLUMN_DATA));
+            }
+            sb.append("\t");
+            sb.append(logTable.getValueAt(i, COLUMN_SOURCE)).append("\n");
+          }
+          outStream.print(sb);
+        } catch (Exception ex) {
+          logger.fatal("Could not write to file: " + saveFile);
+        }
+      }
+    }));
     popupMenu.addSeparator();
     JMenu focusMenu = new JMenu("Show in");
     focusMenu.add(new JMenuItem(showInAllAction));
     focusMenu.addSeparator();
     focusMenu.add(new JMenuItem(timeLineAction));
     focusMenu.add(new JMenuItem(radioLoggerAction));
-    focusMenu.add(new JMenuItem(bufferListenerAction));
+    focusMenu.add(new JMenuItem(new AbstractAction("in Buffer Listener") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int view = logTable.getSelectedRow();
+        if (view < 0) {
+          return;
+        }
+        int model1 = logTable.convertRowIndexToModel(view);
+        long time = logs.get(model1).time;
+
+        Plugin[] plugins = simulation.getCooja().getStartedPlugins();
+        for (Plugin p : plugins) {
+          if (!(p instanceof BufferListener)) {
+            continue;
+          }
+          // Select simulation time.
+          BufferListener plugin = (BufferListener) p;
+          plugin.trySelectTime(time);
+        }
+      }
+    }));
     popupMenu.add(focusMenu);
     popupMenu.addSeparator();
     colorCheckbox = new JCheckBoxMenuItem("Mote-specific coloring");
     popupMenu.add(colorCheckbox);
-    colorCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        backgroundColors = colorCheckbox.isSelected();
-        repaint();
-      }
+    colorCheckbox.addActionListener(e -> {
+      backgroundColors = colorCheckbox.isSelected();
+      repaint();
     });
     inverseFilterCheckbox = new JCheckBoxMenuItem("Inverse filter");
     popupMenu.add(inverseFilterCheckbox);
-    inverseFilterCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        inverseFilter = inverseFilterCheckbox.isSelected();
-        if (inverseFilter) {
-          filterLabel.setText("Exclude:");
-        } else {
-          filterLabel.setText("Filter:");
-        }
-        setFilter(getFilter());
-        repaint();
+    inverseFilterCheckbox.addActionListener(e -> {
+      inverseFilter = inverseFilterCheckbox.isSelected();
+      if (inverseFilter) {
+        filterLabel.setText("Exclude:");
+      } else {
+        filterLabel.setText("Filter:");
       }
+      setFilter(getFilter());
+      repaint();
     });
     hideReadsCheckbox = new JCheckBoxMenuItem("Hide READs", hideReads);
     popupMenu.add(hideReadsCheckbox);
-    hideReadsCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        hideReads = hideReadsCheckbox.isSelected();
-        setFilter(getFilter());
-        repaint();
-      }
+    hideReadsCheckbox.addActionListener(e -> {
+      hideReads = hideReadsCheckbox.isSelected();
+      setFilter(getFilter());
+      repaint();
     });
 
     withStackTraceCheckbox = new JCheckBoxMenuItem("Capture stack traces", withStackTrace);
     popupMenu.add(withStackTraceCheckbox);
-    withStackTraceCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        withStackTrace = withStackTraceCheckbox.isSelected();
-        setFilter(getFilter());
-        repaint();
-      }
+    withStackTraceCheckbox.addActionListener(e -> {
+      withStackTrace = withStackTraceCheckbox.isSelected();
+      setFilter(getFilter());
+      repaint();
     });
 
     logTable.setComponentPopupMenu(popupMenu);
 
     /* Column width adjustment */
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        /* Make sure this happens *after* adding history */
-        adjuster.setDynamicAdjustment(true);
-        adjuster.setAdjustColumn(COLUMN_DATA, false);
-      }
+    java.awt.EventQueue.invokeLater(() -> {
+      /* Make sure this happens *after* adding history */
+      adjuster.setDynamicAdjustment(true);
+      adjuster.setAdjustColumn(COLUMN_DATA, false);
     });
 
     logUpdateAggregator.start();
@@ -618,31 +714,21 @@ public class BufferListener extends VisPlugin {
     filterPanel.add(Box.createHorizontalStrut(2));
     filterPanel.add(filterLabel);
     filterPanel.add(filterTextField);
-    filterTextField.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String str = filterTextField.getText();
-        setFilter(str);
-
-        /* Autoscroll */
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            int s = logTable.getSelectedRow();
-            if (s < 0) {
-              return;
-            }
-
-            s = logTable.getRowSorter().convertRowIndexToView(s);
-            if (s < 0) {
-              return;
-            }
-
-            int v = logTable.getRowHeight()*s;
-            logTable.scrollRectToVisible(new Rectangle(0, v-5, 1, v+5));
-          }
-        });
-      }
+    filterTextField.addActionListener(e -> {
+      setFilter(filterTextField.getText());
+      // Autoscroll.
+      SwingUtilities.invokeLater(() -> {
+        int s = logTable.getSelectedRow();
+        if (s < 0) {
+          return;
+        }
+        s = logTable.getRowSorter().convertRowIndexToView(s);
+        if (s < 0) {
+          return;
+        }
+        int v = logTable.getRowHeight()*s;
+        logTable.scrollRectToVisible(new Rectangle(0, v-5, 1, v+5));
+      });
     });
     filterPanel.add(Box.createHorizontalStrut(2));
 
@@ -971,22 +1057,19 @@ public class BufferListener extends VisPlugin {
   }
 
   public void trySelectTime(final long time) {
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        for (int i=0; i < logs.size(); i++) {
-          if (logs.get(i).time < time) {
-            continue;
-          }
-
-          int view = logTable.convertRowIndexToView(i);
-          if (view < 0) {
-            continue;
-          }
-          logTable.scrollRectToVisible(logTable.getCellRect(view, 0, true));
-          logTable.setRowSelectionInterval(view, view);
-          return;
+    java.awt.EventQueue.invokeLater(() -> {
+      for (int i=0; i < logs.size(); i++) {
+        if (logs.get(i).time < time) {
+          continue;
         }
+
+        int view = logTable.convertRowIndexToView(i);
+        if (view < 0) {
+          continue;
+        }
+        logTable.scrollRectToVisible(logTable.getCellRect(view, 0, true));
+        logTable.setRowSelectionInterval(view, view);
+        return;
       }
     });
   }
@@ -1079,90 +1162,6 @@ public class BufferListener extends VisPlugin {
     }
   }
 
-  private final Action saveAction = new AbstractAction("Save to file") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      JFileChooser fc = new JFileChooser();
-      File suggest = new File(Cooja.getExternalToolsSetting("BUFFER_LISTENER_SAVEFILE", "BufferAccessLogger.txt"));
-      fc.setSelectedFile(suggest);
-      int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
-      if (returnVal != JFileChooser.APPROVE_OPTION) {
-        return;
-      }
-
-      File saveFile = fc.getSelectedFile();
-      if (saveFile.exists()) {
-        String s1 = "Overwrite";
-        String s2 = "Cancel";
-        Object[] options = { s1, s2 };
-        int n = JOptionPane.showOptionDialog(
-            Cooja.getTopParentContainer(),
-            "A file with the same name already exists.\nDo you want to remove it?",
-            "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
-            JOptionPane.QUESTION_MESSAGE, null, options, s1);
-        if (n != JOptionPane.YES_OPTION) {
-          return;
-        }
-      }
-
-      Cooja.setExternalToolsSetting("BUFFER_LISTENER_SAVEFILE", saveFile.getPath());
-      if (saveFile.exists() && !saveFile.canWrite()) {
-        logger.fatal("No write access to file: " + saveFile);
-        return;
-      }
-
-      try {
-        PrintWriter outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
-
-        StringBuilder sb = new StringBuilder();
-        for (int i=0; i < logTable.getRowCount(); i++) {
-          sb.append(logTable.getValueAt(i, COLUMN_TIME));
-          sb.append("\t");
-          sb.append(logTable.getValueAt(i, COLUMN_FROM));
-          sb.append("\t");
-          sb.append(logTable.getValueAt(i, COLUMN_TYPE));
-          sb.append("\t");
-          if (parser instanceof GraphicalParser) {
-            BufferAccess ba = (BufferAccess) logTable.getValueAt(i, COLUMN_DATA);
-            sb.append(ba.getAsHex());
-          } else {
-            sb.append(logTable.getValueAt(i, COLUMN_DATA));
-          }
-          sb.append("\t");
-          sb.append(logTable.getValueAt(i, COLUMN_SOURCE));
-          sb.append("\n");
-        }
-        outStream.print(sb);
-        outStream.close();
-      } catch (Exception ex) {
-        logger.fatal("Could not write to file: " + saveFile);
-      }
-    }
-  };
-
-  private final Action bufferListenerAction = new AbstractAction("in Buffer Listener") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      int view = logTable.getSelectedRow();
-      if (view < 0) {
-        return;
-      }
-      int model = logTable.convertRowIndexToModel(view);
-      long time = logs.get(model).time;
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-        if (!(p instanceof BufferListener)) {
-          continue;
-        }
-
-        /* Select simulation time */
-        BufferListener plugin = (BufferListener) p;
-        plugin.trySelectTime(time);
-      }
-    }
-  };
-
   private final Action timeLineAction = new AbstractAction("in Timeline") {
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1232,75 +1231,8 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private final Action copyAction = new AbstractAction("Selected") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      int[] selectedRows = logTable.getSelectedRows();
-
-      StringBuilder sb = new StringBuilder();
-      for (int i: selectedRows) {
-        sb.append(logTable.getValueAt(i, COLUMN_TIME));
-        sb.append("\t");
-        sb.append(logTable.getValueAt(i, COLUMN_FROM));
-        sb.append("\t");
-        sb.append(logTable.getValueAt(i, COLUMN_TYPE));
-        sb.append("\t");
-        if (parser instanceof GraphicalParser) {
-          BufferAccess ba = (BufferAccess) logTable.getValueAt(i, COLUMN_DATA);
-          sb.append(ba.getAsHex());
-        } else {
-          sb.append(logTable.getValueAt(i, COLUMN_DATA));
-        }
-        sb.append("\t");
-        sb.append(logTable.getValueAt(i, COLUMN_SOURCE));
-        sb.append("\n");
-      }
-
-      StringSelection stringSelection = new StringSelection(sb.toString());
-      clipboard.setContents(stringSelection, null);
-    }
-  };
-
-  private final Action copyAllAction = new AbstractAction("All") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-
-      StringBuilder sb = new StringBuilder();
-      for (int i=0; i < logTable.getRowCount(); i++) {
-        sb.append(logTable.getValueAt(i, COLUMN_TIME));
-        sb.append("\t");
-        sb.append(logTable.getValueAt(i, COLUMN_FROM));
-        sb.append("\t");
-        sb.append(logTable.getValueAt(i, COLUMN_TYPE));
-        sb.append("\t");
-        if (parser instanceof GraphicalParser) {
-          BufferAccess ba = (BufferAccess) logTable.getValueAt(i, COLUMN_DATA);
-          sb.append(ba.getAsHex());
-        } else {
-          sb.append(logTable.getValueAt(i, COLUMN_DATA));
-        }
-        sb.append("\t");
-        sb.append(logTable.getValueAt(i, COLUMN_SOURCE));
-        sb.append("\n");
-      }
-
-      StringSelection stringSelection = new StringSelection(sb.toString());
-      clipboard.setContents(stringSelection, null);
-    }
-  };
-
-  private final ActionListener parserSelectedListener = new ActionListener() {
-    @SuppressWarnings("unchecked")
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Class<? extends Parser> bpClass =
-        (Class<? extends Parser>)
-        ((JMenuItem) e.getSource()).getClientProperty("CLASS");
-      setParser(bpClass);
-    }
+  private final ActionListener parserSelectedListener = e -> {
+    setParser((Class<? extends Parser>) ((JMenuItem) e.getSource()).getClientProperty("CLASS"));
   };
   private void updateParserMenu() {
     parserMenu.removeAll();
@@ -1313,19 +1245,11 @@ public class BufferListener extends VisPlugin {
     }
   }
 
-  private final ActionListener bufferSelectedListener = new ActionListener() {
-    @SuppressWarnings("unchecked")
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Class<? extends Buffer> btClass =
-        (Class<? extends Buffer>)
-        ((JMenuItem) e.getSource()).getClientProperty("CLASS");
-
-      Buffer b = createBufferInstance(btClass);
-      if (b != null) {
-        if (b.configure(BufferListener.this)) {
-          setBuffer(b);
-        }
+  private final ActionListener bufferSelectedListener = e -> {
+    var b = createBufferInstance((Class<? extends Buffer>) ((JMenuItem) e.getSource()).getClientProperty("CLASS"));
+    if (b != null) {
+      if (b.configure(BufferListener.this)) {
+        setBuffer(b);
       }
     }
   };
