@@ -227,14 +227,6 @@ public class ELF {
     return elfData[pos++] & 0xff;
   }
 
-  public static void printBytes(String name, byte[] data) {
-    System.out.print(name + " ");
-    for (byte element : data) {
-      System.out.print((char) element);
-    }
-    System.out.println();
-  }
-
   private void readSections() {
     setPos(shoff);
 
@@ -396,12 +388,9 @@ public class ELF {
 
       if (sAddr > 0 && sAddr < 0x100000) {
 
-        if (sAddr < 0x5c00 && sAddr > sAddrHighest && !sn.equals("__stack")) {
+        if (sAddr < 0x5c00 && sAddr > sAddrHighest && !"__stack".equals(sn)) {
           sAddrHighest = sAddr;
         }
-//	if (bind == ELFSection.SYMBIND_LOCAL) {
-//	  symbolName += " (" + currentFile + ')';
-//	}
         if ("_end".equals(sn)) {
       foundEnd = true;
           map.setHeapStart(sAddr);
@@ -503,17 +492,5 @@ public class ELF {
     return pos;
   }
 
-  private static class FileInfo {
-      public final String name;
-      public final int start;
-      public final int end;
-
-      FileInfo(String name, int start, int end) {
-          this.name = name;
-          this.start = start;
-          this.end = end;
-      }
-
-  }
-
+  private record FileInfo(String name, int start, int end) {}
 } // ELF
