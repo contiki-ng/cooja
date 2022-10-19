@@ -79,6 +79,7 @@ import java.util.Random;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.SynchronousQueue;
+import java.util.regex.Matcher;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.swing.AbstractAction;
@@ -3879,11 +3880,9 @@ public class Cooja extends Observable {
       }
       if (match == -1) return null;
       // Replace Contiki's canonical path with Contiki identifier.
-      String portablePath = fileCanonical.replaceFirst(
-              java.util.regex.Matcher.quoteReplacement(canonicals[match]),
-              java.util.regex.Matcher.quoteReplacement(PATH_IDENTIFIER[match][0]));
-      File portable = new File(portablePath);
-
+      File portable = new File(fileCanonical.replaceFirst(
+              Matcher.quoteReplacement(canonicals[match]),
+              Matcher.quoteReplacement(PATH_IDENTIFIER[match][0])));
       // Verify conversion.
       File verify = restoreContikiRelativePath(portable);
       if (verify == null || !verify.exists()) {
