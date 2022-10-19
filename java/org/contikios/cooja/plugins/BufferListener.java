@@ -595,8 +595,7 @@ public class BufferListener extends VisPlugin {
           logger.fatal("No write access to file: " + saveFile);
           return;
         }
-        try {
-          var outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8));
+        try (var outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8))) {
           StringBuilder sb = new StringBuilder();
           for (int i = 0; i < logTable.getRowCount(); i++) {
             sb.append(logTable.getValueAt(i, COLUMN_TIME)).append("\t");
@@ -612,7 +611,6 @@ public class BufferListener extends VisPlugin {
             sb.append(logTable.getValueAt(i, COLUMN_SOURCE)).append("\n");
           }
           outStream.print(sb);
-          outStream.close();
         } catch (Exception ex) {
           logger.fatal("Could not write to file: " + saveFile);
         }
