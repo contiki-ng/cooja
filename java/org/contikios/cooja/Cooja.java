@@ -3878,21 +3878,21 @@ public class Cooja extends Observable {
           }
         }
       }
-      if (match == -1) return null;
-      // Replace Contiki's canonical path with Contiki identifier.
-      File portable = new File(fileCanonical.replaceFirst(
-              Matcher.quoteReplacement(canonicals[match]),
-              Matcher.quoteReplacement(PATH_IDENTIFIER[match][0])));
-      // Verify conversion.
-      File verify = restoreContikiRelativePath(portable);
-      if (verify == null || !verify.exists()) {
-        // Error: did file even exist pre-conversion?
-        return null;
-      }
-      return portable;
     } catch (IOException e1) {
       return null;
     }
+    if (match == -1) return null;
+    // Replace Contiki's canonical path with Contiki identifier.
+    File portable = new File(fileCanonical.replaceFirst(
+            Matcher.quoteReplacement(canonicals[match]),
+            Matcher.quoteReplacement(PATH_IDENTIFIER[match][0])));
+    // Verify conversion.
+    File verify = restoreContikiRelativePath(portable);
+    if (verify == null || !verify.exists()) {
+      // Error: did file even exist pre-conversion?
+      return null;
+    }
+    return portable;
   }
   
   
