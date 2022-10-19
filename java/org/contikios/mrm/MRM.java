@@ -36,8 +36,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -76,8 +74,6 @@ import org.contikios.mrm.ChannelModel.TxPair;
  */
 @ClassDescription("Multi-path Ray-tracer Medium (MRM)")
 public class MRM extends AbstractRadioMedium {
-  private static final Logger logger = LogManager.getLogger(MRM.class);
-
   public final static boolean WITH_NOISE = true; /* NoiseSourceRadio */
   public final static boolean WITH_DIRECTIONAL = true; /* DirectionalAntennaRadio */
 
