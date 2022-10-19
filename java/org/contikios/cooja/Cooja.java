@@ -3857,15 +3857,16 @@ public class Cooja extends Observable {
   };
 
   private static File createContikiRelativePath(File file) {
+    int elem = PATH_IDENTIFIER.length;
+    File[] path = new File[elem];
+    String[] canonicals = new String[elem];
+    int match = -1;
+    // Not so nice, but goes along with GUI.getExternalToolsSetting
+    String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
+    String fileCanonical;
     try {
-      int elem = PATH_IDENTIFIER.length;
-      File[] path = new File[elem];
-      String[] canonicals = new String[elem];
-      int match = -1;
       int mlength = 0;
-      String fileCanonical = file.getCanonicalPath();
-      // Not so nice, but goes along with GUI.getExternalToolsSetting
-      String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
+      fileCanonical = file.getCanonicalPath();
       for (int i = 0; i < elem; i++) {
         path[i] = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));
         canonicals[i] = path[i].getCanonicalPath();
