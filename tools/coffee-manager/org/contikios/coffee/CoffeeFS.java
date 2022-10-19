@@ -41,16 +41,14 @@ import java.util.TreeMap;
 public class CoffeeFS {
 	private final CoffeeImage image;
 	private final CoffeeConfiguration conf;
-	private int currentPage;
 	private final Map<String, CoffeeFile> files;
 	private static final int INVALID_PAGE = -1;
 
 	public CoffeeFS(CoffeeImage image) throws IOException {
 		this.image = image;
 		conf = image.getConfiguration();
-		currentPage = 0;
 		files = new TreeMap<>();
-
+		var currentPage = 0;
 		while(currentPage < (conf.fsSize / conf.pageSize)) {
 			CoffeeHeader header = readHeader(currentPage);
 			if (header.isActive() && !header.isLog()) {
