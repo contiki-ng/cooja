@@ -233,7 +233,6 @@ public class Timer extends IOUnit {
       @Override
       public void execute(long t) {
           if (mode == STOP) {
-              //System.out.println("**** IGNORING EXECUTION OF CCR - timer stopped!!!");
               return;
           }
           long cycles = cpu.cycles;
@@ -393,15 +392,12 @@ public class Timer extends IOUnit {
           /* and can be something else if mode is another... */
           // This should be updated whenever clockspeed changes...
           nextTimerTrigger = (long) (nextTimerTrigger + 0x10000 * cyclesMultiplicator);
-//          System.out.println("*** scheduling counter trigger..." + nextTimerTrigger + " now = " + t);
           cpu.scheduleCycleEvent(this, nextTimerTrigger);
 
 
           if (lastTIV == 0 && interruptEnable) {
               lastTIV = memory[tiv] = timerOverflow;
               cpu.flagInterrupt(ccr1Vector, Timer.this, true);
-          } else {
-//              System.out.println("*** Did not trigger interrupt: " + interruptEnable);
           }
       }
   };
@@ -477,9 +473,6 @@ public class Timer extends IOUnit {
   // Should handle read of byte also (currently ignores that...)
   @Override
   public int read(int address, boolean word, long cycles) {
-
-//      if (DEBUG) log("read from: $" + Utils.hex(address, 4));
-
       if (address == tiv) {
       // should clear registers for cause of interrupt (highest value)?
       // but what if a higher value have been triggered since this was
@@ -495,7 +488,6 @@ public class Timer extends IOUnit {
     switch(index) {
     case TR:
       val = updateCounter(cycles);
-//      System.out.println(getName() + " TR read => " + val);
       break;
     case TCTL:
       val = tctl;
@@ -833,8 +825,6 @@ public class Timer extends IOUnit {
     }
 
     cpu.scheduleCycleEvent(counterTrigger, cycles + (long)((0x10000 - counter) * cyclesMultiplicator));
-//    System.out.println("(re)Scheduling counter trigger..." + counterTrigger.time + " now = " + cycles + " ctr: " + counter);
-
   }
 
   private void setCounter(int newCtr, long cycles) {
@@ -886,9 +876,6 @@ public class Timer extends IOUnit {
         }
       }
     }
-//    System.out.println("CounterStart: " + counterStart + " C:" + cycles + " bigCounter: " + bigCounter +
-//        " counter" + counter);
-
     if (DEBUG) {
       log("Updating counter cycctr: " + cycctr +
           " divider: " + divider + " mode:" + mode + " => " + counter);
