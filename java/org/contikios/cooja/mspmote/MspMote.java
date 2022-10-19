@@ -85,7 +85,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private final static int EXECUTE_DURATION_US = 1; /* We always execute in 1 us steps */
 
-  {
+  static {
     Visualizer.registerVisualizerSkin(CodeVisualizerSkin.class);
   }
 
