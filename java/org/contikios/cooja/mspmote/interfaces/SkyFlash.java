@@ -30,7 +30,6 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import java.awt.Component;
 import java.awt.Container;
 import java.io.DataInputStream;
 import java.io.File;
@@ -107,7 +106,7 @@ public class SkyFlash extends MoteInterface {
       byte[] data = new byte[CoojaM25P80.SIZE];
       m24p80.seek(0);
       m24p80.readFully(data);
-      writeDialogFileBytes(Cooja.getTopParentContainer(), data);
+      writeDialogFileBytes(data);
     });
 
     Observer observer;
@@ -130,7 +129,7 @@ public class SkyFlash extends MoteInterface {
     this.deleteObserver(observer);
   }
 
-  public static void writeDialogFileBytes(Component parent, byte[] data) {
+  public static void writeDialogFileBytes(byte[] data) {
     JFileChooser fc = new JFileChooser();
     int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
     if (returnVal != JFileChooser.APPROVE_OPTION) {
