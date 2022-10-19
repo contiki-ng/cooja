@@ -188,7 +188,7 @@ public class BufferListener extends VisPlugin {
 
   private final Simulation simulation;
 
-  private JTextField filterTextField;
+  private final JTextField filterTextField;
   private final JLabel filterLabel = new JLabel("Filter: ");
   private final Color filterTextFieldBackground;
 
