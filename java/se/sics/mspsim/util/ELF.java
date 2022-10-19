@@ -391,9 +391,6 @@ public class ELF {
         if (sAddr < 0x5c00 && sAddr > sAddrHighest && !"__stack".equals(sn)) {
           sAddrHighest = sAddr;
         }
-//	if (bind == ELFSection.SYMBIND_LOCAL) {
-//	  symbolName += " (" + currentFile + ')';
-//	}
         if ("_end".equals(sn)) {
       foundEnd = true;
           map.setHeapStart(sAddr);
