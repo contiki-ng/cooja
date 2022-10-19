@@ -227,14 +227,6 @@ public class ELF {
     return elfData[pos++] & 0xff;
   }
 
-  public static void printBytes(String name, byte[] data) {
-    System.out.print(name + " ");
-    for (byte element : data) {
-      System.out.print((char) element);
-    }
-    System.out.println();
-  }
-
   private void readSections() {
     setPos(shoff);
 
