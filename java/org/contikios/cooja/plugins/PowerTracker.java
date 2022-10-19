@@ -449,7 +449,7 @@ public class PowerTracker implements Plugin {
     }
   }
 
-  private MoteTracker createMoteTracker(Mote mote) {
+  private static MoteTracker createMoteTracker(Mote mote) {
     final Radio moteRadio = mote.getInterfaces().getRadio();
     if (moteRadio == null) {
       return null;

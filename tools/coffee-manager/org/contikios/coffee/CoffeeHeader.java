@@ -62,7 +62,7 @@ class CoffeeHeader {
 		processRawHeader(bytes);
 	}
 
-	private int getInt(byte[] bytes, int index) {
+	private static int getInt(byte[] bytes, int index) {
 	    return (bytes[index] & 0xff) + ((bytes[index + 1] & 0xff) << 8);
 	}
 

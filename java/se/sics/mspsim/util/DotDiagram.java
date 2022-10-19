@@ -536,7 +536,7 @@ public class DotDiagram extends JComponent {
     g.setColor(oldColor);
   }
 
-  private double getDivider(double minY, double maxY) {
+  private static double getDivider(double minY, double maxY) {
     double diff = Math.abs(maxY - minY);
     if (diff >= 1500) {
       return 500.0;

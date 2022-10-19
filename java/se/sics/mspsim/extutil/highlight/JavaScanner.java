@@ -596,7 +596,7 @@ public class JavaScanner extends Scanner {
   }
 
   // A malformed or incomplete token has a negative type
-  private int bad(int type) {
+  private static int bad(int type) {
     return -type;
   }
 
@@ -750,7 +750,7 @@ public class JavaScanner extends Scanner {
   // Initialise the two classification arrays using static initializer code.
   // Token types from the TokenTypes class are used to classify characters.
 
-  private void initKind() {
+  private static void initKind() {
     for (char c = 0; c < 128; c++)
       kind[c] = -1;
     for (char c = 0; c < 128; c++)
@@ -911,7 +911,7 @@ public class JavaScanner extends Scanner {
         System.out.println("Char " + ((int) c) + " hasn't been classified");
   }
 
-  private void initUniKind() {
+  private static void initUniKind() {
     for (byte b = 0; b < 31; b++)
       unikind[b] = -1;
     for (byte b = 0; b < 31; b++)

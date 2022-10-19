@@ -133,7 +133,7 @@ public class ChartPanel extends JComponent {
     }
   }
 
-  private Color getDefaultColor(int index) {
+  private static Color getDefaultColor(int index) {
     return DEFAULT_COLOR[index % DEFAULT_COLOR.length];
   }
 
@@ -265,7 +265,7 @@ public class ChartPanel extends JComponent {
     }
   }
 
-  private double getGridValue(double totMinX, double totMaxX, int maxCount) {
+  private static double getGridValue(double totMinX, double totMaxX, int maxCount) {
     double diff = totMaxX - totMinX;
     if (diff <= 0) {
       return 1;

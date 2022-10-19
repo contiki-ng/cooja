@@ -118,7 +118,7 @@ public class LineNumberedBorder extends AbstractBorder {
    *                Description of the Parameter
    * @return Description of the Return Value
    */
-  private int lineNumberWidth(SyntaxHighlighter textArea) {
+  private static int lineNumberWidth(SyntaxHighlighter textArea) {
     //
     // note: should this be changed to use all nines for the lineCount?
     // for example, if the number of rows is 111...999 could be wider

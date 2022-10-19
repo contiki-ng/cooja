@@ -131,7 +131,7 @@ public class NetworkConnection implements Runnable {
     }
   }
 
-  private void printPacket(String prefix, byte[] data) {
+  private static void printPacket(String prefix, byte[] data) {
     System.out.print("NetworkConnection: " + prefix);
     for (byte datum : data) {
       System.out.print(' ' + Utils.hex8(datum));
