@@ -32,13 +32,10 @@ package org.contikios.cooja.mspmote.interfaces;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -93,40 +90,28 @@ public class SkyFlash extends MoteInterface {
     final JButton downloadButton = new JButton("Store to file");
     panel.add(downloadButton);
 
-    uploadButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        byte[] fileData = readDialogFileBytes(Cooja.getTopParentContainer());
-
-        if (fileData != null) {
-          if (fileData.length > CoojaM25P80.SIZE) {
-            logger.fatal("Too large data file: " + fileData.length + " > " + CoojaM25P80.SIZE);
-            return;
-          }
-          m24p80.seek(0);
-          m24p80.write(fileData);
-          logger.info("Done! (" + fileData.length + " bytes written to Flash)");
+    uploadButton.addActionListener(e -> {
+      byte[] fileData = readDialogFileBytes(Cooja.getTopParentContainer());
+      if (fileData != null) {
+        if (fileData.length > CoojaM25P80.SIZE) {
+          logger.fatal("Too large data file: " + fileData.length + " > " + CoojaM25P80.SIZE);
+          return;
         }
+        m24p80.seek(0);
+        m24p80.write(fileData);
+        logger.info("Done! (" + fileData.length + " bytes written to Flash)");
       }
     });
 
-    downloadButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        byte[] data = new byte[CoojaM25P80.SIZE];
-        m24p80.seek(0);
-        m24p80.readFully(data);
-
-        writeDialogFileBytes(Cooja.getTopParentContainer(), data);
-      }
+    downloadButton.addActionListener(e -> {
+      byte[] data = new byte[CoojaM25P80.SIZE];
+      m24p80.seek(0);
+      m24p80.readFully(data);
+      writeDialogFileBytes(Cooja.getTopParentContainer(), data);
     });
 
     Observer observer;
-    this.addObserver(observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-      }
-    });
+    this.addObserver(observer = (obs, obj) -> {});
 
     // Saving observer reference for releaseInterfaceVisualizer
     panel.putClientProperty("intf_obs", observer);
