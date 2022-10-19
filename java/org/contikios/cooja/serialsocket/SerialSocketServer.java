@@ -465,8 +465,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
             break;
           }
         }
-        // No reasonable way to communicate results with Cooja, so just exit upon completion for now.
-        simulation.getCooja().doQuit(false, rv);
+        simulation.stopSimulation(false, rv > 0 ? rv : null);
       }, "SerialSocketServer commands").start();
     }
     return true;

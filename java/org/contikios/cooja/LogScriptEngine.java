@@ -295,7 +295,7 @@ public class LogScriptEngine {
           }
         }
         deactivateScript();
-        simulation.stopSimulation(false, rv >= 0 ? rv : null);
+        simulation.stopSimulation(false, rv > 0 ? rv : null);
       }
     }, "script");
     scriptThread.start();
@@ -318,7 +318,7 @@ public class LogScriptEngine {
       engine.put("TIMEOUT", true);
       stepScript();
       deactivateScript();
-      simulation.stopSimulation(false, 1);
+      simulation.stopSimulation(); // stepScript will set return value.
     }
   };
   private final TimeEvent timeoutProgressEvent = new TimeEvent() {
