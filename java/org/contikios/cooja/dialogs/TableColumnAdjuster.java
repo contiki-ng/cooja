@@ -115,13 +115,6 @@ public class TableColumnAdjuster implements PropertyChangeListener, TableModelLi
     adjustColumns[i] = adjust;
   }
   
-  /*
-   *  Adjust the width of the specified column in the table
-   */
-  public void adjustColumn(int column) {
-    adjustColumn(column, isOnlyAdjustLarger);
-  }
-
   private void adjustColumn(int column, boolean onlyAdjustLarger) {
     if (!adjustColumns[column]) {
       return;
