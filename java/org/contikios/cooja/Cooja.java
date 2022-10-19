@@ -3858,41 +3858,38 @@ public class Cooja extends Observable {
 
   private static File createContikiRelativePath(File file) {
     try {
-    	int elem = PATH_IDENTIFIER.length;
-    	File[] path = new File [elem];
-    	String[] canonicals = new String[elem];
-    	int match = -1;
-    	int mlength = 0;
-    	String fileCanonical = file.getCanonicalPath();
+      int elem = PATH_IDENTIFIER.length;
+      File[] path = new File[elem];
+      String[] canonicals = new String[elem];
+      int match = -1;
+      int mlength = 0;
+      String fileCanonical = file.getCanonicalPath();
       // Not so nice, but goes along with GUI.getExternalToolsSetting
-			String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
-		for(int i = 0; i < elem; i++){
-			path[i] = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));			
-			canonicals[i] = path[i].getCanonicalPath();
-			if (fileCanonical.startsWith(canonicals[i])){
-				if(mlength < canonicals[i].length()){
-					mlength = canonicals[i].length();
-					match = i;
-				}
-	    	}
-		}
-      
-	    if(match == -1) return null;
-
-	    /* Replace Contiki's canonical path with Contiki identifier */
-        String portablePath = fileCanonical.replaceFirst(
-          java.util.regex.Matcher.quoteReplacement(canonicals[match]), 
-          java.util.regex.Matcher.quoteReplacement(PATH_IDENTIFIER[match][0]));
-        File portable = new File(portablePath);
-      
-        /* Verify conversion */
-        File verify = restoreContikiRelativePath(portable);
-        if (verify == null || !verify.exists()) {
-        	/* Error: did file even exist pre-conversion? */
-        	return null;
+      String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
+      for (int i = 0; i < elem; i++) {
+        path[i] = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));
+        canonicals[i] = path[i].getCanonicalPath();
+        if (fileCanonical.startsWith(canonicals[i])) {
+          if (mlength < canonicals[i].length()) {
+            mlength = canonicals[i].length();
+            match = i;
+          }
         }
+      }
+      if (match == -1) return null;
+      // Replace Contiki's canonical path with Contiki identifier.
+      String portablePath = fileCanonical.replaceFirst(
+              java.util.regex.Matcher.quoteReplacement(canonicals[match]),
+              java.util.regex.Matcher.quoteReplacement(PATH_IDENTIFIER[match][0]));
+      File portable = new File(portablePath);
 
-        return portable;
+      // Verify conversion.
+      File verify = restoreContikiRelativePath(portable);
+      if (verify == null || !verify.exists()) {
+        // Error: did file even exist pre-conversion?
+        return null;
+      }
+      return portable;
     } catch (IOException e1) {
       return null;
     }
