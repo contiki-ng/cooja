@@ -232,8 +232,7 @@ public class ScriptParser {
     """ +
     "timeout_function = null; " +
     "function run() { try {" +
-    "SEMAPHORE_SIM.acquire(); " +
-    "BARRIER.countDown(); " +
+    "SEMAPHORE_SIM.release(); " +
     "SEMAPHORE_SCRIPT.acquire(); " + /* STARTUP BLOCKS HERE! */
     "if (TIMEOUT) { SCRIPT_TIMEOUT(); } " +
     "if (SHUTDOWN) { throw new Shutdown(); } " +

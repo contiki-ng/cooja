@@ -41,7 +41,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Observer;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
@@ -244,7 +243,7 @@ public class LogScriptEngine {
   /** Allocate semaphores, set up the internal state of the engine, and start the script thread. */
   public boolean activateScript(final CompiledScript script) {
     semaphoreScript = new Semaphore(1);
-    semaphoreSim = new Semaphore(1);
+    semaphoreSim = new Semaphore(0);
     try {
       semaphoreScript.acquire();
     } catch (InterruptedException e) {
@@ -265,8 +264,6 @@ public class LogScriptEngine {
     engine.put("mote", null);
     engine.put("msg", "");
     engine.put("node", new ScriptMote());
-    var barrier = new CountDownLatch(1);
-    engine.put("BARRIER", barrier);
     scriptThread = new Thread(new Runnable() {
       @Override
       public void run() {
@@ -300,7 +297,7 @@ public class LogScriptEngine {
     }, "script");
     scriptThread.start();
     try {
-      barrier.await();
+      semaphoreSim.acquire();
     } catch (InterruptedException e) {
       // FIXME: Something called interrupt() on this thread, stop the computation.
     }
