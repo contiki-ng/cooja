@@ -51,12 +51,6 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
     public static final int I2C_CLK_PIN = 2;
     public static final int I2C_CLK = 1 << I2C_CLK_PIN;
 
-    private IOPort port1;
-    private IOPort port2;
-    private IOPort port3;
-    private IOPort port4;
-    private IOPort port5;
-
     public static final int LEDS_CONF_RED    = 0x10;
     public static final int LEDS_CONF_GREEN  = 0x40;
     public static final int LEDS_CONF_BLUE   = 0x20;
@@ -147,15 +141,15 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
     }
 
     private void setupNodePorts() {
-        port1 = cpu.getIOUnit(IOPort.class, "P1");
+        var port1 = cpu.getIOUnit(IOPort.class, "P1");
 //        port1.addPortListener(this);
-        port2 = cpu.getIOUnit(IOPort.class, "P2");
+        var port2 = cpu.getIOUnit(IOPort.class, "P2");
 //        port2.addPortListener(this);
-        port3 = cpu.getIOUnit(IOPort.class, "P3");
+        var port3 = cpu.getIOUnit(IOPort.class, "P3");
         port3.addPortListener(this);
-        port4 = cpu.getIOUnit(IOPort.class, "P4");
+        var port4 = cpu.getIOUnit(IOPort.class, "P4");
         port4.addPortListener(this);
-        port5 = cpu.getIOUnit(IOPort.class, "P5");
+        var port5 = cpu.getIOUnit(IOPort.class, "P5");
         port5.addPortListener(this);
 
 //        tmp102 = new TMP102(cpu);
