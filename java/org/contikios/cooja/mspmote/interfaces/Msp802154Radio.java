@@ -43,11 +43,8 @@ import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
 import se.sics.mspsim.chip.CC2420;
-import se.sics.mspsim.chip.ChannelListener;
 import se.sics.mspsim.chip.RFListener;
 import se.sics.mspsim.chip.Radio802154;
-import se.sics.mspsim.core.Chip;
-import se.sics.mspsim.core.OperatingModeListener;
 
 /**
  * MSPSim 802.15.4 radio to COOJA wrapper.
@@ -150,27 +147,21 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
       }
     }); /* addRFListener */
 
-    radio.addOperatingModeListener(new OperatingModeListener() {
-      @Override
-      public void modeChanged(Chip source, int mode) {
-        if (radio.isReadyToReceive()) {
-          lastEvent = RadioEvent.HW_ON;
-          setChanged();
-          notifyObservers();
-        } else {
-          radioOff(); // actually it is a state change, not necessarily to OFF
-        }
+    radio.addOperatingModeListener((source, mode) -> {
+      if (radio.isReadyToReceive()) {
+        lastEvent = RadioEvent.HW_ON;
+        setChanged();
+        notifyObservers();
+      } else {
+        radioOff(); // actually it is a state change, not necessarily to OFF
       }
     });
 
-    radio.addChannelListener(new ChannelListener() {
-      @Override
-      public void channelChanged(int channel) {
-        /* XXX Currently assumes zero channel switch time */
-        lastEvent = RadioEvent.UNKNOWN;
-        setChanged();
-        notifyObservers();
-      }
+    radio.addChannelListener(channel -> {
+      /* XXX Currently assumes zero channel switch time */
+      lastEvent = RadioEvent.UNKNOWN;
+      setChanged();
+      notifyObservers();
     });
   }
 
