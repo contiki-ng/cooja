@@ -495,17 +495,5 @@ public class ELF {
     return pos;
   }
 
-  private static class FileInfo {
-      public final String name;
-      public final int start;
-      public final int end;
-
-      FileInfo(String name, int start, int end) {
-          this.name = name;
-          this.start = start;
-          this.end = end;
-      }
-
-  }
-
+  private record FileInfo(String name, int start, int end) {}
 } // ELF
