@@ -159,7 +159,7 @@ public class CodeUI extends JPanel {
     displayNoCode(true);
   }
 
-  private Object addHighlight(Highlighter hl, int start, int end, HighlightPainter currentLineMarker) {
+  private static Object addHighlight(Highlighter hl, int start, int end, HighlightPainter currentLineMarker) {
     try {
       return hl.addHighlight(start, end, currentLineMarker);
     } catch (BadLocationException ignored) {
@@ -167,7 +167,7 @@ public class CodeUI extends JPanel {
     }
   }
 
-  private void changeHighlight(Highlighter highlighter, Object selectedLineTag, int start, int end) {
+  private static void changeHighlight(Highlighter highlighter, Object selectedLineTag, int start, int end) {
     try {
       highlighter.changeHighlight(selectedLineTag, start, end);
     } catch (BadLocationException ignored) {

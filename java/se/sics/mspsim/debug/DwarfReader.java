@@ -194,7 +194,6 @@ public class DwarfReader implements ELFDebug {
 
             if (DEBUG) System.out.println("Line --- source files ---");
             long dirIndex;
-            long time = 0;
             long size;
             while ((c = sec.readElf8()) != 0) {
                 sb.append((char)c);
@@ -203,7 +202,7 @@ public class DwarfReader implements ELFDebug {
                 }
 
                 dirIndex = sec.readLEB128();
-                time = sec.readLEB128();
+                sec.readLEB128(); // For effects, time is not used.
                 size = sec.readLEB128();
 
                 if (DEBUG) System.out.println("Line: source file: " + sb + "  dir: " + dirIndex + " size: " + size);

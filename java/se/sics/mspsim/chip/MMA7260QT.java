@@ -66,7 +66,7 @@ public class MMA7260QT extends Accelerometer {
         setPosition(1.0, -0.0156, -0.0156);
     }
 
-    private int convertToADC(double x) {
+    private static int convertToADC(double x) {
         if (x > 1.0) {
             x = 1.0;
         } else if (x < -1.0) {

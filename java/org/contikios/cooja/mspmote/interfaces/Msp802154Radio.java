@@ -43,11 +43,8 @@ import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
 import se.sics.mspsim.chip.CC2420;
-import se.sics.mspsim.chip.ChannelListener;
 import se.sics.mspsim.chip.RFListener;
 import se.sics.mspsim.chip.Radio802154;
-import se.sics.mspsim.core.Chip;
-import se.sics.mspsim.core.OperatingModeListener;
 
 /**
  * MSPSim 802.15.4 radio to COOJA wrapper.
@@ -104,7 +101,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
           expMpduLen = 0;
           setChanged();
           notifyObservers();
-          /*logger.debug("----- 802.15.4 TRANSMISSION STARTED -----");*/
         }
 
         /* send this byte to all nodes */
@@ -130,7 +126,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
           }
         }
         else if (len == 6) {
-//          System.out.println("## CC2420 Packet of length: " + data + " expected...");
           expMpduLen = data & 0xFF;
           if ((expMpduLen & 0x80) != 0) {
             logger.error("Outgoing length field is larger than 127: " + expMpduLen);
@@ -141,7 +136,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
           lastOutgoingPacket = CC2420RadioPacketConverter.fromCC2420ToCooja(buffer);
           if (lastOutgoingPacket != null) {
             lastEvent = RadioEvent.PACKET_TRANSMITTED;
-            //logger.debug("----- 802.15.4 PACKET TRANSMITTED -----");
             setChanged();
             notifyObservers();
           }
@@ -150,27 +144,21 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
       }
     }); /* addRFListener */
 
-    radio.addOperatingModeListener(new OperatingModeListener() {
-      @Override
-      public void modeChanged(Chip source, int mode) {
-        if (radio.isReadyToReceive()) {
-          lastEvent = RadioEvent.HW_ON;
-          setChanged();
-          notifyObservers();
-        } else {
-          radioOff(); // actually it is a state change, not necessarily to OFF
-        }
+    radio.addOperatingModeListener((source, mode) -> {
+      if (radio.isReadyToReceive()) {
+        lastEvent = RadioEvent.HW_ON;
+        setChanged();
+        notifyObservers();
+      } else {
+        radioOff(); // actually it is a state change, not necessarily to OFF
       }
     });
 
-    radio.addChannelListener(new ChannelListener() {
-      @Override
-      public void channelChanged(int channel) {
-        /* XXX Currently assumes zero channel switch time */
-        lastEvent = RadioEvent.UNKNOWN;
-        setChanged();
-        notifyObservers();
-      }
+    radio.addChannelListener(channel -> {
+      /* XXX Currently assumes zero channel switch time */
+      lastEvent = RadioEvent.UNKNOWN;
+      setChanged();
+      notifyObservers();
     });
   }
 
@@ -307,7 +295,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
     isReceiving = true;
 
     lastEvent = RadioEvent.RECEPTION_STARTED;
-    /*logger.debug("----- 802.15.4 RECEPTION STARTED -----");*/
     setChanged();
     notifyObservers();
   }
@@ -319,7 +306,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
     isInterfered = false;
 
     lastEvent = RadioEvent.RECEPTION_FINISHED;
-    /*logger.debug("----- 802.15.4 RECEPTION FINISHED -----");*/
     setChanged();
     notifyObservers();
   }
@@ -336,7 +322,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
     lastIncomingPacket = null;
 
     lastEvent = RadioEvent.RECEPTION_INTERFERED;
-    /*logger.debug("----- 802.15.4 RECEPTION INTERFERED -----");*/
     setChanged();
     notifyObservers();
   }

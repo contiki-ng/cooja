@@ -94,7 +94,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   // From the possible interrupt sources - to be able to indicate is serviced.
   // NOTE: 64 since more modern MSP430's have more than 16 vectors (5xxx has 64).
-  private InterruptHandler[] interruptSource = new InterruptHandler[64];
+  private final InterruptHandler[] interruptSource = new InterruptHandler[64];
   public int MAX_INTERRUPT;
 
   protected int interruptMax = -1;
@@ -123,13 +123,13 @@ public class MSP430Core extends Chip implements MSP430Constants {
 //  private int clkACaptureMode = CLKCAPTURE_NONE;
   // Other clocks too...
   long nextEventCycles;
-  private EventQueue vTimeEventQueue = new EventQueue();
+  private final EventQueue vTimeEventQueue = new EventQueue();
   private long nextVTimeEventCycles;
 
-  private EventQueue cycleEventQueue = new EventQueue();
+  private final EventQueue cycleEventQueue = new EventQueue();
   private long nextCycleEventCycles;
 
-  private ArrayList<Chip> chips = new ArrayList<>();
+  private final ArrayList<Chip> chips = new ArrayList<>();
 
   final ComponentRegistry registry;
   Profiler profiler;

@@ -456,7 +456,7 @@ public class Flash extends IOUnit {
     currentWriteMode = WriteMode.NONE;
   }
 
-  private WriteMode getEraseMode(int regdata) {
+  private static WriteMode getEraseMode(int regdata) {
     int idx = (regdata & ERASE_MASK) >> ERASE_SHIFT;
 
     for (WriteMode em : WriteMode.values()) {

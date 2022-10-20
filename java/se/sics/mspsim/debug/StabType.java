@@ -11,7 +11,7 @@ public class StabType {
     boolean signed;
     StabType typeDef;
 
-    private HashMap<String,StabType> types;
+    private final HashMap<String,StabType> types;
 
     /* typical stab that define a type */
     /* int:t(0,1)=r(0,1);-32768;32767; */
