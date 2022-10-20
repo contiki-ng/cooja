@@ -238,6 +238,7 @@ public class ScriptParser {
     "\n" +
     "while (true) { YIELD(); } " /* SCRIPT ENDED */+
     "} catch (error) { " +
+    "SEMAPHORE_SCRIPT.release(); " +
     "if (error instanceof TestOK) return 0; " +
     "if (error instanceof TestFailed) return 1; " +
     "if (error instanceof Shutdown) return -1; " +
