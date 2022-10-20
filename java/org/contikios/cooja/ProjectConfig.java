@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -241,38 +240,11 @@ public class ProjectConfig {
       return true;
     }
 
-    FileInputStream in = new FileInputStream(propertyFile);
-    return appendConfigStream(myConfig, in);
-  }
-
-  /**
-   * Reads properties from the given stream and appends them to the current
-   * configuration. If a property already exists it will be overwritten, unless
-   * the new value begins with a '+' in which case the old value will be
-   * extended.
-   * <p>
-   * WARNING! The project directory history will not be saved if this method is
-   * called, instead the appendUserPlatform method should be used.
-   *
-   * @param configFileStream
-   *          Stream to read from
-   * @return True if stream was read ok, false otherwise
-   * @throws IOException
-   *           Stream read error
-   */
-  public boolean appendConfigStream(InputStream configFileStream)
-      throws IOException {
-    return appendConfigStream(myConfig, configFileStream);
-  }
-
-  private static boolean appendConfigStream(Properties currentValues,
-      InputStream configFileStream) throws IOException {
-
-    // Read from stream
     Properties newProps = new Properties();
-    newProps.load(configFileStream);
-    configFileStream.close();
-    return appendConfig(currentValues, newProps);
+    try (var in = new FileInputStream(propertyFile)) {
+      newProps.load(in);
+    }
+    return appendConfig(myConfig, newProps);
   }
 
   private static boolean appendConfig(Properties currentValues, Properties newProps) {
