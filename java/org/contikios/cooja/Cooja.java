@@ -1134,49 +1134,70 @@ public class Cooja extends Observable {
    * Load external tools settings from default file.
    */
   public static void loadExternalToolsDefaultSettings() {
-    final var toolsConfigFileName = "/external_tools.config";
     Properties settings = new Properties();
-    try (var in = Cooja.class.getResourceAsStream(toolsConfigFileName)) {
-      if (in == null) {
-        throw new MissingResourceException(
-                "Could not find " + toolsConfigFileName + ", jar file seems broken", "Cooja", "");
-      }
-      settings.load(in);
-    } catch (IOException e) {
-      throw new MissingResourceException(e.getMessage(), "Cooja", "");
-    }
+    settings.put("PATH_COOJA", "./");
+    settings.put("PATH_CONTIKI", "../../");
+    settings.put("PATH_MAKE", "make");
+    settings.put("PATH_C_COMPILER", "gcc");
+    settings.put("COMPILER_ARGS", "");
+    settings.put("PATH_JAVAC", "javac");
+    settings.put("DEFAULT_PROJECTDIRS", "");
 
-    final var toolsLinux64ConfigFileName = "/external_tools_linux_64.config";
+    settings.put("PARSE_WITH_COMMAND", "false");
+    settings.put("READELF_COMMAND", "readelf -W --symbols $(LIBFILE)");
+
+    settings.put("PARSE_COMMAND", "nm -aP $(LIBFILE)");
+    settings.put("COMMAND_VAR_NAME_ADDRESS_SIZE", "^(?<symbol>[^.].*?) <SECTION> (?<address>[0-9a-fA-F]+) (?<size>[0-9a-fA-F])*");
+    settings.put("COMMAND_VAR_SEC_DATA", "[DdGg]");
+    settings.put("COMMAND_VAR_SEC_BSS", "[Bb]");
+    settings.put("COMMAND_VAR_SEC_COMMON", "[C]");
+    settings.put("COMMAND_VAR_SEC_READONLY", "[Rr]");
+    settings.put("COMMAND_DATA_START", "^.data[ \t]d[ \t]([0-9A-Fa-f]*)[ \t]*$");
+    settings.put("COMMAND_DATA_END", "^_edata[ \t]D[ \t]([0-9A-Fa-f]*)[ \t]*$");
+    settings.put("COMMAND_BSS_START", "^__bss_start[ \t]B[ \t]([0-9A-Fa-f]*)[ \t]*$");
+    settings.put("COMMAND_BSS_END", "^_end[ \t]B[ \t]([0-9A-Fa-f]*)[ \t]*$");
+    settings.put("COMMAND_READONLY_START", "^.rodata[ \t]r[ \t]([0-9A-Fa-f]*)[ \t]*$");
+    settings.put("COMMAND_READONLY_END", "^.eh_frame_hdr[ \t]r[ \t]([0-9A-Fa-f]*)[ \t]*$");
+
     String osName = System.getProperty("os.name").toLowerCase();
-    String filename;
     if (osName.startsWith("win")) {
-      filename = "/external_tools_win32.config";
-    } else if (osName.startsWith("mac os x")) {
-      filename = "/external_tools_macosx.config";
-    } else if (osName.startsWith("freebsd")) {
-      filename = "/external_tools_freebsd.config";
-    } else if (osName.startsWith("linux")) {
-      filename = "/external_tools_linux.config";
-      String osArch = System.getProperty("os.arch").toLowerCase();
-      if (osArch.startsWith("amd64")) {
-        filename = toolsLinux64ConfigFileName;
-      }
-    } else {
-      filename = toolsLinux64ConfigFileName;
-      logger.warn("Unknown system: " + osName + ", using default: " + filename);
-    }
+      settings.put("PATH_C_COMPILER", "mingw32-gcc");
+      settings.put("PARSE_WITH_COMMAND", "true");
 
-    try (var in = Cooja.class.getResourceAsStream(filename)) {
-      if (in == null) {
-        throw new MissingResourceException(
-                "Could not find " + filename + ", jar file seems broken", "Cooja", "");
+      // Hack: nm with arguments -S --size-sort does not display __data_start symbols
+      settings.put("PARSE_COMMAND", "/bin/nm -aP --size-sort -S $(LIBFILE) && /bin/nm -aP $(LIBFILE)");
+
+      settings.put("COMMAND_VAR_NAME_ADDRESS_SIZE", "^[_](?<symbol>[^.].*?)[ \t]<SECTION>[ \t](?<address>[0-9a-fA-F]+)[ \t](?<size>[0-9a-fA-F]+)");
+      settings.put("COMMAND_DATA_START", "^__data_start__[ \t]D[ \t]([0-9A-Fa-f]*)");
+      settings.put("COMMAND_DATA_END", "^__data_end__[ \t]D[ \t]([0-9A-Fa-f]*)");
+      settings.put("COMMAND_BSS_START", "^__bss_start__[ \t]B[ \t]([0-9A-Fa-f]*)");
+      settings.put("COMMAND_BSS_END", "^__bss_end__[ \t]B[ \t]([0-9A-Fa-f]*)");
+      settings.put("COMMAND_READONLY_START", "^.rodata[ \t]r[ \t]([0-9A-Fa-f]*)");
+      settings.put("COMMAND_READONLY_END", "^.eh_frame_hdr[ \t]r[ \t]([0-9A-Fa-f]*)");
+    } else if (osName.startsWith("mac os x")) {
+      settings.put("PARSE_WITH_COMMAND", "true");
+      settings.put("PARSE_COMMAND", "[COOJA_DIR]/tools/macos/nmandsize $(LIBFILE)");
+      settings.put("COMMAND_VAR_NAME_ADDRESS", "^[ \t]*([0-9A-Fa-f][0-9A-Fa-f]*)[ \t]\\(__DATA,__[^ ]*\\) external _([^ ]*)$");
+      settings.put("COMMAND_DATA_START", "^DATA SECTION START: 0x([0-9A-Fa-f]+)$");
+      settings.put("COMMAND_DATA_END", "^DATA SECTION END: 0x([0-9A-Fa-f]+)$");
+      settings.put("COMMAND_BSS_START", "^COMMON SECTION START: 0x([0-9A-Fa-f]+)$");
+      settings.put("COMMAND_BSS_END", "^COMMON SECTION END: 0x([0-9A-Fa-f]+)$");
+      settings.put("COMMAND_COMMON_START", "^BSS SECTION START: 0x([0-9A-Fa-f]+)$");
+      settings.put("COMMAND_COMMON_END", "^BSS SECTION END: 0x([0-9A-Fa-f]+)$");
+
+      settings.put("COMMAND_VAR_NAME_ADDRESS_SIZE", "^\\s*0x(?<address>[a-fA-F0-9]+) \\(\\s*0x(?<size>[a-fA-F0-9]+)\\) (?<symbol>[A-Za-z0-9_]+) \\[.*EXT.*\\]");
+      settings.put("COMMAND_VAR_SEC_DATA", "(__DATA,__data)");
+      settings.put("COMMAND_VAR_SEC_BSS", "(__DATA,__bss)");
+      settings.put("COMMAND_VAR_SEC_COMMON", "(__DATA,__common)");
+    } else if (osName.startsWith("freebsd")) {
+      settings.put("PATH_MAKE", "gmake");
+    } else {
+      if (!osName.startsWith("linux")) {
+        logger.warn("Unknown system: " + osName + ", using Linux settings");
       }
-      settings.load(in);
-      currentExternalToolsSettings = settings;
-      defaultExternalToolsSettings = (Properties) currentExternalToolsSettings.clone();
-    } catch (IOException e) {
-      throw new MissingResourceException(e.getMessage(), "Cooja", "");
     }
+    currentExternalToolsSettings = settings;
+    defaultExternalToolsSettings = (Properties) currentExternalToolsSettings.clone();
   }
 
   /**
