@@ -93,11 +93,6 @@ public class ProjectConfig {
   private static final Logger logger = LogManager.getLogger(ProjectConfig.class);
 
   /**
-   * Default extension configuration filename.
-   */
-  public static final String PROJECT_DEFAULT_CONFIG_FILENAME = "/cooja_default.config";
-
-  /**
    * User extension configuration filename.
    */
   public static final String PROJECT_CONFIG_FILENAME = "cooja.config";
@@ -118,14 +113,10 @@ public class ProjectConfig {
   public ProjectConfig(boolean useDefault) throws IOException,
       FileNotFoundException {
     if (useDefault) {
-      var input = Cooja.class.getResourceAsStream(PROJECT_DEFAULT_CONFIG_FILENAME);
-      if (input != null) {
-        try (input) {
-          appendConfigStream(input);
-        }
-      } else {
-        throw new FileNotFoundException(PROJECT_DEFAULT_CONFIG_FILENAME);
-      }
+      var settings = new Properties();
+      settings.put("org.contikios.cooja.contikimote.interfaces.ContikiRadio.RADIO_TRANSMISSION_RATE_kbps", "250");
+      settings.put("org.contikios.cooja.contikimote.ContikiMoteType.C_SOURCES", "");
+      appendConfig(myConfig, settings);
     }
   }
 
