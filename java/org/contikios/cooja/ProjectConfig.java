@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -93,11 +92,6 @@ public class ProjectConfig {
   private static final Logger logger = LogManager.getLogger(ProjectConfig.class);
 
   /**
-   * Default extension configuration filename.
-   */
-  public static final String PROJECT_DEFAULT_CONFIG_FILENAME = "/cooja_default.config";
-
-  /**
    * User extension configuration filename.
    */
   public static final String PROJECT_CONFIG_FILENAME = "cooja.config";
@@ -118,14 +112,10 @@ public class ProjectConfig {
   public ProjectConfig(boolean useDefault) throws IOException,
       FileNotFoundException {
     if (useDefault) {
-      var input = Cooja.class.getResourceAsStream(PROJECT_DEFAULT_CONFIG_FILENAME);
-      if (input != null) {
-        try (input) {
-          appendConfigStream(input);
-        }
-      } else {
-        throw new FileNotFoundException(PROJECT_DEFAULT_CONFIG_FILENAME);
-      }
+      var settings = new Properties();
+      settings.put("org.contikios.cooja.contikimote.interfaces.ContikiRadio.RADIO_TRANSMISSION_RATE_kbps", "250");
+      settings.put("org.contikios.cooja.contikimote.ContikiMoteType.C_SOURCES", "");
+      appendConfig(myConfig, settings);
     }
   }
 
@@ -246,43 +236,18 @@ public class ProjectConfig {
   public boolean appendConfigFile(File propertyFile)
       throws FileNotFoundException, IOException {
     if (!propertyFile.exists()) {
-      logger.warn("Trying to import non-existant project configuration: " + propertyFile);
+      logger.warn("Trying to import non-existent project configuration: " + propertyFile);
       return true;
     }
 
-    FileInputStream in = new FileInputStream(propertyFile);
-    return appendConfigStream(myConfig, in);
-  }
-
-  /**
-   * Reads properties from the given stream and appends them to the current
-   * configuration. If a property already exists it will be overwritten, unless
-   * the new value begins with a '+' in which case the old value will be
-   * extended.
-   * <p>
-   * WARNING! The project directory history will not be saved if this method is
-   * called, instead the appendUserPlatform method should be used.
-   *
-   * @param configFileStream
-   *          Stream to read from
-   * @return True if stream was read ok, false otherwise
-   * @throws IOException
-   *           Stream read error
-   */
-  public boolean appendConfigStream(InputStream configFileStream)
-      throws IOException {
-    return appendConfigStream(myConfig, configFileStream);
-  }
-
-  private static boolean appendConfigStream(Properties currentValues,
-      InputStream configFileStream) throws IOException {
-
-    // Read from stream
     Properties newProps = new Properties();
-    newProps.load(configFileStream);
-    configFileStream.close();
+    try (var in = new FileInputStream(propertyFile)) {
+      newProps.load(in);
+    }
+    return appendConfig(myConfig, newProps);
+  }
 
-    // Read new properties
+  private static boolean appendConfig(Properties currentValues, Properties newProps) {
     var en = newProps.keys();
     while (en.hasMoreElements()) {
       String key = (String) en.nextElement();
