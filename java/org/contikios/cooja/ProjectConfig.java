@@ -281,8 +281,10 @@ public class ProjectConfig {
     Properties newProps = new Properties();
     newProps.load(configFileStream);
     configFileStream.close();
+    return appendConfig(currentValues, newProps);
+  }
 
-    // Read new properties
+  private static boolean appendConfig(Properties currentValues, Properties newProps) {
     var en = newProps.keys();
     while (en.hasMoreElements()) {
       String key = (String) en.nextElement();
