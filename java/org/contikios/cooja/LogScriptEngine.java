@@ -299,7 +299,9 @@ public class LogScriptEngine {
     try {
       semaphoreSim.acquire();
     } catch (InterruptedException e) {
-      // FIXME: Something called interrupt() on this thread, stop the computation.
+      logger.error("Thread interrupted:", e);
+      deactivateScript();
+      return false;
     }
     startRealTime = System.currentTimeMillis();
     startTime = simulation.getSimulationTime();
