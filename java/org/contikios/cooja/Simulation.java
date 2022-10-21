@@ -379,6 +379,13 @@ public class Simulation extends Observable implements Runnable {
     cooja.updateProgress(true);
   }
 
+  public void stopScriptEngines() {
+    // FIXME: this should be at the end of run(), but that requires the sim thread to be persistent.
+    for (var engine : scriptEngines) {
+      engine.deactivateScript();
+    }
+  }
+
   /**
    * Starts simulation if stopped, executes one millisecond, and finally stops
    * simulation again.
