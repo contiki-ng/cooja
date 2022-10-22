@@ -3022,24 +3022,30 @@ public class Cooja extends Observable {
     }
     // Check if simulator should be quick-started.
     if (options.action != null) {
-      var config = new File(vis ? options.action.quickstart : options.action.nogui);
-      Simulation sim = null;
-      try {
-        sim = vis
-                ? gui.doLoadConfig(config, true, options.updateSimulation, options.randomSeed)
-                : gui.loadSimulationConfig(config, true, false, options.randomSeed);
-      } catch (Exception e) {
-        logger.fatal("Exception when loading simulation: ", e);
-      }
-      if (sim == null) {
-        System.exit(1);
+      int rv = 0;
+      for (var cfg : vis ? new String[]{options.action.quickstart} : options.action.nogui) {
+        var config = new File(cfg);
+        Simulation sim = null;
+        try {
+          sim = vis
+                  ? gui.doLoadConfig(config, true, options.updateSimulation, options.randomSeed)
+                  : gui.loadSimulationConfig(config, true, false, options.randomSeed);
+        } catch (Exception e) {
+          logger.fatal("Exception when loading simulation: ", e);
+        }
+        if (sim == null) {
+          System.exit(1);
+        }
+        if (!vis) {
+          sim.setSpeedLimit(null);
+          var ret = sim.startSimulation(true);
+          if (ret != null) {
+            rv = Math.max(rv, ret);
+          }
+        }
       }
       if (!vis) {
-        sim.setSpeedLimit(null);
-        var rv = sim.startSimulation(true);
-        if (rv != null) {
-          gui.doQuit(false, rv);
-        }
+        gui.doQuit(false, rv);
       }
     }
   }

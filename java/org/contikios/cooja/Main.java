@@ -119,7 +119,7 @@ class Main {
      * Option for specifying file to start the simulation with.
      */
     @Option(names = "-nogui", paramLabel = "FILE", description = "start simulation with file")
-    String nogui;
+    String[] nogui;
   }
 
   /**
@@ -181,15 +181,16 @@ class Main {
 
     // Verify soundness of -nogui/-quickstart argument.
     if (options.action != null) {
-      String file = options.action.nogui == null ? options.action.quickstart : options.action.nogui;
-      if (!file.endsWith(".csc") && !file.endsWith(".csc.gz")) {
-        String option = options.action.nogui == null ? "-quickstart" : "-nogui";
-        System.err.println("Cooja " + option + " expects a filename extension of '.csc'");
-        System.exit(1);
-      }
-      if (!Files.exists(Path.of(file))) {
-        System.err.println("File '" + file + "' does not exist");
-        System.exit(1);
+      for (var file : options.action.nogui == null ? new String[] {options.action.quickstart} : options.action.nogui) {
+        if (!file.endsWith(".csc") && !file.endsWith(".csc.gz")) {
+          String option = options.action.nogui == null ? "-quickstart" : "-nogui";
+          System.err.println("Cooja " + option + " expects a filename extension of '.csc'");
+          System.exit(1);
+        }
+        if (!Files.exists(Path.of(file))) {
+          System.err.println("File '" + file + "' does not exist");
+          System.exit(1);
+        }
       }
     }
 
