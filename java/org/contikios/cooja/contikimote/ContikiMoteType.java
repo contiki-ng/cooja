@@ -43,9 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
@@ -116,11 +114,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * Library file suffix
    */
   private static final String librarySuffix = ".cooja";
-
-  /**
-   * Random generator for generating a unique mote ID.
-   */
-  private static final Random rnd = new Random();
 
   private final Cooja gui;
 
@@ -272,13 +265,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
   @Override
   protected AbstractCompileDialog createCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
-    if (getIdentifier() == null) {
-      var usedNames = new HashSet<String>();
-      for (var mote : sim.getMoteTypes()) {
-        usedNames.add(mote.getIdentifier());
-      }
-      setIdentifier(generateUniqueMoteTypeID(usedNames));
-    }
     return new ContikiMoteCompileDialog(sim, this, cfg);
   }
 
@@ -835,25 +821,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     var e = new MoteTypeCreationException(message, err);
     e.setCompilationOutput(outputList);
     return e;
-  }
-
-  /**
-   * Generates a unique Cooja mote type ID.
-   *
-   * @param reservedIdentifiers Already reserved identifiers
-   * @return Unique mote type ID.
-   */
-  public static String generateUniqueMoteTypeID(Set<String> reservedIdentifiers) {
-    String testID = "";
-    boolean available = false;
-
-    while (!available) {
-      testID = "mtype" + rnd.nextInt(1000000000);
-      available = !reservedIdentifiers.contains(testID);
-      // FIXME: add check that the library name is not already used.
-    }
-
-    return testID;
   }
 
   @Override
