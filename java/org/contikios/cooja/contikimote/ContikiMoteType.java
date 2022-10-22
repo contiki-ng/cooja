@@ -265,13 +265,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
   @Override
   protected AbstractCompileDialog createCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
-    if (getIdentifier() == null) {
-      var usedNames = new HashSet<String>();
-      for (var mote : sim.getMoteTypes()) {
-        usedNames.add(mote.getIdentifier());
-      }
-      setIdentifier(generateUniqueMoteTypeID("mtype", usedNames));
-    }
     return new ContikiMoteCompileDialog(sim, this, cfg);
   }
 

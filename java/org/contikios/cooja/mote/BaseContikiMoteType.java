@@ -42,6 +42,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
@@ -311,6 +312,15 @@ public abstract class BaseContikiMoteType implements MoteType {
   @Override
   public boolean configureAndInit(Container top, Simulation sim, boolean vis) throws MoteTypeCreationException {
     if (vis && !sim.isQuickSetup()) {
+      if (getIdentifier() == null) {
+        var usedNames = new HashSet<String>();
+        for (var mote : sim.getMoteTypes()) {
+          usedNames.add(mote.getIdentifier());
+        }
+        // The "mtype" prefix for ContikiMoteType is hardcoded elsewhere, so use that instead of "cooja".
+        var namePrefix = getMoteType();
+        setIdentifier(generateUniqueMoteTypeID("cooja".equals(namePrefix) ? "mtype" : namePrefix, usedNames));
+      }
       var currDesc = getDescription();
       var desc = currDesc == null ? getMoteName() + " Mote Type #" + (sim.getMoteTypes().length + 1) : currDesc;
       final var source = getContikiSourceFile();
