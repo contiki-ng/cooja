@@ -44,6 +44,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.Action;
@@ -87,6 +89,9 @@ public abstract class BaseContikiMoteType implements MoteType {
   /** MoteInterface classes used by the mote type. */
   protected final ArrayList<Class<? extends MoteInterface>> moteInterfaceClasses = new ArrayList<>();
 
+  /** Random generator for generating a unique mote ID. */
+  private static final Random rnd = new Random();
+
   /** Returns file name extension for firmware. */
   public abstract String getMoteType();
 
@@ -113,6 +118,24 @@ public abstract class BaseContikiMoteType implements MoteType {
   @Override
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
+  }
+
+  /**
+   * Generates a unique mote type ID.
+   *
+   * @param prefix Beginning of name
+   * @param reservedIdentifiers Already reserved identifiers
+   * @return Unique mote type ID.
+   */
+  public static String generateUniqueMoteTypeID(String prefix, Set<String> reservedIdentifiers) {
+    String testID = "";
+    boolean available = false;
+    while (!available) {
+      testID = prefix + rnd.nextInt(1000000000);
+      available = !reservedIdentifiers.contains(testID);
+      // FIXME: add check that the library name is not already used.
+    }
+    return testID;
   }
 
   @Override

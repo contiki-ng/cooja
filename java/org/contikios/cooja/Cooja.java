@@ -136,6 +136,7 @@ import org.contikios.cooja.dialogs.ExternalToolsDialog;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
+import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.motes.DisturberMoteType;
 import org.contikios.cooja.motes.ImportAppMoteType;
 import org.contikios.cooja.mspmote.SkyMoteType;
@@ -3132,7 +3133,7 @@ public class Cooja extends Observable {
         }
       }
       for (var existingIdentifier : readNames) {
-        String newID = ContikiMoteType.generateUniqueMoteTypeID("mtype", reserved);
+        String newID = BaseContikiMoteType.generateUniqueMoteTypeID("mtype", reserved);
         moteTypeIDMappings.put(existingIdentifier, newID);
         reserved.add(newID);
       }
