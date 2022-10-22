@@ -3132,7 +3132,7 @@ public class Cooja extends Observable {
         }
       }
       for (var existingIdentifier : readNames) {
-        String newID = ContikiMoteType.generateUniqueMoteTypeID(reserved);
+        String newID = ContikiMoteType.generateUniqueMoteTypeID("mtype", reserved);
         moteTypeIDMappings.put(existingIdentifier, newID);
         reserved.add(newID);
       }

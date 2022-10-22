@@ -277,7 +277,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
       for (var mote : sim.getMoteTypes()) {
         usedNames.add(mote.getIdentifier());
       }
-      setIdentifier(generateUniqueMoteTypeID(usedNames));
+      setIdentifier(generateUniqueMoteTypeID("mtype", usedNames));
     }
     return new ContikiMoteCompileDialog(sim, this, cfg);
   }
@@ -840,15 +840,16 @@ public class ContikiMoteType extends BaseContikiMoteType {
   /**
    * Generates a unique Cooja mote type ID.
    *
+   * @param prefix Beginning of name
    * @param reservedIdentifiers Already reserved identifiers
    * @return Unique mote type ID.
    */
-  public static String generateUniqueMoteTypeID(Set<String> reservedIdentifiers) {
+  public static String generateUniqueMoteTypeID(String prefix, Set<String> reservedIdentifiers) {
     String testID = "";
     boolean available = false;
 
     while (!available) {
-      testID = "mtype" + rnd.nextInt(1000000000);
+      testID = prefix + rnd.nextInt(1000000000);
       available = !reservedIdentifiers.contains(testID);
       // FIXME: add check that the library name is not already used.
     }
