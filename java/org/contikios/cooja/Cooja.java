@@ -2219,7 +2219,7 @@ public class Cooja extends Observable {
    *          Should we ask for confirmation if a simulation is already active?
    * @return True if no simulation exists when method returns
    */
-  private boolean doRemoveSimulation(boolean askForConfirmation) {
+  boolean doRemoveSimulation(boolean askForConfirmation) {
 
     if (mySimulation == null) {
       return true;
