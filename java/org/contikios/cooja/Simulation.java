@@ -713,9 +713,7 @@ public class Simulation extends Observable implements Runnable {
         notifyObservers(mote);
 
         // Delete all events associated with deleted mote.
-        eventQueue.removeIf(
-          (TimeEvent ev) ->
-            ev instanceof MoteTimeEvent && ((MoteTimeEvent)ev).getMote() == mote);
+        eventQueue.removeIf(ev -> ev instanceof MoteTimeEvent moteTimeEvent && moteTimeEvent.getMote() == mote);
       }
     };
 
