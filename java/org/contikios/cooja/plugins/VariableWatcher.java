@@ -99,7 +99,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;
 
-  private final JComboBox varNameCombo;
+  private final JComboBox<String> varNameCombo;
   private final JComboBox<VarTypes> varTypeCombo;
   private final JComboBox<VarFormats> varFormatCombo;
   private final JFormattedTextField varAddressField;
@@ -231,7 +231,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     List<String> allPotentialVarNames = new ArrayList<>(moteMemory.getVariableNames());
     Collections.sort(allPotentialVarNames);
 
-    varNameCombo = new JComboBox(allPotentialVarNames.toArray());
+    varNameCombo = new JComboBox<>(allPotentialVarNames.toArray(new String[0]));
     AutoCompleteDecorator.decorate(varNameCombo);
     varNameCombo.setEditable(true);
     varNameCombo.setSelectedItem("");
