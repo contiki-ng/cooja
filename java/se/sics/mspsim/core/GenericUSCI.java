@@ -73,7 +73,7 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
     private final int uartIndex;
     private final int vector;
 
-    private TimeEvent txTrigger = new TimeEvent(0) {
+    private final TimeEvent txTrigger = new TimeEvent(0) {
         @Override
         public void execute(long t) {
             // Ready to transmit new byte!
@@ -87,7 +87,7 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
         private boolean readyForNextTransmit;
         private boolean stopConditionPending;
 
-        private ArrayDeque<Integer> txBuffer = new ArrayDeque<>(100);
+        private final ArrayDeque<Integer> txBuffer = new ArrayDeque<>(100);
 
     public GenericUSCI(MSP430Core cpu, int uartIndex, int[] memory, MSP430Config config) {
         super(config.uartConfig[uartIndex].name, cpu, memory, config.uartConfig[uartIndex].offset);

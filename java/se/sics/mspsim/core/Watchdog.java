@@ -63,7 +63,7 @@ public class Watchdog extends IOUnit implements SFRModule {
     32768, 8192, 512, 64
   };
 
-  private int resetVector;
+  private final int resetVector;
 
   private int wdtctl = 0x4;
 

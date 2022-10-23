@@ -9,7 +9,7 @@ public class JFrameWindowManager implements WindowManager {
     @Override
     public ManagedWindow createWindow(final String name) {
         return new ManagedWindow() {
-            private JFrame window = new JFrame(name);
+            private final JFrame window = new JFrame(name);
             private boolean restored = false;
 
             @Override

@@ -53,10 +53,10 @@ import java.io.PrintStream;
  */
 public class StreamCommandHandler extends CommandHandler implements Runnable {
 
-  private BufferedReader inReader;
+  private final BufferedReader inReader;
   private boolean workaround = false;
   private boolean exit;
-  private String prompt;
+  private final String prompt;
 
   public StreamCommandHandler(InputStream in, PrintStream out, PrintStream err, String prompt) {
     super(out, err);

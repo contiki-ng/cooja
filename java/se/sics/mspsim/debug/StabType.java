@@ -5,8 +5,8 @@ import se.sics.mspsim.debug.StabDebug.Stab;
 
 public class StabType {
 
-    String name;
-    String internalName;
+    final String name;
+    final String internalName;
     int size;
     boolean signed;
     StabType typeDef;

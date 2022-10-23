@@ -66,7 +66,7 @@ public abstract class I2CUnit implements USARTListener {
                 public final static int ACK = 0x400;
                 public final static int NACK = 0x800;
 
-                private int data;
+                private final int data;
 
                 public I2CData(int data) {
                         this.data = data;
@@ -158,14 +158,14 @@ public abstract class I2CUnit implements USARTListener {
          */
         private boolean ready = false;
 
-        private MSP430Core cpu;
-        private USARTSource source;
+        private final MSP430Core cpu;
+        private final USARTSource source;
         private boolean txScheduled = false;
 
         /**
          * Tx Event Handler
          */
-        private TimeEvent txTrigger = new TimeEvent(0) {
+        private final TimeEvent txTrigger = new TimeEvent(0) {
                 @Override
                 public void execute(long t) {
                         /* Transmit the next pending byte to the uC */

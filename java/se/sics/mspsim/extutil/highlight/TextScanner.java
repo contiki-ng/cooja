@@ -28,7 +28,7 @@ public class TextScanner extends Scanner {
   // token is recognized, as there could be with more sophisticated scanners.
   // The raw numbers +t must use or match the constants in TokenTypes.
 
-  int[][] table = {
+  final int[][] table = {
   // $ \0 \n z '-_ 9 . ( // $ = end of text, must be column 0
       { +1, -1, -2, -3, -4, -5, -4, -4 }, // s=0: start token
       { +1, +1, +1, +1, +1, +1, +1, +1 }, // s=1: illegal character (t=1)

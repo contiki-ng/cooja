@@ -69,7 +69,7 @@ public class GDBStubs implements Runnable {
         }
     }
 
-    int[] buffer = new int[256];
+    final int[] buffer = new int[256];
     int len;
 
     @Override

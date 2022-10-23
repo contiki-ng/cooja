@@ -65,10 +65,10 @@ public class Enc28J60 extends Chip {
 
         private IOPort myPort;
 
-        private int myClk;
-        private int myMosi;
-        private int myChipSelect;
-        private int myMisoBit;
+        private final int myClk;
+        private final int myMosi;
+        private final int myChipSelect;
+        private final int myMisoBit;
 
         public Enc28J60(MSP430Core cpu, IOPort port, int clk, int mosi,
                         int miso, int chipSelect) {
@@ -94,9 +94,9 @@ public class Enc28J60 extends Chip {
         private boolean nextEcon1 = false;
         private boolean nextEcon2 = false;
 
-        private ArrayList<Byte> wbmData = new ArrayList<>();
+        private final ArrayList<Byte> wbmData = new ArrayList<>();
 
-        private ArrayList<RbmPacket> rbmPackets = new ArrayList<>();
+        private final ArrayList<RbmPacket> rbmPackets = new ArrayList<>();
         private static class RbmPacket {
                 ArrayList<Byte> data = new ArrayList<>();
                 boolean wasRead = false;

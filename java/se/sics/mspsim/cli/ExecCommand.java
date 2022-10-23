@@ -110,7 +110,7 @@ public class ExecCommand extends BasicLineCommand {
 
   private static class Runner extends Thread {
 
-    public ExecCommand command;
+    public final ExecCommand command;
     public boolean isRunning;
 
     public Runner(String name, ExecCommand command) {
@@ -153,9 +153,9 @@ public class ExecCommand extends BasicLineCommand {
 
   private static class Reader extends Thread {
 
-    private ExecCommand command;
-    private PrintStream out;
-    private BufferedReader input;
+    private final ExecCommand command;
+    private final PrintStream out;
+    private final BufferedReader input;
 
     public Reader(String name, ExecCommand command,
                   InputStream input, PrintStream out) {

@@ -37,7 +37,7 @@ public class PMM extends IOUnit {
      * Implement me!
      */
 
-    private int baseAddress;
+    private final int baseAddress;
 
     public PMM(MSP430Core cpu, int[] memory, int address) {
         super("PMM", "PMM", cpu, memory, address);
