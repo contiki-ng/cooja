@@ -1231,9 +1231,8 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private final ActionListener parserSelectedListener = e -> {
-    setParser((Class<? extends Parser>) ((JMenuItem) e.getSource()).getClientProperty("CLASS"));
-  };
+  private final ActionListener parserSelectedListener =
+          e -> setParser((Class<? extends Parser>) ((JMenuItem) e.getSource()).getClientProperty("CLASS"));
   private void updateParserMenu() {
     parserMenu.removeAll();
 
