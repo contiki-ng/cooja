@@ -205,6 +205,7 @@ public class Simulation extends Observable {
         } catch (InterruptedException e) {
           // Simulation thread interrupted - quit
           logger.warn("simulation thread interrupted");
+          Thread.currentThread().interrupt();
           isAlive = false;
           isShutdown = true;
         }
