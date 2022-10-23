@@ -445,7 +445,7 @@ public class Cooja extends Observable {
                       "To manage Cooja extensions:\n" +
                       "Menu->Settings->Cooja extensions",
               "Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
-      showErrorDialog(frame, "Cooja extensions load error", e, false);
+      showErrorDialog("Cooja extensions load error", e, false);
     }
 
     // Start all standard GUI plugins
@@ -1916,7 +1916,7 @@ public class Cooja extends Observable {
       return startPlugin(pluginClass, sim, argMote, root);
     } catch (PluginConstructionException ex) {
       if (Cooja.isVisualized()) {
-        Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Error when starting plugin", ex, false);
+        Cooja.showErrorDialog("Error when starting plugin", ex, false);
       } else {
         /* If the plugin requires visualization, inform user */
         Throwable cause = ex;
@@ -2408,7 +2408,7 @@ public class Cooja extends Observable {
       @Override
       protected void process(List<SimulationCreationException> exs) {
         for (var e : exs) {
-          var retry = showErrorDialog(Cooja.getTopParentContainer(), "Simulation load error", e, true);
+          var retry = showErrorDialog("Simulation load error", e, true);
           try {
             channel.put(retry ? 1 : 0);
           } catch (InterruptedException ex) {
@@ -2816,7 +2816,7 @@ public class Cooja extends Observable {
           mySimulation.addMoteType(newMoteType);
         } catch (Exception e1) {
           logger.fatal("Exception when creating mote type", e1);
-          showErrorDialog(getTopParentContainer(), "Mote type creation error", e1, false);
+          showErrorDialog("Mote type creation error", e1, false);
           newMoteType = null;
         }
       } else if (cmd.equals("add motes")) {
@@ -2838,7 +2838,7 @@ public class Cooja extends Observable {
                             "To manage Cooja extensions:\n" +
                             "Menu->Settings->Cooja extensions",
                     "Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
-            showErrorDialog(getTopParentContainer(), "Cooja extensions load error", ex, false);
+            showErrorDialog("Cooja extensions load error", ex, false);
           }
         }
       } else {
@@ -3473,33 +3473,17 @@ public class Cooja extends Observable {
   /**
    * A simple error dialog with compilation output and stack trace.
    *
-   * @param parentComponent
-   *          Parent component
-   * @param title
-   *          Title of error window
-   * @param exception
-   *          Exception causing window to be shown
-   * @param retryAvailable
-   *          If true, a retry option is presented
+   * @param title          Title of error window
+   * @param exception      Exception causing window to be shown
+   * @param retryAvailable If true, a retry option is presented
    * @return Retry failed operation
    */
-  public static boolean showErrorDialog(final Component parentComponent,
-      final String title, final Throwable exception, final boolean retryAvailable) {
-
+  public static boolean showErrorDialog(final String title, final Throwable exception, final boolean retryAvailable) {
     return new RunnableInEDT<Boolean>() {
       @Override
       public Boolean work() {
         JTabbedPane tabbedPane = new JTabbedPane();
-        final JDialog errorDialog;
-        if (parentComponent instanceof Dialog) {
-          errorDialog = new JDialog((Dialog) parentComponent, title, true);
-        } else if (parentComponent instanceof Frame) {
-          errorDialog = new JDialog((Frame) parentComponent, title, true);
-        } else {
-          errorDialog = new JDialog((Frame) null, title);
-        }
         Box buttonBox = Box.createHorizontalBox();
-
         if (exception != null) {
           /* Contiki error */
           if (exception instanceof ContikiError) {
@@ -3544,7 +3528,7 @@ public class Cooja extends Observable {
         }
 
         buttonBox.add(Box.createHorizontalGlue());
-
+        final var errorDialog = new JDialog(Cooja.getTopParentContainer(), title, true);
         if (retryAvailable) {
           Action retryAction = new AbstractAction() {
             @Override
@@ -3584,11 +3568,9 @@ public class Cooja extends Observable {
         errorDialog.getContentPane().add(BorderLayout.CENTER, tabbedPane);
         errorDialog.getContentPane().add(BorderLayout.SOUTH, buttonBox);
         errorDialog.setSize(700, 500);
-        errorDialog.setLocationRelativeTo(parentComponent);
+        errorDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
         errorDialog.setVisible(true); /* BLOCKS */
-
         return errorDialog.getTitle().equals("-RETRY-");
-
       }
     }.invokeAndWait();
 

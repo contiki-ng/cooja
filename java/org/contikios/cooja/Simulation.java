@@ -253,7 +253,7 @@ public class Simulation extends Observable implements Runnable {
     		  if (nextEvent.event instanceof MoteTimeEvent) {
     		    title += ": " + ((MoteTimeEvent)nextEvent.event).getMote();
     		  }
-    		  Cooja.showErrorDialog(Cooja.getTopParentContainer(), title, e, false);
+          Cooja.showErrorDialog(title, e, false);
     		}
     	}
     }
