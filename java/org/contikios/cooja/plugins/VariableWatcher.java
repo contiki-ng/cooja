@@ -113,8 +113,6 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
   private final VarMemory moteMemory;
 
   MemoryInterface.SegmentMonitor memMonitor;
-  long monitorAddr;
-  int monitorSize;
 
   private final ValueFormatter hf;
 
