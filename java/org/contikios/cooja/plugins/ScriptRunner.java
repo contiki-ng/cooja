@@ -270,7 +270,7 @@ public class ScriptRunner implements Plugin {
     } catch (ScriptException e) {
       logger.fatal("Test script error: ", e);
       if (Cooja.isVisualized()) {
-        Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Script error", e, false);
+        Cooja.showErrorDialog("Script error", e, false);
       }
       return false;
     }

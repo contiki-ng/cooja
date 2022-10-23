@@ -100,9 +100,7 @@ public class LogScriptEngine {
       } catch (UndeclaredThrowableException e) {
         logger.fatal("Exception: " + e.getMessage(), e);
         if (Cooja.isVisualized()) {
-          Cooja.showErrorDialog(Cooja.getTopParentContainer(),
-              e.getMessage(),
-              e, false);
+          Cooja.showErrorDialog(e.getMessage(), e, false);
         }
         deactivateScript();
         simulation.stopSimulation(false, 1);
@@ -288,7 +286,7 @@ public class LogScriptEngine {
           rv = 1;
           logger.fatal("Script error:", e);
           if (Cooja.isVisualized()) {
-            Cooja.showErrorDialog(Cooja.getTopParentContainer(), "Script error", e, false);
+            Cooja.showErrorDialog("Script error", e, false);
           }
         }
         deactivateScript();

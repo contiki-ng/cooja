@@ -311,7 +311,7 @@ public class DGRMConfigurator extends VisPlugin {
     try {
     	importEdges(parseDGRMLinksFile(file, gui.getSimulation()));
     } catch (Exception e) {
-    	Cooja.showErrorDialog(this, "Error when importing DGRM links from " + file.getName(), e, false);
+      Cooja.showErrorDialog("Error when importing DGRM links from " + file.getName(), e, false);
     }
 	}
 
