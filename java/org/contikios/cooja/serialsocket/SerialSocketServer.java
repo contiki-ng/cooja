@@ -467,6 +467,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
         }
         simulation.stopSimulation(false, rv > 0 ? rv : null);
         stopServer();
+        simulation.stopScriptEngines();
       }, "SerialSocketServer commands").start();
     }
     return true;
