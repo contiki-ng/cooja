@@ -99,7 +99,7 @@ public abstract class AbstractWakeupMote implements Mote {
    * @return True iff wakeup request rescheduled the wakeup time.
    */
   public boolean scheduleNextWakeup(long time) {
-    assert simulation.isSimulationThreadOrNull() : "Scheduling event from non-simulation thread (" + Thread.currentThread() + ")";
+    assert simulation.isSimulationThread() : "Scheduling event from non-simulation thread (" + Thread.currentThread() + ")";
       
     if (executeMoteEvent.isScheduled() &&
         nextWakeupTime <= time) {

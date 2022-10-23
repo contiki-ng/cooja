@@ -291,14 +291,6 @@ public class Simulation extends Observable {
   }
 
   /**
-   * @return True iff current thread is the simulation thread,
-   * or the simulation threat has not yet been created.
-   */
-  public boolean isSimulationThreadOrNull() {
-    return simulationThread == Thread.currentThread() || simulationThread == null;
-  }
-
-  /**
    * Schedule simulation event for given time.
    * Already scheduled events must be removed before they are rescheduled.
    * <p>
@@ -310,7 +302,7 @@ public class Simulation extends Observable {
    * @param time Execution time
    */
   public void scheduleEvent(final TimeEvent e, final long time) {
-    assert !isRunning || isSimulationThread() : "Scheduling event from non-simulation thread: " + e;
+    assert isSimulationThread() : "Scheduling event from non-simulation thread: " + e;
     eventQueue.addEvent(e, time);
   }
 
