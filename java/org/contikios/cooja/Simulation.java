@@ -762,7 +762,7 @@ public class Simulation extends Observable {
    *          Mote to add
    */
   public void addMote(final Mote mote) {
-    Runnable addMote = new Runnable() {
+    invokeSimulationThread(new Runnable() {
       @Override
       public void run() {
         if (mote.getInterfaces().getClock() != null) {
@@ -788,9 +788,7 @@ public class Simulation extends Observable {
         notifyObservers(mote);
         cooja.updateGUIComponentState();
       }
-    };
-
-    invokeSimulationThread(addMote);
+    });
   }
 
   /**
@@ -909,7 +907,7 @@ public class Simulation extends Observable {
    * @param newSpeedLimit
    */
   public void setSpeedLimit(final Double newSpeedLimit) {
-    Runnable r = new Runnable() {
+    invokeSimulationThread(new Runnable() {
       @Override
       public void run() {
         if (newSpeedLimit == null) {
@@ -929,8 +927,7 @@ public class Simulation extends Observable {
         Simulation.this.setChanged();
         Simulation.this.notifyObservers(this);
       }
-    };
-    invokeSimulationThread(r);
+    });
   }
 
   /**
