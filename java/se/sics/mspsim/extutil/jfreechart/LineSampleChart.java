@@ -17,7 +17,6 @@ import org.jfree.data.xy.XYSeriesCollection;
 public class LineSampleChart extends JFreeWindowDataHandler {
 
   private final JPanel panel;
-  private final XYSeriesCollection dataset;
   private final XYSeries dataSeries;
   private final JFreeChart chart;
   private final DefaultXYItemRenderer renderer;
@@ -29,7 +28,8 @@ public class LineSampleChart extends JFreeWindowDataHandler {
     xyplot.setDomainAxis(domain);
     xyplot.setRangeAxis(range);
     // xyplot.setBackgroundPaint(Color.black);
-    xyplot.setDataset(dataset = new XYSeriesCollection());
+    var dataset = new XYSeriesCollection();
+    xyplot.setDataset(dataset);
 
     renderer = new DefaultXYItemRenderer();
     renderer.setSeriesPaint(0, Color.black);
