@@ -41,7 +41,7 @@ import java.util.Random;
  * that simulations are reproducible.
  *
  */
-public class SafeRandom extends Random {
+class SafeRandom extends Random {
   
   final Simulation sim;
   Thread initThread = null;
