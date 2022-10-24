@@ -197,9 +197,6 @@ public class CodeUI extends JPanel {
   }
 
   private int getCodeEditorMouseLine() {
-    if (codeEditorLines == null) {
-      return -1;
-    }
     Point mousePos = codeEditor.getMousePosition();
     if (mousePos == null) {
       return -1;
