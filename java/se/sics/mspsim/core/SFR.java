@@ -103,17 +103,9 @@ public class SFR extends IOUnit {
                              long cycles) {
     if (DEBUG) log("write to: " + address + " = " + value);
     switch (address) {
-    case IE1:
-    case IE2:
-        updateIE(address - IE1, value);
-      break;
-    case IFG1:
-    case IFG2:
-      updateIFG(address - IFG1, value);
-      break;
-    case ME1:
-    case ME2:
-      updateME(address - ME1, value);
+      case IE1, IE2 -> updateIE(address - IE1, value);
+      case IFG1, IFG2 -> updateIFG(address - IFG1, value);
+      case ME1, ME2 -> updateME(address - ME1, value);
     }
     memory[address] = value;
   }
@@ -122,22 +114,15 @@ public class SFR extends IOUnit {
   @Override
   public int read(int address, boolean word, long cycles) {
     if (DEBUG) log("read from: " + address);
-    switch (address) {
-    case IE1:
-      return ie1;
-    case IE2:
-      return ie2;
-    case IFG1:
-      return ifg1;
-    case IFG2:
-      return ifg2;
-    case ME1:
-      return me1;
-    case ME2:
-      return me2;
-    default:
-      return memory[address];
-    }
+    return switch (address) {
+      case IE1 -> ie1;
+      case IE2 -> ie2;
+      case IFG1 -> ifg1;
+      case IFG2 -> ifg2;
+      case ME1 -> me1;
+      case ME2 -> me2;
+      default -> memory[address];
+    };
   }
 
   private void updateIE(int pos, int value) {

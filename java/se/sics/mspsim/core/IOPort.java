@@ -193,33 +193,20 @@ public class IOPort extends IOUnit {
     }
 
     public int getRegister(PortReg register) {
-        switch(register) {
-        case DIR:
-            return dir;
-        case IE:
-            return ie;
-        case IES:
-            return ies;
-        case IFG:
-            return ifg;
-        case IN:
-            return in;
-        case IV_H:
-            return (iv >> 8) & 0xff;
-        case IV_L:
-            return iv & 0xff;
-        case OUT:
-            return out;
-        case REN:
-            return ren;
-        case DS:
-            return ds;
-        case SEL:
-            return sel;
-        case SEL2:
-            return sel2;
-        }
-        return 0;
+        return switch (register) {
+            case DIR -> dir;
+            case IE -> ie;
+            case IES -> ies;
+            case IFG -> ifg;
+            case IN -> in;
+            case IV_H -> (iv >> 8) & 0xff;
+            case IV_L -> iv & 0xff;
+            case OUT -> out;
+            case REN -> ren;
+            case DS -> ds;
+            case SEL -> sel;
+            case SEL2 -> sel2;
+        };
     }
 
     /* only byte access!!! */

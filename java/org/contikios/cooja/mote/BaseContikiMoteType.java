@@ -264,26 +264,15 @@ public abstract class BaseContikiMoteType implements MoteType {
   protected boolean setBaseConfigXML(Simulation sim, Collection<Element> configXML) throws MoteTypeCreationException {
     for (Element element : configXML) {
       switch (element.getName()) {
-        case "identifier":
-          identifier = element.getText();
-          break;
-        case "description":
-          description = element.getText();
-          break;
-        case "contikiapp":
-        case "source":
+        case "identifier" -> identifier = element.getText();
+        case "description" -> description = element.getText();
+        case "contikiapp", "source" -> {
           fileSource = sim.getCooja().restorePortablePath(new File(element.getText()));
           fileFirmware = getExpectedFirmwareFile(fileSource.getName());
-          break;
-        case "elf":
-        case "firmware":
-          fileFirmware = sim.getCooja().restorePortablePath(new File(element.getText()));
-          break;
-        case "command":
-        case "commands":
-          compileCommands = element.getText();
-          break;
-        case "moteinterface":
+        }
+        case "elf", "firmware" -> fileFirmware = sim.getCooja().restorePortablePath(new File(element.getText()));
+        case "command", "commands" -> compileCommands = element.getText();
+        case "moteinterface" -> {
           var name = element.getText().trim();
           var clazz = MoteInterfaceHandler.getInterfaceClass(sim.getCooja(), this, name);
           if (clazz == null) {
@@ -291,16 +280,11 @@ public abstract class BaseContikiMoteType implements MoteType {
             return false;
           }
           moteInterfaceClasses.add(clazz);
-          break;
-        case "contikibasedir":
-        case "contikicoredir":
-        case "projectdir":
-        case "compilefile":
-        case "process":
-        case "sensor":
-        case "coreinterface":
+        }
+        case "contikibasedir", "contikicoredir", "projectdir", "compilefile", "process", "sensor", "coreinterface" -> {
           logger.fatal("Old Cooja mote type detected, aborting..");
           return false;
+        }
       }
     }
     if (getIdentifier() == null) {
