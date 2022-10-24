@@ -125,6 +125,8 @@ public class Simulation extends Observable implements Runnable {
         try {
           Thread.sleep(sleep);
         } catch (InterruptedException e) {
+          // Restore interrupted status
+          Thread.currentThread().interrupt();
         }
       } else {
         /* Reduce slow-down: execute this delay event less often */
