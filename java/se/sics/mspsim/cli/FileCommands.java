@@ -39,16 +39,16 @@ public class FileCommands implements CommandBundle {
         handler.registerCommand("files", new BasicCommand("list open files", "") {
           @Override
           public int executeCommand(CommandContext context) {
-            FileTarget[] files = null;
+            Target[] files = null;
             synchronized (fileTargets) {
                 if (fileTargets.size() > 0) {
-                    files = fileTargets.values().toArray(new FileTarget[0]);
+                    files = fileTargets.values().toArray(new Target[0]);
                 }
             }
             if (files == null) {
               context.out.println("There are no open files.");
             } else {
-              for (FileTarget type : files) {
+              for (var type : files) {
                 context.out.println(type.getStatus());
               }
             }
