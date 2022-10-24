@@ -187,7 +187,6 @@ public class Simulation extends Observable {
           }
         } catch (RuntimeException e) {
           if ("MSPSim requested simulation stop".equals(e.getMessage())) {
-            /* XXX Should be*/
             logger.info("Simulation stopped due to MSPSim breakpoint");
           } else {
             logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
