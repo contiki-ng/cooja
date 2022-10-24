@@ -94,9 +94,6 @@ public class IHexReader {
                                   hexToInt(line.charAt(index++)));
           }
 
-//	  int checksum = (byte) hexToInt(line.charAt(index++)) * 0x10
-//	    + hexToInt(line.charAt(index++));
-          //	System.out.println("Checksum: " + checksum);
         }
       }
       bInput.close();
@@ -132,13 +129,6 @@ public class IHexReader {
     IHexReader reader = new IHexReader();
     int data = 0x84;
     System.out.println("RRA: " + hex((data & 0x80) + (data >> 1)));
-
-//     for (int i = 0, n = 0x3ff; i < n; i++) {
-//       int val = (i & 0x200) == 0 ? i : -(0x200 - (i & 0x1ff));
-//     System.out.println("Value: " + val);
-//     }
-//     System.out.println("T ^ T =>  " + (true ^ true) +
-//                     " T ^ F => " + (false ^ true));
 
     MSP430 cpu = new MSP430(0, new ComponentRegistry(), new MSP430f1611Config());
     int[] memory = cpu.memory;

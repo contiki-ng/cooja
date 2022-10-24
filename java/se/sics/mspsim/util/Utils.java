@@ -231,8 +231,4 @@ public class Utils {
   }
 
 
-//  public static void main(String[] args) {
-//    System.out.println("Hex 47 = " + hex8(47));
-//  }
-
 }

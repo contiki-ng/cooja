@@ -94,8 +94,6 @@ public class EventQueue {
   public boolean removeEvent(TimeEvent event) {
     TimeEvent pos = first;
     TimeEvent lastPos = first;
-//  System.out.println("Removing: " + event.getShort() + "  Before remove: ");
-//  print();
     while (pos != null && pos != event) {
       lastPos = pos;
       pos = pos.nextEvent;
@@ -117,8 +115,6 @@ public class EventQueue {
     } else {
       nextTime = 0;
     }
-//  System.out.println("Removed =>");
-//  print();
     event.scheduledIn = null;
     eventCount--;
     return true;

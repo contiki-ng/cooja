@@ -1341,8 +1341,6 @@ public class ChannelModel {
             unhandledAngles = AngleInterval.subtract(unhandledAngles, visibleLineCandidateAngleInterval);
             visibleLines.add(visibleLineCandidate);
 
-            //logger.info("Added visible line and removed angle interval: " + visibleLineCandidateAngleInterval);
-            //logger.info("Number of visible lines sofar: " + visibleLines.size());
             break;
           }
 

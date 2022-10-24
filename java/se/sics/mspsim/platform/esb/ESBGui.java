@@ -107,10 +107,6 @@ public class ESBGui extends AbstractNodeGUI implements ADCInput {
         if (e.getButton() == MouseEvent.BUTTON1) {
           int x = e.getX();
           int y = e.getY();
-//        System.err.println("PRESSED AT " + x + "," + y
-//                + "  IMAGE=" + getNodeImage().getIconWidth()
-//                + "x" + getNodeImage().getIconHeight() +
-//                "  SIZE=" + getWidth() + "x" + getHeight());
 
           if (y > 152 && y < 168) {
             if (x > 0 && x < 19) {

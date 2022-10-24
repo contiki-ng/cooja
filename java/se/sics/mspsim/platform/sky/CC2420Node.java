@@ -150,10 +150,6 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
                 }
                 @Override
                 public void transmissionEnded(byte[] receivedData) {
-//                    System.out.println("**** Sending data len = " + receivedData.length);
-//                    for (int i = 0; i < receivedData.length; i++) {
-//                        System.out.println("Byte: " + Utils.hex8(receivedData[i]));
-//                    }
                     network.dataSent(receivedData);
                 }
             });
