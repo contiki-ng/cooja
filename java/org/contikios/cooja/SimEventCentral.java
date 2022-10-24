@@ -53,21 +53,7 @@ public class SimEventCentral {
 
   public SimEventCentral(Simulation simulation) {
     this.simulation = simulation;
-
-    /* Default buffer sizes */
-    logOutputBufferSize = Integer.parseInt(Cooja.getExternalToolsSetting("BUFFERSIZE_LOGOUTPUT", "" + 40000));
-
-    
-    moteObservations = new ArrayList<>();
-
-    /* Mote count: notifications */
-    moteCountListeners = new MoteCountListener[0];
-
-    /* Log output: notifications and history */
-    logOutputListeners = new LogOutputListener[0];
-    logOutputEvents = new ArrayDeque<>();
   }
-  
 
   /* GENERIC */
   private static class MoteEvent {
@@ -117,7 +103,7 @@ public class SimEventCentral {
       observable.deleteObserver(observer);
     }
   }
-  private final ArrayList<MoteObservation> moteObservations;
+  private final ArrayList<MoteObservation> moteObservations = new ArrayList<>();
 
   
   /* ADDED/REMOVED MOTES */
@@ -125,7 +111,8 @@ public class SimEventCentral {
     void moteWasAdded(Mote mote);
     void moteWasRemoved(Mote mote);
   }
-  private MoteCountListener[] moteCountListeners;
+  /** Mote count notifications. */
+  private MoteCountListener[] moteCountListeners = new MoteCountListener[0];
   private final Observer moteCountObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
@@ -204,13 +191,15 @@ public class SimEventCentral {
       return msg;
     }
   }
-  private int logOutputBufferSize;
-  private final ArrayDeque<LogOutputEvent> logOutputEvents;
+  /** Default buffer sizes. */
+  private int logOutputBufferSize = Integer.parseInt(Cooja.getExternalToolsSetting("BUFFERSIZE_LOGOUTPUT", "" + 40000));
+  private final ArrayDeque<LogOutputEvent> logOutputEvents = new ArrayDeque<>();
   public interface LogOutputListener extends MoteCountListener {
     void removedLogOutput(LogOutputEvent ev);
     void newLogOutput(LogOutputEvent ev);
   }
-  private LogOutputListener[] logOutputListeners;
+  /** Log output: notifications and history */
+  private LogOutputListener[] logOutputListeners = new LogOutputListener[0];
   private final Observer logOutputObserver = new Observer() {
     @Override
     public void update(Observable obs, Object obj) {
