@@ -952,15 +952,13 @@ class ConfigViewer extends JDialog {
 	private ConfigViewer(Dialog dialog, ProjectConfig config) {
 		super(dialog, "Merged project configuration", true);
 		JPanel configPane = new JPanel(new BorderLayout());
-		JLabel label;
-		JButton button;
 
 		/* Control */
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
 		buttonPane.add(Box.createHorizontalGlue());
 
-		button = new JButton("Close");
+		var button = new JButton("Close");
 		button.addActionListener(e -> dispose());
 		buttonPane.add(button);
 
@@ -976,7 +974,7 @@ class ConfigViewer extends JDialog {
 		valuePane.setLayout(new BoxLayout(valuePane, BoxLayout.Y_AXIS));
 		configPane.add(valuePane, BorderLayout.EAST);
 
-		label = new JLabel("KEY");
+		var label = new JLabel("KEY");
 		label.setForeground(Color.RED);
 		keyPane.add(label);
 		label = new JLabel("VALUE");
