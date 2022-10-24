@@ -37,7 +37,6 @@ import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -943,9 +942,6 @@ class DirectoryTreePanel extends JPanel {
 class ConfigViewer extends JDialog {
 	public static void showDialog(Dialog parentDialog, ProjectConfig config) {
 		ConfigViewer myDialog = new ConfigViewer(parentDialog, config);
-		myDialog.setAlwaysOnTop(true);
-		myDialog.setSize(700, 300);
-		myDialog.setLocationRelativeTo(parentDialog);
 		myDialog.setVisible(true);
 	}
 
@@ -999,5 +995,8 @@ class ConfigViewer extends JDialog {
 		contentPane.add(new JScrollPane(configPane), BorderLayout.CENTER);
 		contentPane.add(buttonPane, BorderLayout.SOUTH);
 		pack();
+		setAlwaysOnTop(true);
+		setSize(700, 300);
+		setLocationRelativeTo(dialog);
 	}
 }
