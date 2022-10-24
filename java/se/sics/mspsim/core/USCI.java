@@ -126,7 +126,7 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
 
   private boolean usciA; /* if this is an USCI A or B */
 
-  private TimeEvent txTrigger = new TimeEvent(0) {
+  private final TimeEvent txTrigger = new TimeEvent(0) {
     @Override
     public void execute(long t) {
         // Ready to transmit new byte!

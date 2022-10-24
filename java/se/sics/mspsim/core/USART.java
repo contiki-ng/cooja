@@ -115,7 +115,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   /* DMA controller that needs to be called at certain times */
   private DMA dma;
 
-  private TimeEvent txTrigger = new TimeEvent(0) {
+  private final TimeEvent txTrigger = new TimeEvent(0) {
     @Override
     public void execute(long t) {
         // Ready to transmit new byte!
@@ -123,7 +123,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
     }
   };
 
-  private TimeEvent rxTrigger = new TimeEvent(0) {
+  private final TimeEvent rxTrigger = new TimeEvent(0) {
       @Override
       public void execute(long t) {
           handleReceive();

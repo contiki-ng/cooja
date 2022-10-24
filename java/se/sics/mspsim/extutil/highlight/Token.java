@@ -9,7 +9,7 @@ public class Token {
   /**
    * The symbol contains all the properties shared with similar tokens.
    */
-  public Symbol symbol;
+  public final Symbol symbol;
 
   /**
    * The token's position is given by an index into the document text.

@@ -340,7 +340,7 @@ public class Scanner implements TokenTypes {
   // Reuse this symbol object to create each new symbol, then look it up in
   // the symbol table, to replace it by a shared version to minimize space.
 
-  private Symbol symbol = new Symbol(0, null);
+  private final Symbol symbol = new Symbol(0, null);
 
   /**
    * Lookup a symbol in the symbol table. This can be overridden to implement

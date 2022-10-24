@@ -54,9 +54,9 @@ public class NetworkPacket {
   Hashtable<String,Field> fields = new Hashtable<>();
 
   private static class Field {
-    String name;
-    int pos;
-    int size;
+    final String name;
+    final int pos;
+    final int size;
     int mask = 0;
     int value = 0;
 

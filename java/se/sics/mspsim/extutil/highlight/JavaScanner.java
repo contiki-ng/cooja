@@ -11,7 +11,7 @@ public class JavaScanner extends Scanner {
   // The version of Java supported.
   private int version = 15;
 
-  private boolean debug = false;
+  private final boolean debug = false;
 
   /** Create a Java scanner, for Java version 1.5 by default. */
   public JavaScanner() {
@@ -719,7 +719,7 @@ public class JavaScanner extends Scanner {
 
   // *** Override lookup, but what about unicode escape translation?
 
-  private Symbol temp = new Symbol(0, null);
+  private final Symbol temp = new Symbol(0, null);
 
   @Override
   protected Symbol lookup(int type, String name) {

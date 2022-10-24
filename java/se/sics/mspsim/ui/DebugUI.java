@@ -53,12 +53,12 @@ import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.util.Utils;
 
 public class DebugUI extends JPanel {
-  private JList<DbgInstruction> disList;
-  private DbgListModel listModel;
+  private final JList<DbgInstruction> disList;
+  private final DbgListModel listModel;
   private JLabel[] regsLabel;
-  private MSP430 cpu;
+  private final MSP430 cpu;
 
-  private DisAsm disAsm;
+  private final DisAsm disAsm;
 
   /**
    * Creates a new <code>DebugUI</code> instance.
@@ -105,7 +105,7 @@ public class DebugUI extends JPanel {
     int endPos = -1;
     static final int size = 21;
 
-    DbgInstruction[] instructions = new DbgInstruction[size];
+    final DbgInstruction[] instructions = new DbgInstruction[size];
 
     // -------------------------------------------------------------------
     // ListAPI

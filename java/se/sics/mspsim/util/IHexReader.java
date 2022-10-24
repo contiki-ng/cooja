@@ -52,7 +52,7 @@ import se.sics.mspsim.core.MSP430;
 public class IHexReader {
 
   // 64k tmp ram!
-  private int[] tmpMemory = new int[64 * 1024];
+  private final int[] tmpMemory = new int[64 * 1024];
 
   /**
    * Creates a new <code>IHexReader</code> instance.

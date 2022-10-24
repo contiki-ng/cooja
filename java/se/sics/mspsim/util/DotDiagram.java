@@ -58,13 +58,13 @@ public class DotDiagram extends JComponent {
   public static final char[] NOTE_CHAR = { 'N' };
 
   // The data "vector" - any number of vectors
-  private int[][] data;
-  private String[][] notes;
-  private Point[][] notesCoords;
-  private int[] dataLen;
-  private int[] start;
-  private int[] maxData;
-  private int[] minData;
+  private final int[][] data;
+  private final String[][] notes;
+  private final Point[][] notesCoords;
+  private final int[] dataLen;
+  private final int[] start;
+  private final int[] maxData;
+  private final int[] minData;
   private int totMax;
   private int totMin;
   private boolean lockMinMax = false;
@@ -85,14 +85,14 @@ public class DotDiagram extends JComponent {
   private String yLabel = null;
   private String xLabel = null;
 
-  private boolean isAdditive;
-  private boolean isFilled;
+  private final boolean isAdditive;
+  private final boolean isFilled;
 
   // Cache to avoid creating new insets objects for each repaint. Is
   // created when first needed.
   private Insets insets;
 
-  private Color[] lineColor;
+  private final Color[] lineColor;
 
   public DotDiagram(int diagrams) {
     this(diagrams, NORMAL);

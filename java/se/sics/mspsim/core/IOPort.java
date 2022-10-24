@@ -78,7 +78,7 @@ public class IOPort extends IOUnit {
 
     private int iv; /* low / high */
 
-    private Timer[] timerCapture = new Timer[8];
+    private final Timer[] timerCapture = new Timer[8];
 
     private IOPort ioPair;
 

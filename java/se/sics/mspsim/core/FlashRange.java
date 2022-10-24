@@ -35,10 +35,10 @@ package se.sics.mspsim.core;
  * @author Klaus Stengel (siklsten@informatik.stud.uni-erlangen.de)
  */
 public class FlashRange {
-  public int start;
-  public int end;
-  public int segment_size;
-  public int blocksize;
+  public final int start;
+  public final int end;
+  public final int segment_size;
+  public final int blocksize;
 
   public FlashRange(int start, int end, int segment_size, int blocksize) {
     this.start = start;

@@ -30,7 +30,7 @@
 package se.sics.mspsim.core;
 
 public class PMMDummy extends IOUnit {
-    public static int SIZE = 0x10;
+    public static final int SIZE = 0x10;
 
     public PMMDummy(MSP430Core cpu, int[] memory, int address) {
         super("PMMDummy", "PMMDummy", cpu, memory, address);
