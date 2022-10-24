@@ -951,10 +951,6 @@ class ConfigViewer extends JDialog {
 
 	private ConfigViewer(Dialog dialog, ProjectConfig config) {
 		super(dialog, "Merged project configuration", true);
-		init(config);
-	}
-
-	private void init(ProjectConfig config) {
 		JPanel configPane = new JPanel(new BorderLayout());
 		JLabel label;
 		JButton button;
