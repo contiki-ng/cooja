@@ -194,13 +194,12 @@ public class Simulation extends Observable {
             if (!Cooja.isVisualized()) {
               /* Quit simulator if in test mode */
               System.exit(1);
-            } else {
-              String title = "Simulation error";
-              if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
-                title += ": " + moteTimeEvent.getMote();
-              }
-              Cooja.showErrorDialog(title, e, false);
             }
+            String title = "Simulation error";
+            if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
+              title += ": " + moteTimeEvent.getMote();
+            }
+            Cooja.showErrorDialog(title, e, false);
           }
         } catch (InterruptedException e) {
           // Simulation thread interrupted - quit
