@@ -44,7 +44,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
@@ -227,8 +226,26 @@ public class PowerTracker implements Plugin {
 
     Box control = Box.createHorizontalBox();
     control.add(Box.createHorizontalGlue());
-    control.add(new JButton(printAction));
-    control.add(new JButton(resetAction));
+    control.add(new JButton(new AbstractAction("Print to console/Copy to clipboard") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String output = radioStatistics(true, true, false);
+        logger.info("PowerTracker output:\n\n" + output);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(new StringSelection(output), null);
+      }
+    }));
+    control.add(new JButton(new AbstractAction("Reset") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        Runnable r = PowerTracker.this::reset;
+        if (simulation.isRunning()) {
+          simulation.invokeSimulationThread(r);
+        } else {
+          r.run();
+        }
+      }
+    }));
 
     frame.getContentPane().add(BorderLayout.CENTER, new JScrollPane(table));
     frame.getContentPane().add(BorderLayout.SOUTH, control);
@@ -245,30 +262,6 @@ public class PowerTracker implements Plugin {
 	  }
 	  return null;
   }
-  
-  private final Action resetAction = new AbstractAction("Reset") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      Runnable r = PowerTracker.this::reset;
-      if (simulation.isRunning()) {
-        simulation.invokeSimulationThread(r);
-      } else {
-        r.run();
-      }
-    }
-  };
-
-  private final Action printAction = new AbstractAction("Print to console/Copy to clipboard") {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      String output = radioStatistics(true, true, false);
-      logger.info("PowerTracker output:\n\n" + output);
-
-      Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-      StringSelection stringSelection = new StringSelection(output);
-      clipboard.setContents(stringSelection, null);
-    }
-  };
 
   public String radioStatistics() {
     return radioStatistics(true, true, false);
