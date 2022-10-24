@@ -196,20 +196,13 @@ public class DisAsm implements MSP430Constants {
         case RRXX_WORD:
             String rrwordStr = rrword ? ".W" : ".A";
             int count = ((instruction >> 10) & 0x03) + 1; // shift amount
-            switch (instruction & RRMASK) {
-                case RRCM:
-                    opstr = "RRCM" + rrwordStr + " #" + count + ",R" + dst;
-                    break;
-                case RRAM:
-                    opstr = "RRAM" + rrwordStr + " #" + count + ",R" + dst;
-                    break;
-                case RLAM:
-                    opstr = "RLAM" + rrwordStr + " #" + count + ",R" + dst;
-                    break;
-                case RRUM:
-                    opstr = "RRUM" + rrwordStr + " #" + count + ",R" + dst;
-                    break;
-            }
+          opstr = switch (instruction & RRMASK) {
+            case RRCM -> "RRCM" + rrwordStr + " #" + count + ",R" + dst;
+            case RRAM -> "RRAM" + rrwordStr + " #" + count + ",R" + dst;
+            case RLAM -> "RLAM" + rrwordStr + " #" + count + ",R" + dst;
+            case RRUM -> "RRUM" + rrwordStr + " #" + count + ",R" + dst;
+            default -> opstr;
+          };
             break;
         }
 
@@ -248,20 +241,13 @@ public class DisAsm implements MSP430Constants {
             size += 2;
             break;
         default:
-            switch (instruction & 0xff00) {
-            case PUSHM_A:
-                opstr = "PUSHM.A #" + (1 + ((instruction >> 4) & 0x0f)) + ", R" + (instruction & 0x0f);
-                break;
-            case PUSHM_W:
-                opstr = "PUSHM.W #" + (1 + ((instruction >> 4) & 0x0f)) + ", R" + (instruction & 0x0f);
-                break;
-            case POPM_A:
-                opstr = "POPM.A #" + (1 + ((instruction >> 4) & 0x0f)) + ", R" + (instruction & 0x0f);
-                break;
-            case POPM_W:
-                opstr = "POPM.W #" + (1 + ((instruction >> 4) & 0x0f)) + ", R" + (instruction & 0x0f);
-                break;
-            }
+          opstr = switch (instruction & 0xff00) {
+            case PUSHM_A -> "PUSHM.A #" + (1 + ((instruction >> 4) & 0x0f)) + ", R" + (instruction & 0x0f);
+            case PUSHM_W -> "PUSHM.W #" + (1 + ((instruction >> 4) & 0x0f)) + ", R" + (instruction & 0x0f);
+            case POPM_A -> "POPM.A #" + (1 + ((instruction >> 4) & 0x0f)) + ", R" + (instruction & 0x0f);
+            case POPM_W -> "POPM.W #" + (1 + ((instruction >> 4) & 0x0f)) + ", R" + (instruction & 0x0f);
+            default -> opstr;
+          };
         }
         if (opstr != null) {
             output += dumpMem(startPC, size, memory);
@@ -362,36 +348,20 @@ public class DisAsm implements MSP430Constants {
       int jmpOffset = instruction & 0x3ff;
       jmpOffset = (jmpOffset & 0x200) == 0 ?
         2 * jmpOffset : -(2 * (0x200 - (jmpOffset & 0x1ff)));
-      String opstr = "";
-      switch(instruction & 0xfc00) {
-      case JNE:
-        opstr = "JNE";
-        break;
-      case JEQ:
-        opstr = "JEQ";
-        break;
-      case JNC:
-        opstr = "JNC";
-        break;
-      case JC:
-        opstr = "JC";
-        break;
-      case JN:
-        opstr = "JN";
-        break;
-      case JGE:
-        opstr = "JGE";
-        break;
-      case JL:
-        opstr = "JL";
-        break;
-      case JMP:
-        opstr = "JMP";
-        break;
-      default:
-        System.out.println("Not implemented instruction: " +
-                           Utils.binary16(instruction));
-      }
+      String opstr = switch (instruction & 0xfc00) {
+        case JNE -> "JNE";
+        case JEQ -> "JEQ";
+        case JNC -> "JNC";
+        case JC -> "JC";
+        case JN -> "JN";
+        case JGE -> "JGE";
+        case JL -> "JL";
+        case JMP -> "JMP";
+        default -> {
+          System.out.println("Not implemented instruction: " + Utils.binary16(instruction));
+          yield "";
+        }
+      };
       output += dumpMem(startPC, size, memory);
       output += opstr + " $" + Utils.hex16(jmpOffset);
       regs = "\tSR=" + dumpSR(reg[SR]);
@@ -596,24 +566,16 @@ public class DisAsm implements MSP430Constants {
 
   public static String getSingleOPStr(int instruction) {
     boolean word = (instruction & 0x40) == 0;
-    switch(instruction & 0xff80) {
-    case RRC:
-      return "RRC" + (word ? ".W" : ".B");
-    case SWPB:
-      return "SWPB" + (word ? ".W" : ".B");
-    case RRA:
-      return "RRA" + (word ? ".W" : ".B");
-    case SXT:
-      return "RRA" + (word ? ".W" : ".B");
-    case PUSH:
-      return "PUSH" + (word ? ".W" : ".B");
-    case CALL:
-      return "CALL";
-    case RETI:
-      return "RETI";
-    default:
-      return "-";
-    }
+    return switch (instruction & 0xff80) {
+      case RRC -> "RRC" + (word ? ".W" : ".B");
+      case SWPB -> "SWPB" + (word ? ".W" : ".B");
+      case RRA -> "RRA" + (word ? ".W" : ".B");
+      case SXT -> "RRA" + (word ? ".W" : ".B");
+      case PUSH -> "PUSH" + (word ? ".W" : ".B");
+      case CALL -> "CALL";
+      case RETI -> "RETI";
+      default -> "-";
+    };
   }
 
   private static String dumpSR(int sr) {

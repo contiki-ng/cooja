@@ -113,15 +113,9 @@ public class CPUHeatMap extends JComponent implements MemoryMonitor {
         int f = 1;
         if (mode == 1) f = 40;
         switch (type) {
-        case EXECUTE:
-            val = heatE[adr] = heatE[adr] + f;
-            break;
-        case READ:
-            val = heatR[adr] = heatR[adr] + f;
-            break;
-        case WRITE:
-            val = heatW[adr] = heatW[adr] + f;
-            break;
+            case EXECUTE -> val = heatE[adr] = heatE[adr] + f;
+            case READ -> val = heatR[adr] = heatR[adr] + f;
+            case WRITE -> val = heatW[adr] = heatW[adr] + f;
         }
         if (val > heatMax) {
             heatMax = val;

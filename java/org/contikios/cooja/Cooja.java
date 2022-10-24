@@ -775,14 +775,14 @@ public class Cooja extends Observable {
           return;
         }
         switch (e.getStateChange()) {
-          case ItemEvent.SELECTED:
+          case ItemEvent.SELECTED -> {
             sim.startSimulation();
             stepButton.setEnabled(false);
-            break;
-          case ItemEvent.DESELECTED:
+          }
+          case ItemEvent.DESELECTED -> {
             sim.stopSimulation();
             stepButton.setEnabled(true);
-            break;
+          }
         }
         updateToolbar(false);
       }
@@ -873,24 +873,12 @@ public class Cooja extends Observable {
       @Override
       public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-          case "0.01X":
-            getSimulation().setSpeedLimit(0.01);
-            break;
-          case "0.1X":
-            getSimulation().setSpeedLimit(0.1);
-            break;
-          case "1X":
-            getSimulation().setSpeedLimit(1.0);
-            break;
-          case "2X":
-            getSimulation().setSpeedLimit(2.0);
-            break;
-          case "20X":
-            getSimulation().setSpeedLimit(20.0);
-            break;
-          case "Unlimited":
-            getSimulation().setSpeedLimit(null);
-            break;
+          case "0.01X" -> getSimulation().setSpeedLimit(0.01);
+          case "0.1X" -> getSimulation().setSpeedLimit(0.1);
+          case "1X" -> getSimulation().setSpeedLimit(1.0);
+          case "2X" -> getSimulation().setSpeedLimit(2.0);
+          case "20X" -> getSimulation().setSpeedLimit(20.0);
+          case "Unlimited" -> getSimulation().setSpeedLimit(null);
         }
       }
     };
