@@ -198,9 +198,9 @@ public class Simulation extends Observable implements Runnable {
     			System.exit(1);
     		} else {
     		  String title = "Simulation error";
-    		  if (nextEvent.event instanceof MoteTimeEvent) {
-    		    title += ": " + ((MoteTimeEvent)nextEvent.event).getMote();
-    		  }
+                  if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
+                    title += ": " + moteTimeEvent.getMote();
+                  }
           Cooja.showErrorDialog(title, e, false);
     		}
     	}
