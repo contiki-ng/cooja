@@ -120,12 +120,14 @@ public class Simulation extends Observable implements Runnable {
       long expectedDiffRealtime = (long) (diffSimtime/speedLimit);
       long sleep = expectedDiffRealtime - diffRealtime;
       if (sleep >= 0) {
+        scheduleEvent(this, t+MILLISECOND);
         /* Slow down simulation */
         try {
           Thread.sleep(sleep);
         } catch (InterruptedException e) {
+          // Restore interrupted status
+          Thread.currentThread().interrupt();
         }
-        scheduleEvent(this, t+MILLISECOND);
       } else {
         /* Reduce slow-down: execute this delay event less often */
         scheduleEvent(this, t-sleep*MILLISECOND);
@@ -198,9 +200,9 @@ public class Simulation extends Observable implements Runnable {
     			System.exit(1);
     		} else {
     		  String title = "Simulation error";
-    		  if (nextEvent.event instanceof MoteTimeEvent) {
-    		    title += ": " + ((MoteTimeEvent)nextEvent.event).getMote();
-    		  }
+                  if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
+                    title += ": " + moteTimeEvent.getMote();
+                  }
           Cooja.showErrorDialog(title, e, false);
     		}
     	}
