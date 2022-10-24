@@ -67,28 +67,32 @@ public class CoffeeManager {
 				}
 			}
 
-			if(args[i].equals("-p")) {
-				platform = args[i + 1];
-				i++;
-			} else if (args[i].equals("-i")) {
-				command = Command.INSERT;
-				filename = args[i + 1];
-				i++;
-			} else if (args[i].equals("-r")) {
-				command = Command.REMOVE;
-				filename = args[i + 1];
-				i++;
-			} else if (args[i].equals("-e")) {
-				command = Command.EXTRACT;
-				filename = args[i + 1];
-				i++;
-			} else if (args[i].equals("-l")) {
-				command = Command.LIST;
-			} else if (args[i].equals("-s")) {
-				command = Command.STATS;
-			} else {
-				System.err.println(usage);
-				System.exit(1);
+			switch (args[i]) {
+				case "-p" -> {
+					platform = args[i + 1];
+					i++;
+				}
+				case "-i" -> {
+					command = Command.INSERT;
+					filename = args[i + 1];
+					i++;
+				}
+				case "-r" -> {
+					command = Command.REMOVE;
+					filename = args[i + 1];
+					i++;
+				}
+				case "-e" -> {
+					command = Command.EXTRACT;
+					filename = args[i + 1];
+					i++;
+				}
+				case "-l" -> command = Command.LIST;
+				case "-s" -> command = Command.STATS;
+				default -> {
+					System.err.println(usage);
+					System.exit(1);
+				}
 			}
 		}
 		fsImage = args[args.length - 1];

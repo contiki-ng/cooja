@@ -190,56 +190,33 @@ public class ChannelModel {
     
     public static Parameter fromString(String name) {
       /* Backwards compatability */
-      if (name.equals("apply_random")) {
-        return apply_random;
-      } else if (name.equals("snr_threshold")) {
-        return snr_threshold;
-      } else if (name.equals("bg_noise_mean")) {
-        return bg_noise_mean;
-      } else if (name.equals("bg_noise_var")) {
-        return bg_noise_var;
-      } else if (name.equals("system_gain_mean")) {
-        return system_gain_mean;
-      } else if (name.equals("system_gain_var")) {
-        return system_gain_var;
-      } else if (name.equals("tx_power")) {
-        return tx_power;
-      } else if (name.equals("rx_sensitivity")) {
-        return rx_sensitivity;
-      } else if (name.equals("rt_disallow_direct_path")) {
-        return rt_disallow_direct_path;
-      } else if (name.equals("rt_ignore_non_direct")) {
-        return rt_ignore_non_direct;
-      } else if (name.equals("rt_fspl_on_total_length")) {
-        return rt_fspl_on_total_length;
-      } else if (name.equals("rt_max_rays")) {
-        return rt_max_rays;
-      } else if (name.equals("rt_max_refractions")) {
-        return rt_max_refractions;
-      } else if (name.equals("rt_max_reflections")) {
-        return rt_max_reflections;
-      } else if (name.equals("rt_max_diffractions")) {
-        return rt_max_diffractions;
-      } else if (name.equals("rt_use_scattering")) {
-        return rt_use_scattering;
-      } else if (name.equals("rt_refrac_coefficient")) {
-        return rt_refrac_coefficient;
-      } else if (name.equals("rt_reflec_coefficient")) {
-        return rt_reflec_coefficient;
-      } else if (name.equals("rt_diffr_coefficient")) {
-        return rt_diffr_coefficient;
-      } else if (name.equals("rt_scatt_coefficient")) {
-        return rt_scatt_coefficient;
-      } else if (name.equals("obstacle_attenuation")) {
-        return obstacle_attenuation;
-      } else if (name.equals("captureEffect")) {
-        return captureEffect;
-      } else if (name.equals("captureEffectPreambleDuration")) {
-        return captureEffectPreambleDuration;
-      } else if (name.equals("captureEffectSignalTreshold")) {
-        return captureEffectSignalTreshold;
-      }
-      return null;
+      return switch (name) {
+        case "apply_random" -> apply_random;
+        case "snr_threshold" -> snr_threshold;
+        case "bg_noise_mean" -> bg_noise_mean;
+        case "bg_noise_var" -> bg_noise_var;
+        case "system_gain_mean" -> system_gain_mean;
+        case "system_gain_var" -> system_gain_var;
+        case "tx_power" -> tx_power;
+        case "rx_sensitivity" -> rx_sensitivity;
+        case "rt_disallow_direct_path" -> rt_disallow_direct_path;
+        case "rt_ignore_non_direct" -> rt_ignore_non_direct;
+        case "rt_fspl_on_total_length" -> rt_fspl_on_total_length;
+        case "rt_max_rays" -> rt_max_rays;
+        case "rt_max_refractions" -> rt_max_refractions;
+        case "rt_max_reflections" -> rt_max_reflections;
+        case "rt_max_diffractions" -> rt_max_diffractions;
+        case "rt_use_scattering" -> rt_use_scattering;
+        case "rt_refrac_coefficient" -> rt_refrac_coefficient;
+        case "rt_reflec_coefficient" -> rt_reflec_coefficient;
+        case "rt_diffr_coefficient" -> rt_diffr_coefficient;
+        case "rt_scatt_coefficient" -> rt_scatt_coefficient;
+        case "obstacle_attenuation" -> obstacle_attenuation;
+        case "captureEffect" -> captureEffect;
+        case "captureEffectPreambleDuration" -> captureEffectPreambleDuration;
+        case "captureEffectSignalTreshold" -> captureEffectSignalTreshold;
+        default -> null;
+      };
     }
 
     public static String getDescription(Parameter p) {
