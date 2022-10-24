@@ -37,7 +37,6 @@ import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -941,43 +940,21 @@ class DirectoryTreePanel extends JPanel {
  * @author Fredrik Osterlind
  */
 class ConfigViewer extends JDialog {
-	public static void showDialog(Frame parentFrame, ProjectConfig config) {
-		ConfigViewer myDialog = new ConfigViewer(parentFrame, config);
-		myDialog.setAlwaysOnTop(true);
-		myDialog.setSize(700, 300);
-		myDialog.setLocationRelativeTo(parentFrame);
-		myDialog.setVisible(true);
-	}
-
 	public static void showDialog(Dialog parentDialog, ProjectConfig config) {
 		ConfigViewer myDialog = new ConfigViewer(parentDialog, config);
-		myDialog.setAlwaysOnTop(true);
-		myDialog.setSize(700, 300);
-		myDialog.setLocationRelativeTo(parentDialog);
 		myDialog.setVisible(true);
 	}
 
 	private ConfigViewer(Dialog dialog, ProjectConfig config) {
 		super(dialog, "Merged project configuration", true);
-		init(config);
-	}
-
-	private ConfigViewer(Frame frame, ProjectConfig config) {
-		super(frame, "Merged project configuration", true);
-		init(config);
-	}
-
-	private void init(ProjectConfig config) {
 		JPanel configPane = new JPanel(new BorderLayout());
-		JLabel label;
-		JButton button;
 
 		/* Control */
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
 		buttonPane.add(Box.createHorizontalGlue());
 
-		button = new JButton("Close");
+		var button = new JButton("Close");
 		button.addActionListener(e -> dispose());
 		buttonPane.add(button);
 
@@ -993,7 +970,7 @@ class ConfigViewer extends JDialog {
 		valuePane.setLayout(new BoxLayout(valuePane, BoxLayout.Y_AXIS));
 		configPane.add(valuePane, BorderLayout.EAST);
 
-		label = new JLabel("KEY");
+		var label = new JLabel("KEY");
 		label.setForeground(Color.RED);
 		keyPane.add(label);
 		label = new JLabel("VALUE");
@@ -1018,5 +995,8 @@ class ConfigViewer extends JDialog {
 		contentPane.add(new JScrollPane(configPane), BorderLayout.CENTER);
 		contentPane.add(buttonPane, BorderLayout.SOUTH);
 		pack();
+		setAlwaysOnTop(true);
+		setSize(700, 300);
+		setLocationRelativeTo(dialog);
 	}
 }
