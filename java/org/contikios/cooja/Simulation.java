@@ -120,12 +120,12 @@ public class Simulation extends Observable implements Runnable {
       long expectedDiffRealtime = (long) (diffSimtime/speedLimit);
       long sleep = expectedDiffRealtime - diffRealtime;
       if (sleep >= 0) {
+        scheduleEvent(this, t+MILLISECOND);
         /* Slow down simulation */
         try {
           Thread.sleep(sleep);
         } catch (InterruptedException e) {
         }
-        scheduleEvent(this, t+MILLISECOND);
       } else {
         /* Reduce slow-down: execute this delay event less often */
         scheduleEvent(this, t-sleep*MILLISECOND);
