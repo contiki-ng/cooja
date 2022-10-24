@@ -107,67 +107,6 @@ public class Simulation extends Observable implements Runnable {
   private boolean hasPollRequests = false;
   private final ArrayDeque<Runnable> pollRequests = new ArrayDeque<>();
 
-
-  /**
-   * Request poll from simulation thread.
-   * Poll requests are prioritized over simulation events, and are
-   * executed between each simulation event.
-   *
-   * @param r Simulation thread action
-   */
-  public void invokeSimulationThread(Runnable r) {
-    synchronized (pollRequests) {
-      pollRequests.addLast(r);
-      hasPollRequests = true;
-    }
-  }
-
-  private void runSimulationInvokes() {
-    boolean more;
-    synchronized (pollRequests) {
-      more = hasPollRequests;
-    }
-    while (more) {
-      Runnable r;
-      synchronized (pollRequests) {
-        r = pollRequests.pop();
-        more = hasPollRequests = !pollRequests.isEmpty();
-      }
-      r.run();
-    }
-  }
-
-  /**
-   * @return True iff current thread is the simulation thread
-   */
-  public boolean isSimulationThread() {
-    return simulationThread == Thread.currentThread();
-  }
-
-  /**
-   * @return True iff current thread is the simulation thread,
-   * or the simulation threat has not yet been created.
-   */
-  public boolean isSimulationThreadOrNull() {
-    return simulationThread == Thread.currentThread() || simulationThread == null;
-  }
-
-  /**
-   * Schedule simulation event for given time.
-   * Already scheduled events must be removed before they are rescheduled.
-   * <p>
-   * If the simulation is running, this method may only be called from the simulation thread.
-   *
-   * @see #invokeSimulationThread(Runnable)
-   *
-   * @param e Event
-   * @param time Execution time
-   */
-  public void scheduleEvent(final TimeEvent e, final long time) {
-    assert !isRunning || isSimulationThread() : "Scheduling event from non-simulation thread: " + e;
-    eventQueue.addEvent(e, time);
-  }
-
   private final TimeEvent delayEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
@@ -203,6 +142,15 @@ public class Simulation extends Observable implements Runnable {
       return "DELAY";
     }
   };
+
+  /**
+   * Creates a new simulation
+   */
+  public Simulation(Cooja cooja, long seed) {
+    this.cooja = cooja;
+    randomGenerator = new SafeRandom(this);
+    randomSeed = seed;
+  }
 
   @Override
   public void run() {
@@ -267,12 +215,63 @@ public class Simulation extends Observable implements Runnable {
   }
 
   /**
-   * Creates a new simulation
+   * Request poll from simulation thread.
+   * Poll requests are prioritized over simulation events, and are
+   * executed between each simulation event.
+   *
+   * @param r Simulation thread action
    */
-  public Simulation(Cooja cooja, long seed) {
-    this.cooja = cooja;
-    randomGenerator = new SafeRandom(this);
-    randomSeed = seed;
+  public void invokeSimulationThread(Runnable r) {
+    synchronized (pollRequests) {
+      pollRequests.addLast(r);
+      hasPollRequests = true;
+    }
+  }
+
+  private void runSimulationInvokes() {
+    boolean more;
+    synchronized (pollRequests) {
+      more = hasPollRequests;
+    }
+    while (more) {
+      Runnable r;
+      synchronized (pollRequests) {
+        r = pollRequests.pop();
+        more = hasPollRequests = !pollRequests.isEmpty();
+      }
+      r.run();
+    }
+  }
+
+  /**
+   * @return True iff current thread is the simulation thread
+   */
+  public boolean isSimulationThread() {
+    return simulationThread == Thread.currentThread();
+  }
+
+  /**
+   * @return True iff current thread is the simulation thread,
+   * or the simulation threat has not yet been created.
+   */
+  public boolean isSimulationThreadOrNull() {
+    return simulationThread == Thread.currentThread() || simulationThread == null;
+  }
+
+  /**
+   * Schedule simulation event for given time.
+   * Already scheduled events must be removed before they are rescheduled.
+   * <p>
+   * If the simulation is running, this method may only be called from the simulation thread.
+   *
+   * @see #invokeSimulationThread(Runnable)
+   *
+   * @param e Event
+   * @param time Execution time
+   */
+  public void scheduleEvent(final TimeEvent e, final long time) {
+    assert !isRunning || isSimulationThread() : "Scheduling event from non-simulation thread: " + e;
+    eventQueue.addEvent(e, time);
   }
 
   /** Basic simulation configuration. */
@@ -714,9 +713,7 @@ public class Simulation extends Observable implements Runnable {
         notifyObservers(mote);
 
         // Delete all events associated with deleted mote.
-        eventQueue.removeIf(
-          (TimeEvent ev) ->
-            ev instanceof MoteTimeEvent && ((MoteTimeEvent)ev).getMote() == mote);
+        eventQueue.removeIf(ev -> ev instanceof MoteTimeEvent moteTimeEvent && moteTimeEvent.getMote() == mote);
       }
     };
 
