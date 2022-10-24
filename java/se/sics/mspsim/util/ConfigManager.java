@@ -71,14 +71,6 @@ public class ConfigManager {
   // Config file handling
   // -------------------------------------------------------------------
 
-  protected String getBackupFile(String configFile) {
-    int index = configFile.lastIndexOf('.');
-    if (index > 0 && index < configFile.length() - 1) {
-      return configFile.substring(0, index) + ".bak";
-    }
-    return null;
-  }
-
   public boolean loadConfiguration(String configFile) {
     return loadConfiguration(new File(configFile));
   }
