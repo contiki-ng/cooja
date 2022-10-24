@@ -300,7 +300,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private final int[] memory = new int[512];
 
   // Buffer to hold 5 byte Synchronization header, as it is not written to the TXFIFO
-  private byte[] SHR = new byte[5];
+  private final byte[] SHR = new byte[5];
 
   private boolean chipSelect;
 

@@ -17,14 +17,14 @@ public class CPUHeatMap extends JComponent implements MemoryMonitor {
     private final Timer ticker;
 
     private ManagedWindow window;
-    private BufferedImage heatmap;
-    private int[] heatR;
-    private int[] heatW;
-    private int[] heatE;
+    private final BufferedImage heatmap;
+    private final int[] heatR;
+    private final int[] heatW;
+    private final int[] heatE;
     private int heatMax = 0;
     private int mode = 1;
 
-    private MSP430Core cpu;
+    private final MSP430Core cpu;
 
     public CPUHeatMap(MSP430Core cpu, WindowManager windowManager) {
         this.cpu = cpu;

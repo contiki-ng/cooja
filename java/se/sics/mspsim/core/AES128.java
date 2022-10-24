@@ -62,7 +62,7 @@ public class AES128 extends IOUnit {
         /**
          * Enable/Disable debug output of the module
          */
-        private static boolean DEBUG = false;
+        private static final boolean DEBUG = false;
 
         /**
          * Register definition as in the documentation Offset from 0xff80
@@ -154,7 +154,7 @@ public class AES128 extends IOUnit {
 
         /* avoid using NIO resources */
         private static class ByteBuffer {
-            byte[] buffer;
+            final byte[] buffer;
             int pos;
 
             ByteBuffer(int size) {
@@ -206,9 +206,9 @@ public class AES128 extends IOUnit {
             }
         }
 
-        private ByteBuffer key = new ByteBuffer(16);
-        private ByteBuffer inData = new ByteBuffer(16);
-        private ByteBuffer outData = new ByteBuffer(16);
+        private final ByteBuffer key = new ByteBuffer(16);
+        private final ByteBuffer inData = new ByteBuffer(16);
+        private final ByteBuffer outData = new ByteBuffer(16);
 
         /**
          * Syntax sugar

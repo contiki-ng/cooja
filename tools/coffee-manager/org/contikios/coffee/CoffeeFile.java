@@ -40,9 +40,9 @@ import java.io.IOException;
 public class CoffeeFile {
 	protected CoffeeFS coffeeFS;
 	protected CoffeeHeader header;
-	private String name;
+	private final String name;
 	private int length;
-	private int reservedSize;
+	private final int reservedSize;
 	private CoffeeMicroLog microLog;
 	private boolean knownLength;
 

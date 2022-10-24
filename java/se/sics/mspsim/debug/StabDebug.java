@@ -48,7 +48,7 @@ import se.sics.mspsim.util.Utils;
 
 public class StabDebug implements ELFDebug {
 
-  private Stab[] stabs;
+  private final Stab[] stabs;
 
   public static final int N_FUN = 0x24;
   public static final int N_STSYM = 0x26; // Data segment file-scope variable;
@@ -61,8 +61,8 @@ public class StabDebug implements ELFDebug {
 
   public static final boolean DEBUG = false;
 
-  ELFSection dbgStab;
-  ELFSection dbgStabStr;
+  final ELFSection dbgStab;
+  final ELFSection dbgStabStr;
 
   public StabDebug(ELF elf, ELFSection stab, ELFSection stabstr) {
     dbgStab = stab;
@@ -287,11 +287,11 @@ public class StabDebug implements ELFDebug {
 
   public static class Stab {
 
-    public String data;
-    public int type;
-    public int other;
-    public int desc;
-    public int value;
+    public final String data;
+    public final int type;
+    public final int other;
+    public final int desc;
+    public final int value;
 
     Stab(String data, int type, int other, int desc, int value) {
       this.data = data;

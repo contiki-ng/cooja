@@ -102,7 +102,7 @@ public class DwarfReader implements ELFDebug {
         LineEntry[] lineEntries;
     }
 
-    ArrayList<LineData> lineInfo = new ArrayList<>();
+    final ArrayList<LineData> lineInfo = new ArrayList<>();
 
     /* some state for the line number handling */
     private int lineAddress;

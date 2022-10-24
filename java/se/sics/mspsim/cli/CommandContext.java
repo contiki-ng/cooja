@@ -7,16 +7,16 @@ import se.sics.mspsim.util.Utils;
 
 public class CommandContext {
 
-  private String[] args;
-  private String commandLine;
-  private MapTable mapTable;
-  private int pid;
+  private final String[] args;
+  private final String commandLine;
+  private final MapTable mapTable;
+  private final int pid;
   private boolean exited = false;
-  private Command command;
+  private final Command command;
 
   public PrintStream out;
   public PrintStream err;
-  private CommandHandler commandHandler;
+  private final CommandHandler commandHandler;
 
   public CommandContext(CommandHandler ch, MapTable table, String commandLine, String[] args,
                         int pid, Command command, PrintStream out, PrintStream err) {

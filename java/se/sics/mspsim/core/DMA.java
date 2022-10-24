@@ -37,7 +37,7 @@ public class DMA extends IOUnit {
     private InterruptMultiplexer interruptMultiplexer;
 
     class Channel implements InterruptHandler {
-        int channelNo;
+        final int channelNo;
         /* public registers */
 
         int ctl;
