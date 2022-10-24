@@ -205,6 +205,7 @@ public class Simulation extends Observable {
         } catch (InterruptedException e) {
           // Simulation thread interrupted - quit
           logger.warn("simulation thread interrupted");
+          Thread.currentThread().interrupt();
           isAlive = false;
           isShutdown = true;
         }
@@ -291,14 +292,6 @@ public class Simulation extends Observable {
   }
 
   /**
-   * @return True iff current thread is the simulation thread,
-   * or the simulation threat has not yet been created.
-   */
-  public boolean isSimulationThreadOrNull() {
-    return simulationThread == Thread.currentThread() || simulationThread == null;
-  }
-
-  /**
    * Schedule simulation event for given time.
    * Already scheduled events must be removed before they are rescheduled.
    * <p>
@@ -310,7 +303,7 @@ public class Simulation extends Observable {
    * @param time Execution time
    */
   public void scheduleEvent(final TimeEvent e, final long time) {
-    assert !isRunning || isSimulationThread() : "Scheduling event from non-simulation thread: " + e;
+    assert isSimulationThread() : "Scheduling event from non-simulation thread: " + e;
     eventQueue.addEvent(e, time);
   }
 
@@ -423,13 +416,6 @@ public class Simulation extends Observable {
       }
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-    }
-  }
-
-  public void stopScriptEngines() {
-    // FIXME: this should be at the end of run(), but that requires the sim thread to be persistent.
-    for (var engine : scriptEngines) {
-      engine.deactivateScript();
     }
   }
 
