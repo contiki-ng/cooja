@@ -370,7 +370,7 @@ public class ConsoleUI extends JComponent {
   /**
    * Get the String residing on the clipboard.
    */
-  public String getClipboardContents() {
+  public static String getClipboardContents() {
     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     Transferable contents = clipboard.getContents(null);
     if ((contents != null)
