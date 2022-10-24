@@ -2216,9 +2216,6 @@ public class AreaViewer extends VisPlugin {
       // Decide on scale comparator
       double currentArrowDistance = 0.1; // in meters
       if (currentZoomX < canvas.getWidth() / 2) {
-        currentArrowDistance = 0.1; // 0.1m
-      }
-      if (currentZoomX < canvas.getWidth() / 2) {
         currentArrowDistance = 1; // 1m
       }
       if (10 * currentZoomX < canvas.getWidth() / 2) {
