@@ -428,7 +428,6 @@ public class Simulation extends Observable {
     TimeEvent stopEvent = new TimeEvent() {
       @Override
       public void execute(long t) {
-        /* Stop simulation */
         stopSimulation();
       }
     };
