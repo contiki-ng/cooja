@@ -63,7 +63,7 @@ public class Enc28J60 extends Chip {
         private static final int WBM_COMMAND = 0x3a; /* Note: 0x7a with write bit set */
         private static final int RBM_COMMAND = 0x3a; /* Note: 0x7a with write bit set */
 
-        private IOPort myPort;
+        private final IOPort myPort;
 
         private final int myClk;
         private final int myMosi;
@@ -98,7 +98,7 @@ public class Enc28J60 extends Chip {
 
         private final ArrayList<RbmPacket> rbmPackets = new ArrayList<>();
         private static class RbmPacket {
-                ArrayList<Byte> data = new ArrayList<>();
+                final ArrayList<Byte> data = new ArrayList<>();
                 boolean wasRead = false;
         }
 

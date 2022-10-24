@@ -41,10 +41,10 @@ package se.sics.mspsim.util;
 
 public class DebugInfo {
 
-  private String file;
-  private String path;
-  private int lineNo;
-  private String function;
+  private final String file;
+  private final String path;
+  private final int lineNo;
+  private final String function;
 
   public DebugInfo(int line, String path, String file, String fun) {
     this.lineNo = line;

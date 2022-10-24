@@ -68,16 +68,16 @@ import se.sics.mspsim.cli.CommandHandler;
  *
  */
 public class ConsoleUI extends JComponent {
-  private Timer timer;
+  private final Timer timer;
 
-  private String[] history = new String[200];
+  private final String[] history = new String[200];
   private int pos;
 
   /* this is the "edit" line */
-  private char[] chars = new char[1024];
+  private final char[] chars = new char[1024];
 
   /* up to 200 visible lines */
-  private String[] lines = new String[200];
+  private final String[] lines = new String[200];
 
   private int lineCount = 0;
   private int lastVisible = 0;
@@ -96,14 +96,14 @@ public class ConsoleUI extends JComponent {
   private int len = 0;
   private int back = 0;
 
-  private int charWidth = 7;
-  private int charHeight = 11;
+  private final int charWidth = 7;
+  private final int charHeight = 11;
   private int bottomLine = 30;
 
   private CommandHandler commandHandler;
 
   /* editor variables */
-  private boolean insert = true;
+  private final boolean insert = true;
   private boolean editing = false;
   private boolean cursor;
 
@@ -119,7 +119,7 @@ public class ConsoleUI extends JComponent {
   private int selectEndY = 0;
 
 
-  private static int MIN_X = 8;
+  private static final int MIN_X = 8;
 
   public ConsoleUI() {
     setFont(Font.decode("Courier-12"));
@@ -456,7 +456,7 @@ public class ConsoleUI extends JComponent {
         charWidth, 2);
   }
 
-  StringBuffer currentOutput = new StringBuffer();
+  final StringBuffer currentOutput = new StringBuffer();
 
   int oldBottomLine = 0;
   @Override
@@ -524,7 +524,7 @@ public class ConsoleUI extends JComponent {
     }
   }
 
-  StringBuffer buffer = new StringBuffer();
+  final StringBuffer buffer = new StringBuffer();
 
   /* add a line to the "visible" screen */
   private void addLine(String line) {
@@ -560,7 +560,7 @@ public class ConsoleUI extends JComponent {
   }
 
   /* just print space instead of tabs */
-  String tabs = "           ";
+  final String tabs = "           ";
 
   /* print char to the shell */
   public void output(int c) {

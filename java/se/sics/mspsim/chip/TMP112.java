@@ -54,7 +54,7 @@ public class TMP112 extends I2CUnit implements TemperatureChip {
         private int resolution = 0x03;
         private boolean oneShot = false;
 
-        private float[] resFactors = { 50f, 25f, 12.5f, 6.25f };
+        private final float[] resFactors = { 50f, 25f, 12.5f, 6.25f };
 
         public static final int TEMP_REG = 0;
         public static final int CONFIG_REG = 1;

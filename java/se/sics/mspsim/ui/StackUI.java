@@ -63,12 +63,12 @@ public class StackUI extends JPanel implements ServiceComponent {
   private LineChart maxUsageStackChart;
 
 //  private DotDiagram diagram;
-  private int[] minData = new int[STACK_FRAME];
-  private int[] maxData = new int[STACK_FRAME];
-  private int[] maxUsageData = new int[STACK_FRAME];
-  private int[] minCache = new int[STACK_FRAME];
-  private int[] maxCache = new int[STACK_FRAME];
-  private int[] maxUsageCache = new int[STACK_FRAME];
+  private final int[] minData = new int[STACK_FRAME];
+  private final int[] maxData = new int[STACK_FRAME];
+  private final int[] maxUsageData = new int[STACK_FRAME];
+  private final int[] minCache = new int[STACK_FRAME];
+  private final int[] maxCache = new int[STACK_FRAME];
+  private final int[] maxUsageCache = new int[STACK_FRAME];
 //  private String[] notes = new String[STACK_FRAME];
 
   private long lastCycles = 0;

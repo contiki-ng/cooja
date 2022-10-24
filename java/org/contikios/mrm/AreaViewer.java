@@ -943,11 +943,10 @@ public class AreaViewer extends VisPlugin {
       virtualWidth = 0.0,
       virtualHeight = 0.0;
 
-      private JFormattedTextField
-      virtualStartXField,
-      virtualStartYField,
-      virtualWidthField,
-      virtualHeightField;
+      private final JFormattedTextField virtualStartXField;
+      private final JFormattedTextField virtualStartYField;
+      private final JFormattedTextField virtualWidthField;
+      private final JFormattedTextField virtualHeightField;
 
       private boolean terminatedOK = false;
 
