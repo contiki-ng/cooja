@@ -941,14 +941,6 @@ class DirectoryTreePanel extends JPanel {
  * @author Fredrik Osterlind
  */
 class ConfigViewer extends JDialog {
-	public static void showDialog(Frame parentFrame, ProjectConfig config) {
-		ConfigViewer myDialog = new ConfigViewer(parentFrame, config);
-		myDialog.setAlwaysOnTop(true);
-		myDialog.setSize(700, 300);
-		myDialog.setLocationRelativeTo(parentFrame);
-		myDialog.setVisible(true);
-	}
-
 	public static void showDialog(Dialog parentDialog, ProjectConfig config) {
 		ConfigViewer myDialog = new ConfigViewer(parentDialog, config);
 		myDialog.setAlwaysOnTop(true);
@@ -959,11 +951,6 @@ class ConfigViewer extends JDialog {
 
 	private ConfigViewer(Dialog dialog, ProjectConfig config) {
 		super(dialog, "Merged project configuration", true);
-		init(config);
-	}
-
-	private ConfigViewer(Frame frame, ProjectConfig config) {
-		super(frame, "Merged project configuration", true);
 		init(config);
 	}
 
