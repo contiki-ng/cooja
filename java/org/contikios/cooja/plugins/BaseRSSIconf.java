@@ -42,9 +42,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.PluginType;
@@ -67,8 +64,6 @@ import org.contikios.cooja.radiomediums.DirectedGraphMedium;
 @SupportedArguments(radioMediums = { AbstractRadioMedium.class })
 
 public class BaseRSSIconf extends VisPlugin {
-	private static final Logger logger = LogManager.getLogger(BaseRSSIconf.class);
-
 	private final static int IDX_Mote = 0;
 	private final static int IDX_BaseRSSI = 1;
 

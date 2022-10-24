@@ -43,7 +43,7 @@ public class CoffeeFile {
 	private final String name;
 	private int length;
 	private final int reservedSize;
-	private CoffeeMicroLog microLog;
+	private final CoffeeMicroLog microLog;
 	private boolean knownLength;
 
 	public CoffeeFile(CoffeeFS coffeeFS, CoffeeHeader header) throws IOException {

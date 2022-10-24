@@ -128,7 +128,7 @@ public class AT45DB extends ExternalFlash implements USARTListener {
   private final byte[] buffer1 = new byte[PAGE_SIZE];
   private final byte[] buffer2 = new byte[PAGE_SIZE];
 
-  private TimeEvent writeEvent = new TimeEvent(0) {
+  private final TimeEvent writeEvent = new TimeEvent(0) {
     @Override
     public void execute(long t) {
       setReady(true);

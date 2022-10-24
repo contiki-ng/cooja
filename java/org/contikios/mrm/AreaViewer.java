@@ -171,7 +171,6 @@ public class AreaViewer extends VisPlugin {
   private Image channelImage = null;
 
   private final JSlider resolutionSlider;
-  private final Box controlPanel;
   private final JScrollPane scrollControlPanel;
 
   private final Simulation currentSimulation;
@@ -587,7 +586,7 @@ public class AreaViewer extends VisPlugin {
     visualizeChannelPanel.add(recalculateVisibleButton);
 
     // Create control panel
-    controlPanel = Box.createVerticalBox();
+    var controlPanel = Box.createVerticalBox();
     graphicsComponentsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
     controlPanel.add(graphicsComponentsPanel);
     controlPanel.add(new JSeparator());
@@ -945,8 +944,6 @@ public class AreaViewer extends VisPlugin {
 
       private boolean terminatedOK = false;
 
-      private final NumberFormat doubleFormat = NumberFormat.getNumberInstance();
-
       /**
        * Creates a new dialog for settings background parameters
        */
@@ -954,8 +951,6 @@ public class AreaViewer extends VisPlugin {
         super(Cooja.getTopParentContainer(), "Image settings");
         JPanel mainPanel, tempPanel;
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        doubleFormat.setMinimumIntegerDigits(1);
-
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Set layout and add components
@@ -964,6 +959,8 @@ public class AreaViewer extends VisPlugin {
 
         tempPanel = new JPanel(new GridLayout(1, 2));
         tempPanel.add(new JLabel("Start X (m)     "));
+        var doubleFormat = NumberFormat.getNumberInstance();
+        doubleFormat.setMinimumIntegerDigits(1);
         virtualStartXField = new JFormattedTextField(doubleFormat);
         virtualStartXField.setValue(0.0);
         tempPanel.add(virtualStartXField);
@@ -1257,7 +1254,6 @@ public class AreaViewer extends VisPlugin {
   };
 
   static class ObstacleFinderDialog extends JDialog {
-    private final NumberFormat intFormat = NumberFormat.getIntegerInstance();
     private final BufferedImage imageToAnalyze;
     private BufferedImage obstacleImage;
     private JPanel canvasPanel = null;
@@ -1367,6 +1363,7 @@ public class AreaViewer extends VisPlugin {
         );
 
         // Set layout and add components
+        var intFormat = NumberFormat.getIntegerInstance();
         intFormat.setMinimumIntegerDigits(1);
         intFormat.setMaximumIntegerDigits(3);
         intFormat.setParseIntegerOnly(true);

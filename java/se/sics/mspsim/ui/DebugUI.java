@@ -53,8 +53,6 @@ import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.util.Utils;
 
 public class DebugUI extends JPanel {
-  private final JList<DbgInstruction> disList;
-  private final DbgListModel listModel;
   private JLabel[] regsLabel;
   private final MSP430 cpu;
 
@@ -73,8 +71,7 @@ public class DebugUI extends JPanel {
     this.cpu = cpu;
     disAsm = cpu.getDisAsm();
 
-    listModel = new DbgListModel();
-    disList = new JList<>(listModel);
+    var disList = new JList<>(new DbgListModel());
     disList.setFont(new Font("courier", Font.PLAIN, 12));
     disList.setCellRenderer(new MyCellRenderer());
     disList.setPreferredSize(new Dimension(500, 350));

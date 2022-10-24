@@ -51,10 +51,6 @@ public class BarChart extends IntSerieChart {
     // Do nothing
   }
 
-  public BarChart(String name) {
-    setName(name);
-  }
-
   @Override
   public void drawChart(Graphics2D g, double xfac, double yfac, int width, int height) {
     int[] data = this.data;

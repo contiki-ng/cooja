@@ -48,10 +48,6 @@ public class ArgumentManager extends ConfigManager {
   public ArgumentManager() {
   }
 
-  public ArgumentManager(ConfigManager parent) {
-    super(parent);
-  }
-
   public boolean isConfigLoaded() {
     return isConfigLoaded;
   }

@@ -31,7 +31,7 @@ import javax.swing.text.StyledDocument;
  */
 public class SyntaxHighlighter extends JTextPane implements DocumentListener, TokenTypes {
   private StyledDocument doc;
-  private Scanner scanner;
+  private final Scanner scanner;
   private int rows, columns;
 
   private int currentY, currentHeight = -1;
@@ -241,13 +241,13 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
   // Scan a small portion of the document. If more is needed, call repaint()
   // so the GUI gets a go and doesn't freeze, but calls this again later.
 
-  private Segment text = new Segment();
+  private final Segment text = new Segment();
 
   private int firstRehighlightToken;
 
   private int smallAmount = 100;
 
-  private Color highlightColor = new Color(0, 240, 0, 255);
+  private final Color highlightColor = new Color(0, 240, 0, 255);
 
   /**
    * <span style="color:gray;">Ignore this method. Carries out a small amount of

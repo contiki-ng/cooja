@@ -113,7 +113,7 @@ public class DwarfReader implements ELFDebug {
     private boolean isStatement = false;
     private boolean endSequence = false;
 
-    private ArrayList<Arange> aranges = new ArrayList<>();
+    private final ArrayList<Arange> aranges = new ArrayList<>();
 
     public DwarfReader(ELF elfFile) {
         this.elfFile = elfFile;
