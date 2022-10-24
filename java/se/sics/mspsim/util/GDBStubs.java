@@ -118,21 +118,19 @@ public class GDBStubs implements Runnable {
             sendResponse(OK);
             break;
         case 'q':
-            if ("qC".equals(cmd)) {
-                sendResponse("QC1");
-            } else if ("qOffsets".equals(cmd)) {
-                sendResponse("Text=0;Data=0;Bss=0");
-            } else if ("qfThreadInfo".equals(cmd)){
-                sendResponse("m 01");
-            } else if ("qsThreadInfo".equals(cmd)){
-                sendResponse("l");
-            } else if ("qSymbol::".equals(cmd)){
-                sendResponse(OK);
+            switch (cmd) {
+                case "qC" -> sendResponse("QC1");
+                case "qOffsets" -> sendResponse("Text=0;Data=0;Bss=0");
+                case "qfThreadInfo" -> sendResponse("m 01");
+                case "qsThreadInfo" -> sendResponse("l");
+                case "qSymbol::" -> sendResponse(OK);
+
                 //} else if ("qThreadExtraInfo,1".equals(cmd)){
                 //              sendResponse(stringToHex("Stoped"));
-            } else {
-                System.out.println("Command unknown");
-                sendResponse("");
+                default -> {
+                    System.out.println("Command unknown");
+                    sendResponse("");
+                }
             }
 
             break;
