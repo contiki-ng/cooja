@@ -211,11 +211,11 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
   /* Generic visualization */
   private final MoteCountListener newMotesListener;
-  private Observer posObserver;
-  private Observer moteHighligtObserver;
+  private final Observer posObserver;
+  private final Observer moteHighligtObserver;
   private final ArrayList<Mote> highlightedMotes = new ArrayList<>();
   private final static Color HIGHLIGHT_COLOR = Color.CYAN;
-  private Observer moteRelationsObserver;
+  private final Observer moteRelationsObserver;
 
   /* Popup menu */
   public interface SimulationMenuAction {

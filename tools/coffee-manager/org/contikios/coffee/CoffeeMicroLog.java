@@ -35,12 +35,12 @@ package org.contikios.coffee;
 import java.io.IOException;
 
 public class CoffeeMicroLog extends CoffeeFile {
-	private int logRecords;
+	private final int logRecords;
 	private int logRecordSize;
-	private int indexStart;
-	private int indexSize;
-	private int recordStart;
-	private int[] index;
+	private final int indexStart;
+	private final int indexSize;
+	private final int recordStart;
+	private final int[] index;
 
 	public CoffeeMicroLog(CoffeeFS fs, CoffeeHeader header)
 			throws IOException {
