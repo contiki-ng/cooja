@@ -146,16 +146,28 @@ public class SimEventCentral {
 
       if (exists) {
         /* Mote was added */
-        moteWasAdded(evMote);
-
+        if (logOutputListeners.length > 0) {
+          // Add another log output observation (supports multiple log interfaces per mote).
+          for (MoteInterface mi: evMote.getInterfaces().getInterfaces()) {
+            if (mi instanceof Log) {
+              moteObservations.add(new MoteObservation(evMote, mi, logOutputObserver));
+            }
+          }
+        }
         /* Notify external listeners */
         for (MoteCountListener l: moteCountListeners) {
           l.moteWasAdded(evMote);
         }
       } else {
         /* Mote was removed */
-        moteWasRemoved(evMote);
-
+        // Disconnect and remove mote observations.
+        MoteObservation[] observations = moteObservations.toArray(new MoteObservation[0]);
+        for (MoteObservation o: observations) {
+          if (o.getMote() == evMote) {
+            o.disconnect();
+            moteObservations.remove(o);
+          }
+        }
         /* Notify external listeners */
         for (MoteCountListener l: moteCountListeners) {
           l.moteWasRemoved(evMote);
@@ -301,32 +313,6 @@ public class SimEventCentral {
       }
     }
     return count;
-  }
-
-  
-  /* HELP METHODS: MAINTAIN OBSERVERS */
-  private void moteWasAdded(Mote mote) {
-    if (logOutputListeners.length > 0) {
-      /* Add another log output observation.
-       * (Supports multiple log interfaces per mote) */
-      for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
-        if (mi instanceof Log) {
-          moteObservations.add(new MoteObservation(mote, mi, logOutputObserver));
-        }
-      }
-    }
-
-    /* ... */
-  }
-  private void moteWasRemoved(Mote mote) {
-    /* Disconnect and remove mote observations */
-    MoteObservation[] observations = moteObservations.toArray(new MoteObservation[0]);
-    for (MoteObservation o: observations) {
-      if (o.getMote() == mote) {
-        o.disconnect();
-        moteObservations.remove(o);
-      }
-    }
   }
 
   @Override
