@@ -493,7 +493,16 @@ public class BufferListener extends VisPlugin {
     bufferMenu.addMenuListener(new MenuListener() {
       @Override
       public void menuSelected(MenuEvent e) {
-        updateBufferMenu();
+        bufferMenu.removeAll();
+        for (var btClass: bufferTypes) {
+          if (btClass == CustomVariableBuffer.class) {
+            bufferMenu.addSeparator();
+          }
+          JCheckBoxMenuItem mi = new JCheckBoxMenuItem(Cooja.getDescriptionOf(btClass), btClass == buffer.getClass());
+          mi.putClientProperty("CLASS", btClass);
+          mi.addActionListener(bufferSelectedListener);
+          bufferMenu.add(mi);
+        }
       }
       @Override
       public void menuDeselected(MenuEvent e) {
@@ -506,7 +515,13 @@ public class BufferListener extends VisPlugin {
     parserMenu.addMenuListener(new MenuListener() {
       @Override
       public void menuSelected(MenuEvent e) {
-        updateParserMenu();
+        parserMenu.removeAll();
+        for (var bpClass: bufferParsers) {
+          JCheckBoxMenuItem mi = new JCheckBoxMenuItem(Cooja.getDescriptionOf(bpClass), bpClass == parser.getClass());
+          mi.putClientProperty("CLASS", bpClass);
+          mi.addActionListener(parserSelectedListener);
+          parserMenu.add(mi);
+        }
       }
       @Override
       public void menuDeselected(MenuEvent e) {
@@ -1233,16 +1248,6 @@ public class BufferListener extends VisPlugin {
 
   private final ActionListener parserSelectedListener =
           e -> setParser((Class<? extends Parser>) ((JMenuItem) e.getSource()).getClientProperty("CLASS"));
-  private void updateParserMenu() {
-    parserMenu.removeAll();
-
-    for (Class<? extends Parser> bpClass: bufferParsers) {
-      JCheckBoxMenuItem mi = new JCheckBoxMenuItem(Cooja.getDescriptionOf(bpClass), bpClass==parser.getClass());
-      mi.putClientProperty("CLASS", bpClass);
-      mi.addActionListener(parserSelectedListener);
-      parserMenu.add(mi);
-    }
-  }
 
   private final ActionListener bufferSelectedListener = e -> {
     var b = createBufferInstance((Class<? extends Buffer>) ((JMenuItem) e.getSource()).getClientProperty("CLASS"));
@@ -1252,19 +1257,6 @@ public class BufferListener extends VisPlugin {
       }
     }
   };
-  private void updateBufferMenu() {
-    bufferMenu.removeAll();
-
-    for (Class<? extends Buffer> btClass: bufferTypes) {
-      if (btClass == CustomVariableBuffer.class) {
-        bufferMenu.addSeparator();
-      }
-      JCheckBoxMenuItem mi = new JCheckBoxMenuItem(Cooja.getDescriptionOf(btClass), btClass==buffer.getClass());
-      mi.putClientProperty("CLASS", btClass);
-      mi.addActionListener(bufferSelectedListener);
-      bufferMenu.add(mi);
-    }
-  }
 
   private void setParser(Class<? extends Parser> bpClass) {
     Parser bp;
