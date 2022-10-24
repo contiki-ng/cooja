@@ -102,10 +102,8 @@ public class HighlightSourceViewer implements SourceViewer {
 
   private void addEnvPath(String searchPath) {
     String[] p = searchPath.split(File.pathSeparator);
-    if (p != null) {
-      for (String s : p) {
-        addSearchPath(new File(s));
-      }
+    for (String s : p) {
+      addSearchPath(new File(s));
     }
   }
 

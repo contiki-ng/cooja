@@ -11,8 +11,6 @@ public class NoMemSegment implements Memory {
     @Override
     public int read(int address, AccessMode mode, AccessType type) throws EmulationException {
         throw new EmulationException("Illegal read - out of bounds at $" + core.config.getAddressAsString(address));
-//        core.printWarning(MSP430Constants.ADDRESS_OUT_OF_BOUNDS_READ, address);
-//        return 0;
     }
 
     @Override

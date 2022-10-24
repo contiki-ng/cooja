@@ -186,8 +186,6 @@ public class ADC12Plus extends IOUnit {
         private final TimeEvent adcTrigger = new TimeEvent(0) {
                 @Override
                 public void execute(long t) {
-                        // System.out.println(getName() + " **** executing update timers at " +
-                        // t + " cycles=" + cpu.cycles);
                         convert();
                 }
         };
@@ -376,8 +374,6 @@ public class ADC12Plus extends IOUnit {
                                 if (adc12iv == reg * 2 + 6) {
                                         cpu.flagInterrupt(adc12Vector, this, false);
                                         adc12iv = 0;
-                                        // System.out.println("** de-Trigger ADC12 IRQ for ADCMEM" +
-                                        // adc12Pos);
                                 }
                                 return adc12mem[reg];
                         }

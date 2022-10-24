@@ -160,9 +160,6 @@ public class Flash extends IOUnit {
           logw(WarningType.EXECUTION, "Last access in block mode. Forced exit?");
           currentWriteMode = WriteMode.WRITE_BLOCK_FINISH;
         }
-/*	if (DEBUG) {
-          System.out.println("Write cycle complete, flagged WAIT.");
-        } */
         wait = true;
         break;
 
@@ -488,9 +485,6 @@ public class Flash extends IOUnit {
   }
 
   private void triggerSingleWrite() {
-    /*if (DEBUG) {
-      System.out.println("Single write triggered");
-    }*/
     currentWriteMode = WriteMode.WRITE_SINGLE;
   }
 

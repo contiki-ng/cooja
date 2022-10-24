@@ -343,9 +343,6 @@ public class M25P80 extends ExternalFlash implements USARTListener, PortListener
       }
     }
     chipSelect = (data & CHIP_SELECT) == 0;
-//    if (DEBUG) log("write to Port4: " +
-//		       Integer.toString(data, 16)
-//		       + " CS:" + chipSelect);
     state = 0;
   }
 

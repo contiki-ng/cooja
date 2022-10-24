@@ -238,9 +238,7 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
       address = address - offset;
 
       // Indicate ready to write!!! - this should not be done here...
-//      System.out.println(">>>> Write to " + getName() + " at " +
-//              address + " = " + data);
-      switch (address) {
+        switch (address) {
       case CTL0:
         syncMode = (data & 0x01) > 0;
         i2cEnabled = (data & 0x06) == 0x06;

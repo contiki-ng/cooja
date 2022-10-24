@@ -139,10 +139,7 @@ public class MSP430 extends MSP430Core {
         nextSleep = cycles + (long)(rate * dcoFrq / 10);
       }
 
-//       if ((instruction & 0xff80) == CALL) {
-//      System.out.println("Call to PC = " + reg[PC]);
-//       }
-    }
+      }
     isStopping = isBreaking = false;
   }
 
@@ -249,8 +246,6 @@ public class MSP430 extends MSP430Core {
 
     /* run until this cycle time */
     maxCycles = lastMicrosCycles + ((lastMicrosDelta + executeMicros) * dcoFrq) / 1000000;
-    /*System.out.println("Current cycles: " + cycles + " additional micros: " + (jumpMicros) +
-          " exec micros: " + executeMicros + " => Execute until cycles: " + maxCycles);*/
 
 
     while (cycles < maxCycles || (cpuOff && (nextEventCycles < cycles))) {

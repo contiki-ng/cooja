@@ -17,8 +17,6 @@ public class IOSegment implements Memory {
     }
 
     void setIORange(int address, int range, IOUnit io) {
-//        System.out.println("IO: 0x" + Utils.hex(address, 4) + "-"
-//                + Utils.hex(address + range - 1, 4) + ": " + io.id);
         for (int i = 0; i < range; i++) {
 //            if (mem[address + i] != voidIO) {
 //                System.err.println("Warning, IO unit already set: 0x"

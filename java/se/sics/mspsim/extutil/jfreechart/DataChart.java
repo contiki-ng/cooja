@@ -49,9 +49,6 @@ public class DataChart extends JPanel implements ServiceComponent {
     renderer.setSeriesPaint(1, Color.green);
     renderer.setSeriesPaint(2, Color.blue);
     renderer.setSeriesPaint(3, Color.black);
-//    renderer.setBaseStroke(
-//        new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL)
-//    );
     renderer.setSeriesShapesVisible(0, false);
     renderer.setSeriesShapesVisible(1, false);
     renderer.setSeriesShapesVisible(2, false);

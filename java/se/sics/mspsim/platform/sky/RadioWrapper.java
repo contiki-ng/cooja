@@ -34,9 +34,6 @@ public class RadioWrapper implements RFListener {
    // radio.receivedByte((byte) receivedData.length);
 
     for (byte receivedDatum : receivedData) {
-//      int data = receivedData[i];
-//      System.out.println("*** RF (external) Data :" + data + " = $" + Utils.hex8(data) + " => " +
-//          (char) data);
 
       radio.receivedByte(receivedDatum);
     }
@@ -46,8 +43,6 @@ public class RadioWrapper implements RFListener {
   @Override
   public void receivedByte(byte data) {
     PacketListener listener = this.packetListener;
-//    System.out.println("*** RF Data :" + data + " = $" + Utils.hex8(data) + " => " +
-//        (char) data);
     if (pos == 5) {
       len = data;
     }

@@ -331,8 +331,6 @@ public class JSONObject extends HashMap<String,Object> implements JSONAware, JSO
         @Override
         public boolean endObject() {
             trackBack();
-            // System.out.println("End JSON Object: " + getResult() + " Stack: "
-            // + valueStack.size());
             /* we are finished if value stack is 1 */
             return this.valueStack.size() > 1;
         }

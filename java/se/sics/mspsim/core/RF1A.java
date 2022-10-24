@@ -132,9 +132,6 @@ public class RF1A extends IOUnit implements InterruptHandler {
     private boolean expectingDummyWrite = false;
     @Override
     public void write(int address, int value, boolean word, long cycles) {
-        /*if (DEBUG) {
-            System.out.printf(this.getName() + ": Write to 0x%04x: 0x%04x\n", address, value);
-        }*/
 
         if (address == ADDRESS + RF1AIE) {
           /* Configure interrupts */
@@ -199,9 +196,6 @@ public class RF1A extends IOUnit implements InterruptHandler {
 
     @Override
     public int read(int address, boolean word, long cycles) {
-        /*if (DEBUG) {
-            System.out.printf(this.getName() + ": Read from 0x%04x\n", address);
-        }*/
 
         if (address == ADDRESS + RF1AIV) {
           if (interruptOnCC1101GDO0 && gdo0IsHigh) {

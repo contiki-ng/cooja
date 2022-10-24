@@ -59,8 +59,6 @@ public class LineChart extends IntSerieChart {
   public void drawChart(Graphics2D g, double xfac, double yfac, int width, int height) {
     int[] lastData = this.data;
     if (lastData != null) {
-//      int minWidth = 1;
-//      if (xfac > 1) minWidth = (int) (xfac + 0.9);
       int lastX = -1;
       int lastY = -1;
       int zero = height;

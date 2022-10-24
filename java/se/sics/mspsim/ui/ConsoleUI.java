@@ -306,7 +306,7 @@ public class ConsoleUI extends JComponent {
       String line = new String(chars, 0, len);
       if (line.trim().length() > 0)
         history[pos++] = line;
-      addLine(currentOutput.toString() + line);
+      addLine(currentOutput + line);
       if (pos >= history.length)
         pos = 0;
       back = 0;
@@ -370,7 +370,7 @@ public class ConsoleUI extends JComponent {
   /**
    * Get the String residing on the clipboard.
    */
-  public String getClipboardContents() {
+  public static String getClipboardContents() {
     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
     Transferable contents = clipboard.getContents(null);
     if ((contents != null)
@@ -407,7 +407,7 @@ public class ConsoleUI extends JComponent {
         fetchLine += lineCount == lines.length ? lines.length : 1;
     }
     /* actual last visible line */
-    String ll = currentOutput.toString() + new String(chars, 0, len);
+    String ll = currentOutput + new String(chars, 0, len);
     while (scrLine >= 0 && fetchLine >= 0 && ll != null) {
       int neededRows = 1 + (ll.length() / lineWidth);
       int lastStartPos = (neededRows - 1) * lineWidth;

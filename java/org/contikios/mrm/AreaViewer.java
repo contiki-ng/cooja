@@ -326,11 +326,6 @@ public class AreaViewer extends VisPlugin {
     radiosCheckBox.addActionListener(selectGraphicsHandler);
     graphicsComponentsPanel.add(radiosCheckBox);
 
-//    radioActivityCheckBox = new JCheckBox("Radio Activity", true);
-//    radioActivityCheckBox.setActionCommand("toggle radio activity");
-//    radioActivityCheckBox.addActionListener(selectGraphicsHandler);
-//    graphicsComponentsPanel.add(radioActivityCheckBox);
-
     arrowCheckBox = new JCheckBox("Scale arrow", true);
     arrowCheckBox.setActionCommand("toggle arrow");
     arrowCheckBox.addActionListener(selectGraphicsHandler);
@@ -2221,9 +2216,6 @@ public class AreaViewer extends VisPlugin {
       // Decide on scale comparator
       double currentArrowDistance = 0.1; // in meters
       if (currentZoomX < canvas.getWidth() / 2) {
-        currentArrowDistance = 0.1; // 0.1m
-      }
-      if (currentZoomX < canvas.getWidth() / 2) {
         currentArrowDistance = 1; // 1m
       }
       if (10 * currentZoomX < canvas.getWidth() / 2) {
@@ -2380,9 +2372,6 @@ public class AreaViewer extends VisPlugin {
     element = new Element("show_radios");
     element.setText(Boolean.toString(drawRadios));
     config.add(element);
-//    element = new Element("show_activity");
-//    element.setText(Boolean.toString(drawRadioActivity));
-//    config.add(element);
     element = new Element("show_arrow");
     element.setText(Boolean.toString(drawScaleArrow));
     config.add(element);
@@ -2465,9 +2454,6 @@ public class AreaViewer extends VisPlugin {
         selectGraphicsHandler.actionPerformed(new ActionEvent(radiosCheckBox,
             ActionEvent.ACTION_PERFORMED, radiosCheckBox.getActionCommand()));
       } else if (element.getName().equals("show_activity")) {
-//        radioActivityCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
-//        selectGraphicsHandler.actionPerformed(new ActionEvent(radioActivityCheckBox,
-//            ActionEvent.ACTION_PERFORMED, radioActivityCheckBox.getActionCommand()));
       } else if (element.getName().equals("show_arrow")) {
         arrowCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
         selectGraphicsHandler.actionPerformed(new ActionEvent(arrowCheckBox,
