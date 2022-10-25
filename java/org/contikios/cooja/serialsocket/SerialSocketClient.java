@@ -168,7 +168,7 @@ public class SerialSocketClient implements Plugin, MotePlugin {
     c.gridx++;
     serverSelectPanel.add(serverPortField, c);
 
-    serverSelectButton = new JButton("Connect") { // Button for label toggeling
+    serverSelectButton = new JButton("Connect") { // Button for label toggling
       @Override
       public Dimension getPreferredSize() {
         String origText = getText();
@@ -494,18 +494,10 @@ public class SerialSocketClient implements Plugin, MotePlugin {
     
     for (Element element : configXML) {
       switch (element.getName()) {
-        case "host":
-          host = element.getText();
-          break;
-        case "port":
-          port = Integer.parseInt(element.getText());
-          break;
-        case "bound":
-          bound = Boolean.parseBoolean(element.getText());
-          break;
-        default:
-          logger.warn("Unknwon config element: " + element.getName());
-          break;
+        case "host" -> host = element.getText();
+        case "port" -> port = Integer.parseInt(element.getText());
+        case "bound" -> bound = Boolean.parseBoolean(element.getText());
+        default -> logger.warn("Unknown config element: " + element.getName());
       }
     }
     
