@@ -2555,20 +2555,12 @@ public class Cooja extends Observable {
   }
   
   public void doQuit(boolean askForConfirmation, int exitCode) {
-    if (getSimulation() != null) {
-      if (askForConfirmation) {
-        /* Save? */
-        String s1 = "Yes";
-        String s2 = "No";
-        String s3 = "Cancel";
-        Object[] options = { s1, s2, s3 };
-        int n = JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
-            "Do you want to save the current simulation?",
-            WINDOW_TITLE, JOptionPane.YES_NO_CANCEL_OPTION,
-            JOptionPane.WARNING_MESSAGE, null, options, s1);
-        if (n == JOptionPane.CANCEL_OPTION || n == JOptionPane.YES_OPTION && doSaveConfig() == null) {
-          return;
-        }
+    if (getSimulation() != null && askForConfirmation) { // Save?
+      Object[] opts = {"Yes", "No", "Cancel"};
+      int n = JOptionPane.showOptionDialog(frame, "Do you want to save the current simulation?", WINDOW_TITLE,
+              JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, opts, opts[0]);
+      if (n == JOptionPane.CANCEL_OPTION || n == JOptionPane.YES_OPTION && doSaveConfig() == null) {
+        return;
       }
     }
 
