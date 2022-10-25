@@ -1847,7 +1847,7 @@ public class Cooja extends Observable {
 
       Mote pluginMote = ((MotePlugin)p).getMote();
       if (pluginMote == mote) {
-        removePlugin(p, false);
+        removePlugin(p);
       }
     }
   }
@@ -1855,13 +1855,9 @@ public class Cooja extends Observable {
   /**
    * Remove a plugin from working area.
    *
-   * @param plugin
-   *          Plugin to remove
-   * @param askUser
-   *          If plugin is the last one, ask user if we should remove current
-   *          simulation also?
+   * @param plugin Plugin to remove
    */
-  public void removePlugin(final Plugin plugin, final boolean askUser) {
+  public void removePlugin(final Plugin plugin) {
     plugin.closePlugin();
     startedPlugins.remove(plugin);
 
@@ -1879,10 +1875,6 @@ public class Cooja extends Observable {
           return true;
         }
       }.invokeAndWait();
-    }
-    // Remove simulation if requested (and all plugins are closed).
-    if (askUser && getSimulation() != null && startedPlugins.isEmpty()) {
-      doRemoveSimulation(true);
     }
   }
 
@@ -2090,6 +2082,10 @@ public class Cooja extends Observable {
     return null;
   }
 
+  public boolean hasStartedPlugins() {
+    return !startedPlugins.isEmpty();
+  }
+
   public Plugin[] getStartedPlugins() {
     return startedPlugins.toArray(new Plugin[0]);
   }
@@ -2249,7 +2245,7 @@ public class Cooja extends Observable {
     for (var startedPlugin : startedPlugins.toArray(new Plugin[0])) {
       int pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
       if (pluginType != PluginType.COOJA_PLUGIN && pluginType != PluginType.COOJA_STANDARD_PLUGIN) {
-        removePlugin(startedPlugin, false);
+        removePlugin(startedPlugin);
       }
     }
 
@@ -2568,7 +2564,7 @@ public class Cooja extends Observable {
     try {
       doRemoveSimulation(false);
       for (var plugin : startedPlugins.toArray(new Plugin[0])) {
-        removePlugin(plugin, false);
+        removePlugin(plugin);
       }
     } catch (Exception e) {
       logger.error("Failed to remove simulation/plugins on shutdown.", e);

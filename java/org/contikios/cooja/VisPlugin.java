@@ -70,7 +70,10 @@ public class VisPlugin extends JInternalFrame implements Plugin {
     addInternalFrameListener(new InternalFrameAdapter() {
       @Override
       public void internalFrameClosing(InternalFrameEvent e) {
-        gui.removePlugin(parent, true);
+        gui.removePlugin(parent);
+        if (!gui.hasStartedPlugins()) {
+          gui.doRemoveSimulation(true);
+        }
       }
       @Override
       public void internalFrameActivated(InternalFrameEvent e) {
