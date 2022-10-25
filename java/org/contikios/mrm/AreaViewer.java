@@ -950,7 +950,6 @@ public class AreaViewer extends VisPlugin {
       private ImageSettingsDialog() {
         super(Cooja.getTopParentContainer(), "Image settings");
         JPanel mainPanel, tempPanel;
-        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Set layout and add components
