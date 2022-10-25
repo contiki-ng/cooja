@@ -2362,45 +2362,46 @@ public class AreaViewer extends VisPlugin {
   @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
-      if (element.getName().equals("selected")) {
+      var name = element.getName();
+      if (name.equals("selected")) {
         int id = Integer.parseInt(element.getAttributeValue("mote"));
         selectedRadio =  currentSimulation.getMoteWithID(id).getInterfaces().getRadio();
         trackModeButton.setEnabled(true);
         paintEnvironmentAction.setEnabled(true);
-      } else if (element.getName().equals("controls_visible")) {
+      } else if (name.equals("controls_visible")) {
         showSettingsBox.setSelected(Boolean.parseBoolean(element.getText()));
         canvasModeHandler.actionPerformed(new ActionEvent(showSettingsBox,
             ActionEvent.ACTION_PERFORMED, showSettingsBox.getActionCommand()));
-      } else if (element.getName().equals("zoom_x")) {
+      } else if (name.equals("zoom_x")) {
         currentZoomX = Double.parseDouble(element.getText());
-      } else if (element.getName().equals("zoom_y")) {
+      } else if (name.equals("zoom_y")) {
         currentZoomY = Double.parseDouble(element.getText());
-      } else if (element.getName().equals("pan_x")) {
+      } else if (name.equals("pan_x")) {
         currentPanX = Double.parseDouble(element.getText());
-      } else if (element.getName().equals("pan_y")) {
+      } else if (name.equals("pan_y")) {
         currentPanY = Double.parseDouble(element.getText());
-      } else if (element.getName().equals("show_background")) {
+      } else if (name.equals("show_background")) {
         backgroundCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
         selectGraphicsHandler.actionPerformed(new ActionEvent(backgroundCheckBox,
             ActionEvent.ACTION_PERFORMED, backgroundCheckBox.getActionCommand()));
-      } else if (element.getName().equals("show_obstacles")) {
+      } else if (name.equals("show_obstacles")) {
         obstaclesCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
         selectGraphicsHandler.actionPerformed(new ActionEvent(obstaclesCheckBox,
             ActionEvent.ACTION_PERFORMED, obstaclesCheckBox.getActionCommand()));
-      } else if (element.getName().equals("show_channel")) {
+      } else if (name.equals("show_channel")) {
         channelCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
         selectGraphicsHandler.actionPerformed(new ActionEvent(channelCheckBox,
             ActionEvent.ACTION_PERFORMED, channelCheckBox.getActionCommand()));
-      } else if (element.getName().equals("show_radios")) {
+      } else if (name.equals("show_radios")) {
         radiosCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
         selectGraphicsHandler.actionPerformed(new ActionEvent(radiosCheckBox,
             ActionEvent.ACTION_PERFORMED, radiosCheckBox.getActionCommand()));
-      } else if (element.getName().equals("show_activity")) {
-      } else if (element.getName().equals("show_arrow")) {
+      } else if (name.equals("show_activity")) {
+      } else if (name.equals("show_arrow")) {
         arrowCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
         selectGraphicsHandler.actionPerformed(new ActionEvent(arrowCheckBox,
             ActionEvent.ACTION_PERFORMED, arrowCheckBox.getActionCommand()));
-      } else if (element.getName().equals("vis_type")) {
+      } else if (name.equals("vis_type")) {
         String visTypeIdentifier = element.getText();
         Enumeration<AbstractButton> buttonEnum = visTypeSelectionGroup.getElements();
         while (buttonEnum.hasMoreElements()) {
@@ -2412,7 +2413,7 @@ public class AreaViewer extends VisPlugin {
                     ActionEvent.ACTION_PERFORMED, button.getActionCommand()));
           }
         }
-      } else if (element.getName().equals("background_image")) {
+      } else if (name.equals("background_image")) {
         backgroundImageFile = new File(element.getText());
         if (backgroundImageFile.exists()) {
           Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -2429,18 +2430,18 @@ public class AreaViewer extends VisPlugin {
           }
 
         }
-      } else if (element.getName().equals("back_start_x")) {
+      } else if (name.equals("back_start_x")) {
         backgroundStartX = Double.parseDouble(element.getText());
-      } else if (element.getName().equals("back_start_y")) {
+      } else if (name.equals("back_start_y")) {
         backgroundStartY = Double.parseDouble(element.getText());
-      } else if (element.getName().equals("back_width")) {
+      } else if (name.equals("back_width")) {
         backgroundWidth = Double.parseDouble(element.getText());
-      } else if (element.getName().equals("back_height")) {
+      } else if (name.equals("back_height")) {
         backgroundHeight = Double.parseDouble(element.getText());
-      } else if (element.getName().equals("resolution")) {
+      } else if (name.equals("resolution")) {
         resolutionSlider.setValue(Integer.parseInt(element.getText()));
       } else {
-        logger.fatal("Unknown configuration value: " + element.getName());
+        logger.fatal("Unknown configuration value: " + name);
       }
     }
 
