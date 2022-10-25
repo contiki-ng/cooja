@@ -187,20 +187,18 @@ public class Simulation extends Observable {
           }
         } catch (RuntimeException e) {
           if ("MSPSim requested simulation stop".equals(e.getMessage())) {
-            /* XXX Should be*/
             logger.info("Simulation stopped due to MSPSim breakpoint");
           } else {
             logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
             if (!Cooja.isVisualized()) {
               /* Quit simulator if in test mode */
               System.exit(1);
-            } else {
-              String title = "Simulation error";
-              if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
-                title += ": " + moteTimeEvent.getMote();
-              }
-              Cooja.showErrorDialog(title, e, false);
             }
+            String title = "Simulation error";
+            if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
+              title += ": " + moteTimeEvent.getMote();
+            }
+            Cooja.showErrorDialog(title, e, false);
           }
         } catch (InterruptedException e) {
           // Simulation thread interrupted - quit
@@ -430,7 +428,6 @@ public class Simulation extends Observable {
     TimeEvent stopEvent = new TimeEvent() {
       @Override
       public void execute(long t) {
-        /* Stop simulation */
         stopSimulation();
       }
     };
@@ -765,7 +762,7 @@ public class Simulation extends Observable {
    *          Mote to add
    */
   public void addMote(final Mote mote) {
-    Runnable addMote = new Runnable() {
+    invokeSimulationThread(new Runnable() {
       @Override
       public void run() {
         if (mote.getInterfaces().getClock() != null) {
@@ -791,9 +788,7 @@ public class Simulation extends Observable {
         notifyObservers(mote);
         cooja.updateGUIComponentState();
       }
-    };
-
-    invokeSimulationThread(addMote);
+    });
   }
 
   /**
@@ -912,7 +907,7 @@ public class Simulation extends Observable {
    * @param newSpeedLimit
    */
   public void setSpeedLimit(final Double newSpeedLimit) {
-    Runnable r = new Runnable() {
+    invokeSimulationThread(new Runnable() {
       @Override
       public void run() {
         if (newSpeedLimit == null) {
@@ -932,8 +927,7 @@ public class Simulation extends Observable {
         Simulation.this.setChanged();
         Simulation.this.notifyObservers(this);
       }
-    };
-    invokeSimulationThread(r);
+    });
   }
 
   /**
