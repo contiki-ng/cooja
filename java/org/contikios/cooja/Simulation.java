@@ -363,32 +363,30 @@ public class Simulation extends Observable {
   }
 
   /**
-   * Stop simulation (blocks) by calling stopSimulation(true, null).
+   * Stop simulation and block until it has stopped.
    */
   public void stopSimulation() {
-    stopSimulation(true, null);
+    if (stopSimulation(null)) {
+      waitFor(false, 250);
+    }
   }
 
   /**
    * Stop simulation
    *
-   * @param block Block until simulation has stopped, with timeout (100ms)
    * @param rv Return value from startSimulation, should be null unless > 0
+   * @return True if action was taken
    */
-  public void stopSimulation(boolean block, Integer rv) {
+  public boolean stopSimulation(Integer rv) {
     if (!isRunning() || isShutdown) {
-      return;
+      return false;
     }
     assert rv == null || rv > 0 : "Pass in rv = null or rv > 0";
     if (rv != null) {
       returnValue = rv;
     }
-
     commandQueue.add(Cooja.isVisualized() ? Command.STOP : Command.QUIT);
-
-    if (block) {
-      waitFor(false, 250);
-    }
+    return true;
   }
 
   private void waitFor(boolean isRunning, long timeout) {

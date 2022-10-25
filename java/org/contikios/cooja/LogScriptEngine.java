@@ -103,7 +103,7 @@ public class LogScriptEngine {
           Cooja.showErrorDialog(e.getMessage(), e, false);
         }
         deactivateScript();
-        simulation.stopSimulation(false, 1);
+        simulation.stopSimulation(1);
       }
     }
     @Override
@@ -290,7 +290,7 @@ public class LogScriptEngine {
           }
         }
         deactivateScript();
-        simulation.stopSimulation(false, rv > 0 ? rv : null);
+        simulation.stopSimulation(rv > 0 ? rv : null);
       }
     }, "script");
     scriptThread.start();
