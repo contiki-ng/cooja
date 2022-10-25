@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Observable;
 import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import javax.swing.JOptionPane;
 
 import javax.swing.JTextArea;
@@ -67,7 +67,7 @@ public class Simulation extends Observable {
   private final ArrayList<Mote> motes = new ArrayList<>();
   private final ArrayList<MoteType> moteTypes = new ArrayList<>();
 
-  private final ArrayBlockingQueue<Object> commandQueue = new ArrayBlockingQueue<>(1024);
+  private final LinkedBlockingDeque<Object> commandQueue = new LinkedBlockingDeque<>();
 
   private final Thread simulationThread;
 
