@@ -371,22 +371,12 @@ public class AreaViewer extends VisPlugin {
     JPanel fixedVsRelative = new JPanel(new GridLayout(1, 2));
     JRadioButton fixedColoringButton = new JRadioButton("Fixed");
     fixedColoringButton.setSelected(true);
-    fixedColoringButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        coloringIsFixed = true;
-      }
-    });
+    fixedColoringButton.addActionListener(e -> coloringIsFixed = true);
     fixedVsRelative.add(fixedColoringButton);
 
     JRadioButton relativeColoringButton = new JRadioButton("Relative");
     relativeColoringButton.setSelected(true);
-    relativeColoringButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        coloringIsFixed = false;
-      }
-    });
+    relativeColoringButton.addActionListener(e -> coloringIsFixed = false);
     fixedVsRelative.add(relativeColoringButton);
     ButtonGroup coloringGroup = new ButtonGroup();
     coloringGroup.add(fixedColoringButton);
@@ -490,67 +480,37 @@ public class AreaViewer extends VisPlugin {
     JRadioButton signalStrengthButton = new JRadioButton("Signal strength");
     signalStrengthButton.setActionCommand("signalStrengthButton");
     signalStrengthButton.setSelected(true);
-    signalStrengthButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH;
-      }
-    });
+    signalStrengthButton.addActionListener(e -> dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH);
     visualizeChannelPanel.add(signalStrengthButton);
 
     JRadioButton signalStrengthVarButton = new JRadioButton("Signal strength variance");
     signalStrengthVarButton.setActionCommand("signalStrengthVarButton");
     signalStrengthVarButton.setSelected(false);
-    signalStrengthVarButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH_VAR;
-      }
-    });
+    signalStrengthVarButton.addActionListener(e -> dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH_VAR);
     visualizeChannelPanel.add(signalStrengthVarButton);
 
     JRadioButton SNRButton = new JRadioButton("Signal to Noise ratio");
     SNRButton.setActionCommand("SNRButton");
     SNRButton.setSelected(false);
-    SNRButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        dataTypeToVisualize = ChannelModel.TransmissionData.SNR;
-      }
-    });
+    SNRButton.addActionListener(e -> dataTypeToVisualize = ChannelModel.TransmissionData.SNR);
     visualizeChannelPanel.add(SNRButton);
 
     JRadioButton SNRVarButton = new JRadioButton("Signal to Noise variance");
     SNRVarButton.setActionCommand("SNRVarButton");
     SNRVarButton.setSelected(false);
-    SNRVarButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        dataTypeToVisualize = ChannelModel.TransmissionData.SNR_VAR;
-      }
-    });
+    SNRVarButton.addActionListener(e -> dataTypeToVisualize = ChannelModel.TransmissionData.SNR_VAR);
     visualizeChannelPanel.add(SNRVarButton);
 
     JRadioButton probabilityButton = new JRadioButton("Probability of reception");
     probabilityButton.setActionCommand("probabilityButton");
     probabilityButton.setSelected(false);
-    probabilityButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        dataTypeToVisualize = ChannelModel.TransmissionData.PROB_OF_RECEPTION;
-      }
-    });
+    probabilityButton.addActionListener(e -> dataTypeToVisualize = ChannelModel.TransmissionData.PROB_OF_RECEPTION);
     visualizeChannelPanel.add(probabilityButton);
 
     JRadioButton rmsDelaySpreadButton = new JRadioButton("RMS delay spread");
     rmsDelaySpreadButton.setActionCommand("rmsDelaySpreadButton");
     rmsDelaySpreadButton.setSelected(false);
-    rmsDelaySpreadButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        dataTypeToVisualize = ChannelModel.TransmissionData.DELAY_SPREAD_RMS;
-      }
-    });
+    rmsDelaySpreadButton.addActionListener(e -> dataTypeToVisualize = ChannelModel.TransmissionData.DELAY_SPREAD_RMS);
     visualizeChannelPanel.add(rmsDelaySpreadButton);
 
     visTypeSelectionGroup = new ButtonGroup();
@@ -995,24 +955,18 @@ public class AreaViewer extends VisPlugin {
         final JButton okButton = new JButton("OK");
         this.getRootPane().setDefaultButton(okButton);
         final JButton cancelButton = new JButton("Cancel");
-        okButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            virtualStartX = ((Number) virtualStartXField.getValue()).doubleValue();
-            virtualStartY = ((Number) virtualStartYField.getValue()).doubleValue();
-            virtualWidth = ((Number) virtualWidthField.getValue()).doubleValue();
-            virtualHeight = ((Number) virtualHeightField.getValue()).doubleValue();
+        okButton.addActionListener(e -> {
+          virtualStartX = ((Number) virtualStartXField.getValue()).doubleValue();
+          virtualStartY = ((Number) virtualStartYField.getValue()).doubleValue();
+          virtualWidth = ((Number) virtualWidthField.getValue()).doubleValue();
+          virtualHeight = ((Number) virtualHeightField.getValue()).doubleValue();
 
-            terminatedOK = true;
-            dispose();
-}
+          terminatedOK = true;
+          dispose();
         });
-        cancelButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            terminatedOK = false;
-            dispose();
-          }
+        cancelButton.addActionListener(e -> {
+          terminatedOK = false;
+          dispose();
         });
 
         tempPanel.add(okButton);
@@ -1445,25 +1399,19 @@ public class AreaViewer extends VisPlugin {
         tempPanel.add(Box.createHorizontalGlue());
         var tempButton = new JButton("Pick color");
         tempPanel.add(tempButton);
-        tempButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            // Set to color picker mode (if not already there)
-            if (canvasPanel.getMouseMotionListeners().length == 0) {
-              canvasPanel.addMouseListener(myMouseListener);
-              canvasPanel.addMouseMotionListener(myMouseMotionListener);
-              canvasPanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-            }
+        tempButton.addActionListener(e -> {
+          // Set to color picker mode (if not already there)
+          if (canvasPanel.getMouseMotionListeners().length == 0) {
+            canvasPanel.addMouseListener(myMouseListener);
+            canvasPanel.addMouseMotionListener(myMouseMotionListener);
+            canvasPanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
           }
         });
         tempPanel.add(Box.createHorizontalStrut(5));
         tempPanel.add(tempButton = new JButton("Preview obstacles"));
-        tempButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            obstacleImage = createObstacleImage();
-            canvasPanel.repaint();
-          }
+        tempButton.addActionListener(e -> {
+          obstacleImage = createObstacleImage();
+          canvasPanel.repaint();
         });
         mainPanel.add(tempPanel);
 
@@ -1491,21 +1439,13 @@ public class AreaViewer extends VisPlugin {
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
         tempPanel.add(Box.createHorizontalGlue());
         tempPanel.add(tempButton = new JButton("Cancel"));
-        tempButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            dispose();
-          }
-        });
+        tempButton.addActionListener(e -> dispose());
         tempPanel.add(Box.createHorizontalStrut(5));
         tempPanel.add(tempButton = new JButton("OK"));
-        tempButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            obstacleImage = createObstacleImage();
-            exitedOK = true;
-            dispose();
-          }
+        tempButton.addActionListener(e -> {
+          obstacleImage = createObstacleImage();
+          exitedOK = true;
+          dispose();
         });
         mainPanel.add(tempPanel);
 
