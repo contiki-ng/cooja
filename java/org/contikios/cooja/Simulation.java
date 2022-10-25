@@ -262,11 +262,6 @@ public class Simulation extends Observable {
     cooja.updateProgress(!isRunning);
     setChanged();
     notifyObservers(this);
-
-    if (!Cooja.isVisualized() && !isRunning) {
-      // Remove simulation when it stopped without GUI
-      cooja.doRemoveSimulation(false);
-    }
   }
 
   /**
@@ -341,7 +336,6 @@ public class Simulation extends Observable {
   /** Remove a script engine from the list of active script engines. */
   public void removeScriptEngine(LogScriptEngine engine) {
     engine.deactivateScript();
-    engine.closeLog();
     scriptEngines.remove(engine);
   }
 
@@ -390,7 +384,7 @@ public class Simulation extends Observable {
       returnValue = rv;
     }
 
-    commandQueue.add(Command.STOP);
+    commandQueue.add(Cooja.isVisualized() ? Command.STOP : Command.QUIT);
 
     if (block) {
       waitFor(false, 250);
