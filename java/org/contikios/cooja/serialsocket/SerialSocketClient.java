@@ -168,7 +168,7 @@ public class SerialSocketClient implements Plugin, MotePlugin {
     c.gridx++;
     serverSelectPanel.add(serverPortField, c);
 
-    serverSelectButton = new JButton("Connect") { // Button for label toggeling
+    serverSelectButton = new JButton("Connect") { // Button for label toggling
       @Override
       public Dimension getPreferredSize() {
         String origText = getText();
