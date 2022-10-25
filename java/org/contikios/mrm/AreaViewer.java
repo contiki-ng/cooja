@@ -949,14 +949,13 @@ public class AreaViewer extends VisPlugin {
        */
       private ImageSettingsDialog() {
         super(Cooja.getTopParentContainer(), "Image settings");
-        JPanel mainPanel, tempPanel;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         // Set layout and add components
-        mainPanel = new JPanel();
+        var mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        tempPanel = new JPanel(new GridLayout(1, 2));
+        var tempPanel = new JPanel(new GridLayout(1, 2));
         tempPanel.add(new JLabel("Start X (m)     "));
         var doubleFormat = NumberFormat.getNumberInstance();
         doubleFormat.setMinimumIntegerDigits(1);
