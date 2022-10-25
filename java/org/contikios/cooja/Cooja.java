@@ -2090,6 +2090,10 @@ public class Cooja extends Observable {
     return null;
   }
 
+  public boolean hasStartedPlugins() {
+    return !startedPlugins.isEmpty();
+  }
+
   public Plugin[] getStartedPlugins() {
     return startedPlugins.toArray(new Plugin[0]);
   }
