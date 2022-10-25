@@ -282,7 +282,158 @@ public class AreaViewer extends VisPlugin {
     canvas.setBorder(BorderFactory.createLineBorder(Color.BLACK));
     canvas.setBackground(Color.WHITE);
     canvas.setLayout(new BorderLayout());
-    canvas.addMouseListener(canvasMouseHandler);
+    canvas.addMouseListener(new MouseAdapter() {
+      private Popup popUpToolTip = null;
+      private boolean temporaryZoom = false;
+      private boolean temporaryPan = false;
+      private boolean trackedPreviously = false;
+
+      @Override
+      public void mouseReleased(MouseEvent e1) {
+        if (temporaryZoom) {
+          temporaryZoom = false;
+          if (trackedPreviously) {
+            trackModeButton.doClick();
+          } else {
+            selectModeButton.doClick();
+          }
+        }
+        if (temporaryPan) {
+          temporaryPan = false;
+          if (trackedPreviously) {
+            trackModeButton.doClick();
+          } else {
+            selectModeButton.doClick();
+          }
+        }
+
+        if (popUpToolTip != null) {
+          popUpToolTip.hide();
+          popUpToolTip = null;
+        }
+      }
+
+      @Override
+      public void mousePressed(final MouseEvent e1) {
+        if (e1.isControlDown()) {
+          temporaryZoom = true;
+          trackedPreviously = inTrackMode;
+          zoomModeButton.doClick();
+        }
+        if (e1.isAltDown()) {
+          temporaryPan = true;
+          trackedPreviously = inTrackMode;
+          panModeButton.doClick();
+          //canvasModeHandler.actionPerformed(new ActionEvent(e, 0, "set zoom mode"));
+        }
+
+        if (popUpToolTip != null) {
+          popUpToolTip.hide();
+          popUpToolTip = null;
+        }
+
+        /* Zoom & Pan */
+        lastHandledPosition = new Point(e1.getX(), e1.getY());
+        zoomCenterX = e1.getX() / currentZoomX - currentPanX;
+        zoomCenterY = e1.getY() / currentZoomY - currentPanY;
+        zoomCenterPoint = e1.getPoint();
+        if (temporaryZoom || temporaryPan) {
+          e1.consume();
+          return;
+        }
+
+        /* Select */
+        if (inSelectMode) {
+          ArrayList<Radio> hitRadios = trackClickedRadio(e1.getPoint());
+          if (hitRadios == null || hitRadios.size() == 0) {
+            if (e1.getButton() != MouseEvent.BUTTON1) {
+              selectedRadio = null;
+              channelImage = null;
+              trackModeButton.setEnabled(false);
+              paintEnvironmentAction.setEnabled(false);
+              canvas.repaint();
+            }
+            return;
+          }
+
+          if (hitRadios.size() == 1 && hitRadios.get(0) == selectedRadio) {
+            return;
+          }
+
+          if (selectedRadio == null || !hitRadios.contains(selectedRadio)) {
+            selectedRadio = hitRadios.get(0);
+          } else {
+            selectedRadio = hitRadios.get(
+                    (hitRadios.indexOf(selectedRadio) + 1) % hitRadios.size()
+            );
+          }
+          trackModeButton.setEnabled(true);
+          paintEnvironmentAction.setEnabled(true);
+
+          channelImage = null;
+          canvas.repaint();
+          return;
+        }
+
+        /* Track */
+        if (inTrackMode && selectedRadio != null) {
+          TxPair txPair = new TxPair() {
+            @Override
+            public double getFromX() {
+              return selectedRadio.getPosition().getXCoordinate();
+            }
+
+            @Override
+            public double getFromY() {
+              return selectedRadio.getPosition().getYCoordinate();
+            }
+
+            @Override
+            public double getToX() {
+              return e1.getX() / currentZoomX - currentPanX;
+            }
+
+            @Override
+            public double getToY() {
+              return e1.getY() / currentZoomY - currentPanY;
+            }
+
+            @Override
+            public double getTxPower() {
+              return selectedRadio.getCurrentOutputPower();
+            }
+
+            @Override
+            public double getTxGain() {
+              if (!(selectedRadio instanceof DirectionalAntennaRadio)) {
+                return 0;
+              }
+              DirectionalAntennaRadio r = (DirectionalAntennaRadio) selectedRadio;
+              return r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
+            }
+
+            @Override
+            public double getRxGain() {
+              return 0;
+            }
+          };
+          trackedComponents = currentChannelModel.getRaysOfTransmission(txPair);
+          canvas.repaint();
+
+          // Show popup.
+          JToolTip t = AreaViewer.this.createToolTip();
+          t.setTipText("<html>" +
+                  trackedComponents.log.replace("\n", "<br>").replace(" pi", " &pi;") +
+                  "</html>");
+          if (t.getTipText() == null || t.getTipText().equals("")) {
+            return;
+          }
+          popUpToolTip = PopupFactory.getSharedInstance().getPopup(
+                  AreaViewer.this, t, e1.getXOnScreen(), e1.getYOnScreen());
+          popUpToolTip.show();
+        }
+      }
+    });
 
     // Create canvas mode panel
     JPanel canvasModePanel = new JPanel();
@@ -586,150 +737,6 @@ public class AreaViewer extends VisPlugin {
       // Could not select
     }
   }
-
-  /**
-   * Listens to mouse event on canvas
-   */
-  private final MouseAdapter canvasMouseHandler = new MouseAdapter() {
-    private Popup popUpToolTip = null;
-    private boolean temporaryZoom = false;
-    private boolean temporaryPan = false;
-    private boolean trackedPreviously = false;
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-      if (temporaryZoom) {
-        temporaryZoom = false;
-        if (trackedPreviously) {
-          trackModeButton.doClick();
-        } else {
-          selectModeButton.doClick();
-        }
-      }
-      if (temporaryPan) {
-        temporaryPan = false;
-        if (trackedPreviously) {
-          trackModeButton.doClick();
-        } else {
-          selectModeButton.doClick();
-        }
-      }
-
-      if (popUpToolTip != null) {
-        popUpToolTip.hide();
-        popUpToolTip = null;
-      }
-    }
-
-    @Override
-    public void mousePressed(final MouseEvent e) {
-      if (e.isControlDown()) {
-        temporaryZoom = true;
-        trackedPreviously = inTrackMode;
-        zoomModeButton.doClick();
-      }
-      if (e.isAltDown()) {
-        temporaryPan = true;
-        trackedPreviously = inTrackMode;
-        panModeButton.doClick();
-        //canvasModeHandler.actionPerformed(new ActionEvent(e, 0, "set zoom mode"));
-      }
-
-      if (popUpToolTip != null) {
-        popUpToolTip.hide();
-        popUpToolTip = null;
-      }
-
-      /* Zoom & Pan */
-      lastHandledPosition = new Point(e.getX(), e.getY());
-      zoomCenterX = e.getX() / currentZoomX - currentPanX;
-      zoomCenterY = e.getY() / currentZoomY - currentPanY;
-      zoomCenterPoint = e.getPoint();
-      if (temporaryZoom || temporaryPan) {
-        e.consume();
-        return;
-      }
-
-      /* Select */
-      if (inSelectMode) {
-        ArrayList<Radio> hitRadios = trackClickedRadio(e.getPoint());
-        if (hitRadios == null || hitRadios.size() == 0) {
-          if (e.getButton() != MouseEvent.BUTTON1) {
-            selectedRadio = null;
-            channelImage = null;
-            trackModeButton.setEnabled(false);
-            paintEnvironmentAction.setEnabled(false);
-            canvas.repaint();
-          }
-          return;
-        }
-
-        if (hitRadios.size() == 1 && hitRadios.get(0) == selectedRadio) {
-          return;
-        }
-
-        if (selectedRadio == null || !hitRadios.contains(selectedRadio)) {
-          selectedRadio = hitRadios.get(0);
-        } else {
-          selectedRadio = hitRadios.get(
-              (hitRadios.indexOf(selectedRadio)+1) % hitRadios.size()
-          );
-        }
-        trackModeButton.setEnabled(true);
-        paintEnvironmentAction.setEnabled(true);
-
-        channelImage = null;
-        canvas.repaint();
-        return;
-      }
-
-      /* Track */
-      if (inTrackMode && selectedRadio != null) {
-        TxPair txPair = new TxPair() {
-          @Override
-          public double getFromX() { return selectedRadio.getPosition().getXCoordinate(); }
-          @Override
-          public double getFromY() { return selectedRadio.getPosition().getYCoordinate(); }
-          @Override
-          public double getToX() { return e.getX() / currentZoomX - currentPanX; }
-          @Override
-          public double getToY() { return e.getY() / currentZoomY - currentPanY; }
-          @Override
-          public double getTxPower() { return selectedRadio.getCurrentOutputPower(); }
-          @Override
-          public double getTxGain() {
-            if (!(selectedRadio instanceof DirectionalAntennaRadio)) {
-              return 0;
-            }
-            DirectionalAntennaRadio r = (DirectionalAntennaRadio)selectedRadio;
-            return r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
-          }
-          @Override
-          public double getRxGain() {
-            return 0;
-          }
-        };
-        trackedComponents = currentChannelModel.getRaysOfTransmission(txPair);
-        canvas.repaint();
-
-        /* Show popup */
-        JToolTip t = AreaViewer.this.createToolTip();
-
-        String logHtml =
-                "<html>" +
-                trackedComponents.log.replace("\n", "<br>").replace(" pi", " &pi;") +
-                "</html>";
-        t.setTipText(logHtml);
-
-        if (t.getTipText() == null || t.getTipText().equals("")) {
-          return;
-        }
-        popUpToolTip = PopupFactory.getSharedInstance().getPopup(
-                        AreaViewer.this, t, e.getXOnScreen(), e.getYOnScreen());
-        popUpToolTip.show();
-      }
-    }
-  };
 
   /**
    * Listens to mouse movements when in pan mode
