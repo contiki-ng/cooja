@@ -274,11 +274,9 @@ public class LogScriptEngine {
               // Something else is shutting down Cooja, for example the SerialSocket commands in 17-tun-rpl-br.
               break;
             case 0:
-              logger.info("TEST OK\n");
               scriptLogObserver.update(null, "TEST OK\n");
               break;
             default:
-              logger.warn("TEST FAILED\n");
               scriptLogObserver.update(null, "TEST FAILED\n");
               break;
           }
