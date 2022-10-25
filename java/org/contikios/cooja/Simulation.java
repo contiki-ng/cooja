@@ -328,7 +328,7 @@ public class Simulation extends Observable {
   /** Create a new script engine that logs to the logTextArea and add it to the list
    *  of active script engines. */
   public LogScriptEngine newScriptEngine(JTextArea logTextArea) {
-    var engine = new LogScriptEngine(this, logTextArea);
+    var engine = new LogScriptEngine(this, scriptEngines.size(), logTextArea);
     scriptEngines.add(engine);
     return engine;
   }
