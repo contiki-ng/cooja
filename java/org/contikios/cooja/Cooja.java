@@ -1782,59 +1782,6 @@ public class Cooja extends Observable {
   // // PLUGIN METHODS ////
 
   /**
-   * Show a started plugin in working area.
-   *
-   * @param plugin Plugin
-   */
-  public void showPlugin(final Plugin plugin) {
-    new RunnableInEDT<Boolean>() {
-      private static final int FRAME_STANDARD_WIDTH = 150;
-
-      private static final int FRAME_STANDARD_HEIGHT = 300;
-
-      @Override
-      public Boolean work() {
-        JInternalFrame pluginFrame = plugin.getCooja();
-        if (pluginFrame == null) {
-          logger.fatal("Failed trying to show plugin without visualizer.");
-          return false;
-        }
-
-        myDesktopPane.add(pluginFrame);
-
-        /* Set size if not already specified by plugin */
-        if (pluginFrame.getWidth() <= 0 || pluginFrame.getHeight() <= 0) {
-          pluginFrame.setSize(FRAME_STANDARD_WIDTH, FRAME_STANDARD_HEIGHT);
-        }
-
-        /* Set location if not already set */
-        if (pluginFrame.getLocation().x <= 0 && pluginFrame.getLocation().y <= 0) {
-          JInternalFrame[] iframes = myDesktopPane.getAllFrames();
-          Point topFrameLoc = iframes.length > 1
-                  ? iframes[1].getLocation()
-                  :  new Point(myDesktopPane.getSize().width / 2, myDesktopPane.getSize().height / 2);
-          pluginFrame.setLocation(new Point(
-                  topFrameLoc.x + FRAME_NEW_OFFSET,
-                  topFrameLoc.y + FRAME_NEW_OFFSET));
-        }
-
-        pluginFrame.setVisible(true);
-
-        /* Select plugin */
-        try {
-          for (JInternalFrame existingPlugin : myDesktopPane.getAllFrames()) {
-            existingPlugin.setSelected(false);
-          }
-          pluginFrame.setSelected(true);
-        } catch (Exception e) { }
-        myDesktopPane.moveToFront(pluginFrame);
-
-        return true;
-      }
-    }.invokeAndWait();
-  }
-
-  /**
    * Close all mote plugins for given mote.
    *
    * @param mote Mote
@@ -2017,7 +1964,46 @@ public class Cooja extends Observable {
             }
           }
 
-          showPlugin(plugin);
+          new RunnableInEDT<Boolean>() {
+            private static final int FRAME_STANDARD_WIDTH = 150;
+
+            private static final int FRAME_STANDARD_HEIGHT = 300;
+
+            @Override
+            public Boolean work() {
+              var pluginFrame = plugin.getCooja();
+              if (pluginFrame == null) {
+                logger.fatal("Failed trying to show plugin without visualizer.");
+                return false;
+              }
+
+              myDesktopPane.add(pluginFrame);
+
+              // Set size if not already specified by plugin.
+              if (pluginFrame.getWidth() <= 0 || pluginFrame.getHeight() <= 0) {
+                pluginFrame.setSize(FRAME_STANDARD_WIDTH, FRAME_STANDARD_HEIGHT);
+              }
+              // Set location if not already set.
+              if (pluginFrame.getLocation().x <= 0 && pluginFrame.getLocation().y <= 0) {
+                var iframes = myDesktopPane.getAllFrames();
+                Point topFrameLoc = iframes.length > 1
+                        ? iframes[1].getLocation()
+                        :  new Point(myDesktopPane.getSize().width / 2, myDesktopPane.getSize().height / 2);
+                pluginFrame.setLocation(new Point(topFrameLoc.x + FRAME_NEW_OFFSET, topFrameLoc.y + FRAME_NEW_OFFSET));
+              }
+              pluginFrame.setVisible(true);
+
+              // Select plugin.
+              try {
+                for (var existingPlugin : myDesktopPane.getAllFrames()) {
+                  existingPlugin.setSelected(false);
+                }
+                pluginFrame.setSelected(true);
+              } catch (Exception e) { }
+              myDesktopPane.moveToFront(pluginFrame);
+              return true;
+            }
+          }.invokeAndWait();
           return true;
         }
       }.invokeAndWait();
