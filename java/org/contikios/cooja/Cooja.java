@@ -2431,12 +2431,6 @@ public class Cooja extends Observable {
    * @param seed Seed to use for reloaded simulation.
    */
   public void reloadCurrentSimulation(long seed) {
-    final Simulation sim = getSimulation();
-    if (sim == null) {
-      logger.fatal("No simulation to reload");
-      return;
-    }
-
     /* Warn about memory usage */
     if (warnMemory()) {
       return;
