@@ -2480,25 +2480,20 @@ public class Cooja extends Observable {
     if (fc.showSaveDialog(myDesktopPane) != JFileChooser.APPROVE_OPTION) {
       return null;
     }
-
     File saveFile = fc.getSelectedFile();
     if (!fc.accept(saveFile)) {
       saveFile = new File(saveFile.getParent(), saveFile.getName() + fc.getFileFilter());
     }
     if (saveFile.exists()) {
-      String s1 = "Overwrite";
-      String s2 = "Cancel";
-      Object[] options = {s1, s2};
-      if (JOptionPane.showOptionDialog(getTopParentContainer(),
-              "A file with the same name already exists.\nDo you want to remove it?",
+      Object[] opts = {"Overwrite", "Cancel"};
+      if (JOptionPane.showOptionDialog(frame, "A file with the same name already exists.\nDo you want to remove it?",
               "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
-              JOptionPane.QUESTION_MESSAGE, null, options, s1) != JOptionPane.YES_OPTION) {
+              JOptionPane.QUESTION_MESSAGE, null, opts, opts[0]) != JOptionPane.YES_OPTION) {
         return null;
       }
     }
     if (saveFile.exists() && !saveFile.canWrite()) {
-      JOptionPane.showMessageDialog(getTopParentContainer(),
-            "No write access to " + saveFile, "Save failed", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(frame, "No write access to " + saveFile, "Save failed", JOptionPane.ERROR_MESSAGE);
       logger.fatal("No write access to file: " + saveFile.getAbsolutePath());
       return null;
     }
