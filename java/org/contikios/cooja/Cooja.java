@@ -2006,13 +2006,10 @@ public class Cooja extends Observable {
               } else if (cfgElem.getName().equals("minimized")) {
                 final var pluginGUI = plugin.getCooja();
                 if (Boolean.parseBoolean(cfgElem.getText()) && pluginGUI != null) {
-                  SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                      try {
-                        pluginGUI.setIcon(true);
-                      } catch (PropertyVetoException e) {
-                      }
+                  SwingUtilities.invokeLater(() -> {
+                    try {
+                      pluginGUI.setIcon(true);
+                    } catch (PropertyVetoException e) {
                     }
                   });
                 }
