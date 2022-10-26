@@ -248,8 +248,6 @@ public class Cooja extends Observable {
     "HIDE_WARNINGS"
   };
 
-  private static final int FRAME_NEW_OFFSET = 30;
-
   private static final String WINDOW_TITLE = "Cooja: The Contiki Network Simulator";
 
   private Simulation mySimulation;
@@ -1933,6 +1931,8 @@ public class Cooja extends Observable {
         private static final int FRAME_STANDARD_WIDTH = 150;
 
         private static final int FRAME_STANDARD_HEIGHT = 300;
+
+        private static final int FRAME_NEW_OFFSET = 30;
 
         @Override
         public Boolean work() {
