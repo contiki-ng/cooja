@@ -71,7 +71,6 @@ public class LogScriptEngine {
   private final NashornScriptEngine engine = (NashornScriptEngine) new NashornScriptEngineFactory().getScriptEngine();
 
   private final BufferedWriter logWriter; // For non-GUI tests.
-  private static int engineInstances = 0;
 
   private final LogOutputListener logOutputListener = new LogOutputListener() {
     @Override
@@ -122,10 +121,10 @@ public class LogScriptEngine {
   private long startTime;
   private long startRealTime;
 
-  protected LogScriptEngine(Simulation simulation, JTextArea logTextArea) {
+  protected LogScriptEngine(Simulation simulation, int logNumber, JTextArea logTextArea) {
     this.simulation = simulation;
     if (!Cooja.isVisualized()) {
-      var logName = engineInstances++ == 0 ? "COOJA.testlog" : String.format("COOJA-%02d.testlog", engineInstances);
+      var logName = logNumber == 0 ? "COOJA.testlog" : String.format("COOJA-%02d.testlog", logNumber);
       var logFile = Paths.get(simulation.getCooja().logDirectory, logName);
       try {
         logWriter = Files.newBufferedWriter(logFile, UTF_8);
