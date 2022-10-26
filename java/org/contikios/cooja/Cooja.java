@@ -2475,12 +2475,7 @@ public class Cooja extends Observable {
    * Save current simulation configuration to disk
    */
   public File doSaveConfig() {
-    if (mySimulation == null) {
-      return null;
-    }
-
     mySimulation.stopSimulation();
-
     JFileChooser fc = newFileChooser();
     if (fc.showSaveDialog(myDesktopPane) != JFileChooser.APPROVE_OPTION) {
       return null;
