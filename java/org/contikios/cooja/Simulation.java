@@ -228,6 +228,15 @@ public class Simulation extends Observable {
       for (Mote m: motes) {
         doRemoveMote(m);
       }
+
+      // Log test status to console in headless mode, ScriptRunner shows status in GUI mode.
+      if (!Cooja.isVisualized()) {
+        if (returnValue == null) {
+          logger.info("TEST OK\n");
+        } else {
+          logger.warn("TEST FAILED\n");
+        }
+      }
     }, "sim");
     simulationThread.start();
   }
