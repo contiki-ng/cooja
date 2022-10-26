@@ -2547,10 +2547,6 @@ public class Cooja extends Observable {
    * @param askForConfirmation Should we ask for confirmation before quitting?
    */
   public void doQuit(boolean askForConfirmation) {
-    doQuit(askForConfirmation, 0);
-  }
-  
-  public void doQuit(boolean askForConfirmation, int exitCode) {
     if (getSimulation() != null && askForConfirmation) { // Save?
       Object[] opts = {"Yes", "No", "Cancel"};
       int n = JOptionPane.showOptionDialog(frame, "Do you want to save the current simulation?", WINDOW_TITLE,
@@ -2559,7 +2555,10 @@ public class Cooja extends Observable {
         return;
       }
     }
+    doQuit(0);
+  }
 
+  public void doQuit(int exitCode) {
     // Clean up resources. Catch all exceptions to ensure that System.exit will be called.
     try {
       doRemoveSimulation(false);
@@ -3021,7 +3020,7 @@ public class Cooja extends Observable {
         }
       }
       if (!vis) {
-        gui.doQuit(false, rv);
+        gui.doQuit(rv);
       }
     }
   }
