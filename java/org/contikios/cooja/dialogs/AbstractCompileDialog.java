@@ -122,8 +122,8 @@ public abstract class AbstractCompileDialog extends JDialog {
   private Process currentCompilationProcess = null;
 
   /* Accessible at Contiki compilation success */
-  public File contikiSource = null;
-  public File contikiFirmware = null;
+  protected File contikiSource = null;
+  protected File contikiFirmware = null;
 
   public AbstractCompileDialog(Simulation sim, final BaseContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
     super(Cooja.getTopParentContainer(), "Create Mote Type: Compile Contiki", ModalityType.APPLICATION_MODAL);
@@ -550,7 +550,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @param intfClass Mote interface class
    * @param selected If true, interface will initially be selected
    */
-  public void addMoteInterface(Class<? extends MoteInterface> intfClass, boolean selected) {
+  protected void addMoteInterface(Class<? extends MoteInterface> intfClass, boolean selected) {
     /* If mote interface was already added  */
     for (Component c : moteIntfBox.getComponents()) {
       if (!(c instanceof JCheckBox)) {
@@ -600,7 +600,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @param name Contiki source
    * @return Suggested compile commands for compiling source
    */
-  public String getDefaultCompileCommands(String name) {
+  protected String getDefaultCompileCommands(String name) {
     String sourceNoExtension = new File(name.substring(0, name.length() - 2)).getName();
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
             sourceNoExtension + "." + targetName + " TARGET=" + targetName;
