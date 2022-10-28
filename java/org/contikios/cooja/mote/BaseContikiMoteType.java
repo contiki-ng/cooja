@@ -56,6 +56,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
@@ -312,7 +313,7 @@ public abstract class BaseContikiMoteType implements MoteType {
       String file = source != null ? source.getAbsolutePath() : firmware != null ? firmware.getAbsolutePath() : null;
       var moteClasses = getMoteInterfaceClasses();
       var interfaces = moteClasses == null ? getDefaultMoteInterfaceClasses() : moteClasses;
-      var cfg = showCompilationDialog(sim, new MoteTypeConfig(desc, getMoteType(), file,
+      var cfg = showCompilationDialog(sim.getCooja(), new MoteTypeConfig(desc, getMoteType(), file,
               getCompileCommands(), interfaces));
       if (cfg == null) {
         return false;
@@ -351,11 +352,11 @@ public abstract class BaseContikiMoteType implements MoteType {
                                Class<? extends MoteInterface>[] interfaces) {}
 
   /** Create a compilation dialog for this mote type. */
-  protected abstract AbstractCompileDialog createCompilationDialog(Simulation sim, MoteTypeConfig cfg);
+  protected abstract AbstractCompileDialog createCompilationDialog(Cooja gui, MoteTypeConfig cfg);
 
   /** Show a compilation dialog for this mote type. */
-  protected MoteTypeConfig showCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
-    final var dialog = createCompilationDialog(sim, cfg);
+  protected MoteTypeConfig showCompilationDialog(Cooja gui, MoteTypeConfig cfg) {
+    final var dialog = createCompilationDialog(gui, cfg);
     dialog.setVisible(true); // Blocks.
     return dialog.results();
   }

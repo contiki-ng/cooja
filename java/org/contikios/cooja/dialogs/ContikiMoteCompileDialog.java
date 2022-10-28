@@ -45,7 +45,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
-import org.contikios.cooja.Simulation;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.contikimote.ContikiMoteType.NetworkStack;
 import org.contikios.cooja.mote.BaseContikiMoteType;
@@ -56,8 +56,8 @@ import org.contikios.cooja.mote.BaseContikiMoteType;
  * @author Fredrik Osterlind
  */
 public class ContikiMoteCompileDialog extends AbstractCompileDialog {
-  public ContikiMoteCompileDialog(Simulation sim, ContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
-    super(sim, moteType, cfg);
+  public ContikiMoteCompileDialog(Cooja gui, ContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
+    super(gui, moteType, cfg);
     // Add Contiki mote type specifics.
     // Communication stack.
     JLabel label = new JLabel("Default network stack header");

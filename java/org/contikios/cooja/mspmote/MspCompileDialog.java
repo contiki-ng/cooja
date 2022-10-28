@@ -33,13 +33,13 @@ package org.contikios.cooja.mspmote;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.contikios.cooja.Simulation;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.dialogs.AbstractCompileDialog;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 
 public class MspCompileDialog extends AbstractCompileDialog {
-  public MspCompileDialog(Simulation sim, MspMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
-    super(sim, moteType, cfg);
+  public MspCompileDialog(Cooja gui, MspMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
+    super(gui, moteType, cfg);
     setTitle("Create Mote Type: Compile Contiki for " + moteType.getMoteType());
     var textArea = new JTextArea();
     textArea.setEditable(false);

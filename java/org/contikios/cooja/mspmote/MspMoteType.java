@@ -60,8 +60,8 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   private static final Logger logger = LogManager.getLogger(MspMoteType.class);
 
   @Override
-  protected AbstractCompileDialog createCompilationDialog(Simulation sim, MoteTypeConfig cfg) {
-    return new MspCompileDialog(sim, this, cfg);
+  protected AbstractCompileDialog createCompilationDialog(Cooja gui, MoteTypeConfig cfg) {
+    return new MspCompileDialog(gui, this, cfg);
   }
 
   @Override
