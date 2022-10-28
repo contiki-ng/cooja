@@ -340,8 +340,52 @@ public abstract class AbstractCompileDialog extends JDialog {
     topPanel.add(buttonPanel);
 
     /* Center: Tabs showing configuration, compilation output, ... */
-    addCompileCommandTab(tabbedPane);
-    addMoteInterfacesTab(tabbedPane);
+    // Loading firmware sets the create button to default, so do not update dialog state after that.
+    commandsArea.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
+          setDialogState(DialogState.AWAITING_COMPILATION);
+        }
+      }
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
+          setDialogState(DialogState.AWAITING_COMPILATION);
+        }
+      }
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
+          setDialogState(DialogState.AWAITING_COMPILATION);
+        }
+      }
+    });
+    tabbedPane.addTab("Compile commands", null, new JScrollPane(commandsArea), "Manually alter Contiki compilation commands");
+    JPanel panel = new JPanel(new BorderLayout());
+    JLabel label1 = new JLabel("Cooja interacts with simulated motes via mote interfaces. These settings normally do not need to be changed.");
+    Box b = Box.createHorizontalBox();
+    b.add(new JButton(new AbstractAction("Use default") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        for (var c : moteIntfBox.getComponents()) {
+          if (c instanceof JCheckBox checkbox) {
+            checkbox.setSelected(false);
+          }
+        }
+        // Select default.
+        for (var moteIntf : AbstractCompileDialog.this.moteType.getDefaultMoteInterfaceClasses()) {
+          addMoteInterface(moteIntf, true);
+        }
+      }
+    }));
+    b.add(label1);
+    panel.add(BorderLayout.NORTH, b);
+    panel.add(BorderLayout.CENTER, new JScrollPane(moteIntfBox));
+    tabbedPane.addTab("Mote interfaces", null, panel, "Mote interfaces");
+    for (var moteInterfaces : this.moteType.getAllMoteInterfaceClasses()) {
+      addMoteInterface(moteInterfaces, false);
+    }
 
     /* Build panel */
     mainPanel.add(BorderLayout.NORTH, topPanel);
@@ -497,60 +541,6 @@ public abstract class AbstractCompileDialog extends JDialog {
         getRootPane().setDefaultButton(createButton);
         commandsArea.setText("");
       }
-    }
-  }
-
-  private void addCompileCommandTab(JTabbedPane parent) {
-    // Loading firmware sets the create button to default, so do not update dialog state after that.
-    commandsArea.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
-          setDialogState(DialogState.AWAITING_COMPILATION);
-        }
-      }
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
-          setDialogState(DialogState.AWAITING_COMPILATION);
-        }
-      }
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
-          setDialogState(DialogState.AWAITING_COMPILATION);
-        }
-      }
-    });
-    parent.addTab("Compile commands", null, new JScrollPane(commandsArea), "Manually alter Contiki compilation commands");
-  }
-
-  private void addMoteInterfacesTab(JTabbedPane parent) {
-    JPanel panel = new JPanel(new BorderLayout());
-    JLabel label = new JLabel("Cooja interacts with simulated motes via mote interfaces. These settings normally do not need to be changed.");
-    Box b = Box.createHorizontalBox();
-    b.add(new JButton(new AbstractAction("Use default") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        // Unselect everything.
-        for (Component c : moteIntfBox.getComponents()) {
-          if (c instanceof JCheckBox checkbox) {
-            checkbox.setSelected(false);
-          }
-        }
-
-        // Select default.
-        for (var moteIntf : moteType.getDefaultMoteInterfaceClasses()) {
-          addMoteInterface(moteIntf, true);
-        }
-      }
-    }));
-    b.add(label);
-    panel.add(BorderLayout.NORTH, b);
-    panel.add(BorderLayout.CENTER, new JScrollPane(moteIntfBox));
-    parent.addTab("Mote interfaces", null, panel, "Mote interfaces");
-    for (var moteInterfaces : moteType.getAllMoteInterfaceClasses()) {
-      addMoteInterface(moteInterfaces, false);
     }
   }
 
