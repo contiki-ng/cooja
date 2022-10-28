@@ -45,7 +45,7 @@ import java.util.Hashtable;
 
 public class NetworkPacket {
   byte[] data;
-  String description;
+  final String description;
   public static final String IPv6 =
     "version:4=6|trafficClass:8|flowLabel:20" +
     "|payloadLength:16|nextHeader:8|hopLimit:8" +

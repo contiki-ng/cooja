@@ -95,7 +95,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   // From the possible interrupt sources - to be able to indicate is serviced.
   // NOTE: 64 since more modern MSP430's have more than 16 vectors (5xxx has 64).
   private final InterruptHandler[] interruptSource = new InterruptHandler[64];
-  public int MAX_INTERRUPT;
+  public final int MAX_INTERRUPT;
 
   protected int interruptMax = -1;
   // Op/instruction represents the last executed OP / instruction

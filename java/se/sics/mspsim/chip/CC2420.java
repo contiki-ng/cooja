@@ -406,7 +406,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private StateListener stateListener = null;
   private int ackPos;
   /* type = 2 (ACK), third byte needs to be sequence number... */
-  private int[] ackBuf = {0x05, 0x02, 0x00, 0x00, 0x00, 0x00};
+  private final int[] ackBuf = {0x05, 0x02, 0x00, 0x00, 0x00, 0x00};
   private boolean ackFramePending = false;
   private final CCITT_CRC rxCrc = new CCITT_CRC();
   private final CCITT_CRC txCrc = new CCITT_CRC();

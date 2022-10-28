@@ -38,8 +38,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class CoffeeFile {
-	protected CoffeeFS coffeeFS;
-	protected CoffeeHeader header;
+	protected final CoffeeFS coffeeFS;
+	protected final CoffeeHeader header;
 	private final String name;
 	private int length;
 	private final int reservedSize;

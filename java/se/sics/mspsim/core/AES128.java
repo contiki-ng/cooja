@@ -56,7 +56,7 @@ public class AES128 extends IOUnit {
         /**
          * Address and size for IO configuration
          */
-        public static int OFFSET = 0x09C0;
+        public static final int OFFSET = 0x09C0;
         public static int SIZE = 12;
 
         /**

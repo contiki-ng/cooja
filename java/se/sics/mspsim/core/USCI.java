@@ -87,9 +87,9 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
 
   private USARTListener usartListener;
 
-  private int utxifg;
-  private int urxifg;
-  private int rxVector;
+  private final int utxifg;
+  private final int urxifg;
+  private final int rxVector;
 
   private int clockSource = 0;
   private int baudRate = 0;
@@ -114,7 +114,7 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
   private int urxbuf;
   private int utxbuf;
   private int ustat;
-  private int txbit;
+  private final int txbit;
 
   private boolean txEnabled = false;
   private boolean rxEnabled = false;
@@ -124,7 +124,7 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
   private DMA dma;
   private int dmaIndex;
 
-  private boolean usciA; /* if this is an USCI A or B */
+  private final boolean usciA; /* if this is an USCI A or B */
 
   private final TimeEvent txTrigger = new TimeEvent(0) {
     @Override

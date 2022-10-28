@@ -52,7 +52,7 @@ public abstract class IOUnit implements InterruptHandler, Loggable {
   protected int logLevel;
   protected boolean DEBUG = false;
 
-  protected EmulationLogger logger;
+  protected final EmulationLogger logger;
 
   public IOUnit(String id, MSP430Core cpu, int[] memory, int offset) {
     this(id, id, cpu, memory, offset);
