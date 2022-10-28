@@ -35,7 +35,6 @@ import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -578,17 +577,13 @@ public abstract class AbstractCompileDialog extends JDialog {
     intfCheckBox.putClientProperty("class", intfClass);
     intfCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
     intfCheckBox.setToolTipText(intfClass.getName());
-    intfCheckBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (contikiSource == null &&
-            contikiFirmware != null) {
-          setDialogState(DialogState.SELECTED_FIRMWARE);
-        } else if (contikiSource != null){
-          setDialogState(DialogState.AWAITING_COMPILATION);
-        } else {
-          setDialogState(DialogState.SELECTED_SOURCE);
-        }
+    intfCheckBox.addActionListener(e -> {
+      if (contikiSource == null && contikiFirmware != null) {
+        setDialogState(DialogState.SELECTED_FIRMWARE);
+      } else if (contikiSource != null){
+        setDialogState(DialogState.AWAITING_COMPILATION);
+      } else {
+        setDialogState(DialogState.SELECTED_SOURCE);
       }
     });
 
