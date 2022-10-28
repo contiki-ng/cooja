@@ -2363,84 +2363,79 @@ public class AreaViewer extends VisPlugin {
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       var name = element.getName();
-      if (name.equals("selected")) {
-        int id = Integer.parseInt(element.getAttributeValue("mote"));
-        selectedRadio =  currentSimulation.getMoteWithID(id).getInterfaces().getRadio();
-        trackModeButton.setEnabled(true);
-        paintEnvironmentAction.setEnabled(true);
-      } else if (name.equals("controls_visible")) {
-        showSettingsBox.setSelected(Boolean.parseBoolean(element.getText()));
-        canvasModeHandler.actionPerformed(new ActionEvent(showSettingsBox,
-            ActionEvent.ACTION_PERFORMED, showSettingsBox.getActionCommand()));
-      } else if (name.equals("zoom_x")) {
-        currentZoomX = Double.parseDouble(element.getText());
-      } else if (name.equals("zoom_y")) {
-        currentZoomY = Double.parseDouble(element.getText());
-      } else if (name.equals("pan_x")) {
-        currentPanX = Double.parseDouble(element.getText());
-      } else if (name.equals("pan_y")) {
-        currentPanY = Double.parseDouble(element.getText());
-      } else if (name.equals("show_background")) {
-        backgroundCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
-        selectGraphicsHandler.actionPerformed(new ActionEvent(backgroundCheckBox,
-            ActionEvent.ACTION_PERFORMED, backgroundCheckBox.getActionCommand()));
-      } else if (name.equals("show_obstacles")) {
-        obstaclesCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
-        selectGraphicsHandler.actionPerformed(new ActionEvent(obstaclesCheckBox,
-            ActionEvent.ACTION_PERFORMED, obstaclesCheckBox.getActionCommand()));
-      } else if (name.equals("show_channel")) {
-        channelCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
-        selectGraphicsHandler.actionPerformed(new ActionEvent(channelCheckBox,
-            ActionEvent.ACTION_PERFORMED, channelCheckBox.getActionCommand()));
-      } else if (name.equals("show_radios")) {
-        radiosCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
-        selectGraphicsHandler.actionPerformed(new ActionEvent(radiosCheckBox,
-            ActionEvent.ACTION_PERFORMED, radiosCheckBox.getActionCommand()));
-      } else if (name.equals("show_arrow")) {
-        arrowCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
-        selectGraphicsHandler.actionPerformed(new ActionEvent(arrowCheckBox,
-            ActionEvent.ACTION_PERFORMED, arrowCheckBox.getActionCommand()));
-      } else if (name.equals("vis_type")) {
-        String visTypeIdentifier = element.getText();
-        Enumeration<AbstractButton> buttonEnum = visTypeSelectionGroup.getElements();
-        while (buttonEnum.hasMoreElements()) {
-          AbstractButton button = buttonEnum.nextElement();
-          if (button.getActionCommand().equals(visTypeIdentifier)) {
-            visTypeSelectionGroup.setSelected(button.getModel(), true);
-            button.getActionListeners()[0]
-                .actionPerformed(new ActionEvent(button,
-                    ActionEvent.ACTION_PERFORMED, button.getActionCommand()));
+      switch (name) {
+        case "selected" -> {
+          int id = Integer.parseInt(element.getAttributeValue("mote"));
+          selectedRadio = currentSimulation.getMoteWithID(id).getInterfaces().getRadio();
+          trackModeButton.setEnabled(true);
+          paintEnvironmentAction.setEnabled(true);
+        }
+        case "controls_visible" -> {
+          showSettingsBox.setSelected(Boolean.parseBoolean(element.getText()));
+          canvasModeHandler.actionPerformed(new ActionEvent(showSettingsBox,
+                  ActionEvent.ACTION_PERFORMED, showSettingsBox.getActionCommand()));
+        }
+        case "zoom_x" -> currentZoomX = Double.parseDouble(element.getText());
+        case "zoom_y" -> currentZoomY = Double.parseDouble(element.getText());
+        case "pan_x" -> currentPanX = Double.parseDouble(element.getText());
+        case "pan_y" -> currentPanY = Double.parseDouble(element.getText());
+        case "show_background" -> {
+          backgroundCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
+          selectGraphicsHandler.actionPerformed(new ActionEvent(backgroundCheckBox,
+                  ActionEvent.ACTION_PERFORMED, backgroundCheckBox.getActionCommand()));
+        }
+        case "show_obstacles" -> {
+          obstaclesCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
+          selectGraphicsHandler.actionPerformed(new ActionEvent(obstaclesCheckBox,
+                  ActionEvent.ACTION_PERFORMED, obstaclesCheckBox.getActionCommand()));
+        }
+        case "show_channel" -> {
+          channelCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
+          selectGraphicsHandler.actionPerformed(new ActionEvent(channelCheckBox,
+                  ActionEvent.ACTION_PERFORMED, channelCheckBox.getActionCommand()));
+        }
+        case "show_radios" -> {
+          radiosCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
+          selectGraphicsHandler.actionPerformed(new ActionEvent(radiosCheckBox,
+                  ActionEvent.ACTION_PERFORMED, radiosCheckBox.getActionCommand()));
+        }
+        case "show_arrow" -> {
+          arrowCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
+          selectGraphicsHandler.actionPerformed(new ActionEvent(arrowCheckBox,
+                  ActionEvent.ACTION_PERFORMED, arrowCheckBox.getActionCommand()));
+        }
+        case "vis_type" -> {
+          String visTypeIdentifier = element.getText();
+          Enumeration<AbstractButton> buttonEnum = visTypeSelectionGroup.getElements();
+          while (buttonEnum.hasMoreElements()) {
+            AbstractButton button = buttonEnum.nextElement();
+            if (button.getActionCommand().equals(visTypeIdentifier)) {
+              visTypeSelectionGroup.setSelected(button.getModel(), true);
+              button.getActionListeners()[0]
+                      .actionPerformed(new ActionEvent(button, ActionEvent.ACTION_PERFORMED, button.getActionCommand()));
+            }
           }
         }
-      } else if (name.equals("background_image")) {
-        backgroundImageFile = new File(element.getText());
-        if (backgroundImageFile.exists()) {
-          Toolkit toolkit = Toolkit.getDefaultToolkit();
-          backgroundImage = toolkit.getImage(backgroundImageFile.getAbsolutePath());
-
-          MediaTracker tracker = new MediaTracker(canvas);
-          tracker.addImage(backgroundImage, 1);
-
-          try {
-            tracker.waitForAll();
-          } catch (InterruptedException ex) {
-            logger.fatal("Interrupted during image loading, aborting");
-            backgroundImage = null;
+        case "background_image" -> {
+          backgroundImageFile = new File(element.getText());
+          if (backgroundImageFile.exists()) {
+            backgroundImage = Toolkit.getDefaultToolkit().getImage(backgroundImageFile.getAbsolutePath());
+            MediaTracker tracker = new MediaTracker(canvas);
+            tracker.addImage(backgroundImage, 1);
+            try {
+              tracker.waitForAll();
+            } catch (InterruptedException ex) {
+              logger.fatal("Interrupted during image loading, aborting");
+              backgroundImage = null;
+            }
           }
-
         }
-      } else if (name.equals("back_start_x")) {
-        backgroundStartX = Double.parseDouble(element.getText());
-      } else if (name.equals("back_start_y")) {
-        backgroundStartY = Double.parseDouble(element.getText());
-      } else if (name.equals("back_width")) {
-        backgroundWidth = Double.parseDouble(element.getText());
-      } else if (name.equals("back_height")) {
-        backgroundHeight = Double.parseDouble(element.getText());
-      } else if (name.equals("resolution")) {
-        resolutionSlider.setValue(Integer.parseInt(element.getText()));
-      } else {
-        logger.fatal("Unknown configuration value: " + name);
+        case "back_start_x" -> backgroundStartX = Double.parseDouble(element.getText());
+        case "back_start_y" -> backgroundStartY = Double.parseDouble(element.getText());
+        case "back_width" -> backgroundWidth = Double.parseDouble(element.getText());
+        case "back_height" -> backgroundHeight = Double.parseDouble(element.getText());
+        case "resolution" -> resolutionSlider.setValue(Integer.parseInt(element.getText()));
+        default -> logger.fatal("Unknown configuration value: " + name);
       }
     }
 
