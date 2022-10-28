@@ -438,75 +438,65 @@ public abstract class AbstractCompileDialog extends JDialog {
     final Path inputPath = Path.of(input);
     compileButton.setText("Compile");
     getRootPane().setDefaultButton(compileButton);
-
     switch (dialogState) {
-    case NO_SELECTION:
-    	cleanButton.setEnabled(false);
-    	compileButton.setEnabled(false);
-    	createButton.setEnabled(false);
-    	commandsArea.setEnabled(false);
-      break;
-
-    case SELECTED_SOURCE:
-    case AWAITING_COMPILATION:
-      if (!input.endsWith(".c")) {
-        setDialogState(DialogState.NO_SELECTION);
-        return;
+      case NO_SELECTION -> {
+        cleanButton.setEnabled(false);
+        compileButton.setEnabled(false);
+        createButton.setEnabled(false);
+        commandsArea.setEnabled(false);
       }
-      if (!Files.exists(inputPath)) {
-        logger.warn("Could not find Contiki source: " + new File(input).getAbsolutePath());
-        setDialogState(DialogState.NO_SELECTION);
-        return;
+      case SELECTED_SOURCE, AWAITING_COMPILATION -> {
+        if (!input.endsWith(".c")) {
+          setDialogState(DialogState.NO_SELECTION);
+          return;
+        }
+        if (!Files.exists(inputPath)) {
+          logger.warn("Could not find Contiki source: " + new File(input).getAbsolutePath());
+          setDialogState(DialogState.NO_SELECTION);
+          return;
+        }
+        cleanButton.setEnabled(true);
+        compileButton.setEnabled(true);
+        createButton.setEnabled(false);
+        commandsArea.setEnabled(true);
+        if (dialogState == DialogState.SELECTED_SOURCE) {
+          contikiSource = new File(input);
+          commandsArea.setText(getDefaultCompileCommands(input));
+          contikiFirmware = moteType.getExpectedFirmwareFile(input);
+        }
       }
-
-    	cleanButton.setEnabled(true);
-    	compileButton.setEnabled(true);
-    	createButton.setEnabled(false);
-    	commandsArea.setEnabled(true);
-      if (dialogState == DialogState.SELECTED_SOURCE) {
-        contikiSource = new File(input);
-        commandsArea.setText(getDefaultCompileCommands(input));
-        contikiFirmware = moteType.getExpectedFirmwareFile(input);
+      case IS_COMPILING -> {
+        cleanButton.setEnabled(false);
+        compileButton.setEnabled(false);
+        compileButton.setText("Compiling");
+        createButton.setEnabled(false);
+        commandsArea.setEnabled(false);
       }
-      break;
-
-    case IS_COMPILING:
-    	cleanButton.setEnabled(false);
-    	compileButton.setEnabled(false);
-    	compileButton.setText("Compiling");
-    	createButton.setEnabled(false);
-    	commandsArea.setEnabled(false);
-      break;
-
-    case COMPILED_FIRMWARE:
-    	cleanButton.setEnabled(true);
-    	compileButton.setEnabled(true);
-    	createButton.setEnabled(true);
-    	commandsArea.setEnabled(true);
-      getRootPane().setDefaultButton(createButton);
-      break;
-
-    case SELECTED_FIRMWARE:
-      if (!Files.exists(inputPath)) {
-        setDialogState(DialogState.NO_SELECTION);
-        return;
+      case COMPILED_FIRMWARE -> {
+        cleanButton.setEnabled(true);
+        compileButton.setEnabled(true);
+        createButton.setEnabled(true);
+        commandsArea.setEnabled(true);
+        getRootPane().setDefaultButton(createButton);
       }
-      if (!canLoadFirmware(input)) {
-        setDialogState(DialogState.NO_SELECTION);
-        return;
+      case SELECTED_FIRMWARE -> {
+        if (!Files.exists(inputPath)) {
+          setDialogState(DialogState.NO_SELECTION);
+          return;
+        }
+        if (!canLoadFirmware(input)) {
+          setDialogState(DialogState.NO_SELECTION);
+          return;
+        }
+        contikiSource = null;
+        contikiFirmware = new File(input);
+        cleanButton.setEnabled(true);
+        compileButton.setEnabled(false);
+        createButton.setEnabled(true);
+        commandsArea.setEnabled(false);
+        getRootPane().setDefaultButton(createButton);
+        commandsArea.setText("");
       }
-      contikiSource = null;
-      contikiFirmware = new File(input);
-    	cleanButton.setEnabled(true);
-    	compileButton.setEnabled(false);
-    	createButton.setEnabled(true);
-    	commandsArea.setEnabled(false);
-      getRootPane().setDefaultButton(createButton);
-      commandsArea.setText("");
-      break;
-
-    default:
-      break;
     }
   }
 
