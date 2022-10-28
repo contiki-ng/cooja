@@ -313,23 +313,16 @@ public class AT45DB extends ExternalFlash implements USARTListener {
     public void setChipSelect(boolean select) {
       chipSelect = select;
       if(!chipSelect) {
-        switch(state) {
-
-        case BUFFER1_TO_PAGE_ERASE:
-        case BUFFER2_TO_PAGE_ERASE:
-          bufferToPage((state == BUFFER1_TO_PAGE_ERASE ? 1 : 2));
-          setReady(true);
-          break;
-
-        case PAGE_TO_BUFFER1:
-        case PAGE_TO_BUFFER2:
-          pageToBuffer((state == PAGE_TO_BUFFER1 ? 1 : 2));
-          setReady(true);
-          break;
-
-        default:
-          setReady(true);
-        break;
+        switch (state) {
+          case BUFFER1_TO_PAGE_ERASE, BUFFER2_TO_PAGE_ERASE -> {
+            bufferToPage((state == BUFFER1_TO_PAGE_ERASE ? 1 : 2));
+            setReady(true);
+          }
+          case PAGE_TO_BUFFER1, PAGE_TO_BUFFER2 -> {
+            pageToBuffer((state == PAGE_TO_BUFFER1 ? 1 : 2));
+            setReady(true);
+          }
+          default -> setReady(true);
         }
 
         setState(STATE_IDLE);

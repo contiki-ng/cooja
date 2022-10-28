@@ -417,18 +417,12 @@ public class AES128 extends IOUnit {
                                 isBusy = true;
                                 key.position(key.limit());
                                 switch (operation) {
-                                case AESOP_0: // encrypt
-                                        aesEncrypt();
-                                        break;
-                                case AESOP_1: // decrypt
-                                        aesDecrypt();
-                                        break;
-                                case AESOP_2: // gen 1st round key
-                                        logw(WarningType.ILLEGAL_IO_WRITE, "to implement");
-                                        break;
-                                case AESOP_3: // decrypt 1st round key
-                                        logw(WarningType.ILLEGAL_IO_WRITE, "to implement");
-                                        break;
+                                        case AESOP_0 -> aesEncrypt();
+                                        case AESOP_1 -> aesDecrypt();
+                                        case AESOP_2 -> // gen 1st round key
+                                                logw(WarningType.ILLEGAL_IO_WRITE, "to implement");
+                                        case AESOP_3 -> // decrypt 1st round key
+                                                logw(WarningType.ILLEGAL_IO_WRITE, "to implement");
                                 }
                                 isBusy = false;
                                 readyInterruptFlag = true;

@@ -302,24 +302,25 @@ public class ConsoleUI extends JComponent {
 
   private void handleChar(char c) {
     switch (c) {
-    case '\n':
-      String line = new String(chars, 0, len);
-      if (line.trim().length() > 0)
-        history[pos++] = line;
-      addLine(currentOutput + line);
-      if (pos >= history.length)
-        pos = 0;
-      back = 0;
-      executeCommand(line);
-      break;
-    default:
-      if (insert && editPos < len) {
-        System.arraycopy(chars, editPos, chars, editPos + 1, len - editPos);
+      case '\n' -> {
+        String line = new String(chars, 0, len);
+        if (line.trim().length() > 0)
+          history[pos++] = line;
+        addLine(currentOutput + line);
+        if (pos >= history.length)
+          pos = 0;
+        back = 0;
+        executeCommand(line);
       }
-      chars[editPos++] = c;
-      cursorX++;
-      len++;
-      editing = true;
+      default -> {
+        if (insert && editPos < len) {
+          System.arraycopy(chars, editPos, chars, editPos + 1, len - editPos);
+        }
+        chars[editPos++] = c;
+        cursorX++;
+        len++;
+        editing = true;
+      }
     }
     /*
      * complete re-layout - needs to be optimized later - layout is only needed

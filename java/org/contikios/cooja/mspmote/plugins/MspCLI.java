@@ -134,37 +134,37 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
       @Override
       public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
-        case KeyEvent.VK_UP: {
-          int nextPos = (historyPos + history.length - 1) % history.length;
-          if (nextPos == historyCount || history[nextPos] == null) {
-            commandField.getToolkit().beep();
-          } else {
-            String cmd = trim(commandField.getText());
-            if (cmd != null) {
-              history[historyPos] = cmd;
+          case KeyEvent.VK_UP -> {
+            int nextPos = (historyPos + history.length - 1) % history.length;
+            if (nextPos == historyCount || history[nextPos] == null) {
+              commandField.getToolkit().beep();
+            } else {
+              String cmd = trim(commandField.getText());
+              if (cmd != null) {
+                history[historyPos] = cmd;
+              }
+              historyPos = nextPos;
+              commandField.setText(history[historyPos]);
             }
-            historyPos = nextPos;
-            commandField.setText(history[historyPos]);
+            break;
           }
-          break;
-        }
-        case KeyEvent.VK_DOWN: {
-          int nextPos = (historyPos + 1) % history.length;
-          if (nextPos == historyCount) {
-            historyPos = nextPos;
-            commandField.setText("");
-          } else if (historyPos == historyCount || history[nextPos] == null) {
-            commandField.getToolkit().beep();
-          } else {
-            String cmd = trim(commandField.getText());
-            if (cmd != null) {
-              history[historyPos] = cmd;
+          case KeyEvent.VK_DOWN -> {
+            int nextPos = (historyPos + 1) % history.length;
+            if (nextPos == historyCount) {
+              historyPos = nextPos;
+              commandField.setText("");
+            } else if (historyPos == historyCount || history[nextPos] == null) {
+              commandField.getToolkit().beep();
+            } else {
+              String cmd = trim(commandField.getText());
+              if (cmd != null) {
+                history[historyPos] = cmd;
+              }
+              historyPos = nextPos;
+              commandField.setText(history[historyPos]);
             }
-            historyPos = nextPos;
-            commandField.setText(history[historyPos]);
+            break;
           }
-          break;
-        }
         }
       }
 

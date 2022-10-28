@@ -129,27 +129,20 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
     @Override
     public void portWrite(IOPort source, int data) {
         switch (source.getPort()) {
-        case 1:
-            ds2411.dataPin((data & DS2411_DATA) != 0);
-            break;
-        case 2:
-            leds.setLeds(LEDS_GREEN, (data & LEDS_CONF_GREEN) == 0 && (source.getDirection() & LEDS_CONF_GREEN) != 0);
-            break;
-        case 3:
-            // Chip select = active low...
-            radio.setChipSelect((data & CC2520_CHIP_SELECT) == 0);
-            break;
-        case 4:
-            //radio.portWrite(source, data);
-            //flash.portWrite(source, data);
-            radio.setVRegOn((data & CC2520_VREG) != 0);
-            break;
-        case 5:
-            leds.setLeds(LEDS_RED2, (data & LEDS_CONF_RED2) == 0 && (source.getDirection() & LEDS_CONF_RED2) != 0);
-            break;
-        case 8:
-            leds.setLeds(LEDS_RED1, (data & LEDS_CONF_RED1) == 0 && (source.getDirection() & LEDS_CONF_RED1) != 0);
-            break;
+            case 1 -> ds2411.dataPin((data & DS2411_DATA) != 0);
+            case 2 ->
+                    leds.setLeds(LEDS_GREEN, (data & LEDS_CONF_GREEN) == 0 && (source.getDirection() & LEDS_CONF_GREEN) != 0);
+            case 3 ->
+                // Chip select = active low...
+                    radio.setChipSelect((data & CC2520_CHIP_SELECT) == 0);
+            case 4 ->
+                //radio.portWrite(source, data);
+                //flash.portWrite(source, data);
+                    radio.setVRegOn((data & CC2520_VREG) != 0);
+            case 5 ->
+                    leds.setLeds(LEDS_RED2, (data & LEDS_CONF_RED2) == 0 && (source.getDirection() & LEDS_CONF_RED2) != 0);
+            case 8 ->
+                    leds.setLeds(LEDS_RED1, (data & LEDS_CONF_RED1) == 0 && (source.getDirection() & LEDS_CONF_RED1) != 0);
         }
     }
 

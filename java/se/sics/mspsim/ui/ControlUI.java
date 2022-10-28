@@ -243,9 +243,7 @@ public class ControlUI extends JPanel implements ActionListener, SimEventListene
   @Override
   public void simChanged(SimEvent event) {
     switch (event.type()) {
-    case START:
-    case STOP:
-      java.awt.EventQueue.invokeLater(() -> {
+      case START, STOP -> java.awt.EventQueue.invokeLater(() -> {
         if (cpu.isRunning()) {
           controlButton.setText("Stop");
           stepAction.setEnabled(false);
@@ -254,7 +252,6 @@ public class ControlUI extends JPanel implements ActionListener, SimEventListene
           stepAction.setEnabled(true);
         }
       });
-      break;
     }
   }
 
