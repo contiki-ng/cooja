@@ -180,70 +180,64 @@ public abstract class AbstractCompileDialog extends JDialog {
     };
     sourcePanel.add(contikiField);
     JButton browseButton = new JButton("Browse");
-    browseButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        JFileChooser fc = new JFileChooser();
-
-        File fp = new File(contikiField.getText());
-        if (fp.exists() && fp.isFile()) {
-            lastFile = fp;
+    browseButton.addActionListener(e -> {
+      JFileChooser fc = new JFileChooser();
+      File fp = new File(contikiField.getText());
+      if (fp.exists() && fp.isFile()) {
+          lastFile = fp;
+      }
+      if (lastFile == null) {
+        String path = Cooja.getExternalToolsSetting("COMPILE_LAST_FILE", null);
+        if (path != null) {
+          lastFile = gui.restorePortablePath(new File(path));
         }
-        if (lastFile == null) {
-          String path = Cooja.getExternalToolsSetting("COMPILE_LAST_FILE", null);
-          if (path != null) {
-            lastFile = gui.restorePortablePath(new File(path));
+      }
+
+      /* Last file/directory */
+      if (lastFile != null) {
+        if (lastFile.isDirectory()) {
+          fc.setCurrentDirectory(lastFile);
+        } else if (lastFile.isFile() && lastFile.exists()) {
+          fc.setCurrentDirectory(lastFile.getParentFile());
+          fc.setSelectedFile(lastFile);
+        } else if (lastFile.isFile() && !lastFile.exists()) {
+          fc.setCurrentDirectory(lastFile.getParentFile());
+        }
+      } else {
+        File helloworldSourceFile =
+          new File(Cooja.getExternalToolsSetting("PATH_CONTIKI"), "examples/hello-world/hello-world.c");
+        try {
+          helloworldSourceFile = helloworldSourceFile.getCanonicalFile();
+          fc.setCurrentDirectory(helloworldSourceFile.getParentFile());
+          fc.setSelectedFile(helloworldSourceFile);
+        } catch (IOException e1) {
+        }
+      }
+
+      fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+      fc.setFileFilter(new FileFilter() {
+        @Override
+        public boolean accept(File f) {
+          String filename = f.getName();
+          if (f.isDirectory() || filename.endsWith(".c")) {
+            return true;
           }
+
+          if (filename.isEmpty()) {
+            return false;
+          }
+
+          return canLoadFirmware(filename);
         }
 
-        /* Last file/directory */
-        if (lastFile != null) {
-          if (lastFile.isDirectory()) {
-            fc.setCurrentDirectory(lastFile);
-          } else if (lastFile.isFile() && lastFile.exists()) {
-            fc.setCurrentDirectory(lastFile.getParentFile());
-            fc.setSelectedFile(lastFile);
-          } else if (lastFile.isFile() && !lastFile.exists()) {
-            fc.setCurrentDirectory(lastFile.getParentFile());
-          }
-        } else {
-          File helloworldSourceFile =
-            new java.io.File(
-                Cooja.getExternalToolsSetting("PATH_CONTIKI"), "examples/hello-world/hello-world.c");
-          try {
-            helloworldSourceFile = helloworldSourceFile.getCanonicalFile();
-            fc.setCurrentDirectory(helloworldSourceFile.getParentFile());
-            fc.setSelectedFile(helloworldSourceFile);
-          } catch (IOException e1) {
-          }
+        @Override
+        public String getDescription() {
+          return "Contiki process source or Precompiled firmware";
         }
-
-        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fc.setFileFilter(new FileFilter() {
-          @Override
-          public boolean accept(File f) {
-            String filename = f.getName();
-            if (f.isDirectory() || filename.endsWith(".c")) {
-              return true;
-            }
-
-            if (filename.isEmpty()) {
-              return false;
-            }
-
-            return canLoadFirmware(filename);
-          }
-
-          @Override
-          public String getDescription() {
-            return "Contiki process source or Precompiled firmware";
-          }
-        });
-        fc.setDialogTitle("Select Contiki process source");
-
-        if (fc.showOpenDialog(AbstractCompileDialog.this) == JFileChooser.APPROVE_OPTION) {
-          contikiField.setText(fc.getSelectedFile().getAbsolutePath());
-        }
+      });
+      fc.setDialogTitle("Select Contiki process source");
+      if (fc.showOpenDialog(AbstractCompileDialog.this) == JFileChooser.APPROVE_OPTION) {
+        contikiField.setText(fc.getSelectedFile().getAbsolutePath());
       }
     });
     sourcePanel.add(browseButton);
@@ -317,35 +311,21 @@ public abstract class AbstractCompileDialog extends JDialog {
       }
     };
     cleanButton.setToolTipText("make clean TARGET=" + targetName);
-    cleanButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        createButton.setEnabled(false);
-				try {
-					currentCompilationProcess = BaseContikiMoteType.compile(
-							"make clean TARGET=" + targetName,
-              moteType.getCompilationEnvironment(),
-							new File(contikiField.getText()).getParentFile(),
-							null,
-							null,
-              new MessageListUI(),
-							true
-					);
-				} catch (Exception e1) {
-					logger.fatal("Clean failed: " + e1.getMessage(), e1);
-				}
-			}
-		});
+    cleanButton.addActionListener(e -> {
+      createButton.setEnabled(false);
+      try {
+        currentCompilationProcess = BaseContikiMoteType.compile("make clean TARGET=" + targetName,
+            moteType.getCompilationEnvironment(), new File(contikiField.getText()).getParentFile(),
+            null, null, new MessageListUI(), true);
+      } catch (Exception e1) {
+        logger.fatal("Clean failed: " + e1.getMessage(), e1);
+      }
+    });
 
     compileButton = new JButton(compileAction);
     getRootPane().setDefaultButton(compileButton);
 
-    createButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      	AbstractCompileDialog.this.dispose();
-      }
-    });
+    createButton.addActionListener(e -> AbstractCompileDialog.this.dispose());
 
     Box buttonPanel = Box.createHorizontalBox();
     buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
