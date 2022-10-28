@@ -2396,7 +2396,6 @@ public class AreaViewer extends VisPlugin {
         radiosCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
         selectGraphicsHandler.actionPerformed(new ActionEvent(radiosCheckBox,
             ActionEvent.ACTION_PERFORMED, radiosCheckBox.getActionCommand()));
-      } else if (name.equals("show_activity")) {
       } else if (name.equals("show_arrow")) {
         arrowCheckBox.setSelected(Boolean.parseBoolean(element.getText()));
         selectGraphicsHandler.actionPerformed(new ActionEvent(arrowCheckBox,
