@@ -203,8 +203,8 @@ public class ScriptParser {
   public String getJSCode() {
     // Nashorn can be created with --language=es6, but "class TestFailed extends Error .." is not supported.
     return
-    """
-    function TestFailed(msg, name, line) {
+     """
+     function TestFailed(msg, name, line) {
        var err = new Error(msg, name, line);
        Object.setPrototypeOf(err, Object.getPrototypeOf(this));
        return err;
@@ -231,46 +231,52 @@ public class ScriptParser {
        constructor: { value: Error, enumerable: false, writable: true, configurable: true }
      });
      Object.setPrototypeOf(Shutdown, Error);
-    """ +
-    "timeout_function = null; " +
-    "function run() { try {" +
-    "YIELD(); " +
-    code + 
-    "\n" +
-    "\n" +
-    "while (true) { YIELD(); } " /* SCRIPT ENDED */+
-    "} catch (error) { " +
-    "SEMAPHORE_SCRIPT.release(); " +
-    "if (error instanceof TestOK) return 0; " +
-    "if (error instanceof TestFailed) return 1; " +
-    "if (error instanceof Shutdown) return -1; " +
-    "throw(error); }" +
-    "};" +
-    "\n" +
-    "function GENERATE_MSG(time, msg) { " +
-    " log.generateMsg(mote, time, msg); " +
-    "};\n" +
-    "\n" +
-    "function SCRIPT_TIMEOUT() { " +
-    timeoutCode + "; " +
-    " if (timeout_function != null) { timeout_function(); } " +
-    " log.log('TEST TIMEOUT\\n'); " +
-    " throw new TestFailed(); " +
-    "};\n" +
-    "\n" +
-    "function YIELD() { " +
-    " SEMAPHORE_SIM.release(); " +
-    " SEMAPHORE_SCRIPT.acquire(); " /* SWITCH BLOCKS HERE! */ +
-    " if (TIMEOUT) { SCRIPT_TIMEOUT(); } " +
-    " if (SHUTDOWN) { throw new Shutdown(); } " +
-    " msg = new java.lang.String(msg); " +
-    " node.setMoteMsg(mote, msg); " +
-    "};\n" +
-    "\n" +
-    "function write(mote,msg) { " +
-    " mote.getInterfaces().getLog().writeString(msg); " +
-    "};\n" +
-    "run();\n";
+     timeout_function = null;
+     function run() {
+       try {
+         YIELD();
+         // User script starting.
+     """ +
+    code +
+     """
+         // User script end.
+         while (true) { YIELD(); }
+       } catch (error) {
+         SEMAPHORE_SCRIPT.release();
+         if (error instanceof TestOK) return 0;
+         if (error instanceof TestFailed) return 1;
+         if (error instanceof Shutdown) return -1;
+         throw(error);
+       }
+     };
+
+     function GENERATE_MSG(time, msg) {
+       log.generateMsg(mote, time, msg);
+     };
+
+     function SCRIPT_TIMEOUT() {
+     """ +
+       timeoutCode + ";\n" +
+     """
+       if (timeout_function != null) { timeout_function(); }
+       log.log('TEST TIMEOUT\\n');
+       throw new TestFailed();
+     };
+
+     function YIELD() {
+       SEMAPHORE_SIM.release();
+       SEMAPHORE_SCRIPT.acquire(); // Wait for simulation here.
+       if (TIMEOUT) { SCRIPT_TIMEOUT(); }
+       if (SHUTDOWN) { throw new Shutdown(); }
+       msg = new java.lang.String(msg);
+       node.setMoteMsg(mote, msg);
+     };
+
+     function write(mote, msg) {
+       mote.getInterfaces().getLog().writeString(msg);
+     };
+     run();
+     """;
   }
 
   public long getTimeoutTime() {
