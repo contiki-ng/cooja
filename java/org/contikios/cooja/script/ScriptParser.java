@@ -201,10 +201,6 @@ public class ScriptParser {
   }
 
   public String getJSCode() {
-    return getJSCode(code, timeoutCode);
-  }
-    
-  public static String getJSCode(String code, String timeoutCode) {
     // Nashorn can be created with --language=es6, but "class TestFailed extends Error .." is not supported.
     return
     """
