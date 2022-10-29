@@ -73,7 +73,6 @@ import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.mote.BaseContikiMoteType;
@@ -105,7 +104,6 @@ public abstract class AbstractCompileDialog extends JDialog {
     SELECTED_FIRMWARE,
   }
 
-  protected final Cooja gui;
   protected final BaseContikiMoteType moteType;
 
   protected final JTabbedPane tabbedPane = new JTabbedPane();
@@ -126,9 +124,8 @@ public abstract class AbstractCompileDialog extends JDialog {
   public File contikiSource = null;
   public File contikiFirmware = null;
 
-  public AbstractCompileDialog(Simulation sim, final BaseContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
+  public AbstractCompileDialog(Cooja gui, final BaseContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
     super(Cooja.getTopParentContainer(), "Create Mote Type: Compile Contiki", ModalityType.APPLICATION_MODAL);
-    this.gui = sim.getCooja();
     this.moteType = moteType;
     this.targetName = cfg.targetName();
 
