@@ -29,6 +29,11 @@
 package org.contikios.cooja;
 
 import java.io.IOException;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
@@ -239,6 +244,46 @@ class Main {
 
     if (options.logName != null && !options.logName.endsWith(".log")) {
       options.logName += ".log";
+    }
+
+    var vis = options.action == null || options.action.quickstart != null;
+    if (vis) {
+      try {
+        java.awt.EventQueue.invokeAndWait(() -> {
+          JFrame.setDefaultLookAndFeelDecorated(true);
+          JDialog.setDefaultLookAndFeelDecorated(true);
+          ToolTipManager.sharedInstance().setDismissDelay(60000);
+          // Nimbus.
+          try {
+            String osName = System.getProperty("os.name").toLowerCase();
+            if (osName.startsWith("linux")) {
+              try {
+                for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                  if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                  }
+                }
+              } catch (UnsupportedLookAndFeelException e) {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+              }
+            } else {
+              UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+            }
+            return;
+          } catch (Exception e) {
+          }
+
+          // System.
+          try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+          } catch (Exception e) {
+          }
+        });
+      } catch (Exception e) {
+        System.err.println("Could not set look and feel: " + e.getMessage());
+        System.exit(1);
+      }
     }
 
     // Configure logger

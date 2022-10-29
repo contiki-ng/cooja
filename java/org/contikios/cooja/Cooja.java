@@ -116,10 +116,6 @@ import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
-import javax.swing.ToolTipManager;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
@@ -1480,42 +1476,6 @@ public class Cooja extends Observable {
    */
   public JDesktopPane getDesktopPane() {
     return myDesktopPane;
-  }
-
-  private static void setLookAndFeel() throws InterruptedException, InvocationTargetException {
-    javax.swing.SwingUtilities.invokeAndWait(() -> {
-      JFrame.setDefaultLookAndFeelDecorated(true);
-      JDialog.setDefaultLookAndFeelDecorated(true);
-
-      ToolTipManager.sharedInstance().setDismissDelay(60000);
-
-      /* Nimbus */
-      try {
-        String osName = System.getProperty("os.name").toLowerCase();
-        if (osName.startsWith("linux")) {
-          try {
-            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-              if ("Nimbus".equals(info.getName())) {
-                UIManager.setLookAndFeel(info.getClassName());
-                break;
-              }
-            }
-          } catch (UnsupportedLookAndFeelException e) {
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-          }
-        } else {
-          UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-        }
-        return;
-      } catch (Exception e) {
-      }
-
-      /* System */
-      try {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      } catch (Exception e) {
-      }
-    });
   }
 
   private static void updateDesktopSize(final JDesktopPane desktop) {
@@ -2975,17 +2935,6 @@ public class Cooja extends Observable {
 
     // Is Cooja started in GUI mode?
     var vis = options.action == null || options.action.quickstart != null;
-
-    if (vis) {
-      try {
-        setLookAndFeel();
-      } catch (InterruptedException e) {
-        logger.fatal("Thread interrupted: " + e.getMessage());
-        return;
-      } catch (InvocationTargetException e) {
-        throw new RuntimeException(e);
-      }
-    }
 
     Cooja gui = null;
     try {
