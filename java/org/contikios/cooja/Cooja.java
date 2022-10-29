@@ -3148,7 +3148,76 @@ public class Cooja extends Observable {
         return null;
       }
       // Restart plugins from config
-      if (!setPluginsConfigXML(root, newSim)) {
+      boolean result = true;
+      boolean finished = false;
+      for (var e : root.getChildren("plugin")) {
+        final Element pluginElement = (Element) e;
+        // Read plugin class
+        String pluginClassName = pluginElement.getText().trim();
+        if (pluginClassName.startsWith("se.sics")) {
+          pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
+        }
+        // Skip SimControl, functionality is now in Cooja class.
+        if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName)) {
+          continue;
+        }
+        // Backwards compatibility: old visualizers were replaced.
+        if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
+          logger.warn("Old simulation config detected: visualizers have been remade");
+          pluginClassName = "org.contikios.cooja.plugins.Visualizer";
+        }
+
+        var pluginClass = tryLoadClass(this, Plugin.class, pluginClassName);
+        if (pluginClass == null) {
+          logger.fatal("Could not load plugin class: " + pluginClassName);
+          result = false;
+          finished = true;
+          break;
+        }
+        // Skip plugins that require visualization in headless mode.
+        if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
+          continue;
+        }
+        // Parse plugin mote argument (if any)
+        Mote mote = null;
+        for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
+          int moteNr = Integer.parseInt(((Element) pluginSubElement).getText());
+          if (moteNr >= 0 && moteNr < newSim.getMotesCount()) {
+            mote = newSim.getMote(moteNr);
+          }
+        }
+        tryStartPlugin(pluginClass, newSim, mote, pluginElement);
+      }
+      if (!finished) {
+        if (isVisualized()) { // Z order visualized plugins.
+          try {
+            for (int z = 0; z < getDesktopPane().getAllFrames().length; z++) {
+              for (JInternalFrame plugin : getDesktopPane().getAllFrames()) {
+                if (plugin.getClientProperty("zorder") == null) {
+                  continue;
+                }
+                int zOrder = (Integer) plugin.getClientProperty("zorder");
+                if (zOrder != z) {
+                  continue;
+                }
+                getDesktopPane().setComponentZOrder(plugin, zOrder);
+                if (z == 0) {
+                  plugin.setSelected(true);
+                }
+                plugin.putClientProperty("zorder", null);
+                break;
+              }
+              getDesktopPane().repaint();
+            }
+          } catch (Exception e) {
+          }
+        }
+      }
+      // FIXME: remove result/finished bools and throw exceptions inline in the previous 30 lines.
+      if (!result) {
         throw new Exception("Failed to configure plugins");
       }
     } catch (MoteTypeCreationException e) {
@@ -3331,90 +3400,6 @@ public class Cooja extends Observable {
     return allOk;
   }
 
-
-  /**
-   * Starts plugins with arguments in given config.
-   *
-   * @param root XML config root element
-   * @param sim Simulation on which to start plugins
-   * @return True if all plugins started, false otherwise
-   */
-  private boolean setPluginsConfigXML(Element root, Simulation sim) {
-    for (var e : root.getChildren("plugin")) {
-      final Element pluginElement = (Element)e;
-      // Read plugin class
-      String pluginClassName = pluginElement.getText().trim();
-
-      /* Backwards compatibility: se.sics -> org.contikios */
-      if (pluginClassName.startsWith("se.sics")) {
-        pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
-      }
-
-      // Skip SimControl, functionality is now in Cooja class.
-      if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName)) {
-        continue;
-      }
-
-      /* Backwards compatibility: old visualizers were replaced */
-      if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
-              pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
-              pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
-              pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
-        logger.warn("Old simulation config detected: visualizers have been remade");
-        pluginClassName = "org.contikios.cooja.plugins.Visualizer";
-      }
-
-      Class<? extends Plugin> pluginClass =
-              tryLoadClass(this, Plugin.class, pluginClassName);
-      if (pluginClass == null) {
-        logger.fatal("Could not load plugin class: " + pluginClassName);
-        return false;
-      }
-      // Skip plugins that require visualization in headless mode.
-      if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
-        continue;
-      }
-
-      // Parse plugin mote argument (if any)
-      Mote mote = null;
-      for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
-        int moteNr = Integer.parseInt(((Element)pluginSubElement).getText());
-        if (moteNr >= 0 && moteNr < sim.getMotesCount()) {
-          mote = sim.getMote(moteNr);
-        }
-      }
-
-      tryStartPlugin(pluginClass, sim, mote, pluginElement);
-    }
-
-    if (!isVisualized()) {
-      return true;
-    }
-
-    /* Z order visualized plugins */
-    try {
-    	for (int z=0; z < getDesktopPane().getAllFrames().length; z++) {
-        for (JInternalFrame plugin : getDesktopPane().getAllFrames()) {
-          if (plugin.getClientProperty("zorder") == null) {
-          	continue;
-          }
-          int zOrder = (Integer) plugin.getClientProperty("zorder");
-          if (zOrder != z) {
-          	continue;
-          }
-          getDesktopPane().setComponentZOrder(plugin, zOrder);
-          if (z == 0) {
-            plugin.setSelected(true);
-          }
-          plugin.putClientProperty("zorder", null);
-          break;
-        }
-        getDesktopPane().repaint();
-    	}
-    } catch (Exception e) { }
-
-    return true;
-  }
 
   public static class ParseProjectsException extends Exception {
     public ParseProjectsException(String message, Throwable cause) {
