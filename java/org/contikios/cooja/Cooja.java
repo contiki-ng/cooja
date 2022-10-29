@@ -1121,7 +1121,8 @@ public class Cooja extends Observable {
     scroll.setBorder(null);
     container.add(BorderLayout.CENTER, scroll);
     container.add(BorderLayout.EAST, quickHelpScroll);
-    var showQuickHelpAction = new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
+    loadQuickHelp("GETTING_STARTED");
+    final var checkBox = new JCheckBoxMenuItem(new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (!(e.getSource() instanceof JCheckBoxMenuItem)) {
@@ -1139,9 +1140,7 @@ public class Cooja extends Observable {
       public boolean shouldBeEnabled() {
         return true;
       }
-    };
-    loadQuickHelp("GETTING_STARTED");
-    final var checkBox = new JCheckBoxMenuItem(showQuickHelpAction);
+    });
     final var showGettingStartedAction = new GUIAction("Getting started") {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -1160,7 +1159,7 @@ public class Cooja extends Observable {
     if (getExternalToolsSetting("SHOW_QUICKHELP", "true").equalsIgnoreCase("true")) {
       showGettingStartedAction.actionPerformed(null);
     }
-    final var showKeyboardShortcutsAction = new GUIAction("Keyboard shortcuts") {
+    helpMenu.add(new JMenuItem(new GUIAction("Keyboard shortcuts") {
       @Override
       public void actionPerformed(ActionEvent e) {
         loadQuickHelp("KEYBOARD_SHORTCUTS");
@@ -1173,8 +1172,7 @@ public class Cooja extends Observable {
       public boolean shouldBeEnabled() {
         return true;
       }
-    };
-    helpMenu.add(new JMenuItem(showKeyboardShortcutsAction));
+    }));
     helpMenu.add(checkBox);
 
     helpMenu.addSeparator();
@@ -3875,8 +3873,7 @@ public class Cooja extends Observable {
     if (help != null) {
       quickHelpTextPane.setText("<html>" + help + "</html>");
     } else {
-      quickHelpTextPane.setText(
-          "<html><b>" + getDescriptionOf(obj) +"</b>" +
+      quickHelpTextPane.setText("<html><b>" + getDescriptionOf(obj) +"</b>" +
           "<p>No help available</html>");
     }
     quickHelpTextPane.setCaretPosition(0);
@@ -3902,7 +3899,7 @@ public class Cooja extends Observable {
     public abstract boolean shouldBeEnabled();
   }
   class StartPluginGUIAction extends GUIAction {
-               public StartPluginGUIAction(String name) {
+    public StartPluginGUIAction(String name) {
       super(name);
     }
     @Override
@@ -3945,5 +3942,4 @@ public class Cooja extends Observable {
       }
     }
   }
-
 }
