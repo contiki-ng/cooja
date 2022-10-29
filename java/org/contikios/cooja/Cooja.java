@@ -3013,7 +3013,10 @@ public class Cooja extends Observable {
         if (!vis) {
           sim.setSpeedLimit(null);
           var ret = sim.startSimulation(true);
-          if (ret != null) {
+          if (ret == null) {
+            logger.info("TEST OK\n");
+          } else {
+            logger.warn("TEST FAILED\n");
             rv = Math.max(rv, ret);
           }
         }
