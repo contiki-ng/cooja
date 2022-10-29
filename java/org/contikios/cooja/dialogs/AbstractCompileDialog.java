@@ -35,7 +35,6 @@ import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -121,8 +120,8 @@ public abstract class AbstractCompileDialog extends JDialog {
   private Process currentCompilationProcess = null;
 
   /* Accessible at Contiki compilation success */
-  public File contikiSource = null;
-  public File contikiFirmware = null;
+  protected File contikiSource = null;
+  protected File contikiFirmware = null;
 
   public AbstractCompileDialog(Cooja gui, final BaseContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
     super(Cooja.getTopParentContainer(), "Create Mote Type: Compile Contiki", ModalityType.APPLICATION_MODAL);
@@ -177,70 +176,64 @@ public abstract class AbstractCompileDialog extends JDialog {
     };
     sourcePanel.add(contikiField);
     JButton browseButton = new JButton("Browse");
-    browseButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        JFileChooser fc = new JFileChooser();
-
-        File fp = new File(contikiField.getText());
-        if (fp.exists() && fp.isFile()) {
-            lastFile = fp;
+    browseButton.addActionListener(e -> {
+      JFileChooser fc = new JFileChooser();
+      File fp = new File(contikiField.getText());
+      if (fp.exists() && fp.isFile()) {
+          lastFile = fp;
+      }
+      if (lastFile == null) {
+        String path = Cooja.getExternalToolsSetting("COMPILE_LAST_FILE", null);
+        if (path != null) {
+          lastFile = gui.restorePortablePath(new File(path));
         }
-        if (lastFile == null) {
-          String path = Cooja.getExternalToolsSetting("COMPILE_LAST_FILE", null);
-          if (path != null) {
-            lastFile = gui.restorePortablePath(new File(path));
+      }
+
+      /* Last file/directory */
+      if (lastFile != null) {
+        if (lastFile.isDirectory()) {
+          fc.setCurrentDirectory(lastFile);
+        } else if (lastFile.isFile() && lastFile.exists()) {
+          fc.setCurrentDirectory(lastFile.getParentFile());
+          fc.setSelectedFile(lastFile);
+        } else if (lastFile.isFile() && !lastFile.exists()) {
+          fc.setCurrentDirectory(lastFile.getParentFile());
+        }
+      } else {
+        File helloworldSourceFile =
+          new File(Cooja.getExternalToolsSetting("PATH_CONTIKI"), "examples/hello-world/hello-world.c");
+        try {
+          helloworldSourceFile = helloworldSourceFile.getCanonicalFile();
+          fc.setCurrentDirectory(helloworldSourceFile.getParentFile());
+          fc.setSelectedFile(helloworldSourceFile);
+        } catch (IOException e1) {
+        }
+      }
+
+      fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+      fc.setFileFilter(new FileFilter() {
+        @Override
+        public boolean accept(File f) {
+          String filename = f.getName();
+          if (f.isDirectory() || filename.endsWith(".c")) {
+            return true;
           }
+
+          if (filename.isEmpty()) {
+            return false;
+          }
+
+          return canLoadFirmware(filename);
         }
 
-        /* Last file/directory */
-        if (lastFile != null) {
-          if (lastFile.isDirectory()) {
-            fc.setCurrentDirectory(lastFile);
-          } else if (lastFile.isFile() && lastFile.exists()) {
-            fc.setCurrentDirectory(lastFile.getParentFile());
-            fc.setSelectedFile(lastFile);
-          } else if (lastFile.isFile() && !lastFile.exists()) {
-            fc.setCurrentDirectory(lastFile.getParentFile());
-          }
-        } else {
-          File helloworldSourceFile =
-            new java.io.File(
-                Cooja.getExternalToolsSetting("PATH_CONTIKI"), "examples/hello-world/hello-world.c");
-          try {
-            helloworldSourceFile = helloworldSourceFile.getCanonicalFile();
-            fc.setCurrentDirectory(helloworldSourceFile.getParentFile());
-            fc.setSelectedFile(helloworldSourceFile);
-          } catch (IOException e1) {
-          }
+        @Override
+        public String getDescription() {
+          return "Contiki process source or Precompiled firmware";
         }
-
-        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fc.setFileFilter(new FileFilter() {
-          @Override
-          public boolean accept(File f) {
-            String filename = f.getName();
-            if (f.isDirectory() || filename.endsWith(".c")) {
-              return true;
-            }
-
-            if (filename.isEmpty()) {
-              return false;
-            }
-
-            return canLoadFirmware(filename);
-          }
-
-          @Override
-          public String getDescription() {
-            return "Contiki process source or Precompiled firmware";
-          }
-        });
-        fc.setDialogTitle("Select Contiki process source");
-
-        if (fc.showOpenDialog(AbstractCompileDialog.this) == JFileChooser.APPROVE_OPTION) {
-          contikiField.setText(fc.getSelectedFile().getAbsolutePath());
-        }
+      });
+      fc.setDialogTitle("Select Contiki process source");
+      if (fc.showOpenDialog(AbstractCompileDialog.this) == JFileChooser.APPROVE_OPTION) {
+        contikiField.setText(fc.getSelectedFile().getAbsolutePath());
       }
     });
     sourcePanel.add(browseButton);
@@ -314,35 +307,21 @@ public abstract class AbstractCompileDialog extends JDialog {
       }
     };
     cleanButton.setToolTipText("make clean TARGET=" + targetName);
-    cleanButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        createButton.setEnabled(false);
-				try {
-					currentCompilationProcess = BaseContikiMoteType.compile(
-							"make clean TARGET=" + targetName,
-              moteType.getCompilationEnvironment(),
-							new File(contikiField.getText()).getParentFile(),
-							null,
-							null,
-              new MessageListUI(),
-							true
-					);
-				} catch (Exception e1) {
-					logger.fatal("Clean failed: " + e1.getMessage(), e1);
-				}
-			}
-		});
+    cleanButton.addActionListener(e -> {
+      createButton.setEnabled(false);
+      try {
+        currentCompilationProcess = BaseContikiMoteType.compile("make clean TARGET=" + targetName,
+            moteType.getCompilationEnvironment(), new File(contikiField.getText()).getParentFile(),
+            null, null, new MessageListUI(), true);
+      } catch (Exception e1) {
+        logger.fatal("Clean failed: " + e1.getMessage(), e1);
+      }
+    });
 
     compileButton = new JButton(compileAction);
     getRootPane().setDefaultButton(compileButton);
 
-    createButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      	AbstractCompileDialog.this.dispose();
-      }
-    });
+    createButton.addActionListener(e -> AbstractCompileDialog.this.dispose());
 
     Box buttonPanel = Box.createHorizontalBox();
     buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
@@ -357,8 +336,52 @@ public abstract class AbstractCompileDialog extends JDialog {
     topPanel.add(buttonPanel);
 
     /* Center: Tabs showing configuration, compilation output, ... */
-    addCompileCommandTab(tabbedPane);
-    addMoteInterfacesTab(tabbedPane);
+    // Loading firmware sets the create button to default, so do not update dialog state after that.
+    commandsArea.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
+          setDialogState(DialogState.AWAITING_COMPILATION);
+        }
+      }
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
+          setDialogState(DialogState.AWAITING_COMPILATION);
+        }
+      }
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
+          setDialogState(DialogState.AWAITING_COMPILATION);
+        }
+      }
+    });
+    tabbedPane.addTab("Compile commands", null, new JScrollPane(commandsArea), "Manually alter Contiki compilation commands");
+    JPanel panel = new JPanel(new BorderLayout());
+    JLabel label1 = new JLabel("Cooja interacts with simulated motes via mote interfaces. These settings normally do not need to be changed.");
+    Box b = Box.createHorizontalBox();
+    b.add(new JButton(new AbstractAction("Use default") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        for (var c : moteIntfBox.getComponents()) {
+          if (c instanceof JCheckBox checkbox) {
+            checkbox.setSelected(false);
+          }
+        }
+        // Select default.
+        for (var moteIntf : AbstractCompileDialog.this.moteType.getDefaultMoteInterfaceClasses()) {
+          addMoteInterface(moteIntf, true);
+        }
+      }
+    }));
+    b.add(label1);
+    panel.add(BorderLayout.NORTH, b);
+    panel.add(BorderLayout.CENTER, new JScrollPane(moteIntfBox));
+    tabbedPane.addTab("Mote interfaces", null, panel, "Mote interfaces");
+    for (var moteInterfaces : this.moteType.getAllMoteInterfaceClasses()) {
+      addMoteInterface(moteInterfaces, false);
+    }
 
     /* Build panel */
     mainPanel.add(BorderLayout.NORTH, topPanel);
@@ -455,129 +478,65 @@ public abstract class AbstractCompileDialog extends JDialog {
     final Path inputPath = Path.of(input);
     compileButton.setText("Compile");
     getRootPane().setDefaultButton(compileButton);
-
     switch (dialogState) {
-    case NO_SELECTION:
-    	cleanButton.setEnabled(false);
-    	compileButton.setEnabled(false);
-    	createButton.setEnabled(false);
-    	commandsArea.setEnabled(false);
-      break;
-
-    case SELECTED_SOURCE:
-    case AWAITING_COMPILATION:
-      if (!input.endsWith(".c")) {
-        setDialogState(DialogState.NO_SELECTION);
-        return;
+      case NO_SELECTION -> {
+        cleanButton.setEnabled(false);
+        compileButton.setEnabled(false);
+        createButton.setEnabled(false);
+        commandsArea.setEnabled(false);
       }
-      if (!Files.exists(inputPath)) {
-        logger.warn("Could not find Contiki source: " + new File(input).getAbsolutePath());
-        setDialogState(DialogState.NO_SELECTION);
-        return;
-      }
-
-    	cleanButton.setEnabled(true);
-    	compileButton.setEnabled(true);
-    	createButton.setEnabled(false);
-    	commandsArea.setEnabled(true);
-      if (dialogState == DialogState.SELECTED_SOURCE) {
-        contikiSource = new File(input);
-        commandsArea.setText(getDefaultCompileCommands(input));
-        contikiFirmware = moteType.getExpectedFirmwareFile(input);
-      }
-      break;
-
-    case IS_COMPILING:
-    	cleanButton.setEnabled(false);
-    	compileButton.setEnabled(false);
-    	compileButton.setText("Compiling");
-    	createButton.setEnabled(false);
-    	commandsArea.setEnabled(false);
-      break;
-
-    case COMPILED_FIRMWARE:
-    	cleanButton.setEnabled(true);
-    	compileButton.setEnabled(true);
-    	createButton.setEnabled(true);
-    	commandsArea.setEnabled(true);
-      getRootPane().setDefaultButton(createButton);
-      break;
-
-    case SELECTED_FIRMWARE:
-      if (!Files.exists(inputPath)) {
-        setDialogState(DialogState.NO_SELECTION);
-        return;
-      }
-      if (!canLoadFirmware(input)) {
-        setDialogState(DialogState.NO_SELECTION);
-        return;
-      }
-      contikiSource = null;
-      contikiFirmware = new File(input);
-    	cleanButton.setEnabled(true);
-    	compileButton.setEnabled(false);
-    	createButton.setEnabled(true);
-    	commandsArea.setEnabled(false);
-      getRootPane().setDefaultButton(createButton);
-      commandsArea.setText("");
-      break;
-
-    default:
-      break;
-    }
-  }
-
-  private void addCompileCommandTab(JTabbedPane parent) {
-    // Loading firmware sets the create button to default, so do not update dialog state after that.
-    commandsArea.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
-          setDialogState(DialogState.AWAITING_COMPILATION);
+      case SELECTED_SOURCE, AWAITING_COMPILATION -> {
+        if (!input.endsWith(".c")) {
+          setDialogState(DialogState.NO_SELECTION);
+          return;
+        }
+        if (!Files.exists(inputPath)) {
+          logger.warn("Could not find Contiki source: " + new File(input).getAbsolutePath());
+          setDialogState(DialogState.NO_SELECTION);
+          return;
+        }
+        cleanButton.setEnabled(true);
+        compileButton.setEnabled(true);
+        createButton.setEnabled(false);
+        commandsArea.setEnabled(true);
+        if (dialogState == DialogState.SELECTED_SOURCE) {
+          contikiSource = new File(input);
+          commandsArea.setText(getDefaultCompileCommands(input));
+          contikiFirmware = moteType.getExpectedFirmwareFile(input);
         }
       }
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
-          setDialogState(DialogState.AWAITING_COMPILATION);
-        }
+      case IS_COMPILING -> {
+        cleanButton.setEnabled(false);
+        compileButton.setEnabled(false);
+        compileButton.setText("Compiling");
+        createButton.setEnabled(false);
+        commandsArea.setEnabled(false);
       }
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        if (contikiSource != null || getRootPane().getDefaultButton() != createButton) {
-          setDialogState(DialogState.AWAITING_COMPILATION);
-        }
+      case COMPILED_FIRMWARE -> {
+        cleanButton.setEnabled(true);
+        compileButton.setEnabled(true);
+        createButton.setEnabled(true);
+        commandsArea.setEnabled(true);
+        getRootPane().setDefaultButton(createButton);
       }
-    });
-    parent.addTab("Compile commands", null, new JScrollPane(commandsArea), "Manually alter Contiki compilation commands");
-  }
-
-  private void addMoteInterfacesTab(JTabbedPane parent) {
-    JPanel panel = new JPanel(new BorderLayout());
-    JLabel label = new JLabel("Cooja interacts with simulated motes via mote interfaces. These settings normally do not need to be changed.");
-    Box b = Box.createHorizontalBox();
-    b.add(new JButton(new AbstractAction("Use default") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        // Unselect everything.
-        for (Component c : moteIntfBox.getComponents()) {
-          if (c instanceof JCheckBox checkbox) {
-            checkbox.setSelected(false);
-          }
+      case SELECTED_FIRMWARE -> {
+        if (!Files.exists(inputPath)) {
+          setDialogState(DialogState.NO_SELECTION);
+          return;
         }
-
-        // Select default.
-        for (var moteIntf : moteType.getDefaultMoteInterfaceClasses()) {
-          addMoteInterface(moteIntf, true);
+        if (!canLoadFirmware(input)) {
+          setDialogState(DialogState.NO_SELECTION);
+          return;
         }
+        contikiSource = null;
+        contikiFirmware = new File(input);
+        cleanButton.setEnabled(true);
+        compileButton.setEnabled(false);
+        createButton.setEnabled(true);
+        commandsArea.setEnabled(false);
+        getRootPane().setDefaultButton(createButton);
+        commandsArea.setText("");
       }
-    }));
-    b.add(label);
-    panel.add(BorderLayout.NORTH, b);
-    panel.add(BorderLayout.CENTER, new JScrollPane(moteIntfBox));
-    parent.addTab("Mote interfaces", null, panel, "Mote interfaces");
-    for (var moteInterfaces : moteType.getAllMoteInterfaceClasses()) {
-      addMoteInterface(moteInterfaces, false);
     }
   }
 
@@ -588,7 +547,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @param intfClass Mote interface class
    * @param selected If true, interface will initially be selected
    */
-  public void addMoteInterface(Class<? extends MoteInterface> intfClass, boolean selected) {
+  protected void addMoteInterface(Class<? extends MoteInterface> intfClass, boolean selected) {
     /* If mote interface was already added  */
     for (Component c : moteIntfBox.getComponents()) {
       if (!(c instanceof JCheckBox)) {
@@ -615,17 +574,13 @@ public abstract class AbstractCompileDialog extends JDialog {
     intfCheckBox.putClientProperty("class", intfClass);
     intfCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
     intfCheckBox.setToolTipText(intfClass.getName());
-    intfCheckBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (contikiSource == null &&
-            contikiFirmware != null) {
-          setDialogState(DialogState.SELECTED_FIRMWARE);
-        } else if (contikiSource != null){
-          setDialogState(DialogState.AWAITING_COMPILATION);
-        } else {
-          setDialogState(DialogState.SELECTED_SOURCE);
-        }
+    intfCheckBox.addActionListener(e -> {
+      if (contikiSource == null && contikiFirmware != null) {
+        setDialogState(DialogState.SELECTED_FIRMWARE);
+      } else if (contikiSource != null){
+        setDialogState(DialogState.AWAITING_COMPILATION);
+      } else {
+        setDialogState(DialogState.SELECTED_SOURCE);
       }
     });
 
@@ -642,7 +597,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    * @param name Contiki source
    * @return Suggested compile commands for compiling source
    */
-  public String getDefaultCompileCommands(String name) {
+  protected String getDefaultCompileCommands(String name) {
     String sourceNoExtension = new File(name.substring(0, name.length() - 2)).getName();
     return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
             sourceNoExtension + "." + targetName + " TARGET=" + targetName;
