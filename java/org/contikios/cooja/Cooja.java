@@ -1121,7 +1121,8 @@ public class Cooja extends Observable {
     scroll.setBorder(null);
     container.add(BorderLayout.CENTER, scroll);
     container.add(BorderLayout.EAST, quickHelpScroll);
-    var showQuickHelpAction = new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
+    loadQuickHelp("GETTING_STARTED");
+    final var checkBox = new JCheckBoxMenuItem(new GUIAction("Quick help", KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)) {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (!(e.getSource() instanceof JCheckBoxMenuItem)) {
@@ -1139,9 +1140,7 @@ public class Cooja extends Observable {
       public boolean shouldBeEnabled() {
         return true;
       }
-    };
-    loadQuickHelp("GETTING_STARTED");
-    final var checkBox = new JCheckBoxMenuItem(showQuickHelpAction);
+    });
     final var showGettingStartedAction = new GUIAction("Getting started") {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -1160,7 +1159,7 @@ public class Cooja extends Observable {
     if (getExternalToolsSetting("SHOW_QUICKHELP", "true").equalsIgnoreCase("true")) {
       showGettingStartedAction.actionPerformed(null);
     }
-    final var showKeyboardShortcutsAction = new GUIAction("Keyboard shortcuts") {
+    helpMenu.add(new JMenuItem(new GUIAction("Keyboard shortcuts") {
       @Override
       public void actionPerformed(ActionEvent e) {
         loadQuickHelp("KEYBOARD_SHORTCUTS");
@@ -1173,8 +1172,7 @@ public class Cooja extends Observable {
       public boolean shouldBeEnabled() {
         return true;
       }
-    };
-    helpMenu.add(new JMenuItem(showKeyboardShortcutsAction));
+    }));
     helpMenu.add(checkBox);
 
     helpMenu.addSeparator();
