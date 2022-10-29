@@ -456,32 +456,21 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     private final TimeEvent symbolEvent = new TimeEvent(0, "CC2520 Symbol") {
         @Override
         public void execute(long t) {
-            switch(stateMachine) {
-            case RX_CALIBRATE:
-                setState(RadioState.RX_SFD_SEARCH);
-                break;
+            switch (stateMachine) {
+                case RX_CALIBRATE -> setState(RadioState.RX_SFD_SEARCH);
+
                 /* this will be called 8 symbols after first SFD_SEARCH */
-            case RX_SFD_SEARCH:
-                status |= STATUS_RSSI_VALID;
-                memory[REG_RSSISTAT] = 1;
-                updateCCA();
-                break;
-
-            case TX_CALIBRATE:
-                setState(RadioState.TX_PREAMBLE);
-                break;
-
-            case RX_WAIT:
-                setState(RadioState.RX_SFD_SEARCH);
-                break;
-
-            case TX_ACK_CALIBRATE:
-                setState(RadioState.TX_ACK_PREAMBLE);
-                break;
-
-            default:
+                case RX_SFD_SEARCH -> {
+                    status |= STATUS_RSSI_VALID;
+                    memory[REG_RSSISTAT] = 1;
+                    updateCCA();
+                }
+                case TX_CALIBRATE -> setState(RadioState.TX_PREAMBLE);
+                case RX_WAIT -> setState(RadioState.RX_SFD_SEARCH);
+                case TX_ACK_CALIBRATE -> setState(RadioState.TX_ACK_PREAMBLE);
+                default -> {
+                }
                 // Ignore other states
-                break;
             }
         }
     };
@@ -957,11 +946,10 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     }
 
     int readMemory(int address) {
-        switch(address) {
-        case REG_RXFIFOCNT:
-                return rxFIFO.length();
-        }
-        return memory[address];
+        return switch (address) {
+            case REG_RXFIFOCNT -> rxFIFO.length();
+            default -> memory[address];
+        };
     }
 
     @Override
@@ -1393,20 +1381,10 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     }
 
     private boolean isDefinedTxPower(int txpower) {
-        switch (txpower) {
-        case 0xf7:
-        case 0xf2:
-        case 0xab:
-        case 0x88:
-        case 0x81:
-        case 0x32:
-        case 0x2c:
-        case 0x13:
-        case 0x03:
-            return true;
-        default:
-            return false;
-        }
+        return switch (txpower) {
+            case 0xf7, 0xf2, 0xab, 0x88, 0x81, 0x32, 0x2c, 0x13, 0x03 -> true;
+            default -> false;
+        };
     }
 
     @Override

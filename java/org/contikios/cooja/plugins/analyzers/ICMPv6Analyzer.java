@@ -63,39 +63,37 @@ public class ICMPv6Analyzer extends PacketAnalyzer {
       brief.append("RPL ");
       verbose.append("<br/>Type: RPL Code: ");
       switch (code) {
-        case RPL_CODE_DIS:
+        case RPL_CODE_DIS -> {
           brief.append("DIS");
           verbose.append("DIS");
-          break;
-        case RPL_CODE_DIO:
+        }
+        case RPL_CODE_DIO -> {
           brief.append("DIO");
           verbose.append("DIO<br>");
-
           int instanceID = packet.get(4) & 0xff;
           int version = packet.get(5) & 0xff;
           int rank = ((packet.get(6) & 0xff) << 8) + (packet.get(7) & 0xff);
           int mop = (packet.get(8) >> 3) & 0x07;
           int dtsn = packet.get(9) & 0xFF;
-
           verbose.append(" InstanceID: ").append(instanceID)
                   .append(", Version: ").append(version)
                   .append(", Rank: ").append(rank)
                   .append(", MOP: ").append(mop)
                   .append(", DTSN: ").append(dtsn);
           packet.consumeBytesStart(8);
-
-          break;
-        case RPL_CODE_DAO:
+        }
+        case RPL_CODE_DAO -> {
           brief.append("DAO");
           verbose.append("DAO");
-          break;
-        case RPL_CODE_DAO_ACK:
+        }
+        case RPL_CODE_DAO_ACK -> {
           brief.append("DAO ACK");
           verbose.append("DAO ACK");
-          break;
-        default:
+        }
+        default -> {
           brief.append(code);
           verbose.append(code);
+        }
       }
     }
 

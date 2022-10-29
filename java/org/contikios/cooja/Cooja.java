@@ -3849,25 +3849,19 @@ public class Cooja extends Observable {
       } else {
         key = obj.getClass().getName();
       }
-      switch (key) {
-        case "KEYBOARD_SHORTCUTS":
-          help = "<b>Keyboard shortcuts</b><br>" +
-                  "<br><i>Ctrl+N:</i> New simulation" +
-                  "<br><i>Ctrl+S:</i> Start/pause simulation" +
-                  "<br><i>Ctrl+R:</i> Reload current simulation. If no simulation exists, the last used simulation config is loaded" +
-                  "<br><i>Ctrl+Shift+R:</i> Reload current simulation with another random seed" +
-                  "<br>" +
-                  "<br><i>F1:</i> Toggle quick help";
-          break;
-        case "GETTING_STARTED":
-          help = "<b>Getting started</b><br>" +
-                  "<br>" +
-                  "<br><i>F1:</i> Toggle quick help</i>";
-          break;
-        default:
-          help = null;
-          break;
-      }
+      help = switch (key) {
+        case "KEYBOARD_SHORTCUTS" -> "<b>Keyboard shortcuts</b><br>" +
+                "<br><i>Ctrl+N:</i> New simulation" +
+                "<br><i>Ctrl+S:</i> Start/pause simulation" +
+                "<br><i>Ctrl+R:</i> Reload current simulation. If no simulation exists, the last used simulation config is loaded" +
+                "<br><i>Ctrl+Shift+R:</i> Reload current simulation with another random seed" +
+                "<br>" +
+                "<br><i>F1:</i> Toggle quick help";
+        case "GETTING_STARTED" -> "<b>Getting started</b><br>" +
+                "<br>" +
+                "<br><i>F1:</i> Toggle quick help</i>";
+        default -> null;
+      };
     }
 
     if (help != null) {

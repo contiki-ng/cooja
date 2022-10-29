@@ -83,20 +83,18 @@ public class TMP112 extends I2CUnit implements TemperatureChip {
         @Override
         protected void registerWrite(int address, int value) {
                 switch (address) {
-                case CONFIG_REG:
-                        config = value;
-                        /* Parse some of the configurations */
-                        polarity = ((value & 0x400) > 0);
-                        extendedMode = ((value & 0x10) > 0);
-                        alarm = ((value & 0x020) > 0);
-                        shutdown = ((value & 0x100) > 0);
-                        thermostat = ((value & 0x200) > 0);
-                        resolution = ((value & 0x6000) >> 13);
-                        oneShot = ((value & 0x8000) > 0);
-                        break;
-                default:
-                        logw("not implemented");
-                        break;
+                        case CONFIG_REG -> {
+                                config = value;
+                                /* Parse some of the configurations */
+                                polarity = ((value & 0x400) > 0);
+                                extendedMode = ((value & 0x10) > 0);
+                                alarm = ((value & 0x020) > 0);
+                                shutdown = ((value & 0x100) > 0);
+                                thermostat = ((value & 0x200) > 0);
+                                resolution = ((value & 0x6000) >> 13);
+                                oneShot = ((value & 0x8000) > 0);
+                        }
+                        default -> logw("not implemented");
                 }
         }
 
