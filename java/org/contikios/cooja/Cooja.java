@@ -3873,8 +3873,7 @@ public class Cooja extends Observable {
     if (help != null) {
       quickHelpTextPane.setText("<html>" + help + "</html>");
     } else {
-      quickHelpTextPane.setText(
-          "<html><b>" + getDescriptionOf(obj) +"</b>" +
+      quickHelpTextPane.setText("<html><b>" + getDescriptionOf(obj) +"</b>" +
           "<p>No help available</html>");
     }
     quickHelpTextPane.setCaretPosition(0);
@@ -3900,7 +3899,7 @@ public class Cooja extends Observable {
     public abstract boolean shouldBeEnabled();
   }
   class StartPluginGUIAction extends GUIAction {
-               public StartPluginGUIAction(String name) {
+    public StartPluginGUIAction(String name) {
       super(name);
     }
     @Override
@@ -3943,5 +3942,4 @@ public class Cooja extends Observable {
       }
     }
   }
-
 }
