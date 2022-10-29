@@ -33,7 +33,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
@@ -2305,7 +2304,43 @@ public class Cooja extends Observable {
         // Optionally show compilation warnings.
         var hideWarn = Boolean.parseBoolean(Cooja.getExternalToolsSetting("HIDE_WARNINGS", "false"));
         if (quick && !hideWarn && !PROGRESS_WARNINGS.isEmpty()) {
-          showWarningsDialog(frame, PROGRESS_WARNINGS.toArray(new String[0]));
+          final String[] warnings = PROGRESS_WARNINGS.toArray(new String[0]);
+          final JDialog dialog = new JDialog(frame, "Compilation warnings", false);
+          Box buttonBox = Box.createHorizontalBox();
+          // Warnings message list.
+          MessageListUI compilationOutput = new MessageListUI();
+          for (String w : warnings) {
+            compilationOutput.addMessage(w, MessageList.ERROR);
+          }
+          compilationOutput.addPopupMenuItem(null, true);
+
+          // Checkbox.
+          buttonBox.add(Box.createHorizontalGlue());
+          JCheckBox hideButton = new JCheckBox("Hide compilation warnings", false);
+          hideButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              setExternalToolsSetting("HIDE_WARNINGS", String.valueOf(((JCheckBox) e.getSource()).isSelected()));
+            }
+          });
+          buttonBox.add(Box.createHorizontalStrut(10));
+          buttonBox.add(hideButton);
+
+          InputMap inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+          inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "close");
+          dialog.getRootPane().getActionMap().put("close", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              dialog.dispose();
+            }
+          });
+
+          // Layout.
+          dialog.getContentPane().add(BorderLayout.CENTER, new JScrollPane(compilationOutput));
+          dialog.getContentPane().add(BorderLayout.SOUTH, buttonBox);
+          dialog.setSize(700, 500);
+          dialog.setLocationRelativeTo(frame);
+          dialog.setVisible(true);
         }
         PROGRESS_WARNINGS.clear();
         if (progressDialog != null && progressDialog.isDisplayable()) {
@@ -3407,56 +3442,6 @@ public class Cooja extends Observable {
       }
     }.invokeAndWait();
 
-  }
-
-  private static void showWarningsDialog(final Frame parent, final String[] warnings) {
-    new RunnableInEDT<Boolean>() {
-      @Override
-      public Boolean work() {
-        final JDialog dialog = new JDialog(parent, "Compilation warnings", false);
-        Box buttonBox = Box.createHorizontalBox();
-
-        /* Warnings message list */
-        MessageListUI compilationOutput = new MessageListUI();
-        for (String w: warnings) {
-          compilationOutput.addMessage(w, MessageList.ERROR);
-        }
-        compilationOutput.addPopupMenuItem(null, true);
-
-        /* Checkbox */
-        buttonBox.add(Box.createHorizontalGlue());
-        JCheckBox hideButton = new JCheckBox("Hide compilation warnings", false);
-        hideButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            Cooja.setExternalToolsSetting("HIDE_WARNINGS",
-                    String.valueOf(((JCheckBox) e.getSource()).isSelected()));
-          }
-        });
-        buttonBox.add(Box.createHorizontalStrut(10));
-        buttonBox.add(hideButton);
-
-        /* Close on escape */
-        AbstractAction closeAction = new AbstractAction(){
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            dialog.dispose();
-          }
-        };
-        InputMap inputMap = dialog.getRootPane().getInputMap(
-            JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "close");
-        dialog.getRootPane().getActionMap().put("close", closeAction);
-
-        /* Layout */
-        dialog.getContentPane().add(BorderLayout.CENTER, new JScrollPane(compilationOutput));
-        dialog.getContentPane().add(BorderLayout.SOUTH, buttonBox);
-        dialog.setSize(700, 500);
-        dialog.setLocationRelativeTo(parent);
-        dialog.setVisible(true);
-        return true;
-      }
-    }.invokeAndWait();
   }
 
   /**
