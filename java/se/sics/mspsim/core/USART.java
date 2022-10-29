@@ -82,9 +82,9 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
 
   private USARTListener usartListener;
 
-  private int utxifg;
-  private int urxifg;
-  private int rxVector;
+  private final int utxifg;
+  private final int urxifg;
+  private final int rxVector;
 
   private int clockSource = 0;
   private int baudRate = 0;
@@ -106,7 +106,7 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   private int ubr1;
   private int urxbuf;
   private int utxbuf;
-  private int txbit;
+  private final int txbit;
 
   private boolean txEnabled = false;
   private boolean rxEnabled = false;

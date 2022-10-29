@@ -438,18 +438,19 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 source.byteReceived(getMarcstate());
         }
         public int setReg(int address, int data) {
-                switch (address) {
-                case CC1101_TXFIFO:
-                        txfifo.add((byte) data);
-                        /*printTXFIFO();*/
-                        return txfifo.size();
-                case CC1101_CHANNR:
-                        channel = data;
-                        if (channelListener != null) {
-                                channelListener.channelChanged(channel);
-                        }
-                        return 0;
-                }
+          switch (address) {
+            case CC1101_TXFIFO -> {
+              txfifo.add((byte) data);
+              return txfifo.size();
+            }
+            case CC1101_CHANNR -> {
+              channel = data;
+              if (channelListener != null) {
+                channelListener.channelChanged(channel);
+              }
+              return 0;
+            }
+          }
 
                 log(String.format("setReg(0x%02x) 0x%02x", address, data));
                 int oldValue = registers[address];

@@ -32,7 +32,8 @@ import javax.swing.text.StyledDocument;
 public class SyntaxHighlighter extends JTextPane implements DocumentListener, TokenTypes {
   private StyledDocument doc;
   private final Scanner scanner;
-  private int rows, columns;
+  private final int rows;
+  private final int columns;
 
   private int currentY, currentHeight = -1;
 
@@ -245,7 +246,7 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
 
   private int firstRehighlightToken;
 
-  private int smallAmount = 100;
+  private final int smallAmount = 100;
 
   private final Color highlightColor = new Color(0, 240, 0, 255);
 

@@ -106,17 +106,17 @@ public abstract class I2CUnit implements USARTListener {
         /**
          * Address of the I2C peripheral
          */
-        protected int busAddress;
+        protected final int busAddress;
 
         /**
          * String name for logging
          */
-        protected String name;
+        protected final String name;
 
         /**
          * Enable debug
          */
-        protected boolean DEBUG = false;
+        protected final boolean DEBUG = false;
 
         /**
          * Is this a read message
@@ -131,12 +131,12 @@ public abstract class I2CUnit implements USARTListener {
         /**
          * Length in bytes of the bus address
          */
-        protected int regAddressLen = 1;
+        protected final int regAddressLen = 1;
 
         /**
          * Length in bytes of the buffer value
          */
-        protected int numBytesTotal = 2;
+        protected final int numBytesTotal = 2;
 
         /**
          * Number of received value bytes

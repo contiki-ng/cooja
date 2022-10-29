@@ -220,29 +220,26 @@ public class Flash extends IOUnit {
       blocked_cpu = true;
     }
 
-    switch(getClockSource()) {
-    case ACLK:
-      myfreq = cpu.aclkFrq / freqdiv;
-      finish_msec = ((double)time * freqdiv * 1000) / cpu.aclkFrq;
-      if (DEBUG)
-        log("Using ACLK source with f=" + myfreq + "Hz. Time required=" + finish_msec + " ms");
-      cpu.scheduleTimeEventMillis(end_process, finish_msec);
-      break;
-
-    case SMCLK:
-      finish_msec = ((double)time * freqdiv * 1000) / cpu.smclkFrq;
+    switch (getClockSource()) {
+      case ACLK -> {
+        myfreq = cpu.aclkFrq / freqdiv;
+        finish_msec = ((double) time * freqdiv * 1000) / cpu.aclkFrq;
+        if (DEBUG)
+          log("Using ACLK source with f=" + myfreq + "Hz. Time required=" + finish_msec + " ms");
+        cpu.scheduleTimeEventMillis(end_process, finish_msec);
+      }
+      case SMCLK -> {
+        finish_msec = ((double) time * freqdiv * 1000) / cpu.smclkFrq;
       /* if (DEBUG)
         System.out.println("Flash: Using SMCLK source with f=" + myfreq
             + " Hz\nFlash: Time required=" + finish_msec + " ms"); */
-      cpu.scheduleTimeEventMillis(end_process, finish_msec);
-      break;
-
-
-    case MCLK:
-      if (DEBUG)
-        log("Using MCLK source with div=" + freqdiv);
-      cpu.scheduleCycleEvent(end_process, (long)time * freqdiv);
-      break;
+        cpu.scheduleTimeEventMillis(end_process, finish_msec);
+      }
+      case MCLK -> {
+        if (DEBUG)
+          log("Using MCLK source with div=" + freqdiv);
+        cpu.scheduleCycleEvent(end_process, (long) time * freqdiv);
+      }
     }
   }
 

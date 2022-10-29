@@ -69,7 +69,7 @@ public class ELF {
   int shnum;
   int shstrndx;
 
-  byte[] elfData;
+  final byte[] elfData;
   private int pos = 0;
 
   private ELFSection[] sections;

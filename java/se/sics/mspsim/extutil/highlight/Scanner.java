@@ -175,7 +175,7 @@ public class Scanner implements TokenTypes {
    * <code>symbolTable.put(sym,sym)</code> and extracted with
    * <code>symbolTable.get(sym)</code>.
    */
-  protected HashMap<Symbol,Symbol> symbolTable;
+  protected final HashMap<Symbol,Symbol> symbolTable;
 
   /**
    * Create a new Scanner representing an empty text document. For

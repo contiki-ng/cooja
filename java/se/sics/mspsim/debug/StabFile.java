@@ -61,28 +61,23 @@ public class StabFile {
         while(i < stabs.length) {
             StabDebug.Stab stab = stabs[i];
             System.out.println("Handling stab: " + stab);
-            switch(stab.type) {
-            case StabDebug.N_SO:
-                if (stab.value != startAddress) {
-                    return;
-                }
-                if (stab.data.length() > 0) {
-                    if (path == null) {
-                        path = stab.data;
-                    } else if (file == null) {
-                        file = stab.data;
+            switch (stab.type) {
+                case StabDebug.N_SO -> {
+                    if (stab.value != startAddress) {
+                        return;
                     }
+                    if (stab.data.length() > 0) {
+                        if (path == null) {
+                            path = stab.data;
+                        } else if (file == null) {
+                            file = stab.data;
+                        }
+                    }
+                    i++;
                 }
-                i++;
-                break;
-            case StabDebug.N_FUN:
-                i += addFunction(i, stabs);
-                break;
-            case StabDebug.N_LSYM:
-                i += addType(i, stabs);
-                break;
-            default:
-                i++;
+                case StabDebug.N_FUN -> i += addFunction(i, stabs);
+                case StabDebug.N_LSYM -> i += addType(i, stabs);
+                default -> i++;
             }
         }
     }

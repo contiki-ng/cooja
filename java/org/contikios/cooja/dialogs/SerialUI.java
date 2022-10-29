@@ -188,32 +188,32 @@ public abstract class SerialUI extends Log implements SerialPort {
       @Override
       public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
-        case KeyEvent.VK_UP: {
-          historyPos++;
-          if (historyPos >= history.size()) {
-            historyPos = history.size() - 1;
-            commandField.getToolkit().beep();
+          case KeyEvent.VK_UP -> {
+            historyPos++;
+            if (historyPos >= history.size()) {
+              historyPos = history.size() - 1;
+              commandField.getToolkit().beep();
+            }
+            if (historyPos >= 0 && historyPos < history.size()) {
+              commandField.setText(history.get(historyPos));
+            } else {
+              commandField.setText("");
+            }
+            break;
           }
-          if (historyPos >= 0 && historyPos < history.size()) {
-            commandField.setText(history.get(historyPos));
-          } else {
-            commandField.setText("");
+          case KeyEvent.VK_DOWN -> {
+            historyPos--;
+            if (historyPos < 0) {
+              historyPos = -1;
+              commandField.setText("");
+              commandField.getToolkit().beep();
+            } else if (historyPos < history.size()) {
+              commandField.setText(history.get(historyPos));
+            } else {
+              commandField.setText("");
+            }
+            break;
           }
-          break;
-        }
-        case KeyEvent.VK_DOWN: {
-          historyPos--;
-          if (historyPos < 0) {
-            historyPos = -1;
-            commandField.setText("");
-            commandField.getToolkit().beep();
-          } else if (historyPos < history.size()) {
-            commandField.setText(history.get(historyPos));
-          } else {
-            commandField.setText("");
-          }
-          break;
-        }
         }
       }
     });

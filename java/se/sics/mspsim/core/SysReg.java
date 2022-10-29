@@ -30,8 +30,8 @@
 package se.sics.mspsim.core;
 
 public class SysReg extends IOUnit {
-        public static int ADDRESS = 0x180;
-        public static int SIZE = 0x1f;
+        public static final int ADDRESS = 0x180;
+        public static final int SIZE = 0x1f;
 
         /*
          * This is only a stub to avoid immediate Mspsim exceptions.

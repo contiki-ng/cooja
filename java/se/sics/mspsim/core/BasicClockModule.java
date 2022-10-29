@@ -133,34 +133,34 @@ public class BasicClockModule extends ClockSystem {
 
 
     switch (address) {
-    case DCOCTL:
-      dcoFrequency = (data >> 5) & 0x7;
-      dcoModulator = data & 0x1f;
-      if (DEBUG) log("Write: BCM DCOCTL0: DCO Frq:" + dcoFrequency +
-                         "  dcoMod:" + dcoModulator);
-      break;
-    case BCSCTL1:
-      resistorSel = data & 0x7;
-      divAclk = 1 << ((data >> 4) & 3);
-      lfxt1Mode = (data >> 6) & 1;
-      xt2Off = (data >> 7) & 1;
-      if (DEBUG) log("Write: BCM BCSCTL1: RSel:" + resistorSel +
-                         " DivACLK:" + divAclk + " ACLKFrq: " +
-                         ACLK_FRQ / divAclk);
-      cpu.setACLKFrq(ACLK_FRQ / divAclk);
-      updateTimers(cycles);
-      break;
-    case BCSCTL2:
-      mclkSel = (data >> 6) & 3;
-      divMclk = 1 << ((data >> 4) & 3);
-      smclSel = (data >> 3) & 1;
-      divSMclk = 1 << ((data >> 2) & 3);
-      dcoResitorSel = data & 1;
-      if (DEBUG) log("Write: BCM BCSCTL2: SMCLKDIV: " +
-                         divSMclk + " SMCLK_SEL: "
-                         + smclSel + " MCLKSel: " + mclkSel + " divMclk: " +
-                         divMclk + " DCOResitorSel: " + dcoResitorSel);
-      break;
+      case DCOCTL -> {
+        dcoFrequency = (data >> 5) & 0x7;
+        dcoModulator = data & 0x1f;
+        if (DEBUG) log("Write: BCM DCOCTL0: DCO Frq:" + dcoFrequency +
+                "  dcoMod:" + dcoModulator);
+      }
+      case BCSCTL1 -> {
+        resistorSel = data & 0x7;
+        divAclk = 1 << ((data >> 4) & 3);
+        lfxt1Mode = (data >> 6) & 1;
+        xt2Off = (data >> 7) & 1;
+        if (DEBUG) log("Write: BCM BCSCTL1: RSel:" + resistorSel +
+                " DivACLK:" + divAclk + " ACLKFrq: " +
+                ACLK_FRQ / divAclk);
+        cpu.setACLKFrq(ACLK_FRQ / divAclk);
+        updateTimers(cycles);
+      }
+      case BCSCTL2 -> {
+        mclkSel = (data >> 6) & 3;
+        divMclk = 1 << ((data >> 4) & 3);
+        smclSel = (data >> 3) & 1;
+        divSMclk = 1 << ((data >> 2) & 3);
+        dcoResitorSel = data & 1;
+        if (DEBUG) log("Write: BCM BCSCTL2: SMCLKDIV: " +
+                divSMclk + " SMCLK_SEL: "
+                + smclSel + " MCLKSel: " + mclkSel + " divMclk: " +
+                divMclk + " DCOResitorSel: " + dcoResitorSel);
+      }
     }
 
     // resistor selects three bits gives the highest impact on the DCO_FACTOR

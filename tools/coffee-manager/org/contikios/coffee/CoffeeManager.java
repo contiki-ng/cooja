@@ -101,42 +101,39 @@ public class CoffeeManager {
 			CoffeeConfiguration conf = new CoffeeConfiguration(platform + ".properties");
 			CoffeeFS coffeeFS = new CoffeeFS(new CoffeeImageFile(fsImage, conf));
 			switch (command) {
-			case INSERT:
-				if (coffeeFS.getFiles().get(filename) != null) {
-					System.err.println("error: file \"" +
-						filename + "\" already exists");
-					break;
+				case INSERT -> {
+					if (coffeeFS.getFiles().get(filename) != null) {
+						System.err.println("error: file \"" +
+										filename + "\" already exists");
+						break;
+					}
+					if (coffeeFS.insertFile(filename) != null) {
+						System.out.println("Inserted the local file \"" +
+										filename +
+										"\" into the file system image");
+					}
 				}
-				if (coffeeFS.insertFile(filename) != null) {
-					System.out.println("Inserted the local file \"" +
-						filename +
-						"\" into the file system image");
+				case EXTRACT -> {
+					if (!coffeeFS.extractFile(filename)) {
+						System.err.println("Inexistent file: " +
+										filename);
+						System.exit(1);
+					}
+					System.out.println("Saved the file \"" +
+									filename + "\"");
 				}
-				break;
-			case EXTRACT:
-				if (!coffeeFS.extractFile(filename)) {
-					System.err.println("Inexistent file: " +
-						filename);
+				case REMOVE -> {
+					coffeeFS.removeFile(filename);
+					System.out.println("Removed the file \"" +
+									filename +
+									"\" from the Coffee file system image");
+				}
+				case LIST -> printFiles(coffeeFS.getFiles());
+				case STATS -> printStatistics(coffeeFS);
+				default -> {
+					System.err.println("Unknown command!");
 					System.exit(1);
 				}
-				System.out.println("Saved the file \"" +
-					filename + "\"");
-				break;
-			case REMOVE:
-				coffeeFS.removeFile(filename);
-				System.out.println("Removed the file \"" +
-					filename +
-					"\" from the Coffee file system image");
-				break;
-			case LIST:
-				printFiles(coffeeFS.getFiles());
-				break;
-			case STATS:
-				printStatistics(coffeeFS);
-				break;
-			default:
-				System.err.println("Unknown command!");
-				System.exit(1);
 			}
 		} catch (IOException | CoffeeFileException | CoffeeException e) {
 			System.err.println(e.getMessage());

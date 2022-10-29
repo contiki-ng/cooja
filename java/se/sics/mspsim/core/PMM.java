@@ -30,7 +30,7 @@
 package se.sics.mspsim.core;
 
 public class PMM extends IOUnit {
-    public static int SIZE = 32;
+    public static final int SIZE = 32;
 
     /*
      * This is only a stub to avoid immediate Mspsim exceptions. TODO XXX:
