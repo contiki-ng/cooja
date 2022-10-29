@@ -2306,49 +2306,42 @@ public class Cooja extends Observable {
         var hideWarn = Boolean.parseBoolean(Cooja.getExternalToolsSetting("HIDE_WARNINGS", "false"));
         if (quick && !hideWarn && !PROGRESS_WARNINGS.isEmpty()) {
           final String[] warnings = PROGRESS_WARNINGS.toArray(new String[0]);
-          new RunnableInEDT<Boolean>() {
+          final JDialog dialog = new JDialog(frame, "Compilation warnings", false);
+          Box buttonBox = Box.createHorizontalBox();
+          // Warnings message list.
+          MessageListUI compilationOutput = new MessageListUI();
+          for (String w : warnings) {
+            compilationOutput.addMessage(w, MessageList.ERROR);
+          }
+          compilationOutput.addPopupMenuItem(null, true);
+
+          // Checkbox.
+          buttonBox.add(Box.createHorizontalGlue());
+          JCheckBox hideButton = new JCheckBox("Hide compilation warnings", false);
+          hideButton.addActionListener(new ActionListener() {
             @Override
-            public Boolean work() {
-              final JDialog dialog = new JDialog(frame, "Compilation warnings", false);
-              Box buttonBox = Box.createHorizontalBox();
-              // Warnings message list.
-              MessageListUI compilationOutput = new MessageListUI();
-              for (String w: warnings) {
-                compilationOutput.addMessage(w, MessageList.ERROR);
-              }
-              compilationOutput.addPopupMenuItem(null, true);
-
-              // Checkbox.
-              buttonBox.add(Box.createHorizontalGlue());
-              JCheckBox hideButton = new JCheckBox("Hide compilation warnings", false);
-              hideButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                  Cooja.setExternalToolsSetting("HIDE_WARNINGS",
-                          String.valueOf(((JCheckBox) e.getSource()).isSelected()));
-                }
-              });
-              buttonBox.add(Box.createHorizontalStrut(10));
-              buttonBox.add(hideButton);
-
-              InputMap inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-              inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "close");
-              dialog.getRootPane().getActionMap().put("close", new AbstractAction(){
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                  dialog.dispose();
-                }
-              });
-
-              // Layout.
-              dialog.getContentPane().add(BorderLayout.CENTER, new JScrollPane(compilationOutput));
-              dialog.getContentPane().add(BorderLayout.SOUTH, buttonBox);
-              dialog.setSize(700, 500);
-              dialog.setLocationRelativeTo(frame);
-              dialog.setVisible(true);
-              return true;
+            public void actionPerformed(ActionEvent e) {
+              setExternalToolsSetting("HIDE_WARNINGS", String.valueOf(((JCheckBox) e.getSource()).isSelected()));
             }
-          }.invokeAndWait();
+          });
+          buttonBox.add(Box.createHorizontalStrut(10));
+          buttonBox.add(hideButton);
+
+          InputMap inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+          inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "close");
+          dialog.getRootPane().getActionMap().put("close", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              dialog.dispose();
+            }
+          });
+
+          // Layout.
+          dialog.getContentPane().add(BorderLayout.CENTER, new JScrollPane(compilationOutput));
+          dialog.getContentPane().add(BorderLayout.SOUTH, buttonBox);
+          dialog.setSize(700, 500);
+          dialog.setLocationRelativeTo(frame);
+          dialog.setVisible(true);
         }
         PROGRESS_WARNINGS.clear();
         if (progressDialog != null && progressDialog.isDisplayable()) {
