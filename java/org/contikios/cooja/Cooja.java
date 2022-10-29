@@ -175,7 +175,6 @@ import org.jdom.filter.ElementFilter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.openjdk.nashorn.internal.runtime.regexp.joni.Warnings;
 
 /**
  * Main file of COOJA Simulator. Typically, contains a visualizer for the
