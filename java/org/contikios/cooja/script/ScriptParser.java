@@ -61,6 +61,8 @@ public class ScriptParser {
 
     code = replaceTestStatus(code);
 
+    code = replaceGenerateMessage(code);
+
     this.code = code;
   }
 
@@ -194,6 +196,10 @@ public class ScriptParser {
     return Pattern.compile("log\\.testFailed\\(\\)").matcher(code).replaceAll("throw new TestFailed()");
   }
 
+  private static String replaceGenerateMessage(String code) {
+    return Pattern.compile("log\\.generateMessage\\(").matcher(code).replaceAll("log.generateMsg(mote, ");
+  }
+
   public String getJSCode() {
     return getJSCode(code, timeoutCode);
   }
@@ -246,7 +252,7 @@ public class ScriptParser {
     "};" +
     "\n" +
     "function GENERATE_MSG(time, msg) { " +
-    " log.generateMessage(time, msg); " +
+    " log.generateMsg(mote, time, msg); " +
     "};\n" +
     "\n" +
     "function SCRIPT_TIMEOUT() { " +

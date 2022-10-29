@@ -33,9 +33,11 @@ package org.contikios.cooja.script;
 
 /* Morty: This interface must be public, otherwise openjdk will fail */
 
+import org.contikios.cooja.Mote;
+
 public interface ScriptLog {
     void log(String log);
-    void generateMessage(long delay, String msg);
+    void generateMsg(Mote mote, long delay, String msg);
     void append(String filename, String msg);
     void writeFile(String filename, String msg);
 }
