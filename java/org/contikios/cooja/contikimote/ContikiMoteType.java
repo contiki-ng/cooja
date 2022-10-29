@@ -204,16 +204,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     return new ContikiMote(this, simulation);
   }
 
-  /**
-   * Get the mote file for the extension.
-   *
-   * @param extension File extension (.map)
-   * @return The mote file for the extension
-   */
-  private File getMoteFile(String extension) {
-    return new File(fileSource.getParentFile(), "build/cooja/" + identifier + extension);
-  }
-
   @Override
   public LinkedHashMap<String, String> getCompilationEnvironment() {
     var sources = new StringBuilder();
@@ -842,7 +832,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
     final var sourceFile = getContikiSourceFile();
     if (sourceFile != null) { // Compensate for non-standard naming rules.
-      fileFirmware = getMoteFile(librarySuffix);
+      fileFirmware = getExpectedFirmwareFile(sourceFile.getAbsolutePath());
     }
     if (sourceFile == null) {
       throw new MoteTypeCreationException("No Contiki application specified");
