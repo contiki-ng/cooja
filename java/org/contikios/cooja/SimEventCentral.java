@@ -319,25 +319,22 @@ public class SimEventCentral {
 
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
-    Element element;
 
     /* Log output buffer size */
-    element = new Element("logoutput");
+    var element = new Element("logoutput");
     element.setText(String.valueOf(logOutputBufferSize));
     config.add(element);
 
     return config;
   }
 
-  public boolean setConfigXML(Simulation simulation,
-      Collection<Element> configXML, boolean visAvailable) {
+  public void setConfigXML(Collection<Element> configXML) {
     for (Element element : configXML) {
       String name = element.getName();
       if (name.equals("logoutput")) {
         logOutputBufferSize = Integer.parseInt(element.getText());
       }
     }
-    return true;
   }
   
 }

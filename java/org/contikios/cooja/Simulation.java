@@ -620,7 +620,7 @@ public class Simulation extends Observable {
           break;
         }
         case "events":
-          eventCentral.setConfigXML(this, element.getChildren(), Cooja.isVisualized());
+          eventCentral.setConfigXML(element.getChildren());
           break;
         case "motetype": {
           String moteTypeClassName = element.getText().trim();
