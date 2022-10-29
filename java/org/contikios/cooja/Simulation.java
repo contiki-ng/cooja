@@ -259,7 +259,7 @@ public class Simulation extends Observable {
       stateLock.notifyAll();
     }
 
-    cooja.updateProgress(!isRunning);
+    Cooja.updateProgress(!isRunning);
     setChanged();
     notifyObservers(this);
   }
@@ -778,7 +778,7 @@ public class Simulation extends Observable {
 
         setChanged();
         notifyObservers(mote);
-        cooja.updateGUIComponentState();
+        Cooja.updateGUIComponentState();
       }
     });
   }

@@ -645,7 +645,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     /* XXX HACK: here we set the position and size of the window when it appears on a blank simulation screen. */
     this.setLocation(400, 160);
-    this.setSize(gui.getDesktopPane().getWidth() - 400, 240);
+    this.setSize(Cooja.getDesktopPane().getWidth() - 400, 240);
   }
 
   public void registerNewLogOutput(Mote mote, long time, String msg) {
@@ -804,7 +804,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       filterTextField.setBackground(Color.red);
       filterTextField.setToolTipText("Syntax error in regular expression: " + e.getMessage());
     }
-    simulation.getCooja().getDesktopPane().repaint();
+    Cooja.getDesktopPane().repaint();
   }
 
   public void trySelectTime(final long time) {

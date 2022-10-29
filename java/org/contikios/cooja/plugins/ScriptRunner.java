@@ -213,7 +213,7 @@ public class ScriptRunner implements Plugin {
     frame.getContentPane().add(BorderLayout.SOUTH, southPanel);
 
     frame.setSize(600, 700);
-    Dimension maxSize = gui.getDesktopPane().getSize();
+    Dimension maxSize = Cooja.getDesktopPane().getSize();
     if (frame.getWidth() > maxSize.getWidth()) {
       frame.setSize((int)maxSize.getWidth(), frame.getHeight());
     }

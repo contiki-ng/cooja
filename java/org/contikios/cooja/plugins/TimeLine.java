@@ -376,7 +376,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     /* Update timeline for the duration of the plugin */
     repaintTimelineTimer.start();
 
-    gui.addMoteHighlightObserver(moteHighlightObserver = new Observer() {
+    Cooja.addMoteHighlightObserver(moteHighlightObserver = new Observer() {
       @Override
       public void update(Observable obs, Object obj) {
         if (!(obj instanceof Mote)) {
@@ -411,8 +411,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     });
 
     /* XXX HACK: here we set the position and size of the window when it appears on a blank simulation screen. */
-    this.setLocation(0, gui.getDesktopPane().getHeight() - 166);
-    this.setSize(gui.getDesktopPane().getWidth(), 166);
+    this.setLocation(0, Cooja.getDesktopPane().getHeight() - 166);
+    this.setSize(Cooja.getDesktopPane().getWidth(), 166);
   }
 
   @Override

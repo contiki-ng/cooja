@@ -1052,7 +1052,7 @@ public class RadioLogger extends VisPlugin {
     verboseBox.setText("");
 
     setTitle("Radio messages: showing " + dataTable.getRowCount() + "/" + connections.size() + " packets");
-    simulation.getCooja().getDesktopPane().repaint();
+    Cooja.getDesktopPane().repaint();
   }
 
   private Action createAnalyzerAction(String name, final String actionName,
