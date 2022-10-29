@@ -50,10 +50,6 @@ public class FileStorage implements Storage {
     private FileLock fileLock;
     private long maxSize = 0;
 
-    public FileStorage() {
-        this("flash.bin");
-    }
-
     public FileStorage(String filename) {
         this.filename = filename;
     }
