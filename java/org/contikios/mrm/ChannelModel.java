@@ -129,63 +129,35 @@ public class ChannelModel {
     captureEffectSignalTreshold;
 
     public static Object getDefaultValue(Parameter p) {
-      switch (p) {
-      case apply_random:
-        return Boolean.FALSE;
-      case snr_threshold:
-        return 6.0;
-      case bg_noise_mean:
-        return AbstractRadioMedium.SS_NOTHING;
-      case bg_noise_var:
-        return 1.0;
-      case system_gain_mean:
-        return 0.0;
-      case system_gain_var:
-        return 4.0;
-      case frequency: /* MHz */
-        return 2400.0;
-      case tx_power:
-        return 1.5;
-      case tx_with_gain:
-        return Boolean.TRUE;
-      case rx_sensitivity:
-        return -100.0;
-      case rx_with_gain:
-        return Boolean.FALSE;
-      case rt_disallow_direct_path:
-        return Boolean.FALSE;
-      case rt_ignore_non_direct:
-        return Boolean.FALSE;
-      case rt_fspl_on_total_length:
-        return Boolean.TRUE;
-      case rt_max_rays:
-        return 1;
-      case rt_max_refractions:
-        return 1;
-      case rt_max_reflections:
-        return 1;
-      case rt_max_diffractions:
-        return 0;
-      case rt_use_scattering:
-        return Boolean.FALSE;
-      case rt_refrac_coefficient:
-        return -3.0;
-      case rt_reflec_coefficient:
-        return -5.0;
-      case rt_diffr_coefficient:
-        return -10.0;
-      case rt_scatt_coefficient:
-        return -20.0;
-      case obstacle_attenuation:
-        return -3.0;
-      case captureEffect:
-        return true;
-      case captureEffectPreambleDuration:
-        return 1000*1000*4*0.5*8/250000; /* 2 bytes, 250kbit/s, us */
-      case captureEffectSignalTreshold:
-        return 3.0; /* dB, according to previous 802.15.4 studies */
-      }
-      throw new RuntimeException("Unknown default value: " + p);
+      return switch (p) {
+        case apply_random -> Boolean.FALSE;
+        case snr_threshold -> 6.0;
+        case bg_noise_mean -> AbstractRadioMedium.SS_NOTHING;
+        case bg_noise_var -> 1.0;
+        case system_gain_mean -> 0.0;
+        case system_gain_var -> 4.0;
+        case frequency -> 2400.0; // MHz.
+        case tx_power -> 1.5;
+        case tx_with_gain -> Boolean.TRUE;
+        case rx_sensitivity -> -100.0;
+        case rx_with_gain -> Boolean.FALSE;
+        case rt_disallow_direct_path -> Boolean.FALSE;
+        case rt_ignore_non_direct -> Boolean.FALSE;
+        case rt_fspl_on_total_length -> Boolean.TRUE;
+        case rt_max_rays -> 1;
+        case rt_max_refractions -> 1;
+        case rt_max_reflections -> 1;
+        case rt_max_diffractions -> 0;
+        case rt_use_scattering -> Boolean.FALSE;
+        case rt_refrac_coefficient -> -3.0;
+        case rt_reflec_coefficient -> -5.0;
+        case rt_diffr_coefficient -> -10.0;
+        case rt_scatt_coefficient -> -20.0;
+        case obstacle_attenuation -> -3.0;
+        case captureEffect -> true;
+        case captureEffectPreambleDuration -> 1000 * 1000 * 4 * 0.5 * 8 / 250000; // 2 bytes, 250kbit/s, us.
+        case captureEffectSignalTreshold -> 3.0; // dB, according to previous 802.15.4 studies.
+      };
     }
     
     public static Parameter fromString(String name) {
