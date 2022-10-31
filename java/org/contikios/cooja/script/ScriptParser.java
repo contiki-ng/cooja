@@ -45,21 +45,16 @@ public class ScriptParser {
 
   public ScriptParser(String code) throws ScriptSyntaxErrorException {
     code = "\n" + code.replaceAll("\r\n", "\n") + "\n";
-    Pattern pattern = Pattern.compile("/\\*([^*]|\n|(\\*+([^*/]|\n)))*\\*+/");
-    Matcher matcher = pattern.matcher(code);
+    Matcher matcher = Pattern.compile("/\\*([^*]|\n|(\\*+([^*/]|\n)))*\\*+/").matcher(code);
     while (matcher.find()) {
       String match = matcher.group();
       int newLines = match.split("\n").length;
       code = matcher.replaceFirst("\n".repeat(newLines));
       matcher.reset(code);
     }
+    code = Pattern.compile("//.*\n").matcher(code).replaceAll("\n");
 
-    Pattern pattern1 = Pattern.compile("//.*\n");
-    Matcher matcher1 = pattern1.matcher(code);
-    code = matcher1.replaceAll("\n");
-
-    Pattern pattern2 = Pattern.compile("TIMEOUT\\(" + "(\\d+)" + "\\)");
-    Matcher matcher2 = pattern2.matcher(code);
+    Matcher matcher2 = Pattern.compile("TIMEOUT\\(" + "(\\d+)" + "\\)").matcher(code);
     if (matcher2.find()) {
       timeoutTime = Long.parseLong(matcher2.group(1)) * Simulation.MILLISECOND;
       timeoutCode = ";";
@@ -71,8 +66,7 @@ public class ScriptParser {
       }
     }
 
-    Pattern pattern3 = Pattern.compile("TIMEOUT\\(" + "(\\d+)" + "\\s*,\\s*" + "(.*)" + "\\)");
-    Matcher matcher3 = pattern3.matcher(code);
+    Matcher matcher3 = Pattern.compile("TIMEOUT\\(" + "(\\d+)" + "\\s*,\\s*" + "(.*)" + "\\)").matcher(code);
     if (matcher3.find()) {
       if (timeoutTime > 0) {
         throw new ScriptSyntaxErrorException("Only one timeout handler allowed");
@@ -90,15 +84,13 @@ public class ScriptParser {
       }
     }
 
-    Pattern pattern4 = Pattern.compile("YIELD_THEN_WAIT_UNTIL\\(" + "(.*)" + "\\)");
-    Matcher matcher4 = pattern4.matcher(code);
+    Matcher matcher4 = Pattern.compile("YIELD_THEN_WAIT_UNTIL\\(" + "(.*)" + "\\)").matcher(code);
     while (matcher4.find()) {
       code = matcher4.replaceFirst("YIELD(); WAIT_UNTIL(" + matcher4.group(1) + ")");
       matcher4.reset(code);
     }
 
-    Pattern pattern5 = Pattern.compile("WAIT_UNTIL\\(" + "(.*)" + "\\)");
-    Matcher matcher5 = pattern5.matcher(code);
+    Matcher matcher5 = Pattern.compile("WAIT_UNTIL\\(" + "(.*)" + "\\)").matcher(code);
     while (matcher5.find()) {
       code = matcher5.replaceFirst("while (!(" + matcher5.group(1) + ")) { " + " YIELD(); " + "}");
       matcher5.reset(code);
