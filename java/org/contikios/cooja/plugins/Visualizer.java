@@ -412,7 +412,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     }
 
     /* Observe mote highlights */
-    gui.addMoteHighlightObserver(moteHighligtObserver = new Observer() {
+    Cooja.addMoteHighlightObserver(moteHighligtObserver = new Observer() {
       @Override
       public void update(Observable obs, Object obj) {
         if (!(obj instanceof Mote)) {
@@ -448,7 +448,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     });
 
     /* Observe mote relations */
-    gui.addMoteRelationsObserver(moteRelationsObserver = (obs, obj) -> repaint());
+    Cooja.addMoteRelationsObserver(moteRelationsObserver = (obs, obj) -> repaint());
 
     canvas.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "abort_action");
     canvas.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "delete_motes");
@@ -780,7 +780,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
       /* Add registered mote actions */
       for (final Mote mote : motes) {
-        menu.add(simulation.getCooja().createMotePluginsSubmenu(mote));
+        menu.add(Cooja.createMotePluginsSubmenu(mote));
         for (Class<? extends MoteMenuAction> menuActionClass : moteMenuActions) {
           try {
             final MoteMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
@@ -1485,7 +1485,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       gui.deleteMoteHighlightObserver(moteHighligtObserver);
     }
     if (moteRelationsObserver != null) {
-      gui.deleteMoteRelationsObserver(moteRelationsObserver);
+      Cooja.deleteMoteRelationsObserver(moteRelationsObserver);
     }
 
     simulation.getEventCentral().removeMoteCountListener(newMotesListener);
