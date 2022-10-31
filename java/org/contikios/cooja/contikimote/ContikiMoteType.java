@@ -109,11 +109,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
   private static final Logger logger = LogManager.getLogger(ContikiMoteType.class);
 
-  /**
-   * Library file suffix
-   */
-  private static final String librarySuffix = ".cooja";
-
   private final Cooja gui;
 
   /**
@@ -409,7 +404,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
   @Override
   public File getExpectedFirmwareFile(String name) {
-    return new File(new File(name).getParentFile(), "build/cooja/" + identifier + ContikiMoteType.librarySuffix);
+    return new File(new File(name).getParentFile(), "build/cooja/" + identifier + "." + getMoteType());
   }
 
   /**
