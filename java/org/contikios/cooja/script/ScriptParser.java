@@ -39,7 +39,7 @@ import org.contikios.cooja.Simulation;
 
 public class ScriptParser {
   private long timeoutTime = -1;
-  private String timeoutCode = null;
+  private String timeoutCode = "";
 
   private final String code;
 
@@ -57,7 +57,6 @@ public class ScriptParser {
     Matcher matcher2 = Pattern.compile("TIMEOUT\\(" + "(\\d+)" + "\\)").matcher(code);
     if (matcher2.find()) {
       timeoutTime = Long.parseLong(matcher2.group(1)) * Simulation.MILLISECOND;
-      timeoutCode = ";";
       matcher2.reset(code);
       code = matcher2.replaceFirst(";");
       matcher2.reset(code);
