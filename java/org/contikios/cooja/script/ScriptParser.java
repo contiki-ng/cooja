@@ -60,10 +60,7 @@ public class ScriptParser {
 
     Pattern pattern2 = Pattern.compile("TIMEOUT\\(" + "(\\d+)" + "\\)");
     Matcher matcher2 = pattern2.matcher(code);
-    String result;
-    if (!matcher2.find()) {
-      result = code;
-    } else {
+    if (matcher2.find()) {
       timeoutTime = Long.parseLong(matcher2.group(1)) * Simulation.MILLISECOND;
       timeoutCode = ";";
       matcher2.reset(code);
@@ -72,15 +69,11 @@ public class ScriptParser {
       if (matcher2.find()) {
         throw new ScriptSyntaxErrorException("Only one timeout handler allowed");
       }
-      result = code;
     }
-    code = result;
 
     Pattern pattern3 = Pattern.compile("TIMEOUT\\(" + "(\\d+)" + "\\s*,\\s*" + "(.*)" + "\\)");
     Matcher matcher3 = pattern3.matcher(code);
-    if (!matcher3.find()) {
-      result = code;
-    } else {
+    if (matcher3.find()) {
       if (timeoutTime > 0) {
         throw new ScriptSyntaxErrorException("Only one timeout handler allowed");
       }
@@ -95,9 +88,7 @@ public class ScriptParser {
       if (matcher3.find()) {
         throw new ScriptSyntaxErrorException("Only one timeout handler allowed");
       }
-      result = code;
     }
-    code = result;
 
     Pattern pattern4 = Pattern.compile("YIELD_THEN_WAIT_UNTIL\\(" + "(.*)" + "\\)");
     Matcher matcher4 = pattern4.matcher(code);
