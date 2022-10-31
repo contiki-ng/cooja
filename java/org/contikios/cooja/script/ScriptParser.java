@@ -44,98 +44,76 @@ public class ScriptParser {
   private final String code;
 
   public ScriptParser(String code) throws ScriptSyntaxErrorException {
-    String code1 = code;
-    code1 = code1.replaceAll("\r\n", "\n");
-    code1 = "\n" + code1 + "\n";
-    code = code1;
-
-    String code2 = code;
-    /* TODO Handle strings */
+    code = "\n" + code.replaceAll("\r\n", "\n") + "\n";
     Pattern pattern = Pattern.compile("/\\*([^*]|\n|(\\*+([^*/]|\n)))*\\*+/");
-    Matcher matcher = pattern.matcher(code2);
-
+    Matcher matcher = pattern.matcher(code);
     while (matcher.find()) {
       String match = matcher.group();
       int newLines = match.split("\n").length;
-      code2 = matcher.replaceFirst("\n".repeat(newLines));
-      matcher.reset(code2);
+      code = matcher.replaceFirst("\n".repeat(newLines));
+      matcher.reset(code);
     }
-    code = code2;
 
-    String code3 = code;
-    /* TODO Handle strings */
     Pattern pattern1 = Pattern.compile("//.*\n");
-    Matcher matcher1 = pattern1.matcher(code3);
-    code3 = matcher1.replaceAll("\n");
-    code = code3;
+    Matcher matcher1 = pattern1.matcher(code);
+    code = matcher1.replaceAll("\n");
 
-    String result;
-    String code4 = code;
     Pattern pattern2 = Pattern.compile("TIMEOUT\\(" + "(\\d+)" + "\\)");
-    Matcher matcher2 = pattern2.matcher(code4);
-
+    Matcher matcher2 = pattern2.matcher(code);
+    String result;
     if (!matcher2.find()) {
-      result = code4;
+      result = code;
     } else {
       timeoutTime = Long.parseLong(matcher2.group(1)) * Simulation.MILLISECOND;
       timeoutCode = ";";
-      matcher2.reset(code4);
-      code4 = matcher2.replaceFirst(";");
-      matcher2.reset(code4);
+      matcher2.reset(code);
+      code = matcher2.replaceFirst(";");
+      matcher2.reset(code);
       if (matcher2.find()) {
         throw new ScriptSyntaxErrorException("Only one timeout handler allowed");
       }
-      result = code4;
+      result = code;
     }
-
     code = result;
 
-    String result1;
-    String code5 = code;
     Pattern pattern3 = Pattern.compile("TIMEOUT\\(" + "(\\d+)" + "\\s*,\\s*" + "(.*)" + "\\)");
-    Matcher matcher3 = pattern3.matcher(code5);
-
+    Matcher matcher3 = pattern3.matcher(code);
     if (!matcher3.find()) {
-      result1 = code5;
+      result = code;
     } else {
       if (timeoutTime > 0) {
         throw new ScriptSyntaxErrorException("Only one timeout handler allowed");
       }
       timeoutTime = Long.parseLong(matcher3.group(1)) * Simulation.MILLISECOND;
+      // FIXME: code6 should not be required, handled by last lines in constructor.
       String code6 = matcher3.group(2);
       code6 = Pattern.compile("log\\.testOK\\(\\)").matcher(code6).replaceAll("throw new TestOK()");
       timeoutCode = Pattern.compile("log\\.testFailed\\(\\)").matcher(code6).replaceAll("throw new TestFailed()");
-      matcher3.reset(code5);
-      code5 = matcher3.replaceFirst(";");
-      matcher3.reset(code5);
+      matcher3.reset(code);
+      code = matcher3.replaceFirst(";");
+      matcher3.reset(code);
       if (matcher3.find()) {
         throw new ScriptSyntaxErrorException("Only one timeout handler allowed");
       }
-      result1 = code5;
+      result = code;
     }
+    code = result;
 
-    code = result1;
-
-    String code6 = code;
     Pattern pattern4 = Pattern.compile("YIELD_THEN_WAIT_UNTIL\\(" + "(.*)" + "\\)");
-    Matcher matcher4 = pattern4.matcher(code6);
+    Matcher matcher4 = pattern4.matcher(code);
     while (matcher4.find()) {
-      code6 = matcher4.replaceFirst("YIELD(); WAIT_UNTIL(" + matcher4.group(1) + ")");
-      matcher4.reset(code6);
+      code = matcher4.replaceFirst("YIELD(); WAIT_UNTIL(" + matcher4.group(1) + ")");
+      matcher4.reset(code);
     }
 
-    code = code6;
-    String code7 = code;
     Pattern pattern5 = Pattern.compile("WAIT_UNTIL\\(" + "(.*)" + "\\)");
-    Matcher matcher5 = pattern5.matcher(code7);
+    Matcher matcher5 = pattern5.matcher(code);
     while (matcher5.find()) {
-      code7 = matcher5.replaceFirst("while (!(" + matcher5.group(1) + ")) { " + " YIELD(); " + "}");
-      matcher5.reset(code7);
+      code = matcher5.replaceFirst("while (!(" + matcher5.group(1) + ")) { " + " YIELD(); " + "}");
+      matcher5.reset(code);
     }
-    code = code7;
-    String code8 = code;
-    code8 = Pattern.compile("log\\.testOK\\(\\)").matcher(code8).replaceAll("throw new TestOK()");
-    code = Pattern.compile("log\\.testFailed\\(\\)").matcher(code8).replaceAll("throw new TestFailed()");
+    code = Pattern.compile("log\\.testOK\\(\\)").matcher(code).replaceAll("throw new TestOK()");
+    code = Pattern.compile("log\\.testFailed\\(\\)").matcher(code).replaceAll("throw new TestFailed()");
     code = Pattern.compile("log\\.generateMessage\\(").matcher(code).replaceAll("log.generateMsg(mote, ");
     this.code = code;
   }
