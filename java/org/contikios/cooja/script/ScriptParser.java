@@ -77,9 +77,6 @@ public class ScriptParser {
     if (!matcher2.find()) {
       result = code4;
     } else {
-      if (timeoutTime > 0) {
-        throw new ScriptSyntaxErrorException("Only one timeout handler allowed");
-      }
       timeoutTime = Long.parseLong(matcher2.group(1)) * Simulation.MILLISECOND;
       timeoutCode = ";";
       matcher2.reset(code4);
