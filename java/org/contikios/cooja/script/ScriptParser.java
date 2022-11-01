@@ -131,13 +131,36 @@ public class ScriptParser {
        constructor: { value: Error, enumerable: false, writable: true, configurable: true }
      });
      Object.setPrototypeOf(Shutdown, Error);
+
+     function GENERATE_MSG(time, msg) {
+       log.generateMsg(mote, time, msg);
+     };
+
+     function YIELD() {
+       SEMAPHORE_SIM.release();
+       SEMAPHORE_SCRIPT.acquire(); // Wait for simulation here.
+       if (TIMEOUT) {
+     """ + timeoutCode + ";\n" +
+     """
+         if (timeout_function != null) { timeout_function(); }
+         log.log('TEST TIMEOUT\\n');
+         throw new TestFailed();
+       }
+       if (SHUTDOWN) { throw new Shutdown(); }
+       msg = new java.lang.String(msg);
+       node.setMoteMsg(mote, msg);
+     };
+
+     function write(mote, msg) {
+       mote.getInterfaces().getLog().writeString(msg);
+     };
      timeout_function = null;
      function run() {
        try {
          YIELD();
          // User script starting.
      """ +
-    code +
+     code +
      """
          // User script end.
          while (true) { YIELD(); }
@@ -148,32 +171,6 @@ public class ScriptParser {
          if (error instanceof Shutdown) return -1;
          throw(error);
        }
-     };
-
-     function GENERATE_MSG(time, msg) {
-       log.generateMsg(mote, time, msg);
-     };
-
-     function SCRIPT_TIMEOUT() {
-     """ +
-       timeoutCode + ";\n" +
-     """
-       if (timeout_function != null) { timeout_function(); }
-       log.log('TEST TIMEOUT\\n');
-       throw new TestFailed();
-     };
-
-     function YIELD() {
-       SEMAPHORE_SIM.release();
-       SEMAPHORE_SCRIPT.acquire(); // Wait for simulation here.
-       if (TIMEOUT) { SCRIPT_TIMEOUT(); }
-       if (SHUTDOWN) { throw new Shutdown(); }
-       msg = new java.lang.String(msg);
-       node.setMoteMsg(mote, msg);
-     };
-
-     function write(mote, msg) {
-       mote.getInterfaces().getLog().writeString(msg);
      };
      run();
      """;
