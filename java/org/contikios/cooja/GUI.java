@@ -50,6 +50,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,6 +90,9 @@ import javax.swing.KeyStroke;
 import javax.swing.RepaintManager;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
+import javax.swing.ToolTipManager;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
@@ -1522,6 +1526,40 @@ public class GUI {
             "Out of memory warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null,
             new String[]{"Continue", "Abort"}, "Abort");
     return n != JOptionPane.YES_OPTION;
+  }
+
+  public static void setLookAndFeel() throws InterruptedException, InvocationTargetException {
+    java.awt.EventQueue.invokeAndWait(() -> {
+      JFrame.setDefaultLookAndFeelDecorated(true);
+      JDialog.setDefaultLookAndFeelDecorated(true);
+      ToolTipManager.sharedInstance().setDismissDelay(60000);
+      // Nimbus.
+      try {
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.startsWith("linux")) {
+          try {
+            for (var info : UIManager.getInstalledLookAndFeels()) {
+              if ("Nimbus".equals(info.getName())) {
+                UIManager.setLookAndFeel(info.getClassName());
+                break;
+              }
+            }
+          } catch (UnsupportedLookAndFeelException e) {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+          }
+        } else {
+          UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        }
+        return;
+      } catch (Exception e) {
+      }
+
+      // System.
+      try {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      } catch (Exception e) {
+      }
+    });
   }
 
   /** GUI event handler */
