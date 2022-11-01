@@ -136,19 +136,16 @@ public class ScriptParser {
        log.generateMsg(mote, time, msg);
      };
 
-     function SCRIPT_TIMEOUT() {
-     """ +
-       timeoutCode + ";\n" +
-     """
-       if (timeout_function != null) { timeout_function(); }
-       log.log('TEST TIMEOUT\\n');
-       throw new TestFailed();
-     };
-
      function YIELD() {
        SEMAPHORE_SIM.release();
        SEMAPHORE_SCRIPT.acquire(); // Wait for simulation here.
-       if (TIMEOUT) { SCRIPT_TIMEOUT(); }
+       if (TIMEOUT) {
+     """ + timeoutCode + ";\n" +
+     """
+         if (timeout_function != null) { timeout_function(); }
+         log.log('TEST TIMEOUT\\n');
+         throw new TestFailed();
+       }
        if (SHUTDOWN) { throw new Shutdown(); }
        msg = new java.lang.String(msg);
        node.setMoteMsg(mote, msg);
