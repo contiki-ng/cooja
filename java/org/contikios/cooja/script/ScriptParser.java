@@ -131,24 +131,6 @@ public class ScriptParser {
        constructor: { value: Error, enumerable: false, writable: true, configurable: true }
      });
      Object.setPrototypeOf(Shutdown, Error);
-     timeout_function = null;
-     function run() {
-       try {
-         YIELD();
-         // User script starting.
-     """ +
-    code +
-     """
-         // User script end.
-         while (true) { YIELD(); }
-       } catch (error) {
-         SEMAPHORE_SCRIPT.release();
-         if (error instanceof TestOK) return 0;
-         if (error instanceof TestFailed) return 1;
-         if (error instanceof Shutdown) return -1;
-         throw(error);
-       }
-     };
 
      function GENERATE_MSG(time, msg) {
        log.generateMsg(mote, time, msg);
@@ -174,6 +156,24 @@ public class ScriptParser {
 
      function write(mote, msg) {
        mote.getInterfaces().getLog().writeString(msg);
+     };
+     timeout_function = null;
+     function run() {
+       try {
+         YIELD();
+         // User script starting.
+     """ +
+     code +
+     """
+         // User script end.
+         while (true) { YIELD(); }
+       } catch (error) {
+         SEMAPHORE_SCRIPT.release();
+         if (error instanceof TestOK) return 0;
+         if (error instanceof TestFailed) return 1;
+         if (error instanceof Shutdown) return -1;
+         throw(error);
+       }
      };
      run();
      """;
