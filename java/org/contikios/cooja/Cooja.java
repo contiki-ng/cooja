@@ -829,7 +829,7 @@ public class Cooja extends Observable {
     return plugin;
   }
 
-  public List<Class<? extends Plugin>> getMenuMotePluginClasses() {
+  List<Class<? extends Plugin>> getMenuMotePluginClasses() {
     return menuMotePluginClasses;
   }
 
