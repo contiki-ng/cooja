@@ -38,6 +38,7 @@ import java.awt.Insets;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.script.CompiledScript;
@@ -53,6 +54,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -63,6 +65,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
+import org.contikios.cooja.HasQuickHelp;
 import org.contikios.cooja.LogScriptEngine;
 import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
@@ -73,7 +76,7 @@ import org.jdom.Element;
 
 @ClassDescription("Simulation script editor")
 @PluginType(PluginType.SIM_CONTROL_PLUGIN)
-public class ScriptRunner implements Plugin {
+public class ScriptRunner implements Plugin, HasQuickHelp {
   private static final Logger logger = LogManager.getLogger(ScriptRunner.class);
 
   private final Cooja gui;
@@ -92,12 +95,11 @@ public class ScriptRunner implements Plugin {
   private boolean activated = false;
 
   /** The script text when running in headless mode. */
-  private String headlessScript = null;
-  private final JEditorPane codeEditor;
-  private boolean codeEditorChanged = false;
+  private final ArrayList<String> headlessScript = new ArrayList<>();
+  private final JTabbedPane editorTabs;
+  private final ArrayList<Boolean> codeEditorChanged = new ArrayList<>();
   private final JTextArea logTextArea;
 
-  private File linkedFile = null;
   private final VisPlugin frame;
 
   public ScriptRunner(Simulation simulation, Cooja gui) {
@@ -106,7 +108,7 @@ public class ScriptRunner implements Plugin {
 
     if (!Cooja.isVisualized()) {
       frame = null;
-      codeEditor = null;
+      editorTabs = null;
       logTextArea = null;
       engine = simulation.newScriptEngine(null);
       return;
@@ -127,7 +129,7 @@ public class ScriptRunner implements Plugin {
 
     /* Script area */
     frame.setLayout(new BorderLayout());
-    codeEditor = newEditor();
+    editorTabs = new JTabbedPane();
 
     logTextArea = new JTextArea(12,50);
     logTextArea.setMargin(new Insets(5,5,5,5));
@@ -138,8 +140,7 @@ public class ScriptRunner implements Plugin {
     var newScript = new JMenuItem("New");
     newScript.addActionListener(l -> {
       checkForUpdatesAndSave();
-      linkedFile = null;
-      updateScript("");
+      updateScript("", null);
     });
     fileMenu.add(newScript);
     var open = new JMenuItem("Open...");
@@ -155,6 +156,16 @@ public class ScriptRunner implements Plugin {
     var saveAs = new JMenuItem("Save as...");
     saveAs.addActionListener(l -> saveScript(true));
     fileMenu.add(saveAs);
+    var closeTab = new JMenuItem("Close tab");
+    closeTab.addActionListener(l -> {
+      var ix = editorTabs.getSelectedIndex();
+      editorTabs.remove(ix);
+      codeEditorChanged.remove(ix);
+      if (editorTabs.getTabCount() > 0) {
+        editorTabs.setSelectedIndex(Math.max(0, ix - 1));
+      }
+    });
+    fileMenu.add(closeTab);
     /* Example scripts */
     final JMenu examplesMenu = new JMenu("Load example script");
     for (int i=0; i < EXAMPLE_SCRIPTS.length; i += 2) {
@@ -162,8 +173,7 @@ public class ScriptRunner implements Plugin {
       JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
       exampleItem.addActionListener(e -> {
         checkForUpdatesAndSave();
-        linkedFile = null;
-        updateScript(loadScript(file));
+        updateScript(loadScript(file), null);
       });
       examplesMenu.add(exampleItem);
     }
@@ -174,7 +184,8 @@ public class ScriptRunner implements Plugin {
       if (activated) {
         engine.deactivateScript();
         activated = false;
-        codeEditor.setEnabled(true);
+        editorTabs.setEnabled(true);
+        getEditor(editorTabs.getSelectedIndex()).setEnabled(true);
         updateTitle();
       } else {
         activateScript();
@@ -185,15 +196,20 @@ public class ScriptRunner implements Plugin {
     frame.doLayout();
     var centerPanel = new JSplitPane(
             JSplitPane.VERTICAL_SPLIT,
-            new JScrollPane(codeEditor),
+            editorTabs,
             new JScrollPane(logTextArea)
     );
 
     MenuListener toggleMenuItems = new MenuListener() {
       @Override
       public void menuSelected(MenuEvent e) {
-        activateMenuItem.setSelected(activated);
+        newScript.setEnabled(!activated);
+        open.setEnabled(!activated);
+        saveAs.setEnabled(editorTabs.getTabCount() > 0);
+        closeTab.setEnabled(!activated && editorTabs.getTabCount() > 0);
         examplesMenu.setEnabled(!activated);
+        activateMenuItem.setSelected(activated);
+        activateMenuItem.setEnabled(editorTabs.getTabCount() > 0);
       }
       @Override
       public void menuDeselected(MenuEvent e) {
@@ -222,22 +238,41 @@ public class ScriptRunner implements Plugin {
     }
 
     /* Set default script */
-    updateScript(loadScript(EXAMPLE_SCRIPTS[0]));
+    updateScript(loadScript(EXAMPLE_SCRIPTS[0]), null);
   }
 
   private void saveScript(boolean saveToLinkedFile) {
-    var f = !saveToLinkedFile ? linkedFile : showFileChooser(false);
+    var ix = editorTabs.getSelectedIndex();
+    var f = !saveToLinkedFile ? getLinkedFile(ix) : showFileChooser(false);
     if (f == null) {
       return;
     }
     try (var writer = Files.newBufferedWriter(f.toPath(), UTF_8)) {
-      writer.write(codeEditor.getText());
-      linkedFile = f;
-      codeEditorChanged = false;
-      updateTitle();
+      writer.write(getEditor(ix).getText());
+      codeEditorChanged.set(ix, false);
+      updateTabTitle(f);
     } catch (IOException e) {
       logger.error("Failed to save script file: {}", f, e);
     }
+  }
+
+  /** Returns the editor in a specific tab.
+   *
+   * @param ix Index for tab
+   * @return The editor
+   */
+  private JEditorPane getEditor(int ix) {
+    return (JEditorPane) ((JScrollPane) editorTabs.getComponentAt(ix)).getViewport().getView();
+  }
+
+  /** Returns the file belonging to an editor in a specific tab.
+   *
+   * @param ix Index for tab
+   * @return The file
+   */
+  private File getLinkedFile(int ix){
+    var name = editorTabs.getTitleAt(ix);
+    return name.endsWith(".js") && Files.exists(Path.of(name)) ? new File(name) : null;
   }
 
   @Override
@@ -255,18 +290,29 @@ public class ScriptRunner implements Plugin {
       logger.error("Could not read " + source);
       return false;
     }
-    linkedFile = source;
-    updateScript(script);
+    updateScript(script, source);
     if (Cooja.isVisualized()) {
       Cooja.setExternalToolsSetting("SCRIPTRUNNER_LAST_SCRIPTFILE", source.getAbsolutePath());
     }
     return true;
   }
 
+  /** Returns the scripts concatenated, tabs from left to right in visual mode. */
+  private String getCombinedScripts() {
+    if (!Cooja.isVisualized()) {
+      return String.join("\n", headlessScript);
+    }
+    var sb = new StringBuilder();
+    for (int i = 0; i < editorTabs.getTabCount(); i++) {
+      sb.append(getEditor(i).getText());
+    }
+    return sb.toString();
+  }
+
   private boolean activateScript() {
     CompiledScript script;
     try {
-      script = engine.compileScript(Cooja.isVisualized() ? codeEditor.getText() : headlessScript);
+      script = engine.compileScript(getCombinedScripts());
     } catch (ScriptException e) {
       logger.fatal("Test script error: ", e);
       if (Cooja.isVisualized()) {
@@ -281,7 +327,8 @@ public class ScriptRunner implements Plugin {
     activated = true;
     if (Cooja.isVisualized()) {
       logTextArea.setText("");
-      codeEditor.setEnabled(false);
+      editorTabs.setEnabled(false);
+      getEditor(editorTabs.getSelectedIndex()).setEnabled(false);
       updateTitle();
     }
     return true;
@@ -289,60 +336,71 @@ public class ScriptRunner implements Plugin {
 
   private void updateTitle() {
     String title = "Simulation script editor";
-    if (linkedFile != null) {
-      title += " (" + linkedFile.getName() + ")";
-    }
     if (activated) {
       title += " *active*";
     }
     frame.setTitle(title);
   }
 
-  /** Check if the script has been updated and offer the user to save the changes. */
-  private void checkForUpdatesAndSave() {
-    if (!codeEditorChanged) {
-      return;
-    }
-    if (JOptionPane.showConfirmDialog(Cooja.getTopParentContainer(),
-            "Do you want to save the changes to " + linkedFile.getAbsolutePath() + "?",
-            "Save script changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-      saveScript(false);
-    }
-    // User has chosen, do not ask again for the current modifications.
-    codeEditorChanged = false;
+  private void updateTabTitle(File file) {
+    String title = file == null ? "Script" : file.getAbsolutePath();
+    editorTabs.setTitleAt(editorTabs.getSelectedIndex(), title);
   }
 
-  /** Make a new code editor. */
-  private JEditorPane newEditor() {
+  /** Check if the script has been updated and offer the user to save the changes. */
+  private void checkForUpdatesAndSave() {
+    for (int i = 0; editorTabs != null && i < editorTabs.getTabCount(); i++) {
+      var linkedFile = getLinkedFile(i);
+      if (!codeEditorChanged.get(i) || linkedFile == null) continue;
+      if (JOptionPane.showConfirmDialog(Cooja.getTopParentContainer(),
+              "Do you want to save the changes to " + linkedFile.getAbsolutePath() + "?",
+              "Save script changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        saveScript(false);
+      }
+      // User has chosen, do not ask again for the current modifications.
+      codeEditorChanged.set(i, false);
+    }
+  }
+
+  /** Make a new tab containing an editor. */
+  private void newTab(String script, File file) {
     var editor = new JEditorPane();
     editor.setContentType("text/javascript");
+    editorTabs.addTab(null, new JScrollPane(editor));
+    editorTabs.setSelectedIndex(editorTabs.getTabCount() - 1);
+    editor.setText(script);
+    codeEditorChanged.add(false);
+    updateTabTitle(file);
     editor.getDocument().addDocumentListener(new DocumentListener() {
+      private void modified() {
+        var ix = editorTabs.getSelectedIndex();
+        if (getLinkedFile(ix) != null && editor == getEditor(ix)) {
+          codeEditorChanged.set(ix, true);
+        }
+      }
       @Override
       public void insertUpdate(DocumentEvent documentEvent) {
-        codeEditorChanged = linkedFile != null;
+        modified();
       }
 
       @Override
       public void removeUpdate(DocumentEvent documentEvent) {
-        codeEditorChanged = linkedFile != null;
+        modified();
       }
 
       @Override
       public void changedUpdate(DocumentEvent documentEvent) {
-        codeEditorChanged = linkedFile != null;
+        modified();
       }
     });
-    return editor;
   }
 
-  private void updateScript(String script) {
+  private void updateScript(String script, File file) {
     if (Cooja.isVisualized()) {
-      codeEditor.setText(script);
-      codeEditorChanged = false;
+      newTab(script, file);
       logTextArea.setText("");
-      updateTitle();
     } else {
-      headlessScript = script;
+      headlessScript.add(script);
     }
   }
 
@@ -350,14 +408,17 @@ public class ScriptRunner implements Plugin {
   public Collection<Element> getConfigXML() {
     checkForUpdatesAndSave();
     ArrayList<Element> config = new ArrayList<>();
-    if (linkedFile != null) {
-      Element element = new Element("scriptfile");
-      element.setText(simulation.getCooja().createPortablePath(linkedFile).getPath().replace('\\', '/'));
-      config.add(element);
-    } else {
-      Element element = new Element("script");
-      element.setText(codeEditor.getText());
-      config.add(element);
+    for (int i = 0; i < editorTabs.getTabCount(); i++) {
+      var name = editorTabs.getTitleAt(i);
+      if (name.endsWith(".js")) {
+        Element element = new Element("scriptfile");
+        element.setText(gui.createPortablePath(new File(name)).getPath().replace('\\', '/'));
+        config.add(element);
+      } else {
+        Element element = new Element("script");
+        element.setText(getEditor(i).getText());
+        config.add(element);
+      }
     }
 
     if (activated) {
@@ -377,11 +438,14 @@ public class ScriptRunner implements Plugin {
 
   @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+    if (Cooja.isVisualized()) {
+      editorTabs.removeAll(); // Remove the example tab opened by the constructor.
+    }
     boolean activate = false;
     for (Element element : configXML) {
       String name = element.getName();
       if ("script".equals(name)) {
-        updateScript(element.getText());
+        updateScript(element.getText(), null);
       } else if ("scriptfile".equals(name)) {
         if (!setLinkFile(gui.restorePortablePath(new File(element.getText().trim())))) {
           return false;
@@ -431,5 +495,15 @@ public class ScriptRunner implements Plugin {
     });
     var choice = open ? chooser.showOpenDialog(frame) : chooser.showSaveDialog(frame);
     return choice == JFileChooser.APPROVE_OPTION ? chooser.getSelectedFile() : null;
+  }
+
+  @Override
+  public String getQuickHelp() {
+    return """
+            <b>Script Editor</b>
+            <p>Perform logging and computation based on simulation events.
+            <p>The tabs represent a single program, with the leftmost tab containing line 1 of the program,
+            and the rightmost tab containing the last line of the program.
+            """;
   }
 }
