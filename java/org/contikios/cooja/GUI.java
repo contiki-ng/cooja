@@ -50,6 +50,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -83,6 +84,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
@@ -201,7 +203,7 @@ public class GUI {
                       "To manage Cooja extensions:\n" +
                       "Menu->Settings->Cooja extensions",
               "Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
-      Cooja.showErrorDialog("Cooja extensions load error", e, false);
+      showErrorDialog("Cooja extensions load error", e, false);
     }
 
     // Start all standard GUI plugins
@@ -1323,7 +1325,7 @@ public class GUI {
       @Override
       protected void process(List<Cooja.SimulationCreationException> exs) {
         for (var e : exs) {
-          var retry = Cooja.showErrorDialog("Simulation load error", e, true);
+          var retry = showErrorDialog("Simulation load error", e, true);
           try {
             channel.put(retry ? 1 : 0);
           } catch (InterruptedException ex) {
@@ -1510,6 +1512,93 @@ public class GUI {
     return fc;
   }
 
+  public static boolean showErrorDialog(final String title, final Throwable e, final boolean retry) {
+    return new Cooja.RunnableInEDT<Boolean>() {
+      @Override
+      public Boolean work() {
+        JTabbedPane tabbedPane = new JTabbedPane();
+        var buttonBox = Box.createHorizontalBox();
+        // Contiki error.
+        if (e instanceof ContikiError ex) {
+          MessageListUI list = new MessageListUI();
+          list.addMessage(e.getMessage());
+          list.addMessage("");
+          list.addMessage("");
+          for (String l: ex.getContikiError().split("\n")) {
+            list.addMessage(l);
+          }
+          list.addPopupMenuItem(null, true);
+          tabbedPane.addTab("Contiki error", new JScrollPane(list));
+        }
+        if (e != null) {
+          // Compilation output.
+          MessageListUI compilationOutput = null;
+          if (e instanceof MoteType.MoteTypeCreationException ex && ex.hasCompilationOutput()) {
+            compilationOutput = (MessageListUI) ex.getCompilationOutput();
+          } else if (e.getCause() instanceof MoteType.MoteTypeCreationException ex && ex.hasCompilationOutput()) {
+            compilationOutput = (MessageListUI) ex.getCompilationOutput();
+          }
+          if (compilationOutput != null) {
+            compilationOutput.addPopupMenuItem(null, true);
+            tabbedPane.addTab("Compilation output", new JScrollPane(compilationOutput));
+          }
+
+          // Stack trace.
+          MessageListUI stackTrace = new MessageListUI();
+          PrintStream printStream = stackTrace.getInputStream(MessageListUI.NORMAL);
+          e.printStackTrace(printStream);
+          stackTrace.addPopupMenuItem(null, true);
+          tabbedPane.addTab("Java stack trace", new JScrollPane(stackTrace));
+
+          // Exception message.
+          buttonBox.add(Box.createHorizontalStrut(10));
+          buttonBox.add(new JLabel(e.getMessage()));
+          buttonBox.add(Box.createHorizontalStrut(10));
+        }
+
+        buttonBox.add(Box.createHorizontalGlue());
+        final var dialog = new JDialog(frame, title, true);
+        if (retry) {
+          var retryAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              dialog.setTitle("-RETRY-");
+              dialog.dispose();
+            }
+          };
+          JButton retryButton = new JButton(retryAction);
+          retryButton.setText("Retry Ctrl+R");
+          buttonBox.add(retryButton);
+
+          var inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+          inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK, false), "retry");
+          dialog.getRootPane().getActionMap().put("retry", retryAction);
+        }
+
+        var closeAction = new AbstractAction() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            dialog.dispose();
+          }
+        };
+        JButton closeButton = new JButton(closeAction);
+        closeButton.setText("Close");
+        buttonBox.add(closeButton);
+
+        var inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "close");
+        dialog.getRootPane().getActionMap().put("close", closeAction);
+        dialog.getRootPane().setDefaultButton(closeButton);
+        dialog.getContentPane().add(BorderLayout.CENTER, tabbedPane);
+        dialog.getContentPane().add(BorderLayout.SOUTH, buttonBox);
+        dialog.setSize(700, 500);
+        dialog.setLocationRelativeTo(frame);
+        dialog.setVisible(true); // BLOCKS.
+        return dialog.getTitle().equals("-RETRY-");
+      }
+    }.invokeAndWait();
+  }
+
   private static boolean warnMemory() {
     long max = Runtime.getRuntime().maxMemory();
     long used = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
@@ -1584,7 +1673,7 @@ public class GUI {
             cooja.getSimulation().addMoteType(newMoteType);
           } catch (Exception e1) {
             logger.fatal("Exception when creating mote type", e1);
-            Cooja.showErrorDialog("Mote type creation error", e1, false);
+            showErrorDialog("Mote type creation error", e1, false);
             newMoteType = null;
           }
         }
@@ -1607,7 +1696,7 @@ public class GUI {
                               "To manage Cooja extensions:\n" +
                               "Menu->Settings->Cooja extensions",
                       "Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
-              Cooja.showErrorDialog("Cooja extensions load error", ex, false);
+              showErrorDialog("Cooja extensions load error", ex, false);
             }
           }
         }
