@@ -50,7 +50,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -1544,8 +1543,7 @@ public class GUI {
         if (e != null) {
           // Stack trace.
           MessageListUI stackTrace = new MessageListUI();
-          PrintStream printStream = stackTrace.getInputStream(MessageListUI.NORMAL);
-          e.printStackTrace(printStream);
+          e.printStackTrace(stackTrace.getInputStream(MessageListUI.NORMAL));
           stackTrace.addPopupMenuItem(null, true);
           tabbedPane.addTab("Java stack trace", new JScrollPane(stackTrace));
 
