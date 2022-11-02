@@ -37,8 +37,6 @@ import java.io.IOException;
 public class CoffeeMicroLog extends CoffeeFile {
 	private final int logRecords;
 	private int logRecordSize;
-	private final int indexStart;
-	private final int indexSize;
 	private final int recordStart;
 	private final int[] index;
 
@@ -56,10 +54,9 @@ public class CoffeeMicroLog extends CoffeeFile {
 			logRecords = header.logRecords;
 		}
 
-		indexStart = header.getPage() * conf.pageSize +
-			     header.rawLength();
+		int indexStart = header.getPage() * conf.pageSize + header.rawLength();
 		/* An index entry uses two bytes. */
-		indexSize = logRecords * 2;
+		int indexSize = logRecords * 2;
 		recordStart = indexStart + indexSize;
 
 		index = new int[logRecords];
