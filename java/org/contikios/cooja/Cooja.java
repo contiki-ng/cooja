@@ -180,6 +180,8 @@ public class Cooja extends Observable {
 
   private static GUI gui = null;
 
+  /** The Cooja startup configuration. */
+  private final Config configuration;
   private Simulation mySimulation;
 
   private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
@@ -210,17 +212,16 @@ public class Cooja extends Observable {
   /**
    * Creates a new Cooja Simulator GUI and ensures Swing initialization is done in the right thread.
    *
-   * @param logDirectory Directory for log files
-   * @param vis          True if running in visual mode
+   * @param cfg Cooja configuration
    */
-  public static Cooja makeCooja(final String logDirectory, final boolean vis) throws ParseProjectsException {
-    if (vis) {
+  public static Cooja makeCooja(Config cfg) throws ParseProjectsException {
+    if (cfg.noGui == null) {
       assert !java.awt.EventQueue.isDispatchThread() : "Call from regular context";
       return new RunnableInEDT<Cooja>() {
         @Override
         public Cooja work() {
           try {
-            return new Cooja(logDirectory, vis);
+            return new Cooja(cfg);
           } catch (ParseProjectsException e) {
             throw new RuntimeException("Could not parse projects", e);
           }
@@ -228,17 +229,17 @@ public class Cooja extends Observable {
       }.invokeAndWait();
     }
 
-    return new Cooja(logDirectory, vis);
+    return new Cooja(cfg);
   }
 
   /**
    * Internal constructor for Cooja.
    *
-   * @param logDirectory Directory for log files
-   * @param vis          True if running in visual mode
+   * @param cfg Cooja configuration
    */
-  private Cooja(String logDirectory, boolean vis) throws ParseProjectsException {
-    this.logDirectory = logDirectory;
+  private Cooja(Config cfg) throws ParseProjectsException {
+    logDirectory = cfg.logDir;
+    configuration = cfg;
     mySimulation = null;
     // Load default and overwrite with user settings (if any).
     loadExternalToolsDefaultSettings();
@@ -278,7 +279,7 @@ public class Cooja extends Observable {
       }
     }
 
-    if (vis) {
+    if (cfg.noGui == null) {
       gui = new GUI(this);
     } else {
       parseProjectConfig();
@@ -1392,7 +1393,7 @@ public class Cooja extends Observable {
 
     Cooja gui = null;
     try {
-      gui = makeCooja(config.logDir, vis);
+      gui = makeCooja(config);
     } catch (Exception e) {
       logger.error(e.getMessage());
       System.exit(1);
