@@ -149,11 +149,6 @@ public class Cooja extends Observable {
   public static Properties defaultExternalToolsSettings;
   public static Properties currentExternalToolsSettings;
 
-  /**
-   * The name of the directory to output logs to.
-   */
-  public final String logDirectory;
-
   private static final String[] externalToolsSettingNames = new String[] {
     "PATH_COOJA",
     "PATH_CONTIKI", "PATH_APPS",
@@ -181,7 +176,7 @@ public class Cooja extends Observable {
   private static GUI gui = null;
 
   /** The Cooja startup configuration. */
-  private final Config configuration;
+  final Config configuration;
   private Simulation mySimulation;
 
   private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
@@ -238,7 +233,6 @@ public class Cooja extends Observable {
    * @param cfg Cooja configuration
    */
   private Cooja(Config cfg) throws ParseProjectsException {
-    logDirectory = cfg.logDir;
     configuration = cfg;
     mySimulation = null;
     // Load default and overwrite with user settings (if any).
@@ -1548,7 +1542,7 @@ public class Cooja extends Observable {
     var cfgSeed = root.getChild("simulation").getChild("randomseed").getText();
     long seed = manualRandomSeed != null ? manualRandomSeed
             : "generated".equals(cfgSeed) ? new Random().nextLong() : Long.parseLong(cfgSeed);
-    var newSim = new Simulation(this, seed);
+    var newSim = new Simulation(this, configuration.logDir, seed);
     try {
       if (!newSim.setConfigXML(root.getChild("simulation"), quick)) {
         logger.info("Simulation not loaded");

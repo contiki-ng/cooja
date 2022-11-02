@@ -404,7 +404,7 @@ public class GUI {
           return;
         }
 
-        var sim = new Simulation(cooja, 123456);
+        var sim = new Simulation(cooja, cooja.configuration.logDir(), 123456);
         boolean ok;
         try {
           ok = sim.setSimConfig(CreateSimDialog.showDialog(cooja, sim.getSimConfig()));

@@ -61,6 +61,9 @@ public class Simulation extends Observable {
   public static final long MICROSECOND = 1L;
   public static final long MILLISECOND = 1000*MICROSECOND;
 
+  /** The name of the directory to output logs to. */
+  private final String logDir;
+
   /** Lock used to wait for simulation state changes */
   private final Object stateLock = new Object();
 
@@ -152,8 +155,9 @@ public class Simulation extends Observable {
   /**
    * Creates a new simulation
    */
-  public Simulation(Cooja cooja, long seed) {
+  public Simulation(Cooja cooja, String logDir, long seed) {
     this.cooja = cooja;
+    this.logDir = logDir;
     randomGenerator = new SafeRandom(this);
     randomSeed = seed;
     simulationThread = new Thread(() -> {
@@ -328,7 +332,7 @@ public class Simulation extends Observable {
   /** Create a new script engine that logs to the logTextArea and add it to the list
    *  of active script engines. */
   public LogScriptEngine newScriptEngine(JTextArea logTextArea) {
-    var engine = new LogScriptEngine(this, scriptEngines.size(), logTextArea);
+    var engine = new LogScriptEngine(this, logDir, scriptEngines.size(), logTextArea);
     scriptEngines.add(engine);
     return engine;
   }
