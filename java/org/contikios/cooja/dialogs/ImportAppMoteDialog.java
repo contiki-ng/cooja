@@ -158,13 +158,9 @@ public class ImportAppMoteDialog extends JDialog {
     });
     topPanel.add(createPanel("Application Mote Java Class:", classField, browseButton));
 
-    ActionListener cancelAction = new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        setVisible(false);
-        dispose();
-      }
+    ActionListener cancelAction = e -> {
+      setVisible(false);
+      dispose();
     };
     cancelButton = new JButton("Cancel");
     cancelButton.addActionListener(cancelAction);

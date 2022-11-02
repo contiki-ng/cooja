@@ -239,16 +239,13 @@ public class BreakpointsUI extends JPanel {
       return;
     }
     /* Locate breakpoints table index */
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        Watchpoint[] watchpoints = mote.getBreakpoints();
-        for (int i=0; i < watchpoints.length; i++) {
-          if (breakpoint == watchpoints[i]) {
-            /* Select */
-            table.setRowSelectionInterval(i, i);
-            return;
-          }
+    SwingUtilities.invokeLater(() -> {
+      Watchpoint[] watchpoints = mote.getBreakpoints();
+      for (int i=0; i < watchpoints.length; i++) {
+        if (breakpoint == watchpoints[i]) {
+          /* Select */
+          table.setRowSelectionInterval(i, i);
+          return;
         }
       }
     });

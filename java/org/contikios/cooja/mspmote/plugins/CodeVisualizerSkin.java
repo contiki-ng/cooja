@@ -64,21 +64,13 @@ public class CodeVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private final Timer repaintTimer = new Timer(100, new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      if (simulation.isRunning()) {
-        visualizer.repaint();
-      }
+  private final Timer repaintTimer = new Timer(100, e -> {
+    if (simulation.isRunning()) {
+      visualizer.repaint();
     }
   });
 
-  private final Observer simulationObserver = new Observer() {
-    @Override
-    public void update(Observable obs, Object obj) {
-      visualizer.repaint();
-    }
-  };
+  private final Observer simulationObserver = (obs, obj) -> visualizer.repaint();
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {

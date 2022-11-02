@@ -384,28 +384,22 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     });
     hideDebugCheckbox = new JCheckBoxMenuItem("Hide \"DEBUG: \" messages");
     showMenu.add(hideDebugCheckbox);
-    hideDebugCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        hideDebug = hideDebugCheckbox.isSelected();
-        setFilter(getFilter());
-        repaint();
-      }
+    hideDebugCheckbox.addActionListener(e -> {
+      hideDebug = hideDebugCheckbox.isSelected();
+      setFilter(getFilter());
+      repaint();
     });
     inverseFilterCheckbox = new JCheckBoxMenuItem("Inverse filter");
     showMenu.add(inverseFilterCheckbox);
-    inverseFilterCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        inverseFilter = inverseFilterCheckbox.isSelected();
-        if (inverseFilter) {
-          filterLabel.setText("Exclude:");
-        } else {
-          filterLabel.setText("Filter:");
-        }
-        setFilter(getFilter());
-        repaint();
+    inverseFilterCheckbox.addActionListener(e -> {
+      inverseFilter = inverseFilterCheckbox.isSelected();
+      if (inverseFilter) {
+        filterLabel.setText("Exclude:");
+      } else {
+        filterLabel.setText("Filter:");
       }
+      setFilter(getFilter());
+      repaint();
     });
 
 
@@ -568,13 +562,9 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         LogData data = new LogData(historyEv);
         logs.add(data);
       }
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          model.fireTableDataChanged();
-          logTable.scrollRectToVisible(
-              new Rectangle(0, logTable.getHeight() - 2, 1, logTable.getHeight()));
-        }
+      java.awt.EventQueue.invokeLater(() -> {
+        model.fireTableDataChanged();
+        logTable.scrollRectToVisible(new Rectangle(0, logTable.getHeight() - 2, 1, logTable.getHeight()));
       });
     }
 

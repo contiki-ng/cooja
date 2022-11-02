@@ -97,16 +97,13 @@ public class BufferSettings extends JDialog {
     box.add(value);
     main.add(box);
     value.setValue(central.getLogOutputBufferSize());
-    value.addPropertyChangeListener("value", new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent evt) {
-        int newVal = ((Number)evt.getNewValue()).intValue();
-        if (newVal < 1) {
-          newVal = 1;
-          ((JFormattedTextField)evt.getSource()).setValue(newVal);
-        }
-        central.setLogOutputBufferSize(newVal);
+    value.addPropertyChangeListener("value", evt -> {
+      int newVal = ((Number)evt.getNewValue()).intValue();
+      if (newVal < 1) {
+        newVal = 1;
+        ((JFormattedTextField)evt.getSource()).setValue(newVal);
       }
+      central.setLogOutputBufferSize(newVal);
     });
 
     main.add(Box.createVerticalStrut(10));

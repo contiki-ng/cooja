@@ -257,13 +257,10 @@ public class EventListener extends VisPlugin {
 
     mySimulation.stopSimulation();
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        messageLabel.setText(message);
-        actionButton.setAction(action);
-        actionButton.setVisible(action != null);
-      }
+    SwingUtilities.invokeLater(() -> {
+      messageLabel.setText(message);
+      actionButton.setAction(action);
+      actionButton.setVisible(action != null);
     });
   }
 

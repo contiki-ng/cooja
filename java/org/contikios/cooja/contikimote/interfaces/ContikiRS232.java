@@ -250,17 +250,11 @@ public class ContikiRS232 extends SerialUI implements PolledAfterActiveTicks {
     	return;
     }
 
-    mote.getSimulation().invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-    		if (pendingBytesEvent.isScheduled()) {
-    			return;
-    		}
-    		mote.getSimulation().scheduleEvent(
-    				pendingBytesEvent,
-    				mote.getSimulation().getSimulationTime()
-    				);
-    	}
+    mote.getSimulation().invokeSimulationThread(() -> {
+      if (pendingBytesEvent.isScheduled()) {
+        return;
+      }
+      mote.getSimulation().scheduleEvent(pendingBytesEvent, mote.getSimulation().getSimulationTime());
     });
   }
 

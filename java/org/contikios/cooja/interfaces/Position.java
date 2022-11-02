@@ -151,14 +151,9 @@ public class Position extends MoteInterface {
     panel.add(positionLabel);
 
     Observer observer;
-    this.addObserver(observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        positionLabel.setText("x=" + form.format(getXCoordinate()) + " "
-            + "y=" + form.format(getYCoordinate()) + " "
-            + "z=" + form.format(getZCoordinate()));
-      }
-    });
+    this.addObserver(observer = (obs, obj) -> positionLabel.setText("x=" + form.format(getXCoordinate()) + " "
+        + "y=" + form.format(getYCoordinate()) + " "
+        + "z=" + form.format(getZCoordinate())));
 
     // Saving observer reference for releaseInterfaceVisualizer
     panel.putClientProperty("intf_obs", observer);
