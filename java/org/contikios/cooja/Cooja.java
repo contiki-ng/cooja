@@ -30,12 +30,9 @@ package org.contikios.cooja;
 
 import static org.contikios.cooja.GUI.WINDOW_TITLE;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,7 +40,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -61,22 +57,11 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -829,7 +814,7 @@ public class Cooja extends Observable {
     return plugin;
   }
 
-  public List<Class<? extends Plugin>> getMenuMotePluginClasses() {
+  List<Class<? extends Plugin>> getMenuMotePluginClasses() {
     return menuMotePluginClasses;
   }
 
@@ -1858,101 +1843,7 @@ public class Cooja extends Observable {
    * @return Retry failed operation
    */
   public static boolean showErrorDialog(final String title, final Throwable exception, final boolean retryAvailable) {
-    return new RunnableInEDT<Boolean>() {
-      @Override
-      public Boolean work() {
-        JTabbedPane tabbedPane = new JTabbedPane();
-        Box buttonBox = Box.createHorizontalBox();
-        if (exception != null) {
-          /* Contiki error */
-          if (exception instanceof ContikiError) {
-            String contikiError = ((ContikiError) exception).getContikiError();
-            MessageListUI list = new MessageListUI();
-            list.addMessage(exception.getMessage());
-            list.addMessage("");
-            list.addMessage("");
-            for (String l: contikiError.split("\n")) {
-              list.addMessage(l);
-            }
-            list.addPopupMenuItem(null, true);
-            tabbedPane.addTab("Contiki error", new JScrollPane(list));
-          }
-
-          /* Compilation output */
-          MessageListUI compilationOutput = null;
-          if (exception instanceof MoteTypeCreationException
-              && ((MoteTypeCreationException) exception).hasCompilationOutput()) {
-            compilationOutput = (MessageListUI) ((MoteTypeCreationException) exception).getCompilationOutput();
-          } else if (exception.getCause() != null
-              && exception.getCause() instanceof MoteTypeCreationException
-              && ((MoteTypeCreationException) exception.getCause()).hasCompilationOutput()) {
-            compilationOutput = (MessageListUI) ((MoteTypeCreationException) exception.getCause()).getCompilationOutput();
-          }
-          if (compilationOutput != null) {
-            compilationOutput.addPopupMenuItem(null, true);
-            tabbedPane.addTab("Compilation output", new JScrollPane(compilationOutput));
-          }
-
-          /* Stack trace */
-          MessageListUI stackTrace = new MessageListUI();
-          PrintStream printStream = stackTrace.getInputStream(MessageListUI.NORMAL);
-          exception.printStackTrace(printStream);
-          stackTrace.addPopupMenuItem(null, true);
-          tabbedPane.addTab("Java stack trace", new JScrollPane(stackTrace));
-
-          /* Exception message */
-          buttonBox.add(Box.createHorizontalStrut(10));
-          buttonBox.add(new JLabel(exception.getMessage()));
-          buttonBox.add(Box.createHorizontalStrut(10));
-        }
-
-        buttonBox.add(Box.createHorizontalGlue());
-        final var errorDialog = new JDialog(Cooja.getTopParentContainer(), title, true);
-        if (retryAvailable) {
-          Action retryAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              errorDialog.setTitle("-RETRY-");
-              errorDialog.dispose();
-            }
-          };
-          JButton retryButton = new JButton(retryAction);
-          retryButton.setText("Retry Ctrl+R");
-          buttonBox.add(retryButton);
-
-          InputMap inputMap = errorDialog.getRootPane().getInputMap(
-              JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-          inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK, false), "retry");
-          errorDialog.getRootPane().getActionMap().put("retry", retryAction);
-        }
-
-        AbstractAction closeAction = new AbstractAction(){
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            errorDialog.dispose();
-          }
-        };
-
-        JButton closeButton = new JButton(closeAction);
-        closeButton.setText("Close");
-        buttonBox.add(closeButton);
-
-        InputMap inputMap = errorDialog.getRootPane().getInputMap(
-            JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "close");
-        errorDialog.getRootPane().getActionMap().put("close", closeAction);
-
-
-        errorDialog.getRootPane().setDefaultButton(closeButton);
-        errorDialog.getContentPane().add(BorderLayout.CENTER, tabbedPane);
-        errorDialog.getContentPane().add(BorderLayout.SOUTH, buttonBox);
-        errorDialog.setSize(700, 500);
-        errorDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
-        errorDialog.setVisible(true); /* BLOCKS */
-        return errorDialog.getTitle().equals("-RETRY-");
-      }
-    }.invokeAndWait();
-
+    return GUI.showErrorDialog(title, exception, retryAvailable);
   }
 
   /**
