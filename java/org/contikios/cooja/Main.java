@@ -37,6 +37,7 @@ import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.contikios.cooja.Cooja.Config;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
@@ -251,6 +252,10 @@ class Main {
       }
     }
 
+    var cfg = new Config(options.randomSeed, options.externalToolsConfig, options.updateSimulation,
+            options.logDir, options.contikiPath, options.coojaPath,
+            options.action == null ? null : options.action.quickstart,
+            options.action == null ? null : options.action.nogui);
     // Configure logger
     if (options.logConfigFile == null) {
       ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
@@ -290,10 +295,10 @@ class Main {
       //        but go immediately returns which causes the log file to be closed
       //        while the simulation is still running.
       Configurator.initialize(builder.build());
-      Cooja.go(options);
+      Cooja.go(cfg);
     } else {
       Configurator.initialize("ConfigFile", options.logConfigFile);
-      Cooja.go(options);
+      Cooja.go(cfg);
     }
   }
 }

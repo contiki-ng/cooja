@@ -1374,39 +1374,39 @@ public class Cooja extends Observable {
   /**
    * Load configurations and create a GUI.
    *
-   * @param options Parsed command line options
+   * @param config Cooja configuration
    */
-  public static void go(Main options) {
-    externalToolsUserSettingsFileReadOnly = options.externalToolsConfig != null;
-    if (options.externalToolsConfig == null) {
+  public static void go(Config config) {
+    externalToolsUserSettingsFileReadOnly = config.externalToolsConfig != null;
+    if (config.externalToolsConfig == null) {
       externalToolsUserSettingsFile = new File(System.getProperty("user.home"), ".cooja.user.properties");
     } else {
-      externalToolsUserSettingsFile = new File(options.externalToolsConfig);
+      externalToolsUserSettingsFile = new File(config.externalToolsConfig);
     }
 
-    specifiedContikiPath = options.contikiPath;
-    specifiedCoojaPath = options.coojaPath;
+    specifiedContikiPath = config.contikiPath;
+    specifiedCoojaPath = config.coojaPath;
 
     // Is Cooja started in GUI mode?
-    var vis = options.action == null || options.action.quickstart != null;
+    var vis = config.noGui == null;
 
     Cooja gui = null;
     try {
-      gui = makeCooja(options.logDir, vis);
+      gui = makeCooja(config.logDir, vis);
     } catch (Exception e) {
       logger.error(e.getMessage());
       System.exit(1);
     }
     // Check if simulator should be quick-started.
-    if (options.action != null) {
+    if (config.quickstart != null || config.noGui != null) {
       int rv = 0;
-      for (var cfg : vis ? new String[]{options.action.quickstart} : options.action.nogui) {
-        var config = new File(cfg);
+      for (var cfg : vis ? new String[]{config.quickstart} : config.noGui) {
+        var file = new File(cfg);
         Simulation sim = null;
         try {
           sim = vis
-                  ? Cooja.gui.doLoadConfig(config, options.updateSimulation, options.randomSeed)
-                  : gui.loadSimulationConfig(config, true, false, options.randomSeed);
+                  ? Cooja.gui.doLoadConfig(file, config.updateSim, config.randomSeed)
+                  : gui.loadSimulationConfig(file, true, false, config.randomSeed);
         } catch (Exception e) {
           logger.fatal("Exception when loading simulation: ", e);
         }
@@ -2238,4 +2238,9 @@ public class Cooja extends Observable {
       }
     }
   }
+
+  /** Structure to hold the Cooja startup configuration. */
+  public record Config(Long randomSeed, String externalToolsConfig, boolean updateSim,
+                       String logDir, String contikiPath, String coojaPath,
+                       String quickstart, String[] noGui) {}
 }
