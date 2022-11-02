@@ -540,7 +540,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         if (d == null) {
         	return;
         }
-        simulation.getCooja().signalMoteHighlight(d.ev.getMote());
+        Cooja.signalMoteHighlight(d.ev.getMote());
     	}
 		});
 

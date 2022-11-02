@@ -479,7 +479,7 @@ public class BufferListener extends VisPlugin {
         if (d == null) {
           return;
         }
-        simulation.getCooja().signalMoteHighlight(d.mote);
+        Cooja.signalMoteHighlight(d.mote);
       }
     });
 

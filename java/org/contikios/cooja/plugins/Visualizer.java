@@ -1482,7 +1482,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     }
     currentSkins.clear();
     if (moteHighligtObserver != null) {
-      gui.deleteMoteHighlightObserver(moteHighligtObserver);
+      Cooja.deleteMoteHighlightObserver(moteHighligtObserver);
     }
     if (moteRelationsObserver != null) {
       Cooja.deleteMoteRelationsObserver(moteRelationsObserver);
