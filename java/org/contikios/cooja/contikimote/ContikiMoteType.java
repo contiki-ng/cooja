@@ -272,7 +272,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     // Allocate core communicator class
     final var firmwareFile = getContikiFirmwareFile();
     logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + firmwareFile.getPath() + "'");
-    myCoreComm = CoreComm.createCoreComm(tmpDir, javaClassName, firmwareFile);
+    myCoreComm = CoreComm.createCoreComm(gui, tmpDir, javaClassName, firmwareFile);
 
     /* Parse addresses using map file
      * or output of command specified in external tools settings (e.g. nm -a )

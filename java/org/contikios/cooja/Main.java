@@ -89,6 +89,12 @@ class Main {
   String coojaPath;
 
   /**
+   * Option for specifying javac path.
+   */
+  @Option(names = "-javac", paramLabel = "FILE", description = "the javac binary", required = true)
+  String javac;
+
+  /**
    * Option for specifying external config file of tools.
    */
   @Option(names = "-external_tools_config", paramLabel = "FILE", description = "the filename for external config")
@@ -238,6 +244,11 @@ class Main {
       System.exit(1);
     }
 
+    if (!Files.exists(Path.of(options.javac))) {
+      System.err.println("Java compiler '" + options.javac + "' does not exist");
+      System.exit(1);
+    }
+
     if (options.logName != null && !options.logName.endsWith(".log")) {
       options.logName += ".log";
     }
@@ -253,7 +264,7 @@ class Main {
     }
 
     var cfg = new Config(options.randomSeed, options.externalToolsConfig, options.updateSimulation,
-            options.logDir, options.contikiPath, options.coojaPath,
+            options.logDir, options.contikiPath, options.coojaPath, options.javac,
             options.action == null ? null : options.action.quickstart,
             options.action == null ? null : options.action.nogui);
     // Configure logger
