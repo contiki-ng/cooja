@@ -1246,7 +1246,7 @@ public class GUI {
                                                                                          boolean rewriteCsc, Long manualRandomSeed) {
     assert java.awt.EventQueue.isDispatchThread() : "Call from AWT thread";
     final var autoStart = configFile == null && cooja.getSimulation().isRunning();
-    if (configFile != null && !cooja.doRemoveSimulation(true)) {
+    if (configFile != null && !cooja.doRemoveSimulation(!cooja.configuration.updateSim())) {
       return null;
     }
 
