@@ -405,17 +405,20 @@ public class AddMoteDialog extends JDialog {
             positionerClass = positioner;
           }
         }
-
-        // FIXME: inline generateInterface().
+        if (positionerClass == null) {
+          return;
+        }
         int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
-        var positioner = Positioner.generateInterface(positionerClass,
-                motesToAdd,
-                ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
-                ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
-                ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
-
-        if (positioner == null) {
-          logger.fatal("Could not create positioner");
+        Positioner positioner;
+        try {
+          var constr = positionerClass.getConstructor(int.class, double.class, double.class,
+                  double.class, double.class, double.class, double.class);
+          positioner = constr.newInstance(motesToAdd,
+                  ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
+                  ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
+                  ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
+        } catch (Exception e1) {
+          logger.fatal("Exception when creating " + positionerClass + ": ", e1);
           return;
         }
 
