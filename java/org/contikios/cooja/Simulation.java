@@ -685,11 +685,7 @@ public class Simulation extends Observable {
             logger.fatal("Mote was not created: " + element.getText().trim());
             throw new Exception("All motes were not recreated");
           }
-          if (getMoteWithID(mote.getID()) != null) {
-            logger.warn("Ignoring duplicate mote ID: " + mote.getID());
-          } else {
-            addMote(mote);
-          }
+          addMote(mote);
           break;
         }
       }
