@@ -147,7 +147,6 @@ public class ScriptParser {
          throw new TestFailed();
        }
        if (SHUTDOWN) { throw new Shutdown(); }
-       msg = new java.lang.String(msg);
        node.setMoteMsg(mote, msg);
      };
 
