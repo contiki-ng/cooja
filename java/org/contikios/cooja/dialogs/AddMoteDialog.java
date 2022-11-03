@@ -381,8 +381,8 @@ public class AddMoteDialog extends JDialog {
     }
     @Override
     public void focusGained(final FocusEvent e) {
-      if (e.getSource() instanceof JFormattedTextField) {
-        SwingUtilities.invokeLater(() -> ((JFormattedTextField) e.getSource()).selectAll());
+      if (e.getSource() instanceof JFormattedTextField src) {
+        SwingUtilities.invokeLater(src::selectAll);
       }
     }
     @Override
