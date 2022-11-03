@@ -149,11 +149,6 @@ public class Cooja extends Observable {
   public static Properties defaultExternalToolsSettings;
   public static Properties currentExternalToolsSettings;
 
-  /**
-   * The name of the directory to output logs to.
-   */
-  public final String logDirectory;
-
   private static final String[] externalToolsSettingNames = new String[] {
     "PATH_COOJA",
     "PATH_CONTIKI", "PATH_APPS",
@@ -180,6 +175,8 @@ public class Cooja extends Observable {
 
   private static GUI gui = null;
 
+  /** The Cooja startup configuration. */
+  final Config configuration;
   private Simulation mySimulation;
 
   private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
@@ -210,17 +207,16 @@ public class Cooja extends Observable {
   /**
    * Creates a new Cooja Simulator GUI and ensures Swing initialization is done in the right thread.
    *
-   * @param logDirectory Directory for log files
-   * @param vis          True if running in visual mode
+   * @param cfg Cooja configuration
    */
-  public static Cooja makeCooja(final String logDirectory, final boolean vis) throws ParseProjectsException {
-    if (vis) {
+  public static Cooja makeCooja(Config cfg) throws ParseProjectsException {
+    if (cfg.noGui == null) {
       assert !java.awt.EventQueue.isDispatchThread() : "Call from regular context";
       return new RunnableInEDT<Cooja>() {
         @Override
         public Cooja work() {
           try {
-            return new Cooja(logDirectory, vis);
+            return new Cooja(cfg);
           } catch (ParseProjectsException e) {
             throw new RuntimeException("Could not parse projects", e);
           }
@@ -228,17 +224,16 @@ public class Cooja extends Observable {
       }.invokeAndWait();
     }
 
-    return new Cooja(logDirectory, vis);
+    return new Cooja(cfg);
   }
 
   /**
    * Internal constructor for Cooja.
    *
-   * @param logDirectory Directory for log files
-   * @param vis          True if running in visual mode
+   * @param cfg Cooja configuration
    */
-  private Cooja(String logDirectory, boolean vis) throws ParseProjectsException {
-    this.logDirectory = logDirectory;
+  private Cooja(Config cfg) throws ParseProjectsException {
+    configuration = cfg;
     mySimulation = null;
     // Load default and overwrite with user settings (if any).
     loadExternalToolsDefaultSettings();
@@ -275,7 +270,7 @@ public class Cooja extends Observable {
       }
     }
 
-    if (vis) {
+    if (cfg.noGui == null) {
       gui = new GUI(this);
     } else {
       parseProjectConfig();
@@ -1373,39 +1368,39 @@ public class Cooja extends Observable {
   /**
    * Load configurations and create a GUI.
    *
-   * @param options Parsed command line options
+   * @param config Cooja configuration
    */
-  public static void go(Main options) {
-    externalToolsUserSettingsFileReadOnly = options.externalToolsConfig != null;
-    if (options.externalToolsConfig == null) {
+  public static void go(Config config) {
+    externalToolsUserSettingsFileReadOnly = config.externalToolsConfig != null;
+    if (config.externalToolsConfig == null) {
       externalToolsUserSettingsFile = new File(System.getProperty("user.home"), ".cooja.user.properties");
     } else {
-      externalToolsUserSettingsFile = new File(options.externalToolsConfig);
+      externalToolsUserSettingsFile = new File(config.externalToolsConfig);
     }
 
-    specifiedContikiPath = options.contikiPath;
-    specifiedCoojaPath = options.coojaPath;
+    specifiedContikiPath = config.contikiPath;
+    specifiedCoojaPath = config.coojaPath;
 
     // Is Cooja started in GUI mode?
-    var vis = options.action == null || options.action.quickstart != null;
+    var vis = config.noGui == null;
 
     Cooja gui = null;
     try {
-      gui = makeCooja(options.logDir, vis);
+      gui = makeCooja(config);
     } catch (Exception e) {
       logger.error(e.getMessage());
       System.exit(1);
     }
     // Check if simulator should be quick-started.
-    if (options.action != null) {
+    if (config.quickstart != null || config.noGui != null) {
       int rv = 0;
-      for (var cfg : vis ? new String[]{options.action.quickstart} : options.action.nogui) {
-        var config = new File(cfg);
+      for (var cfg : vis ? new String[]{config.quickstart} : config.noGui) {
+        var file = new File(cfg);
         Simulation sim = null;
         try {
           sim = vis
-                  ? Cooja.gui.doLoadConfig(config, options.updateSimulation, options.randomSeed)
-                  : gui.loadSimulationConfig(config, true, false, options.randomSeed);
+                  ? Cooja.gui.doLoadConfig(file, config.updateSim, config.randomSeed)
+                  : gui.loadSimulationConfig(file, true, false, config.randomSeed);
         } catch (Exception e) {
           logger.fatal("Exception when loading simulation: ", e);
         }
@@ -1546,7 +1541,7 @@ public class Cooja extends Observable {
     var cfgSeed = root.getChild("simulation").getChild("randomseed").getText();
     long seed = manualRandomSeed != null ? manualRandomSeed
             : "generated".equals(cfgSeed) ? new Random().nextLong() : Long.parseLong(cfgSeed);
-    var newSim = new Simulation(this, seed);
+    var newSim = new Simulation(this, configuration.logDir, seed);
     try {
       if (!newSim.setConfigXML(root.getChild("simulation"), quick)) {
         logger.info("Simulation not loaded");
@@ -2237,4 +2232,9 @@ public class Cooja extends Observable {
       }
     }
   }
+
+  /** Structure to hold the Cooja startup configuration. */
+  public record Config(Long randomSeed, String externalToolsConfig, boolean updateSim,
+                       String logDir, String contikiPath, String coojaPath,
+                       String quickstart, String[] noGui) {}
 }
