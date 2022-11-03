@@ -439,15 +439,7 @@ public class AddMoteDialog extends JDialog {
           Position newPosition = newMote.getInterfaces().getPosition();
           if (newPosition != null) {
             double[] next = positioner.getNextPosition();
-            if (next.length >= 3) {
-              newPosition.setCoordinates(next[0], next[1], next[2]);
-            } else if (next.length == 2) {
-              newPosition.setCoordinates(next[0], next[1], 0);
-            } else if (next.length == 1) {
-              newPosition.setCoordinates(next[0], 0, 0);
-            } else {
-              newPosition.setCoordinates(0, 0, 0);
-            }
+            newPosition.setCoordinates(next.length > 0 ? next[0] : 0, next.length > 1 ? next[1] : 0, next.length > 2 ? next[2] : 0);
           }
         }
 
