@@ -425,8 +425,7 @@ public class AddMoteDialog extends JDialog {
         // Create new motes
         while (newMotes.size() < motesToAdd) {
           try {
-            Mote newMote = moteType.generateMote(simulation);
-            newMotes.add(newMote);
+            newMotes.add(moteType.generateMote(simulation));
           } catch (MoteType.MoteTypeCreationException e2) {
             newMotes.clear();
             JOptionPane.showMessageDialog(AddMoteDialog.this,
