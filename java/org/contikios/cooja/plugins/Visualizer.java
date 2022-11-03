@@ -596,7 +596,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 
         try {
-          List<Object> transferList = Arrays.asList(
+          List<Object> transferList = List.of(
                   transferable.getTransferData(DataFlavor.javaFileListFlavor)
           );
           if (transferList.size() != 1) {
@@ -635,7 +635,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           return false;
         }
         try {
-          List<Object> transferList = Arrays.asList(
+          List<Object> transferList = List.of(
                   transferable.getTransferData(DataFlavor.javaFileListFlavor)
           );
           if (transferList.size() != 1) {
