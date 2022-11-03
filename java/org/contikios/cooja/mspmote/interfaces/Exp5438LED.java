@@ -45,7 +45,6 @@ import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.mspmote.Exp5438Mote;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
-import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.platform.ti.Exp5438Node;
 
 /**
