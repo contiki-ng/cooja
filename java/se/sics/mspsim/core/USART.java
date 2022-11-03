@@ -189,9 +189,6 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   }
 
   private void setBitIFG(int bits) {
-//    if ((bits & utxifg) > 0) {
-//        System.out.println(getName() + " Set utxifg");
-//    }
     if (dma != null) {
         sfr.setBitIFG(uartID, bits);
         /* set the bit first, then trigger DMA transfer - this should
@@ -202,9 +199,6 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   }
 
   private void clrBitIFG(int bits) {
-//      if ((bits & utxifg) > 0) {
-//          System.out.println(getName() + " Clear utxifg");
-//      }
     sfr.clrBitIFG(uartID, bits);
   }
 
@@ -309,8 +303,6 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   @Override
   public int read(int address, boolean word, long cycles) {
     address = address - offset;
-//     System.out.println(">>>>> Read from " + getName() + " at " +
-//                     address + " = " + memory[address]);
 
     switch (address) {
     case UCTL:
