@@ -61,7 +61,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
 
   private final MoteType moteType;
 
-  private SectionMoteMemory memory;
+  private final SectionMoteMemory memory;
 
   protected MoteInterfaceHandler moteInterfaces;
 
@@ -134,7 +134,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
   @Override
   public boolean setConfigXML(Simulation simulation,
       Collection<Element> configXML, boolean visAvailable) {
-    this.memory = new SectionMoteMemory(new HashMap<>());
     moteInterfaces.getRadio().addObserver(radioDataObserver);
 
     for (Element element : configXML) {
