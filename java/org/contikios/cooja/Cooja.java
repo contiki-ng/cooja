@@ -244,9 +244,6 @@ public class Cooja extends Observable {
     loadExternalToolsDefaultSettings();
     loadExternalToolsUserSettings();
 
-    // Shutdown hook to close running simulations.
-    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(this));
-
     // Register default extension directories.
     String defaultProjectDirs = getExternalToolsSetting("DEFAULT_PROJECTDIRS", null);
     if (defaultProjectDirs != null && defaultProjectDirs.length() > 0) {
@@ -283,6 +280,8 @@ public class Cooja extends Observable {
     } else {
       parseProjectConfig();
     }
+    // Shutdown hook to close running simulations.
+    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(this));
   }
 
 
