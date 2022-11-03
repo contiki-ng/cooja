@@ -89,8 +89,101 @@ public class SkyCoffeeFilesystem extends MoteInterface {
     this.mote = mote;
 
     /* Coffee configuration is already loaded statically */
+    filesTable = new JTable(new AbstractTableModel() {
+      @Override
+      public String getColumnName(int col) {
+        return COLUMN_NAMES[col];
+      }
+      @Override
+      public int getRowCount() {
+        return files.length;
+      }
+      @Override
+      public int getColumnCount() {
+        return COLUMN_NAMES.length;
+      }
+      @Override
+      public Object getValueAt(int row, int col) {
+        if (col == COLUMN_NAME) {
+          return files[row].getName();
+        }
+        if (col == COLUMN_SIZE) {
+          try {
+            return files[row].getLength() + " bytes";
+          } catch (IOException e) {
+            return "? bytes";
+          }
+        }
+        return Boolean.FALSE;
+      }
+      @Override
+      public boolean isCellEditable(int row, int col){
+        return getColumnClass(col) == Boolean.class;
+      }
+      @Override
+      public void setValueAt(Object value, final int row, int col) {
+        if (col == COLUMN_SAVE) {
+          JFileChooser fc = new JFileChooser();
+          if (fc.showSaveDialog(Cooja.getTopParentContainer()) != JFileChooser.APPROVE_OPTION) {
+            return;
+          }
 
-    filesTable = new JTable(tableModel);
+          final File saveFile = fc.getSelectedFile();
+          if (saveFile.exists()) {
+            String s1 = "Overwrite";
+            String s2 = "Cancel";
+            Object[] options = { s1, s2 };
+            int n = JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
+                    "A file with the same name already exists.\nDo you want to remove it?",
+                    "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null, options, s1);
+            if (n != JOptionPane.YES_OPTION) {
+              return;
+            }
+          }
+
+          if (saveFile.exists() && !saveFile.canWrite()) {
+            logger.fatal("No write access to file: " + saveFile);
+            return;
+          }
+
+          new Thread(() -> {
+            try {
+              logger.info("Saving to file: " + saveFile.getName());
+              boolean ok = coffeeFS.extractFile(files[row].getName(), saveFile);
+              if (!ok) {
+                logger.warn("Error when saving to file: " + saveFile.getName());
+              }
+            } catch (Exception e) {
+              logger.fatal("Coffee exception: " + e.getMessage(), e);
+            }
+            updateFS();
+          }, "coffeeFS.extractFile").start();
+          return;
+        }
+
+        if (col == COLUMN_REMOVE) {
+          int reply = JOptionPane.showConfirmDialog(Cooja.getTopParentContainer(),
+                  "Remove \"" + files[row].getName() + "\" from filesystem?");
+          if (reply != JOptionPane.YES_OPTION) {
+            return;
+          }
+          new Thread(() -> {
+            try {
+              logger.info("Removing file: " + files[row].getName());
+              coffeeFS.removeFile(files[row].getName());
+            } catch (Exception e) {
+              logger.fatal("Coffee exception: " + e.getMessage(), e);
+            }
+            updateFS();
+          }, "coffeeFS.removeFile").start();
+        }
+      }
+      @Override
+      public Class<?> getColumnClass(int c) {
+        return getValueAt(0, c).getClass();
+      }
+    });
     filesTable.setFillsViewportHeight(true);
     filesTable.setFont(new Font("Monospaced", Font.PLAIN, 12));
     TableColumnAdjuster adjuster = new TableColumnAdjuster(filesTable);
@@ -195,113 +288,6 @@ public class SkyCoffeeFilesystem extends MoteInterface {
   public void releaseInterfaceVisualizer(JPanel panel) {
   }
 
-  private final AbstractTableModel tableModel = new AbstractTableModel() {
-    @Override
-    public String getColumnName(int col) {
-      return COLUMN_NAMES[col];
-    }
-    @Override
-    public int getRowCount() {
-      return files.length;
-    }
-    @Override
-    public int getColumnCount() {
-      return COLUMN_NAMES.length;
-    }
-    @Override
-    public Object getValueAt(int row, int col) {
-      if (col == COLUMN_NAME) {
-        return files[row].getName();
-      }
-      if (col == COLUMN_SIZE) {
-        try {
-          return files[row].getLength() + " bytes";
-        } catch (IOException e) {
-          return "? bytes";
-        }
-      }
-      return Boolean.FALSE;
-    }
-    @Override
-    public boolean isCellEditable(int row, int col){
-      return getColumnClass(col) == Boolean.class;
-    }
-    @Override
-    public void setValueAt(Object value, final int row, int col) {
-      if (col == COLUMN_SAVE) {
-        JFileChooser fc = new JFileChooser();
-        int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
-        if (returnVal != JFileChooser.APPROVE_OPTION) {
-          return;
-        }
-
-        final File saveFile = fc.getSelectedFile();
-        if (saveFile.exists()) {
-          String s1 = "Overwrite";
-          String s2 = "Cancel";
-          Object[] options = { s1, s2 };
-          int n = JOptionPane.showOptionDialog(
-              Cooja.getTopParentContainer(),
-              "A file with the same name already exists.\nDo you want to remove it?",
-              "Overwrite existing file?", JOptionPane.YES_NO_OPTION,
-              JOptionPane.QUESTION_MESSAGE, null, options, s1);
-          if (n != JOptionPane.YES_OPTION) {
-            return;
-          }
-        }
-
-        if (saveFile.exists() && !saveFile.canWrite()) {
-          logger.fatal("No write access to file: " + saveFile);
-          return;
-        }
-
-        new Thread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              logger.info("Saving to file: " + saveFile.getName());
-              boolean ok = coffeeFS.extractFile(files[row].getName(), saveFile);
-              if (!ok) {
-                logger.warn("Error when saving to file: " + saveFile.getName());
-              }
-            } catch (Exception e) {
-              logger.fatal("Coffee exception: " + e.getMessage(), e);
-            }
-            updateFS();
-          }
-        }, "coffeeFS.extractFile").start();
-        return;
-      }
-      
-      if (col == COLUMN_REMOVE) {
-        int reply = JOptionPane.showConfirmDialog(
-            Cooja.getTopParentContainer(),
-            "Remove \"" + files[row].getName() + "\" from filesystem?");
-        if (reply != JOptionPane.YES_OPTION) {
-          return;
-        }
-
-        /* Remove file */
-        new Thread(new Runnable() {
-          @Override
-          public void run() {
-            try {
-              logger.info("Removing file: " + files[row].getName());
-              coffeeFS.removeFile(files[row].getName());
-            } catch (Exception e) {
-              logger.fatal("Coffee exception: " + e.getMessage(), e);
-            }
-            updateFS();
-          }
-        }, "coffeeFS.removeFile").start();
-      }
-    }
-    @Override
-    public Class<?> getColumnClass(int c) {
-      return getValueAt(0, c).getClass();
-    }
-  };
-  
   public boolean extractFile(String coffeeFile, String diskFilename) {
     try {
       updateFS();

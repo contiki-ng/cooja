@@ -102,19 +102,16 @@ public class ContikiBeeper extends Beeper implements PolledAfterActiveTicks {
     panel.add(statusLabel);
 
     Observer observer;
-    this.addObserver(observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        if (!isBeeping()) {
-          return;
-        }
-
-        long currentTime = mote.getSimulation().getSimulationTime();
-        statusLabel.setText("Last beep at time: " + currentTime);
-
-        /* Beep on speakers */
-        Toolkit.getDefaultToolkit().beep();
+    this.addObserver(observer = (obs, obj) -> {
+      if (!isBeeping()) {
+        return;
       }
+
+      long currentTime = mote.getSimulation().getSimulationTime();
+      statusLabel.setText("Last beep at time: " + currentTime);
+
+      /* Beep on speakers */
+      Toolkit.getDefaultToolkit().beep();
     });
 
     // Saving observer reference for releaseInterfaceVisualizer

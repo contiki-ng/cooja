@@ -82,12 +82,9 @@ public class MoteAttributes extends MoteInterface {
 
   private final HashMap<String, Object> attributes = new HashMap<>();
 
-  private Observer logObserver = new Observer() {
-    @Override
-    public void update(Observable o, Object arg) {
-      String msg = ((Log) o).getLastLogMessage();
-      handleNewLog(msg);
-    }
+  private Observer logObserver = (o, arg) -> {
+    String msg = ((Log) o).getLastLogMessage();
+    handleNewLog(msg);
   };
 
   public MoteAttributes(Mote mote) {

@@ -104,15 +104,6 @@ public class DwarfReader implements ELFDebug {
 
     final ArrayList<LineData> lineInfo = new ArrayList<>();
 
-    /* some state for the line number handling */
-    private int lineAddress;
-    private int lineFile;
-    private int lineLine;
-    private int lineColumn;
-    private boolean isBasicBlock = false;
-    private boolean isStatement = false;
-    private boolean endSequence = false;
-
     private final ArrayList<Arange> aranges = new ArrayList<>();
 
     public DwarfReader(ELF elfFile) {
@@ -222,13 +213,13 @@ public class DwarfReader implements ELFDebug {
 
             while (sec.getPosition() < endPos) {
                 /* reset the "state" of the state machine (6.2.2 spec) */
-                lineAddress = 0;
-                lineFile = 1;
-                lineLine = 1;
-                lineColumn = 0;
-                endSequence = false;
-                isStatement = defaultIsStmt != 0;
-                isBasicBlock = false;
+                int lineAddress = 0;
+                int lineFile = 1;
+                int lineLine = 1;
+                int lineColumn = 0;
+                boolean endSequence = false;
+                boolean isStatement = defaultIsStmt != 0;
+                boolean isBasicBlock = false;
 
                 lineData.clear();
 

@@ -97,8 +97,6 @@ public class SerialSocketServer implements Plugin, MotePlugin {
   private static final Color COLOR_NEUTRAL = Color.DARK_GRAY;
   private static final Color COLOR_POSITIVE = new Color(0, 161, 83);
   private static final Color COLOR_NEGATIVE = Color.RED;
-  
-  private final int SERVER_DEFAULT_PORT;
 
   private final SerialPort serialPort;
   private Observer serialDataObserver;
@@ -125,7 +123,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
     this.mote = mote;
     this.simulation = simulation;
 
-    SERVER_DEFAULT_PORT = 60000 + mote.getID();
+    int SERVER_DEFAULT_PORT = 60000 + mote.getID();
 
     serialPort = (SerialPort) mote.getInterfaces().getLog();
     if (serialPort == null) {

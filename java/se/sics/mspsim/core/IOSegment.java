@@ -7,11 +7,9 @@ public class IOSegment implements Memory {
 
     private final MSP430Core core;
     private final IOUnit[] mem;
-    private final IOUnit voidIO;
 
     IOSegment(MSP430Core core, int maxMemIO, IOUnit voidIO) {
         this.core = core;
-        this.voidIO = voidIO;
         this.mem = new IOUnit[maxMemIO];
         Arrays.fill(mem, voidIO);
     }

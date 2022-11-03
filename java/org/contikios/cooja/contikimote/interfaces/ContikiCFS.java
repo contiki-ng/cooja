@@ -161,29 +161,23 @@ public class ContikiCFS extends MoteInterface implements PolledAfterActiveTicks 
     panel.add(lastWrittenLabel);
     panel.add(uploadButton);
 
-    uploadButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        byte[] fileData = readDialogFileBytes(null);
+    uploadButton.addActionListener(e -> {
+      byte[] fileData = readDialogFileBytes(null);
 
-        // Write file data to CFS
-        if (fileData != null) {
-          if (setFilesystemData(fileData)) {
-            logger.info("Done! (" + fileData.length + " bytes written to CFS)");
-          }
+      // Write file data to CFS
+      if (fileData != null) {
+        if (setFilesystemData(fileData)) {
+          logger.info("Done! (" + fileData.length + " bytes written to CFS)");
         }
       }
     });
 
     Observer observer;
-    this.addObserver(observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        long currentTime = mote.getSimulation().getSimulationTime();
-        lastTimeLabel.setText("Last change at time: " + currentTime);
-        lastReadLabel.setText("Last change read bytes: " + getLastReadCount());
-        lastWrittenLabel.setText("Last change wrote bytes: " + getLastWrittenCount());
-      }
+    this.addObserver(observer = (obs, obj) -> {
+      long currentTime = mote.getSimulation().getSimulationTime();
+      lastTimeLabel.setText("Last change at time: " + currentTime);
+      lastReadLabel.setText("Last change read bytes: " + getLastReadCount());
+      lastWrittenLabel.setText("Last change wrote bytes: " + getLastWrittenCount());
     });
 
     // Saving observer reference for releaseInterfaceVisualizer

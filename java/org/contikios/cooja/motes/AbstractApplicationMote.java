@@ -66,18 +66,15 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
   protected MoteInterfaceHandler moteInterfaces;
 
   /* Observe our own radio for incoming radio packets */
-  private final Observer radioDataObserver = new Observer() {
-    @Override
-    public void update(Observable obs, Object obj) {
-      ApplicationRadio radio = (ApplicationRadio) obs;
-      if (radio.getLastEvent() == Radio.RadioEvent.RECEPTION_FINISHED) {
-        /* only send in packets when they exist */
-        if (radio.getLastPacketReceived() != null)
-            receivedPacket(radio.getLastPacketReceived());
-      } else if (radio.getLastEvent() == Radio.RadioEvent.TRANSMISSION_FINISHED) {
-        if (radio.getLastPacketTransmitted() != null)
-            sentPacket(radio.getLastPacketTransmitted());
-      }
+  private final Observer radioDataObserver = (obs, obj) -> {
+    ApplicationRadio radio = (ApplicationRadio) obs;
+    if (radio.getLastEvent() == Radio.RadioEvent.RECEPTION_FINISHED) {
+      /* only send in packets when they exist */
+      if (radio.getLastPacketReceived() != null)
+          receivedPacket(radio.getLastPacketReceived());
+    } else if (radio.getLastEvent() == Radio.RadioEvent.TRANSMISSION_FINISHED) {
+      if (radio.getLastPacketTransmitted() != null)
+          sentPacket(radio.getLastPacketTransmitted());
     }
   };
 
