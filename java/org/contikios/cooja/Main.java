@@ -114,7 +114,7 @@ class Main {
      * Option for specifying file to start the simulation with.
      */
     @Option(names = "-quickstart", paramLabel = "FILE", description = "start simulation with file")
-    String quickstart;
+    String[] quickstart;
 
     /**
      * Option for specifying file to start the simulation with.
@@ -182,7 +182,7 @@ class Main {
 
     // Verify soundness of -nogui/-quickstart argument.
     if (options.action != null) {
-      for (var file : options.action.nogui == null ? new String[] {options.action.quickstart} : options.action.nogui) {
+      for (var file : options.action.nogui == null ? options.action.quickstart : options.action.nogui) {
         if (!file.endsWith(".csc") && !file.endsWith(".csc.gz")) {
           String option = options.action.nogui == null ? "-quickstart" : "-nogui";
           System.err.println("Cooja " + option + " expects a filename extension of '.csc'");

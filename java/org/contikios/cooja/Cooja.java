@@ -1394,7 +1394,7 @@ public class Cooja extends Observable {
     // Check if simulator should be quick-started.
     if (config.quickstart != null || config.noGui != null) {
       int rv = 0;
-      for (var cfg : vis ? new String[]{config.quickstart} : config.noGui) {
+      for (var cfg : vis ? config.quickstart : config.noGui) {
         var file = new File(cfg);
         Simulation sim = null;
         try {
@@ -1418,7 +1418,7 @@ public class Cooja extends Observable {
           }
         }
       }
-      if (!vis) {
+      if (!vis || config.updateSim) {
         gui.doQuit(rv);
       }
     }
@@ -1466,7 +1466,6 @@ public class Cooja extends Observable {
     // Rewrite simulation config after the InputStream is closed.
     if (rewriteCsc) {
       saveSimulationConfig(file);
-      System.exit(0);
     }
     return sim;
   }
@@ -2236,5 +2235,5 @@ public class Cooja extends Observable {
   /** Structure to hold the Cooja startup configuration. */
   public record Config(Long randomSeed, String externalToolsConfig, boolean updateSim,
                        String logDir, String contikiPath, String coojaPath,
-                       String quickstart, String[] noGui) {}
+                       String[] quickstart, String[] noGui) {}
 }
