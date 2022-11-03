@@ -381,8 +381,8 @@ public class AddMoteDialog extends JDialog {
     }
     @Override
     public void focusGained(final FocusEvent e) {
-      if (e.getSource() instanceof JFormattedTextField) {
-        SwingUtilities.invokeLater(() -> ((JFormattedTextField) e.getSource()).selectAll());
+      if (e.getSource() instanceof JFormattedTextField src) {
+        SwingUtilities.invokeLater(src::selectAll);
       }
     }
     @Override
@@ -405,25 +405,27 @@ public class AddMoteDialog extends JDialog {
             positionerClass = positioner;
           }
         }
-
-        // FIXME: inline generateInterface().
+        if (positionerClass == null) {
+          return;
+        }
         int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
-        var positioner = Positioner.generateInterface(positionerClass,
-                motesToAdd,
-                ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
-                ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
-                ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
-
-        if (positioner == null) {
-          logger.fatal("Could not create positioner");
+        Positioner positioner;
+        try {
+          var constr = positionerClass.getConstructor(int.class, double.class, double.class,
+                  double.class, double.class, double.class, double.class);
+          positioner = constr.newInstance(motesToAdd,
+                  ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
+                  ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
+                  ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
+        } catch (Exception e1) {
+          logger.fatal("Exception when creating " + positionerClass + ": ", e1);
           return;
         }
 
         // Create new motes
         while (newMotes.size() < motesToAdd) {
           try {
-            Mote newMote = moteType.generateMote(simulation);
-            newMotes.add(newMote);
+            newMotes.add(moteType.generateMote(simulation));
           } catch (MoteType.MoteTypeCreationException e2) {
             newMotes.clear();
             JOptionPane.showMessageDialog(AddMoteDialog.this,
@@ -437,15 +439,7 @@ public class AddMoteDialog extends JDialog {
           Position newPosition = newMote.getInterfaces().getPosition();
           if (newPosition != null) {
             double[] next = positioner.getNextPosition();
-            if (next.length >= 3) {
-              newPosition.setCoordinates(next[0], next[1], next[2]);
-            } else if (next.length == 2) {
-              newPosition.setCoordinates(next[0], next[1], 0);
-            } else if (next.length == 1) {
-              newPosition.setCoordinates(next[0], 0, 0);
-            } else {
-              newPosition.setCoordinates(0, 0, 0);
-            }
+            newPosition.setCoordinates(next.length > 0 ? next[0] : 0, next.length > 1 ? next[1] : 0, next.length > 2 ? next[2] : 0);
           }
         }
 
