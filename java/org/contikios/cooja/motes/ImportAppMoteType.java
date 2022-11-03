@@ -61,8 +61,6 @@ import org.contikios.cooja.util.ArrayUtils;
 public class ImportAppMoteType extends AbstractApplicationMoteType {
   private static final Logger logger = LogManager.getLogger(ImportAppMoteType.class);
 
-  private Simulation simulation;
-
   private File moteClassPath = null;
   private String moteClassName = null;
   private Constructor<? extends AbstractApplicationMote> moteConstructor = null;
@@ -95,8 +93,6 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
   public boolean setConfigXML(Simulation simulation,
       Collection<Element> configXML, boolean visAvailable)
   throws MoteTypeCreationException {
-    this.simulation = simulation;
-
     for (Element element : configXML) {
       String name = element.getName();
       if (name.equals("moteclass")) {
@@ -113,8 +109,6 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
   public boolean configureAndInit(Container parentContainer,
       Simulation simulation, boolean visAvailable)
   throws MoteTypeCreationException {
-    this.simulation = simulation;
-
     if (!super.configureAndInit(parentContainer, simulation, visAvailable)) {
       return false;
     }
@@ -134,7 +128,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
       if (moteClassName.indexOf('/') >= 0 || moteClassName.indexOf(File.separatorChar) >= 0) {
         File moteClassFile = new File(moteClassName);
         if (moteClassFile.canRead()) {
-          try (var test = createTestLoader(moteClassFile)) {
+          try (var test = createTestLoader(simulation, moteClassFile)) {
             // Successfully found the class
             moteClassPath = test.getTestClassPath();
             moteClassName = test.getTestClassName();
@@ -145,7 +139,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
       }
     }
     try {
-      ClassLoader parentLoader = getParentClassLoader();
+      ClassLoader parentLoader = getParentClassLoader(simulation);
       ClassLoader loader;
       if (moteClassPath != null) {
         /* Load class */
@@ -193,7 +187,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     return moteClassName;
   }
 
-  private ClassLoader getParentClassLoader() {
+  private ClassLoader getParentClassLoader(Simulation simulation) {
     ClassLoader ldr = null;
     try {
       ldr = simulation.getCooja().getProjectClassLoader();
@@ -203,7 +197,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     return ldr == null ? ClassLoader.getSystemClassLoader() : ldr;
   }
 
-  public TestLoader createTestLoader(File classFile) throws IOException {
+  public TestLoader createTestLoader(Simulation sim, File classFile) throws IOException {
     classFile = classFile.getCanonicalFile();
     ArrayList<URL> list = new ArrayList<>();
     for(File parent = classFile.getParentFile();
@@ -211,8 +205,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
         parent = parent.getParentFile()) {
       list.add(parent.toURI().toURL());
     }
-    return new TestLoader(list.toArray(new URL[0]),
-        getParentClassLoader(), classFile);
+    return new TestLoader(list.toArray(new URL[0]), getParentClassLoader(sim), classFile);
   }
 
   public static class TestLoader extends URLClassLoader {
