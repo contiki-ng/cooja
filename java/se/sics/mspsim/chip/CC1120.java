@@ -299,7 +299,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 }
         };
 
-        protected final boolean DEBUG = false;
+        protected static final boolean DEBUG = false;
 
         public final static double BITRATE_BYTE_DURATION = 0.16; /* ms. Duration per byte transmitted, corresponds to 50kbit/s */
         public final static double FREQUENCY_CHANNEL_0 = 902; /* MHz */
@@ -311,7 +311,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
   /* RSSI1: RSSI_11_4 */
         private int currentRssiReg1 = 0;
   /* RSSI0: RSSI_3_0 TODO XXX Ignored */
-        private final int currentRssiReg0 = 0;
+        private static final int currentRssiReg0 = 0;
 
         private double frequency = -1;
         private int nextFreq0 = -1, nextFreq1 = -1, nextFreq2 = -1; /* regs */

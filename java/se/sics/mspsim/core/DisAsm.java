@@ -50,7 +50,7 @@ import se.sics.mspsim.util.Utils;
 
 public class DisAsm implements MSP430Constants {
 
-  private final boolean step = true; //false;
+  private static final boolean step = true; //false;
 
   private MapTable map;
 

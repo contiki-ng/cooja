@@ -8,7 +8,7 @@ package se.sics.mspsim.extutil.highlight;
 
 public class CScanner extends Scanner {
 
-  private final boolean debug = false;
+  private static final boolean debug = false;
 
   /** Create a Java scanner, for Java version 1.5 by default. */
   public CScanner() {

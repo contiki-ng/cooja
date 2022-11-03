@@ -11,7 +11,7 @@ public class JavaScanner extends Scanner {
   // The version of Java supported.
   private int version = 15;
 
-  private final boolean debug = false;
+  private static final boolean debug = false;
 
   /** Create a Java scanner, for Java version 1.5 by default. */
   public JavaScanner() {
