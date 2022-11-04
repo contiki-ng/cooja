@@ -41,7 +41,7 @@ import se.sics.mspsim.core.IOPort.PinState;
 import se.sics.mspsim.core.MSP430Core;
 
 public class Enc28J60 extends Chip {
-        protected final boolean DEBUG = false;
+        protected static final boolean DEBUG = false;
 
         public static final int EIE = 0x1b;
         public static final int EIR = 0x1c;

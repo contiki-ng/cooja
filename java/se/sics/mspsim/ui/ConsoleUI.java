@@ -96,14 +96,14 @@ public class ConsoleUI extends JComponent {
   private int len = 0;
   private int back = 0;
 
-  private final int charWidth = 7;
-  private final int charHeight = 11;
+  private static final int charWidth = 7;
+  private static final int charHeight = 11;
   private int bottomLine = 30;
 
   private CommandHandler commandHandler;
 
   /* editor variables */
-  private final boolean insert = true;
+  private static final boolean insert = true;
   private boolean editing = false;
   private boolean cursor;
 
@@ -561,7 +561,7 @@ public class ConsoleUI extends JComponent {
   }
 
   /* just print space instead of tabs */
-  final String tabs = "           ";
+  static final String tabs = "           ";
 
   /* print char to the shell */
   public void output(int c) {

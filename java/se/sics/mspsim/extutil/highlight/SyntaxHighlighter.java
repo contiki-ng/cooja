@@ -246,7 +246,7 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
 
   private int firstRehighlightToken;
 
-  private final int smallAmount = 100;
+  private static final int smallAmount = 100;
 
   private final Color highlightColor = new Color(0, 240, 0, 255);
 

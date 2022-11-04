@@ -31,7 +31,6 @@ package org.contikios.cooja.motes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.logging.log4j.Logger;

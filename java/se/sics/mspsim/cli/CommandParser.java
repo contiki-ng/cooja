@@ -252,20 +252,4 @@ public class CommandParser {
     return sb.toString();
   }
 
-//   public static void main(String[] args) {
-//     StringBuilder sb = new StringBuilder();
-//     for (int i = 0, n = args.length; i < n; i++) {
-//       if (i > 0) sb.append(' ');
-//       sb.append(args[i]);
-//     }
-//     String[][] list = parseLine(sb.toString());
-//     for (int j = 0, m = list.length; j < m; j++) {
-//       String[] a = list[j];
-//       System.out.println("PARSED LINE:");
-//       for (int i = 0, n = a.length; i < n; i++) {
-//      System.out.println("  ARG " + (i + 1) + ": '" + a[i] + '\'');
-//       }
-//     }
-//   }
-
 }

@@ -34,7 +34,7 @@ import se.sics.mspsim.chip.CC1101.GDOListener;
 import se.sics.mspsim.core.IOPort.PinState;
 
 public class RF1A extends IOUnit implements InterruptHandler {
-    private final boolean DEBUG = true;
+    private static final boolean DEBUG = true;
 
     public static final int ADDRESS = 0xf00;
     public static final int SIZE = 64;

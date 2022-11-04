@@ -88,7 +88,7 @@ public class CRC16 extends IOUnit {
          */
         private static class CRC16Java {
                 private int crc = CCITTSeed;
-                private final int polynomial = 0x1021; // 0001 0000 0010 0001 (0, 5, 12)
+                private static final int polynomial = 0x1021; // 0001 0000 0010 0001 (0, 5, 12)
 
                 /**
                  * Adds one byte to the CRC computation

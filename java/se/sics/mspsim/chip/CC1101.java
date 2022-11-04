@@ -39,7 +39,7 @@ import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 
 public class CC1101 extends Radio802154 implements USARTListener {
-    protected final boolean DEBUG = false;
+    protected static final boolean DEBUG = false;
 
         /* cc1101-const.h: Configuration registers */
         public static final int CC1101_IOCFG1 = 0x01;
@@ -183,8 +183,8 @@ public class CC1101 extends Radio802154 implements USARTListener {
 
   public final static int CCA_THRESHOLD = -95;
 
-  private final boolean triggerGDO0onSynch = false;
-  private final boolean triggerGDO0onFifoThreshold = true;
+  private static final boolean triggerGDO0onSynch = false;
+  private static final boolean triggerGDO0onFifoThreshold = true;
 
         private StateListener stateListener = null;
         private ReceiverListener receiverListener = null;
