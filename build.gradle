@@ -18,10 +18,11 @@ dependencies {
   implementation files('lib/jcommon-1.0.14.jar',
                        'lib/jfreechart-1.0.11.jar',
                        'lib/jipv6.jar',
-                       'lib/json-simple-1.1.1.jar',
-                       'lib/picocli-4.6.3.jar')
+                       'lib/json-simple-1.1.1.jar')
   // https://mvnrepository.com/artifact/de.sciss/syntaxpane
   implementation 'de.sciss:syntaxpane:1.2.1'
+  // https://mvnrepository.com/artifact/info.picocli/picocli
+  implementation 'info.picocli:picocli:4.7.0'
   // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
   implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
   // https://mvnrepository.com/artifact/org.jdom/jdom-legacy
