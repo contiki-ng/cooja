@@ -343,8 +343,8 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
   }
 
   private void updateTabTitle(File file) {
-    String title = file == null ? "Script" : file.getAbsolutePath();
-    editorTabs.setTitleAt(editorTabs.getSelectedIndex(), title);
+    editorTabs.setTitleAt(editorTabs.getSelectedIndex(), file == null ? "Script" : file.getName());
+    editorTabs.setToolTipTextAt(editorTabs.getSelectedIndex(), file == null ? "Script" : file.getAbsolutePath());
   }
 
   /** Check if the script has been updated and offer the user to save the changes. */
@@ -409,7 +409,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
     checkForUpdatesAndSave();
     ArrayList<Element> config = new ArrayList<>();
     for (int i = 0; i < editorTabs.getTabCount(); i++) {
-      var name = editorTabs.getTitleAt(i);
+      var name = editorTabs.getToolTipTextAt(i);
       if (name.endsWith(".js")) {
         Element element = new Element("scriptfile");
         element.setText(gui.createPortablePath(new File(name)).getPath().replace('\\', '/'));
