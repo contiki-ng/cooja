@@ -145,13 +145,14 @@ public abstract class CoreComm {
   /**
    * Compiles Java class.
    *
+   * @param cooja Cooja object
    * @param tempDir Directory for temporary files
    * @param className
    *          Java class name (without extension)
    * @throws MoteTypeCreationException
    *           If Java class compilation error occurs
    */
-  private static void compileSourceFile(Path tempDir, String className)
+  private static void compileSourceFile(Cooja cooja, Path tempDir, String className)
       throws MoteTypeCreationException {
       /* Try to create a message list with support for GUI - will give not UI if headless */
     MessageList compilationOutput = MessageContainer.createMessageList(true);
@@ -162,9 +163,8 @@ public abstract class CoreComm {
 
     try {
       int b;
-      String[] cmd = new String[] {
-          Cooja.getExternalToolsSetting("PATH_JAVAC"),
-          "-cp", System.getProperty("java.class.path"), "--release", "17",
+      String[] cmd = new String[] {cooja.configuration.javac(),
+          "-cp", System.getProperty("java.class.path"), "--release", String.valueOf(Runtime.version().feature()),
           // Disable warnings to avoid 3 lines of "warning: using incubating module(s): jdk.incubator.foreign".
           "-nowarn", "--add-modules", "jdk.incubator.foreign",
           tempDir + "/org/contikios/cooja/corecomm/" + className + ".java" };
@@ -201,6 +201,7 @@ public abstract class CoreComm {
    * Create and return an instance of the core communicator identified by
    * className. This core communicator will load the native library libFile.
    *
+   * @param cooja Cooja object
    * @param tempDir Directory for temporary files
    * @param className
    *          Class name of core communicator
@@ -208,10 +209,10 @@ public abstract class CoreComm {
    *          Native library file
    * @return Core Communicator
    */
-  public static CoreComm createCoreComm(Path tempDir, String className, File libFile)
+  public static CoreComm createCoreComm(Cooja cooja, Path tempDir, String className, File libFile)
       throws MoteTypeCreationException {
     generateLibSourceFile(tempDir, className);
-    compileSourceFile(tempDir, className);
+    compileSourceFile(cooja, tempDir, className);
 
     // Loading a class might leave residue in the JVM so use a new name for the next call.
     fileCounter++;

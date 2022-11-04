@@ -149,6 +149,7 @@ public class Cooja extends Observable {
   public static Properties defaultExternalToolsSettings;
   public static Properties currentExternalToolsSettings;
 
+  // FIXME: remove PATH_JAVAC.
   private static final String[] externalToolsSettingNames = new String[] {
     "PATH_COOJA",
     "PATH_CONTIKI", "PATH_APPS",
@@ -2234,6 +2235,6 @@ public class Cooja extends Observable {
 
   /** Structure to hold the Cooja startup configuration. */
   public record Config(Long randomSeed, String externalToolsConfig, boolean updateSim,
-                       String logDir, String contikiPath, String coojaPath,
+                       String logDir, String contikiPath, String coojaPath, String javac,
                        String[] quickstart, String[] noGui) {}
 }
