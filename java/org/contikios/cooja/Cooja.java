@@ -49,6 +49,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Observable;
 import java.util.Observer;
@@ -1390,35 +1391,33 @@ public class Cooja extends Observable {
       System.exit(1);
     }
     // Check if simulator should be quick-started.
-    if (config.configs != null) {
-      int rv = 0;
-      for (var cfg : config.configs) {
-        var file = new File(cfg);
-        Simulation sim = null;
-        try {
-          sim = config.vis
-                  ? Cooja.gui.doLoadConfig(file, config.updateSim, config.randomSeed)
-                  : gui.loadSimulationConfig(file, true, false, config.randomSeed);
-        } catch (Exception e) {
-          logger.fatal("Exception when loading simulation: ", e);
-        }
-        if (sim == null) {
-          System.exit(1);
-        }
-        if (!config.vis) {
-          sim.setSpeedLimit(null);
-          var ret = sim.startSimulation(true);
-          if (ret == null) {
-            logger.info("TEST OK\n");
-          } else {
-            logger.warn("TEST FAILED\n");
-            rv = Math.max(rv, ret);
-          }
+    int rv = 0;
+    for (var simConfig : config.configs) {
+      var file = new File(simConfig.file);
+      Simulation sim = null;
+      try {
+        sim = config.vis
+                ? Cooja.gui.doLoadConfig(file, config.updateSim, config.randomSeed)
+                : gui.loadSimulationConfig(file, true, false, config.randomSeed);
+      } catch (Exception e) {
+        logger.fatal("Exception when loading simulation: ", e);
+      }
+      if (sim == null) {
+        System.exit(1);
+      }
+      if (!config.vis) {
+        sim.setSpeedLimit(null);
+        var ret = sim.startSimulation(true);
+        if (ret == null) {
+          logger.info("TEST OK\n");
+        } else {
+          logger.warn("TEST FAILED\n");
+          rv = Math.max(rv, ret);
         }
       }
-      if (!config.vis || config.updateSim) {
-        gui.doQuit(rv);
-      }
+    }
+    if (!config.configs.isEmpty() && (!config.vis || config.updateSim)) {
+      gui.doQuit(rv);
     }
   }
 
@@ -2230,8 +2229,11 @@ public class Cooja extends Observable {
     }
   }
 
+  /** Structure to hold the simulation parameters. */
+  public record SimConfig(Map<String, String> opts, String file) {}
+
   /** Structure to hold the Cooja startup configuration. */
   public record Config(boolean vis, Long randomSeed, String externalToolsConfig, boolean updateSim,
                        String logDir, String contikiPath, String coojaPath, String javac,
-                       String[] configs) {}
+                       List<SimConfig> configs) {}
 }
