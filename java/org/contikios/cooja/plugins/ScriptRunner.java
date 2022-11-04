@@ -30,6 +30,7 @@
 package org.contikios.cooja.plugins;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT;
 
 import de.sciss.syntaxpane.DefaultSyntaxKit;
 import java.awt.BorderLayout;
@@ -130,6 +131,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
     /* Script area */
     frame.setLayout(new BorderLayout());
     editorTabs = new JTabbedPane();
+    editorTabs.setTabLayoutPolicy(SCROLL_TAB_LAYOUT);
 
     logTextArea = new JTextArea(12,50);
     logTextArea.setMargin(new Insets(5,5,5,5));
