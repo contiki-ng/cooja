@@ -42,6 +42,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Objects;
+import jdk.incubator.foreign.MemoryAddress;
+import jdk.incubator.foreign.ResourceScope;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageContainer;
@@ -83,6 +85,7 @@ import org.contikios.cooja.dialogs.MessageList;
 public abstract class CoreComm {
   private final static ArrayList<File> coreCommFiles = new ArrayList<>();
 
+  protected long offset = 0;
   private static int fileCounter = 1;
 
   /**
@@ -256,12 +259,13 @@ public abstract class CoreComm {
   public abstract long getReferenceAddress();
 
   /**
-   * Sets the relative memory address of the reference variable.
-   * Is used by Contiki to map between absolute and relative memory addresses.
+   * Set the offset between absolute and relative memory addresses.
    *
-   * @param addr Relative address
+   * @param offset Offset between absolute and relative addresses
    */
-  public abstract void setReferenceAddress(long addr);
+  public void setReferenceOffset(long offset) {
+    this.offset = offset;
+  }
 
   /**
    * Fills a byte array with memory segment identified by start and length.
@@ -270,7 +274,10 @@ public abstract class CoreComm {
    * @param length Length of segment
    * @param mem Array to fill with memory segment
    */
-  public abstract void getMemory(long relAddr, int length, byte[] mem);
+  public void getMemory(long relAddr, int length, byte[] mem) {
+    final var addr = MemoryAddress.ofLong(relAddr + offset);
+    addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().get(0, mem, 0, length);
+  }
 
   /**
    * Overwrites a memory segment identified by start and length.
@@ -279,6 +286,8 @@ public abstract class CoreComm {
    * @param length Length of segment
    * @param mem New memory segment data
    */
-  public abstract void setMemory(long relAddr, int length, byte[] mem);
-
+  public void setMemory(long relAddr, int length, byte[] mem) {
+    final var addr = MemoryAddress.ofLong(relAddr + offset);
+    addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().put(0, mem, 0, length);
+  }
 }
