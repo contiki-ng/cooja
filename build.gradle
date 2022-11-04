@@ -15,8 +15,9 @@ repositories {
 }
 
 dependencies {
-  implementation files('lib/jipv6.jar',
-                       'lib/json-simple-1.1.1.jar')
+  implementation files('lib/jipv6.jar')
+  // https://mvnrepository.com/artifact/com.github.cliftonlabs/json-simple
+  implementation 'com.github.cliftonlabs:json-simple:2.3.1'
   // https://mvnrepository.com/artifact/de.sciss/syntaxpane
   implementation 'de.sciss:syntaxpane:1.2.1'
   // https://mvnrepository.com/artifact/info.picocli/picocli
