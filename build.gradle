@@ -15,16 +15,19 @@ repositories {
 }
 
 dependencies {
-  implementation files('lib/jcommon-1.0.14.jar',
-                       'lib/jdom.jar',
-                       'lib/jfreechart-1.0.11.jar',
-                       'lib/jipv6.jar',
-                       'lib/json-simple-1.1.1.jar',
-                       'lib/picocli-4.6.3.jar')
+  implementation files('lib/jipv6.jar')
+  // https://mvnrepository.com/artifact/com.github.cliftonlabs/json-simple
+  implementation 'com.github.cliftonlabs:json-simple:2.3.1'
   // https://mvnrepository.com/artifact/de.sciss/syntaxpane
   implementation 'de.sciss:syntaxpane:1.2.1'
+  // https://mvnrepository.com/artifact/info.picocli/picocli
+  implementation 'info.picocli:picocli:4.7.0'
   // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
   implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
+  // https://mvnrepository.com/artifact/org.jdom/jdom-legacy
+  implementation 'org.jdom:jdom-legacy:1.1.3'
+  // https://mvnrepository.com/artifact/org.jfree/jfreechart
+  implementation 'org.jfree:jfreechart:1.0.19'
   // https://mvnrepository.com/artifact/org.openjdk.nashorn/nashorn-core
   implementation 'org.openjdk.nashorn:nashorn-core:15.4'
   // https://mvnrepository.com/artifact/org.swinglabs.swingx/swingx-autocomplete
