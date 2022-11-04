@@ -263,10 +263,10 @@ class Main {
       }
     }
 
-    var cfg = new Config(options.randomSeed, options.externalToolsConfig, options.updateSimulation,
+    var cfg = new Config(vis, options.randomSeed, options.externalToolsConfig, options.updateSimulation,
             options.logDir, options.contikiPath, options.coojaPath, options.javac,
-            options.action == null ? null : options.action.quickstart,
-            options.action == null ? null : options.action.nogui);
+            options.action == null
+                    ? null : options.action.quickstart == null ? options.action.nogui : options.action.quickstart);
     // Configure logger
     if (options.logConfigFile == null) {
       ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();

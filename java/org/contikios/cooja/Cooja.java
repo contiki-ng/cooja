@@ -211,7 +211,7 @@ public class Cooja extends Observable {
    * @param cfg Cooja configuration
    */
   public static Cooja makeCooja(Config cfg) throws ParseProjectsException {
-    if (cfg.noGui == null) {
+    if (cfg.vis) {
       assert !java.awt.EventQueue.isDispatchThread() : "Call from regular context";
       return new RunnableInEDT<Cooja>() {
         @Override
@@ -271,7 +271,7 @@ public class Cooja extends Observable {
       }
     }
 
-    if (cfg.noGui == null) {
+    if (cfg.vis) {
       gui = new GUI(this);
     } else {
       parseProjectConfig();
@@ -1382,9 +1382,6 @@ public class Cooja extends Observable {
     specifiedContikiPath = config.contikiPath;
     specifiedCoojaPath = config.coojaPath;
 
-    // Is Cooja started in GUI mode?
-    var vis = config.noGui == null;
-
     Cooja gui = null;
     try {
       gui = makeCooja(config);
@@ -1393,13 +1390,13 @@ public class Cooja extends Observable {
       System.exit(1);
     }
     // Check if simulator should be quick-started.
-    if (config.quickstart != null || config.noGui != null) {
+    if (config.configs != null) {
       int rv = 0;
-      for (var cfg : vis ? config.quickstart : config.noGui) {
+      for (var cfg : config.configs) {
         var file = new File(cfg);
         Simulation sim = null;
         try {
-          sim = vis
+          sim = config.vis
                   ? Cooja.gui.doLoadConfig(file, config.updateSim, config.randomSeed)
                   : gui.loadSimulationConfig(file, true, false, config.randomSeed);
         } catch (Exception e) {
@@ -1408,7 +1405,7 @@ public class Cooja extends Observable {
         if (sim == null) {
           System.exit(1);
         }
-        if (!vis) {
+        if (!config.vis) {
           sim.setSpeedLimit(null);
           var ret = sim.startSimulation(true);
           if (ret == null) {
@@ -1419,7 +1416,7 @@ public class Cooja extends Observable {
           }
         }
       }
-      if (!vis || config.updateSim) {
+      if (!config.vis || config.updateSim) {
         gui.doQuit(rv);
       }
     }
@@ -2234,7 +2231,7 @@ public class Cooja extends Observable {
   }
 
   /** Structure to hold the Cooja startup configuration. */
-  public record Config(Long randomSeed, String externalToolsConfig, boolean updateSim,
+  public record Config(boolean vis, Long randomSeed, String externalToolsConfig, boolean updateSim,
                        String logDir, String contikiPath, String coojaPath, String javac,
-                       String[] quickstart, String[] noGui) {}
+                       String[] configs) {}
 }
