@@ -47,15 +47,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-
+import org.json.simple.DeserializationException;
+import org.json.simple.JSONAware;
+import org.json.simple.Jsoner;
 import org.json.simple.parser.ContainerFactory;
-import org.json.simple.parser.ContentHandler;
-import org.json.simple.parser.JSONParser;
 
 /**
  *
  */
-public class JSONObject extends HashMap<String,Object> implements JSONAware, JSONStreamAware {
+public class JSONObject extends HashMap<String,Object> implements JSONStreamAware, JSONAware {
     private void checkForCycles(Object value) {
         if (this == value) {
             throw new IllegalArgumentException("cycle detected");

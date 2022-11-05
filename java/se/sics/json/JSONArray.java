@@ -44,11 +44,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import org.json.simple.JSONAware;
 
 /**
  *
  */
-public class JSONArray extends ArrayList<Object> implements JSONAware, JSONStreamAware {
+public class JSONArray extends ArrayList<Object> implements JSONStreamAware, JSONAware {
     private void checkForCycles(Object value) {
         if (this == value) {
             throw new IllegalArgumentException("cycle detected");
