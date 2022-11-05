@@ -40,19 +40,19 @@
 
 package se.sics.json;
 
+import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.Jsonable;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import org.json.simple.DeserializationException;
-import org.json.simple.Jsonable;
-import org.json.simple.Jsoner;
 
 /**
  *
  */
-public class JSONObject extends HashMap<String,Object> implements JSONStreamAware, Jsonable {
+public class JSONObject extends HashMap<String,Object> implements Jsonable {
     private void checkForCycles(Object value) {
         if (this == value) {
             throw new IllegalArgumentException("cycle detected");
@@ -251,18 +251,13 @@ public class JSONObject extends HashMap<String,Object> implements JSONStreamAwar
 
     @Override
     public void toJson(Writer out) throws IOException {
-        writeJSONString(out);
-    }
-
-    @Override
-    public void writeJSONString(Writer out) throws IOException {
         Jsoner.serialize(this, out);
     }
 
     public static Object parseJSON(String input) throws ParseException {
         try {
             return Jsoner.deserialize(input);
-        } catch (DeserializationException e) {
+        } catch (JsonException e) {
             throw new ParseException(e.getMessage(), e);
         }
     }
@@ -270,7 +265,7 @@ public class JSONObject extends HashMap<String,Object> implements JSONStreamAwar
     public static Object parseJSON(Reader input) throws ParseException {
         try {
             return Jsoner.deserialize(input);
-        } catch (DeserializationException e) {
+        } catch (JsonException e) {
             throw new ParseException(e.getMessage(), e);
         }
     }
