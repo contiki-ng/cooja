@@ -411,10 +411,10 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
     checkForUpdatesAndSave();
     ArrayList<Element> config = new ArrayList<>();
     for (int i = 0; i < editorTabs.getTabCount(); i++) {
-      var name = editorTabs.getToolTipTextAt(i);
-      if (name.endsWith(".js")) {
+      var file = getLinkedFile(i);
+      if (file != null) {
         Element element = new Element("scriptfile");
-        element.setText(gui.createPortablePath(new File(name)).getPath().replace('\\', '/'));
+        element.setText(gui.createPortablePath(file).getPath().replace('\\', '/'));
         config.add(element);
       } else {
         Element element = new Element("script");
