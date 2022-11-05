@@ -44,18 +44,15 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import org.json.simple.DeserializationException;
-import org.json.simple.JSONAware;
+import org.json.simple.Jsonable;
 import org.json.simple.Jsoner;
-import org.json.simple.parser.ContainerFactory;
 
 /**
  *
  */
-public class JSONObject extends HashMap<String,Object> implements JSONStreamAware, JSONAware {
+public class JSONObject extends HashMap<String,Object> implements JSONStreamAware, Jsonable {
     private void checkForCycles(Object value) {
         if (this == value) {
             throw new IllegalArgumentException("cycle detected");
@@ -244,35 +241,36 @@ public class JSONObject extends HashMap<String,Object> implements JSONStreamAwar
 
     @Override
     public String toString() {
-        return toJSONString();
+        return toJson();
     }
 
     @Override
-    public String toJSONString() {
-        return org.json.simple.JSONObject.toJSONString(this);
+    public String toJson() {
+        return Jsoner.serialize(this);
+    }
+
+    @Override
+    public void toJson(Writer out) throws IOException {
+        writeJSONString(out);
     }
 
     @Override
     public void writeJSONString(Writer out) throws IOException {
-        org.json.simple.JSONObject.writeJSONString(this, out);
+        Jsoner.serialize(this, out);
     }
 
     public static Object parseJSON(String input) throws ParseException {
         try {
-            JSONParser parser = new JSONParser();
-            return parser.parse(input, jsonObjectFactory);
-        } catch (org.json.simple.parser.ParseException e) {
+            return Jsoner.deserialize(input);
+        } catch (DeserializationException e) {
             throw new ParseException(e.getMessage(), e);
         }
     }
 
-    public static Object parseJSON(Reader input) throws IOException, ParseException {
+    public static Object parseJSON(Reader input) throws ParseException {
         try {
-            JSONParser parser = new JSONParser();
-            JSONObjectHandler doh = new JSONObjectHandler();
-            parser.parse(input, doh);
-            return doh.getResult();
-        } catch (org.json.simple.parser.ParseException e) {
+            return Jsoner.deserialize(input);
+        } catch (DeserializationException e) {
             throw new ParseException(e.getMessage(), e);
         }
     }
@@ -292,114 +290,4 @@ public class JSONObject extends HashMap<String,Object> implements JSONStreamAwar
         }
         throw new ParseException("not a JSON object: " + input);
     }
-
-    private static final ContainerFactory jsonObjectFactory = new ContainerFactory() {
-
-        @Override
-        public List<Object> creatArrayContainer() {
-            return new JSONArray();
-        }
-
-        @Override
-        public Map<String,Object> createObjectContainer() {
-            return new JSONObject();
-        }
-
-    };
-
-    private static class JSONObjectHandler implements ContentHandler {
-
-        private final Stack<Object> valueStack = new Stack<>();
-
-        public Object getResult() {
-            if (this.valueStack.size() == 0) {
-                return null;
-            }
-            return this.valueStack.peek();
-        }
-
-        @Override
-        public boolean endArray() {
-            trackBack();
-            return true;
-        }
-
-        @Override
-        public void endJSON() {
-        }
-
-        @Override
-        public boolean endObject() {
-            trackBack();
-            /* we are finished if value stack is 1 */
-            return this.valueStack.size() > 1;
-        }
-
-        @Override
-        public boolean endObjectEntry() {
-            Object value = this.valueStack.pop();
-            Object key = this.valueStack.pop();
-            JSONObject parent = (JSONObject) this.valueStack.peek();
-            parent.put((String) key, value);
-            return true;
-        }
-
-        private void trackBack() {
-            if (this.valueStack.size() > 1) {
-                Object value = this.valueStack.pop();
-                Object prev = this.valueStack.peek();
-                if (prev instanceof String) {
-                    this.valueStack.push(value);
-                }
-            }
-        }
-
-        private void consumeValue(Object value) {
-            if (this.valueStack.size() == 0) {
-                this.valueStack.push(value);
-            } else {
-                Object prev = this.valueStack.peek();
-                if (prev instanceof JSONArray) {
-                    JSONArray array = (JSONArray) prev;
-                    array.add(value);
-                } else {
-                    this.valueStack.push(value);
-                }
-            }
-        }
-
-        @Override
-        public boolean primitive(Object value) {
-            consumeValue(value);
-            return true;
-        }
-
-        @Override
-        public boolean startArray() {
-            JSONArray array = new JSONArray();
-            consumeValue(array);
-            this.valueStack.push(array);
-            return true;
-        }
-
-        @Override
-        public void startJSON() {
-            this.valueStack.clear();
-        }
-
-        @Override
-        public boolean startObject() {
-            JSONObject object = new JSONObject();
-            consumeValue(object);
-            this.valueStack.push(object);
-            return true;
-        }
-
-        @Override
-        public boolean startObjectEntry(String key) {
-            this.valueStack.push(key);
-            return true;
-        }
-    }
-
 }
