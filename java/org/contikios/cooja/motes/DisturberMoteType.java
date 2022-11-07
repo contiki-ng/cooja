@@ -118,5 +118,14 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
     public String toString() {
       return "Disturber " + getID();
     }
-}
+
+    @Override
+    public void writeArray(byte[] s) {}
+
+    @Override
+    public void writeByte(byte b) {}
+
+    @Override
+    public void writeString(String s) {}
+  }
 }
