@@ -1545,8 +1545,6 @@ public class Cooja extends Observable {
         return null;
       }
       // Restart plugins from config
-      boolean result = true;
-      boolean finished = false;
       for (var e : root.getChildren("plugin")) {
         final Element pluginElement = (Element) e;
         // Read plugin class
@@ -1570,9 +1568,7 @@ public class Cooja extends Observable {
         var pluginClass = tryLoadClass(this, Plugin.class, pluginClassName);
         if (pluginClass == null) {
           logger.fatal("Could not load plugin class: " + pluginClassName);
-          result = false;
-          finished = true;
-          break;
+          throw new Exception("Could not load plugin class " + pluginClassName);
         }
         // Skip plugins that require visualization in headless mode.
         if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
@@ -1588,34 +1584,28 @@ public class Cooja extends Observable {
         }
         tryStartPlugin(pluginClass, newSim, mote, pluginElement);
       }
-      if (!finished) {
-        if (isVisualized()) { // Z order visualized plugins.
-          try {
-            for (int z = 0; z < getDesktopPane().getAllFrames().length; z++) {
-              for (JInternalFrame plugin : getDesktopPane().getAllFrames()) {
-                if (plugin.getClientProperty("zorder") == null) {
-                  continue;
-                }
-                int zOrder = (Integer) plugin.getClientProperty("zorder");
-                if (zOrder != z) {
-                  continue;
-                }
-                getDesktopPane().setComponentZOrder(plugin, zOrder);
-                if (z == 0) {
-                  plugin.setSelected(true);
-                }
-                plugin.putClientProperty("zorder", null);
-                break;
+      if (isVisualized()) { // Z order visualized plugins.
+        try {
+          for (int z = 0; z < getDesktopPane().getAllFrames().length; z++) {
+            for (JInternalFrame plugin : getDesktopPane().getAllFrames()) {
+              if (plugin.getClientProperty("zorder") == null) {
+                continue;
               }
-              getDesktopPane().repaint();
+              int zOrder = (Integer) plugin.getClientProperty("zorder");
+              if (zOrder != z) {
+                continue;
+              }
+              getDesktopPane().setComponentZOrder(plugin, zOrder);
+              if (z == 0) {
+                plugin.setSelected(true);
+              }
+              plugin.putClientProperty("zorder", null);
+              break;
             }
-          } catch (Exception e) {
+            getDesktopPane().repaint();
           }
+        } catch (Exception e) {
         }
-      }
-      // FIXME: remove result/finished bools and throw exceptions inline in the previous 30 lines.
-      if (!result) {
-        throw new Exception("Failed to configure plugins");
       }
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Mote type creation error: " + e.getMessage(), e);
