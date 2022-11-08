@@ -1544,7 +1544,7 @@ public class Cooja extends Observable {
         logger.info("Simulation not loaded");
         return null;
       }
-    } catch (Exception e) {
+    } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }
 
