@@ -755,15 +755,10 @@ public class Simulation extends Observable {
    */
   public void addMote(final Mote mote) {
     invokeSimulationThread(() -> {
-      if (mote.getInterfaces().getClock() != null) {
-        if (maxMoteStartupDelay > 0) {
-          mote.getInterfaces().getClock().setDrift(
-              - getSimulationTime()
-              - randomGenerator.nextInt((int)maxMoteStartupDelay)
-          );
-        } else {
-          mote.getInterfaces().getClock().setDrift(-getSimulationTime());
-        }
+      var clock = mote.getInterfaces().getClock();
+      if (clock != null) {
+        var delay = maxMoteStartupDelay > 0 ? randomGenerator.nextInt((int)maxMoteStartupDelay) : 0;
+        clock.setDrift(-getSimulationTime() - delay);
       }
 
       motes.add(mote);
