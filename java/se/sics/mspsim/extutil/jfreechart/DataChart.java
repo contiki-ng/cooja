@@ -92,11 +92,11 @@ public class DataChart extends JPanel implements ServiceComponent {
           jw = openFrame("Stack Monitor");
           StackMonitor sm = new StackMonitor(cpu);
           DataSourceSampler dss = new DataSourceSampler(cpu);
-          TimeSeries ts = new TimeSeries("Max Stack", Millisecond.class);
+          TimeSeries ts = new TimeSeries("Max Stack");
           ts.setMaximumItemCount(200);
           addTimeSeries(ts);
           dss.addDataSource(sm.getMaxSource(), ts);
-          ts = new TimeSeries("Stack", Millisecond.class);
+          ts = new TimeSeries("Stack");
           ts.setMaximumItemCount(200);
           addTimeSeries(ts);
           dss.addDataSource(sm.getSource(), ts);
@@ -113,7 +113,7 @@ public class DataChart extends JPanel implements ServiceComponent {
   }
 
   public void addDataSource(DataSourceSampler dss, String name, DataSource src) {
-    TimeSeries ts = new TimeSeries(name, Millisecond.class);
+    TimeSeries ts = new TimeSeries(name);
     ts.setMaximumItemCount(200);
     addTimeSeries(ts);
     dss.addDataSource(src, ts);
