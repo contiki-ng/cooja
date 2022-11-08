@@ -754,32 +754,29 @@ public class Simulation extends Observable {
    *          Mote to add
    */
   public void addMote(final Mote mote) {
-    invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        if (mote.getInterfaces().getClock() != null) {
-          if (maxMoteStartupDelay > 0) {
-            mote.getInterfaces().getClock().setDrift(
-                - getSimulationTime()
-                - randomGenerator.nextInt((int)maxMoteStartupDelay)
-            );
-          } else {
-            mote.getInterfaces().getClock().setDrift(-getSimulationTime());
-          }
+    invokeSimulationThread(() -> {
+      if (mote.getInterfaces().getClock() != null) {
+        if (maxMoteStartupDelay > 0) {
+          mote.getInterfaces().getClock().setDrift(
+              - getSimulationTime()
+              - randomGenerator.nextInt((int)maxMoteStartupDelay)
+          );
+        } else {
+          mote.getInterfaces().getClock().setDrift(-getSimulationTime());
         }
-
-        motes.add(mote);
-        currentRadioMedium.registerMote(mote, Simulation.this);
-
-        /* Notify mote interfaces that node was added */
-        for (MoteInterface i: mote.getInterfaces().getInterfaces()) {
-          i.added();
-        }
-
-        setChanged();
-        notifyObservers(mote);
-        Cooja.updateGUIComponentState();
       }
+
+      motes.add(mote);
+      currentRadioMedium.registerMote(mote, Simulation.this);
+
+      /* Notify mote interfaces that node was added */
+      for (MoteInterface i: mote.getInterfaces().getInterfaces()) {
+        i.added();
+      }
+
+      setChanged();
+      notifyObservers(mote);
+      Cooja.updateGUIComponentState();
     });
   }
 
