@@ -1591,25 +1591,26 @@ public class Cooja extends Observable {
     }
 
     if (isVisualized()) { // Z order visualized plugins.
-      try {
-        for (int z = 0; z < getDesktopPane().getAllFrames().length; z++) {
-          for (JInternalFrame plugin : getDesktopPane().getAllFrames()) {
-            if (plugin.getClientProperty("zorder") == null) {
-              continue;
-            }
-            int zOrder = (Integer) plugin.getClientProperty("zorder");
-            if (zOrder != z) {
-              continue;
-            }
-            getDesktopPane().setComponentZOrder(plugin, zOrder);
-            if (z == 0) {
-              plugin.setSelected(true);
-            }
-            plugin.putClientProperty("zorder", null);
-            break;
+      for (int z = 0; z < getDesktopPane().getAllFrames().length; z++) {
+        for (JInternalFrame plugin : getDesktopPane().getAllFrames()) {
+          if (plugin.getClientProperty("zorder") == null) {
+            continue;
           }
+          int zOrder = (Integer) plugin.getClientProperty("zorder");
+          if (zOrder != z) {
+            continue;
+          }
+          getDesktopPane().setComponentZOrder(plugin, zOrder);
+          if (z == 0) {
+            try {
+              plugin.setSelected(true);
+            } catch (Exception e) {
+              logger.error("Could not select plugin {}", plugin.getTitle());
+            }
+          }
+          plugin.putClientProperty("zorder", null);
+          break;
         }
-      } catch (Exception e) {
       }
       getDesktopPane().repaint();
     } else { // Non-GUI Cooja requires a simulation controller, ensure one is started.
