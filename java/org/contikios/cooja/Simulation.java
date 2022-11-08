@@ -567,33 +567,25 @@ public class Simulation extends Observable {
     // Parse elements
     for (var element : (List<Element>) root.getChildren()) {
       switch (element.getName()) {
-        case "title":
-          title = element.getText();
-          break;
-        case "speedlimit": {
+        case "title" -> title = element.getText();
+        case "speedlimit" -> {
           String text = element.getText();
           if (text.equals("null")) {
             setSpeedLimit(null);
           } else {
             setSpeedLimit(Double.parseDouble(text));
           }
-          break;
         }
-        case "randomseed": {
+        case "randomseed" -> {
           if (element.getText().equals("generated")) {
             randomSeedGenerated = true;
           }
           // Seed already passed into the constructor, init random generator.
           setRandomSeed(randomSeed);
-          break;
         }
-        case "motedelay":
-          maxMoteStartupDelay = Integer.parseInt(element.getText()) * MILLISECOND;
-          break;
-        case "motedelay_us":
-          maxMoteStartupDelay = Integer.parseInt(element.getText());
-          break;
-        case "radiomedium": {
+        case "motedelay" -> maxMoteStartupDelay = Integer.parseInt(element.getText()) * MILLISECOND;
+        case "motedelay_us" -> maxMoteStartupDelay = Integer.parseInt(element.getText());
+        case "radiomedium" -> {
           String radioMediumClassName = element.getText().trim();
           currentRadioMedium = MoteInterfaceHandler.createRadioMedium(this, radioMediumClassName);
           // Show configure simulation dialog
@@ -612,12 +604,9 @@ public class Simulation extends Observable {
           } else {
             logger.info("Radio Medium changed - ignoring radio medium specific config");
           }
-          break;
         }
-        case "events":
-          eventCentral.setConfigXML(element.getChildren());
-          break;
-        case "motetype": {
+        case "events" -> eventCentral.setConfigXML(element.getChildren());
+        case "motetype" -> {
           String moteTypeClassName = element.getText().trim();
           /* Backwards compatibility: se.sics -> org.contikios */
           if (moteTypeClassName.startsWith("se.sics")) {
@@ -668,9 +657,8 @@ public class Simulation extends Observable {
             return false;
           }
           addMoteType(moteType);
-          break;
         }
-        case "mote": {
+        case "mote" -> {
           MoteType moteType = null;
           for (Element subElement : (Collection<Element>) element.getChildren()) {
             if (subElement.getName().equals("motetype_identifier")) {
@@ -690,7 +678,6 @@ public class Simulation extends Observable {
             throw new Exception("All motes were not recreated");
           }
           addMote(mote);
-          break;
         }
       }
     }
