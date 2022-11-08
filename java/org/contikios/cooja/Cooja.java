@@ -1584,37 +1584,35 @@ public class Cooja extends Observable {
         }
         tryStartPlugin(pluginClass, newSim, mote, pluginElement);
       }
-      if (isVisualized()) { // Z order visualized plugins.
-        try {
-          for (int z = 0; z < getDesktopPane().getAllFrames().length; z++) {
-            for (JInternalFrame plugin : getDesktopPane().getAllFrames()) {
-              if (plugin.getClientProperty("zorder") == null) {
-                continue;
-              }
-              int zOrder = (Integer) plugin.getClientProperty("zorder");
-              if (zOrder != z) {
-                continue;
-              }
-              getDesktopPane().setComponentZOrder(plugin, zOrder);
-              if (z == 0) {
-                plugin.setSelected(true);
-              }
-              plugin.putClientProperty("zorder", null);
-              break;
-            }
-          }
-        } catch (Exception e) {
-        }
-        getDesktopPane().repaint();
-      }
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Mote type creation error: " + e.getMessage(), e);
     } catch (Exception e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }
 
-    // Non-GUI Cooja requires a simulation controller, ensure one is started.
-    if (!isVisualized()) {
+    if (isVisualized()) { // Z order visualized plugins.
+      try {
+        for (int z = 0; z < getDesktopPane().getAllFrames().length; z++) {
+          for (JInternalFrame plugin : getDesktopPane().getAllFrames()) {
+            if (plugin.getClientProperty("zorder") == null) {
+              continue;
+            }
+            int zOrder = (Integer) plugin.getClientProperty("zorder");
+            if (zOrder != z) {
+              continue;
+            }
+            getDesktopPane().setComponentZOrder(plugin, zOrder);
+            if (z == 0) {
+              plugin.setSelected(true);
+            }
+            plugin.putClientProperty("zorder", null);
+            break;
+          }
+        }
+      } catch (Exception e) {
+      }
+      getDesktopPane().repaint();
+    } else { // Non-GUI Cooja requires a simulation controller, ensure one is started.
       boolean hasController = false;
       for (var p : startedPlugins) {
         int pluginType = p.getClass().getAnnotation(PluginType.class).value();
