@@ -121,6 +121,7 @@ run {
       systemProperty k - "cooja.", v
     }
   }
+  systemProperty 'picocli.disable.closures', "true"
   // Enable assertions with "-Passertions".
   enableAssertions = project.hasProperty('assertions')
 }
