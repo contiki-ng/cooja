@@ -82,22 +82,9 @@ public class SimEventCentral {
     }
   }
   /** Help class for maintaining mote-specific observations */
-  private static class MoteObservation {
-    private final Mote mote;
-    private final Observable observable;
-    private final Observer observer;
-    public MoteObservation(Mote mote, Observable observable, Observer observer) {
-      this.mote = mote;
-      this.observable = observable;
-      this.observer = observer;
-
+  private record MoteObservation(Mote mote, Observable observable, Observer observer) {
+    public MoteObservation {
       observable.addObserver(observer);
-    }
-    public Mote getMote() {
-      return mote;
-    }
-    public Observer getObserver() {
-      return observer;
     }
     public void disconnect() {
       observable.deleteObserver(observer);
@@ -150,7 +137,7 @@ public class SimEventCentral {
         // Disconnect and remove mote observations.
         MoteObservation[] observations = moteObservations.toArray(new MoteObservation[0]);
         for (MoteObservation o: observations) {
-          if (o.getMote() == evMote) {
+          if (o.mote() == evMote) {
             o.disconnect();
             moteObservations.remove(o);
           }
@@ -260,7 +247,7 @@ public class SimEventCentral {
       /* Stop observing all log interfaces */
       MoteObservation[] observations = moteObservations.toArray(new MoteObservation[0]);
       for (MoteObservation o: observations) {
-        if (o.getObserver() == logOutputObserver) {
+        if (o.observer() == logOutputObserver) {
           o.disconnect();
           moteObservations.remove(o);
         }
@@ -297,7 +284,7 @@ public class SimEventCentral {
     int count=0;
     MoteObservation[] observations = moteObservations.toArray(new MoteObservation[0]);
     for (MoteObservation o: observations) {
-      if (o.getObserver() == logOutputObserver) {
+      if (o.observer() == logOutputObserver) {
         count++;
       }
     }
