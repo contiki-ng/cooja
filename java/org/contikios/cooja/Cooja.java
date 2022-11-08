@@ -1602,10 +1602,10 @@ public class Cooja extends Observable {
               plugin.putClientProperty("zorder", null);
               break;
             }
-            getDesktopPane().repaint();
           }
         } catch (Exception e) {
         }
+        getDesktopPane().repaint();
       }
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Mote type creation error: " + e.getMessage(), e);
