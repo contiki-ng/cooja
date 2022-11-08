@@ -1544,50 +1544,49 @@ public class Cooja extends Observable {
         logger.info("Simulation not loaded");
         return null;
       }
-      // Restart plugins from config
-      for (var e : root.getChildren("plugin")) {
-        final Element pluginElement = (Element) e;
-        // Read plugin class
-        String pluginClassName = pluginElement.getText().trim();
-        if (pluginClassName.startsWith("se.sics")) {
-          pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
-        }
-        // Skip SimControl, functionality is now in Cooja class.
-        if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName)) {
-          continue;
-        }
-        // Backwards compatibility: old visualizers were replaced.
-        if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
-                pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
-                pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
-                pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
-          logger.warn("Old simulation config detected: visualizers have been remade");
-          pluginClassName = "org.contikios.cooja.plugins.Visualizer";
-        }
-
-        var pluginClass = tryLoadClass(this, Plugin.class, pluginClassName);
-        if (pluginClass == null) {
-          logger.fatal("Could not load plugin class: " + pluginClassName);
-          throw new Exception("Could not load plugin class " + pluginClassName);
-        }
-        // Skip plugins that require visualization in headless mode.
-        if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
-          continue;
-        }
-        // Parse plugin mote argument (if any)
-        Mote mote = null;
-        for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
-          int moteNr = Integer.parseInt(((Element) pluginSubElement).getText());
-          if (moteNr >= 0 && moteNr < newSim.getMotesCount()) {
-            mote = newSim.getMote(moteNr);
-          }
-        }
-        tryStartPlugin(pluginClass, newSim, mote, pluginElement);
-      }
-    } catch (MoteTypeCreationException e) {
-      throw new SimulationCreationException("Mote type creation error: " + e.getMessage(), e);
     } catch (Exception e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
+    }
+
+    // Restart plugins from config
+    for (var e : root.getChildren("plugin")) {
+      final Element pluginElement = (Element) e;
+      // Read plugin class
+      String pluginClassName = pluginElement.getText().trim();
+      if (pluginClassName.startsWith("se.sics")) {
+        pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
+      }
+      // Skip SimControl, functionality is now in Cooja class.
+      if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName)) {
+        continue;
+      }
+      // Backwards compatibility: old visualizers were replaced.
+      if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
+              pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
+              pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
+              pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
+        logger.warn("Old simulation config detected: visualizers have been remade");
+        pluginClassName = "org.contikios.cooja.plugins.Visualizer";
+      }
+
+      var pluginClass = tryLoadClass(this, Plugin.class, pluginClassName);
+      if (pluginClass == null) {
+        logger.fatal("Could not load plugin class: " + pluginClassName);
+        throw new SimulationCreationException("Could not load plugin class " + pluginClassName, null);
+      }
+      // Skip plugins that require visualization in headless mode.
+      if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
+        continue;
+      }
+      // Parse plugin mote argument (if any)
+      Mote mote = null;
+      for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
+        int moteNr = Integer.parseInt(((Element) pluginSubElement).getText());
+        if (moteNr >= 0 && moteNr < newSim.getMotesCount()) {
+          mote = newSim.getMote(moteNr);
+        }
+      }
+      tryStartPlugin(pluginClass, newSim, mote, pluginElement);
     }
 
     if (isVisualized()) { // Z order visualized plugins.
