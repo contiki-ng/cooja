@@ -152,8 +152,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
     memorySegments = new Memory[MAX_MEM >> 8];
 
     flash = new Flash(this, memory,
-            new FlashRange(config.mainFlashStart, config.mainFlashStart + config.mainFlashSize, 512, 64),
-            new FlashRange(config.infoMemStart, config.infoMemStart + config.infoMemSize, 128, 64),
+            new Flash.FlashRange(config.mainFlashStart, config.mainFlashStart + config.mainFlashSize, 512, 64),
+            new Flash.FlashRange(config.infoMemStart, config.infoMemStart + config.infoMemSize, 128, 64),
             config.flashControllerOffset);
 
     currentSegment = new Memory() {

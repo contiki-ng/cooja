@@ -611,4 +611,13 @@ public class Flash extends IOUnit {
     locked = true;
     currentWriteMode = WriteMode.NONE;
   }
+
+  /**
+   * @author Klaus Stengel (siklsten@informatik.stud.uni-erlangen.de)
+   */
+  public record FlashRange(int start, int end, int segment_size, int blocksize) {
+    public boolean isInRange(int address) {
+      return address >= start && address < end;
+    }
+  }
 }
