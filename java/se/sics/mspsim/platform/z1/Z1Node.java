@@ -109,34 +109,30 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
     @Override
     public void portWrite(IOPort source, int data) {
         switch (source.getPort()) {
-        case 3:
-            // Chip select = active low...
-            radio.setChipSelect((data & CC2420_CHIP_SELECT) == 0);
-            break;
-        case 4:
-            radio.setVRegOn((data & CC2420_VREG) != 0);
-            //radio.portWrite(source, data);
-            flash.portWrite(source, data);
-            break;
-        case 5: {
-            if ((data & (LEDS_CONF_RED|LEDS_CONF_BLUE|LEDS_CONF_GREEN)) !=
-                (lastPort5 & (LEDS_CONF_RED|LEDS_CONF_BLUE|LEDS_CONF_GREEN))) {
-                redLed = (data & LEDS_CONF_RED) == 0;
-                blueLed = (data & LEDS_CONF_BLUE) == 0;
-                greenLed = (data & LEDS_CONF_GREEN) == 0;
-                leds.setLeds((redLed ? 1 : 0) + (greenLed ? 2 : 0) + (blueLed ? 4 : 0));
-                int newMode = (redLed ? 1 : 0) + (greenLed ? 1 : 0) + (blueLed ? 1 : 0);
-                setMode(newMode);
+            case 3 -> radio.setChipSelect((data & CC2420_CHIP_SELECT) == 0); // Chip select = active low...
+            case 4 -> {
+                radio.setVRegOn((data & CC2420_VREG) != 0);
+                //radio.portWrite(source, data);
+                flash.portWrite(source, data);
             }
-            if ((data & TMP102_PWR) != (lastPort5 & TMP102_PWR)) {
+            case 5 -> {
+                if ((data & (LEDS_CONF_RED | LEDS_CONF_BLUE | LEDS_CONF_GREEN)) !=
+                        (lastPort5 & (LEDS_CONF_RED | LEDS_CONF_BLUE | LEDS_CONF_GREEN))) {
+                    redLed = (data & LEDS_CONF_RED) == 0;
+                    blueLed = (data & LEDS_CONF_BLUE) == 0;
+                    greenLed = (data & LEDS_CONF_GREEN) == 0;
+                    leds.setLeds((redLed ? 1 : 0) + (greenLed ? 2 : 0) + (blueLed ? 4 : 0));
+                    int newMode = (redLed ? 1 : 0) + (greenLed ? 1 : 0) + (blueLed ? 1 : 0);
+                    setMode(newMode);
+                }
+                if ((data & TMP102_PWR) != (lastPort5 & TMP102_PWR)) {
 //                tmp102.setPowerPin((data & TMP102_PWR) != 0);
-            }
-            if ((data & (I2C_CLK | I2C_DATA)) != (lastPort5 & (I2C_CLK|I2C_DATA))) {
+                }
+                if ((data & (I2C_CLK | I2C_DATA)) != (lastPort5 & (I2C_CLK | I2C_DATA))) {
 //                tmp102.setI2CPins((data & I2C_CLK) != 0, (data & I2C_DATA) != 0);
+                }
+                lastPort5 = data;
             }
-            lastPort5 = data;
-            break;
-        }
         }
     }
 

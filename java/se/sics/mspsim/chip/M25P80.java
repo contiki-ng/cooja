@@ -129,128 +129,134 @@ public class M25P80 extends ExternalFlash implements USARTListener, PortListener
       if (DEBUG) {
         log("byte received: " + data);
       }
-      switch(state) {
-      case READ_STATUS:
+      switch (state) {
+        case READ_STATUS -> {
           if (DEBUG) {
             log("Read status => " + getStatus() + " from $" + Utils.hex(cpu.getPC(), 4));
           }
           source.byteReceived(getStatus());
           return;
-      case READ_IDENT:
-        source.byteReceived(identity[pos]);
-        pos++;
-        if (pos >= identity.length) {
-          pos = 0;
         }
-        return;
-      case WRITE_STATUS:
-        status = data & STATUS_MASK;
-        source.byteReceived(0);
-        return;
-      case READ_DATA:
-        if (pos < 3) {
-          readAddress = (readAddress << 8) + data;
-          source.byteReceived(0);
+        case READ_IDENT -> {
+          source.byteReceived(identity[pos]);
           pos++;
-          if (DEBUG && pos == 3) {
-            log("reading from $" + Integer.toHexString(readAddress));
+          if (pos >= identity.length) {
+            pos = 0;
           }
-        } else {
-          source.byteReceived(readMemory(readAddress++));
-          if (readAddress > 0xfffff) {
-             readAddress = 0;
-          }
+          return;
         }
-        return;
-      case SECTOR_ERASE:
-        if (pos < 3) {
-          readAddress = (readAddress << 8) + data;
+        case WRITE_STATUS -> {
+          status = data & STATUS_MASK;
           source.byteReceived(0);
-          pos++;
-          if (pos == 3) {
-            // Clear buffer
-            sectorErase(readAddress);
-          }
+          return;
         }
-        return;
-      case PAGE_PROGRAM:
-        if (pos < 3) {
-          readAddress = (readAddress << 8) + data;
-          source.byteReceived(0);
-          pos++;
-          if (pos == 3) {
-            // Clear buffer
-            Arrays.fill(buffer, (byte) 0xff);
-            blockWriteAddress = readAddress & 0xfff00;
-            if (DEBUG) {
-              log("programming at $" + Integer.toHexString(readAddress));
+        case READ_DATA -> {
+          if (pos < 3) {
+            readAddress = (readAddress << 8) + data;
+            source.byteReceived(0);
+            pos++;
+            if (DEBUG && pos == 3) {
+              log("reading from $" + Integer.toHexString(readAddress));
+            }
+          } else {
+            source.byteReceived(readMemory(readAddress++));
+            if (readAddress > 0xfffff) {
+              readAddress = 0;
             }
           }
-        } else {
-          // Do the programming!!!
-          source.byteReceived(0);
-          writeBuffer((readAddress++) & 0xff, data);
+          return;
         }
-        return;
+        case SECTOR_ERASE -> {
+          if (pos < 3) {
+            readAddress = (readAddress << 8) + data;
+            source.byteReceived(0);
+            pos++;
+            if (pos == 3) {
+              // Clear buffer
+              sectorErase(readAddress);
+            }
+          }
+          return;
+        }
+        case PAGE_PROGRAM -> {
+          if (pos < 3) {
+            readAddress = (readAddress << 8) + data;
+            source.byteReceived(0);
+            pos++;
+            if (pos == 3) {
+              // Clear buffer
+              Arrays.fill(buffer, (byte) 0xff);
+              blockWriteAddress = readAddress & 0xfff00;
+              if (DEBUG) {
+                log("programming at $" + Integer.toHexString(readAddress));
+              }
+            }
+          } else {
+            // Do the programming!!!
+            source.byteReceived(0);
+            writeBuffer((readAddress++) & 0xff, data);
+          }
+          return;
+        }
       }
       if (DEBUG) {
         log("new command: " + data);
       }
       switch (data) {
-      case WRITE_ENABLE:
-        if (DEBUG) {
-          log("Write Enable");
+        case WRITE_ENABLE -> {
+          if (DEBUG) {
+            log("Write Enable");
+          }
+          writeEnable = true;
         }
-        writeEnable = true;
-        break;
-      case WRITE_DISABLE:
-        if (DEBUG) {
-          log("Write Disable");
+        case WRITE_DISABLE -> {
+          if (DEBUG) {
+            log("Write Disable");
+          }
+          writeEnable = false;
         }
-        writeEnable = false;
-        break;
-      case READ_IDENT:
-        if (DEBUG) {
-          log("Read ident.");
+        case READ_IDENT -> {
+          if (DEBUG) {
+            log("Read ident.");
+          }
+          state = READ_IDENT;
+          pos = 0;
+          source.byteReceived(0);
+          return;
         }
-        state = READ_IDENT;
-        pos = 0;
-        source.byteReceived(0);
-        return;
-      case READ_STATUS:
-        state = READ_STATUS;
-        source.byteReceived(0);
-        return;
-      case WRITE_STATUS:
-        if (DEBUG) {
-          log("Write status");
+        case READ_STATUS -> {
+          state = READ_STATUS;
+          source.byteReceived(0);
+          return;
         }
-        state = WRITE_STATUS;
-        break;
-      case READ_DATA:
-        if (DEBUG) {
-          log("Read Data");
+        case WRITE_STATUS -> {
+          if (DEBUG) {
+            log("Write status");
+          }
+          state = WRITE_STATUS;
         }
-        state = READ_DATA;
-        pos = readAddress = 0;
-        break;
-      case PAGE_PROGRAM:
-        if (DEBUG) {
-          log("Page Program");
+        case READ_DATA -> {
+          if (DEBUG) {
+            log("Read Data");
+          }
+          state = READ_DATA;
+          pos = readAddress = 0;
         }
-        state = PAGE_PROGRAM;
-        pos = readAddress = 0;
-        break;
-      case SECTOR_ERASE:
-        if (DEBUG) {
-          log("Sector Erase");
+        case PAGE_PROGRAM -> {
+          if (DEBUG) {
+            log("Page Program");
+          }
+          state = PAGE_PROGRAM;
+          pos = readAddress = 0;
         }
-        state = SECTOR_ERASE;
-        pos = 0;
-        break;
-      case BULK_ERASE:
-        log("Bulk Erase");
-        break;
+        case SECTOR_ERASE -> {
+          if (DEBUG) {
+            log("Sector Erase");
+          }
+          state = SECTOR_ERASE;
+          pos = 0;
+        }
+        case BULK_ERASE -> log("Bulk Erase");
       }
       source.byteReceived(0);
     }
@@ -336,10 +342,8 @@ public class M25P80 extends ExternalFlash implements USARTListener, PortListener
     // Chip select = active low...
     if (chipSelect && (data & CHIP_SELECT) != 0) {
       // Chip select will go "off"
-      switch(state) {
-      case PAGE_PROGRAM:
-        programPage();
-        break;
+      switch (state) {
+        case PAGE_PROGRAM -> programPage();
       }
     }
     chipSelect = (data & CHIP_SELECT) == 0;

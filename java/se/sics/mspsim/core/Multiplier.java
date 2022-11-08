@@ -109,71 +109,63 @@ public class Multiplier extends IOUnit {
     if (DEBUG) {
       log("write to: $" + Utils.hex(address, 4) + " data = " + data + " word = " + word);
     }
-    switch(address) {
-    case MPY:
-      op1 = mpy = data;
-      if (DEBUG) log("Write to MPY: " + data);
-      signed = false;
-      accumulating = false;
-      break;
-    case MPYS:
-      op1 = mpys = data;
-      if (DEBUG) log("Write to MPYS: " + data);
-      signed = true;
-      accumulating = false;
-      break;
-    case MAC:
-      op1 = mac = data;
-      if (DEBUG) log("Write to MAC: " + data);
-      signed = false;
-      accumulating = true;
-      break;
-    case MACS:
-      op1 = macs = data;
-      if (DEBUG) log("Write to MACS: " + data);
-      signed = true;
-      accumulating = true;
-      break;
-    case RESLO:
-      resLo = data;
-      break;
-    case RESHI:
-      resHi = data;
-      break;
-    case OP2:
-      if (DEBUG) log("Write to OP2: " + data);
-      sumext = 0;
-      op2 = data;
-      // Expand to word
-      if (signed) {
-        if (!word) {
-          if (op1 > 0x80) op1 = op1 | 0xff00;
-          if (op2 > 0x80) op2 = op2 | 0xff00;
-        }
-        op1 = op1 > 0x8000 ? op1 - 0x10000 : op1;
-        op2 = op2 > 0x8000 ? op2 - 0x10000 : op2;
+    switch (address) {
+      case MPY -> {
+        op1 = mpy = data;
+        if (DEBUG) log("Write to MPY: " + data);
+        signed = false;
+        accumulating = false;
       }
-
-      long res = (long) op1 * (long) op2;
-      if (DEBUG) log("O1:" + op1 + " * " + op2 + " = " + res);
-
-      if (signed) {
-        sumext = res < 0 ? 0xffff : 0;
+      case MPYS -> {
+        op1 = mpys = data;
+        if (DEBUG) log("Write to MPYS: " + data);
+        signed = true;
+        accumulating = false;
       }
-
-      if (accumulating) {
-        res += ((long) resHi << 16) + resLo;
-        if (!signed) {
-          sumext = res > 0xffffffffL ? 1 : 0;
-        }
-      } else if (!signed) {
+      case MAC -> {
+        op1 = mac = data;
+        if (DEBUG) log("Write to MAC: " + data);
+        signed = false;
+        accumulating = true;
+      }
+      case MACS -> {
+        op1 = macs = data;
+        if (DEBUG) log("Write to MACS: " + data);
+        signed = true;
+        accumulating = true;
+      }
+      case RESLO -> resLo = data;
+      case RESHI -> resHi = data;
+      case OP2 -> {
+        if (DEBUG) log("Write to OP2: " + data);
         sumext = 0;
+        op2 = data;
+        // Expand to word
+        if (signed) {
+          if (!word) {
+            if (op1 > 0x80) op1 = op1 | 0xff00;
+            if (op2 > 0x80) op2 = op2 | 0xff00;
+          }
+          op1 = op1 > 0x8000 ? op1 - 0x10000 : op1;
+          op2 = op2 > 0x8000 ? op2 - 0x10000 : op2;
+        }
+        long res = (long) op1 * (long) op2;
+        if (DEBUG) log("O1:" + op1 + " * " + op2 + " = " + res);
+        if (signed) {
+          sumext = res < 0 ? 0xffff : 0;
+        }
+        if (accumulating) {
+          res += ((long) resHi << 16) + resLo;
+          if (!signed) {
+            sumext = res > 0xffffffffL ? 1 : 0;
+          }
+        } else if (!signed) {
+          sumext = 0;
+        }
+        resHi = (int) ((res >> 16) & 0xffff);
+        resLo = (int) (res & 0xffff);
+        if (DEBUG) log(" ===> result = " + res);
       }
-
-      resHi = (int) ((res >> 16) & 0xffff);
-      resLo = (int) (res & 0xffff);
-      if (DEBUG) log(" ===> result = " + res);
-      break;
     }
   }
 

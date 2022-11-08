@@ -171,166 +171,156 @@ public class Multiplier32 extends IOUnit {
         if (DEBUG) {
             log("write to: $" + Utils.hex(address, 4) + " data=" + data + " word=" + word);
         }
-        switch(address) {
-        case MPY:
-            if (DEBUG) log("Write to MPY: " + data);
-            op1 = mpy = data;
-            signed = false;
-            accumulating = false;
-            break;
-        case MPYS:
-            op1 = mpys = data;
-            if (DEBUG) log("Write to MPYS: " + data);
-            signed = true;
-            accumulating = false;
-            break;
-        case MAC:
-            op1 = mac = data;
-            if (DEBUG) log("Write to MAC: " + data);
-            signed = false;
-            accumulating = true;
-            break;
-        case MACS:
-            op1 = macs = data;
-            if (DEBUG) log("Write to MACS: " + data);
-            signed = true;
-            accumulating = true;
-            break;
-        case RESLO:
-            resLo = data;
-            break;
-        case RESHI:
-            resHi = data;
-            break;
-        case OP2:
-            if (DEBUG) log("Write to OP2: " + data);
-            sumext = 0;
-            op2 = data;
-            // Expand to word
-            if (signed) {
-                if (!word) {
-                    if (op1 > 0x80) op1 = op1 | 0xff00;
-                    if (op2 > 0x80) op2 = op2 | 0xff00;
-                }
-                op1 = op1 > 0x8000 ? op1 - 0x10000 : op1;
-                op2 = op2 > 0x8000 ? op2 - 0x10000 : op2;
+        switch (address) {
+            case MPY -> {
+                if (DEBUG) log("Write to MPY: " + data);
+                op1 = mpy = data;
+                signed = false;
+                accumulating = false;
             }
-
-            long res = (long) op1 * (long) op2;
-            if (DEBUG) log("O1:" + op1 + " * " + op2 + " = " + res);
-
-            if (signed) {
-                sumext = res < 0 ? 0xffff : 0;
+            case MPYS -> {
+                op1 = mpys = data;
+                if (DEBUG) log("Write to MPYS: " + data);
+                signed = true;
+                accumulating = false;
             }
-
-            if (accumulating) {
-                res += ((long) resHi << 16) + resLo;
-                if (!signed) {
-                    sumext = res > 0xffffffffL ? 1 : 0;
-                }
-            } else if (!signed) {
+            case MAC -> {
+                op1 = mac = data;
+                if (DEBUG) log("Write to MAC: " + data);
+                signed = false;
+                accumulating = true;
+            }
+            case MACS -> {
+                op1 = macs = data;
+                if (DEBUG) log("Write to MACS: " + data);
+                signed = true;
+                accumulating = true;
+            }
+            case RESLO -> resLo = data;
+            case RESHI -> resHi = data;
+            case OP2 -> {
+                if (DEBUG) log("Write to OP2: " + data);
                 sumext = 0;
-            }
-
-            resHi = (int) ((res >> 16) & 0xffff);
-            resLo = (int) (res & 0xffff);
-            if (DEBUG) log(" ===> result = " + res);
-            break;
-        case MPY32L:
-            op1 = mpy32L = data;
-            signed = false;
-            accumulating = false;
-            break;
-        case MPY32H:
-            mpy32H = data;
-            op1 = (op1 & 0xffff) | (data << 16);
-            break;
-        case MPYS32L:
-            if (!word && data >= 0x80) {
-                data -= 0x100;
-            }
-            op1 = mpy32L = data;
-            signed = true;
-            accumulating = false;
-            break;
-        case MPYS32H:
-            if (!word & data > 0x80) {
-                data -= 0x100;
-            }
-            mpys32H = data;
-            op1 = (op1 & 0xffff) | (data << 16);
-            break;
-        case MAC32L:
-            op1 = mac32L = data;
-            signed = false;
-            accumulating = true;
-            break;
-        case MAC32H:
-            mac32H = data;
-            op1 = (op1 & 0xffff) | (data << 16);
-            break;
-        case MACS32L:
-            if (!word & data > 0x80) {
-                data -= 0x100;
-            }
-            op1 = macs32L = data;
-            signed = true;
-            accumulating = true;
-            break;
-        case MACS32H:
-            if (!word & data > 0x80) {
-                data -= 0x100;
-            }
-            macs32H = data;
-            op1 = (op1 & 0xffff) | (data << 16);
-            break;
-        case OP2L:
-            if (signed && !word && data >= 0x80) {
-                data -= 0x80;
-            }
-            op2L = op2 = data;
-            break;
-        case OP2H: {
-            long p;
-            if (signed && !word && data >= 0x80) {
-                data -= 0x80;
-            }
-            op2 = (op2 & 0xffff) | (data << 16);
-
-            /* FIXME: Doesn't set SUMEXT and MPYC properly. */
-            if (signed) {
-                p = (long) op1 * (long) op2;
-            }
-            else {
-                long uop1, uop2;
-                uop1 = op1;
-                if (uop1 < 0) {
-                    uop1 += 0x100000000L;
+                op2 = data;
+                // Expand to word
+                if (signed) {
+                    if (!word) {
+                        if (op1 > 0x80) op1 = op1 | 0xff00;
+                        if (op2 > 0x80) op2 = op2 | 0xff00;
+                    }
+                    op1 = op1 > 0x8000 ? op1 - 0x10000 : op1;
+                    op2 = op2 > 0x8000 ? op2 - 0x10000 : op2;
                 }
-                uop2 = op2;
-                if (uop2 < 0) {
-                    uop2 += 0x100000000L;
+                long res = (long) op1 * (long) op2;
+                if (DEBUG) log("O1:" + op1 + " * " + op2 + " = " + res);
+                if (signed) {
+                    sumext = res < 0 ? 0xffff : 0;
+                }
+                if (accumulating) {
+                    res += ((long) resHi << 16) + resLo;
+                    if (!signed) {
+                        sumext = res > 0xffffffffL ? 1 : 0;
+                    }
+                } else if (!signed) {
+                    sumext = 0;
+                }
+                resHi = (int) ((res >> 16) & 0xffff);
+                resLo = (int) (res & 0xffff);
+                if (DEBUG) log(" ===> result = " + res);
+            }
+            case MPY32L -> {
+                op1 = mpy32L = data;
+                signed = false;
+                accumulating = false;
+            }
+            case MPY32H -> {
+                mpy32H = data;
+                op1 = (op1 & 0xffff) | (data << 16);
+            }
+            case MPYS32L -> {
+                if (!word && data >= 0x80) {
+                    data -= 0x100;
+                }
+                op1 = mpy32L = data;
+                signed = true;
+                accumulating = false;
+            }
+            case MPYS32H -> {
+                if (!word & data > 0x80) {
+                    data -= 0x100;
+                }
+                mpys32H = data;
+                op1 = (op1 & 0xffff) | (data << 16);
+            }
+            case MAC32L -> {
+                op1 = mac32L = data;
+                signed = false;
+                accumulating = true;
+            }
+            case MAC32H -> {
+                mac32H = data;
+                op1 = (op1 & 0xffff) | (data << 16);
+            }
+            case MACS32L -> {
+                if (!word & data > 0x80) {
+                    data -= 0x100;
+                }
+                op1 = macs32L = data;
+                signed = true;
+                accumulating = true;
+            }
+            case MACS32H -> {
+                if (!word & data > 0x80) {
+                    data -= 0x100;
+                }
+                macs32H = data;
+                op1 = (op1 & 0xffff) | (data << 16);
+            }
+            case OP2L -> {
+                if (signed && !word && data >= 0x80) {
+                    data -= 0x80;
+                }
+                op2L = op2 = data;
+            }
+            case OP2H -> {
+                long p;
+                if (signed && !word && data >= 0x80) {
+                    data -= 0x80;
+                }
+                op2 = (op2 & 0xffff) | (data << 16);
+
+                /* FIXME: Doesn't set SUMEXT and MPYC properly. */
+                if (signed) {
+                    p = (long) op1 * (long) op2;
+                } else {
+                    long uop1, uop2;
+                    uop1 = op1;
+                    if (uop1 < 0) {
+                        uop1 += 0x100000000L;
+                    }
+                    uop2 = op2;
+                    if (uop2 < 0) {
+                        uop2 += 0x100000000L;
+                    }
+
+                    p = uop1 * uop2;
+                }
+                if (accumulating) {
+                    res64 += p;
+                } else {
+                    res64 = p;
                 }
 
-                p = uop1 * uop2;
-            }
-            if (accumulating) {
-                res64 += p;
-            } else {
-                res64 = p;
-            }
+                /* FIXME: Ignore accumulate. */
+                resLo = res0 = (int) res64 & 0xffff;
+                resHi = res1 = (int) (res64 >> 16) & 0xffff;
+                res2 = (int) (res64 >> 32) & 0xffff;
+                res3 = (int) (res64 >> 48) & 0xffff;
 
-            /* FIXME: Ignore accumulate. */
-            resLo = res0 = (int) res64 & 0xffff;
-            resHi = res1 = (int) (res64 >> 16) & 0xffff;
-            res2 = (int) (res64 >> 32) & 0xffff;
-            res3 = (int) (res64 >> 48) & 0xffff;
-
-            break;
-        }
-        default:
-            logw(WarningType.EMULATION_ERROR, "**** Not yet implemented multiplier 32 register: 0x" + Utils.hex(address, 4));
-            break;
+                break;
+            }
+            default ->
+                    logw(WarningType.EMULATION_ERROR, "**** Not yet implemented multiplier 32 register: 0x" + Utils.hex(address, 4));
         }
     }
 
