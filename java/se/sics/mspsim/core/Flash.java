@@ -615,19 +615,7 @@ public class Flash extends IOUnit {
   /**
    * @author Klaus Stengel (siklsten@informatik.stud.uni-erlangen.de)
    */
-  public static class FlashRange {
-    public final int start;
-    public final int end;
-    public final int segment_size;
-    public final int blocksize;
-
-    public FlashRange(int start, int end, int segment_size, int blocksize) {
-      this.start = start;
-      this.end = end;
-      this.segment_size = segment_size;
-      this.blocksize = blocksize;
-    }
-
+  public record FlashRange(int start, int end, int segment_size, int blocksize) {
     public boolean isInRange(int address) {
       return address >= start && address < end;
     }
