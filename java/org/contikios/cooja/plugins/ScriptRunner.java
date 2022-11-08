@@ -273,7 +273,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
    * @return The file
    */
   private File getLinkedFile(int ix){
-    var name = editorTabs.getTitleAt(ix);
+    var name = editorTabs.getToolTipTextAt(ix);
     return name.endsWith(".js") && Files.exists(Path.of(name)) ? new File(name) : null;
   }
 
