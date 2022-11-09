@@ -83,6 +83,7 @@ import org.contikios.cooja.plugins.BufferListener;
 import org.contikios.cooja.plugins.DGRMConfigurator;
 import org.contikios.cooja.plugins.EventListener;
 import org.contikios.cooja.plugins.LogListener;
+import org.contikios.cooja.plugins.Mobility;
 import org.contikios.cooja.plugins.MoteInformation;
 import org.contikios.cooja.plugins.MoteInterfaceViewer;
 import org.contikios.cooja.plugins.MoteTypeInformation;
@@ -472,6 +473,7 @@ public class Cooja extends Observable {
     registerPlugin(Visualizer.class);
     registerPlugin(LogListener.class);
     registerPlugin(TimeLine.class);
+    registerPlugin(Mobility.class);
     registerPlugin(MoteInformation.class);
     registerPlugin(MoteInterfaceViewer.class);
     registerPlugin(VariableWatcher.class);
