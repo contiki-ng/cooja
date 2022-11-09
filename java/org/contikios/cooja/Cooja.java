@@ -684,15 +684,15 @@ public class Cooja extends Observable {
   {
     // Check that plugin class is registered
     if (!pluginClasses.contains(pluginClass)) {
-      throw new PluginConstructionException("Tool class not registered: " + pluginClass);
+      throw new PluginConstructionException("Tool class not registered: " + pluginClass.getName());
     }
 
     int pluginType = pluginClass.getAnnotation(PluginType.class).value();
     if (pluginType != PluginType.COOJA_PLUGIN && pluginType != PluginType.COOJA_STANDARD_PLUGIN && sim == null) {
-      throw new PluginConstructionException("No simulation argument for plugin");
+      throw new PluginConstructionException("No simulation argument for plugin: " + pluginClass.getName());
     }
     if (pluginType == PluginType.MOTE_PLUGIN && argMote == null) {
-      throw new PluginConstructionException("No mote argument for mote plugin");
+      throw new PluginConstructionException("No mote argument for mote plugin: " + pluginClass.getName());
     }
     if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
       throw new PluginConstructionException("Plugin " + pluginClass.getName() + " requires visualization");
