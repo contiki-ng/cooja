@@ -27,6 +27,7 @@
  */
 
 package org.contikios.cooja;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -560,9 +561,9 @@ public class Simulation extends Observable {
    *
    * @param root Simulation configuration
    * @return True if simulation was configured successfully
-   * @throws Exception If configuration could not be loaded
+   * @throws MoteType.MoteTypeCreationException If configuration could not be loaded
    */
-  public boolean setConfigXML(Element root, boolean quick) throws Exception {
+  public boolean setConfigXML(Element root, boolean quick) throws MoteType.MoteTypeCreationException {
     this.quick = quick;
     // Parse elements
     for (var element : (List<Element>) root.getChildren()) {
@@ -650,7 +651,11 @@ public class Simulation extends Observable {
               }
             }
             assert moteTypeClass != null : "Selected MoteType class is null";
-            moteType = moteTypeClass.getConstructor((Class<? extends MoteType>[]) null).newInstance();
+            try {
+              moteType = moteTypeClass.getConstructor((Class<? extends MoteType>[]) null).newInstance();
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+              throw new MoteType.MoteTypeCreationException("Could not create " + moteTypeClassName, e);
+            }
           }
           if (!moteType.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
             logger.fatal("Mote type was not created: " + element.getText().trim());
@@ -664,18 +669,18 @@ public class Simulation extends Observable {
             if (subElement.getName().equals("motetype_identifier")) {
               moteType = getMoteType(subElement.getText());
               if (moteType == null) {
-                throw new Exception("No mote type '" + subElement.getText() + "' for mote");
+                throw new MoteType.MoteTypeCreationException("No mote type '" + subElement.getText() + "' for mote");
               }
               break;
             }
           }
           if (moteType == null) {
-            throw new Exception("No mote type specified for mote");
+            throw new MoteType.MoteTypeCreationException("No mote type specified for mote");
           }
           Mote mote = moteType.generateMote(this);
           if (!mote.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
             logger.fatal("Mote was not created: " + element.getText().trim());
-            throw new Exception("All motes were not recreated");
+            throw new MoteType.MoteTypeCreationException("Could not configure mote " + moteType);
           }
           addMote(mote);
         }
