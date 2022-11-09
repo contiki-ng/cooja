@@ -56,20 +56,20 @@ import org.jdom2.Element;
 @ClassDescription("Mobility")
 @PluginType(PluginType.SIM_PLUGIN)
 public class Mobility extends VisPlugin {
-  private static Logger logger = LogManager.getLogger(Mobility.class);
+  private static final Logger logger = LogManager.getLogger(Mobility.class);
 
   private static final boolean QUIET = false;
 
-  private final boolean WRAP_MOVES = true; /* Wrap around loaded moves forever */
+  private static final boolean WRAP_MOVES = true; /* Wrap around loaded moves forever */
 
   private Move[] entries; /* All mote moves */
-  private Simulation simulation;
+  private final Simulation simulation;
   private long periodStart; /* us */
   private int currentMove;
 
   private File filePositions = null;
 
-  private MessageListUI log = new MessageListUI();
+  private final MessageListUI log = new MessageListUI();
 
   public Mobility(Simulation simulation, final Cooja gui) {
     super("Mobility", gui);
@@ -159,7 +159,7 @@ public class Mobility extends VisPlugin {
     }
   }
 
-  private TimeEvent moveNextMoteEvent = new TimeEvent() {
+  private final TimeEvent moveNextMoteEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
 
