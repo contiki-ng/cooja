@@ -144,14 +144,11 @@ public class Mobility extends VisPlugin {
       setTitle("Mobility: " + filePositions.getName());
 
       /* Execute first event - it will reschedule itself */
-      simulation.invokeSimulationThread(new Runnable() {
-        public void run() {
-          currentMove = 0;
-          periodStart = simulation.getSimulationTime();
-          moveNextMoteEvent.execute(Mobility.this.simulation.getSimulationTime());
-        }
+      simulation.invokeSimulationThread(() -> {
+        currentMove = 0;
+        periodStart = simulation.getSimulationTime();
+        moveNextMoteEvent.execute(Mobility.this.simulation.getSimulationTime());
       });
-
     } catch (Exception e) {
       log.addMessage("Error when loading positions: " + e.getMessage());
       logger.info("Error when loading positions:", e);
