@@ -119,7 +119,7 @@ public class Mobility extends VisPlugin {
       String data = StringUtils.loadFromFile(filePositions);
 
       /* Load move by move */
-      ArrayList<Move> entriesList = new ArrayList<Move>();
+      ArrayList<Move> entriesList = new ArrayList<>();
       for (String line: data.split("\n")) {
         if (line.trim().isEmpty() || line.startsWith("#")) {
           /* Skip header/metadata */
@@ -205,7 +205,7 @@ public class Mobility extends VisPlugin {
 
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
 
     if (filePositions != null) {
       var element = new Element("positions");
