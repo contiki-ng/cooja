@@ -29,6 +29,8 @@
 package org.contikios.cooja;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
@@ -186,9 +188,29 @@ class Main {
       }
     }
 
-    // Verify soundness of -nogui/-quickstart argument.
+    // Parse and verify soundness of -nogui/-quickstart argument.
+    ArrayList<Cooja.SimConfig> simConfigs = new ArrayList<>();
     if (options.action != null) {
-      for (var file : options.action.nogui == null ? options.action.quickstart : options.action.nogui) {
+      for (String arg : options.action.nogui == null ? options.action.quickstart : options.action.nogui) {
+        // Argument on the form "file.csc[,key1=value1,key2=value2, ..]"
+        var map = new HashMap<String, String>();
+        String file = null;
+        for (var item : arg.split(",", -1)) {
+          if (file == null) {
+            file = item;
+            continue;
+          }
+          var pair = item.split("=", -1);
+          if (pair.length != 2) {
+            System.err.println("Faulty key=value specification: " + item);
+            System.exit(1);
+          }
+          map.put(pair[0], pair[1]);
+        }
+        if (file == null) {
+          System.err.println("Failed argument parsing of -nogui/-quickstart: " + arg);
+          System.exit(1);
+        }
         if (!file.endsWith(".csc") && !file.endsWith(".csc.gz")) {
           String option = options.action.nogui == null ? "-quickstart" : "-nogui";
           System.err.println("Cooja " + option + " expects a filename extension of '.csc'");
@@ -198,6 +220,7 @@ class Main {
           System.err.println("File '" + file + "' does not exist");
           System.exit(1);
         }
+        simConfigs.add(new Cooja.SimConfig(map, file));
       }
     }
 
@@ -264,9 +287,7 @@ class Main {
     }
 
     var cfg = new Config(vis, options.randomSeed, options.externalToolsConfig, options.updateSimulation,
-            options.logDir, options.contikiPath, options.coojaPath, options.javac,
-            options.action == null
-                    ? null : options.action.quickstart == null ? options.action.nogui : options.action.quickstart);
+            options.logDir, options.contikiPath, options.coojaPath, options.javac, simConfigs);
     // Configure logger
     if (options.logConfigFile == null) {
       ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
