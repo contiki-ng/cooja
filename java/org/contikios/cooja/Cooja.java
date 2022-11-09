@@ -1586,7 +1586,11 @@ public class Cooja extends Observable {
           mote = newSim.getMote(moteNr);
         }
       }
-      tryStartPlugin(pluginClass, newSim, mote, pluginElement);
+      try {
+        startPlugin(pluginClass, newSim, mote, pluginElement);
+      } catch (PluginConstructionException ex) {
+        throw new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
+      }
     }
 
     if (isVisualized()) { // Z order visualized plugins.
