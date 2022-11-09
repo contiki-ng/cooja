@@ -404,10 +404,13 @@ public class GUI {
           return;
         }
 
-        var sim = new Simulation(cooja, cooja.configuration.logDir(), 123456);
+        var cfg = CreateSimDialog.showDialog(cooja, new Simulation.SimConfig(null, null,
+                false, 123456, 1000));
+        if (cfg == null) return;
+        var sim = new Simulation(cooja, cooja.configuration.logDir(), cfg.randomSeed());
         boolean ok;
         try {
-          ok = sim.setSimConfig(CreateSimDialog.showDialog(cooja, sim.getSimConfig()));
+          ok = sim.setSimConfig(cfg);
         } catch (MoteType.MoteTypeCreationException ex) {
           ok = false;
         }
