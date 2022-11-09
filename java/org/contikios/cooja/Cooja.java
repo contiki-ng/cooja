@@ -639,13 +639,12 @@ public class Cooja extends Observable {
    * @see #startPlugin(Class, Simulation, Mote, Element)
    * @param pluginClass Plugin class
    * @param sim Plugin simulation argument
-   * @param argMote Plugin mote argument
-   * @param root XML root element for plugin config
+   * @param mote Plugin mote argument
    * @return Started plugin
    */
-  private Plugin tryStartPlugin(Class<? extends Plugin> pluginClass, Simulation sim, Mote argMote, Element root) {
+  public Plugin tryStartPlugin(Class<? extends Plugin> pluginClass, Simulation sim, Mote mote) {
     try {
-      return startPlugin(pluginClass, sim, argMote, root);
+      return startPlugin(pluginClass, sim, mote, null);
     } catch (PluginConstructionException ex) {
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog("Error when starting plugin", ex, false);
@@ -663,10 +662,6 @@ public class Cooja extends Observable {
       }
     }
     return null;
-  }
-
-  public Plugin tryStartPlugin(Class<? extends Plugin> pluginClass, Simulation argSimulation, Mote argMote) {
-    return tryStartPlugin(pluginClass, argSimulation, argMote, null);
   }
 
   /**
