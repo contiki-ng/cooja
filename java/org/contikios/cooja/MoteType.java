@@ -222,8 +222,16 @@ public interface MoteType {
     public MoteTypeCreationException(String message) {
       super(message);
     }
+    public MoteTypeCreationException(String message, MessageList output) {
+      super(message);
+      compilationOutput = output;
+    }
     public MoteTypeCreationException(String message, Throwable cause) {
       super(message, cause);
+    }
+    public MoteTypeCreationException(String message, Throwable cause, MessageList output) {
+      super(message, cause);
+      compilationOutput = output;
     }
     public boolean hasCompilationOutput() {
       return compilationOutput != null;
