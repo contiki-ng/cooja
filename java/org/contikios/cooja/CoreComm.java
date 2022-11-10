@@ -187,16 +187,10 @@ public abstract class CoreComm {
         return;
       }
     } catch (IOException | InterruptedException e) {
-      var exception = new MoteTypeCreationException(
-          "Could not compile corecomm source file: " + className + ".java", e);
-      exception.setCompilationOutput(compilationOutput);
-      throw exception;
+      throw new MoteTypeCreationException("Could not compile corecomm source file: " + className + ".java", e, compilationOutput);
     }
 
-    MoteTypeCreationException exception = new MoteTypeCreationException(
-        "Could not compile corecomm source file: " + className + ".java");
-    exception.setCompilationOutput(compilationOutput);
-    throw exception;
+    throw new MoteTypeCreationException("Could not compile corecomm source file: " + className + ".java", compilationOutput);
   }
 
   /**

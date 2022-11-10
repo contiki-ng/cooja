@@ -752,10 +752,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
   private static MoteTypeCreationException createException(String message, Throwable err,
                                                            String command, MessageList outputList) {
     outputList.addMessage("Failed to run command: " + command, MessageList.ERROR);
-
-    var e = new MoteTypeCreationException(message, err);
-    e.setCompilationOutput(outputList);
-    return e;
+    return new MoteTypeCreationException(message, err, outputList);
   }
 
   @Override
