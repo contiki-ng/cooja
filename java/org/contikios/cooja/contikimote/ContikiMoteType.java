@@ -820,12 +820,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
       }
     }
     final var sourceFile = getContikiSourceFile();
-    if (sourceFile != null) { // Compensate for non-standard naming rules.
-      fileFirmware = getExpectedFirmwareFile(sourceFile.getAbsolutePath());
-    }
     if (sourceFile == null) {
       throw new MoteTypeCreationException("No Contiki application specified");
     }
+    // Compensate for non-standard naming rules.
+    fileFirmware = getExpectedFirmwareFile(sourceFile.getAbsolutePath());
     if (getCompileCommands() == null) {
       throw new MoteTypeCreationException("No compile commands specified");
     }
