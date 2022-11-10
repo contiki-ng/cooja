@@ -150,7 +150,6 @@ public class Cooja extends Observable {
   public static Properties defaultExternalToolsSettings;
   public static Properties currentExternalToolsSettings;
 
-  // FIXME: remove PATH_JAVAC.
   private static final String[] externalToolsSettingNames = new String[] {
     "PATH_COOJA",
     "PATH_CONTIKI", "PATH_APPS",
@@ -158,7 +157,6 @@ public class Cooja extends Observable {
 
     "PATH_MAKE",
     "PATH_C_COMPILER", "COMPILER_ARGS",
-    "PATH_JAVAC",
 
     "DEFAULT_PROJECTDIRS",
 
@@ -1136,7 +1134,6 @@ public class Cooja extends Observable {
     settings.put("PATH_MAKE", "make");
     settings.put("PATH_C_COMPILER", "gcc");
     settings.put("COMPILER_ARGS", "");
-    settings.put("PATH_JAVAC", "javac");
     settings.put("DEFAULT_PROJECTDIRS", "");
 
     settings.put("PARSE_WITH_COMMAND", "false");
