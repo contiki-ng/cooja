@@ -33,7 +33,7 @@ package org.contikios.cooja;
 import java.util.Collection;
 import java.util.Observable;
 import javax.swing.JPanel;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;

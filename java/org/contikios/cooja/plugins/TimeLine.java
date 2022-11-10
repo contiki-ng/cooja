@@ -99,7 +99,7 @@ import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.interfaces.Radio.RadioEvent;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * Shows events such as mote logs, LEDs, and radio transmissions, in a timeline.

@@ -80,7 +80,7 @@ import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.UnknownVariableException;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * Variable Watcher enables a user to watch mote variables during a simulation.

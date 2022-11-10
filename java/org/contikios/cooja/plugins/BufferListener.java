@@ -104,7 +104,7 @@ import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.util.ArrayQueue;
 import org.contikios.cooja.util.IPUtils;
 import org.contikios.cooja.util.StringUtils;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * @author Fredrik Osterlind, Niclas Finne

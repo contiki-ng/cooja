@@ -42,7 +42,7 @@ import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * Mote 3D position.

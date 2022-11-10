@@ -34,7 +34,7 @@ import java.util.Collection;
 
 import javax.swing.JInternalFrame;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * COOJA plugin. For graphical plugins, extend abstract class VisPlugin.

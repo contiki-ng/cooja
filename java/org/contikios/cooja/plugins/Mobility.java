@@ -50,8 +50,7 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.util.StringUtils;
-
-import org.jdom.Element;
+import org.jdom2.Element;
 
 
 @ClassDescription("Mobility")

@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.util.ArrayUtils;

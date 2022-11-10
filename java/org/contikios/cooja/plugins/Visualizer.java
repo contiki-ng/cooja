@@ -99,7 +99,7 @@ import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
 import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
 import org.contikios.mrm.MRMVisualizerSkin;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;

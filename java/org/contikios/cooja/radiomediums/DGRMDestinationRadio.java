@@ -32,7 +32,7 @@ package org.contikios.cooja.radiomediums;
 
 import java.util.Collection;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Radio;

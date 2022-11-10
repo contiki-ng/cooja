@@ -29,7 +29,7 @@ package org.contikios.cooja;
 
 import java.util.Collection;
 import org.contikios.cooja.mote.memory.MemoryInterface;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * A simulated mote.

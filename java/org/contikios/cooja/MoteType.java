@@ -33,7 +33,7 @@ import java.util.Collection;
 
 import javax.swing.JComponent;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageList;

@@ -33,7 +33,7 @@ package org.contikios.cooja.interfaces;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.MoteInterface;

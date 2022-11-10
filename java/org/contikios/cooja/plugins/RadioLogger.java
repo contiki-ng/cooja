@@ -102,7 +102,7 @@ import org.contikios.cooja.plugins.analyzers.IPv6PacketAnalyzer;
 import org.contikios.cooja.plugins.analyzers.PacketAnalyzer;
 import org.contikios.cooja.plugins.analyzers.RadioLoggerAnalyzerSuite;
 import org.contikios.cooja.util.StringUtils;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * Radio logger listens to the simulation radio medium and lists all transmitted
