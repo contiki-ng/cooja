@@ -659,9 +659,9 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * @param mem
    *          Memory to set
    */
-  protected void getCoreMemory(SectionMoteMemory mem) {
+  protected static void getCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
-      myCoreComm.getMemory(sec.getStartAddr(), sec.getTotalSize(), sec.getMemory());
+      CoreComm.getMemory(sec.getStartAddr(), sec.getTotalSize(), sec.getMemory());
     }
   }
 
@@ -671,9 +671,9 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * @param mem
    * New memory
    */
-  protected void setCoreMemory(SectionMoteMemory mem) {
+  protected static void setCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
-      myCoreComm.setMemory(sec.getStartAddr(), sec.getTotalSize(), sec.getMemory());
+      CoreComm.setMemory(sec.getStartAddr(), sec.getTotalSize(), sec.getMemory());
     }
   }
 
