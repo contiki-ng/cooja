@@ -407,24 +407,14 @@ public class GUI {
         var cfg = CreateSimDialog.showDialog(cooja, new Simulation.SimConfig(null, null,
                 false, 123456, 1000));
         if (cfg == null) return;
-        Simulation sim = null;
-        boolean ok = true;
+        Simulation sim;
         try {
           sim = new Simulation(cooja, cfg.title(), cooja.configuration.logDir(), cfg.randomSeed(), cfg.radioMedium(),
-                  cfg.moteStartDelay());
+                  cfg.moteStartDelay(), null);
         } catch (MoteType.MoteTypeCreationException ex) {
-          ok = false;
+          return;
         }
-        if (ok) {
-          // Start GUI plugins.
-          for (var pluginClass : cooja.getRegisteredPlugins()) {
-            int type = pluginClass.getAnnotation(PluginType.class).value();
-            if (type == PluginType.SIM_STANDARD_PLUGIN) {
-              cooja.tryStartPlugin(pluginClass, sim, null);
-            }
-          }
-          cooja.setSimulation(sim);
-        }
+        cooja.setSimulation(sim);
       }
       @Override
       public boolean shouldBeEnabled() {

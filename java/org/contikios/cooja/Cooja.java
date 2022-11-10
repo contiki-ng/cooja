@@ -1569,7 +1569,7 @@ public class Cooja extends Observable {
     }
     Simulation newSim;
     try {
-      newSim = new Simulation(this, title, configuration.logDir, seed, medium, delay);
+      newSim = new Simulation(this, title, configuration.logDir, seed, medium, delay, root.getChildren("plugin"));
       if (!newSim.setConfigXML(root.getChild("simulation"), quick)) {
         logger.info("Simulation not loaded");
         return null;
