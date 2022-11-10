@@ -160,7 +160,7 @@ public class Simulation extends Observable {
     this.cooja = cooja;
     this.logDir = logDir;
     randomGenerator = new SafeRandom(this);
-    randomSeed = seed;
+    setRandomSeed(seed);
     simulationThread = new Thread(() -> {
       boolean isAlive = true;
       do {
@@ -581,8 +581,6 @@ public class Simulation extends Observable {
           if (element.getText().equals("generated")) {
             randomSeedGenerated = true;
           }
-          // Seed already passed into the constructor, init random generator.
-          setRandomSeed(randomSeed);
         }
         case "motedelay" -> maxMoteStartupDelay = Integer.parseInt(element.getText()) * MILLISECOND;
         case "motedelay_us" -> maxMoteStartupDelay = Integer.parseInt(element.getText());
