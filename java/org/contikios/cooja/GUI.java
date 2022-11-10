@@ -1534,9 +1534,9 @@ public class GUI {
         }
         // Compilation output.
         MessageListUI compilationOutput = null;
-        if (e instanceof MoteType.MoteTypeCreationException ex && ex.hasCompilationOutput()) {
+        if (e instanceof MoteType.MoteTypeCreationException ex) {
           compilationOutput = (MessageListUI) ex.getCompilationOutput();
-        } else if (e != null && e.getCause() instanceof MoteType.MoteTypeCreationException ex && ex.hasCompilationOutput()) {
+        } else if (e != null && e.getCause() instanceof MoteType.MoteTypeCreationException ex) {
           compilationOutput = (MessageListUI) ex.getCompilationOutput();
         }
         if (compilationOutput != null) {
