@@ -50,7 +50,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -69,6 +68,7 @@ import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.VisPlugin.PluginRequiresVisualizationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
+import org.contikios.cooja.dialogs.CreateSimDialog;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.motes.DisturberMoteType;
@@ -1550,11 +1550,27 @@ public class Cooja extends Observable {
       }
     }
     System.gc();
+    var title = root.getChild("simulation").getChild("title").getText();
     var cfgSeed = root.getChild("simulation").getChild("randomseed").getText();
     long seed = manualRandomSeed != null ? manualRandomSeed
             : "generated".equals(cfgSeed) ? new Random().nextLong() : Long.parseLong(cfgSeed);
-    var newSim = new Simulation(this, configuration.logDir, seed);
+    var medium = root.getChild("simulation").getChild("radiomedium").getText().trim();
+    var cfgDelay = root.getChild("simulation").getChild("motedelay");
+    long delay = cfgDelay == null
+            ? Integer.parseInt(root.getChild("simulation").getChild("motedelay_us").getText())
+            : Integer.parseInt(cfgDelay.getText()) * Simulation.MILLISECOND;
+    if (Cooja.isVisualized() && !quick) {
+      var cfg = CreateSimDialog.showDialog(this, new Simulation.SimConfig(title, medium,
+              "generated".equals(cfgSeed), seed, delay));
+      if (cfg == null) return null;
+      title = cfg.title();
+      seed = cfg.randomSeed();
+      medium = cfg.radioMedium();
+      delay = cfg.moteStartDelay();
+    }
+    Simulation newSim;
     try {
+      newSim = new Simulation(this, title, configuration.logDir, seed, medium, delay);
       if (!newSim.setConfigXML(root.getChild("simulation"), quick)) {
         logger.info("Simulation not loaded");
         return null;
