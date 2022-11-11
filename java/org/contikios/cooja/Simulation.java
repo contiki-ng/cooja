@@ -90,7 +90,7 @@ public class Simulation extends Observable {
 
   private String title;
 
-  private RadioMedium currentRadioMedium;
+  private final RadioMedium currentRadioMedium;
 
   private static final Logger logger = LogManager.getLogger(Simulation.class);
 
@@ -167,12 +167,10 @@ public class Simulation extends Observable {
     randomSeed = seed;
     randomGenerator = new SafeRandom(this);
     randomGenerator.setSeed(seed);
-    var radioMedium = MoteInterfaceHandler.createRadioMedium(this, radioMediumClass);
-    if (radioMedium == null) {
+    currentRadioMedium = MoteInterfaceHandler.createRadioMedium(this, radioMediumClass);
+    if (currentRadioMedium == null) {
       throw new MoteType.MoteTypeCreationException("Could not load " + radioMediumClass);
     }
-    // FIXME: inline setRadioMedium and make currentRadioMedium final.
-    setRadioMedium(radioMedium);
     // FIXME: make maxMoteStartupDelay final.
     maxMoteStartupDelay = Math.max(0, moteStartDelay);
     this.quick = quick;
@@ -919,33 +917,6 @@ public class Simulation extends Observable {
    */
   public long convertSimTimeToActualTime(long simTime) {
     return simTime + lastStartRealTime * 1000;
-  }
-
-  /**
-   * Changes radio medium of this simulation to the given.
-   *
-   * @param radioMedium
-   *          New radio medium
-   */
-  public void setRadioMedium(RadioMedium radioMedium) {
-    // Remove current radio medium from observing motes
-    if (currentRadioMedium != null) {
-      for (Mote mote : motes) {
-        currentRadioMedium.unregisterMote(mote, this);
-      }
-    }
-
-    // Change current radio medium to new one
-    if (radioMedium == null) {
-      logger.fatal("Radio medium could not be created.");
-      return;
-    }
-    this.currentRadioMedium = radioMedium;
-
-    // Add all current motes to the new radio medium
-    for (Mote mote : motes) {
-      currentRadioMedium.registerMote(mote, this);
-    }
   }
 
   /**
