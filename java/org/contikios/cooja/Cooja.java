@@ -1405,6 +1405,7 @@ public class Cooja extends Observable {
     }
     // Check if simulator should be quick-started.
     int rv = 0;
+    boolean autoQuit = !config.configs.isEmpty() && (!config.vis || config.updateSim);
     for (var simConfig : config.configs) {
       var file = new File(simConfig.file);
       Simulation sim = null;
@@ -1418,8 +1419,11 @@ public class Cooja extends Observable {
       if (sim == null) {
         System.exit(1);
       }
-      if (!config.vis) {
-        sim.setSpeedLimit(null);
+      if (simConfig.autoStart) {
+        autoQuit = true;
+        if (!config.vis) {
+          sim.setSpeedLimit(null);
+        }
         var ret = sim.startSimulation(true);
         if (ret == null) {
           logger.info("TEST OK\n");
@@ -1429,7 +1433,7 @@ public class Cooja extends Observable {
         }
       }
     }
-    if (!config.configs.isEmpty() && (!config.vis || config.updateSim)) {
+    if (autoQuit) {
       gui.doQuit(rv);
     }
   }
@@ -2235,7 +2239,7 @@ public class Cooja extends Observable {
   }
 
   /** Structure to hold the simulation parameters. */
-  public record SimConfig(Map<String, String> opts, String file) {}
+  public record SimConfig(Map<String, String> opts, boolean autoStart, String file) {}
 
   /** Structure to hold the Cooja startup configuration. */
   public record Config(boolean vis, Long randomSeed, String externalToolsConfig, boolean updateSim,

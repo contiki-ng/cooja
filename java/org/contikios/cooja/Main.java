@@ -109,6 +109,12 @@ class Main {
   Long randomSeed;
 
   /**
+   * Automatically start simulations.
+   */
+  @Option(names = "-autostart", description = "automatically start -nogui/-quickstart simulations")
+  boolean autoStart;
+
+  /**
    * The action to take after starting. No action means start GUI.
    */
   @ArgGroup(exclusive = true)
@@ -220,7 +226,8 @@ class Main {
           System.err.println("File '" + file + "' does not exist");
           System.exit(1);
         }
-        simConfigs.add(new Cooja.SimConfig(map, file));
+        var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || options.action.nogui != null));
+        simConfigs.add(new Cooja.SimConfig(map, Boolean.parseBoolean(autoStart), file));
       }
     }
 
