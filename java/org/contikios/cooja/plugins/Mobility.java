@@ -56,20 +56,20 @@ import org.jdom2.Element;
 @ClassDescription("Mobility")
 @PluginType(PluginType.SIM_PLUGIN)
 public class Mobility extends VisPlugin {
-  private static Logger logger = LogManager.getLogger(Mobility.class);
+  private static final Logger logger = LogManager.getLogger(Mobility.class);
 
   private static final boolean QUIET = false;
 
-  private final boolean WRAP_MOVES = true; /* Wrap around loaded moves forever */
+  private static final boolean WRAP_MOVES = true; /* Wrap around loaded moves forever */
 
   private Move[] entries; /* All mote moves */
-  private Simulation simulation;
+  private final Simulation simulation;
   private long periodStart; /* us */
   private int currentMove;
 
   private File filePositions = null;
 
-  private MessageListUI log = new MessageListUI();
+  private final MessageListUI log = new MessageListUI();
 
   public Mobility(Simulation simulation, final Cooja gui) {
     super("Mobility", gui);
@@ -119,7 +119,7 @@ public class Mobility extends VisPlugin {
       String data = StringUtils.loadFromFile(filePositions);
 
       /* Load move by move */
-      ArrayList<Move> entriesList = new ArrayList<Move>();
+      ArrayList<Move> entriesList = new ArrayList<>();
       for (String line: data.split("\n")) {
         if (line.trim().isEmpty() || line.startsWith("#")) {
           /* Skip header/metadata */
@@ -144,14 +144,11 @@ public class Mobility extends VisPlugin {
       setTitle("Mobility: " + filePositions.getName());
 
       /* Execute first event - it will reschedule itself */
-      simulation.invokeSimulationThread(new Runnable() {
-        public void run() {
-          currentMove = 0;
-          periodStart = simulation.getSimulationTime();
-          moveNextMoteEvent.execute(Mobility.this.simulation.getSimulationTime());
-        }
+      simulation.invokeSimulationThread(() -> {
+        currentMove = 0;
+        periodStart = simulation.getSimulationTime();
+        moveNextMoteEvent.execute(Mobility.this.simulation.getSimulationTime());
       });
-
     } catch (Exception e) {
       log.addMessage("Error when loading positions: " + e.getMessage());
       logger.info("Error when loading positions:", e);
@@ -159,7 +156,7 @@ public class Mobility extends VisPlugin {
     }
   }
 
-  private TimeEvent moveNextMoteEvent = new TimeEvent() {
+  private final TimeEvent moveNextMoteEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
 
@@ -208,7 +205,7 @@ public class Mobility extends VisPlugin {
 
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<Element>();
+    ArrayList<Element> config = new ArrayList<>();
 
     if (filePositions != null) {
       var element = new Element("positions");
