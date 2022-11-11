@@ -45,6 +45,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import jdk.incubator.foreign.MemoryAddress;
+import jdk.incubator.foreign.ResourceScope;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.AbstractionLevelDescription;
@@ -659,9 +661,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * @param mem
    *          Memory to set
    */
-  protected static void getCoreMemory(SectionMoteMemory mem) {
+  static void getCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
-      CoreComm.getMemory(sec.getStartAddr(), sec.getTotalSize(), sec.getMemory());
+      int length = sec.getTotalSize();
+      final var addr = MemoryAddress.ofLong(sec.getStartAddr());
+      addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().get(0, sec.getMemory(), 0, length);
     }
   }
 
@@ -671,9 +675,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * @param mem
    * New memory
    */
-  protected static void setCoreMemory(SectionMoteMemory mem) {
+  static void setCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
-      CoreComm.setMemory(sec.getStartAddr(), sec.getTotalSize(), sec.getMemory());
+      int length = sec.getTotalSize();
+      final var addr = MemoryAddress.ofLong(sec.getStartAddr());
+      addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().put(0, sec.getMemory(), 0, length);
     }
   }
 
