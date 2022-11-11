@@ -258,7 +258,7 @@ public abstract class CoreComm {
    * @param length Length of segment
    * @param mem Array to fill with memory segment
    */
-  public void getMemory(long relAddr, int length, byte[] mem) {
+  public static void getMemory(long relAddr, int length, byte[] mem) {
     final var addr = MemoryAddress.ofLong(relAddr);
     addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().get(0, mem, 0, length);
   }
@@ -270,7 +270,7 @@ public abstract class CoreComm {
    * @param length Length of segment
    * @param mem New memory segment data
    */
-  public void setMemory(long relAddr, int length, byte[] mem) {
+  public static void setMemory(long relAddr, int length, byte[] mem) {
     final var addr = MemoryAddress.ofLong(relAddr);
     addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().put(0, mem, 0, length);
   }
