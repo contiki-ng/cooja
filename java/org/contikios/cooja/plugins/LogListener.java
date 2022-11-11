@@ -96,7 +96,7 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.TableColumnAdjuster;
 import org.contikios.cooja.dialogs.UpdateAggregator;
 import org.contikios.cooja.util.ArrayQueue;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * A simple mote log listener.

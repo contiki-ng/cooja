@@ -109,7 +109,7 @@ import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
 import org.contikios.cooja.plugins.MoteTypeInformation;
 import org.contikios.cooja.plugins.SimInformation;
 import org.contikios.cooja.util.ScnObservable;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /** The graphical user interface for Cooja. */
 public class GUI {

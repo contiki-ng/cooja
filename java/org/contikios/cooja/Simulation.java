@@ -39,7 +39,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * A simulation consists of a number of motes and mote types.

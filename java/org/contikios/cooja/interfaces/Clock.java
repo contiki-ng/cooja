@@ -44,7 +44,7 @@ import javax.swing.JTextField;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.Simulation;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * Represents a mote's internal clock. Notice that the overall

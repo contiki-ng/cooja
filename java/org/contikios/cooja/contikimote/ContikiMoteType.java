@@ -82,7 +82,7 @@ import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.mote.memory.MemoryLayout;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * The Cooja mote type holds the native library used to communicate with an

@@ -50,7 +50,7 @@ import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.interfaces.CustomDataRadio;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.util.ScnObservable;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 
 /**

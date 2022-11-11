@@ -36,7 +36,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * Visualized plugins can extend VisPlugin for basic visualization functionality.

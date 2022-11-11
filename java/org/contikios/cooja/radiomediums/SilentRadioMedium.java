@@ -35,7 +35,7 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Radio;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 /**
  * Silent radio. No data is ever transferred through this medium.
