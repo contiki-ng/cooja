@@ -41,8 +41,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.jdom.Element;
 
-import org.contikios.cooja.dialogs.CreateSimDialog;
-
 /**
  * A simulation consists of a number of motes and mote types.
  * <p>
@@ -87,9 +85,9 @@ public class Simulation extends Observable {
   private long lastStartSimulationTime;
   private long currentSimulationTime = 0;
 
-  private String title = null;
+  private String title;
 
-  private RadioMedium currentRadioMedium = null;
+  private RadioMedium currentRadioMedium;
 
   private static final Logger logger = LogManager.getLogger(Simulation.class);
 
@@ -102,7 +100,7 @@ public class Simulation extends Observable {
 
   private boolean randomSeedGenerated = false;
 
-  private long maxMoteStartupDelay = 1000*MILLISECOND;
+  private long maxMoteStartupDelay;
 
   private final SafeRandom randomGenerator;
 
@@ -156,11 +154,22 @@ public class Simulation extends Observable {
   /**
    * Creates a new simulation
    */
-  public Simulation(Cooja cooja, String logDir, long seed) {
+  public Simulation(Cooja cooja, String title, String logDir, long seed, String radioMediumClass, long moteStartDelay)
+          throws MoteType.MoteTypeCreationException {
     this.cooja = cooja;
+    this.title = title;
     this.logDir = logDir;
     randomGenerator = new SafeRandom(this);
+    // FIXME: inline setRandomSeed and make seed final.
     setRandomSeed(seed);
+    var radioMedium = MoteInterfaceHandler.createRadioMedium(this, radioMediumClass);
+    if (radioMedium == null) {
+      throw new MoteType.MoteTypeCreationException("Could not load " + radioMediumClass);
+    }
+    // FIXME: inline setRadioMedium and make currentRadioMedium final.
+    setRadioMedium(radioMedium);
+    // FIXME: make maxMoteStartupDelay final.
+    maxMoteStartupDelay = Math.max(0, moteStartDelay);
     simulationThread = new Thread(() -> {
       boolean isAlive = true;
       do {
@@ -199,11 +208,11 @@ public class Simulation extends Observable {
               /* Quit simulator if in test mode */
               System.exit(1);
             }
-            String title = "Simulation error";
+            String errorTitle = "Simulation error";
             if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
-              title += ": " + moteTimeEvent.getMote();
+              errorTitle += ": " + moteTimeEvent.getMote();
             }
-            Cooja.showErrorDialog(title, e, false);
+            Cooja.showErrorDialog(errorTitle, e, false);
           }
         } catch (InterruptedException e) {
           // Simulation thread interrupted - quit
@@ -307,28 +316,6 @@ public class Simulation extends Observable {
 
   /** Basic simulation configuration. */
   public record SimConfig(String title, String radioMedium, boolean generatedSeed, long randomSeed, long moteStartDelay) {}
-
-  public SimConfig getSimConfig() {
-    return new Simulation.SimConfig(title,
-            currentRadioMedium == null ? null : Cooja.getDescriptionOf(currentRadioMedium),
-            randomSeedGenerated, randomSeed, maxMoteStartupDelay / MILLISECOND);
-  }
-
-  public boolean setSimConfig(SimConfig cfg) throws MoteType.MoteTypeCreationException {
-    if (cfg == null) {
-      return false;
-    }
-    title = cfg.title;
-    var radioMedium = MoteInterfaceHandler.createRadioMedium(this, cfg.radioMedium);
-    if (radioMedium == null) {
-      throw new MoteType.MoteTypeCreationException("Could not load " + cfg.radioMedium);
-    }
-    setRadioMedium(radioMedium);
-    randomSeedGenerated = cfg.generatedSeed;
-    setRandomSeed(cfg.randomSeed);
-    maxMoteStartupDelay = Math.max(0, cfg.moteStartDelay);
-    return true;
-  }
 
   /** Create a new script engine that logs to the logTextArea and add it to the list
    *  of active script engines. */
@@ -586,17 +573,6 @@ public class Simulation extends Observable {
         case "motedelay_us" -> maxMoteStartupDelay = Integer.parseInt(element.getText());
         case "radiomedium" -> {
           String radioMediumClassName = element.getText().trim();
-          currentRadioMedium = MoteInterfaceHandler.createRadioMedium(this, radioMediumClassName);
-          // Show configure simulation dialog
-          if (Cooja.isVisualized() && !quick) {
-            // FIXME: this should run from the AWT thread.
-            if (!setSimConfig(CreateSimDialog.showDialog(getCooja(), getSimConfig()))) {
-              return false;
-            }
-          }
-          if (currentRadioMedium == null) {
-            throw new MoteType.MoteTypeCreationException("Could not load " + radioMediumClassName);
-          }
           // Check if radio medium specific config should be applied
           if (radioMediumClassName.equals(currentRadioMedium.getClass().getName())) {
             currentRadioMedium.setConfigXML(element.getChildren(), Cooja.isVisualized());
