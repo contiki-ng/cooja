@@ -99,7 +99,7 @@ public class Simulation extends Observable {
 
   private final Cooja cooja;
 
-  private long randomSeed;
+  private final long randomSeed;
 
   private boolean randomSeedGenerated = false;
 
@@ -159,12 +159,14 @@ public class Simulation extends Observable {
    */
   public Simulation(Cooja cooja, String title, String logDir, long seed, String radioMediumClass, long moteStartDelay,
                     boolean quick, Element root) throws MoteType.MoteTypeCreationException {
+    String name = cooja.currentConfigFile == null ? "(unnamed)" : cooja.currentConfigFile.toString();
+    logger.info("Simulation " + name + " random seed: " + seed);
     this.cooja = cooja;
     this.title = title;
     this.logDir = logDir;
+    randomSeed = seed;
     randomGenerator = new SafeRandom(this);
-    // FIXME: inline setRandomSeed and make seed final.
-    setRandomSeed(seed);
+    randomGenerator.setSeed(seed);
     var radioMedium = MoteInterfaceHandler.createRadioMedium(this, radioMediumClass);
     if (radioMedium == null) {
       throw new MoteType.MoteTypeCreationException("Could not load " + radioMediumClass);
@@ -444,18 +446,6 @@ public class Simulation extends Observable {
    */
   public long getRandomSeed() {
     return randomSeed;
-  }
-
-  /**
-   * @param randomSeed Random seed
-   */
-  public void setRandomSeed(long randomSeed) {
-    this.randomSeed = randomSeed;
-    randomGenerator.setSeed(randomSeed);
-    String name =
-      cooja.currentConfigFile == null ? "(unnamed)"
-                                      : cooja.currentConfigFile.toString();
-    logger.info("Simulation " + name + " random seed: " + randomSeed);
   }
 
   public Random getRandomGenerator() {
