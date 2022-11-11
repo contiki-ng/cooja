@@ -155,7 +155,7 @@ public class EmuLink {
     }
 
     protected boolean handleMessage(JSONObject json) {
-        System.out.println("EmuLink: RECV " + json.toJSONString());
+        System.out.println("EmuLink: RECV " + json.toJson());
         String event = json.getAsString("event");
         if ("emulation_control".equals(event)) {
             String command = json.getAsString("data");

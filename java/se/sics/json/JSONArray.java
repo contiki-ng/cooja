@@ -40,6 +40,8 @@
 
 package se.sics.json;
 
+import com.github.cliftonlabs.json_simple.Jsonable;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -48,7 +50,7 @@ import java.util.Collection;
 /**
  *
  */
-public class JSONArray extends ArrayList<Object> implements JSONAware, JSONStreamAware {
+public class JSONArray extends ArrayList<Object> implements Jsonable {
     private void checkForCycles(Object value) {
         if (this == value) {
             throw new IllegalArgumentException("cycle detected");
@@ -265,17 +267,16 @@ public class JSONArray extends ArrayList<Object> implements JSONAware, JSONStrea
 
     @Override
     public String toString() {
-        return toJSONString();
+        return toJson();
     }
 
     @Override
-    public String toJSONString() {
-        return org.json.simple.JSONArray.toJSONString(this);
+    public String toJson() {
+        return Jsoner.serialize(this);
     }
 
     @Override
-    public void writeJSONString(Writer out) throws IOException {
-        org.json.simple.JSONArray.writeJSONString(this, out);
+    public void toJson(Writer out) throws IOException {
+        Jsoner.serialize(this, out);
     }
-
 }
