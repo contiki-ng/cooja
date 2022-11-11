@@ -154,8 +154,8 @@ public class Simulation extends Observable {
   /**
    * Creates a new simulation
    */
-  public Simulation(Cooja cooja, String title, String logDir, long seed, String radioMediumClass, long moteStartDelay)
-          throws MoteType.MoteTypeCreationException {
+  public Simulation(Cooja cooja, String title, String logDir, long seed, String radioMediumClass, long moteStartDelay,
+                    List<Element> plugins) throws MoteType.MoteTypeCreationException {
     this.cooja = cooja;
     this.title = title;
     this.logDir = logDir;
@@ -244,6 +244,13 @@ public class Simulation extends Observable {
       }
     }, "sim");
     simulationThread.start();
+    if (plugins == null) {
+      for (var pluginClass : cooja.getRegisteredPlugins()) {
+        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
+          cooja.tryStartPlugin(pluginClass, this, null);
+        }
+      }
+    }
   }
 
   /**
