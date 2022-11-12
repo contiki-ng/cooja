@@ -708,6 +708,8 @@ public class Simulation extends Observable {
    * This method is called just before the simulation is removed.
    */
   public void removed() {
+    deleteObservers();
+    stopSimulation(); // FIXME: check if this is required.
     if (!isShutdown) {
       commandQueue.add(Command.QUIT);
     }
