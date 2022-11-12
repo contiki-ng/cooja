@@ -410,7 +410,7 @@ public class GUI {
         Simulation sim;
         try {
           sim = new Simulation(cooja, cfg.title(), cooja.configuration.logDir(), cfg.randomSeed(), cfg.radioMedium(),
-                  cfg.moteStartDelay(), null);
+                  cfg.moteStartDelay(), false, null);
         } catch (MoteType.MoteTypeCreationException ex) {
           return;
         }

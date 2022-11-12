@@ -1549,14 +1549,15 @@ public class Cooja extends Observable {
       }
     }
     System.gc();
-    var title = root.getChild("simulation").getChild("title").getText();
-    var cfgSeed = root.getChild("simulation").getChild("randomseed").getText();
+    var simCfg = root.getChild("simulation");
+    var title = simCfg.getChild("title").getText();
+    var cfgSeed = simCfg.getChild("randomseed").getText();
     long seed = manualRandomSeed != null ? manualRandomSeed
             : "generated".equals(cfgSeed) ? new Random().nextLong() : Long.parseLong(cfgSeed);
-    var medium = root.getChild("simulation").getChild("radiomedium").getText().trim();
-    var cfgDelay = root.getChild("simulation").getChild("motedelay");
+    var medium = simCfg.getChild("radiomedium").getText().trim();
+    var cfgDelay = simCfg.getChild("motedelay");
     long delay = cfgDelay == null
-            ? Integer.parseInt(root.getChild("simulation").getChild("motedelay_us").getText())
+            ? Integer.parseInt(simCfg.getChild("motedelay_us").getText())
             : Integer.parseInt(cfgDelay.getText()) * Simulation.MILLISECOND;
     if (Cooja.isVisualized() && !quick) {
       var cfg = CreateSimDialog.showDialog(this, new Simulation.SimConfig(title, medium,
@@ -1569,11 +1570,7 @@ public class Cooja extends Observable {
     }
     Simulation newSim;
     try {
-      newSim = new Simulation(this, title, configuration.logDir, seed, medium, delay, root.getChildren("plugin"));
-      if (!newSim.setConfigXML(root.getChild("simulation"), quick)) {
-        logger.info("Simulation not loaded");
-        return null;
-      }
+      newSim = new Simulation(this, title, configuration.logDir, seed, medium, delay, quick, simCfg);
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }

@@ -66,6 +66,9 @@ public class Simulation extends Observable {
   /** Lock used to wait for simulation state changes */
   private final Object stateLock = new Object();
 
+  /* indicator to components setting up that they need to respect the fast setup mode */
+  private boolean quick;
+
   private final ArrayList<Mote> motes = new ArrayList<>();
   private final ArrayList<MoteType> moteTypes = new ArrayList<>();
 
@@ -155,7 +158,7 @@ public class Simulation extends Observable {
    * Creates a new simulation
    */
   public Simulation(Cooja cooja, String title, String logDir, long seed, String radioMediumClass, long moteStartDelay,
-                    List<Element> plugins) throws MoteType.MoteTypeCreationException {
+                    boolean quick, Element root) throws MoteType.MoteTypeCreationException {
     this.cooja = cooja;
     this.title = title;
     this.logDir = logDir;
@@ -170,6 +173,19 @@ public class Simulation extends Observable {
     setRadioMedium(radioMedium);
     // FIXME: make maxMoteStartupDelay final.
     maxMoteStartupDelay = Math.max(0, moteStartDelay);
+    this.quick = quick;
+    if (root == null) {
+      for (var pluginClass : cooja.getRegisteredPlugins()) {
+        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
+          cooja.tryStartPlugin(pluginClass, this, null);
+        }
+      }
+    } else {
+      if (!setConfigXML(root)) {
+        logger.info("Simulation could not be configured");
+        throw new MoteType.MoteTypeCreationException("Simulation could not be configured");
+      }
+    }
     simulationThread = new Thread(() -> {
       boolean isAlive = true;
       do {
@@ -244,13 +260,6 @@ public class Simulation extends Observable {
       }
     }, "sim");
     simulationThread.start();
-    if (plugins == null) {
-      for (var pluginClass : cooja.getRegisteredPlugins()) {
-        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
-          cooja.tryStartPlugin(pluginClass, this, null);
-        }
-      }
-    }
   }
 
   /**
@@ -543,9 +552,6 @@ public class Simulation extends Observable {
     return config;
   }
 
-  
-  /* indicator to components setting up that they need to respect the fast setup mode */
-  private boolean quick = false;
   public boolean isQuickSetup() {
       return quick;
   }
@@ -557,8 +563,7 @@ public class Simulation extends Observable {
    * @return True if simulation was configured successfully
    * @throws MoteType.MoteTypeCreationException If configuration could not be loaded
    */
-  public boolean setConfigXML(Element root, boolean quick) throws MoteType.MoteTypeCreationException {
-    this.quick = quick;
+  private boolean setConfigXML(Element root) throws MoteType.MoteTypeCreationException {
     // Parse elements
     for (var element : root.getChildren()) {
       switch (element.getName()) {
@@ -673,7 +678,7 @@ public class Simulation extends Observable {
     }
 
     // Quick load mode only during loading
-    this.quick = false;
+    quick = false;
 
     setChanged();
     notifyObservers(this);
