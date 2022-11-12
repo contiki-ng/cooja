@@ -343,9 +343,7 @@ public class Simulation extends Observable {
       }
 
       // Remove the radio medium
-      if (currentRadioMedium != null) {
-        currentRadioMedium.removed();
-      }
+      currentRadioMedium.removed();
 
       // Remove all motes
       Mote[] motes = getMotes();
