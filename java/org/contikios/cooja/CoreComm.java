@@ -42,8 +42,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Objects;
-import jdk.incubator.foreign.MemoryAddress;
-import jdk.incubator.foreign.ResourceScope;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageContainer;
@@ -244,28 +242,4 @@ public abstract class CoreComm {
    * Returns the absolute memory address of the reference variable.
    */
   public abstract long getReferenceAddress();
-
-  /**
-   * Fills a byte array with memory segment identified by start and length.
-   *
-   * @param relAddr Relative memory start address
-   * @param length Length of segment
-   * @param mem Array to fill with memory segment
-   */
-  public static void getMemory(long relAddr, int length, byte[] mem) {
-    final var addr = MemoryAddress.ofLong(relAddr);
-    addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().get(0, mem, 0, length);
-  }
-
-  /**
-   * Overwrites a memory segment identified by start and length.
-   *
-   * @param relAddr Relative memory start address
-   * @param length Length of segment
-   * @param mem New memory segment data
-   */
-  public static void setMemory(long relAddr, int length, byte[] mem) {
-    final var addr = MemoryAddress.ofLong(relAddr);
-    addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().put(0, mem, 0, length);
-  }
 }
