@@ -94,7 +94,7 @@ public class UDGM extends AbstractRadioMedium {
   public UDGM(Simulation simulation) {
     super(simulation);
     random = simulation.getRandomGenerator();
-    dgrm = new DirectedGraphMedium() {
+    dgrm = new DirectedGraphMedium(simulation) {
       @Override
       protected void analyzeEdges() {
         /* Create edges according to distances.

@@ -163,7 +163,7 @@ public class LogisticLoss extends AbstractRadioMedium {
         super(simulation);
         random = simulation.getRandomGenerator();
         sim = simulation;
-        dgrm = new DirectedGraphMedium() {
+        dgrm = new DirectedGraphMedium(simulation) {
                 @Override
                 protected void analyzeEdges() {
                     /* Create edges according to distances.

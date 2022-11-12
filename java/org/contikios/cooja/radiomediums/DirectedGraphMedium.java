@@ -71,11 +71,6 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
   /* Used for optimizing lookup time */
   private HashMap<Radio,DGRMDestinationRadio[]> edgesTable = new HashMap<>();
 
-  public DirectedGraphMedium() {
-    /* Do not initialize radio medium: use only for hash table */
-    super(null);
-  }
-
   public DirectedGraphMedium(Simulation simulation) {
     super(simulation);
     this.simulation = simulation;
