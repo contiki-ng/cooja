@@ -233,12 +233,9 @@ public abstract class SerialUI extends Log implements SerialPort {
 
     /* Mote interface observer */
     Observer observer;
-    this.addObserver(observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        final String logMessage = getLastLogMessage();
-        EventQueue.invokeLater(() -> appendToTextArea(logTextPane, logMessage));
-      }
+    this.addObserver(observer = (obs, obj) -> {
+      final String logMessage = getLastLogMessage();
+      EventQueue.invokeLater(() -> appendToTextArea(logTextPane, logMessage));
     });
     panel.putClientProperty("intf_obs", observer);
 
