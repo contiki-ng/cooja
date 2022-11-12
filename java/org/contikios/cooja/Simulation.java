@@ -66,6 +66,9 @@ public class Simulation extends Observable {
   /** Lock used to wait for simulation state changes */
   private final Object stateLock = new Object();
 
+  /* indicator to components setting up that they need to respect the fast setup mode */
+  private boolean quick;
+
   private final ArrayList<Mote> motes = new ArrayList<>();
   private final ArrayList<MoteType> moteTypes = new ArrayList<>();
 
@@ -170,6 +173,7 @@ public class Simulation extends Observable {
     setRadioMedium(radioMedium);
     // FIXME: make maxMoteStartupDelay final.
     maxMoteStartupDelay = Math.max(0, moteStartDelay);
+    this.quick = quick;
     if (root == null) {
       for (var pluginClass : cooja.getRegisteredPlugins()) {
         if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
@@ -548,9 +552,6 @@ public class Simulation extends Observable {
     return config;
   }
 
-  
-  /* indicator to components setting up that they need to respect the fast setup mode */
-  private boolean quick = false;
   public boolean isQuickSetup() {
       return quick;
   }
@@ -563,7 +564,6 @@ public class Simulation extends Observable {
    * @throws MoteType.MoteTypeCreationException If configuration could not be loaded
    */
   private boolean setConfigXML(Element root, boolean quick) throws MoteType.MoteTypeCreationException {
-    this.quick = quick;
     // Parse elements
     for (var element : (List<Element>) root.getChildren()) {
       switch (element.getName()) {
