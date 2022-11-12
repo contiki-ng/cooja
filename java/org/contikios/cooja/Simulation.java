@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.mspmote.MspMote.MSPSimStop;
 import org.jdom2.Element;
 
 /**
@@ -309,21 +310,19 @@ public class Simulation extends Observable {
               nextEvent.event.execute(currentSimulationTime);
             }
           }
+        } catch (MSPSimStop e) {
+          logger.info("Simulation stopped due to MSPSim breakpoint");
         } catch (RuntimeException e) {
-          if ("MSPSim requested simulation stop".equals(e.getMessage())) {
-            logger.info("Simulation stopped due to MSPSim breakpoint");
-          } else {
-            logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
-            if (!Cooja.isVisualized()) {
-              /* Quit simulator if in test mode */
-              System.exit(1);
-            }
-            String errorTitle = "Simulation error";
-            if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
-              errorTitle += ": " + moteTimeEvent.getMote();
-            }
-            Cooja.showErrorDialog(errorTitle, e, false);
+          logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
+          if (!Cooja.isVisualized()) {
+            /* Quit simulator if in test mode */
+            System.exit(1);
           }
+          String errorTitle = "Simulation error";
+          if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
+            errorTitle += ": " + moteTimeEvent.getMote();
+          }
+          Cooja.showErrorDialog(errorTitle, e, false);
         } catch (InterruptedException e) {
           // Simulation thread interrupted - quit
           logger.warn("simulation thread interrupted");
