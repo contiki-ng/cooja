@@ -181,7 +181,7 @@ public class Simulation extends Observable {
         }
       }
     } else {
-      if (!setConfigXML(root, quick)) {
+      if (!setConfigXML(root)) {
         logger.info("Simulation could not be configured");
         throw new MoteType.MoteTypeCreationException("Simulation could not be configured");
       }
@@ -563,7 +563,7 @@ public class Simulation extends Observable {
    * @return True if simulation was configured successfully
    * @throws MoteType.MoteTypeCreationException If configuration could not be loaded
    */
-  private boolean setConfigXML(Element root, boolean quick) throws MoteType.MoteTypeCreationException {
+  private boolean setConfigXML(Element root) throws MoteType.MoteTypeCreationException {
     // Parse elements
     for (var element : (List<Element>) root.getChildren()) {
       switch (element.getName()) {
@@ -678,7 +678,7 @@ public class Simulation extends Observable {
     }
 
     // Quick load mode only during loading
-    this.quick = false;
+    quick = false;
 
     setChanged();
     notifyObservers(this);
