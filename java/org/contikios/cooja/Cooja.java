@@ -1570,11 +1570,7 @@ public class Cooja extends Observable {
     }
     Simulation newSim;
     try {
-      newSim = new Simulation(this, title, configuration.logDir, seed, medium, delay, root.getChildren("plugin"));
-      if (!newSim.setConfigXML(simCfg, quick)) {
-        logger.info("Simulation not loaded");
-        return null;
-      }
+      newSim = new Simulation(this, title, configuration.logDir, seed, medium, delay, quick, simCfg);
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }

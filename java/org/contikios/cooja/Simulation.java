@@ -155,7 +155,7 @@ public class Simulation extends Observable {
    * Creates a new simulation
    */
   public Simulation(Cooja cooja, String title, String logDir, long seed, String radioMediumClass, long moteStartDelay,
-                    List<Element> plugins) throws MoteType.MoteTypeCreationException {
+                    boolean quick, Element root) throws MoteType.MoteTypeCreationException {
     this.cooja = cooja;
     this.title = title;
     this.logDir = logDir;
@@ -170,6 +170,18 @@ public class Simulation extends Observable {
     setRadioMedium(radioMedium);
     // FIXME: make maxMoteStartupDelay final.
     maxMoteStartupDelay = Math.max(0, moteStartDelay);
+    if (root == null) {
+      for (var pluginClass : cooja.getRegisteredPlugins()) {
+        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
+          cooja.tryStartPlugin(pluginClass, this, null);
+        }
+      }
+    } else {
+      if (!setConfigXML(root, quick)) {
+        logger.info("Simulation could not be configured");
+        throw new MoteType.MoteTypeCreationException("Simulation could not be configured");
+      }
+    }
     simulationThread = new Thread(() -> {
       boolean isAlive = true;
       do {
@@ -244,13 +256,6 @@ public class Simulation extends Observable {
       }
     }, "sim");
     simulationThread.start();
-    if (plugins == null) {
-      for (var pluginClass : cooja.getRegisteredPlugins()) {
-        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
-          cooja.tryStartPlugin(pluginClass, this, null);
-        }
-      }
-    }
   }
 
   /**
@@ -557,7 +562,7 @@ public class Simulation extends Observable {
    * @return True if simulation was configured successfully
    * @throws MoteType.MoteTypeCreationException If configuration could not be loaded
    */
-  public boolean setConfigXML(Element root, boolean quick) throws MoteType.MoteTypeCreationException {
+  private boolean setConfigXML(Element root, boolean quick) throws MoteType.MoteTypeCreationException {
     this.quick = quick;
     // Parse elements
     for (var element : (List<Element>) root.getChildren()) {
