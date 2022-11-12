@@ -714,7 +714,7 @@ public class Cooja extends Observable {
 
     if (root != null) {
       for (var cfg : root.getChildren("plugin_config")) {
-        if (!plugin.setConfigXML(((Element)cfg).getChildren(), isVisualized())) {
+        if (!plugin.setConfigXML(cfg.getChildren(), isVisualized())) {
           throw new PluginConstructionException("Failed to set config for " + pluginClass.getName());
         }
       }
@@ -742,7 +742,7 @@ public class Cooja extends Observable {
           if (root != null) {
             var size = new Dimension(100, 100);
             var location = new Point(100, 100);
-            for (var cfgElem : (List<Element>) root.getChildren()) {
+            for (var cfgElem : root.getChildren()) {
               if (cfgElem.getName().equals("width")) {
                 size.width = Integer.parseInt(cfgElem.getText());
                 plugin.getCooja().setSize(size);
@@ -1579,8 +1579,7 @@ public class Cooja extends Observable {
     }
 
     // Restart plugins from config
-    for (var e : root.getChildren("plugin")) {
-      final Element pluginElement = (Element) e;
+    for (var pluginElement : root.getChildren("plugin")) {
       // Read plugin class
       String pluginClassName = pluginElement.getText().trim();
       if (pluginClassName.startsWith("se.sics")) {
@@ -1611,7 +1610,7 @@ public class Cooja extends Observable {
       // Parse plugin mote argument (if any)
       Mote mote = null;
       for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
-        int moteNr = Integer.parseInt(((Element) pluginSubElement).getText());
+        int moteNr = Integer.parseInt(pluginSubElement.getText());
         if (moteNr >= 0 && moteNr < newSim.getMotesCount()) {
           mote = newSim.getMote(moteNr);
         }
@@ -1787,8 +1786,7 @@ public class Cooja extends Observable {
     boolean allOk = true;
 
     /* Match current extensions against extensions in simulation config */
-    for (var project : root.getChildren("project")) {
-      var pluginElement = (Element)project;
+    for (var pluginElement : root.getChildren("project")) {
       // Skip check for plugins that are Cooja-internal in v4.8.
       // FIXME: v4.9: remove these special cases.
       if ("[APPS_DIR]/mrm".equals(pluginElement.getText())) continue;

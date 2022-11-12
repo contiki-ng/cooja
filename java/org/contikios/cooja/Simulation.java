@@ -560,7 +560,7 @@ public class Simulation extends Observable {
   public boolean setConfigXML(Element root, boolean quick) throws MoteType.MoteTypeCreationException {
     this.quick = quick;
     // Parse elements
-    for (var element : (List<Element>) root.getChildren()) {
+    for (var element : root.getChildren()) {
       switch (element.getName()) {
         case "title" -> title = element.getText();
         case "speedlimit" -> {
@@ -646,7 +646,7 @@ public class Simulation extends Observable {
         }
         case "mote" -> {
           MoteType moteType = null;
-          for (Element subElement : (Collection<Element>) element.getChildren()) {
+          for (Element subElement : element.getChildren()) {
             if (subElement.getName().equals("motetype_identifier")) {
               moteType = getMoteType(subElement.getText());
               if (moteType == null) {

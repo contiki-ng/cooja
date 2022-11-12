@@ -369,7 +369,6 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     boolean oldConfig = false;
     for (Element element : delayedConfiguration) {
       if (element.getName().equals("edge")) {
-        @SuppressWarnings("unchecked")
 		Collection<Element> edgeConfig = element.getChildren();
         Radio source = null;
         DGRMDestinationRadio dest = null;
@@ -418,7 +417,6 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
               }
               try {
                 dest = destClass.getDeclaredConstructor().newInstance();
-                @SuppressWarnings("unchecked")
 				List<Element> children = edgeElement.getChildren();
 				dest.setConfigXML(children, simulation);
               } catch (Exception e) {
