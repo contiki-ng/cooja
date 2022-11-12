@@ -154,9 +154,7 @@ public abstract class SerialUI extends Log implements SerialPort {
 
         try {
           /* Add to history */
-          if (history.size() > 0 && command.equals(history.get(0))) {
-            /* Ignored */
-          } else {
+          if (history.isEmpty() || !command.equals(history.get(0))) {
             history.add(0, command);
             while (history.size() > HISTORY_SIZE) {
               history.remove(HISTORY_SIZE-1);
