@@ -151,7 +151,7 @@ public class ImportAppMoteDialog extends JDialog {
         if (fc.showOpenDialog(ImportAppMoteDialog.this) == JFileChooser.APPROVE_OPTION) {
           File fp = fc.getSelectedFile();
           if (fp != null) {
-            trySetClass(simulation, moteType, fp);
+            trySetClass(simulation, fp);
           }
         }
       }
@@ -185,7 +185,7 @@ public class ImportAppMoteDialog extends JDialog {
           classFile = new File(new File(pathField.getText()),
               className.replace(".", "/") + ".class");
         }
-        if (trySetClass(simulation, moteType, classFile)) {
+        if (trySetClass(simulation, classFile)) {
           moteType.setDescription(descriptionField.getText());
           String path = pathField.getText();
           if (path.length() > 0) {
@@ -231,8 +231,8 @@ public class ImportAppMoteDialog extends JDialog {
     setLocationRelativeTo(Cooja.getTopParentContainer());
   }
 
-  private boolean trySetClass(Simulation simulation, ImportAppMoteType moteType, File classFile) {
-    try (var loader = moteType.createTestLoader(simulation, classFile)) {
+  private boolean trySetClass(Simulation simulation, File classFile) {
+    try (var loader = ImportAppMoteType.createTestLoader(simulation, classFile)) {
       if (!loader.isTestSubclass(Mote.class)) {
         JOptionPane.showMessageDialog(ImportAppMoteDialog.this,
             "Class '" + classFile + "'\n is not of type Mote", "Failed to load class",

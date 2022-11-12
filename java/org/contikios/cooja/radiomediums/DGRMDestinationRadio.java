@@ -44,9 +44,6 @@ public class DGRMDestinationRadio extends DestinationRadio {
 	public int lqi = 105;
 	public int channel = -1; /* not set by default */
 
-	public DGRMDestinationRadio() {
-		super();
-	}
 	public DGRMDestinationRadio(Radio dest) {
 		super(dest);
 	}

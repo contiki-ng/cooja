@@ -187,7 +187,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     return moteClassName;
   }
 
-  private ClassLoader getParentClassLoader(Simulation simulation) {
+  private static ClassLoader getParentClassLoader(Simulation simulation) {
     ClassLoader ldr = null;
     try {
       ldr = simulation.getCooja().getProjectClassLoader();
@@ -197,7 +197,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     return ldr == null ? ClassLoader.getSystemClassLoader() : ldr;
   }
 
-  public TestLoader createTestLoader(Simulation sim, File classFile) throws IOException {
+  public static TestLoader createTestLoader(Simulation sim, File classFile) throws IOException {
     classFile = classFile.getCanonicalFile();
     ArrayList<URL> list = new ArrayList<>();
     for(File parent = classFile.getParentFile();
