@@ -62,8 +62,8 @@ import org.contikios.cooja.interfaces.Radio;
 public class DirectedGraphMedium extends AbstractRadioMedium {
   private static final Logger logger = LogManager.getLogger(DirectedGraphMedium.class);
 
-  private Simulation simulation;
-  private Random random;
+  private final Simulation simulation;
+  private final Random random;
 
   private final ArrayList<Edge> edges = new ArrayList<>();
   private boolean edgesDirty = true;
@@ -345,8 +345,6 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
   @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     super.setConfigXML(configXML, visAvailable);
-
-    random = simulation.getRandomGenerator();
 
     /* Wait until simulation has been loaded */
     delayedConfiguration = configXML;
