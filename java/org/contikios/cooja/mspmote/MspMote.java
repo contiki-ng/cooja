@@ -261,7 +261,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     if (stopNextInstruction) {
       stopNextInstruction = false;
       scheduleNextWakeup(t);
-      throw new RuntimeException("MSPSim requested simulation stop");
+      throw new MSPSimStop();
     }
 
     if (lastExecute < 0) {
@@ -282,7 +282,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
     if (stopNextInstruction) {
       stopNextInstruction = false;
-      throw new RuntimeException("MSPSim requested simulation stop");
+      throw new MSPSimStop();
     }
 
     // TODO: Reimplement stack monitoring using MSPSim internals.
@@ -610,5 +610,12 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     return config;
+  }
+
+  /** Exception for signaling the simulation that MSPSim has stopped. */
+  public static class MSPSimStop extends RuntimeException {
+    public MSPSimStop() {
+      super("MSPSim requested simulation stop");
+    }
   }
 }
