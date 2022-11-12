@@ -30,7 +30,6 @@ package org.contikios.cooja;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Observable;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -181,10 +180,105 @@ public class Simulation extends Observable {
         }
       }
     } else {
-      if (!setConfigXML(root)) {
-        logger.info("Simulation could not be configured");
-        throw new MoteType.MoteTypeCreationException("Simulation could not be configured");
+      // Parse elements
+      for (var element : root.getChildren()) {
+        switch (element.getName()) {
+          case "title" -> this.title = element.getText();
+          case "speedlimit" -> setSpeedLimit(element.getText().equals("null") ? null : Double.parseDouble(element.getText()));
+          case "randomseed" -> randomSeedGenerated = element.getText().equals("generated");
+          case "motedelay" -> maxMoteStartupDelay = Integer.parseInt(element.getText()) * MILLISECOND;
+          case "motedelay_us" -> maxMoteStartupDelay = Integer.parseInt(element.getText());
+          case "radiomedium" -> {
+            String radioMediumClassName = element.getText().trim();
+            // Check if radio medium specific config should be applied
+            if (radioMediumClassName.equals(currentRadioMedium.getClass().getName())) {
+              currentRadioMedium.setConfigXML(element.getChildren(), Cooja.isVisualized());
+            } else {
+              logger.info("Radio Medium changed - ignoring radio medium specific config");
+            }
+          }
+          case "events" -> eventCentral.setConfigXML(element.getChildren());
+          case "motetype" -> {
+            String moteTypeClassName = element.getText().trim();
+            // Backwards compatibility: se.sics -> org.contikios.
+            if (moteTypeClassName.startsWith("se.sics")) {
+              moteTypeClassName = moteTypeClassName.replaceFirst("se\\.sics", "org.contikios");
+            }
+
+            var availableMoteTypesObjs = getCooja().getRegisteredMoteTypes();
+            String[] availableMoteTypes = new String[availableMoteTypesObjs.size()];
+            for (int i = 0; i < availableMoteTypes.length; i++) {
+              availableMoteTypes[i] = availableMoteTypesObjs.get(i).getName();
+            }
+
+            // Try to recreate simulation using a different mote type.
+            if (Cooja.isVisualized() && !quick) {
+              var newClass = (String) JOptionPane.showInputDialog(Cooja.getTopParentContainer(),
+                      "The simulation is about to load '" + moteTypeClassName + "'\n" +
+                              "You may try to load the simulation using a different mote type.\n",
+                      "Loading mote type", JOptionPane.QUESTION_MESSAGE, null, availableMoteTypes,
+                      moteTypeClassName);
+              if (newClass == null) {
+                throw new MoteType.MoteTypeCreationException("No mote type class selected");
+              }
+              if (!newClass.equals(moteTypeClassName)) {
+                logger.warn("Changing mote type class: " + moteTypeClassName + " -> " + newClass);
+                moteTypeClassName = newClass;
+              }
+            }
+
+            var moteType = MoteInterfaceHandler.createMoteType(getCooja(), moteTypeClassName);
+            if (moteType == null) {
+              Class<? extends MoteType> moteTypeClass = null;
+              for (int i = 0; i < availableMoteTypes.length; i++) {
+                if (moteTypeClassName.equals(availableMoteTypes[i])) {
+                  moteTypeClass = availableMoteTypesObjs.get(i);
+                  break;
+                }
+              }
+              assert moteTypeClass != null : "Selected MoteType class is null";
+              try {
+                moteType = moteTypeClass.getConstructor((Class<? extends MoteType>[]) null).newInstance();
+              } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new MoteType.MoteTypeCreationException("Could not create " + moteTypeClassName, e);
+              }
+            }
+            if (!moteType.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
+              logger.fatal("Mote type was not created: " + element.getText().trim());
+              throw new MoteType.MoteTypeCreationException("Mote type was not created: " + element.getText().trim());
+            }
+            addMoteType(moteType);
+          }
+          case "mote" -> {
+            MoteType moteType = null;
+            for (Element subElement : element.getChildren()) {
+              if (subElement.getName().equals("motetype_identifier")) {
+                moteType = getMoteType(subElement.getText());
+                if (moteType == null) {
+                  throw new MoteType.MoteTypeCreationException("No mote type '" + subElement.getText() + "' for mote");
+                }
+                break;
+              }
+            }
+            if (moteType == null) {
+              throw new MoteType.MoteTypeCreationException("No mote type specified for mote");
+            }
+            Mote mote = moteType.generateMote(this);
+            if (!mote.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
+              logger.fatal("Mote was not created: " + element.getText().trim());
+              throw new MoteType.MoteTypeCreationException("Could not configure mote " + moteType);
+            }
+            addMote(mote);
+          }
+        }
       }
+      currentRadioMedium.simulationFinishedLoading();
+
+      // Quick load mode only during loading
+      this.quick = false;
+
+      setChanged();
+      notifyObservers(this);
     }
     simulationThread = new Thread(() -> {
       boolean isAlive = true;
@@ -249,9 +343,7 @@ public class Simulation extends Observable {
       }
 
       // Remove the radio medium
-      if (currentRadioMedium != null) {
-        currentRadioMedium.removed();
-      }
+      currentRadioMedium.removed();
 
       // Remove all motes
       Mote[] motes = getMotes();
@@ -542,136 +634,6 @@ public class Simulation extends Observable {
 
   public boolean isQuickSetup() {
       return quick;
-  }
-  
-  /**
-   * Sets the current simulation config depending on the given configuration.
-   *
-   * @param root Simulation configuration
-   * @return True if simulation was configured successfully
-   * @throws MoteType.MoteTypeCreationException If configuration could not be loaded
-   */
-  private boolean setConfigXML(Element root) throws MoteType.MoteTypeCreationException {
-    // Parse elements
-    for (var element : root.getChildren()) {
-      switch (element.getName()) {
-        case "title" -> title = element.getText();
-        case "speedlimit" -> {
-          String text = element.getText();
-          if (text.equals("null")) {
-            setSpeedLimit(null);
-          } else {
-            setSpeedLimit(Double.parseDouble(text));
-          }
-        }
-        case "randomseed" -> {
-          if (element.getText().equals("generated")) {
-            randomSeedGenerated = true;
-          }
-        }
-        case "motedelay" -> maxMoteStartupDelay = Integer.parseInt(element.getText()) * MILLISECOND;
-        case "motedelay_us" -> maxMoteStartupDelay = Integer.parseInt(element.getText());
-        case "radiomedium" -> {
-          String radioMediumClassName = element.getText().trim();
-          // Check if radio medium specific config should be applied
-          if (radioMediumClassName.equals(currentRadioMedium.getClass().getName())) {
-            currentRadioMedium.setConfigXML(element.getChildren(), Cooja.isVisualized());
-          } else {
-            logger.info("Radio Medium changed - ignoring radio medium specific config");
-          }
-        }
-        case "events" -> eventCentral.setConfigXML(element.getChildren());
-        case "motetype" -> {
-          String moteTypeClassName = element.getText().trim();
-          /* Backwards compatibility: se.sics -> org.contikios */
-          if (moteTypeClassName.startsWith("se.sics")) {
-            moteTypeClassName = moteTypeClassName.replaceFirst("se\\.sics", "org.contikios");
-          }
-
-          var availableMoteTypesObjs = getCooja().getRegisteredMoteTypes();
-          String[] availableMoteTypes = new String[availableMoteTypesObjs.size()];
-          for (int i = 0; i < availableMoteTypes.length; i++) {
-            availableMoteTypes[i] = availableMoteTypesObjs.get(i).getName();
-          }
-
-          /* Try to recreate simulation using a different mote type */
-          if (Cooja.isVisualized() && !quick) {
-            String newClass = (String) JOptionPane.showInputDialog(
-                    Cooja.getTopParentContainer(),
-                    "The simulation is about to load '" + moteTypeClassName + "'\n" +
-                            "You may try to load the simulation using a different mote type.\n",
-                    "Loading mote type",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    availableMoteTypes,
-                    moteTypeClassName
-            );
-            if (newClass == null) {
-              throw new MoteType.MoteTypeCreationException("No mote type class selected");
-            }
-            if (!newClass.equals(moteTypeClassName)) {
-              logger.warn("Changing mote type class: " + moteTypeClassName + " -> " + newClass);
-              moteTypeClassName = newClass;
-            }
-          }
-
-          var moteType = MoteInterfaceHandler.createMoteType(getCooja(), moteTypeClassName);
-          if (moteType == null) {
-            Class<? extends MoteType> moteTypeClass = null;
-            for (int i = 0; i < availableMoteTypes.length; i++) {
-              if (moteTypeClassName.equals(availableMoteTypes[i])) {
-                moteTypeClass = availableMoteTypesObjs.get(i);
-                break;
-              }
-            }
-            assert moteTypeClass != null : "Selected MoteType class is null";
-            try {
-              moteType = moteTypeClass.getConstructor((Class<? extends MoteType>[]) null).newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-              throw new MoteType.MoteTypeCreationException("Could not create " + moteTypeClassName, e);
-            }
-          }
-          if (!moteType.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
-            logger.fatal("Mote type was not created: " + element.getText().trim());
-            return false;
-          }
-          addMoteType(moteType);
-        }
-        case "mote" -> {
-          MoteType moteType = null;
-          for (Element subElement : element.getChildren()) {
-            if (subElement.getName().equals("motetype_identifier")) {
-              moteType = getMoteType(subElement.getText());
-              if (moteType == null) {
-                throw new MoteType.MoteTypeCreationException("No mote type '" + subElement.getText() + "' for mote");
-              }
-              break;
-            }
-          }
-          if (moteType == null) {
-            throw new MoteType.MoteTypeCreationException("No mote type specified for mote");
-          }
-          Mote mote = moteType.generateMote(this);
-          if (!mote.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
-            logger.fatal("Mote was not created: " + element.getText().trim());
-            throw new MoteType.MoteTypeCreationException("Could not configure mote " + moteType);
-          }
-          addMote(mote);
-        }
-      }
-    }
-
-    if (currentRadioMedium != null) {
-      currentRadioMedium.simulationFinishedLoading();
-    }
-
-    // Quick load mode only during loading
-    quick = false;
-
-    setChanged();
-    notifyObservers(this);
-
-    return true;
   }
 
   /**
