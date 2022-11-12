@@ -184,19 +184,8 @@ public class Simulation extends Observable {
       for (var element : root.getChildren()) {
         switch (element.getName()) {
           case "title" -> this.title = element.getText();
-          case "speedlimit" -> {
-            String text = element.getText();
-            if (text.equals("null")) {
-              setSpeedLimit(null);
-            } else {
-              setSpeedLimit(Double.parseDouble(text));
-            }
-          }
-          case "randomseed" -> {
-            if (element.getText().equals("generated")) {
-              randomSeedGenerated = true;
-            }
-          }
+          case "speedlimit" -> setSpeedLimit(element.getText().equals("null") ? null : Double.parseDouble(element.getText()));
+          case "randomseed" -> randomSeedGenerated = element.getText().equals("generated");
           case "motedelay" -> maxMoteStartupDelay = Integer.parseInt(element.getText()) * MILLISECOND;
           case "motedelay_us" -> maxMoteStartupDelay = Integer.parseInt(element.getText());
           case "radiomedium" -> {
