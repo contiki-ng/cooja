@@ -971,8 +971,6 @@ public class Cooja extends Observable {
     }
 
     // Delete simulation
-    mySimulation.deleteObservers();
-    mySimulation.stopSimulation();
     mySimulation.removed();
 
     /* Clear current mote relations */

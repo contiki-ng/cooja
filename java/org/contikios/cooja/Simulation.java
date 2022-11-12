@@ -669,7 +669,9 @@ public class Simulation extends Observable {
    * Called to free resources used by the simulation.
    * This method is called just before the simulation is removed.
    */
-  public void removed() {
+  void removed() {
+    deleteObservers();
+    stopSimulation(); // FIXME: check if this is required.
     if (!isShutdown) {
       commandQueue.add(Command.QUIT);
     }
