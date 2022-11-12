@@ -43,8 +43,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-
+import java.util.Objects;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -53,20 +52,11 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteType;
-import org.contikios.cooja.Positioner;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.interfaces.MoteID;
-import org.contikios.cooja.interfaces.Position;
 
 /**
  * A dialog for adding motes.
@@ -74,17 +64,10 @@ import org.contikios.cooja.interfaces.Position;
  * @author Fredrik Osterlind
  */
 public class AddMoteDialog extends JDialog {
-  private static final Logger logger = LogManager.getLogger(AddMoteDialog.class);
-
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;
 
-  private final ArrayList<Mote> newMotes = new ArrayList<>();
-
   private final JButton addButton = new JButton("Add motes");
-
-  private final MoteType moteType;
-  private final Simulation simulation;
 
   private final JFormattedTextField numberOfMotesField;
   private final JFormattedTextField startX;
@@ -94,7 +77,7 @@ public class AddMoteDialog extends JDialog {
   private final JFormattedTextField startZ;
   private final JFormattedTextField endZ;
   private final JComboBox<String> positionDistributionBox;
-
+  private MoteAdditions returnValue = null;
 
   /**
    * Shows a dialog which enables a user to create and add motes of the given
@@ -104,16 +87,14 @@ public class AddMoteDialog extends JDialog {
    * @param moteType Mote type
    * @return New motes or null if aborted
    */
-  public static ArrayList<Mote> showDialog(Simulation sim, MoteType moteType) {
+  public static MoteAdditions showDialog(Simulation sim, MoteType moteType) {
     var myDialog = new AddMoteDialog(sim, moteType);
     myDialog.setVisible(true);
-    return myDialog.newMotes;
+    return myDialog.returnValue;
   }
 
   private AddMoteDialog(Simulation simulation, MoteType moteType) {
     super(Cooja.getTopParentContainer(), "Add motes (" + moteType.getDescription() + ")", ModalityType.APPLICATION_MODAL);
-    this.moteType = moteType;
-    this.simulation = simulation;
 
     JPanel mainPane = new JPanel();
     mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
@@ -392,77 +373,22 @@ public class AddMoteDialog extends JDialog {
     @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("cancel")) {
-        newMotes.clear();
         dispose();
       } else if (e.getActionCommand().equals("add")) {
         // Validate input
         if (!checkSettings()) {
           return;
         }
-        Class<? extends Positioner> positionerClass = null;
-        for (var positioner : simulation.getCooja().getRegisteredPositioners()) {
-          if (Cooja.getDescriptionOf(positioner).equals(positionDistributionBox.getSelectedItem())) {
-            positionerClass = positioner;
-          }
-        }
-        if (positionerClass == null) {
-          return;
-        }
-        int motesToAdd = ((Number) numberOfMotesField.getValue()).intValue();
-        Positioner positioner;
-        try {
-          var constr = positionerClass.getConstructor(int.class, double.class, double.class,
-                  double.class, double.class, double.class, double.class);
-          positioner = constr.newInstance(motesToAdd,
-                  ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
-                  ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
-                  ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
-        } catch (Exception e1) {
-          logger.fatal("Exception when creating " + positionerClass + ": ", e1);
-          return;
-        }
-
-        // Create new motes
-        while (newMotes.size() < motesToAdd) {
-          try {
-            newMotes.add(moteType.generateMote(simulation));
-          } catch (MoteType.MoteTypeCreationException e2) {
-            newMotes.clear();
-            JOptionPane.showMessageDialog(AddMoteDialog.this,
-                    "Could not create mote.\nException message: \"" + e2.getMessage() + "\"\n\n",
-                    "Mote creation failed", JOptionPane.ERROR_MESSAGE);
-            return;
-          }
-        }
-        // Position new motes
-        for (Mote newMote : newMotes) {
-          Position newPosition = newMote.getInterfaces().getPosition();
-          if (newPosition != null) {
-            double[] next = positioner.getNextPosition();
-            newPosition.setCoordinates(next.length > 0 ? next[0] : 0, next.length > 1 ? next[1] : 0, next.length > 2 ? next[2] : 0);
-          }
-        }
-
-        /* Set unique mote id's for all new motes
-         * TODO ID should be provided differently; not rely on the unsafe MoteID interface */
-        int nextMoteID = 1;
-        for (Mote m : simulation.getMotes()) {
-          int existing = m.getID();
-          if (existing >= nextMoteID) {
-            nextMoteID = existing + 1;
-          }
-        }
-        for (Mote m : newMotes) {
-          MoteID moteID = m.getInterfaces().getMoteID();
-          if (moteID != null) {
-            moteID.setMoteID(nextMoteID++);
-          } else {
-            logger.warn("Can't set mote ID (no mote ID interface): " + m);
-          }
-        }
+        returnValue = new MoteAdditions(((Number) numberOfMotesField.getValue()).intValue(),
+                Objects.requireNonNull(positionDistributionBox.getSelectedItem()).toString(),
+                ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
+                ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
+                ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
         dispose();
       }
     }
   }
 
+  public record MoteAdditions(int numMotes, String positioner,
+                              double startX, double endX, double startY, double endY, double startZ, double endZ) {}
 }

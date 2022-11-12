@@ -106,6 +106,8 @@ import org.contikios.cooja.dialogs.ExternalToolsDialog;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
+import org.contikios.cooja.interfaces.MoteID;
+import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.plugins.MoteTypeInformation;
 import org.contikios.cooja.plugins.SimInformation;
 import org.contikios.cooja.util.ScnObservable;
@@ -1694,7 +1696,66 @@ public class GUI {
         default -> logger.warn("Unhandled action: " + cmd);
       }
       if (newMoteType != null) {
-        for (var mote : AddMoteDialog.showDialog(cooja.getSimulation(), newMoteType)) {
+        var newMoteInfo = AddMoteDialog.showDialog(cooja.getSimulation(), newMoteType);
+        if (newMoteInfo == null) return;
+        Class<? extends Positioner> positionerClass = null;
+        for (var positioner : cooja.getRegisteredPositioners()) {
+          if (Cooja.getDescriptionOf(positioner).equals(newMoteInfo.positioner())) {
+            positionerClass = positioner;
+          }
+        }
+        if (positionerClass == null) {
+          return;
+        }
+        Positioner positioner;
+        try {
+          var constr = positionerClass.getConstructor(int.class, double.class, double.class,
+                  double.class, double.class, double.class, double.class);
+          positioner = constr.newInstance(newMoteInfo.numMotes(), newMoteInfo.startX(), newMoteInfo.endX(),
+                   newMoteInfo.startY(), newMoteInfo.endY(), newMoteInfo.startZ(), newMoteInfo.endZ());
+        } catch (Exception e1) {
+          logger.fatal("Exception when creating " + positionerClass + ": ", e1);
+          return;
+        }
+        // Create new motes.
+        ArrayList<Mote> newMotes = new ArrayList<>();
+        while (newMotes.size() < newMoteInfo.numMotes()) {
+          try {
+            newMotes.add(newMoteType.generateMote(cooja.getSimulation()));
+          } catch (MoteType.MoteTypeCreationException e2) {
+            JOptionPane.showMessageDialog(frame,
+                    "Could not create mote.\nException message: \"" + e2.getMessage() + "\"\n\n",
+                    "Mote creation failed", JOptionPane.ERROR_MESSAGE);
+            return;
+          }
+        }
+        // Position new motes.
+        for (var newMote : newMotes) {
+          Position newPosition = newMote.getInterfaces().getPosition();
+          if (newPosition != null) {
+            double[] next = positioner.getNextPosition();
+            newPosition.setCoordinates(next.length > 0 ? next[0] : 0, next.length > 1 ? next[1] : 0, next.length > 2 ? next[2] : 0);
+          }
+        }
+
+        // Set unique mote id's for all new motes.
+        // TODO: ID should be provided differently; not rely on the unsafe MoteID interface.
+        int nextMoteID = 1;
+        for (Mote m : cooja.getSimulation().getMotes()) {
+          int existing = m.getID();
+          if (existing >= nextMoteID) {
+            nextMoteID = existing + 1;
+          }
+        }
+        for (Mote m : newMotes) {
+          MoteID moteID = m.getInterfaces().getMoteID();
+          if (moteID != null) {
+            moteID.setMoteID(nextMoteID++);
+          } else {
+            logger.warn("Can't set mote ID (no mote ID interface): " + m);
+          }
+        }
+        for (var mote : newMotes) {
           cooja.getSimulation().addMote(mote);
         }
       }
