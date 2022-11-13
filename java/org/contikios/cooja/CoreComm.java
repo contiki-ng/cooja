@@ -233,8 +233,7 @@ public abstract class CoreComm {
   }
 
   /**
-   * Ticks a mote once. This should not be used directly, but instead via
-   * {@link ContikiMoteType#tick()}.
+   * Ticks a mote once.
    */
   public abstract void tick();
 
