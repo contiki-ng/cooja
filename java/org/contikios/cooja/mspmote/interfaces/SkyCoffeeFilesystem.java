@@ -198,7 +198,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
       coffeeFS = new CoffeeFS(flash.m24p80);
     } catch (IOException e) {
       logger.fatal(e.getMessage(), e);
-      coffeeFS = null;
+      return;
     }
 
     files = coffeeFS.getFiles().values().toArray(new CoffeeFile[0]);
@@ -210,12 +210,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
       }
     }
 
-    EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        ((AbstractTableModel)filesTable.getModel()).fireTableDataChanged();
-      }
-    });
+    EventQueue.invokeLater(() -> ((AbstractTableModel)filesTable.getModel()).fireTableDataChanged());
   }
 
   @Override

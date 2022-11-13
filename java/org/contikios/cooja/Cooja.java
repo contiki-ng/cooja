@@ -425,13 +425,7 @@ public class Cooja extends Observable {
 
   void parseProjectConfig() throws ParseProjectsException {
     /* Build cooja configuration */
-    try {
-      projectConfig = new ProjectConfig(true);
-    } catch (FileNotFoundException e) {
-      throw new ParseProjectsException("Could not find default extension config file: " + e.getMessage(), e);
-    } catch (IOException e) {
-      throw new ParseProjectsException("Error when reading default extension config file: " + e.getMessage(), e);
-    }
+    projectConfig = new ProjectConfig(true);
     for (COOJAProject project: currentProjects) {
       try {
         projectConfig.appendProjectDir(project.dir);

@@ -146,7 +146,7 @@ public class LogisticLoss extends AbstractRadioMedium {
 
     /* Bounds for the time-varying component */
     public double TIME_VARIATION_MIN_PL_DB = -10;
-    public double TIME_VARIATION_MAX_PL_DB = +10;
+    public double TIME_VARIATION_MAX_PL_DB = 10;
 
     /* How often to update the time-varying path loss value (in simulation time)? */
     private static final double TIME_VARIATION_STEP_SEC = 10.0;

@@ -1640,6 +1640,7 @@ public class GUI {
       try {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       } catch (Exception e) {
+        System.err.println("Could not set any look and feel");
       }
     });
   }

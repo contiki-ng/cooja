@@ -139,8 +139,8 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
       try {
         return Color.decode(colorString);
       } catch (NumberFormatException e) {
+        logger.warn("Unknown color attribute: " + colorString);
       }
-      logger.warn("Unknown color attribute: " + colorString);
       return null;
     }
   }

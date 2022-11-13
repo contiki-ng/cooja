@@ -278,7 +278,7 @@ public class JSONObject extends HashMap<String,Object> implements Jsonable {
         throw new ParseException("not a JSON object: " + input);
     }
 
-    public static JSONObject parseJSONObject(Reader input) throws ParseException, IOException {
+    public static JSONObject parseJSONObject(Reader input) throws ParseException {
         Object value = parseJSON(input);
         if (value instanceof JSONObject) {
             return (JSONObject) value;

@@ -316,8 +316,6 @@ public class Multiplier32 extends IOUnit {
                 resHi = res1 = (int) (res64 >> 16) & 0xffff;
                 res2 = (int) (res64 >> 32) & 0xffff;
                 res3 = (int) (res64 >> 48) & 0xffff;
-
-                break;
             }
             default ->
                     logw(WarningType.EMULATION_ERROR, "**** Not yet implemented multiplier 32 register: 0x" + Utils.hex(address, 4));
