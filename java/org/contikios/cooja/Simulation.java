@@ -38,6 +38,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.Cooja.PluginConstructionException;
+import org.contikios.cooja.Cooja.SimulationCreationException;
 import org.contikios.cooja.mspmote.MspMote.MSPSimStop;
 import org.jdom2.Element;
 
@@ -158,7 +160,7 @@ public class Simulation extends Observable {
    * Creates a new simulation
    */
   public Simulation(Cooja cooja, String title, String logDir, long seed, String radioMediumClass, long moteStartDelay,
-                    boolean quick, Element root) throws MoteType.MoteTypeCreationException {
+                    boolean quick, Element root) throws MoteType.MoteTypeCreationException, SimulationCreationException {
     String name = cooja.currentConfigFile == null ? "(unnamed)" : cooja.currentConfigFile.toString();
     logger.info("Simulation " + name + " random seed: " + seed);
     this.cooja = cooja;
@@ -245,7 +247,7 @@ public class Simulation extends Observable {
     simulationThread.start();
     if (root != null) {
       // Parse elements
-      for (var element : root.getChildren()) {
+      for (var element : root.getChild("simulation").getChildren()) {
         switch (element.getName()) {
           case "title" -> this.title = element.getText();
           case "speedlimit" -> setSpeedLimit(element.getText().equals("null") ? null : Double.parseDouble(element.getText()));
@@ -343,7 +345,51 @@ public class Simulation extends Observable {
     if (root == null) {
       for (var pluginClass : cooja.getRegisteredPlugins()) {
         if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
+          // FIXME: use cooja.startPlugin to catch errors.
           cooja.tryStartPlugin(pluginClass, this, null);
+        }
+      }
+    } else {
+      // Restart plugins from config
+      for (var pluginElement : root.getChildren("plugin")) {
+        String pluginClassName = pluginElement.getText().trim();
+        if (pluginClassName.startsWith("se.sics")) {
+          pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
+        }
+        // Skip SimControl, functionality is now in Cooja class.
+        if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName)) {
+          continue;
+        }
+        // Backwards compatibility: old visualizers were replaced.
+        if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
+          logger.warn("Old simulation config detected: visualizers have been remade");
+          pluginClassName = "org.contikios.cooja.plugins.Visualizer";
+        }
+
+        var pluginClass = cooja.tryLoadClass(this, Plugin.class, pluginClassName);
+        if (pluginClass == null) {
+          logger.fatal("Could not load plugin class: " + pluginClassName);
+          throw new SimulationCreationException("Could not load plugin class " + pluginClassName, null);
+        }
+        // Skip plugins that require visualization in headless mode.
+        if (!Cooja.isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
+          continue;
+        }
+        // Parse plugin mote argument (if any).
+        Mote mote = null;
+        for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
+          int moteNr = Integer.parseInt(pluginSubElement.getText());
+          if (moteNr >= 0 && moteNr < getMotesCount()) {
+            mote = getMote(moteNr);
+          }
+        }
+        try {
+          cooja.startPlugin(pluginClass, this, mote, pluginElement);
+        } catch (PluginConstructionException ex) {
+          throw new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
         }
       }
     }
