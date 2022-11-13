@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.JFileChooser;
+import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 
 import org.apache.logging.log4j.Logger;
@@ -43,10 +44,13 @@ import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
+import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.VisPlugin;
+import org.contikios.cooja.dialogs.MessageList;
+import org.contikios.cooja.dialogs.MessageListText;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.util.StringUtils;
@@ -55,12 +59,14 @@ import org.jdom2.Element;
 
 @ClassDescription("Mobility")
 @PluginType(PluginType.SIM_PLUGIN)
-public class Mobility extends VisPlugin {
+public class Mobility implements Plugin {
   private static final Logger logger = LogManager.getLogger(Mobility.class);
 
   private static final boolean QUIET = false;
 
   private static final boolean WRAP_MOVES = true; /* Wrap around loaded moves forever */
+
+  private final VisPlugin frame;
 
   private Move[] entries; /* All mote moves */
   private final Simulation simulation;
@@ -69,26 +75,35 @@ public class Mobility extends VisPlugin {
 
   private File filePositions = null;
 
-  private final MessageListUI log = new MessageListUI();
+  private final MessageList log;
 
   public Mobility(Simulation simulation, final Cooja gui) {
-    super("Mobility", gui);
     this.simulation = simulation;
-
-    log.addPopupMenuItem(null, true); /* Create message list popup */
-    add(new JScrollPane(log));
+    if (!Cooja.isVisualized()) {
+      frame = null;
+      log = new MessageListText();
+      return;
+    }
+    frame = new VisPlugin("Mobility", gui);
+    var newLog = new MessageListUI();
+    newLog.addPopupMenuItem(null, true); /* Create message list popup */
+    frame.add(new JScrollPane(newLog));
+    log = newLog;
 
     if (!QUIET) {
       log.addMessage("Mobility plugin started at (ms): " + simulation.getSimulationTimeMillis());
       logger.info("Mobility plugin started at (ms): " + simulation.getSimulationTimeMillis());
     }
-    setSize(500,200);
+    frame.setSize(500,200);
+  }
+
+  @Override
+  public JInternalFrame getCooja() {
+    return frame;
   }
 
   @Override
   public void startPlugin() {
-    super.startPlugin();
-
     if (filePositions != null) {
       /* Positions were already loaded */
       return;
@@ -141,7 +156,9 @@ public class Mobility extends VisPlugin {
         logger.info("Loaded " + entries.length + " positions");
       }
 
-      setTitle("Mobility: " + filePositions.getName());
+      if (Cooja.isVisualized()) {
+        frame.setTitle("Mobility: " + filePositions.getName());
+      }
 
       /* Execute first event - it will reschedule itself */
       simulation.invokeSimulationThread(() -> {
@@ -209,7 +226,7 @@ public class Mobility extends VisPlugin {
 
     if (filePositions != null) {
       var element = new Element("positions");
-      File file = gui.createPortablePath(filePositions);
+      File file = simulation.getCooja().createPortablePath(filePositions);
       element.setText(file.getPath().replaceAll("\\\\", "/"));
       element.setAttribute("EXPORT", "copy");
       config.add(element);
@@ -224,7 +241,7 @@ public class Mobility extends VisPlugin {
       String name = element.getName();
 
       if (name.equals("positions")) {
-        filePositions = gui.restorePortablePath(new File(element.getText()));
+        filePositions = simulation.getCooja().restorePortablePath(new File(element.getText()));
         loadPositions();
       }
     }
