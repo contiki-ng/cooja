@@ -203,7 +203,6 @@ public class Mobility implements Plugin {
       var element = new Element("positions");
       File file = simulation.getCooja().createPortablePath(filePositions);
       element.setText(file.getPath().replaceAll("\\\\", "/"));
-      element.setAttribute("EXPORT", "copy");
       config.add(element);
     }
 
