@@ -161,7 +161,8 @@ public abstract class Chip implements Loggable, EventSource {
       if (modei >= 0 && modei <= getModeMax()) {
         return modei;
       }
-    } catch (Exception e) {
+    } catch (NumberFormatException e) {
+      System.err.println("Could not parse number: " + mode);
     }
     return -1;
   }
