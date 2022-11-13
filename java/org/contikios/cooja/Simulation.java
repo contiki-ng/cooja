@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
 import javax.swing.JOptionPane;
 
@@ -350,6 +351,14 @@ public class Simulation extends Observable {
         }
       }
     } else {
+      // Wait for simulation thread to complete configuration (getMote() can fail otherwise).
+      final var simThreadIdle = new CountDownLatch(1);
+      invokeSimulationThread(simThreadIdle::countDown);
+      try {
+        simThreadIdle.await();
+      } catch (InterruptedException e) {
+        throw new SimulationCreationException("Simulation creation interrupted", e);
+      }
       // Restart plugins from config
       for (var pluginElement : root.getChildren("plugin")) {
         String pluginClassName = pluginElement.getText().trim();
