@@ -32,12 +32,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
 import javax.swing.JOptionPane;
 
 import javax.swing.JTextArea;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.Cooja.PluginConstructionException;
+import org.contikios.cooja.Cooja.SimulationCreationException;
 import org.contikios.cooja.mspmote.MspMote.MSPSimStop;
 import org.jdom2.Element;
 
@@ -103,7 +106,7 @@ public class Simulation extends Observable {
 
   private boolean randomSeedGenerated = false;
 
-  private long maxMoteStartupDelay;
+  private final long maxMoteStartupDelay;
 
   private final SafeRandom randomGenerator;
 
@@ -158,7 +161,7 @@ public class Simulation extends Observable {
    * Creates a new simulation
    */
   public Simulation(Cooja cooja, String title, String logDir, long seed, String radioMediumClass, long moteStartDelay,
-                    boolean quick, Element root) throws MoteType.MoteTypeCreationException {
+                    boolean quick, Element root) throws MoteType.MoteTypeCreationException, SimulationCreationException {
     String name = cooja.currentConfigFile == null ? "(unnamed)" : cooja.currentConfigFile.toString();
     logger.info("Simulation " + name + " random seed: " + seed);
     this.cooja = cooja;
@@ -171,28 +174,87 @@ public class Simulation extends Observable {
     if (currentRadioMedium == null) {
       throw new MoteType.MoteTypeCreationException("Could not load " + radioMediumClass);
     }
-    // FIXME: make maxMoteStartupDelay final.
     maxMoteStartupDelay = Math.max(0, moteStartDelay);
     this.quick = quick;
-    if (root == null) {
-      for (var pluginClass : cooja.getRegisteredPlugins()) {
-        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
-          cooja.tryStartPlugin(pluginClass, this, null);
+    simulationThread = new Thread(() -> {
+      boolean isAlive = true;
+      do {
+        boolean isSimulationRunning = false;
+        EventQueue.Pair nextEvent = null;
+        try {
+          while (isAlive) {
+            Object cmd;
+            do {
+              cmd = isSimulationRunning ? commandQueue.poll() : commandQueue.take();
+              if (cmd instanceof Runnable r) {
+                r.run();
+              } else if (cmd instanceof Command c) {
+                isAlive = c != Command.QUIT;
+                isShutdown = !isAlive;
+                isSimulationRunning = c == Command.START;
+                setRunning(isSimulationRunning);
+              }
+            } while (cmd != null && isAlive);
+
+            if (isSimulationRunning) {
+              // Handle one simulation event, and update simulation time.
+              nextEvent = eventQueue.popFirst();
+              assert nextEvent != null : "Ran out of events in eventQueue";
+              assert nextEvent.time >= currentSimulationTime : "Event from the past";
+              currentSimulationTime = nextEvent.time;
+              nextEvent.event.execute(currentSimulationTime);
+            }
+          }
+        } catch (MSPSimStop e) {
+          logger.info("Simulation stopped due to MSPSim breakpoint");
+        } catch (RuntimeException e) {
+          logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
+          if (!Cooja.isVisualized()) {
+            // Quit simulator if in test mode.
+            System.exit(1);
+          }
+          String errorTitle = "Simulation error";
+          if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
+            errorTitle += ": " + moteTimeEvent.getMote();
+          }
+          Cooja.showErrorDialog(errorTitle, e, false);
+        } catch (InterruptedException e) {
+          // Simulation thread interrupted - quit
+          logger.warn("simulation thread interrupted");
+          Thread.currentThread().interrupt();
+          isAlive = false;
+          isShutdown = true;
         }
+        setRunning(false);
+      } while (isAlive);
+      isShutdown = true;
+      commandQueue.clear();
+
+      // Deactivate all script engines
+      for (var engine : scriptEngines) {
+        engine.deactivateScript();
+        engine.closeLog();
       }
-    } else {
+
+      // Remove the radio medium
+      currentRadioMedium.removed();
+
+      // Remove all motes
+      Mote[] motes = getMotes();
+      for (Mote m: motes) {
+        doRemoveMote(m);
+      }
+    }, "sim");
+    simulationThread.start();
+    if (root != null) {
       // Parse elements
-      for (var element : root.getChildren()) {
+      for (var element : root.getChild("simulation").getChildren()) {
         switch (element.getName()) {
           case "title" -> this.title = element.getText();
           case "speedlimit" -> setSpeedLimit(element.getText().equals("null") ? null : Double.parseDouble(element.getText()));
           case "randomseed" -> randomSeedGenerated = element.getText().equals("generated");
-          case "motedelay" -> maxMoteStartupDelay = Integer.parseInt(element.getText()) * MILLISECOND;
-          case "motedelay_us" -> maxMoteStartupDelay = Integer.parseInt(element.getText());
           case "radiomedium" -> {
-            String radioMediumClassName = element.getText().trim();
-            // Check if radio medium specific config should be applied
-            if (radioMediumClassName.equals(currentRadioMedium.getClass().getName())) {
+            if (element.getText().trim().equals(currentRadioMedium.getClass().getName())) {
               currentRadioMedium.setConfigXML(element.getChildren(), Cooja.isVisualized());
             } else {
               logger.info("Radio Medium changed - ignoring radio medium specific config");
@@ -206,7 +268,7 @@ public class Simulation extends Observable {
               moteTypeClassName = moteTypeClassName.replaceFirst("se\\.sics", "org.contikios");
             }
 
-            var availableMoteTypesObjs = getCooja().getRegisteredMoteTypes();
+            var availableMoteTypesObjs = cooja.getRegisteredMoteTypes();
             String[] availableMoteTypes = new String[availableMoteTypesObjs.size()];
             for (int i = 0; i < availableMoteTypes.length; i++) {
               availableMoteTypes[i] = availableMoteTypesObjs.get(i).getName();
@@ -228,7 +290,7 @@ public class Simulation extends Observable {
               }
             }
 
-            var moteType = MoteInterfaceHandler.createMoteType(getCooja(), moteTypeClassName);
+            var moteType = MoteInterfaceHandler.createMoteType(cooja, moteTypeClassName);
             if (moteType == null) {
               Class<? extends MoteType> moteTypeClass = null;
               for (int i = 0; i < availableMoteTypes.length; i++) {
@@ -281,76 +343,65 @@ public class Simulation extends Observable {
       setChanged();
       notifyObservers(this);
     }
-    simulationThread = new Thread(() -> {
-      boolean isAlive = true;
-      do {
-        boolean isSimulationRunning = false;
-        EventQueue.Pair nextEvent = null;
-        try {
-          while (isAlive) {
-            Object cmd;
-            do {
-              cmd = isSimulationRunning ? commandQueue.poll() : commandQueue.take();
-              if (cmd instanceof Runnable r) {
-                r.run();
-              } else if (cmd instanceof Command c) {
-                isAlive = c != Command.QUIT;
-                isShutdown = !isAlive;
-                isSimulationRunning = c == Command.START;
-                setRunning(isSimulationRunning);
-              }
-            } while (cmd != null && isAlive);
-
-            if (isSimulationRunning) {
-              /* Handle one simulation event, and update simulation time */
-              nextEvent = eventQueue.popFirst();
-              assert nextEvent != null : "Ran out of events in eventQueue";
-              assert nextEvent.time >= currentSimulationTime : "Event from the past";
-              currentSimulationTime = nextEvent.time;
-              nextEvent.event.execute(currentSimulationTime);
-            }
-          }
-        } catch (MSPSimStop e) {
-          logger.info("Simulation stopped due to MSPSim breakpoint");
-        } catch (RuntimeException e) {
-          logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
-          if (!Cooja.isVisualized()) {
-            /* Quit simulator if in test mode */
-            System.exit(1);
-          }
-          String errorTitle = "Simulation error";
-          if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
-            errorTitle += ": " + moteTimeEvent.getMote();
-          }
-          Cooja.showErrorDialog(errorTitle, e, false);
-        } catch (InterruptedException e) {
-          // Simulation thread interrupted - quit
-          logger.warn("simulation thread interrupted");
-          Thread.currentThread().interrupt();
-          isAlive = false;
-          isShutdown = true;
+    if (root == null) {
+      for (var pluginClass : cooja.getRegisteredPlugins()) {
+        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
+          // FIXME: use cooja.startPlugin to catch errors.
+          cooja.tryStartPlugin(pluginClass, this, null);
         }
-        setRunning(false);
-      } while (isAlive);
-      isShutdown = true;
-      commandQueue.clear();
-
-      // Deactivate all script engines
-      for (var engine : scriptEngines) {
-        engine.deactivateScript();
-        engine.closeLog();
       }
-
-      // Remove the radio medium
-      currentRadioMedium.removed();
-
-      // Remove all motes
-      Mote[] motes = getMotes();
-      for (Mote m: motes) {
-        doRemoveMote(m);
+    } else {
+      // Wait for simulation thread to complete configuration (getMote() can fail otherwise).
+      final var simThreadIdle = new CountDownLatch(1);
+      invokeSimulationThread(simThreadIdle::countDown);
+      try {
+        simThreadIdle.await();
+      } catch (InterruptedException e) {
+        throw new SimulationCreationException("Simulation creation interrupted", e);
       }
-    }, "sim");
-    simulationThread.start();
+      // Restart plugins from config
+      for (var pluginElement : root.getChildren("plugin")) {
+        String pluginClassName = pluginElement.getText().trim();
+        if (pluginClassName.startsWith("se.sics")) {
+          pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
+        }
+        // Skip SimControl, functionality is now in Cooja class.
+        if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName)) {
+          continue;
+        }
+        // Backwards compatibility: old visualizers were replaced.
+        if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
+          logger.warn("Old simulation config detected: visualizers have been remade");
+          pluginClassName = "org.contikios.cooja.plugins.Visualizer";
+        }
+
+        var pluginClass = cooja.tryLoadClass(this, Plugin.class, pluginClassName);
+        if (pluginClass == null) {
+          logger.fatal("Could not load plugin class: " + pluginClassName);
+          throw new SimulationCreationException("Could not load plugin class " + pluginClassName, null);
+        }
+        // Skip plugins that require visualization in headless mode.
+        if (!Cooja.isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
+          continue;
+        }
+        // Parse plugin mote argument (if any).
+        Mote mote = null;
+        for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
+          int moteNr = Integer.parseInt(pluginSubElement.getText());
+          if (moteNr >= 0 && moteNr < getMotesCount()) {
+            mote = getMote(moteNr);
+          }
+        }
+        try {
+          cooja.startPlugin(pluginClass, this, mote, pluginElement);
+        } catch (PluginConstructionException ex) {
+          throw new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
+        }
+      }
+    }
   }
 
   /**

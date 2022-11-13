@@ -675,7 +675,7 @@ public class Cooja extends Observable {
    * @return Started plugin
    * @throws PluginConstructionException At errors
    */
-  private Plugin startPlugin(final Class<? extends Plugin> pluginClass, Simulation sim, Mote argMote, Element root)
+  Plugin startPlugin(final Class<? extends Plugin> pluginClass, Simulation sim, Mote argMote, Element root)
   throws PluginConstructionException
   {
     // Check that plugin class is registered
@@ -1572,53 +1572,9 @@ public class Cooja extends Observable {
     }
     Simulation newSim;
     try {
-      newSim = new Simulation(this, title, configuration.logDir, seed, medium, delay, quick, simCfg);
+      newSim = new Simulation(this, title, configuration.logDir, seed, medium, delay, quick, root);
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
-    }
-
-    // Restart plugins from config
-    for (var pluginElement : root.getChildren("plugin")) {
-      // Read plugin class
-      String pluginClassName = pluginElement.getText().trim();
-      if (pluginClassName.startsWith("se.sics")) {
-        pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
-      }
-      // Skip SimControl, functionality is now in Cooja class.
-      if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName)) {
-        continue;
-      }
-      // Backwards compatibility: old visualizers were replaced.
-      if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
-              pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
-              pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
-              pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
-        logger.warn("Old simulation config detected: visualizers have been remade");
-        pluginClassName = "org.contikios.cooja.plugins.Visualizer";
-      }
-
-      var pluginClass = tryLoadClass(this, Plugin.class, pluginClassName);
-      if (pluginClass == null) {
-        logger.fatal("Could not load plugin class: " + pluginClassName);
-        throw new SimulationCreationException("Could not load plugin class " + pluginClassName, null);
-      }
-      // Skip plugins that require visualization in headless mode.
-      if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
-        continue;
-      }
-      // Parse plugin mote argument (if any)
-      Mote mote = null;
-      for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
-        int moteNr = Integer.parseInt(pluginSubElement.getText());
-        if (moteNr >= 0 && moteNr < newSim.getMotesCount()) {
-          mote = newSim.getMote(moteNr);
-        }
-      }
-      try {
-        startPlugin(pluginClass, newSim, mote, pluginElement);
-      } catch (PluginConstructionException ex) {
-        throw new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
-      }
     }
 
     if (isVisualized()) { // Z order visualized plugins.
