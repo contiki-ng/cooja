@@ -126,13 +126,9 @@ public class Mobility implements Plugin {
       }
 
       String[] args = line.split(" ");
-      Move e = new Move();
-      e.moteIndex = Integer.parseInt(args[0]); // XXX Mote index, not ID.
-      e.time = (long) (Double.parseDouble(args[1]) * 1000.0 * Simulation.MILLISECOND); // s -> us.
-      e.posX = Double.parseDouble(args[2]);
-      e.posY = Double.parseDouble(args[3]);
-
-      entriesList.add(e);
+      entriesList.add(new Move((long) (Double.parseDouble(args[1]) * 1000.0 * Simulation.MILLISECOND),
+              Integer.parseInt(args[0]), // XXX Mote index, not ID.
+              Double.parseDouble(args[2]), Double.parseDouble(args[3])));
     }
     entries = entriesList.toArray(new Move[0]);
     if (Cooja.isVisualized()) {
@@ -185,11 +181,7 @@ public class Mobility implements Plugin {
     moveNextMoteEvent.remove();
   }
 
-  class Move {
-    long time;
-    int moteIndex;
-    double posX, posY;
-
+  record Move(long time, int moteIndex, double posX, double posY) {
     public String toString() {
       return "MOVE: mote " + moteIndex + " -> [" + posX + "," + posY + "] @ " + time/Simulation.MILLISECOND;
     }
