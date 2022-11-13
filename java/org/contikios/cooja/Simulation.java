@@ -190,9 +190,7 @@ public class Simulation extends Observable {
           case "motedelay" -> maxMoteStartupDelay = Integer.parseInt(element.getText()) * MILLISECOND;
           case "motedelay_us" -> maxMoteStartupDelay = Integer.parseInt(element.getText());
           case "radiomedium" -> {
-            String radioMediumClassName = element.getText().trim();
-            // Check if radio medium specific config should be applied
-            if (radioMediumClassName.equals(currentRadioMedium.getClass().getName())) {
+            if (element.getText().trim().equals(currentRadioMedium.getClass().getName())) {
               currentRadioMedium.setConfigXML(element.getChildren(), Cooja.isVisualized());
             } else {
               logger.info("Radio Medium changed - ignoring radio medium specific config");
