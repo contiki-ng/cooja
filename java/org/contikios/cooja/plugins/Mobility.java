@@ -37,10 +37,6 @@ import java.util.Collection;
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -60,8 +56,6 @@ import org.jdom2.Element;
 @ClassDescription("Mobility")
 @PluginType(PluginType.SIM_PLUGIN)
 public class Mobility implements Plugin {
-  private static final Logger logger = LogManager.getLogger(Mobility.class);
-
   private static final boolean QUIET = false;
 
   private static final boolean WRAP_MOVES = true; /* Wrap around loaded moves forever */
@@ -92,7 +86,6 @@ public class Mobility implements Plugin {
 
     if (!QUIET) {
       log.addMessage("Mobility plugin started at (ms): " + simulation.getSimulationTimeMillis());
-      logger.info("Mobility plugin started at (ms): " + simulation.getSimulationTimeMillis());
     }
     frame.setSize(500,200);
   }
@@ -127,7 +120,6 @@ public class Mobility implements Plugin {
   private void loadPositions() {
     if (!QUIET) {
       log.addMessage("Parsing position file: " + filePositions);
-      logger.info("Parsing position file: " + filePositions);
     }
     String data = StringUtils.loadFromFile(filePositions);
     if (data == null) return;
@@ -150,7 +142,6 @@ public class Mobility implements Plugin {
     entries = entriesList.toArray(new Move[0]);
     if (!QUIET) {
       log.addMessage("Loaded " + entries.length + " positions");
-      logger.info("Loaded " + entries.length + " positions");
     }
 
     if (Cooja.isVisualized()) {
