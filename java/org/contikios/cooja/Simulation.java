@@ -204,7 +204,7 @@ public class Simulation extends Observable {
               moteTypeClassName = moteTypeClassName.replaceFirst("se\\.sics", "org.contikios");
             }
 
-            var availableMoteTypesObjs = getCooja().getRegisteredMoteTypes();
+            var availableMoteTypesObjs = cooja.getRegisteredMoteTypes();
             String[] availableMoteTypes = new String[availableMoteTypesObjs.size()];
             for (int i = 0; i < availableMoteTypes.length; i++) {
               availableMoteTypes[i] = availableMoteTypesObjs.get(i).getName();
@@ -226,7 +226,7 @@ public class Simulation extends Observable {
               }
             }
 
-            var moteType = MoteInterfaceHandler.createMoteType(getCooja(), moteTypeClassName);
+            var moteType = MoteInterfaceHandler.createMoteType(cooja, moteTypeClassName);
             if (moteType == null) {
               Class<? extends MoteType> moteTypeClass = null;
               for (int i = 0; i < availableMoteTypes.length; i++) {
