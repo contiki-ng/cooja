@@ -104,13 +104,8 @@ public class ProjectConfig {
    *
    * @param useDefault
    *          If true the default configuration will be loaded
-   * @throws FileNotFoundException
-   *           If file was not found
-   * @throws IOException
-   *           Stream read error
    */
-  public ProjectConfig(boolean useDefault) throws IOException,
-      FileNotFoundException {
+  public ProjectConfig(boolean useDefault) {
     if (useDefault) {
       var settings = new Properties();
       settings.put("org.contikios.cooja.contikimote.interfaces.ContikiRadio.RADIO_TRANSMISSION_RATE_kbps", "250");
