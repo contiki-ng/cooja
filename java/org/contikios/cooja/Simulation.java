@@ -243,13 +243,7 @@ public class Simulation extends Observable {
       }
     }, "sim");
     simulationThread.start();
-    if (root == null) {
-      for (var pluginClass : cooja.getRegisteredPlugins()) {
-        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
-          cooja.tryStartPlugin(pluginClass, this, null);
-        }
-      }
-    } else {
+    if (root != null) {
       // Parse elements
       for (var element : root.getChildren()) {
         switch (element.getName()) {
@@ -345,6 +339,13 @@ public class Simulation extends Observable {
 
       setChanged();
       notifyObservers(this);
+    }
+    if (root == null) {
+      for (var pluginClass : cooja.getRegisteredPlugins()) {
+        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
+          cooja.tryStartPlugin(pluginClass, this, null);
+        }
+      }
     }
   }
 
