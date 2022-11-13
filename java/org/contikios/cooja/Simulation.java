@@ -103,7 +103,7 @@ public class Simulation extends Observable {
 
   private boolean randomSeedGenerated = false;
 
-  private long maxMoteStartupDelay;
+  private final long maxMoteStartupDelay;
 
   private final SafeRandom randomGenerator;
 
@@ -171,7 +171,6 @@ public class Simulation extends Observable {
     if (currentRadioMedium == null) {
       throw new MoteType.MoteTypeCreationException("Could not load " + radioMediumClass);
     }
-    // FIXME: make maxMoteStartupDelay final.
     maxMoteStartupDelay = Math.max(0, moteStartDelay);
     this.quick = quick;
     if (root == null) {
@@ -187,8 +186,6 @@ public class Simulation extends Observable {
           case "title" -> this.title = element.getText();
           case "speedlimit" -> setSpeedLimit(element.getText().equals("null") ? null : Double.parseDouble(element.getText()));
           case "randomseed" -> randomSeedGenerated = element.getText().equals("generated");
-          case "motedelay" -> maxMoteStartupDelay = Integer.parseInt(element.getText()) * MILLISECOND;
-          case "motedelay_us" -> maxMoteStartupDelay = Integer.parseInt(element.getText());
           case "radiomedium" -> {
             if (element.getText().trim().equals(currentRadioMedium.getClass().getName())) {
               currentRadioMedium.setConfigXML(element.getChildren(), Cooja.isVisualized());
