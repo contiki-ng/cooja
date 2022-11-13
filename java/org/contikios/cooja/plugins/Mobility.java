@@ -125,52 +125,44 @@ public class Mobility implements Plugin {
   }
 
   private void loadPositions() {
-    try {
-      if (!QUIET) {
-        log.addMessage("Parsing position file: " + filePositions);
-        logger.info("Parsing position file: " + filePositions);
-      }
-
-      String data = StringUtils.loadFromFile(filePositions);
-
-      /* Load move by move */
-      ArrayList<Move> entriesList = new ArrayList<>();
-      for (String line: data.split("\n")) {
-        if (line.trim().isEmpty() || line.startsWith("#")) {
-          /* Skip header/metadata */
-          continue;
-        }
-
-        String[] args = line.split(" ");
-        Move e = new Move();
-        e.moteIndex = Integer.parseInt(args[0]); /* XXX Mote index. Not ID */
-        e.time = (long) (Double.parseDouble(args[1])*1000.0*Simulation.MILLISECOND); /* s -> us */
-        e.posX = Double.parseDouble(args[2]);
-        e.posY = Double.parseDouble(args[3]);
-
-        entriesList.add(e);
-      }
-      entries = entriesList.toArray(new Move[0]);
-      if (!QUIET) {
-        log.addMessage("Loaded " + entries.length + " positions");
-        logger.info("Loaded " + entries.length + " positions");
-      }
-
-      if (Cooja.isVisualized()) {
-        frame.setTitle("Mobility: " + filePositions.getName());
-      }
-
-      /* Execute first event - it will reschedule itself */
-      simulation.invokeSimulationThread(() -> {
-        currentMove = 0;
-        periodStart = simulation.getSimulationTime();
-        moveNextMoteEvent.execute(Mobility.this.simulation.getSimulationTime());
-      });
-    } catch (Exception e) {
-      log.addMessage("Error when loading positions: " + e.getMessage());
-      logger.info("Error when loading positions:", e);
-      entries = new Move[0];
+    if (!QUIET) {
+      log.addMessage("Parsing position file: " + filePositions);
+      logger.info("Parsing position file: " + filePositions);
     }
+    String data = StringUtils.loadFromFile(filePositions);
+    if (data == null) return;
+    // Load move by move.
+    ArrayList<Move> entriesList = new ArrayList<>();
+    for (String line : data.split("\n")) {
+      if (line.trim().isEmpty() || line.startsWith("#")) { // Skip header/metadata.
+        continue;
+      }
+
+      String[] args = line.split(" ");
+      Move e = new Move();
+      e.moteIndex = Integer.parseInt(args[0]); // XXX Mote index, not ID.
+      e.time = (long) (Double.parseDouble(args[1]) * 1000.0 * Simulation.MILLISECOND); // s -> us.
+      e.posX = Double.parseDouble(args[2]);
+      e.posY = Double.parseDouble(args[3]);
+
+      entriesList.add(e);
+    }
+    entries = entriesList.toArray(new Move[0]);
+    if (!QUIET) {
+      log.addMessage("Loaded " + entries.length + " positions");
+      logger.info("Loaded " + entries.length + " positions");
+    }
+
+    if (Cooja.isVisualized()) {
+      frame.setTitle("Mobility: " + filePositions.getName());
+    }
+
+    // Execute first event - it will reschedule itself.
+    simulation.invokeSimulationThread(() -> {
+      currentMove = 0;
+      periodStart = simulation.getSimulationTime();
+      moveNextMoteEvent.execute(Mobility.this.simulation.getSimulationTime());
+    });
   }
 
   private final TimeEvent moveNextMoteEvent = new TimeEvent() {
