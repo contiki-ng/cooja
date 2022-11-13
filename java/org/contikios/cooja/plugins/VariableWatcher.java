@@ -624,7 +624,6 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
             ret = switch (mType) {
               case BYTE, SHORT -> Integer.decode(text);
               case INT, LONG, ADDR -> Long.decode(text);
-              default -> null;
             };
           }
           catch (NumberFormatException ex) {
@@ -646,7 +645,6 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
       return switch (mFormat) {
         case CHAR, DEC -> value.toString();
         case HEX -> String.format("0x%x", ((Number) value).longValue());
-        default -> "";
       };
     }
 
