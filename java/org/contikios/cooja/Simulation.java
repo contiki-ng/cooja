@@ -173,6 +173,76 @@ public class Simulation extends Observable {
     }
     maxMoteStartupDelay = Math.max(0, moteStartDelay);
     this.quick = quick;
+    simulationThread = new Thread(() -> {
+      boolean isAlive = true;
+      do {
+        boolean isSimulationRunning = false;
+        EventQueue.Pair nextEvent = null;
+        try {
+          while (isAlive) {
+            Object cmd;
+            do {
+              cmd = isSimulationRunning ? commandQueue.poll() : commandQueue.take();
+              if (cmd instanceof Runnable r) {
+                r.run();
+              } else if (cmd instanceof Command c) {
+                isAlive = c != Command.QUIT;
+                isShutdown = !isAlive;
+                isSimulationRunning = c == Command.START;
+                setRunning(isSimulationRunning);
+              }
+            } while (cmd != null && isAlive);
+
+            if (isSimulationRunning) {
+              // Handle one simulation event, and update simulation time.
+              nextEvent = eventQueue.popFirst();
+              assert nextEvent != null : "Ran out of events in eventQueue";
+              assert nextEvent.time >= currentSimulationTime : "Event from the past";
+              currentSimulationTime = nextEvent.time;
+              nextEvent.event.execute(currentSimulationTime);
+            }
+          }
+        } catch (MSPSimStop e) {
+          logger.info("Simulation stopped due to MSPSim breakpoint");
+        } catch (RuntimeException e) {
+          logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
+          if (!Cooja.isVisualized()) {
+            // Quit simulator if in test mode.
+            System.exit(1);
+          }
+          String errorTitle = "Simulation error";
+          if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
+            errorTitle += ": " + moteTimeEvent.getMote();
+          }
+          Cooja.showErrorDialog(errorTitle, e, false);
+        } catch (InterruptedException e) {
+          // Simulation thread interrupted - quit
+          logger.warn("simulation thread interrupted");
+          Thread.currentThread().interrupt();
+          isAlive = false;
+          isShutdown = true;
+        }
+        setRunning(false);
+      } while (isAlive);
+      isShutdown = true;
+      commandQueue.clear();
+
+      // Deactivate all script engines
+      for (var engine : scriptEngines) {
+        engine.deactivateScript();
+        engine.closeLog();
+      }
+
+      // Remove the radio medium
+      currentRadioMedium.removed();
+
+      // Remove all motes
+      Mote[] motes = getMotes();
+      for (Mote m: motes) {
+        doRemoveMote(m);
+      }
+    }, "sim");
+    simulationThread.start();
     if (root == null) {
       for (var pluginClass : cooja.getRegisteredPlugins()) {
         if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
@@ -276,76 +346,6 @@ public class Simulation extends Observable {
       setChanged();
       notifyObservers(this);
     }
-    simulationThread = new Thread(() -> {
-      boolean isAlive = true;
-      do {
-        boolean isSimulationRunning = false;
-        EventQueue.Pair nextEvent = null;
-        try {
-          while (isAlive) {
-            Object cmd;
-            do {
-              cmd = isSimulationRunning ? commandQueue.poll() : commandQueue.take();
-              if (cmd instanceof Runnable r) {
-                r.run();
-              } else if (cmd instanceof Command c) {
-                isAlive = c != Command.QUIT;
-                isShutdown = !isAlive;
-                isSimulationRunning = c == Command.START;
-                setRunning(isSimulationRunning);
-              }
-            } while (cmd != null && isAlive);
-
-            if (isSimulationRunning) {
-              /* Handle one simulation event, and update simulation time */
-              nextEvent = eventQueue.popFirst();
-              assert nextEvent != null : "Ran out of events in eventQueue";
-              assert nextEvent.time >= currentSimulationTime : "Event from the past";
-              currentSimulationTime = nextEvent.time;
-              nextEvent.event.execute(currentSimulationTime);
-            }
-          }
-        } catch (MSPSimStop e) {
-          logger.info("Simulation stopped due to MSPSim breakpoint");
-        } catch (RuntimeException e) {
-          logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
-          if (!Cooja.isVisualized()) {
-            /* Quit simulator if in test mode */
-            System.exit(1);
-          }
-          String errorTitle = "Simulation error";
-          if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
-            errorTitle += ": " + moteTimeEvent.getMote();
-          }
-          Cooja.showErrorDialog(errorTitle, e, false);
-        } catch (InterruptedException e) {
-          // Simulation thread interrupted - quit
-          logger.warn("simulation thread interrupted");
-          Thread.currentThread().interrupt();
-          isAlive = false;
-          isShutdown = true;
-        }
-        setRunning(false);
-      } while (isAlive);
-      isShutdown = true;
-      commandQueue.clear();
-
-      // Deactivate all script engines
-      for (var engine : scriptEngines) {
-        engine.deactivateScript();
-        engine.closeLog();
-      }
-
-      // Remove the radio medium
-      currentRadioMedium.removed();
-
-      // Remove all motes
-      Mote[] motes = getMotes();
-      for (Mote m: motes) {
-        doRemoveMote(m);
-      }
-    }, "sim");
-    simulationThread.start();
   }
 
   /**
