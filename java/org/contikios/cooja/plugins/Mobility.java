@@ -45,8 +45,6 @@ import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.VisPlugin;
-import org.contikios.cooja.dialogs.MessageList;
-import org.contikios.cooja.dialogs.MessageListText;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.util.StringUtils;
@@ -56,8 +54,6 @@ import org.jdom2.Element;
 @ClassDescription("Mobility")
 @PluginType(PluginType.SIM_PLUGIN)
 public class Mobility implements Plugin {
-  private static final boolean QUIET = false;
-
   private static final boolean WRAP_MOVES = true; /* Wrap around loaded moves forever */
 
   private final VisPlugin frame;
@@ -69,22 +65,21 @@ public class Mobility implements Plugin {
 
   private File filePositions = null;
 
-  private final MessageList log;
+  private final MessageListUI log;
 
   public Mobility(Simulation simulation, final Cooja gui) {
     this.simulation = simulation;
     if (!Cooja.isVisualized()) {
       frame = null;
-      log = new MessageListText();
+      log = null;
       return;
     }
     frame = new VisPlugin("Mobility", gui);
-    var newLog = new MessageListUI();
-    newLog.addPopupMenuItem(null, true); /* Create message list popup */
-    frame.add(new JScrollPane(newLog));
-    log = newLog;
+    log = new MessageListUI();
+    log.addPopupMenuItem(null, true); /* Create message list popup */
+    frame.add(new JScrollPane(log));
 
-    if (!QUIET) {
+    if (Cooja.isVisualized()) {
       log.addMessage("Mobility plugin started at (ms): " + simulation.getSimulationTimeMillis());
     }
     frame.setSize(500,200);
@@ -118,7 +113,7 @@ public class Mobility implements Plugin {
   }
 
   private void loadPositions() {
-    if (!QUIET) {
+    if (Cooja.isVisualized()) {
       log.addMessage("Parsing position file: " + filePositions);
     }
     String data = StringUtils.loadFromFile(filePositions);
@@ -140,11 +135,8 @@ public class Mobility implements Plugin {
       entriesList.add(e);
     }
     entries = entriesList.toArray(new Move[0]);
-    if (!QUIET) {
-      log.addMessage("Loaded " + entries.length + " positions");
-    }
-
     if (Cooja.isVisualized()) {
+      log.addMessage("Loaded " + entries.length + " positions");
       frame.setTitle("Mobility: " + filePositions.getName());
     }
 
