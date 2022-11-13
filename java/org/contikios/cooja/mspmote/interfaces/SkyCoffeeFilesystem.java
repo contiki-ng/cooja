@@ -210,12 +210,7 @@ public class SkyCoffeeFilesystem extends MoteInterface {
       }
     }
 
-    EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        ((AbstractTableModel)filesTable.getModel()).fireTableDataChanged();
-      }
-    });
+    EventQueue.invokeLater(() -> ((AbstractTableModel)filesTable.getModel()).fireTableDataChanged());
   }
 
   @Override
