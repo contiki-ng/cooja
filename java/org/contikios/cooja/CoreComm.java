@@ -127,8 +127,7 @@ public abstract class CoreComm {
          var writer = Files.newBufferedWriter(dst, UTF_8)) {
       String line;
       while ((line = reader.readLine()) != null) {
-        line = line.replace("CoreCommTemplate", className);
-        writer.write(line + "\n");
+        writer.write(line.replace("CoreCommTemplate", className) + "\n");
       }
     } catch (Exception e) {
       throw new MoteTypeCreationException(
