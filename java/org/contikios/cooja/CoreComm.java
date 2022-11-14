@@ -122,17 +122,12 @@ public abstract class CoreComm {
     dst.toFile().deleteOnExit();
 
     // Instantiate the CoreComm template into the temporary directory.
-    var template = "CoreCommTemplate.java";
-    Path templatePath = Path.of(template);
-    try (var input = CoreComm.class.getResourceAsStream('/' + template);
-         var reader = Files.exists(templatePath)
-                 ? Files.newBufferedReader(templatePath, UTF_8)
-                 : new BufferedReader(new InputStreamReader(Objects.requireNonNull(input), UTF_8));
+    try (var input = CoreComm.class.getResourceAsStream('/' + "CoreCommTemplate.java");
+         var reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(input), UTF_8));
          var writer = Files.newBufferedWriter(dst, UTF_8)) {
       String line;
       while ((line = reader.readLine()) != null) {
-        line = line.replace("CoreCommTemplate", className);
-        writer.write(line + "\n");
+        writer.write(line.replace("CoreCommTemplate", className) + "\n");
       }
     } catch (Exception e) {
       throw new MoteTypeCreationException(
