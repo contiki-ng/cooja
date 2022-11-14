@@ -51,7 +51,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -132,22 +132,8 @@ public class ImportAppMoteDialog extends JDialog {
         }
 
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fc.setFileFilter(new FileFilter() {
-          @Override
-          public boolean accept(File f) {
-            if (f.isDirectory()) {
-              return true;
-            }
-            return f.getName().endsWith(".class");
-          }
-
-          @Override
-          public String getDescription() {
-            return "Application Mote Java Class";
-          }
-        });
+        fc.setFileFilter(new FileNameExtensionFilter("Application Mote Java Class", "class"));
         fc.setDialogTitle("Select Application Mote Java Class");
-
         if (fc.showOpenDialog(ImportAppMoteDialog.this) == JFileChooser.APPROVE_OPTION) {
           File fp = fc.getSelectedFile();
           if (fp != null) {

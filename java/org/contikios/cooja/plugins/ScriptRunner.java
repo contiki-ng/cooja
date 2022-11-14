@@ -61,7 +61,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
@@ -485,16 +485,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
     }
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setDialogTitle("Select script file");
-    chooser.setFileFilter(new FileFilter() {
-      @Override
-      public boolean accept(File file) {
-        return file.isDirectory() || file.getName().endsWith(".js");
-      }
-      @Override
-      public String getDescription() {
-        return "JavaScript";
-      }
-    });
+    chooser.setFileFilter(new FileNameExtensionFilter("JavaScript", "js"));
     var choice = open ? chooser.showOpenDialog(frame) : chooser.showSaveDialog(frame);
     return choice == JFileChooser.APPROVE_OPTION ? chooser.getSelectedFile() : null;
   }
