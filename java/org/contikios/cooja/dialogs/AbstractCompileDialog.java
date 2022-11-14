@@ -65,8 +65,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileFilter;
-
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -211,26 +210,8 @@ public abstract class AbstractCompileDialog extends JDialog {
       }
 
       fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-      fc.setFileFilter(new FileFilter() {
-        @Override
-        public boolean accept(File f) {
-          String filename = f.getName();
-          if (f.isDirectory() || filename.endsWith(".c")) {
-            return true;
-          }
-
-          if (filename.isEmpty()) {
-            return false;
-          }
-
-          return canLoadFirmware(filename);
-        }
-
-        @Override
-        public String getDescription() {
-          return "Contiki process source or Precompiled firmware";
-        }
-      });
+      fc.setFileFilter(new FileNameExtensionFilter("Contiki process source or Precompiled firmware",
+              "c", moteType.getMoteType()));
       fc.setDialogTitle("Select Contiki process source");
       if (fc.showOpenDialog(AbstractCompileDialog.this) == JFileChooser.APPROVE_OPTION) {
         contikiField.setText(fc.getSelectedFile().getAbsolutePath());

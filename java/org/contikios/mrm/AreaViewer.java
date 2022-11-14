@@ -89,8 +89,7 @@ import javax.swing.JToolTip;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.ProgressMonitor;
-import javax.swing.filechooser.FileFilter;
-
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
@@ -869,34 +868,6 @@ public class AreaViewer extends VisPlugin {
    * Helps user set a background image which can be analysed for obstacles/freespace.
    */
   private final ActionListener obstacleHandler = new ActionListener() {
-
-    /**
-     * Choosable file filter that supports tif, gif, jpg, png, bmp.
-     */
-    class ImageFilter extends FileFilter {
-      @Override
-      public boolean accept(File f) {
-        if (f.isDirectory()) {
-          return true;
-        }
-
-        String filename = f.getName();
-        if (filename == null) {
-          return false;
-        }
-
-        return filename.endsWith(".gif") || filename.endsWith(".GIF") ||
-            filename.endsWith(".jpg") || filename.endsWith(".JPG") ||
-            filename.endsWith(".jpeg") || filename.endsWith(".JPEG") ||
-            filename.endsWith(".png") || filename.endsWith(".PNG");
-      }
-
-      @Override
-      public String getDescription() {
-        return "All supported images";
-      }
-    }
-
     class ImageSettingsDialog extends JDialog {
       private double
       virtualStartX = 0.0,
@@ -1055,7 +1026,7 @@ public class AreaViewer extends VisPlugin {
 
       /* Select image file */
       JFileChooser fileChooser = new JFileChooser();
-      ImageFilter filter = new ImageFilter();
+      var filter = new FileNameExtensionFilter("All supported images", "gif", "jpg", "jpeg", "png");
       fileChooser.setFileFilter(filter);
 
       int returnVal = fileChooser.showOpenDialog(canvas);

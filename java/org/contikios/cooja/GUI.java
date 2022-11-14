@@ -96,7 +96,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
-import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.dialogs.AddMoteDialog;
@@ -1189,7 +1189,7 @@ public class GUI {
         }
         File file = fc.getSelectedFile();
         if (!file.exists()) {  // Try default file extension.
-          file = new File(file.getParent(), file.getName() + fc.getFileFilter());
+          file = new File(file.getParent(), file.getName() + ".csc");
         }
         if (!file.exists() || !file.canRead()) {
           logger.fatal("No read access to file");
@@ -1208,7 +1208,7 @@ public class GUI {
     }
     File saveFile = fc.getSelectedFile();
     if (!fc.accept(saveFile)) {
-      saveFile = new File(saveFile.getParent(), saveFile.getName() + fc.getFileFilter());
+      saveFile = new File(saveFile.getParent(), saveFile.getName() + ".csc");
     }
     if (saveFile.exists()) {
       Object[] opts = {"Overwrite", "Cancel"};
@@ -1481,23 +1481,7 @@ public class GUI {
   /** Allocate a file chooser for Cooja simulation files. */
   private static JFileChooser newFileChooser() {
     JFileChooser fc = new JFileChooser();
-    fc.setFileFilter(new FileFilter() {
-      @Override
-      public boolean accept(File file) {
-        if (file.isDirectory()) {
-          return true;
-        }
-        return file.getName().endsWith(".csc") || file.getName().endsWith(".csc.gz");
-      }
-      @Override
-      public String getDescription() {
-        return "Cooja simulation (.csc, .csc.gz)";
-      }
-      @Override
-      public String toString() {
-        return ".csc";
-      }
-    });
+    fc.setFileFilter(new FileNameExtensionFilter("Cooja simulation (.csc, .csc.gz)", "csc", "csc.gz"));
 
     // Suggest file using history
     File suggestedFile = getLastOpenedFile();
