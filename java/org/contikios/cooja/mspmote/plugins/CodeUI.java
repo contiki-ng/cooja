@@ -230,7 +230,7 @@ public class CodeUI extends JPanel {
    * Display given source code and mark given line.
    *
    * @param codeFile Source code file
-   * @param lineNr Line numer
+   * @param lineNr Line number
    */
   public void displayNewCode(final File codeFile, final int lineNr, final boolean markCurrent) {
     if (!codeFile.equals(displayedFile)) {
