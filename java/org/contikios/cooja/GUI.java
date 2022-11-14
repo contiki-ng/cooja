@@ -50,7 +50,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1610,39 +1609,37 @@ public class GUI {
     return n != JOptionPane.YES_OPTION;
   }
 
-  public static void setLookAndFeel() throws InterruptedException, InvocationTargetException {
-    java.awt.EventQueue.invokeAndWait(() -> {
-      JFrame.setDefaultLookAndFeelDecorated(true);
-      JDialog.setDefaultLookAndFeelDecorated(true);
-      ToolTipManager.sharedInstance().setDismissDelay(60000);
-      // Nimbus.
-      try {
-        String osName = System.getProperty("os.name").toLowerCase();
-        if (osName.startsWith("linux")) {
-          try {
-            for (var info : UIManager.getInstalledLookAndFeels()) {
-              if ("Nimbus".equals(info.getName())) {
-                UIManager.setLookAndFeel(info.getClassName());
-                break;
-              }
+  public static void setLookAndFeel() {
+    JFrame.setDefaultLookAndFeelDecorated(true);
+    JDialog.setDefaultLookAndFeelDecorated(true);
+    ToolTipManager.sharedInstance().setDismissDelay(60000);
+    // Nimbus.
+    try {
+      String osName = System.getProperty("os.name").toLowerCase();
+      if (osName.startsWith("linux")) {
+        try {
+          for (var info : UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+              UIManager.setLookAndFeel(info.getClassName());
+              break;
             }
-          } catch (UnsupportedLookAndFeelException e) {
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
           }
-        } else {
-          UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (UnsupportedLookAndFeelException e) {
+          UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         }
-        return;
-      } catch (Exception e) {
+      } else {
+        UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
       }
+      return;
+    } catch (Exception e) {
+    }
 
-      // System.
-      try {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      } catch (Exception e) {
-        System.err.println("Could not set any look and feel");
-      }
-    });
+    // System.
+    try {
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to set look and feel", e);
+    }
   }
 
   /** GUI event handler */
