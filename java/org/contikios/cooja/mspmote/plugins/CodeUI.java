@@ -34,7 +34,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -201,7 +201,7 @@ public class CodeUI extends JPanel {
     if (mousePos == null) {
       return -1;
     }
-    int modelPos = codeEditor.viewToModel(mousePos);
+    int modelPos = codeEditor.viewToModel2D(mousePos);
     int line = 1;
     while (codeEditorLines.containsKey(line+1)) {
       int next = codeEditorLines.get(line+1);
@@ -281,9 +281,9 @@ public class CodeUI extends JPanel {
       /* ensure visible */
       java.awt.EventQueue.invokeLater(() -> {
         try {
-          Rectangle r = codeEditor.modelToView(start);
+          Rectangle2D r = codeEditor.modelToView2D(start);
           if (r != null) {
-            codeEditor.scrollRectToVisible(codeEditor.modelToView(start));
+            codeEditor.scrollRectToVisible(r.getBounds());
           }
         } catch (BadLocationException ignored) {
         }
