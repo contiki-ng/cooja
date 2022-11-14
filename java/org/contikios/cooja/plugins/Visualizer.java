@@ -34,7 +34,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -158,9 +157,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   /* Viewport */
   private final AffineTransform viewportTransform;
   public int resetViewport = 0;
-
-  private static final int SELECT_MASK = Event.CTRL_MASK;
-  private static final int MOVE_MASK = Event.SHIFT_MASK;
 
   enum MotesActionState {
     NONE,
@@ -969,17 +965,15 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       cursorMote = foundMotes[foundMotes.length - 1];
     }
 
-    int modifiers = mouseEvent.getModifiers();
+    int modifiers = mouseEvent.getModifiersEx();
 
     /* translate input */
-    if ((modifiers & SELECT_MASK) != 0) {
+    if ((modifiers & MouseEvent.CTRL_DOWN_MASK) != 0) {
       mouseActionState = MotesActionState.SELECT_PRESS;
-    }
-    else if ((modifiers & MOVE_MASK) != 0) {
+    } else if ((modifiers & MouseEvent.SHIFT_DOWN_MASK) != 0) {
       // only move viewport
       mouseActionState = MotesActionState.PAN_PRESS;
-    }
-    else {
+    } else {
       if (foundMotes == null) {
         // move viewport
         selectedMotes.clear();
