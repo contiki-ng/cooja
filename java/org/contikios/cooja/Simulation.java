@@ -104,7 +104,7 @@ public class Simulation extends Observable {
 
   private final long randomSeed;
 
-  private boolean randomSeedGenerated = false;
+  private final boolean randomSeedGenerated;
 
   private final long maxMoteStartupDelay;
 
@@ -160,14 +160,16 @@ public class Simulation extends Observable {
   /**
    * Creates a new simulation
    */
-  public Simulation(Cooja cooja, String title, String logDir, long seed, String radioMediumClass, long moteStartDelay,
-                    boolean quick, Element root) throws MoteType.MoteTypeCreationException, SimulationCreationException {
+  public Simulation(Cooja cooja, String title, String logDir, boolean generateSeed, long seed, String radioMediumClass,
+                    long moteStartDelay, boolean quick, Element root)
+          throws MoteType.MoteTypeCreationException, SimulationCreationException {
     String name = cooja.currentConfigFile == null ? "(unnamed)" : cooja.currentConfigFile.toString();
     logger.info("Simulation " + name + " random seed: " + seed);
     this.cooja = cooja;
     this.title = title;
     this.logDir = logDir;
     randomSeed = seed;
+    randomSeedGenerated = generateSeed;
     randomGenerator = new SafeRandom(this);
     randomGenerator.setSeed(seed);
     currentRadioMedium = MoteInterfaceHandler.createRadioMedium(this, radioMediumClass);
@@ -250,9 +252,7 @@ public class Simulation extends Observable {
       // Parse elements
       for (var element : root.getChild("simulation").getChildren()) {
         switch (element.getName()) {
-          case "title" -> this.title = element.getText();
           case "speedlimit" -> setSpeedLimit(element.getText().equals("null") ? null : Double.parseDouble(element.getText()));
-          case "randomseed" -> randomSeedGenerated = element.getText().equals("generated");
           case "radiomedium" -> {
             if (element.getText().trim().equals(currentRadioMedium.getClass().getName())) {
               currentRadioMedium.setConfigXML(element.getChildren(), Cooja.isVisualized());
@@ -343,11 +343,19 @@ public class Simulation extends Observable {
       setChanged();
       notifyObservers(this);
     }
+    // Keep track of started plugins so they can be removed on failure.
+    var startedPlugins = new ArrayList<Plugin>();
     if (root == null) {
       for (var pluginClass : cooja.getRegisteredPlugins()) {
         if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
-          // FIXME: use cooja.startPlugin to catch errors.
-          cooja.tryStartPlugin(pluginClass, this, null);
+          try {
+            startedPlugins.add(cooja.startPlugin(pluginClass, this, null, null));
+          } catch (PluginConstructionException e) {
+            for (var plugin : startedPlugins) {
+              cooja.removePlugin(plugin);
+            }
+            throw new SimulationCreationException("Failed to start plugin: " + e.getMessage(), e);
+          }
         }
       }
     } else {
@@ -396,8 +404,11 @@ public class Simulation extends Observable {
           }
         }
         try {
-          cooja.startPlugin(pluginClass, this, mote, pluginElement);
+          startedPlugins.add(cooja.startPlugin(pluginClass, this, mote, pluginElement));
         } catch (PluginConstructionException ex) {
+          for (var plugin : startedPlugins) {
+            cooja.removePlugin(plugin);
+          }
           throw new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
         }
       }
