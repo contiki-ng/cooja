@@ -343,11 +343,19 @@ public class Simulation extends Observable {
       setChanged();
       notifyObservers(this);
     }
+    // Keep track of started plugins so they can be removed on failure.
+    var startedPlugins = new ArrayList<Plugin>();
     if (root == null) {
       for (var pluginClass : cooja.getRegisteredPlugins()) {
         if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
-          // FIXME: use cooja.startPlugin to catch errors.
-          cooja.tryStartPlugin(pluginClass, this, null);
+          try {
+            startedPlugins.add(cooja.startPlugin(pluginClass, this, null, null));
+          } catch (PluginConstructionException e) {
+            for (var plugin : startedPlugins) {
+              cooja.removePlugin(plugin);
+            }
+            throw new SimulationCreationException("Failed to start plugin: " + e.getMessage(), e);
+          }
         }
       }
     } else {
@@ -396,8 +404,11 @@ public class Simulation extends Observable {
           }
         }
         try {
-          cooja.startPlugin(pluginClass, this, mote, pluginElement);
+          startedPlugins.add(cooja.startPlugin(pluginClass, this, mote, pluginElement));
         } catch (PluginConstructionException ex) {
+          for (var plugin : startedPlugins) {
+            cooja.removePlugin(plugin);
+          }
           throw new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
         }
       }
