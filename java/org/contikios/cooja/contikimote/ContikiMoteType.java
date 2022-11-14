@@ -31,10 +31,8 @@ package org.contikios.cooja.contikimote;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -715,8 +713,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
       pb.directory(libraryFile.getParentFile());
       final Process p = pb.start();
       Thread readThread = new Thread(() -> {
-        try (BufferedReader errorInput = new BufferedReader(
-                new InputStreamReader(p.getErrorStream(), UTF_8))) {
+        try (var errorInput = p.errorReader(UTF_8)) {
           String line;
           while ((line = errorInput.readLine()) != null) {
             commandOutput.addMessage(line, MessageList.ERROR);
@@ -729,8 +726,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
       readThread.setDaemon(true);
       readThread.start();
 
-      try (BufferedReader input = new BufferedReader(
-              new InputStreamReader(p.getInputStream(), UTF_8))) {
+      try (var input = p.inputReader(UTF_8)) {
         String line;
         while ((line = input.readLine()) != null) {
           output.add(line);

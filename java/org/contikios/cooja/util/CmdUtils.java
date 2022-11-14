@@ -30,10 +30,8 @@ package org.contikios.cooja.util;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.dialogs.MessageContainer;
@@ -61,7 +59,7 @@ public class CmdUtils {
       pb.directory(new File(gui.getConfigDir()));
       final Process p = pb.start();
       var stderr = new Thread(() -> {
-        try (var errorInput = new BufferedReader(new InputStreamReader(p.getErrorStream(), UTF_8))) {
+        try (var errorInput = p.errorReader(UTF_8)) {
           String line;
           while ((line = errorInput.readLine()) != null) {
             cmdIO.addMessage(line, MessageList.ERROR);
@@ -73,7 +71,7 @@ public class CmdUtils {
       stderr.setDaemon(true);
       stderr.start();
       var stdout = new Thread(() -> {
-        try (var input = new BufferedReader(new InputStreamReader(p.getInputStream(), UTF_8))) {
+        try (var input = p.inputReader(UTF_8)) {
           String line;
           while ((line = input.readLine()) != null) {
             cmdIO.addMessage(line, MessageList.NORMAL);

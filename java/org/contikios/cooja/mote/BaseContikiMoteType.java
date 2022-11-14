@@ -34,10 +34,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.awt.Container;
 import java.awt.Image;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -417,7 +415,7 @@ public abstract class BaseContikiMoteType implements MoteType {
       throw new MoteTypeCreationException("Compilation error: " + ex.getMessage(), ex);
     }
     new Thread(() -> {
-      try (var stdout = new BufferedReader(new InputStreamReader(compileProcess.getInputStream(), UTF_8))) {
+      try (var stdout = compileProcess.inputReader(UTF_8)) {
         String readLine;
         while ((readLine = stdout.readLine()) != null) {
           messageDialog.addMessage(readLine, MessageList.NORMAL);
@@ -428,7 +426,7 @@ public abstract class BaseContikiMoteType implements MoteType {
     }, "read input stream thread").start();
 
     new Thread(() -> {
-      try (var stderr = new BufferedReader(new InputStreamReader(compileProcess.getErrorStream(), UTF_8))) {
+      try (var stderr = compileProcess.errorReader(UTF_8)) {
         String readLine;
         while ((readLine = stderr.readLine()) != null) {
           messageDialog.addMessage(readLine, MessageList.ERROR);

@@ -33,7 +33,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
@@ -43,7 +42,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Objects;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
-import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
 
@@ -161,18 +159,22 @@ public abstract class CoreComm {
     OutputStream compilationErrorStream = compilationOutput
         .getInputStream(MessageList.ERROR);
 
-    try {
-      int b;
-      String[] cmd = new String[] {cooja.configuration.javac(),
+    String[] cmd = new String[] {cooja.configuration.javac(),
           "-cp", System.getProperty("java.class.path"), "--release", String.valueOf(Runtime.version().feature()),
           // Disable warnings to avoid 3 lines of "warning: using incubating module(s): jdk.incubator.foreign".
           "-nowarn", "--add-modules", "jdk.incubator.foreign",
           tempDir + "/org/contikios/cooja/corecomm/" + className + ".java" };
+    ProcessBuilder pb = new ProcessBuilder(cmd);
+    Process p;
+    try {
+      p = pb.start();
+    } catch (IOException e) {
+      throw new MoteTypeCreationException("Could not start Java compiler: " + cmd[0], e);
+    }
 
-      ProcessBuilder pb = new ProcessBuilder(cmd);
-      Process p = pb.start();
-      InputStream outputStream = p.getInputStream();
-      InputStream errorStream = p.getErrorStream();
+    try (var outputStream = p.inputReader(UTF_8);
+         var errorStream = p.errorReader(UTF_8)) {
+      int b;
       while ((b = outputStream.read()) >= 0) {
         compilationStandardStream.write(b);
       }
