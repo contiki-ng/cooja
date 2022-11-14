@@ -252,7 +252,6 @@ public class Simulation extends Observable {
       // Parse elements
       for (var element : root.getChild("simulation").getChildren()) {
         switch (element.getName()) {
-          case "title" -> this.title = element.getText();
           case "speedlimit" -> setSpeedLimit(element.getText().equals("null") ? null : Double.parseDouble(element.getText()));
           case "radiomedium" -> {
             if (element.getText().trim().equals(currentRadioMedium.getClass().getName())) {
