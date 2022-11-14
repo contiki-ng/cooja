@@ -284,15 +284,6 @@ class Main {
     }
 
     var vis = options.action == null || options.action.quickstart != null;
-    if (vis) {
-      try {
-        GUI.setLookAndFeel();
-      } catch (Exception e) {
-        System.err.println("Could not set look and feel: " + e.getMessage());
-        System.exit(1);
-      }
-    }
-
     var cfg = new Config(vis, options.randomSeed, options.externalToolsConfig, options.updateSimulation,
             options.logDir, options.contikiPath, options.coojaPath, options.javac, simConfigs);
     // Configure logger

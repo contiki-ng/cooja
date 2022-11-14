@@ -216,6 +216,7 @@ public class Cooja extends Observable {
       return new RunnableInEDT<Cooja>() {
         @Override
         public Cooja work() {
+          GUI.setLookAndFeel();
           try {
             return new Cooja(cfg);
           } catch (ParseProjectsException e) {
