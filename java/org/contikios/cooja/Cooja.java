@@ -1549,8 +1549,9 @@ public class Cooja extends Observable {
     var simCfg = root.getChild("simulation");
     var title = simCfg.getChild("title").getText();
     var cfgSeed = simCfg.getChild("randomseed").getText();
+    boolean generatedSeed = "generated".equals(cfgSeed);
     long seed = manualRandomSeed != null ? manualRandomSeed
-            : "generated".equals(cfgSeed) ? new Random().nextLong() : Long.parseLong(cfgSeed);
+            : generatedSeed ? new Random().nextLong() : Long.parseLong(cfgSeed);
     var medium = simCfg.getChild("radiomedium").getText().trim();
     var cfgDelay = simCfg.getChild("motedelay");
     long delay = cfgDelay == null
@@ -1558,16 +1559,17 @@ public class Cooja extends Observable {
             : Integer.parseInt(cfgDelay.getText()) * Simulation.MILLISECOND;
     if (Cooja.isVisualized() && !quick) {
       var cfg = CreateSimDialog.showDialog(this, new Simulation.SimConfig(title, medium,
-              "generated".equals(cfgSeed), seed, delay));
+              generatedSeed, seed, delay));
       if (cfg == null) return null;
       title = cfg.title();
+      generatedSeed = cfg.generatedSeed();
       seed = cfg.randomSeed();
       medium = cfg.radioMedium();
       delay = cfg.moteStartDelay();
     }
     Simulation newSim;
     try {
-      newSim = new Simulation(this, title, configuration.logDir, seed, medium, delay, quick, root);
+      newSim = new Simulation(this, title, configuration.logDir, generatedSeed, seed, medium, delay, quick, root);
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }

@@ -104,7 +104,7 @@ public class Simulation extends Observable {
 
   private final long randomSeed;
 
-  private boolean randomSeedGenerated = false;
+  private final boolean randomSeedGenerated;
 
   private final long maxMoteStartupDelay;
 
@@ -160,14 +160,16 @@ public class Simulation extends Observable {
   /**
    * Creates a new simulation
    */
-  public Simulation(Cooja cooja, String title, String logDir, long seed, String radioMediumClass, long moteStartDelay,
-                    boolean quick, Element root) throws MoteType.MoteTypeCreationException, SimulationCreationException {
+  public Simulation(Cooja cooja, String title, String logDir, boolean generateSeed, long seed, String radioMediumClass,
+                    long moteStartDelay, boolean quick, Element root)
+          throws MoteType.MoteTypeCreationException, SimulationCreationException {
     String name = cooja.currentConfigFile == null ? "(unnamed)" : cooja.currentConfigFile.toString();
     logger.info("Simulation " + name + " random seed: " + seed);
     this.cooja = cooja;
     this.title = title;
     this.logDir = logDir;
     randomSeed = seed;
+    randomSeedGenerated = generateSeed;
     randomGenerator = new SafeRandom(this);
     randomGenerator.setSeed(seed);
     currentRadioMedium = MoteInterfaceHandler.createRadioMedium(this, radioMediumClass);
@@ -252,7 +254,6 @@ public class Simulation extends Observable {
         switch (element.getName()) {
           case "title" -> this.title = element.getText();
           case "speedlimit" -> setSpeedLimit(element.getText().equals("null") ? null : Double.parseDouble(element.getText()));
-          case "randomseed" -> randomSeedGenerated = element.getText().equals("generated");
           case "radiomedium" -> {
             if (element.getText().trim().equals(currentRadioMedium.getClass().getName())) {
               currentRadioMedium.setConfigXML(element.getChildren(), Cooja.isVisualized());
