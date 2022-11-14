@@ -353,7 +353,7 @@ public class RadioLogger extends VisPlugin {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
           showInAllAction.actionPerformed(null);
         } else if (e.getKeyCode() == KeyEvent.VK_F
-                && (e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
+                && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
           searchField.setVisible(true);
           searchField.requestFocus();
           searchField.selectAll();
@@ -614,7 +614,7 @@ public class RadioLogger extends VisPlugin {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
           searchSelectNext(
                   searchField.getText(),
-                  (e.getModifiers() & KeyEvent.SHIFT_MASK) != 0);
+                  (e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) != 0);
         } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
           searchField.setVisible(false);
           dataTable.requestFocus();

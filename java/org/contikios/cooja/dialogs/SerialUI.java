@@ -224,7 +224,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     logTextPane.addKeyListener(new KeyAdapter() {
       @Override
       public void keyPressed(KeyEvent e) {
-        if ((e.getModifiers() & (MouseEvent.SHIFT_MASK|MouseEvent.CTRL_MASK)) != 0) {
+        if ((e.getModifiersEx() & (MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK)) != 0) {
           return;
         }
         commandField.requestFocusInWindow();
