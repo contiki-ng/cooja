@@ -146,7 +146,6 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
               historyPos = nextPos;
               commandField.setText(history[historyPos]);
             }
-            break;
           }
           case KeyEvent.VK_DOWN -> {
             int nextPos = (historyPos + 1) % history.length;
@@ -163,7 +162,6 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
               historyPos = nextPos;
               commandField.setText(history[historyPos]);
             }
-            break;
           }
         }
       }
