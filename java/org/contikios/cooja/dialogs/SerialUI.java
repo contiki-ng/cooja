@@ -197,7 +197,6 @@ public abstract class SerialUI extends Log implements SerialPort {
             } else {
               commandField.setText("");
             }
-            break;
           }
           case KeyEvent.VK_DOWN -> {
             historyPos--;
@@ -210,7 +209,6 @@ public abstract class SerialUI extends Log implements SerialPort {
             } else {
               commandField.setText("");
             }
-            break;
           }
         }
       }

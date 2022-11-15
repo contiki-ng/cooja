@@ -165,7 +165,6 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
               historyPos = nextPos;
               commandField.setText(history[historyPos]);
             }
-            break;
           }
           case KeyEvent.VK_DOWN -> {
             int nextPos = (historyPos + 1) % history.length;
@@ -182,7 +181,6 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
               historyPos = nextPos;
               commandField.setText(history[historyPos]);
             }
-            break;
           }
         }
       }
