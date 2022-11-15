@@ -79,8 +79,6 @@ import org.contikios.cooja.dialogs.MessageList;
  * @author Fredrik Osterlind
  */
 public abstract class CoreComm {
-  private final static ArrayList<File> coreCommFiles = new ArrayList<>();
-
   private static int fileCounter = 1;
 
   /**
@@ -220,9 +218,7 @@ public abstract class CoreComm {
     }
 
     try {
-      CoreComm newCoreComm = (CoreComm) newCoreCommClass.getConstructor(File.class).newInstance(libFile);
-      coreCommFiles.add(libFile);
-      return newCoreComm;
+      return (CoreComm) newCoreCommClass.getConstructor(File.class).newInstance(libFile);
     } catch (Exception e) {
       throw new MoteTypeCreationException(
           "Error when creating corecomm instance: " + className, e);
