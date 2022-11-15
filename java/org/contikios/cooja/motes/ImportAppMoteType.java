@@ -138,18 +138,10 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
         }
       }
     }
-    try {
-      ClassLoader parentLoader = getParentClassLoader(simulation);
-      ClassLoader loader;
-      if (moteClassPath != null) {
-        /* Load class */
-        loader = new URLClassLoader(new java.net.URL[] { moteClassPath.toURI().toURL() },
-            parentLoader);
-      } else {
-        loader = parentLoader;
-      }
-
-      var moteClass = loader.loadClass(moteClassName).asSubclass(AbstractApplicationMote.class);
+    ClassLoader parentLoader = getParentClassLoader(simulation);
+    try (var loader = moteClassPath == null
+            ? null : new URLClassLoader(new java.net.URL[] { moteClassPath.toURI().toURL() }, parentLoader)) {
+      var moteClass = (loader == null ? parentLoader : loader).loadClass(moteClassName).asSubclass(AbstractApplicationMote.class);
       moteConstructor = moteClass.getConstructor(MoteType.class, Simulation.class);
     } catch (Exception | LinkageError e) {
       throw new MoteTypeCreationException("Error when loading class from: "
