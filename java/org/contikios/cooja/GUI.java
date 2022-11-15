@@ -406,7 +406,7 @@ public class GUI {
         }
 
         var cfg = CreateSimDialog.showDialog(cooja, new Simulation.SimConfig(null, null,
-                false, 123456, 1000));
+                false, 123456, 1000 * Simulation.MILLISECOND));
         if (cfg == null) return;
         Simulation sim;
         try {
