@@ -1623,12 +1623,6 @@ public class Cooja extends Observable {
    *          File to write
    */
    void saveSimulationConfig(File file) {
-    this.currentConfigFile = file; /* Used to generate config relative paths */
-    try {
-      this.currentConfigFile = this.currentConfigFile.getCanonicalFile();
-    } catch (IOException e) {
-    }
-
     try (var out = file.getName().endsWith(".gz")
             ? new GZIPOutputStream(new FileOutputStream(file)) : new FileOutputStream(file)) {
       // Create and write to document
@@ -1642,9 +1636,14 @@ public class Cooja extends Observable {
       logger.info("Saved to file: " + file.getAbsolutePath());
     } catch (Exception e) {
       logger.warn("Exception while saving simulation config: " + e);
-      e.printStackTrace();
+      return;
     }
-  }
+     try {
+       currentConfigFile = file.getCanonicalFile();
+     } catch (IOException e) {
+       currentConfigFile = file;
+     }
+   }
 
   /** Returns a root element containing the simulation config. */
   Element extractSimulationConfig() {
