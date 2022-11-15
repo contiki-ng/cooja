@@ -177,7 +177,7 @@ public class Cooja extends Observable {
   private static GUI gui = null;
 
   /** The Cooja startup configuration. */
-  final Config configuration;
+  public final Config configuration;
   private Simulation mySimulation;
 
   private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
