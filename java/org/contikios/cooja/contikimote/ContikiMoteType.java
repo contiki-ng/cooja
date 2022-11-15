@@ -31,8 +31,12 @@ package org.contikios.cooja.contikimote;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -40,6 +44,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -108,6 +113,7 @@ import org.jdom2.Element;
 public class ContikiMoteType extends BaseContikiMoteType {
 
   private static final Logger logger = LogManager.getLogger(ContikiMoteType.class);
+  private static int fileCounter = 1;
 
   private final Cooja gui;
 
@@ -172,7 +178,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   public ContikiMoteType(Cooja gui) {
     this.gui = gui;
-    javaClassName = CoreComm.getAvailableClassName();
+    javaClassName = getAvailableClassName();
     projectConfig = gui.getProjectConfig().clone();
   }
 
@@ -269,7 +275,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     // Allocate core communicator class
     final var firmwareFile = getContikiFirmwareFile();
     logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + firmwareFile.getPath() + "'");
-    myCoreComm = CoreComm.createCoreComm(gui, tmpDir, javaClassName, firmwareFile);
+    myCoreComm = createCoreComm(gui, tmpDir, javaClassName, firmwareFile);
 
     /* Parse addresses using map file
      * or output of command specified in external tools settings (e.g. nm -a )
@@ -831,5 +837,133 @@ public class ContikiMoteType extends BaseContikiMoteType {
       throw new MoteTypeCreationException("No compile commands specified");
     }
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
+  }
+
+  /**
+   * Get the class name of next free core communicator class. If null is
+   * returned, no classes are available.
+   *
+   * @return Class name
+   */
+  private static String getAvailableClassName() {
+    return "Lib" + fileCounter;
+  }
+
+  /**
+   * Generates new source file by reading default source template and replacing
+   * the class name field.
+   *
+   * @param tempDir Directory for temporary files
+   * @param className Java class name (without extension)
+   * @throws MoteTypeCreationException If error occurs
+   */
+  private static void generateLibSourceFile(Path tempDir, String className) throws MoteTypeCreationException {
+    // Create the temporary directory and ensure it is deleted on exit.
+    File dir = tempDir.toFile();
+    StringBuilder path = new StringBuilder(tempDir.toString());
+    // Gradually do mkdir() since mkdirs() makes deleteOnExit() leave the
+    // directory when Cooja quits.
+    for (String p : new String[]{"/org", "/contikios", "/cooja", "/corecomm"}) {
+      path.append(p);
+      dir = new File(path.toString());
+      if (!dir.mkdir()) {
+        throw new MoteTypeCreationException("Could not create temporary directory: " + dir);
+      }
+      dir.deleteOnExit();
+    }
+    Path dst = Path.of(dir + "/" + className + ".java");
+    dst.toFile().deleteOnExit();
+
+    // Instantiate the CoreComm template into the temporary directory.
+    try (var input = ContikiMoteType.class.getResourceAsStream('/' + "CoreCommTemplate.java");
+         var reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(input), UTF_8));
+         var writer = Files.newBufferedWriter(dst, UTF_8)) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+        writer.write(line.replace("CoreCommTemplate", className) + "\n");
+      }
+    } catch (Exception e) {
+      throw new MoteTypeCreationException("Could not generate corecomm source file: " + className + ".java", e);
+    }
+  }
+
+  /**
+   * Compiles Java class.
+   *
+   * @param cooja Cooja object
+   * @param tempDir Directory for temporary files
+   * @param className Java class name (without extension)
+   * @throws MoteTypeCreationException If Java class compilation error occurs
+   */
+  private static void compileSourceFile(Cooja cooja, Path tempDir, String className) throws MoteTypeCreationException {
+    String[] cmd = new String[] {cooja.configuration.javac(),
+            "-cp", System.getProperty("java.class.path"), "--release", String.valueOf(Runtime.version().feature()),
+            // Disable warnings to avoid 3 lines of "warning: using incubating module(s): jdk.incubator.foreign".
+            "-nowarn", "--add-modules", "jdk.incubator.foreign",
+            tempDir + "/org/contikios/cooja/corecomm/" + className + ".java" };
+    ProcessBuilder pb = new ProcessBuilder(cmd);
+    Process p;
+    try {
+      p = pb.start();
+    } catch (IOException e) {
+      throw new MoteTypeCreationException("Could not start Java compiler: " + cmd[0], e);
+    }
+
+    // Try to create a message list with support for GUI - will give not UI if headless.
+    var compilationOutput = MessageContainer.createMessageList(true);
+    var stdout = compilationOutput.getInputStream(MessageList.NORMAL);
+    var stderr = compilationOutput.getInputStream(MessageList.ERROR);
+    try (var outputStream = p.inputReader(UTF_8);
+         var errorStream = p.errorReader(UTF_8)) {
+      int b;
+      while ((b = outputStream.read()) >= 0) {
+        stdout.write(b);
+      }
+      while ((b = errorStream.read()) >= 0) {
+        stderr.write(b);
+      }
+      if (p.waitFor() == 0) {
+        File classFile = new File(tempDir + "/org/contikios/cooja/corecomm/" + className + ".class");
+        classFile.deleteOnExit();
+        return;
+      }
+    } catch (IOException | InterruptedException e) {
+      throw new MoteTypeCreationException("Could not compile corecomm source file: " + className + ".java", e, compilationOutput);
+    }
+    throw new MoteTypeCreationException("Could not compile corecomm source file: " + className + ".java", compilationOutput);
+  }
+
+  /**
+   * Create and return an instance of the core communicator identified by
+   * className. This core communicator will load the native library libFile.
+   *
+   * @param cooja Cooja object
+   * @param tempDir Directory for temporary files
+   * @param className Class name of core communicator
+   * @param libFile Native library file
+   * @return Core Communicator
+   */
+  private static CoreComm createCoreComm(Cooja cooja, Path tempDir, String className, File libFile)
+          throws MoteTypeCreationException {
+    generateLibSourceFile(tempDir, className);
+    compileSourceFile(cooja, tempDir, className);
+
+    // Loading a class might leave residue in the JVM so use a new name for the next call.
+    fileCounter++;
+    Class<?> newCoreCommClass;
+    try (var loader = new URLClassLoader(new URL[]{tempDir.toUri().toURL()}, ContikiMoteType.class.getClassLoader())) {
+      newCoreCommClass = loader.loadClass("org.contikios.cooja.corecomm." + className);
+    } catch (IOException | ClassNotFoundException e1) {
+      throw new MoteTypeCreationException("Could not load corecomm class file: " + className + ".class", e1);
+    }
+    if (newCoreCommClass == null) {
+      throw new MoteTypeCreationException("Could not load corecomm class file: " + className + ".class");
+    }
+
+    try {
+      return (CoreComm) newCoreCommClass.getConstructor(File.class).newInstance(libFile);
+    } catch (Exception e) {
+      throw new MoteTypeCreationException("Error when creating corecomm instance: " + className, e);
+    }
   }
 }
