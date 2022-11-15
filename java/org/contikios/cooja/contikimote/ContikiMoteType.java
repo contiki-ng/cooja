@@ -178,7 +178,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   public ContikiMoteType(Cooja gui) {
     this.gui = gui;
-    javaClassName = getAvailableClassName();
+    javaClassName = "Lib" + fileCounter;
     projectConfig = gui.getProjectConfig().clone();
   }
 
@@ -837,16 +837,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
       throw new MoteTypeCreationException("No compile commands specified");
     }
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
-  }
-
-  /**
-   * Get the class name of next free core communicator class. If null is
-   * returned, no classes are available.
-   *
-   * @return Class name
-   */
-  private static String getAvailableClassName() {
-    return "Lib" + fileCounter;
   }
 
   /**
