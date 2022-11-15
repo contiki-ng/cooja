@@ -162,7 +162,6 @@ public class CreateSimDialog extends JDialog {
     label.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT));
 
     final var delayedStartup = new JFormattedTextField(integerFormat);
-    delayedStartup.setValue(10000);
     delayedStartup.setColumns(4);
 
     horizBox.add(label);
@@ -260,7 +259,7 @@ public class CreateSimDialog extends JDialog {
     }
 
     // Set delayed mote startup time (ms)
-    delayedStartup.setValue(cfg.moteStartDelay());
+    delayedStartup.setValue(cfg.moteStartDelay() / Simulation.MILLISECOND);
 
     createButton.addActionListener(e -> {
       config = new Simulation.SimConfig(title.getText(),
