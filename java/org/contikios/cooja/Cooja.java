@@ -1412,7 +1412,7 @@ public class Cooja extends Observable {
         logger.fatal("Exception when loading simulation: ", e);
       }
       if (sim == null) {
-        System.exit(1);
+        gui.doQuit(1);
       }
       if (simConfig.autoStart) {
         autoQuit = true;
