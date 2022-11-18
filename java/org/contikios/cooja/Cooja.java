@@ -1597,19 +1597,6 @@ public class Cooja extends Observable {
         }
       }
       getDesktopPane().repaint();
-    } else { // Non-GUI Cooja requires a simulation controller, ensure one is started.
-      boolean hasController = false;
-      for (var p : startedPlugins) {
-        int pluginType = p.getClass().getAnnotation(PluginType.class).value();
-        if (pluginType == PluginType.SIM_CONTROL_PLUGIN) {
-          hasController = true;
-          break;
-        }
-      }
-      if (!hasController) {
-        logger.fatal("No plugin controlling simulation, aborting");
-        return null;
-      }
     }
     return newSim;
   }
