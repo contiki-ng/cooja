@@ -210,15 +210,17 @@ public class Simulation extends Observable {
           logger.info("Simulation stopped due to MSPSim breakpoint");
         } catch (RuntimeException e) {
           logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
-          if (!Cooja.isVisualized()) {
-            // Quit simulator if in test mode.
-            System.exit(1);
+          if (Cooja.isVisualized()) {
+            String errorTitle = "Simulation error";
+            if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
+              errorTitle += ": " + moteTimeEvent.getMote();
+            }
+            Cooja.showErrorDialog(errorTitle, e, false);
+          } else {
+            isAlive = false;
+            isShutdown = true;
+            returnValue = 1;
           }
-          String errorTitle = "Simulation error";
-          if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
-            errorTitle += ": " + moteTimeEvent.getMote();
-          }
-          Cooja.showErrorDialog(errorTitle, e, false);
         } catch (InterruptedException e) {
           // Simulation thread interrupted - quit
           logger.warn("simulation thread interrupted");
