@@ -1567,51 +1567,11 @@ public class Cooja extends Observable {
       medium = cfg.radioMedium();
       delay = cfg.moteStartDelay();
     }
-    Simulation newSim;
     try {
-      newSim = new Simulation(this, title, configuration.logDir, generatedSeed, seed, medium, delay, quick, root);
+      return new Simulation(this, title, configuration.logDir, generatedSeed, seed, medium, delay, quick, root);
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }
-
-    if (isVisualized()) { // Z order visualized plugins.
-      for (int z = 0; z < getDesktopPane().getAllFrames().length; z++) {
-        for (JInternalFrame plugin : getDesktopPane().getAllFrames()) {
-          if (plugin.getClientProperty("zorder") == null) {
-            continue;
-          }
-          int zOrder = (Integer) plugin.getClientProperty("zorder");
-          if (zOrder != z) {
-            continue;
-          }
-          getDesktopPane().setComponentZOrder(plugin, zOrder);
-          if (z == 0) {
-            try {
-              plugin.setSelected(true);
-            } catch (Exception e) {
-              logger.error("Could not select plugin {}", plugin.getTitle());
-            }
-          }
-          plugin.putClientProperty("zorder", null);
-          break;
-        }
-      }
-      getDesktopPane().repaint();
-    } else { // Non-GUI Cooja requires a simulation controller, ensure one is started.
-      boolean hasController = false;
-      for (var p : startedPlugins) {
-        int pluginType = p.getClass().getAnnotation(PluginType.class).value();
-        if (pluginType == PluginType.SIM_CONTROL_PLUGIN) {
-          hasController = true;
-          break;
-        }
-      }
-      if (!hasController) {
-        logger.fatal("No plugin controlling simulation, aborting");
-        return null;
-      }
-    }
-    return newSim;
   }
 
   /**

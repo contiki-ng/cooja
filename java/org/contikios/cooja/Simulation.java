@@ -351,6 +351,7 @@ public class Simulation extends Observable {
         throw new SimulationCreationException("Simulation creation interrupted", e);
       }
       // Restart plugins from config
+      boolean hasController = false;
       for (var pluginElement : root.getChildren("plugin")) {
         String pluginClassName = pluginElement.getText().trim();
         if (pluginClassName.startsWith("se.sics")) {
@@ -378,6 +379,9 @@ public class Simulation extends Observable {
         if (!Cooja.isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
           continue;
         }
+        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_CONTROL_PLUGIN) {
+          hasController = true;
+        }
         // Parse plugin mote argument (if any).
         Mote mote = null;
         for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
@@ -394,6 +398,10 @@ public class Simulation extends Observable {
           }
           throw new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
         }
+      }
+      // Non-GUI Cooja requires a simulation controller, ensure one is started.
+      if (!Cooja.isVisualized() && !hasController) {
+        throw new SimulationCreationException("No plugin controlling simulation, aborting", null);
       }
     }
   }
