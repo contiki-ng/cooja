@@ -1639,10 +1639,7 @@ public class GUI {
           var clazz = (Class<? extends MoteType>) ((JMenuItem) e.getSource()).getClientProperty("class");
           try {
             newMoteType = MoteInterfaceHandler.createMoteType(cooja, clazz.getName());
-            if (newMoteType == null) {
-              newMoteType = clazz.getDeclaredConstructor().newInstance();
-            }
-            if (!newMoteType.configureAndInit(frame, cooja.getSimulation(), true)) {
+            if (newMoteType == null || !newMoteType.configureAndInit(frame, cooja.getSimulation(), true)) {
               return;
             }
             cooja.getSimulation().addMoteType(newMoteType);

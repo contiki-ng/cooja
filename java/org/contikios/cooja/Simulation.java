@@ -27,7 +27,6 @@
  */
 
 package org.contikios.cooja;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
@@ -292,19 +291,7 @@ public class Simulation extends Observable {
 
             var moteType = MoteInterfaceHandler.createMoteType(cooja, moteTypeClassName);
             if (moteType == null) {
-              Class<? extends MoteType> moteTypeClass = null;
-              for (int i = 0; i < availableMoteTypes.length; i++) {
-                if (moteTypeClassName.equals(availableMoteTypes[i])) {
-                  moteTypeClass = availableMoteTypesObjs.get(i);
-                  break;
-                }
-              }
-              assert moteTypeClass != null : "Selected MoteType class is null";
-              try {
-                moteType = moteTypeClass.getConstructor((Class<? extends MoteType>[]) null).newInstance();
-              } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                throw new MoteType.MoteTypeCreationException("Could not create " + moteTypeClassName, e);
-              }
+              throw new MoteType.MoteTypeCreationException("Could not create: " + moteTypeClassName);
             }
             if (!moteType.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
               logger.fatal("Mote type was not created: " + element.getText().trim());
