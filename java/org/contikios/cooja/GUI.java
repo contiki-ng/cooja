@@ -1331,6 +1331,29 @@ public class GUI {
 
       @Override
       protected void done() {
+        // Simulation loaded, plugins started, now Z-order visualized plugins.
+        for (int z = 0; z < myDesktopPane.getAllFrames().length; z++) {
+          for (var plugin : myDesktopPane.getAllFrames()) {
+            if (plugin.getClientProperty("zorder") == null) {
+              continue;
+            }
+            int zOrder = (Integer) plugin.getClientProperty("zorder");
+            if (zOrder != z) {
+              continue;
+            }
+            myDesktopPane.setComponentZOrder(plugin, zOrder);
+            if (z == 0) {
+              try {
+                plugin.setSelected(true);
+              } catch (Exception e) {
+                logger.error("Could not select plugin {}", plugin.getTitle());
+              }
+            }
+            plugin.putClientProperty("zorder", null);
+            break;
+          }
+        }
+        myDesktopPane.repaint();
         updateProgress(false);
         // Optionally show compilation warnings.
         var hideWarn = Boolean.parseBoolean(Cooja.getExternalToolsSetting("HIDE_WARNINGS", "false"));
