@@ -299,18 +299,13 @@ public class Simulation extends Observable {
             addMoteType(moteType);
           }
           case "mote" -> {
-            MoteType moteType = null;
-            for (Element subElement : element.getChildren()) {
-              if (subElement.getName().equals("motetype_identifier")) {
-                moteType = getMoteType(subElement.getText());
-                if (moteType == null) {
-                  throw new MoteType.MoteTypeCreationException("No mote type '" + subElement.getText() + "' for mote");
-                }
-                break;
-              }
+            var subElement = element.getChild("motetype_identifier");
+            if (subElement == null) {
+              throw new MoteType.MoteTypeCreationException("No motetype_identifier specified for mote");
             }
+            var moteType = getMoteType(subElement.getText());
             if (moteType == null) {
-              throw new MoteType.MoteTypeCreationException("No mote type specified for mote");
+              throw new MoteType.MoteTypeCreationException("No mote type '" + subElement.getText() + "' for mote");
             }
             Mote mote = moteType.generateMote(this);
             if (!mote.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
