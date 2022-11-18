@@ -267,14 +267,13 @@ public class Simulation extends Observable {
               moteTypeClassName = moteTypeClassName.replaceFirst("se\\.sics", "org.contikios");
             }
 
-            var availableMoteTypesObjs = cooja.getRegisteredMoteTypes();
-            String[] availableMoteTypes = new String[availableMoteTypesObjs.size()];
-            for (int i = 0; i < availableMoteTypes.length; i++) {
-              availableMoteTypes[i] = availableMoteTypesObjs.get(i).getName();
-            }
-
             // Try to recreate simulation using a different mote type.
             if (Cooja.isVisualized() && !quick) {
+              var availableMoteTypesObjs = cooja.getRegisteredMoteTypes();
+              String[] availableMoteTypes = new String[availableMoteTypesObjs.size()];
+              for (int i = 0; i < availableMoteTypes.length; i++) {
+                availableMoteTypes[i] = availableMoteTypesObjs.get(i).getName();
+              }
               var newClass = (String) JOptionPane.showInputDialog(Cooja.getTopParentContainer(),
                       "The simulation is about to load '" + moteTypeClassName + "'\n" +
                               "You may try to load the simulation using a different mote type.\n",
