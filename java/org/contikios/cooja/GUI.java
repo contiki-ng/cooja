@@ -1169,34 +1169,28 @@ public class GUI {
     if (file != null && file.canRead()) {
       return file;
     }
-    final File suggestedFile = file;
-    return new Cooja.RunnableInEDT<File>() {
-      @Override
-      public File work() {
-        JFileChooser fc = newFileChooser();
-        if (suggestedFile != null && suggestedFile.isDirectory()) {
-          fc.setCurrentDirectory(suggestedFile);
-        } else {
-          // Suggest file using file history.
-          File suggestedFile = getLastOpenedFile();
-          if (suggestedFile != null) {
-            fc.setSelectedFile(suggestedFile);
-          }
-        }
-        if (fc.showOpenDialog(frame) != JFileChooser.APPROVE_OPTION) {
-          return null;
-        }
-        File file = fc.getSelectedFile();
-        if (!file.exists()) {  // Try default file extension.
-          file = new File(file.getParent(), file.getName() + ".csc");
-        }
-        if (!file.exists() || !file.canRead()) {
-          logger.fatal("No read access to file");
-          return null;
-        }
-        return file;
+    JFileChooser fc = newFileChooser();
+    if (file != null && file.isDirectory()) {
+      fc.setCurrentDirectory(file);
+    } else {
+      // Suggest file using file history.
+      File suggestedFile = getLastOpenedFile();
+      if (suggestedFile != null) {
+        fc.setSelectedFile(suggestedFile);
       }
-    }.invokeAndWait();
+    }
+    if (fc.showOpenDialog(frame) != JFileChooser.APPROVE_OPTION) {
+      return null;
+    }
+    File file2 = fc.getSelectedFile();
+    if (!file2.exists()) {  // Try default file extension.
+      file2 = new File(file2.getParent(), file2.getName() + ".csc");
+    }
+    if (!file2.exists() || !file2.canRead()) {
+      logger.fatal("No read access to file");
+      return null;
+    }
+    return file2;
   }
 
   public File doSaveConfig() {
