@@ -1293,13 +1293,9 @@ public class GUI {
           try {
             shouldRetry = false;
             PROGRESS_WARNINGS.clear();
-            if (cfgFile == null) {
-              cooja.doRemoveSimulation(false);
-              newSim = cooja.createSimulation(root, quick, rewriteCsc, manualRandomSeed);
-              cooja.setSimulation(newSim);
-            } else {
-              newSim = cooja.loadSimulationConfig(cfgFile, quick, rewriteCsc, manualRandomSeed);
-            }
+            newSim = cfgFile == null
+                    ? cooja.createSimulation(root, quick, rewriteCsc, manualRandomSeed)
+                    : cooja.loadSimulationConfig(cfgFile, quick, rewriteCsc, manualRandomSeed);
             if (newSim != null && autoStart) {
               newSim.startSimulation();
             }
