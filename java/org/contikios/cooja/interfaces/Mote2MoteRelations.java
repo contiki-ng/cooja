@@ -210,30 +210,23 @@ public class Mote2MoteRelations extends MoteInterface {
   private static Color decodeColor(String colorString) {
     if (colorString == null) {
       return null;
-    } else if (colorString.equalsIgnoreCase("red")) {
-      return Color.RED;
-    } else if (colorString.equalsIgnoreCase("green")) {
-      return Color.GREEN;
-    } else if (colorString.equalsIgnoreCase("blue")) {
-      return Color.BLUE;
-    } else if (colorString.equalsIgnoreCase("orange")) {
-      return Color.ORANGE;
-    } else if (colorString.equalsIgnoreCase("pink")) {
-      return Color.PINK;
-    } else if (colorString.equalsIgnoreCase("yellow")) {
-      return Color.YELLOW;
-    } else if (colorString.equalsIgnoreCase("gray")) {
-      return Color.GRAY;
-    } else if (colorString.equalsIgnoreCase("magenta")) {
-      return Color.MAGENTA;
-    } else if (colorString.equalsIgnoreCase("black")) {
-      return Color.BLACK;
-    } else {
-      try {
-        return Color.decode(colorString);
-      } catch (NumberFormatException e) {
-        return null;
-      }
+    }
+    switch (colorString.toLowerCase()) {
+      case "red": return Color.RED;
+      case "green": return Color.GREEN;
+      case "blue": return Color.BLUE;
+      case "orange": return Color.ORANGE;
+      case "pink": return Color.PINK;
+      case "yellow": return Color.YELLOW;
+      case "gray": return Color.GRAY;
+      case "magenta": return Color.MAGENTA;
+      case "black": return Color.BLACK;
+      default:
+        try {
+          return Color.decode(colorString);
+        } catch (NumberFormatException e) {
+          return null;
+        }
     }
   }
 
