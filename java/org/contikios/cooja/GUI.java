@@ -1504,88 +1504,83 @@ public class GUI {
   }
 
   public static boolean showErrorDialog(final String title, final Throwable e, final boolean retry) {
-    return new Cooja.RunnableInEDT<Boolean>() {
-      @Override
-      public Boolean work() {
-        JTabbedPane tabbedPane = new JTabbedPane();
-        var buttonBox = Box.createHorizontalBox();
-        // Contiki error.
-        if (e instanceof ContikiError ex) {
-          MessageListUI list = new MessageListUI();
-          list.addMessage(e.getMessage());
-          list.addMessage("");
-          list.addMessage("");
-          for (String l: ex.getContikiError().split("\n")) {
-            list.addMessage(l);
-          }
-          list.addPopupMenuItem(null, true);
-          tabbedPane.addTab("Contiki error", new JScrollPane(list));
-        }
-        // Compilation output.
-        MessageListUI compilationOutput = null;
-        if (e instanceof MoteType.MoteTypeCreationException ex) {
-          compilationOutput = (MessageListUI) ex.getCompilationOutput();
-        } else if (e != null && e.getCause() instanceof MoteType.MoteTypeCreationException ex) {
-          compilationOutput = (MessageListUI) ex.getCompilationOutput();
-        }
-        if (compilationOutput != null) {
-          compilationOutput.addPopupMenuItem(null, true);
-          tabbedPane.addTab("Compilation output", new JScrollPane(compilationOutput));
-        }
-        if (e != null) {
-          // Stack trace.
-          MessageListUI stackTrace = new MessageListUI();
-          e.printStackTrace(stackTrace.getInputStream(MessageListUI.NORMAL));
-          stackTrace.addPopupMenuItem(null, true);
-          tabbedPane.addTab("Java stack trace", new JScrollPane(stackTrace));
-
-          // Exception message.
-          buttonBox.add(Box.createHorizontalStrut(10));
-          buttonBox.add(new JLabel(e.getMessage()));
-          buttonBox.add(Box.createHorizontalStrut(10));
-        }
-
-        buttonBox.add(Box.createHorizontalGlue());
-        final var dialog = new JDialog(frame, title, true);
-        if (retry) {
-          var retryAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              dialog.setTitle("-RETRY-");
-              dialog.dispose();
-            }
-          };
-          JButton retryButton = new JButton(retryAction);
-          retryButton.setText("Retry Ctrl+R");
-          buttonBox.add(retryButton);
-
-          var inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-          inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK, false), "retry");
-          dialog.getRootPane().getActionMap().put("retry", retryAction);
-        }
-
-        var closeAction = new AbstractAction() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            dialog.dispose();
-          }
-        };
-        JButton closeButton = new JButton(closeAction);
-        closeButton.setText("Close");
-        buttonBox.add(closeButton);
-
-        var inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "close");
-        dialog.getRootPane().getActionMap().put("close", closeAction);
-        dialog.getRootPane().setDefaultButton(closeButton);
-        dialog.getContentPane().add(BorderLayout.CENTER, tabbedPane);
-        dialog.getContentPane().add(BorderLayout.SOUTH, buttonBox);
-        dialog.setSize(700, 500);
-        dialog.setLocationRelativeTo(frame);
-        dialog.setVisible(true); // BLOCKS.
-        return dialog.getTitle().equals("-RETRY-");
+    JTabbedPane tabbedPane = new JTabbedPane();
+    var buttonBox = Box.createHorizontalBox();
+    // Contiki error.
+    if (e instanceof ContikiError ex) {
+      MessageListUI list = new MessageListUI();
+      list.addMessage(e.getMessage());
+      list.addMessage("");
+      list.addMessage("");
+      for (String l : ex.getContikiError().split("\n")) {
+        list.addMessage(l);
       }
-    }.invokeAndWait();
+      list.addPopupMenuItem(null, true);
+      tabbedPane.addTab("Contiki error", new JScrollPane(list));
+    }
+    // Compilation output.
+    MessageListUI compilationOutput = null;
+    if (e instanceof MoteType.MoteTypeCreationException ex) {
+      compilationOutput = (MessageListUI) ex.getCompilationOutput();
+    } else if (e != null && e.getCause() instanceof MoteType.MoteTypeCreationException ex) {
+      compilationOutput = (MessageListUI) ex.getCompilationOutput();
+    }
+    if (compilationOutput != null) {
+      compilationOutput.addPopupMenuItem(null, true);
+      tabbedPane.addTab("Compilation output", new JScrollPane(compilationOutput));
+    }
+    if (e != null) {
+      // Stack trace.
+      MessageListUI stackTrace = new MessageListUI();
+      e.printStackTrace(stackTrace.getInputStream(MessageListUI.NORMAL));
+      stackTrace.addPopupMenuItem(null, true);
+      tabbedPane.addTab("Java stack trace", new JScrollPane(stackTrace));
+
+      // Exception message.
+      buttonBox.add(Box.createHorizontalStrut(10));
+      buttonBox.add(new JLabel(e.getMessage()));
+      buttonBox.add(Box.createHorizontalStrut(10));
+    }
+
+    buttonBox.add(Box.createHorizontalGlue());
+    final var dialog = new JDialog(frame, title, true);
+    if (retry) {
+      var retryAction = new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          dialog.setTitle("-RETRY-");
+          dialog.dispose();
+        }
+      };
+      JButton retryButton = new JButton(retryAction);
+      retryButton.setText("Retry Ctrl+R");
+      buttonBox.add(retryButton);
+
+      var inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+      inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK, false), "retry");
+      dialog.getRootPane().getActionMap().put("retry", retryAction);
+    }
+
+    var closeAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        dialog.dispose();
+      }
+    };
+    JButton closeButton = new JButton(closeAction);
+    closeButton.setText("Close");
+    buttonBox.add(closeButton);
+
+    var inputMap = dialog.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), "close");
+    dialog.getRootPane().getActionMap().put("close", closeAction);
+    dialog.getRootPane().setDefaultButton(closeButton);
+    dialog.getContentPane().add(BorderLayout.CENTER, tabbedPane);
+    dialog.getContentPane().add(BorderLayout.SOUTH, buttonBox);
+    dialog.setSize(700, 500);
+    dialog.setLocationRelativeTo(frame);
+    dialog.setVisible(true); // BLOCKS.
+    return dialog.getTitle().equals("-RETRY-");
   }
 
   private static boolean warnMemory() {

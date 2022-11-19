@@ -1764,7 +1764,12 @@ public class Cooja extends Observable {
    * @return Retry failed operation
    */
   public static boolean showErrorDialog(final String title, final Throwable exception, final boolean retryAvailable) {
-    return GUI.showErrorDialog(title, exception, retryAvailable);
+    return new RunnableInEDT<Boolean>() {
+      @Override
+      public Boolean work() {
+        return GUI.showErrorDialog(title, exception, retryAvailable);
+      }
+    }.invokeAndWait();
   }
 
   /**
