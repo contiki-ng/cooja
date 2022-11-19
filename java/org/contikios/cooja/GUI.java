@@ -1790,11 +1790,9 @@ public class GUI {
     }
     @Override
     public void actionPerformed(final ActionEvent e) {
-      new Thread(() -> {
-        var pluginClass = (Class<Plugin>) ((JMenuItem) e.getSource()).getClientProperty("class");
-        Mote mote = (Mote) ((JMenuItem) e.getSource()).getClientProperty("mote");
-        cooja.tryStartPlugin(pluginClass, cooja.getSimulation(), mote);
-      }, "StartPluginGUIAction").start();
+      var pluginClass = (Class<Plugin>) ((JMenuItem) e.getSource()).getClientProperty("class");
+      Mote mote = (Mote) ((JMenuItem) e.getSource()).getClientProperty("mote");
+      cooja.tryStartPlugin(pluginClass, cooja.getSimulation(), mote);
     }
     @Override
     public boolean shouldBeEnabled() {
