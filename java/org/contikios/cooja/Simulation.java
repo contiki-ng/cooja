@@ -350,11 +350,24 @@ public class Simulation extends Observable {
       } catch (InterruptedException e) {
         throw new SimulationCreationException("Simulation creation interrupted", e);
       }
-      startPlugins(root, cooja);
+      SimulationCreationException ret;
+      if (Cooja.isVisualized()) {
+        ret = new Cooja.RunnableInEDT<SimulationCreationException>() {
+          @Override
+          public SimulationCreationException work() {
+            return startPlugins(root, cooja);
+          }
+        }.invokeAndWait();
+      } else {
+        ret = startPlugins(root, cooja);
+      }
+      if (ret != null) {
+        throw ret;
+      }
     }
   }
 
-  private void startPlugins(Element root, Cooja cooja) throws SimulationCreationException {
+  private SimulationCreationException startPlugins(Element root, Cooja cooja) {
     // Keep track of started plugins, so they can be removed on failure.
     var startedPlugins = new ArrayList<Plugin>();
     // Restart plugins from config
@@ -380,7 +393,7 @@ public class Simulation extends Observable {
       var pluginClass = cooja.tryLoadClass(this, Plugin.class, pluginClassName);
       if (pluginClass == null) {
         logger.fatal("Could not load plugin class: " + pluginClassName);
-        throw new SimulationCreationException("Could not load plugin class " + pluginClassName, null);
+        return new SimulationCreationException("Could not load plugin class " + pluginClassName, null);
       }
       // Skip plugins that require visualization in headless mode.
       if (!Cooja.isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
@@ -403,13 +416,14 @@ public class Simulation extends Observable {
         for (var plugin : startedPlugins) {
           cooja.removePlugin(plugin);
         }
-        throw new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
+        return new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
       }
     }
     // Non-GUI Cooja requires a simulation controller, ensure one is started.
     if (!Cooja.isVisualized() && !hasController) {
-      throw new SimulationCreationException("No plugin controlling simulation, aborting", null);
+      return new SimulationCreationException("No plugin controlling simulation, aborting", null);
     }
+    return null;
   }
 
   /**
