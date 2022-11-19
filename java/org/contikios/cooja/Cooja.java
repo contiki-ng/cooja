@@ -1464,9 +1464,7 @@ public class Cooja extends Observable {
         logger.fatal("Not a valid Cooja simulation config.");
         return null;
       }
-      doRemoveSimulation(false);
       sim = createSimulation(root, quick, rewriteCsc, manualRandomSeed);
-      setSimulation(sim);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not well-formed", e);
     } catch (IOException e) {
@@ -1545,6 +1543,7 @@ public class Cooja extends Observable {
         }
       }
     }
+    doRemoveSimulation(false);
     System.gc();
     var simCfg = root.getChild("simulation");
     var title = simCfg.getChild("title").getText();
@@ -1567,11 +1566,14 @@ public class Cooja extends Observable {
       medium = cfg.radioMedium();
       delay = cfg.moteStartDelay();
     }
+    Simulation sim;
     try {
-      return new Simulation(this, title, configuration.logDir, generatedSeed, seed, medium, delay, quick, root);
+      sim = new Simulation(this, title, configuration.logDir, generatedSeed, seed, medium, delay, quick, root);
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }
+    setSimulation(sim);
+    return sim;
   }
 
   /**
