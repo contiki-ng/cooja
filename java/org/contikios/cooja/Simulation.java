@@ -474,9 +474,6 @@ public class Simulation extends Observable {
     eventQueue.addEvent(e, time);
   }
 
-  /** Basic simulation configuration. */
-  public record SimConfig(String title, String radioMedium, boolean generatedSeed, long randomSeed, long moteStartDelay) {}
-
   /** Create a new script engine that logs to the logTextArea and add it to the list
    *  of active script engines. */
   public LogScriptEngine newScriptEngine(JTextArea logTextArea) {

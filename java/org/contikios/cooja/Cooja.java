@@ -1558,7 +1558,7 @@ public class Cooja extends Observable {
             ? Integer.parseInt(simCfg.getChild("motedelay_us").getText())
             : Integer.parseInt(cfgDelay.getText()) * Simulation.MILLISECOND;
     if (Cooja.isVisualized() && !quick) {
-      var cfg = CreateSimDialog.showDialog(this, new Simulation.SimConfig(title, medium,
+      var cfg = CreateSimDialog.showDialog(this, new CreateSimDialog.SimConfig(title, medium,
               generatedSeed, seed, delay));
       if (cfg == null) return null;
       title = cfg.title();
