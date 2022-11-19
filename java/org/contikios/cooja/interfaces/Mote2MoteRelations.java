@@ -232,8 +232,8 @@ public class Mote2MoteRelations extends MoteInterface {
       try {
         return Color.decode(colorString);
       } catch (NumberFormatException e) {
+        return null;
       }
-      return null;
     }
   }
 
