@@ -932,7 +932,6 @@ public class Cooja extends Observable {
    * @return True if no simulation exists when method returns
    */
   boolean doRemoveSimulation(boolean askForConfirmation) {
-
     if (mySimulation == null) {
       return true;
     }
@@ -941,14 +940,11 @@ public class Cooja extends Observable {
       boolean ok = new RunnableInEDT<Boolean>() {
         @Override
         public Boolean work() {
-          String s1 = "Remove";
-          String s2 = "Cancel";
-          Object[] options = { s1, s2 };
-          int n = JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
+          Object[] options = {"Remove", "Cancel"};
+          return JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
               "You have an active simulation.\nDo you want to remove it?",
               "Remove current simulation?", JOptionPane.YES_NO_OPTION,
-              JOptionPane.QUESTION_MESSAGE, null, options, s2);
-          return n == JOptionPane.YES_OPTION;
+              JOptionPane.QUESTION_MESSAGE, null, options, options[1]) == JOptionPane.YES_OPTION;
         }
       }.invokeAndWait();
 
