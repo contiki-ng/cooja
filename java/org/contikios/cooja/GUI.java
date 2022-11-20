@@ -1622,15 +1622,13 @@ public class GUI {
       } else {
         UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
       }
-      return;
     } catch (Exception e) {
-    }
-
-    // System.
-    try {
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to set look and feel", e);
+      // System.
+      try {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+      } catch (Exception e2) {
+        throw new RuntimeException("Failed to set look and feel", e2);
+      }
     }
   }
 
