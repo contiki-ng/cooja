@@ -161,8 +161,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
   }
 
-  private final String javaClassName; // Loading Java class name: Lib1.java.
-
   private NetworkStack netStack = NetworkStack.DEFAULT;
 
   // Type specific class configuration
@@ -178,7 +176,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   public ContikiMoteType(Cooja gui) {
     this.gui = gui;
-    javaClassName = "Lib" + fileCounter;
     projectConfig = gui.getProjectConfig().clone();
   }
 
@@ -272,6 +269,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     // Create, compile, and load the Java wrapper that loads the C library.
 
     // Allocate core communicator class
+    final var javaClassName = "Lib" + fileCounter;
     final var firmwareFile = getContikiFirmwareFile();
     logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + firmwareFile.getPath() + "'");
     myCoreComm = createCoreComm(gui, tmpDir, javaClassName, firmwareFile);
