@@ -33,11 +33,12 @@ package org.contikios.cooja.motes;
 
 import java.awt.Container;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -51,7 +52,6 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.ImportAppMoteDialog;
-import org.contikios.cooja.util.ArrayUtils;
 
 /**
  * @author Fredrik Osterlind
@@ -211,10 +211,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
       super(classpath, parentClassLoader);
       this.classFile = classFile.getCanonicalFile();
 
-      byte[] data = ArrayUtils.readFromFile(classFile);
-      if (data == null) {
-        throw new FileNotFoundException(classFile.getAbsolutePath());
-      }
+      byte[] data = Files.readAllBytes(Path.of(classFile.toURI()));
       this.testClass = defineClass(null, data, 0, data.length);
     }
 
