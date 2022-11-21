@@ -446,7 +446,8 @@ public class SerialSocketServer implements Plugin, MotePlugin {
       }
     }, "SerialSocketServer").start();
 
-    if (commands != null) {
+    final var cooja = simulation.getCooja();
+    if (commands != null && !cooja.configuration.updateSim()) {
       // Run commands in a separate thread since Cooja cannot start the simulation before this method returns.
       // The simulation is required to run before tunslip6 can be started.
       new Thread(() -> {
@@ -457,7 +458,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
           }
           try {
             // Must not be synchronous, tunslip6 hangs in 17-tun-rpl-br because SerialSocket does not disconnect.
-            CmdUtils.run(cmd, simulation.getCooja(), false);
+            CmdUtils.run(cmd, cooja, false);
           } catch (Exception e) {
             rv = 1;
             break;
