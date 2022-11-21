@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
 
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -67,7 +68,8 @@ public abstract class SerialUI extends Log implements SerialPort {
 
   private byte lastSerialData = 0; /* SerialPort */
   private String lastLogMessage = ""; /* Log */
-  private final Pattern nonPrintable = Pattern.compile("[^\\p{Print}[ \\t]]");
+  private int charactersReceived = 0;
+  private final Predicate<String> punctuation = Pattern.compile("\\p{Punct}").asMatchPredicate();
   private final StringBuilder newMessage = new StringBuilder(); /* Log */
 
   /* Command history */
@@ -109,18 +111,21 @@ public abstract class SerialUI extends Log implements SerialPort {
   }
   public void dataReceived(int data) {
     if (data == '\n') {
-      /* Notify observers of new log */
-      // FIXME: Never add the nonPrintable characters to newMessage in the first place
-      //        instead of removing them at the end.
-      lastLogMessage = nonPrintable.matcher(newMessage.toString()).replaceAll("");
+      lastLogMessage = newMessage.toString();
       newMessage.setLength(0);
+      charactersReceived = 0;
       this.setChanged();
       this.notifyObservers(getMote());
     } else {
-      newMessage.append((char) data);
-      if (newMessage.length() > MAX_LENGTH) {
+      // FIXME: Make next 5 lines unconditional first part of method, set lastLogMessage conditionally after that.
+      charactersReceived++;
+      char ch = (char) data;
+      if (Character.isLetterOrDigit(ch) || Character.isWhitespace(ch) || punctuation.test(String.valueOf(ch))) {
+        newMessage.append(ch);
+      }
+      if (charactersReceived > MAX_LENGTH) {
         lastLogMessage = "# [1024 bytes, no line ending]: " +
-            nonPrintable.matcher(newMessage.substring(0, 20)).replaceAll("") + "...";
+            newMessage.substring(0, Math.min(20, newMessage.length())) + "...";
         newMessage.setLength(0);
         this.setChanged();
         this.notifyObservers(getMote());
