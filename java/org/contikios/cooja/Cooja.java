@@ -178,7 +178,7 @@ public class Cooja extends Observable {
 
   /** The Cooja startup configuration. */
   public final Config configuration;
-  private Simulation mySimulation;
+  private Simulation mySimulation = null;
 
   private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
   private final ArrayList<Plugin> startedPlugins = new ArrayList<>();
@@ -236,7 +236,6 @@ public class Cooja extends Observable {
    */
   private Cooja(Config cfg) throws ParseProjectsException {
     configuration = cfg;
-    mySimulation = null;
     // Load default and overwrite with user settings (if any).
     loadExternalToolsDefaultSettings();
     loadExternalToolsUserSettings();
