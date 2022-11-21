@@ -161,8 +161,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
   }
 
-  private final String javaClassName; // Loading Java class name: Lib1.java.
-
   private NetworkStack netStack = NetworkStack.DEFAULT;
 
   // Type specific class configuration
@@ -178,7 +176,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   public ContikiMoteType(Cooja gui) {
     this.gui = gui;
-    javaClassName = "Lib" + fileCounter;
     projectConfig = gui.getProjectConfig().clone();
   }
 
@@ -228,7 +225,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     var env = new LinkedHashMap<String, String>();
     env.put("LIBNAME", "$(BUILD_DIR_BOARD)/" + getIdentifier() + ".cooja");
     env.put("COOJA_VERSION",  Cooja.CONTIKI_NG_BUILD_VERSION);
-    env.put("CLASSNAME", javaClassName);
     env.put("COOJA_SOURCEDIRS", dirs.toString().replace("\\", "/"));
     env.put("COOJA_SOURCEFILES", sources.toString());
     env.put("CC", Cooja.getExternalToolsSetting("PATH_C_COMPILER"));
@@ -274,8 +270,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     // Allocate core communicator class
     final var firmwareFile = getContikiFirmwareFile();
-    logger.debug("Creating core communicator between Java class " + javaClassName + " and Contiki library '" + firmwareFile.getPath() + "'");
-    myCoreComm = createCoreComm(gui, tmpDir, javaClassName, firmwareFile);
+    myCoreComm = createCoreComm(gui, tmpDir, firmwareFile);
 
     /* Parse addresses using map file
      * or output of command specified in external tools settings (e.g. nm -a )
@@ -765,9 +760,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
   @Override
   protected void appendVisualizerInfo(StringBuilder sb) {
-    /* JNI class */
-    sb.append("<tr><td>JNI library</td><td>").append(javaClassName).append("</td></tr>");
-
     /* Mote interfaces */
     sb.append("<tr><td valign=\"top\">Mote interface</td><td>");
     for (var moteInterface : moteInterfaceClasses) {
@@ -929,17 +921,15 @@ public class ContikiMoteType extends BaseContikiMoteType {
    *
    * @param cooja Cooja object
    * @param tempDir Directory for temporary files
-   * @param className Class name of core communicator
    * @param libFile Native library file
    * @return Core Communicator
    */
-  private static CoreComm createCoreComm(Cooja cooja, Path tempDir, String className, File libFile)
-          throws MoteTypeCreationException {
+  private static CoreComm createCoreComm(Cooja cooja, Path tempDir, File libFile) throws MoteTypeCreationException {
+    // Loading a class might leave residue in the JVM so use a new name for the next call.
+    final var className = "Lib" + fileCounter++;
     generateLibSourceFile(tempDir, className);
     compileSourceFile(cooja, tempDir, className);
 
-    // Loading a class might leave residue in the JVM so use a new name for the next call.
-    fileCounter++;
     Class<?> newCoreCommClass;
     try (var loader = new URLClassLoader(new URL[]{tempDir.toUri().toURL()}, ContikiMoteType.class.getClassLoader())) {
       newCoreCommClass = loader.loadClass("org.contikios.cooja.corecomm." + className);
