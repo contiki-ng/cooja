@@ -263,6 +263,9 @@ public class GUI {
     superSpeedButton.setToolTipText("Unlimited");
     pane.add(unlimitedSpeedButton, radioConstraints);
     group.add(unlimitedSpeedButton);
+    // The system and Nimbus look and feels size the pane differently. Clamp the size
+    // to prevent the time label to end up to the far right on the toolbar.
+    pane.setMaximumSize(pane.getPreferredSize());
     toolBar.add(pane);
     toolBar.addSeparator();
     final var simulationTime = new JLabel("Time:");
