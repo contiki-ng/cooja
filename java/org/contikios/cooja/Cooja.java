@@ -1411,6 +1411,8 @@ public class Cooja extends Observable {
       if (sim == null) {
         autoQuit = true;
         rv = Math.max(rv, 1);
+      } else if (config.updateSim) {
+        gui.saveSimulationConfig(file);
       } else if (simConfig.autoStart) {
         autoQuit = true;
         if (!config.vis) {
@@ -1466,10 +1468,6 @@ public class Cooja extends Observable {
       throw new SimulationCreationException("Config not well-formed", e);
     } catch (IOException e) {
       throw new SimulationCreationException("Load simulation error", e);
-    }
-    // Rewrite simulation config after the InputStream is closed.
-    if (rewriteCsc) {
-      saveSimulationConfig(file);
     }
     return sim;
   }
