@@ -178,7 +178,7 @@ public class Cooja extends Observable {
 
   /** The Cooja startup configuration. */
   public final Config configuration;
-  private Simulation mySimulation;
+  private Simulation mySimulation = null;
 
   private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
   private final ArrayList<Plugin> startedPlugins = new ArrayList<>();
@@ -236,7 +236,6 @@ public class Cooja extends Observable {
    */
   private Cooja(Config cfg) throws ParseProjectsException {
     configuration = cfg;
-    mySimulation = null;
     // Load default and overwrite with user settings (if any).
     loadExternalToolsDefaultSettings();
     loadExternalToolsUserSettings();
@@ -277,8 +276,12 @@ public class Cooja extends Observable {
     } else {
       parseProjectConfig();
     }
-    // Shutdown hook to close running simulations.
-    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(this));
+    // Shutdown hook to stop running simulations.
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      if (mySimulation != null) {
+        mySimulation.stopSimulation();
+      }
+    }));
   }
 
 
@@ -2144,24 +2147,6 @@ public class Cooja extends Observable {
   public static void loadQuickHelp(final Object obj) {
     if (obj != null) {
       gui.loadQuickHelp(obj);
-    }
-  }
-
-  private static final class ShutdownHandler extends Thread {
-    private final Cooja cooja;
-
-    public ShutdownHandler(Cooja cooja) {
-      super("Cooja-Shutdown");
-      this.cooja = cooja;
-    }
-
-    @Override
-    public void run() {
-      // Stop the simulation if it is running.
-      Simulation simulation = cooja.getSimulation();
-      if (simulation != null) {
-        simulation.stopSimulation();
-      }
     }
   }
 
