@@ -65,7 +65,7 @@ public class Z1MoteType extends MspMoteType {
 
     @Override
     protected String getMoteImage() {
-        return "images/z1.jpg";
+        return "/images/z1.jpg";
     }
 
     @Override

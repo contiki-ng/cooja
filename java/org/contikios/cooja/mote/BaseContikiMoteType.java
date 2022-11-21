@@ -246,7 +246,7 @@ public abstract class BaseContikiMoteType implements MoteType {
     if (imageName == null) {
       return null;
     }
-    URL imageURL = this.getClass().getClassLoader().getResource(imageName);
+    URL imageURL = getClass().getResource(imageName);
     if (imageURL == null) {
       return null;
     }

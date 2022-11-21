@@ -76,7 +76,7 @@ public class SkyMoteType extends MspMoteType {
 
   @Override
   protected String getMoteImage() {
-    return "images/sky.jpg";
+    return "/images/sky.jpg";
   }
 
   @Override

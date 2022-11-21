@@ -941,7 +941,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     // Loading a class might leave residue in the JVM so use a new name for the next call.
     fileCounter++;
     Class<?> newCoreCommClass;
-    try (var loader = new URLClassLoader(new URL[]{tempDir.toUri().toURL()}, ContikiMoteType.class.getClassLoader())) {
+    try (var loader = URLClassLoader.newInstance(new URL[]{tempDir.toUri().toURL()})) {
       newCoreCommClass = loader.loadClass("org.contikios.cooja.corecomm." + className);
     } catch (IOException | ClassNotFoundException e1) {
       throw new MoteTypeCreationException("Could not load corecomm class file: " + className + ".class", e1);
