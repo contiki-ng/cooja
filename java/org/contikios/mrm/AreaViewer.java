@@ -56,7 +56,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -176,7 +175,7 @@ public class AreaViewer extends VisPlugin {
   private final MRM currentRadioMedium;
   private final ChannelModel currentChannelModel;
 
-  private static final String antennaImageFilename = "images/antenna.png";
+  private static final String antennaImageFilename = "/images/antenna.png";
   private final Image antennaImage;
 
   private Radio selectedRadio = null;
@@ -714,9 +713,7 @@ public class AreaViewer extends VisPlugin {
     this.add(BorderLayout.EAST, scrollControlPanel);
 
     // Load external images (antenna)
-    Toolkit toolkit = Toolkit.getDefaultToolkit();
-    URL imageURL = this.getClass().getClassLoader().getResource(antennaImageFilename);
-    antennaImage = toolkit.getImage(imageURL);
+    antennaImage = Toolkit.getDefaultToolkit().getImage(getClass().getResource(antennaImageFilename));
 
     MediaTracker tracker = new MediaTracker(canvas);
     tracker.addImage(antennaImage, 1);

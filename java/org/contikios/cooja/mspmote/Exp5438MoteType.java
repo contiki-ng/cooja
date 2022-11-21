@@ -100,7 +100,7 @@ public class Exp5438MoteType extends MspMoteType {
 
   @Override
   protected String getMoteImage() {
-    return "images/exp5438.png";
+    return "/images/exp5438.png";
   }
 
   @Override

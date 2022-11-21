@@ -140,7 +140,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
     }
     ClassLoader parentLoader = getParentClassLoader(simulation);
     try (var loader = moteClassPath == null
-            ? null : new URLClassLoader(new java.net.URL[] { moteClassPath.toURI().toURL() }, parentLoader)) {
+            ? null : URLClassLoader.newInstance(new URL[] { moteClassPath.toURI().toURL() }, parentLoader)) {
       var moteClass = (loader == null ? parentLoader : loader).loadClass(moteClassName).asSubclass(AbstractApplicationMote.class);
       moteConstructor = moteClass.getConstructor(MoteType.class, Simulation.class);
     } catch (Exception | LinkageError e) {

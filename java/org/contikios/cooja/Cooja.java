@@ -1326,9 +1326,7 @@ public class Cooja extends Observable {
         throw new ClassLoaderCreationException("Error when trying to read JAR-file in " + projectDir, e);
       }
     }
-
-    URL[] urlsArray = urls.toArray(new URL[0]);
-    return new URLClassLoader(urlsArray, parent);
+    return URLClassLoader.newInstance(urls.toArray(new URL[0]), parent);
   }
 
   /**
