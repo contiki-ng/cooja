@@ -277,8 +277,12 @@ public class Cooja extends Observable {
     } else {
       parseProjectConfig();
     }
-    // Shutdown hook to close running simulations.
-    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(this));
+    // Shutdown hook to stop running simulations.
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      if (mySimulation != null) {
+        mySimulation.stopSimulation();
+      }
+    }));
   }
 
 
@@ -2144,24 +2148,6 @@ public class Cooja extends Observable {
   public static void loadQuickHelp(final Object obj) {
     if (obj != null) {
       gui.loadQuickHelp(obj);
-    }
-  }
-
-  private static final class ShutdownHandler extends Thread {
-    private final Cooja cooja;
-
-    public ShutdownHandler(Cooja cooja) {
-      super("Cooja-Shutdown");
-      this.cooja = cooja;
-    }
-
-    @Override
-    public void run() {
-      // Stop the simulation if it is running.
-      Simulation simulation = cooja.getSimulation();
-      if (simulation != null) {
-        simulation.stopSimulation();
-      }
     }
   }
 
