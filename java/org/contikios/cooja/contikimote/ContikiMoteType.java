@@ -228,7 +228,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     var env = new LinkedHashMap<String, String>();
     env.put("LIBNAME", "$(BUILD_DIR_BOARD)/" + getIdentifier() + ".cooja");
     env.put("COOJA_VERSION",  Cooja.CONTIKI_NG_BUILD_VERSION);
-    env.put("CLASSNAME", javaClassName);
     env.put("COOJA_SOURCEDIRS", dirs.toString().replace("\\", "/"));
     env.put("COOJA_SOURCEFILES", sources.toString());
     env.put("CC", Cooja.getExternalToolsSetting("PATH_C_COMPILER"));
