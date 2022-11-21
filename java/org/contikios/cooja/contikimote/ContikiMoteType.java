@@ -764,9 +764,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
   @Override
   protected void appendVisualizerInfo(StringBuilder sb) {
-    /* JNI class */
-    sb.append("<tr><td>JNI library</td><td>").append(javaClassName).append("</td></tr>");
-
     /* Mote interfaces */
     sb.append("<tr><td valign=\"top\">Mote interface</td><td>");
     for (var moteInterface : moteInterfaceClasses) {
