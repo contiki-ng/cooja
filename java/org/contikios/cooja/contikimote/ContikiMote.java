@@ -143,8 +143,9 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     polledBeforePassive.forEach(PolledBeforeAllTicks::doActionsBeforeTick);
 
     /* Check if pre-boot time */
-    if (myInterfaceHandler.getClock().getTime() < 0) {
-      scheduleNextWakeup(simTime + -myInterfaceHandler.getClock().getTime());
+    var moteTime = myInterfaceHandler.getClock().getTime();
+    if (moteTime < 0) {
+      scheduleNextWakeup(simTime + Math.abs(moteTime));
       return;
     }
 
