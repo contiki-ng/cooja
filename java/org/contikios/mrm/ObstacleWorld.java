@@ -264,20 +264,14 @@ class ObstacleWorld {
       int y = point.y;
 
       // Test if we are inside test box
-      if (!hit) {
-        if (new Rectangle2D.Double(
-            areaStartX + x*boxWidth, 
-            areaStartY + y*boxHeight, 
-            boxWidth,
-            boxHeight).contains(center)) {
-          hit = true;
-          for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) {
-            if (!obstaclesToReturn.contains(allObstaclesSpatial[x][y].get(i)))
-              obstaclesToReturn.add(allObstaclesSpatial[x][y].get(i));
-          }
+      if (new Rectangle2D.Double(areaStartX + x*boxWidth, areaStartY + y*boxHeight, boxWidth, boxHeight).contains(center)) {
+        hit = true;
+        for (int i = 0; i < allObstaclesSpatial[x][y].size(); i++) {
+          if (!obstaclesToReturn.contains(allObstaclesSpatial[x][y].get(i)))
+            obstaclesToReturn.add(allObstaclesSpatial[x][y].get(i));
         }
       }
-      
+
       // Test first diagonal
       if (!hit) {
         AngleInterval testInterval = AngleInterval.getAngleIntervalOfLine(
