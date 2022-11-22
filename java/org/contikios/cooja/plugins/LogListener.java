@@ -348,7 +348,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
         if (returnVal != JFileChooser.APPROVE_OPTION) {
           appendToFile = false;
-          cb.setSelected(appendToFile);
+          cb.setSelected(false);
           return;
         }
 
@@ -357,7 +357,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         if (saveFile.exists() && !saveFile.canWrite()) {
           logger.fatal("No write access to file: " + saveFile);
           appendToFile = false;
-          cb.setSelected(appendToFile);
+          cb.setSelected(false);
           return;
         }
         appendToFile = true;
