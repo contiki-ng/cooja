@@ -34,6 +34,7 @@ import java.awt.Point;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -577,7 +578,7 @@ class ObstacleWorld {
     logger.info(". Outer boundary min:\t" + getOuterBounds().getMinX() + ", " + getOuterBounds().getMinY());
     logger.info(". Outer boundary max:\t" + getOuterBounds().getMaxX() + ", " + getOuterBounds().getMaxY());
     
-    Vector<Rectangle2D> uniqueSpatialObstacles = new Vector<>();
+    ArrayList<Rectangle2D> uniqueSpatialObstacles = new ArrayList<>();
     for (int x=0; x < spatialResolution; x++)
       for (int y=0; y < spatialResolution; y++) 
         for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) 
@@ -599,7 +600,6 @@ class ObstacleWorld {
       }
       System.out.println();
     }
-    
   }
   
   /**
@@ -609,11 +609,9 @@ class ObstacleWorld {
    * @return XML elements representing the obstacles
    */
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<>();
-    Element element;
-
+    var config = new ArrayList<Element>();
     for (Rectangle2D rect: allObstacles) {
-      element = new Element("obst");
+      var element = new Element("obst");
       element.setText(rect.getMinX() + ";" + rect.getMinY() + ";" + rect.getWidth() + ";" + rect.getHeight());
       config.add(element);
     }
