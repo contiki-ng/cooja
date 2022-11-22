@@ -146,8 +146,10 @@ public class LogScriptEngine {
     }
     logWriter = null;
     scriptLogObserver = (obs, obj) -> {
-      logTextArea.append((String) obj);
-      logTextArea.setCaretPosition(logTextArea.getText().length());
+      java.awt.EventQueue.invokeLater(() -> {
+        logTextArea.append((String) obj);
+        logTextArea.setCaretPosition(logTextArea.getText().length());
+      });
     };
   }
 
