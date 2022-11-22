@@ -18,7 +18,6 @@ import se.sics.mspsim.util.ComponentRegistry;
 import se.sics.mspsim.util.DataSource;
 import se.sics.mspsim.util.ServiceComponent;
 import se.sics.mspsim.util.StackMonitor;
-import se.sics.mspsim.util.ServiceComponent.Status;
 
 @SuppressWarnings("serial")
 public class DataChart extends JPanel implements ServiceComponent {
@@ -34,7 +33,7 @@ public class DataChart extends JPanel implements ServiceComponent {
   private Status status = Status.STOPPED;
   private String name = null;
 
-  public DataChart(ComponentRegistry registry, String title, String yaxis) {
+  public DataChart(String title, String yaxis) {
     DateAxis domain = new DateAxis("Time");
     NumberAxis range = new NumberAxis(yaxis);
     XYPlot xyplot = new XYPlot();
