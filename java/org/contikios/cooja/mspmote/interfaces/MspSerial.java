@@ -103,19 +103,15 @@ public class MspSerial extends SerialUI implements SerialPort {
     if (writeDataEvent.isScheduled()) {
       return;
     }
-
-    /* Simulation thread: schedule immediately */
     if (simulation.isSimulationThread()) {
       simulation.scheduleEvent(writeDataEvent, simulation.getSimulationTime());
-      return;
+    } else {
+      simulation.invokeSimulationThread(() -> {
+        if (!writeDataEvent.isScheduled()) {
+          simulation.scheduleEvent(writeDataEvent, simulation.getSimulationTime());
+        }
+      });
     }
-    
-    /* Non-simulation thread: poll */
-    simulation.invokeSimulationThread(() -> {
-      if (!writeDataEvent.isScheduled()) {
-        simulation.scheduleEvent(writeDataEvent, simulation.getSimulationTime());
-      }
-    });
   }
 
   @Override
