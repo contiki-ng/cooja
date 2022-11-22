@@ -39,7 +39,6 @@ import org.contikios.cooja.dialogs.SerialUI;
 import org.contikios.cooja.interfaces.SerialPort;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
-import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 
 /**
@@ -66,20 +65,26 @@ public class MspSerial extends SerialUI implements SerialPort {
     /* Listen to port writes */
     usart = getUSARTSource(this.mote);
     if (usart != null) {
-      usart.addUSARTListener(new USARTListener() {
-        @Override
-        public void dataReceived(USARTSource source, int data) {
-          MspSerial.this.dataReceived(data);
-        }
-      });
+      usart.addUSARTListener((source, data) -> MspSerial.this.dataReceived(data));
     }
-
+    // FIXME: should writeDataEvent be inside usart != null block?
     writeDataEvent = new MspMoteTimeEvent(this.mote) {
       @Override
       public void execute(long t) {
         super.execute(t);
-        
-        tryWriteNextByte();
+        boolean finished = false;
+        byte b = 0;
+        synchronized (incomingData) {
+          if (incomingData.isEmpty() || !usart.isReceiveFlagCleared()) {
+            finished = true;
+          } else { // Write byte to serial port.
+            b = incomingData.remove(0);
+          }
+        }
+        if (!finished) {
+          usart.byteReceived(b);
+          mote.requestImmediateWakeup();
+        }
         if (!incomingData.isEmpty()) {
           simulation.scheduleEvent(this, t+DELAY_INCOMING_DATA);
         }
@@ -98,23 +103,15 @@ public class MspSerial extends SerialUI implements SerialPort {
     if (writeDataEvent.isScheduled()) {
       return;
     }
-
-    /* Simulation thread: schedule immediately */
     if (simulation.isSimulationThread()) {
       simulation.scheduleEvent(writeDataEvent, simulation.getSimulationTime());
-      return;
-    }
-    
-    /* Non-simulation thread: poll */
-    simulation.invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        if (writeDataEvent.isScheduled()) {
-          return;
+    } else {
+      simulation.invokeSimulationThread(() -> {
+        if (!writeDataEvent.isScheduled()) {
+          simulation.scheduleEvent(writeDataEvent, simulation.getSimulationTime());
         }
-        simulation.scheduleEvent(writeDataEvent, simulation.getSimulationTime());
-      }
-    });
+      });
+    }
   }
 
   @Override
@@ -130,24 +127,6 @@ public class MspSerial extends SerialUI implements SerialPort {
     for (byte element : s) {
       writeByte(element);
     }
-  }
-
-  private void tryWriteNextByte() {
-    byte b;
-
-    synchronized (incomingData) {
-      if (!usart.isReceiveFlagCleared()) {
-        return;
-      }
-      if (incomingData.isEmpty()) {
-        return;
-      }
-
-      /* Write byte to serial port */
-      b = incomingData.remove(0);
-    }
-    usart.byteReceived(b);
-    mote.requestImmediateWakeup();
   }
 
   @Override

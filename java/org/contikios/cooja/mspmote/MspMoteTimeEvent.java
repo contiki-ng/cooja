@@ -38,7 +38,7 @@ import org.contikios.cooja.MoteTimeEvent;
  * @author Fredrik Osterlind
  */
 public abstract class MspMoteTimeEvent extends MoteTimeEvent {
-  private final MspMote mote;
+  protected final MspMote mote;
 
   public MspMoteTimeEvent(MspMote mote) {
     super(mote);
