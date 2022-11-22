@@ -981,12 +981,12 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     /* Check if skin depends on any particular radio medium */
     boolean showMenuItem = true;
-    if (skinClass.getAnnotation(SupportedArguments.class) != null) {
+    var annotation = skinClass.getAnnotation(SupportedArguments.class);
+    if (annotation != null) {
       showMenuItem = false;
-      for (var o : skinClass.getAnnotation(SupportedArguments.class).radioMediums()) {
+      for (var o : annotation.radioMediums()) {
         if (o.isAssignableFrom(simulation.getRadioMedium().getClass())) {
-          showMenuItem = true;
-          break;
+          return true;
         }
       }
     }
