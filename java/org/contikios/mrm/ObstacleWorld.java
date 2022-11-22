@@ -183,7 +183,6 @@ class ObstacleWorld {
    * @return All obstacles in given angle interval
    */
   public Vector<Rectangle2D> getAllObstaclesInAngleInterval(Point2D center, AngleInterval angleInterval) {
-    Vector<Rectangle2D> obstaclesToReturn = new Vector<>();
     if (!obstaclesOrganized) {
       reorganizeSpatialObstacles();
     }
@@ -257,7 +256,7 @@ class ObstacleWorld {
       }
       currentDistance++;  
     }
-
+    var obstaclesToReturn = new Vector<Rectangle2D>();
     for (var point : pointsToCheck) {
       // Check which obstacles should be in this box
       boolean hit = false;
