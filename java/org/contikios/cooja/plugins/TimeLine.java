@@ -889,16 +889,17 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   };
 
   private void numberMotesWasUpdated() {
-    /* Plugin title */
-    if (allMoteEvents.isEmpty()) {
-      setTitle("Timeline");
-    } else {
-      setTitle("Timeline showing " + allMoteEvents.size() + " motes");
-    }
-    timelineMoteRuler.revalidate();
-    timelineMoteRuler.repaint();
-    timeline.revalidate();
-    timeline.repaint();
+    java.awt.EventQueue.invokeLater(() -> {
+      if (allMoteEvents.isEmpty()) {
+        setTitle("Timeline");
+      } else {
+        setTitle("Timeline showing " + allMoteEvents.size() + " motes");
+      }
+      timelineMoteRuler.revalidate();
+      timelineMoteRuler.repaint();
+      timeline.revalidate();
+      timeline.repaint();
+    });
   }
 
   /* XXX Keeps track of observed mote interfaces */
