@@ -620,7 +620,43 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         }
 
         if (SwingUtilities.isLeftMouseButton(e)) {
-          handleMouseRelease(e);
+          switch (mouseActionState) {
+            case PAN_PRESS:
+              // ignore
+              break;
+            case SELECT_PRESS:
+              if (cursorMote == null) { // Click on free canvas deselects all motes.
+                selectedMotes.clear();
+              } else { // Toggle selection for mote.
+                if (selectedMotes.contains(cursorMote)) {
+                  selectedMotes.remove(cursorMote);
+                } else {
+                  selectedMotes.add(cursorMote);
+                }
+              }
+              break;
+            case DEFAULT_PRESS:
+              if (cursorMote == null) { // Click on free canvas deselects all motes.
+                selectedMotes.clear();
+              } else {                 // Click on mote selects single mote.
+                selectedMotes.clear();
+                selectedMotes.add(cursorMote);
+              }
+              break;
+            case MOVING:
+              // Release stops moving.
+              canvas.setCursor(Cursor.getDefaultCursor());
+              break;
+            case SELECTING:
+              // Release stops moving.
+              selection.setEnabled(false);
+              repaint();
+              break;
+          }
+          // Release always stops previous actions.
+          mouseActionState = MotesActionState.NONE;
+          canvas.setCursor(Cursor.getDefaultCursor());
+          repaint();
         }
       }
     });
@@ -1013,54 +1049,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   }
 
   final Map<Mote, double[]> moveStartPositions = new HashMap<>();
-
-  private void handleMouseRelease(MouseEvent mouseEvent) {
-
-    switch (mouseActionState) {
-      case PAN_PRESS:
-        // ignore
-        break;
-      case SELECT_PRESS:
-        if (cursorMote == null) {
-          /* Click on free canvas deselects all mote */
-          selectedMotes.clear();
-        }
-        else {
-          /* toggle selection for mote */
-          if (selectedMotes.contains(cursorMote)) {
-            selectedMotes.remove(cursorMote);
-          }
-          else {
-            selectedMotes.add(cursorMote);
-          }
-        }
-        break;
-      case DEFAULT_PRESS:
-        if (cursorMote == null) {
-          /* Click on free canvas deselects all mote */
-          selectedMotes.clear();
-        }
-        else {
-          /* Click on mote selects single mote */
-          selectedMotes.clear();
-          selectedMotes.add(cursorMote);
-        }
-        break;
-      case MOVING:
-        /* Release stops moving */
-        canvas.setCursor(Cursor.getDefaultCursor());
-        break;
-      case SELECTING:
-        /* Release stops moving */
-        selection.setEnabled(false);
-        repaint();
-        break;
-    }
-    /* Release always stops previous actions */
-    mouseActionState = MotesActionState.NONE;
-    canvas.setCursor(Cursor.getDefaultCursor());
-    repaint();
-  }
 
   private void beginMoveRequest(Mote selectedMote) {
     /* Save start positions and set move-start position to clicked mote */
