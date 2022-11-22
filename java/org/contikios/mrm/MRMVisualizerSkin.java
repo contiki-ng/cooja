@@ -93,8 +93,6 @@ public class MRMVisualizerSkin implements VisualizerSkin {
       if (selectedMote.getInterfaces().getRadio() == null) {
         continue;
       }
-      final Position sPos = selectedMote.getInterfaces().getPosition();
-
       /* Paint transmission and interference range for selected mote */
       Position motePos = selectedMote.getInterfaces().getPosition();
 
