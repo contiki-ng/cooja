@@ -581,7 +581,15 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
       @Override
       public void newLogOutput(LogOutputEvent ev) {
-        registerNewLogOutput(ev);
+        if (!hasHours && ev.getTime() > TIME_HOUR) {
+          hasHours = true;
+          repaintTimeColumn();
+        }
+        LogData data = new LogData(ev);
+        logUpdateAggregator.add(data);
+        if (appendToFile) {
+          appendToFile(appendStreamFile, data.getTime() + "\t" + data.getID() + "\t" + data.ev.getMessage() + "\n");
+        }
       }
       @Override
       public void removedLogOutput(LogOutputEvent ev) {
@@ -623,23 +631,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     /* XXX HACK: here we set the position and size of the window when it appears on a blank simulation screen. */
     this.setLocation(400, 160);
     this.setSize(Cooja.getDesktopPane().getWidth() - 400, 240);
-  }
-
-  private void registerNewLogOutput(LogOutputEvent ev) {
-    /* Display new log output */
-    if (!hasHours && ev.getTime() > TIME_HOUR) {
-            hasHours = true;
-            repaintTimeColumn();
-    }
-    LogData data = new LogData(ev);
-    logUpdateAggregator.add(data);
-    if (appendToFile) {
-      appendToFile(appendStreamFile,
-          data.getTime() + "\t" +
-          data.getID() + "\t" +
-          data.ev.getMessage() + "\n"
-      );
-    }
   }
 
   private void repaintTimeColumn() {
