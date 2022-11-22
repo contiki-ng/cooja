@@ -480,6 +480,62 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     /* Popup menu */
     canvas.addMouseMotionListener(new MouseMotionAdapter() {
+      private void handleMouseDrag(MouseEvent e) {
+        Position currPos = transformPixelToPosition(e.getPoint());
+        switch (mouseActionState) {
+          case DEFAULT_PRESS:
+            if (cursorMote == null) {
+              mouseActionState = MotesActionState.PANNING;
+            } else {
+              // If we start moving with on a cursor mote, switch to MOVING.
+              mouseActionState = MotesActionState.MOVING;
+              // save start position
+              for (Mote m : selectedMotes) {
+                Position pos = m.getInterfaces().getPosition();
+                moveStartPositions.put(m, new double[]{pos.getXCoordinate(), pos.getYCoordinate(), pos.getZCoordinate()});
+              }
+            }
+            break;
+          case MOVING:
+            canvas.setCursor(MOVE_CURSOR);
+            for (Mote moveMote : selectedMotes) {
+              moveMote.getInterfaces().getPosition().setCoordinates(
+                      moveStartPositions.get(moveMote)[0] + (currPos.getXCoordinate() - pressedPos.getXCoordinate()),
+                      moveStartPositions.get(moveMote)[1] + (currPos.getYCoordinate() - pressedPos.getYCoordinate()),
+                      moveStartPositions.get(moveMote)[2]);
+              repaint();
+            }
+            break;
+          case PAN_PRESS:
+            mouseActionState = MotesActionState.PANNING;
+            break;
+          case PANNING:
+            // The current mouse position should correspond to where panning started.
+            viewportTransform.translate(currPos.getXCoordinate() - pressedPos.getXCoordinate(),
+                    currPos.getYCoordinate() - pressedPos.getYCoordinate());
+            repaint();
+            break;
+          case SELECT_PRESS:
+            mouseActionState = MotesActionState.SELECTING;
+            selection.setEnabled(true);
+            break;
+          case SELECTING:
+            int pressedX = transformToPixelX(pressedPos.getXCoordinate());
+            int pressedY = transformToPixelY(pressedPos.getYCoordinate());
+            int currX = transformToPixelX(currPos.getXCoordinate());
+            int currY = transformToPixelY(currPos.getYCoordinate());
+            int startX = Math.min(pressedX, currX);
+            int startY = Math.min(pressedY, currY);
+            int width = Math.abs(pressedX - currX);
+            int height = Math.abs(pressedY - currY);
+            selection.setSelection(startX, startY, width, height);
+            selectedMotes.clear();
+            selectedMotes.addAll(Arrays.asList(findMotesInRange(startX, startY, width, height)));
+            repaint();
+            break;
+        }
+      }
+
       @Override
       public void mouseDragged(MouseEvent e) {
         handleMouseDrag(e);
@@ -991,74 +1047,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   }
 
   final Map<Mote, double[]> moveStartPositions = new HashMap<>();
-
-  private void handleMouseDrag(MouseEvent e) {
-    Position currPos = transformPixelToPosition(e.getPoint());
-
-    switch (mouseActionState) {
-      case DEFAULT_PRESS:
-        if (cursorMote == null) {
-          mouseActionState = MotesActionState.PANNING;
-        }
-        else {
-          /* If we start moving with on a cursor mote, switch to MOVING */
-          mouseActionState = MotesActionState.MOVING;
-          // save start position
-          for (Mote m : selectedMotes) {
-            Position pos = m.getInterfaces().getPosition();
-            moveStartPositions.put(m, new double[]{
-              pos.getXCoordinate(),
-              pos.getYCoordinate(),
-              pos.getZCoordinate()});
-          }
-        }
-        break;
-      case MOVING:
-        canvas.setCursor(MOVE_CURSOR);
-        for (Mote moveMote : selectedMotes) {
-          moveMote.getInterfaces().getPosition().setCoordinates(
-                  moveStartPositions.get(moveMote)[0]
-                  + (currPos.getXCoordinate() - pressedPos.getXCoordinate()),
-                  moveStartPositions.get(moveMote)[1]
-                  + (currPos.getYCoordinate() - pressedPos.getYCoordinate()),
-                  moveStartPositions.get(moveMote)[2]
-          );
-          repaint();
-        }
-        break;
-      case PAN_PRESS:
-        mouseActionState = MotesActionState.PANNING;
-        break;
-      case PANNING:
-        /* The current mouse position should correspond to where panning started */
-        viewportTransform.translate(
-                currPos.getXCoordinate() - pressedPos.getXCoordinate(),
-                currPos.getYCoordinate() - pressedPos.getYCoordinate()
-        );
-        repaint();
-        break;
-      case SELECT_PRESS:
-        mouseActionState = MotesActionState.SELECTING;
-        selection.setEnabled(true);
-        break;
-      case SELECTING:
-        int pressedX = transformToPixelX(pressedPos.getXCoordinate());
-        int pressedY = transformToPixelY(pressedPos.getYCoordinate());
-        int currX = transformToPixelX(currPos.getXCoordinate());
-        int currY = transformToPixelY(currPos.getYCoordinate());
-        int startX = Math.min(pressedX, currX);
-        int startY = Math.min(pressedY, currY);
-        int width = Math.abs(pressedX - currX);
-        int height = Math.abs(pressedY - currY);
-
-        selection.setSelection(startX, startY, width, height);
-        selectedMotes.clear();
-        selectedMotes.addAll(Arrays.asList(findMotesInRange(startX, startY, width, height)));
-
-        repaint();
-        break;
-    }
-  }
 
   private void handleMouseRelease(MouseEvent mouseEvent) {
 
