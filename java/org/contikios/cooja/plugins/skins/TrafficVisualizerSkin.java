@@ -76,8 +76,8 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
       if (last != null && historyList.size() < MAX_HISTORY_SIZE) {
         synchronized(historyList) {
           historyList.add(new RadioConnectionArrow(last));
-          visualizer.repaint(500);
         }
+        java.awt.EventQueue.invokeLater(() -> visualizer.repaint(500));
       }
     }
   };
@@ -96,7 +96,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
           historyList.removeIf(rca -> !rca.increaseAge());
         }
 
-        visualizer.repaint(500);
+        java.awt.EventQueue.invokeLater(() -> visualizer.repaint(500));
       }
 
       /* Reschedule myself */
