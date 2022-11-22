@@ -817,8 +817,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         if (file == null || !file.exists()) {
           return;
         }
-
-        handleDropFile(file, dtde.getLocation());
+        // TODO: implement drag and drop.
+        logger.fatal("Drag and drop not implemented: " + file);
       }
 
       private boolean acceptOrRejectDrag(DropTargetDragEvent dtde) {
@@ -854,7 +854,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         }
 
         /* Extract file extension */
-        return isDropFileAccepted(file);
+        return true;
       }
     };
     canvas.setDropTarget(
@@ -1420,15 +1420,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         pos.deleteObserver(posObserver);
       }
     }
-  }
-
-  protected boolean isDropFileAccepted(File file) {
-    return true; /* TODO */
-
-  }
-
-  protected void handleDropFile(File file, Point point) {
-    logger.fatal("Drag and drop not implemented: " + file);
   }
 
   /**
