@@ -94,10 +94,6 @@ public class DotDiagram extends JComponent {
 
   private final Color[] lineColor;
 
-  public DotDiagram(int diagrams) {
-    this(diagrams, NORMAL);
-  }
-
   public DotDiagram(int diagrams, int mode) {
     data = new int[diagrams][];
     notes = new String[diagrams][];
