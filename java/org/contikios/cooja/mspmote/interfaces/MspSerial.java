@@ -67,7 +67,7 @@ public class MspSerial extends SerialUI implements SerialPort {
     if (usart != null) {
       usart.addUSARTListener((source, data) -> MspSerial.this.dataReceived(data));
     }
-
+    // FIXME: should writeDataEvent be inside usart != null block?
     writeDataEvent = new MspMoteTimeEvent(this.mote) {
       @Override
       public void execute(long t) {
@@ -75,7 +75,7 @@ public class MspSerial extends SerialUI implements SerialPort {
         boolean finished = false;
         byte b = 0;
         synchronized (incomingData) {
-          if (!usart.isReceiveFlagCleared() || incomingData.isEmpty()) {
+          if (incomingData.isEmpty() || !usart.isReceiveFlagCleared()) {
             finished = true;
           } else { // Write byte to serial port.
             b = incomingData.remove(0);
