@@ -39,7 +39,6 @@ import org.contikios.cooja.dialogs.SerialUI;
 import org.contikios.cooja.interfaces.SerialPort;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
-import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 
 /**
@@ -66,12 +65,7 @@ public class MspSerial extends SerialUI implements SerialPort {
     /* Listen to port writes */
     usart = getUSARTSource(this.mote);
     if (usart != null) {
-      usart.addUSARTListener(new USARTListener() {
-        @Override
-        public void dataReceived(USARTSource source, int data) {
-          MspSerial.this.dataReceived(data);
-        }
-      });
+      usart.addUSARTListener((source, data) -> MspSerial.this.dataReceived(data));
     }
 
     writeDataEvent = new MspMoteTimeEvent(this.mote) {
@@ -117,12 +111,8 @@ public class MspSerial extends SerialUI implements SerialPort {
     }
     
     /* Non-simulation thread: poll */
-    simulation.invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        if (writeDataEvent.isScheduled()) {
-          return;
-        }
+    simulation.invokeSimulationThread(() -> {
+      if (!writeDataEvent.isScheduled()) {
         simulation.scheduleEvent(writeDataEvent, simulation.getSimulationTime());
       }
     });
