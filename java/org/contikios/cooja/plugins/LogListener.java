@@ -44,7 +44,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -348,7 +347,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         int returnVal = fc.showSaveDialog(Cooja.getTopParentContainer());
         if (returnVal != JFileChooser.APPROVE_OPTION) {
           appendToFile = false;
-          cb.setSelected(appendToFile);
+          cb.setSelected(false);
           return;
         }
 
@@ -357,7 +356,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         if (saveFile.exists() && !saveFile.canWrite()) {
           logger.fatal("No write access to file: " + saveFile);
           appendToFile = false;
-          cb.setSelected(appendToFile);
+          cb.setSelected(false);
           return;
         }
         appendToFile = true;
@@ -375,12 +374,9 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     colorCheckbox = new JCheckBoxMenuItem("Mote-specific coloring", backgroundColors);
     showMenu.add(colorCheckbox);
-    colorCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        backgroundColors = colorCheckbox.isSelected();
-        repaint();
-      }
+    colorCheckbox.addActionListener(e -> {
+      backgroundColors = colorCheckbox.isSelected();
+      repaint();
     });
     hideDebugCheckbox = new JCheckBoxMenuItem("Hide \"DEBUG: \" messages");
     showMenu.add(hideDebugCheckbox);
@@ -585,7 +581,15 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
       @Override
       public void newLogOutput(LogOutputEvent ev) {
-        registerNewLogOutput(ev);
+        if (!hasHours && ev.getTime() > TIME_HOUR) {
+          hasHours = true;
+          repaintTimeColumn();
+        }
+        LogData data = new LogData(ev);
+        logUpdateAggregator.add(data);
+        if (appendToFile) {
+          appendToFile(appendStreamFile, data.getTime() + "\t" + data.getID() + "\t" + data.ev.getMessage() + "\n");
+        }
       }
       @Override
       public void removedLogOutput(LogOutputEvent ev) {
@@ -600,31 +604,22 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     filterPanel.add(Box.createHorizontalStrut(2));
     filterPanel.add(filterLabel);
     filterPanel.add(filterTextField);
-    filterTextField.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String str = filterTextField.getText();
-        setFilter(str);
-
-        /* Autoscroll */
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            int s = logTable.getSelectedRow();
-            if (s < 0) {
-              return;
-            }
-
-            s = logTable.getRowSorter().convertRowIndexToView(s);
-            if (s < 0) {
-              return;
-            }
-
-            int v = logTable.getRowHeight()*s;
-            logTable.scrollRectToVisible(new Rectangle(0, v-5, 1, v+5));
-          }
-        });
-      }
+    filterTextField.addActionListener(e -> {
+      String str = filterTextField.getText();
+      setFilter(str);
+      // Autoscroll.
+      SwingUtilities.invokeLater(() -> {
+        int s = logTable.getSelectedRow();
+        if (s < 0) {
+          return;
+        }
+        s = logTable.getRowSorter().convertRowIndexToView(s);
+        if (s < 0) {
+          return;
+        }
+        int v = logTable.getRowHeight()*s;
+        logTable.scrollRectToVisible(new Rectangle(0, v-5, 1, v+5));
+      });
     });
     filterPanel.add(Box.createHorizontalStrut(2));
 
@@ -636,28 +631,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     /* XXX HACK: here we set the position and size of the window when it appears on a blank simulation screen. */
     this.setLocation(400, 160);
     this.setSize(Cooja.getDesktopPane().getWidth() - 400, 240);
-  }
-
-  public void registerNewLogOutput(Mote mote, long time, String msg) {
-    LogOutputEvent ev = new LogOutputEvent(mote, time, msg);
-    registerNewLogOutput(ev);
-  }
-
-  private void registerNewLogOutput(LogOutputEvent ev) {
-    /* Display new log output */
-    if (!hasHours && ev.getTime() > TIME_HOUR) {
-            hasHours = true;
-            repaintTimeColumn();
-    }
-    LogData data = new LogData(ev);
-    logUpdateAggregator.add(data);
-    if (appendToFile) {
-      appendToFile(appendStreamFile,
-          data.getTime() + "\t" +
-          data.getID() + "\t" +
-          data.ev.getMessage() + "\n"
-      );
-    }
   }
 
   private void repaintTimeColumn() {
@@ -798,22 +771,19 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   }
 
   public void trySelectTime(final long time) {
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        for (int i=0; i < logs.size(); i++) {
-          if (logs.get(i).ev.getTime() < time) {
-            continue;
-          }
-
-          int view = logTable.convertRowIndexToView(i);
-          if (view < 0) {
-            continue;
-          }
-          logTable.scrollRectToVisible(logTable.getCellRect(view, 0, true));
-          logTable.setRowSelectionInterval(view, view);
-          return;
+    java.awt.EventQueue.invokeLater(() -> {
+      for (int i=0; i < logs.size(); i++) {
+        if (logs.get(i).ev.getTime() < time) {
+          continue;
         }
+
+        int view = logTable.convertRowIndexToView(i);
+        if (view < 0) {
+          continue;
+        }
+        logTable.scrollRectToVisible(logTable.getCellRect(view, 0, true));
+        logTable.setRowSelectionInterval(view, view);
+        return;
       }
     });
   }
