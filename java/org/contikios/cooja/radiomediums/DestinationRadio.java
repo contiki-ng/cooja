@@ -40,8 +40,6 @@ import org.contikios.cooja.interfaces.Radio;
 
 public class DestinationRadio {
 	public Radio radio; /* destination radio */
-	public DestinationRadio() {
-	}
 	public DestinationRadio(Radio dest) {
 		this.radio = dest;
 	}
