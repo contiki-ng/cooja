@@ -52,7 +52,7 @@ import org.jdom2.Element;
  *
  * @author Fredrik Osterlind
  */
-public class Simulation extends Observable {
+public final class Simulation extends Observable {
 
   /** Commands sent to the simulation thread to start, stop, or shutdown the simulation */
   private enum Command {
