@@ -266,9 +266,9 @@ class ObstacleWorld {
       // Test if we are inside test box
       if (new Rectangle2D.Double(areaStartX + x*boxWidth, areaStartY + y*boxHeight, boxWidth, boxHeight).contains(center)) {
         hit = true;
-        for (int i = 0; i < allObstaclesSpatial[x][y].size(); i++) {
-          if (!obstaclesToReturn.contains(allObstaclesSpatial[x][y].get(i)))
-            obstaclesToReturn.add(allObstaclesSpatial[x][y].get(i));
+        for (var obstacle : allObstaclesSpatial[x][y]) {
+          if (!obstaclesToReturn.contains(obstacle))
+            obstaclesToReturn.add(obstacle);
         }
       }
 
@@ -284,9 +284,9 @@ class ObstacleWorld {
         );
         if (testInterval.intersects(angleInterval)) {
           hit = true;
-          for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) {
-            if (!obstaclesToReturn.contains(allObstaclesSpatial[x][y].get(i)))
-              obstaclesToReturn.add(allObstaclesSpatial[x][y].get(i));
+          for (var obstacle : allObstaclesSpatial[x][y]) {
+            if (!obstaclesToReturn.contains(obstacle))
+              obstaclesToReturn.add(obstacle);
           }
         }
       }
@@ -302,9 +302,9 @@ class ObstacleWorld {
                 areaStartY + y*boxHeight)
         );
         if (testInterval.intersects(angleInterval)) {
-          for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) {
-            if (!obstaclesToReturn.contains(allObstaclesSpatial[x][y].get(i)))
-              obstaclesToReturn.add(allObstaclesSpatial[x][y].get(i));
+          for (var obstacle : allObstaclesSpatial[x][y]) {
+            if (!obstaclesToReturn.contains(obstacle))
+              obstaclesToReturn.add(obstacle);
           }
         }
       }
