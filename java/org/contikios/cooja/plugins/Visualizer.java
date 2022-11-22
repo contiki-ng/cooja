@@ -600,6 +600,69 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       }
     });
     canvas.addMouseListener(new MouseAdapter() {
+      private void handlePopupRequest(Point point) {
+        var menu = new JPopupMenu();
+        // Mote specific actions.
+        final Mote[] motes = findMotesAtPosition(point.x, point.y);
+        if (motes != null && motes.length > 0) {
+          menu.add(new JSeparator());
+          // Add registered mote actions.
+          for (final Mote mote : motes) {
+            menu.add(Cooja.createMotePluginsSubmenu(mote));
+            for (var menuActionClass : moteMenuActions) {
+              try {
+                final MoteMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
+                if (menuAction.isEnabled(Visualizer.this, mote)) {
+                  JMenuItem menuItem = new JMenuItem(menuAction.getDescription(Visualizer.this, mote));
+                  menuItem.addActionListener(e -> menuAction.doAction(Visualizer.this, mote));
+                  menu.add(menuItem);
+                }
+              } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e1) {
+                logger.fatal("Error: " + e1.getMessage(), e1);
+              }
+            }
+          }
+        }
+
+        // Simulation specific actions.
+        menu.add(new JSeparator());
+        var resetItem = new JMenuItem("Reset viewport");
+        resetItem.addActionListener(e -> {
+          resetViewport = 1;
+          repaint();
+        });
+        menu.add(resetItem);
+        if (getUI() instanceof BasicInternalFrameUI myUI) {
+          final var northPane = myUI.getNorthPane();
+          final var shouldRestore = northPane.getPreferredSize() == null || northPane.getPreferredSize().height == 0;
+          var decorationItem = new JMenuItem((shouldRestore ? "Restore" : "Hide") + " window decorations");
+          decorationItem.addActionListener(e -> {
+            northPane.setPreferredSize(shouldRestore ? null : new Dimension(0, 0));
+            revalidate();
+            repaint();
+          });
+          menu.add(decorationItem);
+        }
+        for (var menuActionClass : simulationMenuActions) {
+          try {
+            final SimulationMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
+            if (menuAction.isEnabled(Visualizer.this, simulation)) {
+              JMenuItem menuItem = new JMenuItem(menuAction.getDescription(Visualizer.this, simulation));
+              menuItem.addActionListener(e -> menuAction.doAction(Visualizer.this, simulation));
+              menu.add(menuItem);
+            }
+          } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e1) {
+            logger.fatal("Error: " + e1.getMessage(), e1);
+          }
+        }
+
+        // Visualizer skin actions.
+        menu.add(new JSeparator());
+        menu.setLocation(new Point(canvas.getLocationOnScreen().x + point.x, canvas.getLocationOnScreen().y + point.y));
+        menu.setInvoker(canvas);
+        menu.setVisible(true);
+      }
+
       @Override
       public void mousePressed(MouseEvent e) {
         if (e.isPopupTrigger()) {
@@ -907,78 +970,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
   public static void unregisterVisualizerSkin(Class<? extends VisualizerSkin> skin) {
     visualizerSkins.remove(skin);
-  }
-
-  private void handlePopupRequest(Point point) {
-    JPopupMenu menu = new JPopupMenu();
-
-    /* Mote specific actions */
-    final Mote[] motes = findMotesAtPosition(point.x, point.y);
-    if (motes != null && motes.length > 0) {
-      menu.add(new JSeparator());
-
-      /* Add registered mote actions */
-      for (final Mote mote : motes) {
-        menu.add(Cooja.createMotePluginsSubmenu(mote));
-        for (Class<? extends MoteMenuAction> menuActionClass : moteMenuActions) {
-          try {
-            final MoteMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
-            if (menuAction.isEnabled(this, mote)) {
-              JMenuItem menuItem = new JMenuItem(menuAction.getDescription(this, mote));
-              menuItem.addActionListener(e -> menuAction.doAction(Visualizer.this, mote));
-              menu.add(menuItem);
-            }
-          }
-          catch (InvocationTargetException | NoSuchMethodException | InstantiationException |
-                 IllegalAccessException e1) {
-            logger.fatal("Error: " + e1.getMessage(), e1);
-          }
-        }
-      }
-    }
-
-    /* Simulation specific actions */
-    menu.add(new JSeparator());
-    var resetItem = new JMenuItem("Reset viewport");
-    resetItem.addActionListener(e -> {
-      resetViewport = 1;
-      repaint();
-    });
-    menu.add(resetItem);
-    if (getUI() instanceof BasicInternalFrameUI myUI) {
-      final var northPane = myUI.getNorthPane();
-      final var shouldRestore = northPane.getPreferredSize() == null || northPane.getPreferredSize().height == 0;
-      var decorationItem = new JMenuItem((shouldRestore ? "Restore" : "Hide") + " window decorations");
-      decorationItem.addActionListener(e -> {
-        northPane.setPreferredSize(shouldRestore ? null : new Dimension(0, 0));
-        revalidate();
-        repaint();
-      });
-      menu.add(decorationItem);
-    }
-    for (Class<? extends SimulationMenuAction> menuActionClass : simulationMenuActions) {
-      try {
-        final SimulationMenuAction menuAction = menuActionClass.getDeclaredConstructor().newInstance();
-        if (menuAction.isEnabled(this, simulation)) {
-          JMenuItem menuItem = new JMenuItem(menuAction.getDescription(this, simulation));
-          menuItem.addActionListener(e -> menuAction.doAction(Visualizer.this, simulation));
-          menu.add(menuItem);
-        }
-      }
-      catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e1) {
-        logger.fatal("Error: " + e1.getMessage(), e1);
-      }
-    }
-
-    /* Visualizer skin actions */
-    menu.add(new JSeparator());
-
-    /* Show menu */
-    menu.setLocation(new Point(
-            canvas.getLocationOnScreen().x + point.x,
-            canvas.getLocationOnScreen().y + point.y));
-    menu.setInvoker(canvas);
-    menu.setVisible(true);
   }
 
   private boolean showMoteToMoteRelations = true;
