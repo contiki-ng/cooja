@@ -126,7 +126,22 @@ public class WindowUtils {
   public synchronized static void addSaveOnShutdown(String key, Window window) {
     if (exitTable == null) {
       exitTable = new Hashtable<>();
-      Runtime.getRuntime().addShutdownHook(new ShutdownHandler());
+      Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+        var table = exitTable;
+        if (table != null && table.size() > 0) {
+          exitTable = null;
+          Enumeration<Window> e = table.keys();
+          while(e.hasMoreElements()) {
+            Window w = e.nextElement();
+            putWindowBounds(table.get(w), w);
+          }
+          try {
+            prefs.flush();
+          } catch (Exception e2) {
+            e2.printStackTrace();
+          }
+        }
+      }));
     }
     exitTable.put(window, key);
   }
@@ -171,39 +186,5 @@ public class WindowUtils {
       source.removeWindowListener(this);
       closeTable.remove(source);
     }
-
   }
-
-
-  // -------------------------------------------------------------------
-  // Shutdown handler
-  // -------------------------------------------------------------------
-
-  private static class ShutdownHandler extends Thread {
-
-    public ShutdownHandler() {
-      super("WindowUtils-Shutdown");
-    }
-
-    @Override
-    public void run() {
-      Hashtable<Window,String> table = exitTable;
-      if (table != null && table.size() > 0) {
-        exitTable = null;
-
-        Enumeration<Window> e = table.keys();
-        while(e.hasMoreElements()) {
-          Window w = e.nextElement();
-          putWindowBounds(table.get(w), w);
-        }
-        try {
-          prefs.flush();
-        } catch (Exception e2) {
-          e2.printStackTrace();
-        }
-      }
-    }
-
-  }
-
 } // WindowUtils
