@@ -877,7 +877,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     }
 
     if (!isSkinCompatible(skinClass)) {
-      /*logger.warn("Skin is not compatible with current simulation: " + skinClass);*/
       return;
     }
 
