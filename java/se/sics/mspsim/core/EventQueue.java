@@ -70,22 +70,16 @@ public class EventQueue {
         lastPos = pos;
         pos = pos.nextEvent;
       }
-      // Here pos will be the first TE after event
-      // and lastPos the first before
+      event.nextEvent = pos;
+      // Here pos will be the first TE after event and lastPos the first before.
       if (pos == first) {
         // Before all other
-        event.nextEvent = pos;
         first = event;
       } else {
-        event.nextEvent = pos;
         lastPos.nextEvent = event;
       }
     }
-    if (first != null) {
-      nextTime = first.time;
-    } else {
-      nextTime = 0;
-    }
+    nextTime = first.time;
     event.scheduledIn = this;
     eventCount++;
   }
