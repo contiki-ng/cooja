@@ -272,16 +272,15 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
             continue;
           }
 
-          var item = new JCheckBoxMenuItem(Cooja.getDescriptionOf(skinClass), false);
-          item.putClientProperty("skinclass", skinClass);
-          // Select skin if active.
+          boolean activated = false;
           for (var skin : currentSkins) {
             if (skin.getClass() == skinClass) {
-              item.setSelected(true);
+              activated = true;
               break;
             }
           }
-
+          var item = new JCheckBoxMenuItem(Cooja.getDescriptionOf(skinClass), activated);
+          item.putClientProperty("skinclass", skinClass);
           item.addItemListener(e1 -> {
             var menuItem = ((JCheckBoxMenuItem) e1.getItem());
             if (menuItem == null) {
