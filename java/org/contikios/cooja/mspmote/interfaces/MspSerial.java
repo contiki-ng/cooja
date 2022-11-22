@@ -78,8 +78,19 @@ public class MspSerial extends SerialUI implements SerialPort {
       @Override
       public void execute(long t) {
         super.execute(t);
-        
-        tryWriteNextByte();
+        boolean finished = false;
+        byte b = 0;
+        synchronized (incomingData) {
+          if (!usart.isReceiveFlagCleared() || incomingData.isEmpty()) {
+            finished = true;
+          } else { // Write byte to serial port.
+            b = incomingData.remove(0);
+          }
+        }
+        if (!finished) {
+          usart.byteReceived(b);
+          mote.requestImmediateWakeup();
+        }
         if (!incomingData.isEmpty()) {
           simulation.scheduleEvent(this, t+DELAY_INCOMING_DATA);
         }
@@ -130,24 +141,6 @@ public class MspSerial extends SerialUI implements SerialPort {
     for (byte element : s) {
       writeByte(element);
     }
-  }
-
-  private void tryWriteNextByte() {
-    byte b;
-
-    synchronized (incomingData) {
-      if (!usart.isReceiveFlagCleared()) {
-        return;
-      }
-      if (incomingData.isEmpty()) {
-        return;
-      }
-
-      /* Write byte to serial port */
-      b = incomingData.remove(0);
-    }
-    usart.byteReceived(b);
-    mote.requestImmediateWakeup();
   }
 
   @Override
