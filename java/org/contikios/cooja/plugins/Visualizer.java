@@ -1228,6 +1228,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     }
   }
 
+  // TODO: check if this can be a local variable inside drawArrow().
   private final Polygon arrowPoly = new Polygon();
 
   private void drawArrow(Graphics g, int xSource, int ySource, int xDest, int yDest) {
