@@ -132,17 +132,8 @@ public class COOJAProject {
 		}
 		return arr;
 	}
-	public String[] getConfigPlugins() {
-		return getStringArray("org.contikios.cooja.Cooja.PLUGINS");
-	}
 	public String[] getConfigJARs() {
 		return getStringArray("org.contikios.cooja.Cooja.JARFILES");
-	}
-	public String[] getConfigMoteTypes() {
-		return getStringArray("org.contikios.cooja.Cooja.MOTETYPES");
-	}
-	public String[] getConfigRadioMediums() {
-		return getStringArray("org.contikios.cooja.Cooja.RADIOMEDIUMS");
 	}
 	public String[] getConfigMoteInterfaces() {
 		return getStringArray("org.contikios.cooja.contikimote.ContikiMoteType.MOTE_INTERFACES");
