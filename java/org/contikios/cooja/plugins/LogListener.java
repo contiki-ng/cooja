@@ -44,7 +44,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -375,12 +374,9 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     colorCheckbox = new JCheckBoxMenuItem("Mote-specific coloring", backgroundColors);
     showMenu.add(colorCheckbox);
-    colorCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        backgroundColors = colorCheckbox.isSelected();
-        repaint();
-      }
+    colorCheckbox.addActionListener(e -> {
+      backgroundColors = colorCheckbox.isSelected();
+      repaint();
     });
     hideDebugCheckbox = new JCheckBoxMenuItem("Hide \"DEBUG: \" messages");
     showMenu.add(hideDebugCheckbox);
@@ -600,31 +596,22 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     filterPanel.add(Box.createHorizontalStrut(2));
     filterPanel.add(filterLabel);
     filterPanel.add(filterTextField);
-    filterTextField.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String str = filterTextField.getText();
-        setFilter(str);
-
-        /* Autoscroll */
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            int s = logTable.getSelectedRow();
-            if (s < 0) {
-              return;
-            }
-
-            s = logTable.getRowSorter().convertRowIndexToView(s);
-            if (s < 0) {
-              return;
-            }
-
-            int v = logTable.getRowHeight()*s;
-            logTable.scrollRectToVisible(new Rectangle(0, v-5, 1, v+5));
-          }
-        });
-      }
+    filterTextField.addActionListener(e -> {
+      String str = filterTextField.getText();
+      setFilter(str);
+      // Autoscroll.
+      SwingUtilities.invokeLater(() -> {
+        int s = logTable.getSelectedRow();
+        if (s < 0) {
+          return;
+        }
+        s = logTable.getRowSorter().convertRowIndexToView(s);
+        if (s < 0) {
+          return;
+        }
+        int v = logTable.getRowHeight()*s;
+        logTable.scrollRectToVisible(new Rectangle(0, v-5, 1, v+5));
+      });
     });
     filterPanel.add(Box.createHorizontalStrut(2));
 
@@ -798,22 +785,19 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   }
 
   public void trySelectTime(final long time) {
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        for (int i=0; i < logs.size(); i++) {
-          if (logs.get(i).ev.getTime() < time) {
-            continue;
-          }
-
-          int view = logTable.convertRowIndexToView(i);
-          if (view < 0) {
-            continue;
-          }
-          logTable.scrollRectToVisible(logTable.getCellRect(view, 0, true));
-          logTable.setRowSelectionInterval(view, view);
-          return;
+    java.awt.EventQueue.invokeLater(() -> {
+      for (int i=0; i < logs.size(); i++) {
+        if (logs.get(i).ev.getTime() < time) {
+          continue;
         }
+
+        int view = logTable.convertRowIndexToView(i);
+        if (view < 0) {
+          continue;
+        }
+        logTable.scrollRectToVisible(logTable.getCellRect(view, 0, true));
+        logTable.setRowSelectionInterval(view, view);
+        return;
       }
     });
   }
