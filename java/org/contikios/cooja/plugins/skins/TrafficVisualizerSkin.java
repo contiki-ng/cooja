@@ -177,16 +177,14 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
       histories = historyList.toArray(new RadioConnectionArrow[0]);
     }
     for (var connArrow : histories) {
-      float colorHistoryIndex = 1.0f - connArrow.getAge();
       Point sourcePoint = visualizer.transformPositionToPixel(connArrow.getConnection().getSource().getPosition());
+      g.setColor(new Color(UNTRANSMITTED_COLOR_RGB[0], UNTRANSMITTED_COLOR_RGB[1], UNTRANSMITTED_COLOR_RGB[2], 1.0f - connArrow.getAge()));
       // If there is no destination, paint red circles to indicate non-transmitted message.
       if (connArrow.getConnection().getDestinations().length == 0) {
-        g.setColor(new Color(UNTRANSMITTED_COLOR_RGB[0], UNTRANSMITTED_COLOR_RGB[1], UNTRANSMITTED_COLOR_RGB[2], colorHistoryIndex));
         g.drawOval(sourcePoint.x - 20, sourcePoint.y - 20, 40, 40);
         g.drawOval(sourcePoint.x - 30, sourcePoint.y - 30, 60, 60);
         continue;
       }
-      g.setColor(new Color(TRANSMITTED_COLOR_RGB[0], TRANSMITTED_COLOR_RGB[1], TRANSMITTED_COLOR_RGB[2], colorHistoryIndex));
       for (var destRadio : connArrow.getConnection().getDestinations()) {
         Point destPoint = visualizer.transformPositionToPixel(destRadio.getPosition());
         drawArrow(g, sourcePoint.x, sourcePoint.y, destPoint.x, destPoint.y, 8);
