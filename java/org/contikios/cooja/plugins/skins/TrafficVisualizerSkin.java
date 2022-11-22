@@ -43,8 +43,6 @@ import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.SupportedArguments;
 import org.contikios.cooja.TimeEvent;
-import org.contikios.cooja.interfaces.Position;
-import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
@@ -174,24 +172,24 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
 
   @Override
   public void paintBeforeMotes(Graphics g) {
+    RadioConnectionArrow[] histories;
     synchronized (historyList) {
-      for (RadioConnectionArrow connArrow : historyList) {
-        float colorHistoryIndex = 1.0f - connArrow.getAge();
-        Radio source = connArrow.getConnection().getSource();
-        Point sourcePoint = visualizer.transformPositionToPixel(source.getPosition());
-        /* If there is no destination, paint red circles to indicate untransmitted message */
-        if (connArrow.getConnection().getDestinations().length == 0) {
-          g.setColor(new Color(UNTRANSMITTED_COLOR_RGB[0], UNTRANSMITTED_COLOR_RGB[1], UNTRANSMITTED_COLOR_RGB[2], colorHistoryIndex));
-          g.drawOval(sourcePoint.x - 20, sourcePoint.y - 20, 40, 40);
-          g.drawOval(sourcePoint.x - 30, sourcePoint.y - 30, 60, 60);
-          continue;
-        }
-        g.setColor(new Color(TRANSMITTED_COLOR_RGB[0], TRANSMITTED_COLOR_RGB[1], TRANSMITTED_COLOR_RGB[2], colorHistoryIndex));
-        for (Radio destRadio : connArrow.getConnection().getDestinations()) {
-          Position destPos = destRadio.getPosition();
-          Point destPoint = visualizer.transformPositionToPixel(destPos);
-          drawArrow(g, sourcePoint.x, sourcePoint.y, destPoint.x, destPoint.y, 8);
-        }
+      histories = historyList.toArray(new RadioConnectionArrow[0]);
+    }
+    for (var connArrow : histories) {
+      float colorHistoryIndex = 1.0f - connArrow.getAge();
+      Point sourcePoint = visualizer.transformPositionToPixel(connArrow.getConnection().getSource().getPosition());
+      // If there is no destination, paint red circles to indicate non-transmitted message.
+      if (connArrow.getConnection().getDestinations().length == 0) {
+        g.setColor(new Color(UNTRANSMITTED_COLOR_RGB[0], UNTRANSMITTED_COLOR_RGB[1], UNTRANSMITTED_COLOR_RGB[2], colorHistoryIndex));
+        g.drawOval(sourcePoint.x - 20, sourcePoint.y - 20, 40, 40);
+        g.drawOval(sourcePoint.x - 30, sourcePoint.y - 30, 60, 60);
+        continue;
+      }
+      g.setColor(new Color(TRANSMITTED_COLOR_RGB[0], TRANSMITTED_COLOR_RGB[1], TRANSMITTED_COLOR_RGB[2], colorHistoryIndex));
+      for (var destRadio : connArrow.getConnection().getDestinations()) {
+        Point destPoint = visualizer.transformPositionToPixel(destRadio.getPosition());
+        drawArrow(g, sourcePoint.x, sourcePoint.y, destPoint.x, destPoint.y, 8);
       }
     }
   }
