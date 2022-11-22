@@ -151,7 +151,7 @@ public class NetworkConnection implements Runnable {
 
   private record SendEvent(byte[] data, ConnectionThread source) {}
 
-  class SendThread implements Runnable {
+  final class SendThread implements Runnable {
 
     private final ArrayList<SendEvent> queue = new ArrayList<>();
 
@@ -211,7 +211,7 @@ public class NetworkConnection implements Runnable {
     }
   }
 
-  class ConnectionThread implements Runnable {
+  final class ConnectionThread implements Runnable {
     Socket socket;
     DataInputStream input;
     OutputStream output;

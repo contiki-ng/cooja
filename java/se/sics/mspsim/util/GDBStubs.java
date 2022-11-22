@@ -50,7 +50,7 @@ import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.MSP430Core;
 import se.sics.mspsim.core.Memory;
 
-public class GDBStubs implements Runnable {
+public final class GDBStubs implements Runnable {
 
     private final static String OK = "OK";
 
