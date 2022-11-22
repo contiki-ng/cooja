@@ -81,11 +81,7 @@ public class EventQueue {
         lastPos.nextEvent = event;
       }
     }
-    if (first != null) {
-      nextTime = first.time;
-    } else {
-      nextTime = 0;
-    }
+    nextTime = first.time;
     event.scheduledIn = this;
     eventCount++;
   }
