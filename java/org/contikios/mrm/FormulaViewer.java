@@ -69,7 +69,7 @@ import org.contikios.mrm.ChannelModel.Parameter;
  * @author Fredrik Osterlind
  */
 @ClassDescription("MRM Settings")
-@PluginType(PluginType.SIM_PLUGIN)
+@PluginType(PluginType.PType.SIM_PLUGIN)
 @SupportedArguments(radioMediums = {MRM.class})
 public class FormulaViewer extends org.contikios.cooja.VisPlugin {
   private final ChannelModel channelModel;

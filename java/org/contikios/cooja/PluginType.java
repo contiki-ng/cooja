@@ -38,89 +38,84 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PluginType {
-  int UNDEFINED_PLUGIN = 0;
+  enum PType {
+    /**
+     * Mote Plugin
+     * <p>
+     * A mote plugin concerns one specific mote.
+     * <p>
+     * An example of such a plugin may be to display some mote information in a
+     * frame.
+     * <p>
+     * Mote plugins can not be instantiated from the regular menu bar, but are
+     * instead started from other plugins, for example a visualizer that lets a
+     * user select a mote.
+     * <p>
+     * When constructed, a mote plugin is given a mote, the current active
+     * simulation and the GUI object.
+     * <p>
+     * If the current simulation is removed, so are all instances of this plugin.
+     */
+    MOTE_PLUGIN,
 
-  /**
-   * Mote Plugin
-   * <p>
-   * A mote plugin concerns one specific mote.
-   * <p>
-   * An example of such a plugin may be to display some mote information in a
-   * frame.
-   * <p>
-   * Mote plugins can not be instantiated from the regular menu bar, but are
-   * instead started from other plugins, for example a visualizer that lets a
-   * user select a mote.
-   * <p>
-   * When constructed, a mote plugin is given a mote, the current active
-   * simulation and the GUI object.
-   * <p>
-   * If the current simulation is removed, so are all instances of this plugin.
-   */
-  int MOTE_PLUGIN = 1;
+    /**
+     * Simulation Plugin
+     * <p>
+     * A simulation plugin concerns one specific simulation.
+     * <p>
+     * An example of such a plugin may be to display number of motes and current
+     * simulation time in a window.
+     * <p>
+     * Simulation plugins are available via the plugin menubar.
+     * <p>
+     * When constructed, a simulation plugin is given the current active
+     * simulation and the GUI object.
+     * <p>
+     * If the current simulation is removed, so are all instances of this plugin.
+     */
+    SIM_PLUGIN,
 
-  /**
-   * Simulation Plugin
-   * <p>
-   * A simulation plugin concerns one specific simulation.
-   * <p>
-   * An example of such a plugin may be to display number of motes and current
-   * simulation time in a window.
-   * <p>
-   * Simulation plugins are available via the plugins menubar.
-   * <p>
-   * When constructed, a simulation plugin is given the current active
-   * simulation and the GUI object.
-   * <p>
-   * If the current simulation is removed, so are all instances of this plugin.
-   */
-  int SIM_PLUGIN = 2;
+    /**
+     * COOJA Plugin
+     * <p>
+     * A COOJA plugin does not depend on the current simulation (if any).
+     * <p>
+     * An example of such a plugin may be a control panel where a user can save
+     * and load different simulations.
+     * <p>
+     * COOJA plugins are available via the plugin menubar.
+     * <p>
+     * When constructed, a COOJA plugin is given the current GUI.
+     */
+    COOJA_PLUGIN,
 
-  /**
-   * COOJA Plugin
-   * <p>
-   * A COOJA plugin does not depend on the current simulation (if any).
-   * <p>
-   * An example of such a plugin may be a control panel where a user can save
-   * and load different simulations.
-   * <p>
-   * COOJA plugins are available via the plugins menubar.
-   * <p>
-   * When constructed, a COOJA plugin is given the current GUI.
-   */
-  int COOJA_PLUGIN = 3;
+    /**
+     * Simulation Standard Plugin
+     * <p>
+     * This is treated exactly like a Simulation Plugin, with the only difference
+     * that this will automatically be opened when a new simulation is created.
+     *
+     * @see #SIM_PLUGIN
+     */
+    SIM_STANDARD_PLUGIN,
 
-  /**
-   * Simulation Standard Plugin
-   * <p>
-   * This is treated exactly like a Simulation Plugin, with the only difference
-   * that this will automatically be opened when a new simulation is created.
-   * 
-   * @see #SIM_PLUGIN
-   */
-  int SIM_STANDARD_PLUGIN = 4;
+    /**
+     * COOJA Standard Plugin
+     * <p>
+     * This is treated exactly like a COOJA Plugin, with the only difference that
+     * this will automatically be opened when the simulator is started.
+     *
+     * @see #COOJA_PLUGIN
+     */
+    COOJA_STANDARD_PLUGIN,
 
-  /**
-   * COOJA Standard Plugin
-   * <p>
-   * This is treated exactly like a COOJA Plugin, with the only difference that
-   * this will automatically be opened when the simulator is started.
-   * 
-   * @see #COOJA_PLUGIN
-   */
-  int COOJA_STANDARD_PLUGIN = 5;
-  
-  /**
-   * Simulation Control Plugin
-   * <p>
-   * A Simulation Control Plugin indicates control over the simulation. If COOJA
-   * is loaded in nogui mode, it will terminate if no controll plugin is present.
-   * <p>
-   * COOJA plugins are available via the plugins menubar.
-   * <p>
-   * When constructed, a COOJA plugin is given the current GUI.  
-   */
-  int SIM_CONTROL_PLUGIN = 6;
-
-  int value();
+    /**
+     * Simulation Control Plugin
+     * <p>
+     * A Simulation Control Plugin indicates control over the simulation. If COOJA
+     * is loaded in headless mode, it will terminate if no control plugin is present.
+     */
+    SIM_CONTROL_PLUGIN,
+  }
+  PType value();
 }

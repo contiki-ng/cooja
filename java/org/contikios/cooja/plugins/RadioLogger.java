@@ -111,7 +111,7 @@ import org.jdom2.Element;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Radio messages")
-@PluginType(PluginType.SIM_PLUGIN)
+@PluginType(PluginType.PType.SIM_PLUGIN)
 public class RadioLogger extends VisPlugin {
 
   private static final Logger logger = LogManager.getLogger(RadioLogger.class);

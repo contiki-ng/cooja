@@ -330,7 +330,7 @@ public final class Simulation extends Observable {
       // Keep track of started plugins, so they can be removed on failure.
       var startedPlugins = new ArrayList<Plugin>();
       for (var pluginClass : cooja.getRegisteredPlugins()) {
-        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_STANDARD_PLUGIN) {
+        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.PType.SIM_STANDARD_PLUGIN) {
           try {
             startedPlugins.add(cooja.startPlugin(pluginClass, this, null, null));
           } catch (PluginConstructionException e) {
@@ -399,7 +399,7 @@ public final class Simulation extends Observable {
       if (!Cooja.isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
         continue;
       }
-      if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.SIM_CONTROL_PLUGIN) {
+      if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.PType.SIM_CONTROL_PLUGIN) {
         hasController = true;
       }
       // Parse plugin mote argument (if any).

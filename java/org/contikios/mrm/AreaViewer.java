@@ -118,7 +118,7 @@ import org.contikios.mrm.ChannelModel.TxPair;
  * @author Fredrik Osterlind
  */
 @ClassDescription("MRM Radio environment")
-@PluginType(PluginType.SIM_PLUGIN)
+@PluginType(PluginType.PType.SIM_PLUGIN)
 @SupportedArguments(radioMediums = {MRM.class})
 public class AreaViewer extends VisPlugin {
   private static final Logger logger = LogManager.getLogger(AreaViewer.class);

@@ -73,7 +73,7 @@ import org.contikios.cooja.interfaces.Radio;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Breakpoints")
-@PluginType(PluginType.SIM_PLUGIN)
+@PluginType(PluginType.PType.SIM_PLUGIN)
 public class EventListener extends VisPlugin {
   private final Simulation mySimulation;
 

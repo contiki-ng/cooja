@@ -60,7 +60,7 @@ import org.contikios.cooja.radiomediums.DirectedGraphMedium;
  * @author Sebastian Schinabeck
  */
 @ClassDescription("Base RSSI")
-@PluginType(PluginType.SIM_PLUGIN)
+@PluginType(PluginType.PType.SIM_PLUGIN)
 @SupportedArguments(radioMediums = { AbstractRadioMedium.class })
 
 public class BaseRSSIconf extends VisPlugin {

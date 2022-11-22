@@ -2,6 +2,22 @@
 
 ## Cooja API changes for plugins outside the main tree
 
+### Strongly typed PluginType Annotation
+
+The PluginType annotation was encapsulated in an enum to give Cooja exhaustiveness
+checking in switch-expressions ([#848](https://github.com/contiki-ng/cooja/pull/848)).
+Plugins need to be updated by adding `.PType` in the PluginType annotation in plugins,
+so change from
+```Java
+@PluginType(PluginType.X)
+public class Y { /* ... */ }
+```
+into
+```Java
+@PluginType(PluginType.PType.X)
+public class Y { /* ... */ }
+```
+
 ### Update from JDOM 1 to JDOM 2
 
 JDOM was upgraded from version 1 to version 2 ([#784](https://github.com/contiki-ng/cooja/pull/784)).

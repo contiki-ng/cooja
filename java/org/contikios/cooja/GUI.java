@@ -208,8 +208,8 @@ public class GUI {
 
     // Start all standard GUI plugins
     for (var pluginClass : cooja.getRegisteredPlugins()) {
-      int pluginType = pluginClass.getAnnotation(PluginType.class).value();
-      if (pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
+      var pluginType = pluginClass.getAnnotation(PluginType.class).value();
+      if (pluginType == PluginType.PType.COOJA_STANDARD_PLUGIN) {
         cooja.tryStartPlugin(pluginClass, null, null);
       }
     }
@@ -793,8 +793,8 @@ public class GUI {
         // Cooja plugins.
         boolean hasCoojaPlugins = false;
         for (Class<? extends Plugin> pluginClass : cooja.getRegisteredPlugins()) {
-          int pluginType = pluginClass.getAnnotation(PluginType.class).value();
-          if (pluginType != PluginType.COOJA_PLUGIN && pluginType != PluginType.COOJA_STANDARD_PLUGIN) {
+          var pluginType = pluginClass.getAnnotation(PluginType.class).value();
+          if (pluginType != PluginType.PType.COOJA_PLUGIN && pluginType != PluginType.PType.COOJA_STANDARD_PLUGIN) {
             continue;
           }
           toolsMenu.add(createMenuItem(pluginClass));
@@ -808,9 +808,9 @@ public class GUI {
             continue; // Ignore.
           }
 
-          int pluginType = pluginClass.getAnnotation(PluginType.class).value();
-          if (pluginType != PluginType.SIM_PLUGIN && pluginType != PluginType.SIM_STANDARD_PLUGIN
-                  && pluginType != PluginType.SIM_CONTROL_PLUGIN) {
+          var pluginType = pluginClass.getAnnotation(PluginType.class).value();
+          if (pluginType != PluginType.PType.SIM_PLUGIN && pluginType != PluginType.PType.SIM_STANDARD_PLUGIN
+                  && pluginType != PluginType.PType.SIM_CONTROL_PLUGIN) {
             continue;
           }
 
@@ -824,8 +824,8 @@ public class GUI {
         }
 
         for (Class<? extends Plugin> pluginClass : cooja.getRegisteredPlugins()) {
-          int pluginType = pluginClass.getAnnotation(PluginType.class).value();
-          if (pluginType != PluginType.MOTE_PLUGIN) {
+          var pluginType = pluginClass.getAnnotation(PluginType.class).value();
+          if (pluginType != PluginType.PType.MOTE_PLUGIN) {
             continue;
           }
 

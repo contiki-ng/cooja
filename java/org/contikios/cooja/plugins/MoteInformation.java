@@ -55,7 +55,7 @@ import org.contikios.cooja.motes.AbstractEmulatedMote;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Mote Information")
-@PluginType(PluginType.MOTE_PLUGIN)
+@PluginType(PluginType.PType.MOTE_PLUGIN)
 public class MoteInformation extends VisPlugin implements MotePlugin {
   private final Mote mote;
 

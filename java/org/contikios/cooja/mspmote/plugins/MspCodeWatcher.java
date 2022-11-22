@@ -84,7 +84,7 @@ import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELFDebug;
 
 @ClassDescription("Msp Code Watcher")
-@PluginType(PluginType.MOTE_PLUGIN)
+@PluginType(PluginType.PType.MOTE_PLUGIN)
 @SupportedArguments(motes = {MspMote.class})
 public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHelp {
   private static final int SOURCECODE = 0;

@@ -52,7 +52,7 @@ import org.contikios.cooja.VisPlugin;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Mote Type Information")
-@PluginType(PluginType.SIM_PLUGIN)
+@PluginType(PluginType.PType.SIM_PLUGIN)
 public class MoteTypeInformation extends VisPlugin {
   private final Simulation simulation;
   private final Observer simObserver;

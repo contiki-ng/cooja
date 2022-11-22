@@ -104,7 +104,7 @@ import org.jdom2.Element;
  * @author Fredrik Osterlind, Niclas Finne
  */
 @ClassDescription("Mote output")
-@PluginType(PluginType.SIM_STANDARD_PLUGIN)
+@PluginType(PluginType.PType.SIM_STANDARD_PLUGIN)
 public class LogListener extends VisPlugin implements HasQuickHelp {
   private static final Logger logger = LogManager.getLogger(LogListener.class);
 

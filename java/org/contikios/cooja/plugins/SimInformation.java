@@ -55,7 +55,7 @@ import org.contikios.cooja.VisPlugin;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Simulation Information")
-@PluginType(PluginType.SIM_PLUGIN)
+@PluginType(PluginType.PType.SIM_PLUGIN)
 public class SimInformation extends VisPlugin {
   private final Simulation simulation;
 

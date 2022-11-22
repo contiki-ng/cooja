@@ -138,7 +138,7 @@ import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
  * @author Enrico Jorns
  */
 @ClassDescription("Network")
-@PluginType(PluginType.SIM_STANDARD_PLUGIN)
+@PluginType(PluginType.PType.SIM_STANDARD_PLUGIN)
 public class Visualizer extends VisPlugin implements HasQuickHelp {
   private static final Logger logger = LogManager.getLogger(Visualizer.class);
 

@@ -74,7 +74,7 @@ import org.contikios.cooja.interfaces.Radio;
  * @author Fredrik Osterlind, Adam Dunkels
  */
 @ClassDescription("Mote radio duty cycle")
-@PluginType(PluginType.SIM_PLUGIN)
+@PluginType(PluginType.PType.SIM_PLUGIN)
 public class PowerTracker implements Plugin {
   private static final Logger logger = LogManager.getLogger(PowerTracker.class);
 
