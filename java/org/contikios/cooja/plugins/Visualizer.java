@@ -51,8 +51,6 @@ import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -85,7 +83,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
-import javax.swing.MenuElement;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
@@ -260,7 +257,67 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       @Override
       public void menuSelected(MenuEvent e) {
         viewMenu.removeAll();
-        populateSkinMenu(viewMenu);
+        // Mote-to-mote relations.
+        var moteRelationsItem = new JCheckBoxMenuItem("Mote relations", showMoteToMoteRelations);
+        moteRelationsItem.addItemListener(e1 -> {
+          JCheckBoxMenuItem menuItem = ((JCheckBoxMenuItem) e1.getItem());
+          showMoteToMoteRelations = menuItem.isSelected();
+          repaint();
+        });
+        viewMenu.add(moteRelationsItem);
+        viewMenu.add(new JSeparator());
+        for (var skinClass : visualizerSkins) {
+          // Should skin be enabled in this simulation?
+          if (!isSkinCompatible(skinClass)) {
+            continue;
+          }
+
+          var item = new JCheckBoxMenuItem(Cooja.getDescriptionOf(skinClass), false);
+          item.putClientProperty("skinclass", skinClass);
+          // Select skin if active.
+          for (var skin : currentSkins) {
+            if (skin.getClass() == skinClass) {
+              item.setSelected(true);
+              break;
+            }
+          }
+
+          item.addItemListener(e1 -> {
+            var menuItem = ((JCheckBoxMenuItem) e1.getItem());
+            if (menuItem == null) {
+              logger.fatal("No menu item");
+              return;
+            }
+
+            var skinClass1 = (Class<VisualizerSkin>) menuItem.getClientProperty("skinclass");
+            if (skinClass1 == null) {
+              logger.fatal("Unknown visualizer skin class");
+              return;
+            }
+
+            if (menuItem.isSelected()) {
+              // Create and activate new skin.
+              generateAndActivateSkin(skinClass1);
+            } else {
+              // Deactivate skin.
+              VisualizerSkin skinToDeactivate = null;
+              for (var skin : currentSkins) {
+                if (skin.getClass() == skinClass1) {
+                  skinToDeactivate = skin;
+                  break;
+                }
+              }
+              if (skinToDeactivate == null) {
+                logger.fatal("Unknown visualizer to deactivate: " + skinClass1);
+                return;
+              }
+              skinToDeactivate.setInactive();
+              repaint();
+              currentSkins.remove(skinToDeactivate);
+            }
+          });
+          viewMenu.add(item);
+        }
       }
 
       @Override
@@ -893,93 +950,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   }
 
   private boolean showMoteToMoteRelations = true;
-
-  private void populateSkinMenu(MenuElement menu) {
-    /* Mote-to-mote relations */
-    JCheckBoxMenuItem moteRelationsItem = new JCheckBoxMenuItem("Mote relations", showMoteToMoteRelations);
-    moteRelationsItem.addItemListener(new ItemListener() {
-      @Override
-      public void itemStateChanged(ItemEvent e) {
-        JCheckBoxMenuItem menuItem = ((JCheckBoxMenuItem) e.getItem());
-        showMoteToMoteRelations = menuItem.isSelected();
-        repaint();
-      }
-    });
-    if (menu instanceof JMenu) {
-      ((JMenu) menu).add(moteRelationsItem);
-      ((JMenu) menu).add(new JSeparator());
-    }
-    if (menu instanceof JPopupMenu) {
-      ((JPopupMenu) menu).add(moteRelationsItem);
-      ((JPopupMenu) menu).add(new JSeparator());
-    }
-
-    for (Class<? extends VisualizerSkin> skinClass : visualizerSkins) {
-      /* Should skin be enabled in this simulation? */
-      if (!isSkinCompatible(skinClass)) {
-        continue;
-      }
-
-      String description = Cooja.getDescriptionOf(skinClass);
-      JCheckBoxMenuItem item = new JCheckBoxMenuItem(description, false);
-      item.putClientProperty("skinclass", skinClass);
-
-      /* Select skin if active */
-      for (VisualizerSkin skin : currentSkins) {
-        if (skin.getClass() == skinClass) {
-          item.setSelected(true);
-          break;
-        }
-      }
-
-      item.addItemListener(new ItemListener() {
-        @Override
-        public void itemStateChanged(ItemEvent e) {
-          JCheckBoxMenuItem menuItem = ((JCheckBoxMenuItem) e.getItem());
-          if (menuItem == null) {
-            logger.fatal("No menu item");
-            return;
-          }
-
-          Class<VisualizerSkin> skinClass
-                  = (Class<VisualizerSkin>) menuItem.getClientProperty("skinclass");
-          if (skinClass == null) {
-            logger.fatal("Unknown visualizer skin class");
-            return;
-          }
-
-          if (menuItem.isSelected()) {
-            /* Create and activate new skin */
-            generateAndActivateSkin(skinClass);
-          }
-          else {
-            /* Deactivate skin */
-            VisualizerSkin skinToDeactivate = null;
-            for (VisualizerSkin skin : currentSkins) {
-              if (skin.getClass() == skinClass) {
-                skinToDeactivate = skin;
-                break;
-              }
-            }
-            if (skinToDeactivate == null) {
-              logger.fatal("Unknown visualizer to deactivate: " + skinClass);
-              return;
-            }
-            skinToDeactivate.setInactive();
-            repaint();
-            currentSkins.remove(skinToDeactivate);
-          }
-        }
-      });
-
-      if (menu instanceof JMenu) {
-        ((JMenu) menu).add(item);
-      }
-      if (menu instanceof JPopupMenu) {
-        ((JPopupMenu) menu).add(item);
-      }
-    }
-  }
 
   public boolean isSkinCompatible(Class<? extends VisualizerSkin> skinClass) {
     if (skinClass == null) {
