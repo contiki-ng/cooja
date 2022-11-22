@@ -149,8 +149,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   private final JPanel canvas;
   private boolean loadedConfig = false;
 
-  private final JMenu viewMenu;
-
   /* Viewport */
   private final AffineTransform viewportTransform;
   public int resetViewport = 0;
@@ -251,8 +249,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     /* Menus */
     JMenuBar menuBar = new JMenuBar();
-
-    viewMenu = new JMenu("View");
+    var viewMenu = new JMenu("View");
     viewMenu.addMenuListener(new MenuListener() {
       @Override
       public void menuSelected(MenuEvent e) {
