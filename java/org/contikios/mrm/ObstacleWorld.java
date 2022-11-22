@@ -34,6 +34,7 @@ import java.awt.Point;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -182,7 +183,6 @@ class ObstacleWorld {
    * @return All obstacles in given angle interval
    */
   public Vector<Rectangle2D> getAllObstaclesInAngleInterval(Point2D center, AngleInterval angleInterval) {
-    Vector<Rectangle2D> obstaclesToReturn = new Vector<>();
     if (!obstaclesOrganized) {
       reorganizeSpatialObstacles();
     }
@@ -256,7 +256,7 @@ class ObstacleWorld {
       }
       currentDistance++;  
     }
-
+    var obstaclesToReturn = new Vector<Rectangle2D>();
     for (var point : pointsToCheck) {
       // Check which obstacles should be in this box
       boolean hit = false;
@@ -264,20 +264,14 @@ class ObstacleWorld {
       int y = point.y;
 
       // Test if we are inside test box
-      if (!hit) {
-        if (new Rectangle2D.Double(
-            areaStartX + x*boxWidth, 
-            areaStartY + y*boxHeight, 
-            boxWidth,
-            boxHeight).contains(center)) {
-          hit = true;
-          for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) {
-            if (!obstaclesToReturn.contains(allObstaclesSpatial[x][y].get(i)))
-              obstaclesToReturn.add(allObstaclesSpatial[x][y].get(i));
-          }
+      if (new Rectangle2D.Double(areaStartX + x*boxWidth, areaStartY + y*boxHeight, boxWidth, boxHeight).contains(center)) {
+        hit = true;
+        for (var obstacle : allObstaclesSpatial[x][y]) {
+          if (!obstaclesToReturn.contains(obstacle))
+            obstaclesToReturn.add(obstacle);
         }
       }
-      
+
       // Test first diagonal
       if (!hit) {
         AngleInterval testInterval = AngleInterval.getAngleIntervalOfLine(
@@ -290,9 +284,9 @@ class ObstacleWorld {
         );
         if (testInterval.intersects(angleInterval)) {
           hit = true;
-          for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) {
-            if (!obstaclesToReturn.contains(allObstaclesSpatial[x][y].get(i)))
-              obstaclesToReturn.add(allObstaclesSpatial[x][y].get(i));
+          for (var obstacle : allObstaclesSpatial[x][y]) {
+            if (!obstaclesToReturn.contains(obstacle))
+              obstaclesToReturn.add(obstacle);
           }
         }
       }
@@ -308,9 +302,9 @@ class ObstacleWorld {
                 areaStartY + y*boxHeight)
         );
         if (testInterval.intersects(angleInterval)) {
-          for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) {
-            if (!obstaclesToReturn.contains(allObstaclesSpatial[x][y].get(i)))
-              obstaclesToReturn.add(allObstaclesSpatial[x][y].get(i));
+          for (var obstacle : allObstaclesSpatial[x][y]) {
+            if (!obstaclesToReturn.contains(obstacle))
+              obstaclesToReturn.add(obstacle);
           }
         }
       }
@@ -583,7 +577,7 @@ class ObstacleWorld {
     logger.info(". Outer boundary min:\t" + getOuterBounds().getMinX() + ", " + getOuterBounds().getMinY());
     logger.info(". Outer boundary max:\t" + getOuterBounds().getMaxX() + ", " + getOuterBounds().getMaxY());
     
-    Vector<Rectangle2D> uniqueSpatialObstacles = new Vector<>();
+    ArrayList<Rectangle2D> uniqueSpatialObstacles = new ArrayList<>();
     for (int x=0; x < spatialResolution; x++)
       for (int y=0; y < spatialResolution; y++) 
         for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) 
@@ -605,7 +599,6 @@ class ObstacleWorld {
       }
       System.out.println();
     }
-    
   }
   
   /**
@@ -615,11 +608,9 @@ class ObstacleWorld {
    * @return XML elements representing the obstacles
    */
   public Collection<Element> getConfigXML() {
-    Vector<Element> config = new Vector<>();
-    Element element;
-
+    var config = new ArrayList<Element>();
     for (Rectangle2D rect: allObstacles) {
-      element = new Element("obst");
+      var element = new Element("obst");
       element.setText(rect.getMinX() + ";" + rect.getMinY() + ";" + rect.getWidth() + ";" + rect.getHeight());
       config.add(element);
     }
