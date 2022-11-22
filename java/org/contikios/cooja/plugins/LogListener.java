@@ -625,11 +625,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     this.setSize(Cooja.getDesktopPane().getWidth() - 400, 240);
   }
 
-  public void registerNewLogOutput(Mote mote, long time, String msg) {
-    LogOutputEvent ev = new LogOutputEvent(mote, time, msg);
-    registerNewLogOutput(ev);
-  }
-
   private void registerNewLogOutput(LogOutputEvent ev) {
     /* Display new log output */
     if (!hasHours && ev.getTime() > TIME_HOUR) {
