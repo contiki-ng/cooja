@@ -226,14 +226,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     var zoomInAction = new AbstractAction("Zoom in (Ctrl+)") {
       @Override
       public void actionPerformed(ActionEvent e) {
-        zoomFinishLevel(zoomGetLevel() - 1, getCenterPointTime(), 0.5);
+        zoomFinishLevel(-1, getCenterPointTime(), 0.5);
       }
     };
     zoomMenu.add(new JMenuItem(zoomInAction));
     var zoomOutAction = new AbstractAction("Zoom out (Ctrl-)") {
       @Override
       public void actionPerformed(ActionEvent e) {
-        zoomFinishLevel(zoomGetLevel() + 1, getCenterPointTime(), 0.5);
+        zoomFinishLevel(1, getCenterPointTime(), 0.5);
       }
     };
     zoomMenu.add(new JMenuItem(zoomOutAction));
@@ -588,10 +588,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     forceRepaintAndFocus(focusTime, focusCenter);
   }
 
-  private void zoomFinishLevel (final int zoomLevel,
-                                final long focusTime,
-                                final double focusCenter) {
-    zoomFinish((double) ZOOM_LEVELS[Math.min(15, Math.max(0, zoomLevel))], focusTime, focusCenter);
+  private void zoomFinishLevel(int zoomOffset, long focusTime, double focusCenter) {
+    zoomFinish((double) ZOOM_LEVELS[Math.min(15, Math.max(0, zoomGetLevel() + zoomOffset))], focusTime, focusCenter);
   }
 
   private long getCenterPointTime() {
@@ -1458,7 +1456,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         if (e.isControlDown()) {
           final long zct = (long) (e.getX()*currentPixelDivisor);
           final double zc = (double) (e.getX() - timeline.getVisibleRect().x) / timeline.getVisibleRect().width;
-          zoomFinishLevel(zoomGetLevel() + e.getWheelRotation(), zct, zc);
+          zoomFinishLevel(e.getWheelRotation(), zct, zc);
         }
       }
     };
