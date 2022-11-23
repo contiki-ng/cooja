@@ -887,29 +887,24 @@ public final class Simulation extends Observable {
   /**
    * Limit simulation speed to given ratio.
    * This method may be called from outside the simulation thread.
-   * @param newSpeedLimit
+   * @param newSpeedLimit Speed limit, or null for unlimited.
    */
   public void setSpeedLimit(final Double newSpeedLimit) {
-    invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        if (newSpeedLimit == null) {
-          speedLimitNone = true;
-          return;
-        }
-
-        speedLimitNone = false;
-        speedLimitLastRealtime = System.currentTimeMillis();
-        speedLimitLastSimtime = getSimulationTimeMillis();
-        speedLimit = newSpeedLimit;
-
-        if (delayEvent.isScheduled()) {
-          delayEvent.remove();
-        }
-        scheduleEvent(delayEvent, currentSimulationTime);
-        Simulation.this.setChanged();
-        Simulation.this.notifyObservers(this);
+    invokeSimulationThread(() -> {
+      speedLimitNone = newSpeedLimit == null;
+      if (speedLimitNone) {
+        return;
       }
+      speedLimitLastRealtime = System.currentTimeMillis();
+      speedLimitLastSimtime = getSimulationTimeMillis();
+      speedLimit = newSpeedLimit;
+
+      if (delayEvent.isScheduled()) {
+        delayEvent.remove();
+      }
+      scheduleEvent(delayEvent, currentSimulationTime);
+      Simulation.this.setChanged();
+      Simulation.this.notifyObservers(this);
     });
   }
 
