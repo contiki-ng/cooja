@@ -52,7 +52,7 @@ import org.jdom2.Element;
 
 
 @ClassDescription("Mobility")
-@PluginType(PluginType.SIM_PLUGIN)
+@PluginType(PluginType.PType.SIM_PLUGIN)
 public class Mobility implements Plugin {
   private static final boolean WRAP_MOVES = true; /* Wrap around loaded moves forever */
 

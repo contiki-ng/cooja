@@ -64,7 +64,7 @@ import org.contikios.cooja.VisPlugin;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Mote Interface Viewer")
-@PluginType(PluginType.MOTE_PLUGIN)
+@PluginType(PluginType.PType.MOTE_PLUGIN)
 public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, MotePlugin {
   private final Mote mote;
   private MoteInterface selectedMoteInterface = null;

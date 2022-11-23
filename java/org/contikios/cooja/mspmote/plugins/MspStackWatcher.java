@@ -64,7 +64,7 @@ import se.sics.mspsim.core.RegisterMonitor;
 import se.sics.mspsim.ui.StackUI;
 
 @ClassDescription("Msp Stack Watcher")
-@PluginType(PluginType.MOTE_PLUGIN)
+@PluginType(PluginType.PType.MOTE_PLUGIN)
 @SupportedArguments(motes = { MspMote.class })
 public class MspStackWatcher extends VisPlugin implements MotePlugin {
   private static final Logger logger = LogManager.getLogger(MspStackWatcher.class);

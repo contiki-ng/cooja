@@ -80,7 +80,7 @@ import org.contikios.cooja.util.StringUtils;
  * @author Fredrik Osterlind
  */
 @ClassDescription("DGRM Links")
-@PluginType(PluginType.SIM_PLUGIN)
+@PluginType(PluginType.PType.SIM_PLUGIN)
 @SupportedArguments(radioMediums = {DirectedGraphMedium.class})
 public class DGRMConfigurator extends VisPlugin {
 	private static final Logger logger = LogManager.getLogger(DGRMConfigurator.class);

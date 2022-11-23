@@ -88,7 +88,7 @@ import org.contikios.cooja.util.CmdUtils;
  * @author Enrico Jorns
  */
 @ClassDescription("Serial Socket (SERVER)")
-@PluginType(PluginType.MOTE_PLUGIN)
+@PluginType(PluginType.PType.MOTE_PLUGIN)
 public class SerialSocketServer implements Plugin, MotePlugin {
   private static final Logger logger = LogManager.getLogger(SerialSocketServer.class);
 

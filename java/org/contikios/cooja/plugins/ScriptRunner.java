@@ -76,7 +76,7 @@ import org.contikios.cooja.util.StringUtils;
 import org.jdom2.Element;
 
 @ClassDescription("Simulation script editor")
-@PluginType(PluginType.SIM_CONTROL_PLUGIN)
+@PluginType(PluginType.PType.SIM_CONTROL_PLUGIN)
 public class ScriptRunner implements Plugin, HasQuickHelp {
   private static final Logger logger = LogManager.getLogger(ScriptRunner.class);
 

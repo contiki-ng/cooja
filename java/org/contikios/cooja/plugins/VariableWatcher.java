@@ -92,7 +92,7 @@ import org.jdom2.Element;
  * @author Enrico Jorns
  */
 @ClassDescription("Variable Watcher")
-@PluginType(PluginType.MOTE_PLUGIN)
+@PluginType(PluginType.PType.MOTE_PLUGIN)
 public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHelp {
   private static final Logger logger = LogManager.getLogger(VariableWatcher.class.getName());
 

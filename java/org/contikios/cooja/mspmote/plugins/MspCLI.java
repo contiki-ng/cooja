@@ -61,7 +61,7 @@ import se.sics.mspsim.cli.LineListener;
 import se.sics.mspsim.cli.LineOutputStream;
 
 @ClassDescription("Msp CLI")
-@PluginType(PluginType.MOTE_PLUGIN)
+@PluginType(PluginType.PType.MOTE_PLUGIN)
 @SupportedArguments(motes = {MspMote.class})
 public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   private final MspMote mspMote;

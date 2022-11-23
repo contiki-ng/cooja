@@ -110,7 +110,7 @@ import org.jdom2.Element;
  * @author Fredrik Osterlind, Niclas Finne
  */
 @ClassDescription("Buffer view")
-@PluginType(PluginType.SIM_PLUGIN)
+@PluginType(PluginType.PType.SIM_PLUGIN)
 public class BufferListener extends VisPlugin {
   private static final Logger logger = LogManager.getLogger(BufferListener.class);
 

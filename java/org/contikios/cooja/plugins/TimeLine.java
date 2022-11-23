@@ -104,7 +104,7 @@ import org.jdom2.Element;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Timeline")
-@PluginType(PluginType.SIM_STANDARD_PLUGIN)
+@PluginType(PluginType.PType.SIM_STANDARD_PLUGIN)
 public class TimeLine extends VisPlugin implements HasQuickHelp {
   public static final int LED_PIXEL_HEIGHT = 2;
   public static final int EVENT_PIXEL_HEIGHT = 4;

@@ -55,7 +55,7 @@ import org.contikios.cooja.mspmote.MspMote;
 import se.sics.mspsim.core.MSP430;
 
 @ClassDescription("Msp Cycle Watcher")
-@PluginType(PluginType.MOTE_PLUGIN)
+@PluginType(PluginType.PType.MOTE_PLUGIN)
 @SupportedArguments(motes = {MspMote.class})
 public class MspCycleWatcher extends VisPlugin implements MotePlugin {
   private final MspMote mspMote;

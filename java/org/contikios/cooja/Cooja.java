@@ -681,11 +681,11 @@ public class Cooja extends Observable {
       throw new PluginConstructionException("Tool class not registered: " + pluginClass.getName());
     }
 
-    int pluginType = pluginClass.getAnnotation(PluginType.class).value();
-    if (pluginType != PluginType.COOJA_PLUGIN && pluginType != PluginType.COOJA_STANDARD_PLUGIN && sim == null) {
+    var pluginType = pluginClass.getAnnotation(PluginType.class).value();
+    if (pluginType != PluginType.PType.COOJA_PLUGIN && pluginType != PluginType.PType.COOJA_STANDARD_PLUGIN && sim == null) {
       throw new PluginConstructionException("No simulation argument for plugin: " + pluginClass.getName());
     }
-    if (pluginType == PluginType.MOTE_PLUGIN && argMote == null) {
+    if (pluginType == PluginType.PType.MOTE_PLUGIN && argMote == null) {
       throw new PluginConstructionException("No mote argument for mote plugin: " + pluginClass.getName());
     }
     if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
@@ -696,13 +696,12 @@ public class Cooja extends Observable {
     Plugin plugin;
     try {
       plugin = switch (pluginType) {
-        case PluginType.MOTE_PLUGIN -> pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class)
+        case MOTE_PLUGIN -> pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class)
                 .newInstance(argMote, sim, this);
-        case PluginType.SIM_PLUGIN, PluginType.SIM_STANDARD_PLUGIN, PluginType.SIM_CONTROL_PLUGIN ->
+        case SIM_PLUGIN, SIM_STANDARD_PLUGIN, SIM_CONTROL_PLUGIN ->
                 pluginClass.getConstructor(Simulation.class, Cooja.class).newInstance(sim, this);
-        case PluginType.COOJA_PLUGIN, PluginType.COOJA_STANDARD_PLUGIN ->
+        case COOJA_PLUGIN, COOJA_STANDARD_PLUGIN ->
                 pluginClass.getConstructor(Cooja.class).newInstance(this);
-        default -> throw new PluginConstructionException("Bad plugin type: " + pluginType);
       };
     } catch (PluginRequiresVisualizationException e) {
       throw new PluginConstructionException("Tool class requires visualization: " + pluginClass.getName(), e);
@@ -831,13 +830,13 @@ public class Cooja extends Observable {
     }
 
     switch (annotation.value()) {
-      case PluginType.MOTE_PLUGIN:
+      case MOTE_PLUGIN:
         menuMotePluginClasses.add(pluginClass);
-      case PluginType.COOJA_PLUGIN:
-      case PluginType.COOJA_STANDARD_PLUGIN:
-      case PluginType.SIM_PLUGIN:
-      case PluginType.SIM_STANDARD_PLUGIN:
-      case PluginType.SIM_CONTROL_PLUGIN:
+      case COOJA_PLUGIN:
+      case COOJA_STANDARD_PLUGIN:
+      case SIM_PLUGIN:
+      case SIM_STANDARD_PLUGIN:
+      case SIM_CONTROL_PLUGIN:
         pluginClasses.add(pluginClass);
         return true;
     }
@@ -958,8 +957,8 @@ public class Cooja extends Observable {
 
     // Close all started non-GUI plugins
     for (var startedPlugin : startedPlugins.toArray(new Plugin[0])) {
-      int pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
-      if (pluginType != PluginType.COOJA_PLUGIN && pluginType != PluginType.COOJA_STANDARD_PLUGIN) {
+      var pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
+      if (pluginType != PluginType.PType.COOJA_PLUGIN && pluginType != PluginType.PType.COOJA_STANDARD_PLUGIN) {
         removePlugin(startedPlugin);
       }
     }
@@ -1622,10 +1621,9 @@ public class Cooja extends Observable {
     // Create started plugins config
     ArrayList<Element> config = new ArrayList<>();
     for (Plugin startedPlugin : startedPlugins) {
-      int pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
-
+      var pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
       // Ignore GUI plugins
-      if (pluginType == PluginType.COOJA_PLUGIN || pluginType == PluginType.COOJA_STANDARD_PLUGIN) {
+      if (pluginType == PluginType.PType.COOJA_PLUGIN || pluginType == PluginType.PType.COOJA_STANDARD_PLUGIN) {
         continue;
       }
 
@@ -1633,7 +1631,7 @@ public class Cooja extends Observable {
       pluginElement.setText(startedPlugin.getClass().getName());
 
       // Create mote argument config (if mote plugin)
-      if (pluginType == PluginType.MOTE_PLUGIN) {
+      if (pluginType == PluginType.PType.MOTE_PLUGIN) {
         var pluginSubElement = new Element("mote_arg");
         Mote taggedMote = ((MotePlugin) startedPlugin).getMote();
         for (int moteNr = 0; moteNr < mySimulation.getMotesCount(); moteNr++) {
