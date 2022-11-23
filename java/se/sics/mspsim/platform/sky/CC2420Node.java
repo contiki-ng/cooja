@@ -131,7 +131,7 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
             }
             if (stats != null) {
                 // A HACK for some "graphs"!!!
-                DataChart dataChart =  new DataChart(registry, "Duty Cycle", "Duty Cycle");
+                DataChart dataChart = new DataChart("Duty Cycle", "Duty Cycle");
                 registry.registerComponent("dutychart", dataChart);
                 DataSourceSampler dss = dataChart.setupChipFrame(cpu);
                 dataChart.addDataSource(dss, "LEDS", stats.getDataSource(getID(), 0, OperatingModeStatistics.OP_INVERT));

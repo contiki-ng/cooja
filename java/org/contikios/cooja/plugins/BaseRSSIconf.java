@@ -70,7 +70,6 @@ public class BaseRSSIconf extends VisPlugin {
 	private final static String[] COLUMN_NAMES = new String[] { "Mote",
 			"BaseRSSI (-45!)" }; // TODO maybe include offset of -45 directly
 
-	private final Cooja gui;
 	private final AbstractRadioMedium radioMedium;
 	private final Observer changeObserver;
 	private final JComboBox<Number> combo = new JComboBox<>();
@@ -80,7 +79,6 @@ public class BaseRSSIconf extends VisPlugin {
 	
 	public BaseRSSIconf(Simulation sim, Cooja gui) {
 		super("Base RSSI Configurator", gui);
-		this.gui = gui;
 		this.sim = sim;
 		radioMedium = (AbstractRadioMedium) sim.getRadioMedium();
 		changeObserver = (obs, obj) -> model.fireTableDataChanged();

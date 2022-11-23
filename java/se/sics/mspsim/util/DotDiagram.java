@@ -88,15 +88,7 @@ public class DotDiagram extends JComponent {
   private final boolean isAdditive;
   private final boolean isFilled;
 
-  // Cache to avoid creating new insets objects for each repaint. Is
-  // created when first needed.
-  private Insets insets;
-
   private final Color[] lineColor;
-
-  public DotDiagram(int diagrams) {
-    this(diagrams, NORMAL);
-  }
 
   public DotDiagram(int diagrams, int mode) {
     data = new int[diagrams][];

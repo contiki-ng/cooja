@@ -17,13 +17,6 @@ public class CScanner extends Scanner {
     initUniKind();
   }
 
-  /** Create a Java scanner, for a given version between "1.1" and "1.5". */
-  public CScanner(String version) {
-    super();
-    initKind();
-    initUniKind();
-  }
-
   /** Override the read method from the Scanner class. */
   @Override
   protected int read() {
