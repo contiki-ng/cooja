@@ -339,83 +339,62 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     showRadioTXRXCheckbox.setToolTipText("Show radio transmissions, receptions, and collisions");
     showRadioTXRXCheckbox.setName("showRadioRXTX");
-    showRadioTXRXCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        showRadioRXTX = ((JCheckBox) e.getSource()).isSelected();
-        recalculateMoteHeight();
-      }
+    showRadioTXRXCheckbox.addActionListener(e -> {
+      showRadioRXTX = ((JCheckBox) e.getSource()).isSelected();
+      recalculateMoteHeight();
     });
     eventsMenu.add(showRadioTXRXCheckbox);
     showRadioOnoffCheckbox.setToolTipText("Show radio hardware state");
     showRadioOnoffCheckbox.setSelected(showRadioOnoff);
     showRadioOnoffCheckbox.setName("showRadioHW");
-    showRadioOnoffCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        showRadioOnoff = ((JCheckBox) e.getSource()).isSelected();
-        recalculateMoteHeight();
-      }
+    showRadioOnoffCheckbox.addActionListener(e -> {
+      showRadioOnoff = ((JCheckBox) e.getSource()).isSelected();
+      recalculateMoteHeight();
     });
     eventsMenu.add(showRadioOnoffCheckbox);
     showRadioChannelsCheckbox.setToolTipText("Show different radio channels");
     showRadioChannelsCheckbox.setSelected(showRadioChannels);
     showRadioChannelsCheckbox.setName("showRadioChannels");
-    showRadioChannelsCheckbox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        showRadioChannels = ((JCheckBox) e.getSource()).isSelected();
-        recalculateMoteHeight();
-      }
+    showRadioChannelsCheckbox.addActionListener(e -> {
+      showRadioChannels = ((JCheckBox) e.getSource()).isSelected();
+      recalculateMoteHeight();
     });
     eventsMenu.add(showRadioChannelsCheckbox);
     showLedsCheckBox.setToolTipText("Show LED state");
     showLedsCheckBox.setSelected(showLeds);
     showLedsCheckBox.setName("showLEDs");
-    showLedsCheckBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        showLeds = ((JCheckBox) e.getSource()).isSelected();
-        recalculateMoteHeight();
-      }
+    showLedsCheckBox.addActionListener(e -> {
+      showLeds = ((JCheckBox) e.getSource()).isSelected();
+      recalculateMoteHeight();
     });
     eventsMenu.add(showLedsCheckBox);
     showLogsCheckBox.setToolTipText("Show mote log output, such as printf()'s");
     showLogsCheckBox.setSelected(showLogOutputs);
     showLogsCheckBox.setName("showLogOutput");
-    showLogsCheckBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        showLogOutputs = ((JCheckBox) e.getSource()).isSelected();
-        
-        /* Check whether there is an active log listener that is used to filter logs */
-        logEventFilterPlugin = (LogListener) simulation.getCooja().getPlugin(
-            LogListener.class.getName());
-        // invalidate filter stamp
-        logEventFilterLast = "";
-        logEventFilterChanged = true;
-        
-        if (showLogOutputs) {
-          if (logEventFilterPlugin != null) {
-            logger.info("Filtering shown log outputs by use of " + Cooja.getDescriptionOf(LogListener.class) + " plugin");
-          } else {
-            logger.info("No active " + Cooja.getDescriptionOf(LogListener.class) + " plugin, not filtering log outputs");
-          }
+    showLogsCheckBox.addActionListener(e -> {
+      showLogOutputs = ((JCheckBox) e.getSource()).isSelected();
+      // Check whether there is an active log listener that is used to filter logs.
+      logEventFilterPlugin = (LogListener) simulation.getCooja().getPlugin(LogListener.class.getName());
+      // Invalidate filter stamp.
+      logEventFilterLast = "";
+      logEventFilterChanged = true;
+
+      if (showLogOutputs) {
+        if (logEventFilterPlugin != null) {
+          logger.info("Filtering shown log outputs by use of " + Cooja.getDescriptionOf(LogListener.class) + " plugin");
+        } else {
+          logger.info("No active " + Cooja.getDescriptionOf(LogListener.class) + " plugin, not filtering log outputs");
         }
-        
-        recalculateMoteHeight();
       }
+      recalculateMoteHeight();
     });
     eventsMenu.add(showLogsCheckBox);
     showWatchpointsCheckBox.setToolTipText("Show code watchpoints (for emulated motes)");
     showWatchpointsCheckBox.setSelected(showWatchpoints);
     showWatchpointsCheckBox.setName("showWatchpoints");
-    showWatchpointsCheckBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        showWatchpoints = ((JCheckBox) e.getSource()).isSelected();
-        recalculateMoteHeight();
-      }
+    showWatchpointsCheckBox.addActionListener(e -> {
+      showWatchpoints = ((JCheckBox) e.getSource()).isSelected();
+      recalculateMoteHeight();
     });
     eventsMenu.add(showWatchpointsCheckBox);
 
