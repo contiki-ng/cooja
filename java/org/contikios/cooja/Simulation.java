@@ -890,24 +890,21 @@ public final class Simulation extends Observable {
    * @param newSpeedLimit
    */
   public void setSpeedLimit(final Double newSpeedLimit) {
-    invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        speedLimitNone = newSpeedLimit == null;
-        if (speedLimitNone) {
-          return;
-        }
-        speedLimitLastRealtime = System.currentTimeMillis();
-        speedLimitLastSimtime = getSimulationTimeMillis();
-        speedLimit = newSpeedLimit;
-
-        if (delayEvent.isScheduled()) {
-          delayEvent.remove();
-        }
-        scheduleEvent(delayEvent, currentSimulationTime);
-        Simulation.this.setChanged();
-        Simulation.this.notifyObservers(this);
+    invokeSimulationThread(() -> {
+      speedLimitNone = newSpeedLimit == null;
+      if (speedLimitNone) {
+        return;
       }
+      speedLimitLastRealtime = System.currentTimeMillis();
+      speedLimitLastSimtime = getSimulationTimeMillis();
+      speedLimit = newSpeedLimit;
+
+      if (delayEvent.isScheduled()) {
+        delayEvent.remove();
+      }
+      scheduleEvent(delayEvent, currentSimulationTime);
+      Simulation.this.setChanged();
+      Simulation.this.notifyObservers(this);
     });
   }
 
