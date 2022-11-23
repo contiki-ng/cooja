@@ -1348,12 +1348,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           if (zoomCenterTime < 0) {
             return;
           }
-
-          double factor = 0.01*(e.getY() - zoomInitialMouseY);
-          factor = Math.exp(factor);
-
-          final double cpd = zoomInitialPixelDivisor * factor;
-          zoomFinish(cpd, zoomCenterTime, zoomCenter);
+          var factor = Math.exp(0.01 * (e.getY() - zoomInitialMouseY));
+          zoomFinish(zoomInitialPixelDivisor * factor, zoomCenterTime, zoomCenter);
           return;
         }
         if (e.isAltDown()) {
