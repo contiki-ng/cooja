@@ -1253,9 +1253,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         showWatchpoints = true;
       } else if ("executionDetails".equals(name)) {
       	executionDetails = true;
-      } else if ("zoom".equals(name)) {
-        /* NB: Historically this is a one-based not zero-based index */
-        zoomFinishLevel(Integer.parseInt(element.getText())-1, 0, 0);
       } else if ("zoomfactor".equals(name)) {
         /* NB: Historically no validation on this option */
         zoomFinish(Double.parseDouble(element.getText()), 0, 0);
