@@ -310,10 +310,9 @@ public class GUI {
         final var sim = cooja.getSimulation();
         simulationTime.setText(getTimeString(sim));
         var hasSim = sim != null;
-        var state = hasSim && !sim.isRunning() && sim.isRunnable();
         startButton.setEnabled(hasSim && sim.isRunnable());
         startButton.setSelected(hasSim && sim.isRunning());
-        stepButton.setEnabled(state);
+        stepButton.setEnabled(hasSim && !sim.isRunning() && sim.isRunnable());
         reloadButton.setEnabled(hasSim);
         slowCrawlSpeedButton.setEnabled(hasSim);
         crawlSpeedButton.setEnabled(hasSim);
