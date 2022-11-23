@@ -27,6 +27,7 @@
  */
 
 package org.contikios.cooja;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
@@ -117,6 +118,10 @@ public final class Simulation extends Observable {
 
   /** The return value from startSimulation. */
   private volatile Integer returnValue = null;
+
+  /** Mote relation (directed). */
+  public record MoteRelation(Mote source, Mote dest, Color color) {}
+  private final ArrayList<MoteRelation> moteRelations = new ArrayList<>();
 
   private final TimeEvent delayEvent = new TimeEvent() {
     @Override
@@ -744,6 +749,11 @@ public final class Simulation extends Observable {
     if (!isShutdown) {
       commandQueue.add(Command.QUIT);
     }
+    // Clear current mote relations.
+    var relations = getMoteRelations();
+    for (var r: relations) {
+      removeMoteRelation(r.source, r.dest);
+    }
   }
 
   /**
@@ -882,6 +892,51 @@ public final class Simulation extends Observable {
     moteTypes.remove(type);
     this.setChanged();
     this.notifyObservers(this);
+  }
+
+  /**
+   * Adds directed relation between given motes.
+   *
+   * @param source Source mote
+   * @param dest Destination mote
+   * @param color The color to use when visualizing the mote relation
+   */
+  public void addMoteRelation(Mote source, Mote dest, Color color) {
+    if (source == null || dest == null || !Cooja.isVisualized()) {
+      return;
+    }
+    removeMoteRelation(source, dest); // Unique relations.
+    moteRelations.add(new MoteRelation(source, dest, color));
+    Cooja.gui.moteRelationObservable.setChangedAndNotify();
+  }
+
+  /**
+   * Removes the relations between given motes.
+   *
+   * @param source Source mote
+   * @param dest Destination mote
+   */
+  public void removeMoteRelation(Mote source, Mote dest) {
+    if (source == null || dest == null || !Cooja.isVisualized()) {
+      return;
+    }
+    var arr = getMoteRelations();
+    for (var r: arr) {
+      if (r.source == source && r.dest == dest) {
+        moteRelations.remove(r); // Relations are unique.
+        Cooja.gui.moteRelationObservable.setChangedAndNotify();
+        break;
+      }
+    }
+  }
+
+  /**
+   * Returns all mote relations.
+   *
+   * @return All current mote relations.
+   */
+  public MoteRelation[] getMoteRelations() {
+    return moteRelations.toArray(new MoteRelation[0]);
   }
 
   /**

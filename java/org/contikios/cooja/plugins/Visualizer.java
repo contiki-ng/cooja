@@ -99,7 +99,6 @@ import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.Cooja.MoteRelation;
 import org.contikios.cooja.HasQuickHelp;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
@@ -1154,8 +1153,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     /* Paint mote relations */
     if (showMoteToMoteRelations) {
-      MoteRelation[] relations = simulation.getCooja().getMoteRelations();
-      for (MoteRelation r : relations) {
+      var relations = simulation.getMoteRelations();
+      for (var r : relations) {
         Position sourcePos = r.source().getInterfaces().getPosition();
         Position destPos = r.dest().getInterfaces().getPosition();
 

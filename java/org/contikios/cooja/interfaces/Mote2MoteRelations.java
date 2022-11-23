@@ -134,10 +134,10 @@ public class Mote2MoteRelations extends MoteInterface {
           return;
         }
         relations.add(destinationMote);
-        gui.addMoteRelation(mote, destinationMote, decodeColor(colorName));
+        mote.getSimulation().addMoteRelation(mote, destinationMote, decodeColor(colorName));
       } else {
         relations.remove(destinationMote);
-        gui.removeMoteRelation(mote, destinationMote);
+        mote.getSimulation().removeMoteRelation(mote, destinationMote);
       }
 
       setChanged();
@@ -180,7 +180,7 @@ public class Mote2MoteRelations extends MoteInterface {
         if (!relations.remove(mote)) {
           return;
         }
-        gui.removeMoteRelation(Mote2MoteRelations.this.mote, mote);
+        mote.getSimulation().removeMoteRelation(Mote2MoteRelations.this.mote, mote);
       }
     });
   }
@@ -200,7 +200,7 @@ public class Mote2MoteRelations extends MoteInterface {
     /* Remove all relations to other motes */
     Mote[] relationsArr = relations.toArray(new Mote[0]);
     for (Mote m: relationsArr) {
-      gui.removeMoteRelation(Mote2MoteRelations.this.mote, m);
+      mote.getSimulation().removeMoteRelation(Mote2MoteRelations.this.mote, m);
     }
     relations.clear();
 
