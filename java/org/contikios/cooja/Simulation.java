@@ -893,12 +893,10 @@ public final class Simulation extends Observable {
     invokeSimulationThread(new Runnable() {
       @Override
       public void run() {
-        if (newSpeedLimit == null) {
-          speedLimitNone = true;
+        speedLimitNone = newSpeedLimit == null;
+        if (speedLimitNone) {
           return;
         }
-
-        speedLimitNone = false;
         speedLimitLastRealtime = System.currentTimeMillis();
         speedLimitLastSimtime = getSimulationTimeMillis();
         speedLimit = newSpeedLimit;
