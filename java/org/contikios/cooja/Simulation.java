@@ -966,15 +966,6 @@ public final class Simulation extends Observable {
   }
 
   /**
-   * Return true is simulation is runnable.
-   *
-   * @return True if simulation is runnable
-   */
-  public boolean isRunnable() {
-    return isRunning || !eventQueue.isEmpty();
-  }
-
-  /**
    * Get current simulation title (short description).
    *
    * @return Title
