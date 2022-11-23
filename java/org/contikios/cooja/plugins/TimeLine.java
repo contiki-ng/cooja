@@ -581,12 +581,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private void zoomFinish (final double zoomDivisor,
                            final long focusTime,
                            final double focusCenter) {
-    currentPixelDivisor = zoomDivisor;
-    if (1 >= zoomDivisor) {
-      currentPixelDivisor = 1;
-    } else if (100000 <= zoomDivisor) {
-      currentPixelDivisor = 100000;
-    }
+    currentPixelDivisor = Math.min(100000, Math.max(1, zoomDivisor));
     if (zoomDivisor != currentPixelDivisor) {
       logger.info("Zoom level: adjusted out-of-range " + zoomDivisor + " us/pixel");
     }
@@ -596,13 +591,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private void zoomFinishLevel (final int zoomLevel,
                                 final long focusTime,
                                 final double focusCenter) {
-    int zoomLevel1 = zoomLevel;
-    if (0 > zoomLevel) {
-      zoomLevel1 = 0;
-    } else if (16 <= zoomLevel) {
-      zoomLevel1 = 15;
-    }
-    zoomFinish((double) ZOOM_LEVELS[zoomLevel1], focusTime, focusCenter);
+    zoomFinish((double) ZOOM_LEVELS[Math.min(15, Math.max(0, zoomLevel))], focusTime, focusCenter);
   }
 
   private long getCenterPointTime() {
@@ -1470,11 +1459,9 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       @Override
       public void mouseWheelMoved(MouseWheelEvent e) {
         if (e.isControlDown()) {
-          final int nticks = e.getWheelRotation();
-          final int zoomLevel = zoomGetLevel() + nticks;
           final long zct = (long) (e.getX()*currentPixelDivisor);
           final double zc = (double) (e.getX() - timeline.getVisibleRect().x) / timeline.getVisibleRect().width;
-          zoomFinishLevel(zoomLevel, zct, zc);
+          zoomFinishLevel(zoomGetLevel() + e.getWheelRotation(), zct, zc);
         }
       }
     };
