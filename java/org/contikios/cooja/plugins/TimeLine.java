@@ -173,8 +173,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   public TimeLine(final Simulation simulation, final Cooja gui) {
     super("Timeline", gui);
     this.simulation = simulation;
-
-    currentPixelDivisor = ZOOM_LEVELS[ZOOM_LEVELS.length/2];
+    currentPixelDivisor = 500;
 
     /* Menus */
     JMenuBar menuBar = new JMenuBar();
@@ -583,10 +582,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
                            final long focusTime,
                            final double focusCenter) {
     currentPixelDivisor = zoomDivisor;
-    if (ZOOM_LEVELS[0] >= zoomDivisor) {
-      currentPixelDivisor = ZOOM_LEVELS[0];
-    } else if (ZOOM_LEVELS[ZOOM_LEVELS.length-1] <= zoomDivisor) {
-      currentPixelDivisor = ZOOM_LEVELS[ZOOM_LEVELS.length-1];
+    if (1 >= zoomDivisor) {
+      currentPixelDivisor = 1;
+    } else if (100000 <= zoomDivisor) {
+      currentPixelDivisor = 100000;
     }
     if (zoomDivisor != currentPixelDivisor) {
       logger.info("Zoom level: adjusted out-of-range " + zoomDivisor + " us/pixel");
@@ -600,8 +599,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     int zoomLevel1 = zoomLevel;
     if (0 > zoomLevel) {
       zoomLevel1 = 0;
-    } else if (ZOOM_LEVELS.length <= zoomLevel) {
-      zoomLevel1 = ZOOM_LEVELS.length - 1;
+    } else if (16 <= zoomLevel) {
+      zoomLevel1 = 15;
     }
     zoomFinish((double) ZOOM_LEVELS[zoomLevel1], focusTime, focusCenter);
   }
