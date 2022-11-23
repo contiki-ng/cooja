@@ -1,0 +1,27 @@
+# Cooja v4.9
+
+## Cooja API changes for plugins outside the main tree
+
+### Update from JDOM 1 to JDOM 2
+
+JDOM was upgraded from version 1 to version 2 ([#784](https://github.com/contiki-ng/cooja/pull/784)).
+This requires some source code updates, but since Cooja uses such a small subset
+of the JDOM API, the update can be done automatically with the command:
+
+```bash
+find <directory> -name \*.java -exec perl -pi -e 's#import org.jdom.#import org.jdom2.#g' {} \;
+```
+
+### Avoid starting the AWT thread in headless mode
+
+Cooja will no longer start plugins that extend `VisPlugin` in headless mode
+to avoid starting the AWT thread. Plugins that should run in both GUI mode
+and headless mode need to be updated to keep the JInternalFrame internal.
+Examples for PowerTracker and other plugins can be found in the PR
+([#261](https://github.com/contiki-ng/cooja/pull/261)).
+
+## Changelog
+
+* Mobility plugin added to Cooja ([#768](https://github.com/contiki-ng/cooja/pull/768))
+
+All [commits](https://github.com/contiki-ng/cooja/compare/630e719d01d3...master) since v4.8.
