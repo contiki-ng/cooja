@@ -887,7 +887,7 @@ public final class Simulation extends Observable {
   /**
    * Limit simulation speed to given ratio.
    * This method may be called from outside the simulation thread.
-   * @param newSpeedLimit
+   * @param newSpeedLimit Speed limit, or null for unlimited.
    */
   public void setSpeedLimit(final Double newSpeedLimit) {
     invokeSimulationThread(() -> {
