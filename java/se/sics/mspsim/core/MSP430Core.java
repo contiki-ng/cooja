@@ -70,9 +70,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
   private final RegisterMonitor[] regWriteMonitors = new RegisterMonitor[16];
   private final RegisterMonitor[] regReadMonitors = new RegisterMonitor[16];
 
-  // true => breakpoints can occur!
-  boolean breakpointActive = true;
-
   public final int[] memory;
   private final Flash flash;
   boolean isFlashBusy;
@@ -115,7 +112,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   long lastCyclesTime = 0;
   long lastVTime = 0;
-  long currentTime = 0;
   long lastMicrosDelta;
   double currentDCOFactor = 1.0;
 
