@@ -475,7 +475,15 @@ public class GUI {
     final var exitCoojaAction = new GUIAction("Exit", 'x') {
       @Override
       public void actionPerformed(ActionEvent e) {
-        cooja.doQuit(true);
+        if (cooja.getSimulation() != null) { // Save?
+          Object[] opts = {"Yes", "No", "Cancel"};
+          int n = JOptionPane.showOptionDialog(frame, "Do you want to save the current simulation?", WINDOW_TITLE,
+                  JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, opts, opts[0]);
+          if (n == JOptionPane.CANCEL_OPTION || n == JOptionPane.YES_OPTION && doSaveConfig() == null) {
+            return;
+          }
+        }
+        cooja.doQuit(0);
       }
       @Override
       public boolean shouldBeEnabled() {
