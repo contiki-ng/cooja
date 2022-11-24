@@ -310,9 +310,9 @@ public class GUI {
         final var sim = cooja.getSimulation();
         simulationTime.setText(getTimeString(sim));
         var hasSim = sim != null;
-        startButton.setEnabled(hasSim && sim.isRunnable());
+        startButton.setEnabled(hasSim);
         startButton.setSelected(hasSim && sim.isRunning());
-        stepButton.setEnabled(hasSim && !sim.isRunning() && sim.isRunnable());
+        stepButton.setEnabled(hasSim && !startButton.isSelected());
         reloadButton.setEnabled(hasSim);
         slowCrawlSpeedButton.setEnabled(hasSim);
         crawlSpeedButton.setEnabled(hasSim);
@@ -509,7 +509,7 @@ public class GUI {
       }
       @Override
       public boolean shouldBeEnabled() {
-        return cooja.getSimulation() != null && cooja.getSimulation().isRunnable();
+        return cooja.getSimulation() != null;
       }
     };
     final var removeAllMotesAction = new GUIAction("Remove all motes") {
