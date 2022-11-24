@@ -143,34 +143,16 @@ public abstract class BaseContikiMoteType implements MoteType {
     return projectConfig;
   }
 
-  @Override
   public File getContikiSourceFile() {
     return fileSource;
   }
 
-  @Override
-  public void setContikiSourceFile(File file) {
-    fileSource = file;
-  }
-
-  @Override
   public String getCompileCommands() {
     return compileCommands;
   }
 
-  @Override
-  public void setCompileCommands(String commands) {
-    this.compileCommands = commands;
-  }
-
-  @Override
   public File getContikiFirmwareFile() {
     return fileFirmware;
-  }
-
-  @Override
-  public void setContikiFirmwareFile(File file) {
-    fileFirmware = file;
   }
 
   public File getExpectedFirmwareFile(String name) {
@@ -323,7 +305,7 @@ public abstract class BaseContikiMoteType implements MoteType {
       } else {
         fileFirmware = new File(cfg.file);
       }
-      setCompileCommands(cfg.commands);
+      compileCommands = cfg.commands;
       setMoteInterfaceClasses(cfg.interfaces);
     } else {
       // Handle multiple compilation commands one by one.

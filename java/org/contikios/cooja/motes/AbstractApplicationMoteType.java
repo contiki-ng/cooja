@@ -156,37 +156,6 @@ public abstract class AbstractApplicationMoteType implements MoteType {
   }
 
   @Override
-  public File getContikiSourceFile() {
-    return null; /* Contiki-independent */
-  }
-
-  @Override
-  public File getContikiFirmwareFile() {
-    return null; /* Contiki-independent */
-  }
-
-  @Override
-  public void setContikiSourceFile(File file) {
-    /* Contiki-independent */
-  }
-
-  @Override
-  public void setContikiFirmwareFile(File file) {
-    /* Contiki-independent */
-  }
-
-  @Override
-  public String getCompileCommands() {
-    /* Contiki-independent */
-    return null;
-  }
-
-  @Override
-  public void setCompileCommands(String commands) {
-    /* Contiki-independent */
-  }
-
-  @Override
   public ProjectConfig getConfig() {
     return myConfig;
   }

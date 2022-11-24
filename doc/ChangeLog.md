@@ -2,6 +2,26 @@
 
 ## Cooja API changes for plugins outside the main tree
 
+### Contiki-NG-specific moved from MoteType to BaseContikiMoteType
+
+Contiki-NG specific methods were moved from MoteType to BaseContikiMoteType
+([#857](https://github.com/contiki-ng/cooja/pull/857)).
+
+The following method implementations can safely be removed from mote other types:
+
+* `getContikiSourceFile`/`setContikiSourceFile`
+* `getContikiFirmwareFile`/`setContikiFirmwareFile`
+* `getCompileCommands`/`setCompileCommands`
+
+Plugins that need access to the getters can still access them through:
+
+```Java
+if (mote.getType() instanceof BaseContikiMoteType moteType) {
+   var sourceFile = moteType.getContikiSourceFile();
+   // ...
+}
+```
+
 ### Strongly typed PluginType Annotation
 
 The PluginType annotation was encapsulated in an enum to give Cooja exhaustiveness
