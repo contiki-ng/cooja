@@ -30,7 +30,6 @@ package org.contikios.cooja;
 
 import static org.contikios.cooja.GUI.WINDOW_TITLE;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.beans.PropertyVetoException;
@@ -174,7 +173,7 @@ public class Cooja extends Observable {
     "HIDE_WARNINGS"
   };
 
-  private static GUI gui = null;
+  static GUI gui = null;
 
   /** The Cooja startup configuration. */
   public final Config configuration;
@@ -198,12 +197,6 @@ public class Cooja extends Observable {
   private final ArrayList<Class<? extends RadioMedium>> radioMediumClasses = new ArrayList<>();
 
   private final ArrayList<Class<? extends Positioner>> positionerClasses = new ArrayList<>();
-
-  /**
-   * Mote relation (directed).
-   */
-  public record MoteRelation(Mote source, Mote dest, Color color) {}
-  private final ArrayList<MoteRelation> moteRelations = new ArrayList<>();
 
   /**
    * Creates a new Cooja Simulator GUI and ensures Swing initialization is done in the right thread.
@@ -965,13 +958,6 @@ public class Cooja extends Observable {
 
     // Delete simulation
     mySimulation.removed();
-
-    /* Clear current mote relations */
-    MoteRelation[] relations = getMoteRelations();
-    for (MoteRelation r: relations) {
-      removeMoteRelation(r.source, r.dest);
-    }
-
     mySimulation = null;
     updateGUIComponentState();
 
@@ -1820,52 +1806,6 @@ public class Cooja extends Observable {
     if (gui != null) {
       gui.moteHighlightObservable.setChangedAndNotify(m);
     }
-  }
-
-  /**
-   * Adds directed relation between given motes.
-   *
-   * @param source Source mote
-   * @param dest Destination mote
-   * @param color The color to use when visualizing the mote relation
-   */
-  public void addMoteRelation(Mote source, Mote dest, Color color) {
-    if (source == null || dest == null || gui == null) {
-      return;
-    }
-    removeMoteRelation(source, dest); /* Unique relations */
-    moteRelations.add(new MoteRelation(source, dest, color));
-    gui.moteRelationObservable.setChangedAndNotify();
-  }
-
-  /**
-   * Removes the relations between given motes.
-   *
-   * @param source Source mote
-   * @param dest Destination mote
-   */
-  public void removeMoteRelation(Mote source, Mote dest) {
-    if (source == null || dest == null || gui == null) {
-      return;
-    }
-    MoteRelation[] arr = getMoteRelations();
-    for (MoteRelation r: arr) {
-      if (r.source == source && r.dest == dest) {
-        moteRelations.remove(r);
-        /* Relations are unique */
-        gui.moteRelationObservable.setChangedAndNotify();
-        break;
-      }
-    }
-  }
-
-  /**
-   * @return All current mote relations.
-   *
-   * @see #addMoteRelationsObserver(Observer)
-   */
-  public MoteRelation[] getMoteRelations() {
-    return moteRelations.toArray(new MoteRelation[0]);
   }
 
   /**
