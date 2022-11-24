@@ -1573,14 +1573,9 @@ public class Cooja extends Observable {
 
     try (var out = file.getName().endsWith(".gz")
             ? new GZIPOutputStream(new FileOutputStream(file)) : new FileOutputStream(file)) {
-      // Create and write to document
-      Document doc = new Document(extractSimulationConfig());
-
-      XMLOutputter outputter = new XMLOutputter();
-      Format fmt = Format.getPrettyFormat();
-      fmt.setLineSeparator("\n");
-      outputter.setFormat(fmt);
-      outputter.output(doc, out);
+      var xmlOutput = new XMLOutputter(Format.getPrettyFormat());
+      xmlOutput.getFormat().setLineSeparator("\n");
+      xmlOutput.output(new Document(extractSimulationConfig()), out);
       logger.info("Saved to file: " + file.getAbsolutePath());
     } catch (Exception e) {
       logger.warn("Exception while saving simulation config: " + e);
