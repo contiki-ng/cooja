@@ -298,8 +298,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   public synchronized void addGlobalMonitor(MemoryMonitor mon) {
       GlobalWatchedMemory gwm;
-      if (currentSegment instanceof GlobalWatchedMemory) {
-          gwm = (GlobalWatchedMemory)currentSegment;
+      if (currentSegment instanceof GlobalWatchedMemory mem) {
+          gwm = mem;
       } else {
           currentSegment = gwm = new GlobalWatchedMemory(currentSegment);
       }
@@ -307,8 +307,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   }
 
   public synchronized void removeGlobalMonitor(MemoryMonitor mon) {
-      if (currentSegment instanceof GlobalWatchedMemory) {
-          GlobalWatchedMemory gwm = (GlobalWatchedMemory)currentSegment;
+      if (currentSegment instanceof GlobalWatchedMemory gwm) {
           gwm.removeGlobalMonitor(mon);
           if (!gwm.hasGlobalMonitor()) {
               // No more monitors - switch back to normal memory
@@ -413,8 +412,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   }
 
   public synchronized void removeWatchPoint(int address, MemoryMonitor mon) {
-      if (memorySegments[address >> 8] instanceof WatchedMemory) {
-          WatchedMemory wm = (WatchedMemory) memorySegments[address >> 8];
+      if (memorySegments[address >> 8] instanceof WatchedMemory wm) {
           wm.removeWatchPoint(address, mon);
       }
   }
