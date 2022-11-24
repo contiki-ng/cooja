@@ -130,7 +130,7 @@ public class IHexReader {
     int data = 0x84;
     System.out.println("RRA: " + hex((data & 0x80) + (data >> 1)));
 
-    MSP430 cpu = new MSP430(0, new ComponentRegistry(), new MSP430f1611Config());
+    MSP430 cpu = new MSP430(new ComponentRegistry(), new MSP430f1611Config());
     int[] memory = cpu.memory;
     reader.readFile(memory, args[0]);
     cpu.reset();

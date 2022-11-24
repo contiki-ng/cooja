@@ -70,9 +70,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
   private final RegisterMonitor[] regWriteMonitors = new RegisterMonitor[16];
   private final RegisterMonitor[] regReadMonitors = new RegisterMonitor[16];
 
-  // true => breakpoints can occur!
-  boolean breakpointActive = true;
-
   public final int[] memory;
   private final Flash flash;
   boolean isFlashBusy;
@@ -115,7 +112,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   long lastCyclesTime = 0;
   long lastVTime = 0;
-  long currentTime = 0;
   long lastMicrosDelta;
   double currentDCOFactor = 1.0;
 
@@ -134,7 +130,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   final ComponentRegistry registry;
   Profiler profiler;
 
-  public MSP430Core(int type, ComponentRegistry registry, MSP430Config config) {
+  public MSP430Core(ComponentRegistry registry, MSP430Config config) {
     super("MSP430", "MSP430 Core", null);
 
     logger = registry.getComponent(EmulationLogger.class);
@@ -186,9 +182,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
             memorySegments[address >> 8].set(address, data, mode);
         }
     };
-
-//    System.out.println("Set up MSP430 Core with " + MAX_MEM + " bytes memory");
-
     /* this is for detecting writes/read to/from non-existing IO */
     IOUnit voidIO = new IOUnit("void", this, memory, 0) {
         @Override
@@ -301,8 +294,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   public synchronized void addGlobalMonitor(MemoryMonitor mon) {
       GlobalWatchedMemory gwm;
-      if (currentSegment instanceof GlobalWatchedMemory) {
-          gwm = (GlobalWatchedMemory)currentSegment;
+      if (currentSegment instanceof GlobalWatchedMemory mem) {
+          gwm = mem;
       } else {
           currentSegment = gwm = new GlobalWatchedMemory(currentSegment);
       }
@@ -310,8 +303,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   }
 
   public synchronized void removeGlobalMonitor(MemoryMonitor mon) {
-      if (currentSegment instanceof GlobalWatchedMemory) {
-          GlobalWatchedMemory gwm = (GlobalWatchedMemory)currentSegment;
+      if (currentSegment instanceof GlobalWatchedMemory gwm) {
           gwm.removeGlobalMonitor(mon);
           if (!gwm.hasGlobalMonitor()) {
               // No more monitors - switch back to normal memory
@@ -416,8 +408,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   }
 
   public synchronized void removeWatchPoint(int address, MemoryMonitor mon) {
-      if (memorySegments[address >> 8] instanceof WatchedMemory) {
-          WatchedMemory wm = (WatchedMemory) memorySegments[address >> 8];
+      if (memorySegments[address >> 8] instanceof WatchedMemory wm) {
           wm.removeWatchPoint(address, mon);
       }
   }

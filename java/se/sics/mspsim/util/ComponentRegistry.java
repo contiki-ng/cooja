@@ -52,13 +52,13 @@ public class ComponentRegistry {
         synchronized (this) {
             components.add(new ComponentEntry(name, component));
         }
-        if (component instanceof ActiveComponent) {
-            ((ActiveComponent)component).init(name, this);
+        if (component instanceof ActiveComponent ac) {
+            ac.init(name, this);
             if (running) {
-                ((ActiveComponent)component).start();
+                ac.start();
             }
-        } else if (component instanceof ServiceComponent) {
-            ((ServiceComponent)component).init(name, this);
+        } else if (component instanceof ServiceComponent sc) {
+            sc.init(name, this);
         }
     }
 
@@ -144,8 +144,8 @@ public class ComponentRegistry {
         }
 
         for (ComponentEntry entry : plugs) {
-            if (entry.component instanceof ActiveComponent) {
-                ((ActiveComponent) entry.component).start();
+            if (entry.component instanceof ActiveComponent ac) {
+                ac.start();
             }
         }
     }
