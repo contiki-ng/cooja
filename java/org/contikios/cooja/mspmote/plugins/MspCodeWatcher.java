@@ -472,7 +472,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   private void tryMapDebugInfo() {
     /* called from AWT */
     int r = JOptionPane.showConfirmDialog(Cooja.getTopParentContainer(),
-        "The firmware file " + mspMote.getType().getContikiFirmwareFile().getName() + " references " + debugSourceFiles.length + " source files.\n" +
+        "The firmware file " + ((MspMoteType) mspMote.getType()).getContikiFirmwareFile().getName() + " references " + debugSourceFiles.length + " source files.\n" +
         "This function tries to locate these files on disk with a set of simple substitution rules.\n" +
         "\n" +
         "Right now " + getLocatedSourcesCount() + "/" + debugSourceFiles.length + " source files can be found.",

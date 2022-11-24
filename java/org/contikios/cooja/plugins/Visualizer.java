@@ -92,6 +92,7 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
 import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
 import org.contikios.mrm.MRMVisualizerSkin;
@@ -397,15 +398,15 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         if (motes == null) {
           return null;
         }
-        File file = motes[0].getType().getContikiSourceFile();
-        if (file == null) {
-          file = motes[0].getType().getContikiFirmwareFile();
-        }
         String fileName;
-        if (file == null) {
-          fileName = "<none>";
-        } else {
+        if (motes[0].getType() instanceof BaseContikiMoteType moteType) {
+          var file = moteType.getContikiSourceFile();
+          if (file == null) {
+            file = moteType.getContikiFirmwareFile();
+          }
           fileName = file.getName();
+        } else {
+          fileName = "<none>";
         }
         return "<html><table cellspacing=\"0\" cellpadding=\"1\">" +
                 "<tr><td>Type:</td><td>" +

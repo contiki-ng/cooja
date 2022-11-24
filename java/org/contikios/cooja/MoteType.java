@@ -83,53 +83,6 @@ public interface MoteType {
   void setIdentifier(String identifier);
 
   /**
-   * Main Contiki source file of mote type.
-   * May be null.
-   *
-   * @return Contiki main process source file.
-   * @see #setContikiSourceFile(File)
-   */
-  File getContikiSourceFile();
-
-  /**
-   * @param file Contiki main process source file.
-   * @see #getContikiSourceFile()
-   */
-  void setContikiSourceFile(File file);
-
-  /**
-   * Compiled Contiki firmware file or library.
-   * May be null.
-   *
-   * @return Contiki firmware file or library.
-   * @see #setContikiFirmwareFile(File)
-   */
-  File getContikiFirmwareFile();
-
-  /**
-   * @param file Contiki firmware file or library.
-   * @see #getContikiFirmwareFile()
-   */
-  void setContikiFirmwareFile(File file);
-
-  /**
-   * Commands used to build the Contiki firmware from the Contiki source.
-   * May be null.
-   *
-   * @return Compile commands used to build firmware
-   * @see #setCompileCommands(String)
-   * @see #getContikiFirmwareFile()
-   * @see #getContikiSourceFile()
-   */
-  String getCompileCommands();
-
-  /**
-   * @param commands Compile commands
-   * @see #getCompileCommands()
-   */
-  void setCompileCommands(String commands);
-
-  /**
    * @return Mote interface classes of mote type.
    * @see #setMoteInterfaceClasses(Class[])
    */
