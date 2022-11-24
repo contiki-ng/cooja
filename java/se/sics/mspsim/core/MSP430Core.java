@@ -134,7 +134,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   final ComponentRegistry registry;
   Profiler profiler;
 
-  public MSP430Core(int type, ComponentRegistry registry, MSP430Config config) {
+  public MSP430Core(ComponentRegistry registry, MSP430Config config) {
     super("MSP430", "MSP430 Core", null);
 
     logger = registry.getComponent(EmulationLogger.class);
