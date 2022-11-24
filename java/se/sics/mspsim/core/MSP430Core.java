@@ -186,9 +186,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
             memorySegments[address >> 8].set(address, data, mode);
         }
     };
-
-//    System.out.println("Set up MSP430 Core with " + MAX_MEM + " bytes memory");
-
     /* this is for detecting writes/read to/from non-existing IO */
     IOUnit voidIO = new IOUnit("void", this, memory, 0) {
         @Override
