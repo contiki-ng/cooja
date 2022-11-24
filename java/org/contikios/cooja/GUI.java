@@ -956,7 +956,7 @@ public class GUI {
     frame.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        cooja.doQuit(true);
+        exitCoojaAction.actionPerformed(null);
       }
     });
     frame.addComponentListener(new ComponentAdapter() {
