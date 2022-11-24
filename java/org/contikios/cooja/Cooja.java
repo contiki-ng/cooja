@@ -989,18 +989,6 @@ public class Cooja extends Observable {
     } catch (Exception e) {
       logger.error("Failed to remove simulation/plugins on shutdown.", e);
     }
-
-    /* Store frame size and position */
-    if (isVisualized()) {
-      setExternalToolsSetting("FRAME_SCREEN", GUI.frame.getGraphicsConfiguration().getDevice().getIDstring());
-      setExternalToolsSetting("FRAME_POS_X", String.valueOf(GUI.frame.getLocationOnScreen().x));
-      setExternalToolsSetting("FRAME_POS_Y", String.valueOf(GUI.frame.getLocationOnScreen().y));
-
-      var maximized = GUI.frame.getExtendedState() == JFrame.MAXIMIZED_BOTH;
-      setExternalToolsSetting("FRAME_WIDTH", String.valueOf(maximized ? Integer.MAX_VALUE : GUI.frame.getWidth()));
-      setExternalToolsSetting("FRAME_HEIGHT", String.valueOf(maximized ? Integer.MAX_VALUE : GUI.frame.getHeight()));
-      saveExternalToolsUserSettings();
-    }
     System.exit(exitCode);
   }
 

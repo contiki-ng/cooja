@@ -483,6 +483,14 @@ public class GUI {
             return;
           }
         }
+        // Save frame size and position.
+        Cooja.setExternalToolsSetting("FRAME_SCREEN", frame.getGraphicsConfiguration().getDevice().getIDstring());
+        Cooja.setExternalToolsSetting("FRAME_POS_X", String.valueOf(frame.getLocationOnScreen().x));
+        Cooja.setExternalToolsSetting("FRAME_POS_Y", String.valueOf(frame.getLocationOnScreen().y));
+        var maximized = frame.getExtendedState() == JFrame.MAXIMIZED_BOTH;
+        Cooja.setExternalToolsSetting("FRAME_WIDTH", String.valueOf(maximized ? Integer.MAX_VALUE : frame.getWidth()));
+        Cooja.setExternalToolsSetting("FRAME_HEIGHT", String.valueOf(maximized ? Integer.MAX_VALUE : frame.getHeight()));
+        Cooja.saveExternalToolsUserSettings();
         cooja.doQuit(0);
       }
       @Override
