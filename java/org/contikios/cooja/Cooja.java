@@ -975,8 +975,7 @@ public class Cooja extends Observable {
   /**
    * Save current simulation configuration to disk
    */
-  public File doSaveConfig() {
-    mySimulation.stopSimulation();
+  public static File doSaveConfig() {
     return gui.doSaveConfig();
   }
 
