@@ -98,15 +98,13 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   /* Stack monitoring variables */
   private boolean stopNextInstruction = false;
+  private boolean loadedDebugInfo = false;
+  // FIXME: move to MspMoteType instead.
+  private HashMap<File, HashMap<Integer, Integer>> debuggingInfo = null;
 
   public MspMote(MspMoteType moteType, Simulation sim, GenericNode node) throws MoteType.MoteTypeCreationException {
     super(sim);
     myMoteType = moteType;
-    try {
-      debuggingInfo = moteType.getFirmwareDebugInfo();
-    } catch (IOException e) {
-      throw new MoteType.MoteTypeCreationException("Error: " + e.getMessage(), e);
-    }
     registry = node.getRegistry();
     node.setCommandHandler(commandHandler);
     node.setup(new ConfigManager());
@@ -477,7 +475,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   /* WatchpointMote */
   private final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<>();
   private final ArrayList<MspBreakpoint> watchpoints = new ArrayList<>();
-  private final HashMap<File, HashMap<Integer, Integer>> debuggingInfo;
 
   @Override
   public void addWatchpointListener(WatchpointListener listener) {
@@ -547,7 +544,18 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   @Override
   public int getExecutableAddressOf(File file, int lineNr) {
-    if (file == null || lineNr < 0 || debuggingInfo == null) {
+    if (file == null || lineNr < 0) {
+      return -1;
+    }
+    if (!loadedDebugInfo) {
+      loadedDebugInfo = true;
+      try {
+        debuggingInfo = myMoteType.getFirmwareDebugInfo();
+      } catch (IOException e) {
+        logger.error("Failed reading debug info: {}", e.getMessage(), e);
+      }
+    }
+    if (debuggingInfo == null) {
       return -1;
     }
 
