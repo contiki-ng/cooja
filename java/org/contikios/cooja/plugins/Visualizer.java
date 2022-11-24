@@ -1488,7 +1488,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           }
           for (final var skinClass : visualizerSkins) {
             if (wanted.equals(skinClass.getName()) || wanted.equals(Cooja.getDescriptionOf(skinClass))) {
-              SwingUtilities.invokeLater(() -> generateAndActivateSkin(skinClass));
+              generateAndActivateSkin(skinClass);
               wanted = null;
               break;
             }
