@@ -1485,18 +1485,18 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           /* Backwards compatibility: se.sics -> org.contikios */
           if (wanted.startsWith("se.sics")) {
             wanted = wanted.replaceFirst("se\\.sics", "org.contikios");
-          } for (Class<? extends VisualizerSkin> skinClass : visualizerSkins) {
-          if (wanted.equals(skinClass.getName())
-                  /* Backwards compatibility */
-                  || wanted.equals(Cooja.getDescriptionOf(skinClass))) {
-            final Class<? extends VisualizerSkin> skin = skinClass;
-            SwingUtilities.invokeLater(() -> generateAndActivateSkin(skin));
-            wanted = null;
-            break;
           }
-        } if (wanted != null) {
-          logger.warn("Could not load visualizer: " + element.getText());
-        } break;
+          for (final var skinClass : visualizerSkins) {
+            if (wanted.equals(skinClass.getName()) || wanted.equals(Cooja.getDescriptionOf(skinClass))) {
+              generateAndActivateSkin(skinClass);
+              wanted = null;
+              break;
+            }
+          }
+          if (wanted != null) {
+            logger.warn("Could not load visualizer: " + element.getText());
+          }
+          break;
         case "moterelations":
           showMoteToMoteRelations = true;
           break;
