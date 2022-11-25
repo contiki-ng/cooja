@@ -124,6 +124,8 @@ public final class Simulation extends Observable {
   public record MoteRelation(Mote source, Mote dest, Color color) {}
   private final ArrayList<MoteRelation> moteRelations = new ArrayList<>();
 
+  private final SimConfig cfg;
+
   private final TimeEvent delayEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
@@ -165,11 +167,11 @@ public final class Simulation extends Observable {
   /**
    * Creates a new simulation
    */
-  public Simulation(Cooja cooja, String title, String logDir, boolean generateSeed, long seed, String radioMediumClass,
-                    long moteStartDelay, boolean quick, Element root)
+  public Simulation(SimConfig cfg, Cooja cooja, String title, String logDir, boolean generateSeed, long seed,
+                    String radioMediumClass, long moteStartDelay, boolean quick, Element root)
           throws MoteType.MoteTypeCreationException, SimulationCreationException {
-    String name = cooja.currentConfigFile == null ? "(unnamed)" : cooja.currentConfigFile.toString();
-    logger.info("Simulation " + name + " random seed: " + seed);
+    this.cfg = cfg;
+    logger.info("Simulation " + (cfg.file == null ? "(unnamed)" : cfg.file) + " random seed: " + seed);
     this.cooja = cooja;
     this.title = title;
     this.logDir = logDir;
@@ -1038,6 +1040,11 @@ public final class Simulation extends Observable {
    */
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  /** Returns the simulation configuration. */
+  public SimConfig getCfg() {
+    return cfg;
   }
 
   /** Structure to hold the simulation parameters. */

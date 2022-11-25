@@ -1387,8 +1387,8 @@ public class Cooja extends Observable {
       Simulation sim = null;
       try {
         sim = config.vis
-                ? Cooja.gui.doLoadConfig(file, config.updateSim, config.randomSeed)
-                : gui.loadSimulationConfig(file, true, false, config.randomSeed);
+                ? Cooja.gui.doLoadConfig(simConfig, config.updateSim, config.randomSeed)
+                : gui.loadSimulationConfig(simConfig, true, false, config.randomSeed);
       } catch (Exception e) {
         logger.fatal("Exception when loading simulation: ", e);
       }
@@ -1422,15 +1422,16 @@ public class Cooja extends Observable {
    * When loading Contiki mote types, the libraries must be recompiled. User may
    * change mote type settings at this point.
    *
-   * @param file       File to read
+   * @param cfg Configuration to load
    * @param rewriteCsc Should Cooja update the .csc file.
    * @param manualRandomSeed The random seed.
    * @return New simulation or null if recompiling failed or aborted
    * @throws SimulationCreationException If loading fails.
    * @see #saveSimulationConfig(File)
    */
-  Simulation loadSimulationConfig(File file, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
+  Simulation loadSimulationConfig(Simulation.SimConfig cfg, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
   throws SimulationCreationException {
+    var file = new File(cfg.file());
     this.currentConfigFile = file; /* Used to generate config relative paths */
     try {
       this.currentConfigFile = this.currentConfigFile.getCanonicalFile();
@@ -1447,7 +1448,7 @@ public class Cooja extends Observable {
         logger.fatal("Not a valid Cooja simulation config.");
         return null;
       }
-      sim = createSimulation(root, quick, rewriteCsc, manualRandomSeed);
+      sim = createSimulation(cfg, root, quick, rewriteCsc, manualRandomSeed);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not well-formed", e);
     } catch (IOException e) {
@@ -1456,15 +1457,18 @@ public class Cooja extends Observable {
     return sim;
   }
 
-  /** Create a new simulation object.
+  /**
+   * Create a new simulation object.
+   *
+   * @param cfg Configuration to use
    * @param root The XML config.
    * @param quick Do a quickstart.
    * @param rewriteCsc Should Cooja update the .csc file.
    * @param manualRandomSeed The random seed.
    * @throws SimulationCreationException If creation fails.
    * @return Simulation object.
-   * */
-  Simulation createSimulation(Element root, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
+   */
+  Simulation createSimulation(Simulation.SimConfig cfg, Element root, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
   throws SimulationCreationException {
     boolean projectsOk = verifyProjects(root);
 
@@ -1536,18 +1540,18 @@ public class Cooja extends Observable {
             ? Integer.parseInt(simCfg.getChild("motedelay_us").getText())
             : Integer.parseInt(cfgDelay.getText()) * Simulation.MILLISECOND;
     if (Cooja.isVisualized() && !quick) {
-      var cfg = CreateSimDialog.showDialog(this, new CreateSimDialog.SimConfig(title, medium,
+      var config = CreateSimDialog.showDialog(this, new CreateSimDialog.SimConfig(title, medium,
               generatedSeed, seed, delay));
-      if (cfg == null) return null;
-      title = cfg.title();
-      generatedSeed = cfg.generatedSeed();
-      seed = cfg.randomSeed();
-      medium = cfg.radioMedium();
-      delay = cfg.moteStartDelay();
+      if (config == null) return null;
+      title = config.title();
+      generatedSeed = config.generatedSeed();
+      seed = config.randomSeed();
+      medium = config.radioMedium();
+      delay = config.moteStartDelay();
     }
     Simulation sim;
     try {
-      sim = new Simulation(this, title, configuration.logDir, generatedSeed, seed, medium, delay, quick, root);
+      sim = new Simulation(cfg, this, title, configuration.logDir, generatedSeed, seed, medium, delay, quick, root);
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }
@@ -1559,7 +1563,7 @@ public class Cooja extends Observable {
    * Saves current simulation configuration to given file and notifies
    * observers.
    *
-   * @see #loadSimulationConfig(File, boolean, boolean, Long)
+   * @see #loadSimulationConfig(Simulation.SimConfig, boolean, boolean, Long)
    * @param file
    *          File to write
    */

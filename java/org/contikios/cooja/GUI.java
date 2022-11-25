@@ -53,6 +53,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -410,10 +411,11 @@ public class GUI {
         var cfg = CreateSimDialog.showDialog(cooja, new CreateSimDialog.SimConfig(null, null,
                 false, 123456, 1000 * Simulation.MILLISECOND));
         if (cfg == null) return;
+        var config = new Simulation.SimConfig(null, false, new HashMap<>());
         Simulation sim;
         try {
-          sim = new Simulation(cooja, cfg.title(), cooja.configuration.logDir(), cfg.generatedSeed(), cfg.randomSeed(),
-                  cfg.radioMedium(), cfg.moteStartDelay(), false, null);
+          sim = new Simulation(config, cooja, cfg.title(), cooja.configuration.logDir(), cfg.generatedSeed(),
+                  cfg.randomSeed(), cfg.radioMedium(), cfg.moteStartDelay(), false, null);
         } catch (MoteType.MoteTypeCreationException | Cooja.SimulationCreationException ex) {
           return;
         }
@@ -1136,8 +1138,8 @@ public class GUI {
 
     final var cfgFile = validateFileOrSelectNew(file);
     if (cfgFile == null) return;
-
-    var worker = createLoadSimWorker(cfgFile, quick, false, null);
+    var cfg = new Simulation.SimConfig(cfgFile.getAbsolutePath(), false, new HashMap<>());
+    var worker = createLoadSimWorker(cfg, quick, false, null);
     if (worker == null) return;
     worker.execute();
   }
@@ -1145,16 +1147,16 @@ public class GUI {
   /**
    * Load a simulation configuration file from disk and return the simulation.
    *
-   * @param configFile Configuration file to load, reloads current sim if null
+   * @param cfg Configuration to load, reloads current sim if null
    * @param rewriteCsc Rewrite simulation config
    * @param manualRandomSeed The random seed to use for the simulation
    * @return The simulation
    */
-  Simulation doLoadConfig(File configFile, boolean rewriteCsc, Long manualRandomSeed) {
+  Simulation doLoadConfig(Simulation.SimConfig cfg, boolean rewriteCsc, Long manualRandomSeed) {
     final var worker = new Cooja.RunnableInEDT<SwingWorker<Simulation, Cooja.SimulationCreationException>>() {
       @Override
       public SwingWorker<Simulation, Cooja.SimulationCreationException> work() {
-        return createLoadSimWorker(configFile, true, rewriteCsc, manualRandomSeed);
+        return createLoadSimWorker(cfg, true, rewriteCsc, manualRandomSeed);
       }
     }.invokeAndWait();
     worker.execute();
@@ -1227,15 +1229,16 @@ public class GUI {
    * Create a worker that will load the simulation in the background, displaying
    * a progress dialog if it is a quick-load.
    *
-   * @param configFile Configuration file to load, reloads current sim if null
+   * @param cfg        Configuration to load, reloads current sim if null
    * @param quick      Quick-load simulation
    * @param rewriteCsc Rewrite simulation config
    * @param manualRandomSeed The random seed to use for the simulation
    * @return The worker that will load the simulation.
    */
-  public SwingWorker<Simulation, Cooja.SimulationCreationException> createLoadSimWorker(File configFile, final boolean quick,
+  public SwingWorker<Simulation, Cooja.SimulationCreationException> createLoadSimWorker(Simulation.SimConfig cfg, final boolean quick,
                                                                                          boolean rewriteCsc, Long manualRandomSeed) {
     assert java.awt.EventQueue.isDispatchThread() : "Call from AWT thread";
+    final var configFile = cfg == null ? null : new File(cfg.file());
     final var autoStart = configFile == null && cooja.getSimulation().isRunning();
     if (configFile != null && !cooja.doRemoveSimulation(!cooja.configuration.updateSim())) {
       return null;
@@ -1275,23 +1278,22 @@ public class GUI {
       progressDialog = null;
     }
 
-    final var cfgFile = configFile;
     // SwingWorker can pass information from worker to process() through publish().
     // Communicate information the other way through this shared queue.
     final var channel = new SynchronousQueue<Integer>(true);
     var worker = new SwingWorker<Simulation, Cooja.SimulationCreationException>() {
       @Override
       public Simulation doInBackground() {
-        Element root = cfgFile == null ? cooja.extractSimulationConfig() : null;
+        Element root = configFile == null ? cooja.extractSimulationConfig() : null;
         boolean shouldRetry;
         Simulation newSim = null;
         do {
           try {
             shouldRetry = false;
             PROGRESS_WARNINGS.clear();
-            newSim = cfgFile == null
-                    ? cooja.createSimulation(root, quick, rewriteCsc, manualRandomSeed)
-                    : cooja.loadSimulationConfig(cfgFile, quick, rewriteCsc, manualRandomSeed);
+            newSim = configFile == null
+                    ? cooja.createSimulation(cooja.getSimulation().getCfg(), root, quick, rewriteCsc, manualRandomSeed)
+                    : cooja.loadSimulationConfig(cfg, quick, rewriteCsc, manualRandomSeed);
             if (newSim != null && autoStart) {
               newSim.startSimulation();
             }
