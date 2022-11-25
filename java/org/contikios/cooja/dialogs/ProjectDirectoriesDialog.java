@@ -95,7 +95,7 @@ import org.contikios.cooja.ProjectConfig;
 public class ProjectDirectoriesDialog extends JDialog {
 	private static final Logger logger = LogManager.getLogger(ProjectDirectoriesDialog.class);
 
-	private Cooja gui;
+  private final Cooja gui;
 
 	private final JTable table;
 	private final JTextArea projectInfo = new JTextArea("Extension information:");
@@ -113,15 +113,14 @@ public class ProjectDirectoriesDialog extends JDialog {
 	 * @return New COOJA projects, or null
 	 */
   public static COOJAProject[] showDialog(Cooja gui, COOJAProject[] currentProjects) {
-    ProjectDirectoriesDialog dialog = new ProjectDirectoriesDialog(currentProjects);
-		dialog.gui = gui;
-		dialog.setLocationRelativeTo(Cooja.getTopParentContainer());
+    var dialog = new ProjectDirectoriesDialog(gui, currentProjects);
 		dialog.setVisible(true);
 		return dialog.returnedProjects;
 	}
 
-  private ProjectDirectoriesDialog(COOJAProject[] projects) {
+  private ProjectDirectoriesDialog(Cooja cooja, COOJAProject[] projects) {
     super(Cooja.getTopParentContainer(), "Cooja extensions", ModalityType.APPLICATION_MODAL);
+    gui = cooja;
 		table = new JTable(new AbstractTableModel() {
 			@Override
 			public int getColumnCount() {
@@ -381,6 +380,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 		getContentPane().add(BorderLayout.CENTER, mainPane);
 		getContentPane().add(BorderLayout.SOUTH, buttonPane);
 		setSize(700, 500);
+    setLocationRelativeTo(Cooja.getTopParentContainer());
 	}
 
 	protected void showProjectInfo(COOJAProject project) {
@@ -471,10 +471,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 	}
 	protected void addProjectDir(COOJAProject project, int index) {
 		currentProjects.add(index, project);
-		((AbstractTableModel)table.getModel()).fireTableDataChanged();
-	}
-	protected void removeProjectDir(int index) {
-		currentProjects.remove(index);
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 	}
 	protected void removeProjectDir(File dir) {
