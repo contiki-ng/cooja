@@ -1506,7 +1506,6 @@ public class GUI {
       }
     }
     Cooja.setExternalToolsSetting("SIMCFG_HISTORY", newHistory.toString());
-    Cooja.saveExternalToolsUserSettings();
     hasFileHistoryChanged = true;
   }
 
