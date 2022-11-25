@@ -30,6 +30,7 @@ package org.contikios.cooja;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
@@ -1038,4 +1039,8 @@ public final class Simulation extends Observable {
   public void setTitle(String title) {
     this.title = title;
   }
+
+  /** Structure to hold the simulation parameters. */
+  public record SimConfig(String file, boolean autoStart,
+                          Map<String, String> opts) {}
 }

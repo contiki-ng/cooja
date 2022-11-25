@@ -48,7 +48,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -1384,7 +1383,7 @@ public class Cooja extends Observable {
     int rv = 0;
     boolean autoQuit = !config.configs.isEmpty() && (!config.vis || config.updateSim);
     for (var simConfig : config.configs) {
-      var file = new File(simConfig.file);
+      var file = new File(simConfig.file());
       Simulation sim = null;
       try {
         sim = config.vis
@@ -1398,7 +1397,7 @@ public class Cooja extends Observable {
         rv = Math.max(rv, 1);
       } else if (config.updateSim) {
         gui.saveSimulationConfig(file);
-      } else if (simConfig.autoStart) {
+      } else if (simConfig.autoStart()) {
         autoQuit = true;
         if (!config.vis) {
           sim.setSpeedLimit(null);
@@ -2079,11 +2078,8 @@ public class Cooja extends Observable {
     }
   }
 
-  /** Structure to hold the simulation parameters. */
-  public record SimConfig(Map<String, String> opts, boolean autoStart, String file) {}
-
   /** Structure to hold the Cooja startup configuration. */
   public record Config(boolean vis, Long randomSeed, String externalToolsConfig, boolean updateSim,
                        String logDir, String contikiPath, String coojaPath, String javac,
-                       List<SimConfig> configs) {}
+                       List<Simulation.SimConfig> configs) {}
 }

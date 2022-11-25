@@ -195,7 +195,7 @@ class Main {
     }
 
     // Parse and verify soundness of -nogui/-quickstart argument.
-    ArrayList<Cooja.SimConfig> simConfigs = new ArrayList<>();
+    ArrayList<Simulation.SimConfig> simConfigs = new ArrayList<>();
     if (options.action != null) {
       for (String arg : options.action.nogui == null ? options.action.quickstart : options.action.nogui) {
         // Argument on the form "file.csc[,key1=value1,key2=value2, ..]"
@@ -227,7 +227,7 @@ class Main {
           System.exit(1);
         }
         var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || options.action.nogui != null));
-        simConfigs.add(new Cooja.SimConfig(map, Boolean.parseBoolean(autoStart), file));
+        simConfigs.add(new Simulation.SimConfig(file, Boolean.parseBoolean(autoStart), map));
       }
     }
 
