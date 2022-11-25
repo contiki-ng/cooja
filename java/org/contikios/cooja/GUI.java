@@ -1252,18 +1252,11 @@ public class GUI {
       return true;
     }
 
-    boolean ok = new Cooja.RunnableInEDT<Boolean>() {
-      @Override
-      public Boolean work() {
-        Object[] options = {"Remove", "Cancel"};
-        return JOptionPane.showOptionDialog(frame,
-                "You have an active simulation.\nDo you want to remove it?",
-                "Remove current simulation?", JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE, null, options, options[1]) == JOptionPane.YES_OPTION;
-      }
-    }.invokeAndWait();
-
-    if (!ok) {
+    Object[] options = {"Remove", "Cancel"};
+    if (JOptionPane.showOptionDialog(frame,
+            "You have an active simulation.\nDo you want to remove it?",
+            "Remove current simulation?", JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE, null, options, options[1]) != JOptionPane.YES_OPTION) {
       return false;
     }
     return cooja.doRemoveSimulation();
