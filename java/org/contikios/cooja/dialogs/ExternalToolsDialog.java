@@ -105,6 +105,15 @@ public class ExternalToolsDialog extends JDialog {
     buttonPane.add(button);
 
     // MAIN PART
+    final var focusListener = new FocusListener() {
+      @Override
+      public void focusGained(FocusEvent focusEvent) {}
+
+      @Override
+      public void focusLost(FocusEvent focusEvent) {
+        compareWithDefaults();
+      }
+    };
     textFields = new JTextField[Cooja.getExternalToolsSettingsCount()];
     for (int i = 0; i < textFields.length; i++) {
       // Add text fields for every changeable property
@@ -116,7 +125,7 @@ public class ExternalToolsDialog extends JDialog {
 
       var textField = new JTextField(35);
       textField.setText("");
-      textField.addFocusListener(myEventHandler);
+      textField.addFocusListener(focusListener);
       textFields[i] = textField;
 
       smallPane.add(label);
@@ -164,18 +173,7 @@ public class ExternalToolsDialog extends JDialog {
     }
   }
 
-  private class ExternalToolsEventHandler
-      implements
-        ActionListener,
-        FocusListener {
-    @Override
-    public void focusGained(FocusEvent e) {
-      // NOP
-    }
-    @Override
-    public void focusLost(FocusEvent e) {
-      compareWithDefaults();
-    }
+  private class ExternalToolsEventHandler implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("reset")) {
