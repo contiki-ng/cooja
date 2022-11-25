@@ -1357,11 +1357,9 @@ public class Cooja extends Observable {
   public static void go(Config config) {
     configuration = config;
     externalToolsUserSettingsFileReadOnly = config.externalToolsConfig != null;
-    if (config.externalToolsConfig == null) {
-      externalToolsUserSettingsFile = new File(System.getProperty("user.home"), ".cooja.user.properties");
-    } else {
-      externalToolsUserSettingsFile = new File(config.externalToolsConfig);
-    }
+    externalToolsUserSettingsFile = config.externalToolsConfig == null
+            ? new File(System.getProperty("user.home"), ".cooja.user.properties")
+            : new File(config.externalToolsConfig);
 
     Cooja gui = null;
     try {
