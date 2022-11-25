@@ -228,8 +228,9 @@ class Main {
         }
         var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || options.action.nogui != null));
         var updateSim = map.getOrDefault("update-simulation", Boolean.toString(options.updateSimulation));
+        var logDir = map.getOrDefault("logdir", options.logDir);
         simConfigs.add(new Simulation.SimConfig(file, Boolean.parseBoolean(autoStart), Boolean.parseBoolean(updateSim),
-                map));
+                logDir, map));
       }
     }
 

@@ -411,10 +411,11 @@ public class GUI {
         var cfg = CreateSimDialog.showDialog(cooja, new CreateSimDialog.SimConfig(null, null,
                 false, 123456, 1000 * Simulation.MILLISECOND));
         if (cfg == null) return;
-        var config = new Simulation.SimConfig(null, false, false, new HashMap<>());
+        var config = new Simulation.SimConfig(null, false, false, cooja.configuration.logDir(),
+                new HashMap<>());
         Simulation sim;
         try {
-          sim = new Simulation(config, cooja, cfg.title(), cooja.configuration.logDir(), cfg.generatedSeed(),
+          sim = new Simulation(config, cooja, cfg.title(), cfg.generatedSeed(),
                   cfg.randomSeed(), cfg.radioMedium(), cfg.moteStartDelay(), false, null);
         } catch (MoteType.MoteTypeCreationException | Cooja.SimulationCreationException ex) {
           return;
@@ -1138,7 +1139,8 @@ public class GUI {
 
     final var cfgFile = validateFileOrSelectNew(file);
     if (cfgFile == null) return;
-    var cfg = new Simulation.SimConfig(cfgFile.getAbsolutePath(), false, false, new HashMap<>());
+    var cfg = new Simulation.SimConfig(cfgFile.getAbsolutePath(), false, false,
+            cooja.configuration.logDir(), new HashMap<>());
     var worker = createLoadSimWorker(cfg, quick, null);
     if (worker == null) return;
     worker.execute();

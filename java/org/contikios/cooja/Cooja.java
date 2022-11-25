@@ -1550,7 +1550,7 @@ public class Cooja extends Observable {
     }
     Simulation sim;
     try {
-      sim = new Simulation(cfg, this, title, configuration.logDir, generatedSeed, seed, medium, delay, quick, root);
+      sim = new Simulation(cfg, this, title, generatedSeed, seed, medium, delay, quick, root);
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }
@@ -2078,7 +2078,11 @@ public class Cooja extends Observable {
     }
   }
 
-  /** Structure to hold the Cooja startup configuration. */
+  /** Structure to hold the Cooja startup configuration.
+   * <p>
+   * When SimConfig contains an identical field, these values are the default
+   * values when creating a new simulation in the File menu.
+   */
   public record Config(boolean vis, Long randomSeed, String externalToolsConfig,
                        String logDir, String contikiPath, String coojaPath, String javac,
                        List<Simulation.SimConfig> configs) {}

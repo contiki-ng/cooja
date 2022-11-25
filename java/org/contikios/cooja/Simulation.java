@@ -64,9 +64,6 @@ public final class Simulation extends Observable {
   public static final long MICROSECOND = 1L;
   public static final long MILLISECOND = 1000*MICROSECOND;
 
-  /** The name of the directory to output logs to. */
-  private final String logDir;
-
   /** Lock used to wait for simulation state changes */
   private final Object stateLock = new Object();
 
@@ -167,14 +164,13 @@ public final class Simulation extends Observable {
   /**
    * Creates a new simulation
    */
-  public Simulation(SimConfig cfg, Cooja cooja, String title, String logDir, boolean generateSeed, long seed,
+  public Simulation(SimConfig cfg, Cooja cooja, String title, boolean generateSeed, long seed,
                     String radioMediumClass, long moteStartDelay, boolean quick, Element root)
           throws MoteType.MoteTypeCreationException, SimulationCreationException {
     this.cfg = cfg;
     logger.info("Simulation " + (cfg.file == null ? "(unnamed)" : cfg.file) + " random seed: " + seed);
     this.cooja = cooja;
     this.title = title;
-    this.logDir = logDir;
     randomSeed = seed;
     randomSeedGenerated = generateSeed;
     randomGenerator = new SafeRandom(this);
@@ -505,7 +501,7 @@ public final class Simulation extends Observable {
   /** Create a new script engine that logs to the logTextArea and add it to the list
    *  of active script engines. */
   public LogScriptEngine newScriptEngine(JTextArea logTextArea) {
-    var engine = new LogScriptEngine(this, logDir, scriptEngines.size(), logTextArea);
+    var engine = new LogScriptEngine(this, scriptEngines.size(), logTextArea);
     scriptEngines.add(engine);
     return engine;
   }
@@ -1049,5 +1045,6 @@ public final class Simulation extends Observable {
 
   /** Structure to hold the simulation parameters. */
   public record SimConfig(String file, boolean autoStart, boolean updateSim,
+                          String logDir,
                           Map<String, String> opts) {}
 }
