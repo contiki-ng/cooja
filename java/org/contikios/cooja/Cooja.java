@@ -143,9 +143,6 @@ public class Cooja extends Observable {
   public static File externalToolsUserSettingsFile = null;
   private static boolean externalToolsUserSettingsFileReadOnly = false;
 
-  private static String specifiedCoojaPath = null;
-  private static String specifiedContikiPath = null;
-
   // External tools setting names
   public static Properties defaultExternalToolsSettings;
   public static Properties currentExternalToolsSettings;
@@ -1068,11 +1065,11 @@ public class Cooja extends Observable {
    * @return Value
    */
   public static String getExternalToolsSetting(String name, String defaultValue) {
-    if (specifiedContikiPath != null && "PATH_CONTIKI".equals(name)) {
-      return specifiedContikiPath;
+    if (configuration.contikiPath != null && "PATH_CONTIKI".equals(name)) {
+      return configuration.contikiPath;
     }
-    if (Cooja.specifiedCoojaPath != null && "PATH_COOJA".equals(name)) {
-      return Cooja.specifiedCoojaPath;
+    if (configuration.coojaPath != null && "PATH_COOJA".equals(name)) {
+      return configuration.coojaPath;
     }
     return currentExternalToolsSettings.getProperty(name, defaultValue);
   }
@@ -1365,9 +1362,6 @@ public class Cooja extends Observable {
     } else {
       externalToolsUserSettingsFile = new File(config.externalToolsConfig);
     }
-
-    specifiedContikiPath = config.contikiPath;
-    specifiedCoojaPath = config.coojaPath;
 
     Cooja gui = null;
     try {
