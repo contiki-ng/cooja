@@ -69,9 +69,7 @@ public class ExternalToolsDialog extends JDialog {
 
   /** Creates a dialog for viewing/editing external tools settings. */
   public static void showDialog() {
-    var myDialog = new ExternalToolsDialog();
-    myDialog.setLocationRelativeTo(Cooja.getTopParentContainer());
-    myDialog.setVisible(true);
+    new ExternalToolsDialog().setVisible(true);
   }
 
   private ExternalToolsDialog() {
@@ -168,6 +166,7 @@ public class ExternalToolsDialog extends JDialog {
     contentPane.add(buttonPane, BorderLayout.SOUTH);
 
     pack();
+    setLocationRelativeTo(Cooja.getTopParentContainer());
   }
 
   private void updateTextFields() {
