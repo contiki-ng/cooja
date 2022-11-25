@@ -85,7 +85,6 @@ public class ExternalToolsDialog extends JDialog {
     button.addActionListener(e -> {
       Cooja.loadExternalToolsDefaultSettings();
       updateTextFields();
-      compareWithDefaults();
     });
     buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
     buttonPane.add(button);
@@ -134,7 +133,6 @@ public class ExternalToolsDialog extends JDialog {
 
     // Set actual used values into all text fields
     updateTextFields();
-    compareWithDefaults();
 
     mainPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -152,6 +150,7 @@ public class ExternalToolsDialog extends JDialog {
     for (int i = 0; i < textFields.length; i++) {
       textFields[i].setText(Cooja.getExternalToolsSetting(Cooja.getExternalToolsSettingName(i), ""));
     }
+    compareWithDefaults();
   }
 
   private void compareWithDefaults() {
