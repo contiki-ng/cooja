@@ -114,7 +114,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 	 */
   public static COOJAProject[] showDialog(Cooja gui, COOJAProject[] currentProjects) {
     var dialog = new ProjectDirectoriesDialog(gui, currentProjects);
-		dialog.setLocationRelativeTo(Cooja.getTopParentContainer());
 		dialog.setVisible(true);
 		return dialog.returnedProjects;
 	}
@@ -381,6 +380,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 		getContentPane().add(BorderLayout.CENTER, mainPane);
 		getContentPane().add(BorderLayout.SOUTH, buttonPane);
 		setSize(700, 500);
+    setLocationRelativeTo(Cooja.getTopParentContainer());
 	}
 
 	protected void showProjectInfo(COOJAProject project) {
