@@ -1383,7 +1383,6 @@ public class Cooja extends Observable {
     int rv = 0;
     boolean autoQuit = !config.configs.isEmpty() && !config.vis;
     for (var simConfig : config.configs) {
-      var file = new File(simConfig.file());
       Simulation sim = null;
       try {
         sim = config.vis
@@ -1397,7 +1396,7 @@ public class Cooja extends Observable {
         rv = Math.max(rv, 1);
       } else if (simConfig.updateSim()) {
         autoQuit = true;
-        gui.saveSimulationConfig(file);
+        gui.saveSimulationConfig(new File(simConfig.file()));
       } else if (simConfig.autoStart()) {
         autoQuit = true;
         if (!config.vis) {
