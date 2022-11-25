@@ -404,7 +404,7 @@ public class GUI {
     final var newSimulationAction = new GUIAction("New simulation...", KeyEvent.VK_N, KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK)) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (!cooja.doRemoveSimulation(true)) {
+        if (!doRemoveSimulation()) {
           return;
         }
 
@@ -430,7 +430,7 @@ public class GUI {
     final var closeSimulationAction = new GUIAction("Close simulation", KeyEvent.VK_C) {
       @Override
       public void actionPerformed(ActionEvent e) {
-        cooja.doRemoveSimulation(true);
+        doRemoveSimulation();
       }
       @Override
       public boolean shouldBeEnabled() {
@@ -1243,6 +1243,33 @@ public class GUI {
   }
 
   /**
+   * Remove current simulation after confirmation.
+   *
+   * @return True if no simulation exists when method returns
+   */
+  boolean doRemoveSimulation() {
+    if (cooja.getSimulation() == null) {
+      return true;
+    }
+
+    boolean ok = new Cooja.RunnableInEDT<Boolean>() {
+      @Override
+      public Boolean work() {
+        Object[] options = {"Remove", "Cancel"};
+        return JOptionPane.showOptionDialog(frame,
+                "You have an active simulation.\nDo you want to remove it?",
+                "Remove current simulation?", JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, options, options[1]) == JOptionPane.YES_OPTION;
+      }
+    }.invokeAndWait();
+
+    if (!ok) {
+      return false;
+    }
+    return cooja.doRemoveSimulation(false);
+  }
+
+  /**
    * Create a worker that will load the simulation in the background, displaying
    * a progress dialog if it is a quick-load.
    *
@@ -1256,7 +1283,8 @@ public class GUI {
     assert java.awt.EventQueue.isDispatchThread() : "Call from AWT thread";
     final var configFile = cfg == null ? null : new File(cfg.file());
     final var autoStart = configFile == null && cooja.getSimulation().isRunning();
-    if (configFile != null && !cooja.doRemoveSimulation(!cfg.updateSim())) {
+    if (configFile != null && (cfg.updateSim()
+            ? !cooja.doRemoveSimulation(false) : !doRemoveSimulation())) {
       return null;
     }
 
