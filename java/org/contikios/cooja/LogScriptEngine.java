@@ -121,11 +121,11 @@ public class LogScriptEngine {
   private long startTime;
   private long startRealTime;
 
-  protected LogScriptEngine(Simulation simulation, String logDir, int logNumber, JTextArea logTextArea) {
+  protected LogScriptEngine(Simulation simulation, int logNumber, JTextArea logTextArea) {
     this.simulation = simulation;
     if (!Cooja.isVisualized()) {
       var logName = logNumber == 0 ? "COOJA.testlog" : String.format("COOJA-%02d.testlog", logNumber);
-      var logFile = Paths.get(logDir, logName);
+      var logFile = Paths.get(simulation.getCfg().logDir(), logName);
       try {
         logWriter = Files.newBufferedWriter(logFile, UTF_8);
         logWriter.write("Random seed: " + simulation.getRandomSeed() + "\n");

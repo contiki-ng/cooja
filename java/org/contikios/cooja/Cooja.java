@@ -48,7 +48,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -1382,23 +1381,23 @@ public class Cooja extends Observable {
     }
     // Check if simulator should be quick-started.
     int rv = 0;
-    boolean autoQuit = !config.configs.isEmpty() && (!config.vis || config.updateSim);
+    boolean autoQuit = !config.configs.isEmpty() && !config.vis;
     for (var simConfig : config.configs) {
-      var file = new File(simConfig.file);
       Simulation sim = null;
       try {
         sim = config.vis
-                ? Cooja.gui.doLoadConfig(file, config.updateSim, config.randomSeed)
-                : gui.loadSimulationConfig(file, true, false, config.randomSeed);
+                ? Cooja.gui.doLoadConfig(simConfig, config.randomSeed)
+                : gui.loadSimulationConfig(simConfig, true, config.randomSeed);
       } catch (Exception e) {
         logger.fatal("Exception when loading simulation: ", e);
       }
       if (sim == null) {
         autoQuit = true;
         rv = Math.max(rv, 1);
-      } else if (config.updateSim) {
-        gui.saveSimulationConfig(file);
-      } else if (simConfig.autoStart) {
+      } else if (simConfig.updateSim()) {
+        autoQuit = true;
+        gui.saveSimulationConfig(new File(simConfig.file()));
+      } else if (simConfig.autoStart()) {
         autoQuit = true;
         if (!config.vis) {
           sim.setSpeedLimit(null);
@@ -1423,15 +1422,15 @@ public class Cooja extends Observable {
    * When loading Contiki mote types, the libraries must be recompiled. User may
    * change mote type settings at this point.
    *
-   * @param file       File to read
-   * @param rewriteCsc Should Cooja update the .csc file.
+   * @param cfg Configuration to load
    * @param manualRandomSeed The random seed.
    * @return New simulation or null if recompiling failed or aborted
    * @throws SimulationCreationException If loading fails.
    * @see #saveSimulationConfig(File)
    */
-  Simulation loadSimulationConfig(File file, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
+  Simulation loadSimulationConfig(Simulation.SimConfig cfg, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
+    var file = new File(cfg.file());
     this.currentConfigFile = file; /* Used to generate config relative paths */
     try {
       this.currentConfigFile = this.currentConfigFile.getCanonicalFile();
@@ -1448,7 +1447,7 @@ public class Cooja extends Observable {
         logger.fatal("Not a valid Cooja simulation config.");
         return null;
       }
-      sim = createSimulation(root, quick, rewriteCsc, manualRandomSeed);
+      sim = createSimulation(cfg, root, quick, manualRandomSeed);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not well-formed", e);
     } catch (IOException e) {
@@ -1457,15 +1456,17 @@ public class Cooja extends Observable {
     return sim;
   }
 
-  /** Create a new simulation object.
+  /**
+   * Create a new simulation object.
+   *
+   * @param cfg Configuration to use
    * @param root The XML config.
    * @param quick Do a quickstart.
-   * @param rewriteCsc Should Cooja update the .csc file.
    * @param manualRandomSeed The random seed.
    * @throws SimulationCreationException If creation fails.
    * @return Simulation object.
-   * */
-  Simulation createSimulation(Element root, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
+   */
+  Simulation createSimulation(Simulation.SimConfig cfg, Element root, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
     boolean projectsOk = verifyProjects(root);
 
@@ -1481,7 +1482,7 @@ public class Cooja extends Observable {
       }
     }
     // Only renumber motes if their names can collide with existing motes.
-    if (!rewriteCsc) {
+    if (!cfg.updateSim()) {
       // Create old to new identifier mappings.
       var moteTypeIDMappings = new HashMap<String, String>();
       var reserved = new HashSet<>(readNames);
@@ -1537,18 +1538,18 @@ public class Cooja extends Observable {
             ? Integer.parseInt(simCfg.getChild("motedelay_us").getText())
             : Integer.parseInt(cfgDelay.getText()) * Simulation.MILLISECOND;
     if (Cooja.isVisualized() && !quick) {
-      var cfg = CreateSimDialog.showDialog(this, new CreateSimDialog.SimConfig(title, medium,
+      var config = CreateSimDialog.showDialog(this, new CreateSimDialog.SimConfig(title, medium,
               generatedSeed, seed, delay));
-      if (cfg == null) return null;
-      title = cfg.title();
-      generatedSeed = cfg.generatedSeed();
-      seed = cfg.randomSeed();
-      medium = cfg.radioMedium();
-      delay = cfg.moteStartDelay();
+      if (config == null) return null;
+      title = config.title();
+      generatedSeed = config.generatedSeed();
+      seed = config.randomSeed();
+      medium = config.radioMedium();
+      delay = config.moteStartDelay();
     }
     Simulation sim;
     try {
-      sim = new Simulation(this, title, configuration.logDir, generatedSeed, seed, medium, delay, quick, root);
+      sim = new Simulation(cfg, this, title, generatedSeed, seed, medium, delay, quick, root);
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }
@@ -1557,12 +1558,9 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Saves current simulation configuration to given file and notifies
-   * observers.
+   * Saves current simulation configuration to given file and notifies observers.
    *
-   * @see #loadSimulationConfig(File, boolean, boolean, Long)
-   * @param file
-   *          File to write
+   * @param file File to write
    */
    void saveSimulationConfig(File file) {
     this.currentConfigFile = file; /* Used to generate config relative paths */
@@ -2079,11 +2077,12 @@ public class Cooja extends Observable {
     }
   }
 
-  /** Structure to hold the simulation parameters. */
-  public record SimConfig(Map<String, String> opts, boolean autoStart, String file) {}
-
-  /** Structure to hold the Cooja startup configuration. */
-  public record Config(boolean vis, Long randomSeed, String externalToolsConfig, boolean updateSim,
+  /** Structure to hold the Cooja startup configuration.
+   * <p>
+   * When SimConfig contains an identical field, these values are the default
+   * values when creating a new simulation in the File menu.
+   */
+  public record Config(boolean vis, Long randomSeed, String externalToolsConfig,
                        String logDir, String contikiPath, String coojaPath, String javac,
-                       List<SimConfig> configs) {}
+                       List<Simulation.SimConfig> configs) {}
 }

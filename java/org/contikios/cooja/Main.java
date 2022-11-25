@@ -195,7 +195,7 @@ class Main {
     }
 
     // Parse and verify soundness of -nogui/-quickstart argument.
-    ArrayList<Cooja.SimConfig> simConfigs = new ArrayList<>();
+    ArrayList<Simulation.SimConfig> simConfigs = new ArrayList<>();
     if (options.action != null) {
       for (String arg : options.action.nogui == null ? options.action.quickstart : options.action.nogui) {
         // Argument on the form "file.csc[,key1=value1,key2=value2, ..]"
@@ -227,7 +227,10 @@ class Main {
           System.exit(1);
         }
         var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || options.action.nogui != null));
-        simConfigs.add(new Cooja.SimConfig(map, Boolean.parseBoolean(autoStart), file));
+        var updateSim = map.getOrDefault("update-simulation", Boolean.toString(options.updateSimulation));
+        var logDir = map.getOrDefault("logdir", options.logDir);
+        simConfigs.add(new Simulation.SimConfig(file, Boolean.parseBoolean(autoStart), Boolean.parseBoolean(updateSim),
+                logDir, map));
       }
     }
 
@@ -284,7 +287,7 @@ class Main {
     }
 
     var vis = options.action == null || options.action.quickstart != null;
-    var cfg = new Config(vis, options.randomSeed, options.externalToolsConfig, options.updateSimulation,
+    var cfg = new Config(vis, options.randomSeed, options.externalToolsConfig,
             options.logDir, options.contikiPath, options.coojaPath, options.javac, simConfigs);
     // Configure logger
     if (options.logConfigFile == null) {

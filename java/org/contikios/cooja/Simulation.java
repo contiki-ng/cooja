@@ -30,6 +30,7 @@ package org.contikios.cooja;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
@@ -62,9 +63,6 @@ public final class Simulation extends Observable {
 
   public static final long MICROSECOND = 1L;
   public static final long MILLISECOND = 1000*MICROSECOND;
-
-  /** The name of the directory to output logs to. */
-  private final String logDir;
 
   /** Lock used to wait for simulation state changes */
   private final Object stateLock = new Object();
@@ -123,6 +121,8 @@ public final class Simulation extends Observable {
   public record MoteRelation(Mote source, Mote dest, Color color) {}
   private final ArrayList<MoteRelation> moteRelations = new ArrayList<>();
 
+  private final SimConfig cfg;
+
   private final TimeEvent delayEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
@@ -164,14 +164,13 @@ public final class Simulation extends Observable {
   /**
    * Creates a new simulation
    */
-  public Simulation(Cooja cooja, String title, String logDir, boolean generateSeed, long seed, String radioMediumClass,
-                    long moteStartDelay, boolean quick, Element root)
+  public Simulation(SimConfig cfg, Cooja cooja, String title, boolean generateSeed, long seed,
+                    String radioMediumClass, long moteStartDelay, boolean quick, Element root)
           throws MoteType.MoteTypeCreationException, SimulationCreationException {
-    String name = cooja.currentConfigFile == null ? "(unnamed)" : cooja.currentConfigFile.toString();
-    logger.info("Simulation " + name + " random seed: " + seed);
+    this.cfg = cfg;
+    logger.info("Simulation " + (cfg.file == null ? "(unnamed)" : cfg.file) + " random seed: " + seed);
     this.cooja = cooja;
     this.title = title;
-    this.logDir = logDir;
     randomSeed = seed;
     randomSeedGenerated = generateSeed;
     randomGenerator = new SafeRandom(this);
@@ -502,7 +501,7 @@ public final class Simulation extends Observable {
   /** Create a new script engine that logs to the logTextArea and add it to the list
    *  of active script engines. */
   public LogScriptEngine newScriptEngine(JTextArea logTextArea) {
-    var engine = new LogScriptEngine(this, logDir, scriptEngines.size(), logTextArea);
+    var engine = new LogScriptEngine(this, scriptEngines.size(), logTextArea);
     scriptEngines.add(engine);
     return engine;
   }
@@ -1038,4 +1037,14 @@ public final class Simulation extends Observable {
   public void setTitle(String title) {
     this.title = title;
   }
+
+  /** Returns the simulation configuration. */
+  public SimConfig getCfg() {
+    return cfg;
+  }
+
+  /** Structure to hold the simulation parameters. */
+  public record SimConfig(String file, boolean autoStart, boolean updateSim,
+                          String logDir,
+                          Map<String, String> opts) {}
 }
