@@ -1180,7 +1180,7 @@ public class GUI {
     try {
       return worker.get();
     } catch (CancellationException | ExecutionException | InterruptedException e) {
-      cooja.doRemoveSimulation(false);
+      cooja.doRemoveSimulation();
       return null;
     }
   }
@@ -1266,7 +1266,7 @@ public class GUI {
     if (!ok) {
       return false;
     }
-    return cooja.doRemoveSimulation(false);
+    return cooja.doRemoveSimulation();
   }
 
   /**
@@ -1284,7 +1284,7 @@ public class GUI {
     final var configFile = cfg == null ? null : new File(cfg.file());
     final var autoStart = configFile == null && cooja.getSimulation().isRunning();
     if (configFile != null && (cfg.updateSim()
-            ? !cooja.doRemoveSimulation(false) : !doRemoveSimulation())) {
+            ? !cooja.doRemoveSimulation() : !doRemoveSimulation())) {
       return null;
     }
 
@@ -1346,7 +1346,7 @@ public class GUI {
             try {
               shouldRetry = channel.take() == 1;
             } catch (InterruptedException ex) {
-              cooja.doRemoveSimulation(false);
+              cooja.doRemoveSimulation();
               return null;
             }
           }

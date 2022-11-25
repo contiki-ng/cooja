@@ -912,30 +912,11 @@ public class Cooja extends Observable {
   /**
    * Remove current simulation
    *
-   * @param askForConfirmation
-   *          Should we ask for confirmation if a simulation is already active?
    * @return True if no simulation exists when method returns
    */
-  boolean doRemoveSimulation(boolean askForConfirmation) {
+  boolean doRemoveSimulation() {
     if (mySimulation == null) {
       return true;
-    }
-
-    if (askForConfirmation) {
-      boolean ok = new RunnableInEDT<Boolean>() {
-        @Override
-        public Boolean work() {
-          Object[] options = {"Remove", "Cancel"};
-          return JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
-              "You have an active simulation.\nDo you want to remove it?",
-              "Remove current simulation?", JOptionPane.YES_NO_OPTION,
-              JOptionPane.QUESTION_MESSAGE, null, options, options[1]) == JOptionPane.YES_OPTION;
-        }
-      }.invokeAndWait();
-
-      if (!ok) {
-        return false;
-      }
     }
 
     // Close all started non-GUI plugins
@@ -972,7 +953,7 @@ public class Cooja extends Observable {
   public void doQuit(int exitCode) {
     // Clean up resources. Catch all exceptions to ensure that System.exit will be called.
     try {
-      doRemoveSimulation(false);
+      doRemoveSimulation();
       for (var plugin : startedPlugins.toArray(new Plugin[0])) {
         removePlugin(plugin);
       }
@@ -1483,7 +1464,7 @@ public class Cooja extends Observable {
         }
       }
     }
-    doRemoveSimulation(false);
+    doRemoveSimulation();
     System.gc();
     var simCfg = root.getChild("simulation");
     var title = simCfg.getChild("title").getText();
