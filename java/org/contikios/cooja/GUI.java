@@ -1119,7 +1119,7 @@ public class GUI {
     if (warnMemory()) {
       return;
     }
-    var worker = createLoadSimWorker(null, true, false, seed);
+    var worker = createLoadSimWorker(null, true, seed);
     if (worker == null) return;
     worker.execute();
   }
@@ -1139,7 +1139,7 @@ public class GUI {
     final var cfgFile = validateFileOrSelectNew(file);
     if (cfgFile == null) return;
     var cfg = new Simulation.SimConfig(cfgFile.getAbsolutePath(), false, false, new HashMap<>());
-    var worker = createLoadSimWorker(cfg, quick, false, null);
+    var worker = createLoadSimWorker(cfg, quick, null);
     if (worker == null) return;
     worker.execute();
   }
@@ -1148,15 +1148,14 @@ public class GUI {
    * Load a simulation configuration file from disk and return the simulation.
    *
    * @param cfg Configuration to load, reloads current sim if null
-   * @param rewriteCsc Rewrite simulation config
    * @param manualRandomSeed The random seed to use for the simulation
    * @return The simulation
    */
-  Simulation doLoadConfig(Simulation.SimConfig cfg, boolean rewriteCsc, Long manualRandomSeed) {
+  Simulation doLoadConfig(Simulation.SimConfig cfg, Long manualRandomSeed) {
     final var worker = new Cooja.RunnableInEDT<SwingWorker<Simulation, Cooja.SimulationCreationException>>() {
       @Override
       public SwingWorker<Simulation, Cooja.SimulationCreationException> work() {
-        return createLoadSimWorker(cfg, true, rewriteCsc, manualRandomSeed);
+        return createLoadSimWorker(cfg, true, manualRandomSeed);
       }
     }.invokeAndWait();
     worker.execute();
@@ -1231,12 +1230,11 @@ public class GUI {
    *
    * @param cfg        Configuration to load, reloads current sim if null
    * @param quick      Quick-load simulation
-   * @param rewriteCsc Rewrite simulation config
    * @param manualRandomSeed The random seed to use for the simulation
    * @return The worker that will load the simulation.
    */
   public SwingWorker<Simulation, Cooja.SimulationCreationException> createLoadSimWorker(Simulation.SimConfig cfg, final boolean quick,
-                                                                                         boolean rewriteCsc, Long manualRandomSeed) {
+                                                                                         Long manualRandomSeed) {
     assert java.awt.EventQueue.isDispatchThread() : "Call from AWT thread";
     final var configFile = cfg == null ? null : new File(cfg.file());
     final var autoStart = configFile == null && cooja.getSimulation().isRunning();
@@ -1292,8 +1290,8 @@ public class GUI {
             shouldRetry = false;
             PROGRESS_WARNINGS.clear();
             newSim = configFile == null
-                    ? cooja.createSimulation(cooja.getSimulation().getCfg(), root, quick, rewriteCsc, manualRandomSeed)
-                    : cooja.loadSimulationConfig(cfg, quick, rewriteCsc, manualRandomSeed);
+                    ? cooja.createSimulation(cooja.getSimulation().getCfg(), root, quick, manualRandomSeed)
+                    : cooja.loadSimulationConfig(cfg, quick, manualRandomSeed);
             if (newSim != null && autoStart) {
               newSim.startSimulation();
             }

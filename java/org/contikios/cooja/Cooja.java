@@ -1387,8 +1387,8 @@ public class Cooja extends Observable {
       Simulation sim = null;
       try {
         sim = config.vis
-                ? Cooja.gui.doLoadConfig(simConfig, simConfig.updateSim(), config.randomSeed)
-                : gui.loadSimulationConfig(simConfig, true, false, config.randomSeed);
+                ? Cooja.gui.doLoadConfig(simConfig, config.randomSeed)
+                : gui.loadSimulationConfig(simConfig, true, config.randomSeed);
       } catch (Exception e) {
         logger.fatal("Exception when loading simulation: ", e);
       }
@@ -1424,13 +1424,12 @@ public class Cooja extends Observable {
    * change mote type settings at this point.
    *
    * @param cfg Configuration to load
-   * @param rewriteCsc Should Cooja update the .csc file.
    * @param manualRandomSeed The random seed.
    * @return New simulation or null if recompiling failed or aborted
    * @throws SimulationCreationException If loading fails.
    * @see #saveSimulationConfig(File)
    */
-  Simulation loadSimulationConfig(Simulation.SimConfig cfg, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
+  Simulation loadSimulationConfig(Simulation.SimConfig cfg, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
     var file = new File(cfg.file());
     this.currentConfigFile = file; /* Used to generate config relative paths */
@@ -1449,7 +1448,7 @@ public class Cooja extends Observable {
         logger.fatal("Not a valid Cooja simulation config.");
         return null;
       }
-      sim = createSimulation(cfg, root, quick, rewriteCsc, manualRandomSeed);
+      sim = createSimulation(cfg, root, quick, manualRandomSeed);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not well-formed", e);
     } catch (IOException e) {
@@ -1464,12 +1463,11 @@ public class Cooja extends Observable {
    * @param cfg Configuration to use
    * @param root The XML config.
    * @param quick Do a quickstart.
-   * @param rewriteCsc Should Cooja update the .csc file.
    * @param manualRandomSeed The random seed.
    * @throws SimulationCreationException If creation fails.
    * @return Simulation object.
    */
-  Simulation createSimulation(Simulation.SimConfig cfg, Element root, boolean quick, boolean rewriteCsc, Long manualRandomSeed)
+  Simulation createSimulation(Simulation.SimConfig cfg, Element root, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
     boolean projectsOk = verifyProjects(root);
 
@@ -1485,7 +1483,7 @@ public class Cooja extends Observable {
       }
     }
     // Only renumber motes if their names can collide with existing motes.
-    if (!rewriteCsc) {
+    if (!cfg.updateSim()) {
       // Create old to new identifier mappings.
       var moteTypeIDMappings = new HashMap<String, String>();
       var reserved = new HashSet<>(readNames);
@@ -1561,12 +1559,9 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Saves current simulation configuration to given file and notifies
-   * observers.
+   * Saves current simulation configuration to given file and notifies observers.
    *
-   * @see #loadSimulationConfig(Simulation.SimConfig, boolean, boolean, Long)
-   * @param file
-   *          File to write
+   * @param file File to write
    */
    void saveSimulationConfig(File file) {
     this.currentConfigFile = file; /* Used to generate config relative paths */
