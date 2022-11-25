@@ -140,7 +140,6 @@ public class Cooja extends Observable {
   private static final Logger logger = LogManager.getLogger(Cooja.class);
 
   public static File externalToolsUserSettingsFile = null;
-  private static boolean externalToolsUserSettingsFileReadOnly = false;
 
   // External tools setting names
   public static Properties defaultExternalToolsSettings;
@@ -1203,7 +1202,7 @@ public class Cooja extends Observable {
    * Save external tools user settings to file.
    */
   public static void saveExternalToolsUserSettings() {
-    if (externalToolsUserSettingsFileReadOnly || externalToolsUserSettingsFile == null) {
+    if (externalToolsUserSettingsFile == null) {
       return;
     }
     var differingSettings = getDifferingExternalToolsSettings();
@@ -1358,7 +1357,6 @@ public class Cooja extends Observable {
    */
   public static void go(Config config) {
     configuration = config;
-    externalToolsUserSettingsFileReadOnly = config.externalToolsConfig != null;
     externalToolsUserSettingsFile = config.externalToolsConfig == null
             ? new File(System.getProperty("user.home"), ".cooja.user.properties")
             : new File(config.externalToolsConfig);
