@@ -1170,19 +1170,33 @@ public class Cooja extends Observable {
     if (externalToolsUserSettingsFile == null || !externalToolsUserSettingsFile.exists()) {
       return;
     }
-
+    var settings = new Properties();
     try (var in = new FileInputStream(externalToolsUserSettingsFile)) {
-      Properties settings = new Properties();
       settings.load(in);
-
-      Enumeration<Object> en = settings.keys();
-      while (en.hasMoreElements()) {
-        String key = (String) en.nextElement();
-        setExternalToolsSetting(key, settings.getProperty(key));
-      }
     } catch (IOException e) {
       logger.warn("Error when reading user settings from: " + externalToolsUserSettingsFile);
+      return;
     }
+    var en = settings.keys();
+    while (en.hasMoreElements()) {
+      String key = (String) en.nextElement();
+      setExternalToolsSetting(key, settings.getProperty(key));
+    }
+  }
+
+  /** Returns the external tools settings that differ from default. */
+  public static Properties getDifferingExternalToolsSettings() {
+    var differingSettings = new Properties();
+    var keyEnum = currentExternalToolsSettings.keys();
+    while (keyEnum.hasMoreElements()) {
+      String key = (String) keyEnum.nextElement();
+      String defaultSetting = getExternalToolsDefaultSetting(key, "");
+      String currentSetting = currentExternalToolsSettings.getProperty(key, "");
+      if (!defaultSetting.equals(currentSetting)) {
+        differingSettings.setProperty(key, currentSetting);
+      }
+    }
+    return differingSettings;
   }
 
   /**
@@ -1192,19 +1206,8 @@ public class Cooja extends Observable {
     if (externalToolsUserSettingsFileReadOnly || externalToolsUserSettingsFile == null) {
       return;
     }
-
+    var differingSettings = getDifferingExternalToolsSettings();
     try (var out = new FileOutputStream(externalToolsUserSettingsFile)) {
-      Properties differingSettings = new Properties();
-      var keyEnum = currentExternalToolsSettings.keys();
-      while (keyEnum.hasMoreElements()) {
-        String key = (String) keyEnum.nextElement();
-        String defaultSetting = getExternalToolsDefaultSetting(key, "");
-        String currentSetting = currentExternalToolsSettings.getProperty(key, "");
-        if (!defaultSetting.equals(currentSetting)) {
-          differingSettings.setProperty(key, currentSetting);
-        }
-      }
-
       differingSettings.store(out, "Cooja External Tools (User specific)");
     } catch (FileNotFoundException ex) {
       // Could not open settings file for writing, aborting
