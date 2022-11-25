@@ -176,7 +176,7 @@ public class Cooja extends Observable {
   static GUI gui = null;
 
   /** The Cooja startup configuration. */
-  public final Config configuration;
+  public static Config configuration = null;
   private Simulation mySimulation = null;
 
   private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
@@ -200,18 +200,16 @@ public class Cooja extends Observable {
 
   /**
    * Creates a new Cooja Simulator GUI and ensures Swing initialization is done in the right thread.
-   *
-   * @param cfg Cooja configuration
    */
-  public static Cooja makeCooja(Config cfg) throws ParseProjectsException {
-    if (cfg.vis) {
+  public static Cooja makeCooja() throws ParseProjectsException {
+    if (configuration.vis) {
       assert !java.awt.EventQueue.isDispatchThread() : "Call from regular context";
       return new RunnableInEDT<Cooja>() {
         @Override
         public Cooja work() {
           GUI.setLookAndFeel();
           try {
-            return new Cooja(cfg);
+            return new Cooja();
           } catch (ParseProjectsException e) {
             throw new RuntimeException("Could not parse projects", e);
           }
@@ -219,16 +217,13 @@ public class Cooja extends Observable {
       }.invokeAndWait();
     }
 
-    return new Cooja(cfg);
+    return new Cooja();
   }
 
   /**
    * Internal constructor for Cooja.
-   *
-   * @param cfg Cooja configuration
    */
-  private Cooja(Config cfg) throws ParseProjectsException {
-    configuration = cfg;
+  private Cooja() throws ParseProjectsException {
     // Load default and overwrite with user settings (if any).
     loadExternalToolsDefaultSettings();
     loadExternalToolsUserSettings();
@@ -264,7 +259,7 @@ public class Cooja extends Observable {
       }
     }
 
-    if (cfg.vis) {
+    if (configuration.vis) {
       gui = new GUI(this);
     } else {
       parseProjectConfig();
@@ -1363,6 +1358,7 @@ public class Cooja extends Observable {
    * @param config Cooja configuration
    */
   public static void go(Config config) {
+    configuration = config;
     externalToolsUserSettingsFileReadOnly = config.externalToolsConfig != null;
     if (config.externalToolsConfig == null) {
       externalToolsUserSettingsFile = new File(System.getProperty("user.home"), ".cooja.user.properties");
@@ -1375,7 +1371,7 @@ public class Cooja extends Observable {
 
     Cooja gui = null;
     try {
-      gui = makeCooja(config);
+      gui = makeCooja();
     } catch (Exception e) {
       logger.error(e.getMessage());
       System.exit(1);
