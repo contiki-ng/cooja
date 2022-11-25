@@ -227,7 +227,9 @@ class Main {
           System.exit(1);
         }
         var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || options.action.nogui != null));
-        simConfigs.add(new Simulation.SimConfig(file, Boolean.parseBoolean(autoStart), map));
+        var updateSim = map.getOrDefault("update-simulation", Boolean.toString(options.updateSimulation));
+        simConfigs.add(new Simulation.SimConfig(file, Boolean.parseBoolean(autoStart), Boolean.parseBoolean(updateSim),
+                map));
       }
     }
 
@@ -284,7 +286,7 @@ class Main {
     }
 
     var vis = options.action == null || options.action.quickstart != null;
-    var cfg = new Config(vis, options.randomSeed, options.externalToolsConfig, options.updateSimulation,
+    var cfg = new Config(vis, options.randomSeed, options.externalToolsConfig,
             options.logDir, options.contikiPath, options.coojaPath, options.javac, simConfigs);
     // Configure logger
     if (options.logConfigFile == null) {

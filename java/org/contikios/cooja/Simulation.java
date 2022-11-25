@@ -1048,6 +1048,6 @@ public final class Simulation extends Observable {
   }
 
   /** Structure to hold the simulation parameters. */
-  public record SimConfig(String file, boolean autoStart,
+  public record SimConfig(String file, boolean autoStart, boolean updateSim,
                           Map<String, String> opts) {}
 }

@@ -411,7 +411,7 @@ public class GUI {
         var cfg = CreateSimDialog.showDialog(cooja, new CreateSimDialog.SimConfig(null, null,
                 false, 123456, 1000 * Simulation.MILLISECOND));
         if (cfg == null) return;
-        var config = new Simulation.SimConfig(null, false, new HashMap<>());
+        var config = new Simulation.SimConfig(null, false, false, new HashMap<>());
         Simulation sim;
         try {
           sim = new Simulation(config, cooja, cfg.title(), cooja.configuration.logDir(), cfg.generatedSeed(),
@@ -1138,7 +1138,7 @@ public class GUI {
 
     final var cfgFile = validateFileOrSelectNew(file);
     if (cfgFile == null) return;
-    var cfg = new Simulation.SimConfig(cfgFile.getAbsolutePath(), false, new HashMap<>());
+    var cfg = new Simulation.SimConfig(cfgFile.getAbsolutePath(), false, false, new HashMap<>());
     var worker = createLoadSimWorker(cfg, quick, false, null);
     if (worker == null) return;
     worker.execute();
@@ -1240,7 +1240,7 @@ public class GUI {
     assert java.awt.EventQueue.isDispatchThread() : "Call from AWT thread";
     final var configFile = cfg == null ? null : new File(cfg.file());
     final var autoStart = configFile == null && cooja.getSimulation().isRunning();
-    if (configFile != null && !cooja.doRemoveSimulation(!cooja.configuration.updateSim())) {
+    if (configFile != null && !cooja.doRemoveSimulation(!cfg.updateSim())) {
       return null;
     }
 
