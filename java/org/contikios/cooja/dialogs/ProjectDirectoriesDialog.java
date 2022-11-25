@@ -95,7 +95,7 @@ import org.contikios.cooja.ProjectConfig;
 public class ProjectDirectoriesDialog extends JDialog {
 	private static final Logger logger = LogManager.getLogger(ProjectDirectoriesDialog.class);
 
-	private Cooja gui;
+  private final Cooja gui;
 
 	private final JTable table;
 	private final JTextArea projectInfo = new JTextArea("Extension information:");
@@ -113,15 +113,15 @@ public class ProjectDirectoriesDialog extends JDialog {
 	 * @return New COOJA projects, or null
 	 */
   public static COOJAProject[] showDialog(Cooja gui, COOJAProject[] currentProjects) {
-    ProjectDirectoriesDialog dialog = new ProjectDirectoriesDialog(currentProjects);
-		dialog.gui = gui;
+    var dialog = new ProjectDirectoriesDialog(gui, currentProjects);
 		dialog.setLocationRelativeTo(Cooja.getTopParentContainer());
 		dialog.setVisible(true);
 		return dialog.returnedProjects;
 	}
 
-  private ProjectDirectoriesDialog(COOJAProject[] projects) {
+  private ProjectDirectoriesDialog(Cooja cooja, COOJAProject[] projects) {
     super(Cooja.getTopParentContainer(), "Cooja extensions", ModalityType.APPLICATION_MODAL);
+    gui = cooja;
 		table = new JTable(new AbstractTableModel() {
 			@Override
 			public int getColumnCount() {
