@@ -219,10 +219,6 @@ public class Cooja extends Observable {
    * Internal constructor for Cooja.
    */
   private Cooja() throws ParseProjectsException {
-    // Load default and overwrite with user settings (if any).
-    loadExternalToolsDefaultSettings();
-    loadExternalToolsUserSettings();
-
     // Register default extension directories.
     String defaultProjectDirs = getExternalToolsSetting("DEFAULT_PROJECTDIRS", null);
     if (defaultProjectDirs != null && defaultProjectDirs.length() > 0) {
@@ -1330,6 +1326,9 @@ public class Cooja extends Observable {
     externalToolsUserSettingsFile = config.externalToolsConfig == null
             ? new File(System.getProperty("user.home"), ".cooja.user.properties")
             : new File(config.externalToolsConfig);
+    // Load default and overwrite with user settings (if any).
+    loadExternalToolsDefaultSettings();
+    loadExternalToolsUserSettings();
 
     Cooja gui = null;
     try {
