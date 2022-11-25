@@ -966,26 +966,8 @@ public class Cooja extends Observable {
   /**
    * Save current simulation configuration to disk
    */
-  public File doSaveConfig() {
-    mySimulation.stopSimulation();
+  public static File doSaveConfig() {
     return gui.doSaveConfig();
-  }
-
-  /**
-   * Quit program
-   *
-   * @param askForConfirmation Should we ask for confirmation before quitting?
-   */
-  public void doQuit(boolean askForConfirmation) {
-    if (getSimulation() != null && askForConfirmation) { // Save?
-      Object[] opts = {"Yes", "No", "Cancel"};
-      int n = JOptionPane.showOptionDialog(GUI.frame, "Do you want to save the current simulation?", WINDOW_TITLE,
-              JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, opts, opts[0]);
-      if (n == JOptionPane.CANCEL_OPTION || n == JOptionPane.YES_OPTION && doSaveConfig() == null) {
-        return;
-      }
-    }
-    doQuit(0);
   }
 
   public void doQuit(int exitCode) {
@@ -997,18 +979,6 @@ public class Cooja extends Observable {
       }
     } catch (Exception e) {
       logger.error("Failed to remove simulation/plugins on shutdown.", e);
-    }
-
-    /* Store frame size and position */
-    if (isVisualized()) {
-      setExternalToolsSetting("FRAME_SCREEN", GUI.frame.getGraphicsConfiguration().getDevice().getIDstring());
-      setExternalToolsSetting("FRAME_POS_X", String.valueOf(GUI.frame.getLocationOnScreen().x));
-      setExternalToolsSetting("FRAME_POS_Y", String.valueOf(GUI.frame.getLocationOnScreen().y));
-
-      var maximized = GUI.frame.getExtendedState() == JFrame.MAXIMIZED_BOTH;
-      setExternalToolsSetting("FRAME_WIDTH", String.valueOf(maximized ? Integer.MAX_VALUE : GUI.frame.getWidth()));
-      setExternalToolsSetting("FRAME_HEIGHT", String.valueOf(maximized ? Integer.MAX_VALUE : GUI.frame.getHeight()));
-      saveExternalToolsUserSettings();
     }
     System.exit(exitCode);
   }
