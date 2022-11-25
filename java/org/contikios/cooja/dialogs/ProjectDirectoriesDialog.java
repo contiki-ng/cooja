@@ -473,10 +473,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 		currentProjects.add(index, project);
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 	}
-	protected void removeProjectDir(int index) {
-		currentProjects.remove(index);
-		((AbstractTableModel)table.getModel()).fireTableDataChanged();
-	}
 	protected void removeProjectDir(File dir) {
 		COOJAProject[] ps = getProjects();
 		for (COOJAProject p: ps) {
