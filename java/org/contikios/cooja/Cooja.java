@@ -1146,9 +1146,6 @@ public class Cooja extends Observable {
    * Save external tools user settings to file.
    */
   public static void saveExternalToolsUserSettings() {
-    if (externalToolsUserSettingsFile == null) {
-      return;
-    }
     var differingSettings = getDifferingExternalToolsSettings();
     try (var out = new FileOutputStream(externalToolsUserSettingsFile)) {
       differingSettings.store(out, "Cooja External Tools (User specific)");
