@@ -377,7 +377,7 @@ public class GUI {
         } else if (source == reloadButton) {
           reloadCurrentSimulation(cooja.getSimulation().getRandomSeed());
         }
-        java.awt.EventQueue.invokeLater(() -> toolbarListener.updateToolbar(source == reloadButton));
+        toolbarListener.updateToolbar(source == reloadButton);
       }
     };
     stepButton.addActionListener(buttonAction);
@@ -1440,21 +1440,19 @@ public class GUI {
   }
 
   public void updateProgress(boolean stoppedSimulation) {
-    java.awt.EventQueue.invokeLater(() -> toolbarListener.updateToolbar(stoppedSimulation));
+    toolbarListener.updateToolbar(stoppedSimulation);
   }
 
   public void updateGUIComponentState() {
-    java.awt.EventQueue.invokeLater(() -> {
-      // Update action state.
-      for (var a : guiActions) {
-        a.setEnabled(a.shouldBeEnabled());
-      }
+    // Update action state.
+    for (var a : guiActions) {
+      a.setEnabled(a.shouldBeEnabled());
+    }
 
-      // Mote and mote type menus.
-      menuMoteTypeClasses.setEnabled(cooja.getSimulation() != null);
-      menuMoteTypes.setEnabled(cooja.getSimulation() != null);
-      updateProgress(false);
-    });
+    // Mote and mote type menus.
+    menuMoteTypeClasses.setEnabled(cooja.getSimulation() != null);
+    menuMoteTypes.setEnabled(cooja.getSimulation() != null);
+    updateProgress(false);
   }
 
   private static void updateDesktopSize(final JDesktopPane desktop) {
