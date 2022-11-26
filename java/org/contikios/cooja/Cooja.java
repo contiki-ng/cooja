@@ -1294,12 +1294,12 @@ public class Cooja {
     int rv = 0;
     boolean autoQuit = !simConfigs.isEmpty() && !config.vis;
     for (var simConfig : simConfigs) {
-      logger.info("Loading " + simConfig.file() + " random seed: " + config.randomSeed);
+      logger.info("Loading " + simConfig.file() + " random seed: " + simConfig.randomSeed());
       Simulation sim = null;
       try {
         sim = config.vis
-                ? Cooja.gui.doLoadConfig(simConfig, config.randomSeed)
-                : gui.loadSimulationConfig(simConfig, true, config.randomSeed);
+                ? Cooja.gui.doLoadConfig(simConfig, simConfig.randomSeed())
+                : gui.loadSimulationConfig(simConfig, true, simConfig.randomSeed());
       } catch (Exception e) {
         logger.fatal("Exception when loading simulation: ", e);
       }
@@ -1916,6 +1916,6 @@ public class Cooja {
    * When SimConfig contains an identical field, these values are the default
    * values when creating a new simulation in the File menu.
    */
-  public record Config(boolean vis, Long randomSeed, String externalToolsConfig,
+  public record Config(boolean vis, String externalToolsConfig,
                        String logDir, String contikiPath, String coojaPath, String javac) {}
 }

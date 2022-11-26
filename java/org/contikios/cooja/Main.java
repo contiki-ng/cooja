@@ -245,11 +245,12 @@ class Main {
         System.err.println("File '" + file + "' does not exist");
         System.exit(1);
       }
+      var randomSeed = map.get("random-seed");
       var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || !options.gui));
       var updateSim = map.getOrDefault("update-simulation", Boolean.toString(options.updateSimulation));
       var logDir = map.getOrDefault("logdir", options.logDir);
-      simConfigs.add(new Simulation.SimConfig(file, Boolean.parseBoolean(autoStart), Boolean.parseBoolean(updateSim),
-                                              logDir, map));
+      simConfigs.add(new Simulation.SimConfig(file, randomSeed == null ? options.randomSeed : Long.parseLong(randomSeed),
+              Boolean.parseBoolean(autoStart), Boolean.parseBoolean(updateSim), logDir, map));
     }
 
     if (options.logConfigFile != null && !Files.exists(Path.of(options.logConfigFile))) {
@@ -299,7 +300,7 @@ class Main {
       options.logName += ".log";
     }
 
-    var cfg = new Config(options.gui, options.randomSeed, options.externalUserConfig,
+    var cfg = new Config(options.gui, options.externalUserConfig,
             options.logDir, options.contikiPath, options.coojaPath, options.javac);
     // Configure logger
     if (options.logConfigFile == null) {
