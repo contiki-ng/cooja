@@ -288,7 +288,7 @@ class Main {
 
     var vis = options.action == null || options.action.quickstart != null;
     var cfg = new Config(vis, options.randomSeed, options.externalToolsConfig,
-            options.logDir, options.contikiPath, options.coojaPath, options.javac, simConfigs);
+            options.logDir, options.contikiPath, options.coojaPath, options.javac);
     // Configure logger
     if (options.logConfigFile == null) {
       ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
@@ -328,10 +328,10 @@ class Main {
       //        but go immediately returns which causes the log file to be closed
       //        while the simulation is still running.
       Configurator.initialize(builder.build());
-      Cooja.go(cfg);
+      Cooja.go(cfg, simConfigs);
     } else {
       Configurator.initialize("ConfigFile", options.logConfigFile);
-      Cooja.go(cfg);
+      Cooja.go(cfg, simConfigs);
     }
   }
 }
