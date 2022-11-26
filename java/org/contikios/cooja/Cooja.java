@@ -58,7 +58,6 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -534,8 +533,36 @@ public class Cooja extends Observable {
    */
   public ClassLoader getProjectClassLoader() throws ParseProjectsException {
     if (projectDirClassLoader == null) {
+      var parent = ClassLoader.getSystemClassLoader();
       try {
-        projectDirClassLoader = createClassLoader(ClassLoader.getSystemClassLoader(), currentProjects);
+        if (currentProjects.isEmpty()) {
+          projectDirClassLoader = parent;
+        } else { // Create class loader from JARs.
+          ArrayList<URL> urls = new ArrayList<>();
+          for (var project : currentProjects) {
+            File projectDir = project.dir;
+            try {
+              urls.add(new File(projectDir, "java").toURI().toURL());
+              // Read configuration to check if any JAR files should be loaded
+              var projectConfig = new ProjectConfig(false);
+              projectConfig.appendProjectDir(projectDir);
+              var projectJarFiles = projectConfig.getStringArrayValue(Cooja.class, "JARFILES");
+              if (projectJarFiles != null && projectJarFiles.length > 0) {
+                for (String jarfile : projectJarFiles) {
+                  File jarpath = findJarFile(projectDir, jarfile);
+                  if (jarpath == null) {
+                    throw new FileNotFoundException(jarfile);
+                  }
+                  urls.add(jarpath.toURI().toURL());
+                }
+              }
+            } catch (Exception e) {
+              logger.fatal("Error when trying to read JAR-file in " + projectDir + ": " + e);
+              throw new ClassLoaderCreationException("Error when trying to read JAR-file in " + projectDir, e);
+            }
+          }
+          projectDirClassLoader = URLClassLoader.newInstance(urls.toArray(new URL[0]), parent);
+        }
       } catch (ClassLoaderCreationException e) {
         throw new ParseProjectsException("Error when creating class loader", e);
       }
@@ -1190,43 +1217,6 @@ public class Cooja extends Observable {
       fp = new File(projectDir, "lib/" + jarfile);
     }
     return fp.exists() ? fp : null;
-  }
-
-  private static ClassLoader createClassLoader(ClassLoader parent, Collection<COOJAProject> projects)
-  throws ClassLoaderCreationException {
-    if (projects == null || projects.isEmpty()) {
-      return parent;
-    }
-
-    /* Create class loader from JARs */
-    ArrayList<URL> urls = new ArrayList<>();
-    for (COOJAProject project: projects) {
-    	File projectDir = project.dir;
-      try {
-        urls.add(new File(projectDir, "java").toURI().toURL());
-
-        // Read configuration to check if any JAR files should be loaded
-        ProjectConfig projectConfig = new ProjectConfig(false);
-        projectConfig.appendProjectDir(projectDir);
-        String[] projectJarFiles = projectConfig.getStringArrayValue(
-            Cooja.class, "JARFILES");
-        if (projectJarFiles != null && projectJarFiles.length > 0) {
-          for (String jarfile : projectJarFiles) {
-            File jarpath = findJarFile(projectDir, jarfile);
-            if (jarpath == null) {
-              throw new FileNotFoundException(jarfile);
-            }
-            urls.add(jarpath.toURI().toURL());
-          }
-        }
-
-      } catch (Exception e) {
-        logger.fatal("Error when trying to read JAR-file in " + projectDir
-            + ": " + e);
-        throw new ClassLoaderCreationException("Error when trying to read JAR-file in " + projectDir, e);
-      }
-    }
-    return URLClassLoader.newInstance(urls.toArray(new URL[0]), parent);
   }
 
   /**
