@@ -305,7 +305,7 @@ public class Cooja extends Observable {
    */
   public static void updateProgress(boolean stoppedSimulation) {
     if (gui != null) {
-      gui.updateProgress(stoppedSimulation);
+      java.awt.EventQueue.invokeLater(() -> gui.updateProgress(stoppedSimulation));
     }
   }
 
@@ -314,7 +314,7 @@ public class Cooja extends Observable {
    */
   static void updateGUIComponentState() {
     if (gui != null) {
-      gui.updateGUIComponentState();
+      java.awt.EventQueue.invokeLater(() -> gui.updateGUIComponentState());
     }
   }
 
