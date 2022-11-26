@@ -1324,8 +1324,9 @@ public class Cooja extends Observable {
    * Load configurations and create a GUI.
    *
    * @param config Cooja configuration
+   * @param simConfigs Simulation configurations
    */
-  public static void go(Config config) {
+  public static void go(Config config, List<Simulation.SimConfig> simConfigs) {
     configuration = config;
     externalToolsUserSettingsFile = config.externalToolsConfig == null
             ? new File(System.getProperty("user.home"), ".cooja.user.properties")
@@ -1340,8 +1341,8 @@ public class Cooja extends Observable {
     }
     // Check if simulator should be quick-started.
     int rv = 0;
-    boolean autoQuit = !config.configs.isEmpty() && !config.vis;
-    for (var simConfig : config.configs) {
+    boolean autoQuit = !simConfigs.isEmpty() && !config.vis;
+    for (var simConfig : simConfigs) {
       Simulation sim = null;
       try {
         sim = config.vis
@@ -2042,6 +2043,5 @@ public class Cooja extends Observable {
    * values when creating a new simulation in the File menu.
    */
   public record Config(boolean vis, Long randomSeed, String externalToolsConfig,
-                       String logDir, String contikiPath, String coojaPath, String javac,
-                       List<Simulation.SimConfig> configs) {}
+                       String logDir, String contikiPath, String coojaPath, String javac) {}
 }
