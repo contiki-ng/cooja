@@ -61,6 +61,12 @@ import java.nio.file.Paths;
         "OS: ${os.name} ${os.version} ${os.arch}"})
 class Main {
   /**
+   * Option for specifying if a GUI should be used.
+   */
+  @Option(names = "--gui", description = "use graphical mode", negatable = true)
+  Boolean gui;
+
+  /**
    * Option for specifying log4j2 config file.
    */
   @Option(names = "-log4j2", paramLabel = "FILE", description = "the log4j2 config file")
@@ -168,19 +174,20 @@ class Main {
       commandLine.printVersionHelp(System.out);
       return;
     }
+    // Let gui control GUI mode, otherwise use -nogui as indicator for headless mode.
+    options.gui = options.gui == null ? options.action == null || options.action.nogui == null : options.gui;
 
-    if ((options.action == null || options.action.nogui == null) &&
-        GraphicsEnvironment.isHeadless()) {
+    if (options.gui && GraphicsEnvironment.isHeadless()) {
       System.err.println("Trying to start GUI in headless environment, aborting");
       System.exit(1);
     }
 
-    if (options.updateSimulation && (options.action == null || options.action.quickstart == null)) {
-      System.err.println("Can only update simulation with -quickstart");
+    if (options.updateSimulation && !options.gui) {
+      System.err.println("Can only update simulation with --gui");
       System.exit(1);
     }
 
-    if (options.action != null && options.action.nogui != null) {
+    if (!options.gui) {
       // Ensure no UI is used by Java
       System.setProperty("java.awt.headless", "true");
       Path logDirPath = Path.of(options.logDir);
@@ -226,7 +233,7 @@ class Main {
           System.err.println("File '" + file + "' does not exist");
           System.exit(1);
         }
-        var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || options.action.nogui != null));
+        var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || !options.gui));
         var updateSim = map.getOrDefault("update-simulation", Boolean.toString(options.updateSimulation));
         var logDir = map.getOrDefault("logdir", options.logDir);
         simConfigs.add(new Simulation.SimConfig(file, Boolean.parseBoolean(autoStart), Boolean.parseBoolean(updateSim),
@@ -286,8 +293,7 @@ class Main {
       options.logName += ".log";
     }
 
-    var vis = options.action == null || options.action.quickstart != null;
-    var cfg = new Config(vis, options.randomSeed, options.externalToolsConfig,
+    var cfg = new Config(options.gui, options.randomSeed, options.externalToolsConfig,
             options.logDir, options.contikiPath, options.coojaPath, options.javac);
     // Configure logger
     if (options.logConfigFile == null) {
