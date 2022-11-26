@@ -44,7 +44,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -219,10 +218,6 @@ public class Cooja extends Observable {
    * Internal constructor for Cooja.
    */
   private Cooja() throws ParseProjectsException {
-    // Load default and overwrite with user settings (if any).
-    loadExternalToolsDefaultSettings();
-    loadExternalToolsUserSettings();
-
     // Register default extension directories.
     String defaultProjectDirs = getExternalToolsSetting("DEFAULT_PROJECTDIRS", null);
     if (defaultProjectDirs != null && defaultProjectDirs.length() > 0) {
@@ -1132,27 +1127,6 @@ public class Cooja extends Observable {
     defaultExternalToolsSettings = (Properties) currentExternalToolsSettings.clone();
   }
 
-  /**
-   * Load user values from external properties file
-   */
-  private static void loadExternalToolsUserSettings() {
-    if (externalToolsUserSettingsFile == null || !externalToolsUserSettingsFile.exists()) {
-      return;
-    }
-    var settings = new Properties();
-    try (var in = new FileInputStream(externalToolsUserSettingsFile)) {
-      settings.load(in);
-    } catch (IOException e) {
-      logger.warn("Error when reading user settings from: " + externalToolsUserSettingsFile);
-      return;
-    }
-    var en = settings.keys();
-    while (en.hasMoreElements()) {
-      String key = (String) en.nextElement();
-      setExternalToolsSetting(key, settings.getProperty(key));
-    }
-  }
-
   /** Returns the external tools settings that differ from default. */
   public static Properties getDifferingExternalToolsSettings() {
     var differingSettings = new Properties();
@@ -1172,9 +1146,6 @@ public class Cooja extends Observable {
    * Save external tools user settings to file.
    */
   public static void saveExternalToolsUserSettings() {
-    if (externalToolsUserSettingsFile == null) {
-      return;
-    }
     var differingSettings = getDifferingExternalToolsSettings();
     try (var out = new FileOutputStream(externalToolsUserSettingsFile)) {
       differingSettings.store(out, "Cooja External Tools (User specific)");
@@ -1330,6 +1301,22 @@ public class Cooja extends Observable {
     externalToolsUserSettingsFile = config.externalToolsConfig == null
             ? new File(System.getProperty("user.home"), ".cooja.user.properties")
             : new File(config.externalToolsConfig);
+    // Load default and overwrite with user settings (if any).
+    loadExternalToolsDefaultSettings();
+    if (externalToolsUserSettingsFile.exists()) {
+      var settings = new Properties();
+      try (var in = new FileInputStream(externalToolsUserSettingsFile)) {
+        settings.load(in);
+      } catch (IOException e1) {
+        logger.warn("Error when reading user settings from: " + externalToolsUserSettingsFile);
+        System.exit(1);
+      }
+      var en = settings.keys();
+      while (en.hasMoreElements()) {
+        String key = (String) en.nextElement();
+        setExternalToolsSetting(key, settings.getProperty(key));
+      }
+    }
 
     Cooja gui = null;
     try {
