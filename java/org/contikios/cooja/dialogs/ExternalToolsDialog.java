@@ -35,8 +35,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import javax.swing.BorderFactory;
@@ -48,9 +46,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.Cooja;
 
 /**
@@ -60,12 +55,10 @@ import org.contikios.cooja.Cooja;
  * @author Fredrik Osterlind
  */
 public class ExternalToolsDialog extends JDialog {
-  private static final Logger logger = LogManager.getLogger(ExternalToolsDialog.class);
-
   private final static int LABEL_WIDTH = 220;
   private final static int LABEL_HEIGHT = 15;
 
-  private final JTextField[] textFields;
+  private final JTextField[] textFields = new JTextField[Cooja.getExternalToolsSettingsCount()];
 
   /** Creates a dialog for viewing/editing external tools settings. */
   public static void showDialog() {
@@ -85,39 +78,25 @@ public class ExternalToolsDialog extends JDialog {
     buttonPane.add(Box.createHorizontalGlue());
 
     var button = new JButton("Cancel");
-    button.setActionCommand("cancel");
-    var actionListener = new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("reset")) {
-          Cooja.loadExternalToolsDefaultSettings();
-          updateTextFields();
-          compareWithDefaults();
-        } else if (e.getActionCommand().equals("ok")) {
-          for (int i = 0; i < textFields.length; i++) {
-            Cooja.setExternalToolsSetting(Cooja.getExternalToolsSettingName(i), textFields[i].getText().trim());
-          }
-          Cooja.saveExternalToolsUserSettings();
-          ExternalToolsDialog.this.dispose();
-        } else if (e.getActionCommand().equals("cancel")) {
-          ExternalToolsDialog.this.dispose();
-        } else {
-          logger.error("Unhandled command: " + e.getActionCommand());
-        }
-      }
-    };
-    button.addActionListener(actionListener);
+    button.addActionListener(actionEvent -> dispose());
     buttonPane.add(button);
 
     button = new JButton("Reset");
-    button.setActionCommand("reset");
-    button.addActionListener(actionListener);
+    button.addActionListener(e -> {
+      Cooja.loadExternalToolsDefaultSettings();
+      updateTextFields();
+    });
     buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
     buttonPane.add(button);
 
     button = new JButton("Save");
-    button.setActionCommand("ok");
-    button.addActionListener(actionListener);
+    button.addActionListener(e -> {
+      for (int i = 0; i < textFields.length; i++) {
+        Cooja.setExternalToolsSetting(Cooja.getExternalToolsSettingName(i), textFields[i].getText().trim());
+      }
+      Cooja.saveExternalToolsUserSettings();
+      dispose();
+    });
     buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
     buttonPane.add(button);
 
@@ -131,7 +110,6 @@ public class ExternalToolsDialog extends JDialog {
         compareWithDefaults();
       }
     };
-    textFields = new JTextField[Cooja.getExternalToolsSettingsCount()];
     for (int i = 0; i < textFields.length; i++) {
       // Add text fields for every changeable property
       var smallPane = new JPanel();
@@ -155,7 +133,6 @@ public class ExternalToolsDialog extends JDialog {
 
     // Set actual used values into all text fields
     updateTextFields();
-    compareWithDefaults();
 
     mainPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -173,6 +150,7 @@ public class ExternalToolsDialog extends JDialog {
     for (int i = 0; i < textFields.length; i++) {
       textFields[i].setText(Cooja.getExternalToolsSetting(Cooja.getExternalToolsSettingName(i), ""));
     }
+    compareWithDefaults();
   }
 
   private void compareWithDefaults() {
