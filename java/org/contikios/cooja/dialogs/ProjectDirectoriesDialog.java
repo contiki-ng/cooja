@@ -208,8 +208,9 @@ public class ProjectDirectoriesDialog extends JDialog {
 							config.appendConfig(project.config);
 						}
 
-						ConfigViewer.showDialog(ProjectDirectoriesDialog.this, config);
-					} catch (Exception ex) {
+            var myDialog = new ConfigViewer(ProjectDirectoriesDialog.this, config);
+            myDialog.setVisible(true);
+          } catch (Exception ex) {
 						logger.fatal("Error when merging config: " + ex.getMessage(), ex);
           }
 				}
@@ -481,14 +482,12 @@ public class ProjectDirectoriesDialog extends JDialog {
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 		repaint();
 	}
-	private int getProjectListIndex(COOJAProject project) {
-		return currentProjects.indexOf(project);
-	}
-	public void selectListProject(File dir) {
+
+  public void selectListProject(File dir) {
 		/* Check if project exists */
 		for (COOJAProject p: currentProjects) {
 			if (dir.equals(p.dir)) {
-				int i = getProjectListIndex(p);
+        int i = currentProjects.indexOf(p);
 				if (i >= 0) {
 					table.getSelectionModel().setSelectionInterval(i, i);
 				}
@@ -921,12 +920,7 @@ class DirectoryTreePanel extends JPanel {
  * @author Fredrik Osterlind
  */
 class ConfigViewer extends JDialog {
-	public static void showDialog(Dialog parentDialog, ProjectConfig config) {
-		ConfigViewer myDialog = new ConfigViewer(parentDialog, config);
-		myDialog.setVisible(true);
-	}
-
-	private ConfigViewer(Dialog dialog, ProjectConfig config) {
+  public ConfigViewer(Dialog dialog, ProjectConfig config) {
 		super(dialog, "Merged project configuration", true);
 		JPanel configPane = new JPanel(new BorderLayout());
 
