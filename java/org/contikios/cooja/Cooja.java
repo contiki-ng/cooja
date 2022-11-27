@@ -140,7 +140,7 @@ public class Cooja extends Observable {
   public static File externalToolsUserSettingsFile = null;
 
   // External tools setting names
-  public static Properties defaultExternalToolsSettings;
+  private static final Properties defaultExternalToolsSettings = loadExternalToolsDefaultSettings();
   public static Properties currentExternalToolsSettings;
 
   static GUI gui = null;
@@ -1029,7 +1029,7 @@ public class Cooja extends Observable {
   /**
    * Load external tools settings from default file.
    */
-  public static void loadExternalToolsDefaultSettings() {
+  public static Properties loadExternalToolsDefaultSettings() {
     Properties settings = new Properties();
     settings.put("PATH_COOJA", "./");
     settings.put("PATH_CONTIKI", "../../");
@@ -1092,7 +1092,7 @@ public class Cooja extends Observable {
       }
     }
     currentExternalToolsSettings = settings;
-    defaultExternalToolsSettings = (Properties) currentExternalToolsSettings.clone();
+    return settings;
   }
 
   /** Returns the external tools settings that differ from default. */
