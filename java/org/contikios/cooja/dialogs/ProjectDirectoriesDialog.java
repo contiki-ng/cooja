@@ -99,7 +99,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 	private final JTable table;
 	private final JTextArea projectInfo = new JTextArea("Extension information:");
-	private final DirectoryTreePanel treePanel;
 
 	private final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
 	private COOJAProject[] returnedProjects = null;
@@ -121,6 +120,7 @@ public class ProjectDirectoriesDialog extends JDialog {
   private ProjectDirectoriesDialog(Cooja cooja, COOJAProject[] projects) {
     super(Cooja.getTopParentContainer(), "Cooja extensions", ModalityType.APPLICATION_MODAL);
     gui = cooja;
+    final var treePanel = new DirectoryTreePanel(this);
 		table = new JTable(new AbstractTableModel() {
 			@Override
 			public int getColumnCount() {
@@ -280,8 +280,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 		/* Center: Tree and list*/
 		{
-			treePanel = new DirectoryTreePanel(this);
-
 			sortPane = new JPanel(new BorderLayout());
 			button = new JButton("Move up");
 			button.addActionListener(new ActionListener() {
