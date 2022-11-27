@@ -37,7 +37,6 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -608,18 +607,16 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       String str = filterTextField.getText();
       setFilter(str);
       // Autoscroll.
-      SwingUtilities.invokeLater(() -> {
-        int s = logTable.getSelectedRow();
-        if (s < 0) {
-          return;
-        }
-        s = logTable.getRowSorter().convertRowIndexToView(s);
-        if (s < 0) {
-          return;
-        }
-        int v = logTable.getRowHeight()*s;
-        logTable.scrollRectToVisible(new Rectangle(0, v-5, 1, v+5));
-      });
+      int s = logTable.getSelectedRow();
+      if (s < 0) {
+        return;
+      }
+      s = logTable.getRowSorter().convertRowIndexToView(s);
+      if (s < 0) {
+        return;
+      }
+      int v = logTable.getRowHeight() * s;
+      logTable.scrollRectToVisible(new Rectangle(0, v - 5, 1, v + 5));
     });
     filterPanel.add(Box.createHorizontalStrut(2));
 
