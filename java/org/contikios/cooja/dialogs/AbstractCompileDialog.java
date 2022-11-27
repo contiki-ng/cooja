@@ -126,16 +126,13 @@ public abstract class AbstractCompileDialog extends JDialog {
     this.moteType = moteType;
     this.targetName = cfg.targetName();
 
-    JPanel mainPanel = new JPanel(new BorderLayout());
-    JLabel label;
-
     /* Top: Contiki source */
     JPanel topPanel = new JPanel();
     topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
     topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
     Box descriptionBox = Box.createHorizontalBox();
-    label = new JLabel("Description:");
+    var label = new JLabel("Description:");
     label.setPreferredSize(LABEL_DIMENSION);
     descriptionBox.add(label);
     descriptionField.setText("[enter mote type description]");
@@ -353,6 +350,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     }
 
     /* Build panel */
+    var mainPanel = new JPanel(new BorderLayout());
     mainPanel.add(BorderLayout.NORTH, topPanel);
     mainPanel.add(BorderLayout.CENTER, tabbedPane);
     mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
