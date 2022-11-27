@@ -145,30 +145,6 @@ public abstract class AbstractCompileDialog extends JDialog {
     label = new JLabel("Contiki process / Firmware:");
     label.setPreferredSize(LABEL_DIMENSION);
     sourcePanel.add(label);
-    DocumentListener contikiFieldListener = new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        fileSelected(contikiField.getText());
-      }
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        fileSelected(contikiField.getText());
-      }
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        fileSelected(contikiField.getText());
-      }
-      private void fileSelected(String name) {
-        if (!Files.exists(Path.of(name))) {
-          setDialogState(DialogState.NO_SELECTION);
-          return;
-        }
-        lastFile = new File(name);
-        Cooja.setExternalToolsSetting("COMPILE_LAST_FILE", gui.createPortablePath(lastFile).getPath());
-        setDialogState(name.endsWith(".c") || !canLoadFirmware(name)
-                ? DialogState.SELECTED_SOURCE : DialogState.SELECTED_FIRMWARE);
-      }
-    };
     sourcePanel.add(contikiField);
     JButton browseButton = new JButton("Browse");
     browseButton.addActionListener(e -> {
@@ -371,7 +347,30 @@ public abstract class AbstractCompileDialog extends JDialog {
     descriptionField.select(0, descriptionField.getText().length());
 
     /* Add listener only after restoring old config */
-    contikiField.getDocument().addDocumentListener(contikiFieldListener);
+    contikiField.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        fileSelected(contikiField.getText());
+      }
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        fileSelected(contikiField.getText());
+      }
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        fileSelected(contikiField.getText());
+      }
+      private void fileSelected(String name) {
+        if (!Files.exists(Path.of(name))) {
+          setDialogState(DialogState.NO_SELECTION);
+          return;
+        }
+        lastFile = new File(name);
+        Cooja.setExternalToolsSetting("COMPILE_LAST_FILE", gui.createPortablePath(lastFile).getPath());
+        setDialogState(name.endsWith(".c") || !canLoadFirmware(name)
+                ? DialogState.SELECTED_SOURCE : DialogState.SELECTED_FIRMWARE);
+      }
+    });
 
     /* Final touches: respect window size, focus on description etc */
     Rectangle maxSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
