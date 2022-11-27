@@ -728,26 +728,20 @@ public class RadioLogger extends VisPlugin {
    * @param time Start time
    */
   public void trySelectTime(final long time) {
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        if (dataTable.getRowCount() == 0) {
-          return;
-        }
-        for (int ai = 0; ai < model.getRowCount(); ai++) {
-          int index = dataTable.convertRowIndexToModel(ai);
-          if (connections.get(index).endTime < time) {
-            continue;
-          }
-
-          dataTable.scrollRectToVisible(dataTable.getCellRect(ai, 0, true));
-          dataTable.setRowSelectionInterval(ai, ai);
-          return;
-        }
-        dataTable.scrollRectToVisible(dataTable.getCellRect(dataTable.getRowCount() - 1, 0, true));
-        dataTable.setRowSelectionInterval(dataTable.getRowCount() - 1, dataTable.getRowCount() - 1);
+    if (dataTable.getRowCount() == 0) {
+      return;
+    }
+    for (int ai = 0; ai < model.getRowCount(); ai++) {
+      int index = dataTable.convertRowIndexToModel(ai);
+      if (connections.get(index).endTime < time) {
+        continue;
       }
-    });
+      dataTable.scrollRectToVisible(dataTable.getCellRect(ai, 0, true));
+      dataTable.setRowSelectionInterval(ai, ai);
+      return;
+    }
+    dataTable.scrollRectToVisible(dataTable.getCellRect(dataTable.getRowCount() - 1, 0, true));
+    dataTable.setRowSelectionInterval(dataTable.getRowCount() - 1, dataTable.getRowCount() - 1);
   }
 
   private void applyFilter() {
