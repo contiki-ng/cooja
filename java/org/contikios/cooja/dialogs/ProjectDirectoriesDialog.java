@@ -670,7 +670,6 @@ class DirectoryTreePanel extends JPanel {
 				String projectCanonical = project.dir.getCanonicalPath();
 				TreePath tp = new TreePath(tree.getModel().getRoot());
 				tp = buildTreePath(projectCanonical, treeRoot, tp, tree);
-				/*logger.info("Expanding: " + tp);*/
 				if (tp != null) {
 					tree.expandPath(tp.getParentPath());
 				}
