@@ -685,8 +685,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     for (Element element : configXML) {
       String name = element.getName();
       if ("filter".equals(name)) {
-        final String str = element.getText();
-        EventQueue.invokeLater(() -> setFilter(str));
+        setFilter(element.getText());
       } else if ("coloring".equals(name)) {
         backgroundColors = true;
         colorCheckbox.setSelected(true);
