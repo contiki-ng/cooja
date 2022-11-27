@@ -632,14 +632,11 @@ class DirectoryTreePanel extends JPanel {
 				}
 
 				if (pd.isProject()) {
-					/* Remove project */
 					DirectoryTreePanel.this.parent.removeProjectDir(pd.dir);
-					DirectoryTreePanel.this.parent.repaint();
 				} else if (pd.containsConfig()) {
-					/* Add project */
 					DirectoryTreePanel.this.parent.addProjectDir(pd.dir);
-					DirectoryTreePanel.this.parent.repaint();
 				}
+        DirectoryTreePanel.this.parent.repaint();
 			}
 		});
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
