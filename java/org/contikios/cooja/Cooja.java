@@ -137,7 +137,16 @@ public class Cooja extends Observable {
 
   private static final Logger logger = LogManager.getLogger(Cooja.class);
 
+  private static final String PATH_CONFIG_IDENTIFIER = "[CONFIG_DIR]";
+
+  private static final String[][] PATH_IDENTIFIER = {
+          {"[CONTIKI_DIR]","PATH_CONTIKI",""},
+          {"[COOJA_DIR]","PATH_COOJA",""},
+          {"[APPS_DIR]","PATH_APPS","apps"}
+  };
+
   public static File externalToolsUserSettingsFile = null;
+  private File currentConfigFile = null; /* Used to generate config relative paths */
 
   // External tools setting names
   private static final Properties defaultExternalToolsSettings = getExternalToolsDefaultSettings();
@@ -1765,12 +1774,6 @@ public class Cooja extends Observable {
     return file;
   }
 
-  private final static String[][] PATH_IDENTIFIER = {
-	  {"[CONTIKI_DIR]","PATH_CONTIKI",""},
-	  {"[COOJA_DIR]","PATH_COOJA",""},
-	  {"[APPS_DIR]","PATH_APPS","apps"}
-  };
-
   private static File createContikiRelativePath(File file) {
     int elem = PATH_IDENTIFIER.length;
     File[] path = new File[elem];
@@ -1835,9 +1838,6 @@ public class Cooja extends Observable {
     	return null;
     }
   }
-
-  private final static String PATH_CONFIG_IDENTIFIER = "[CONFIG_DIR]";
-  public File currentConfigFile = null; /* Used to generate config relative paths */
 
   /**
    * Returns the config dir.
