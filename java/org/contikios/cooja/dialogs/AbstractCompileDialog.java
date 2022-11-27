@@ -39,7 +39,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -185,28 +184,17 @@ public abstract class AbstractCompileDialog extends JDialog {
         String path = Cooja.getExternalToolsSetting("COMPILE_LAST_FILE", null);
         if (path != null) {
           lastFile = gui.restorePortablePath(new File(path));
+        } else {
+          lastFile = new File(Cooja.getExternalToolsSetting("PATH_CONTIKI"), "examples/hello-world/hello-world.c");
         }
       }
-
-      /* Last file/directory */
-      if (lastFile != null) {
-        if (lastFile.isDirectory()) {
-          fc.setCurrentDirectory(lastFile);
-        } else if (lastFile.isFile() && lastFile.exists()) {
-          fc.setCurrentDirectory(lastFile.getParentFile());
-          fc.setSelectedFile(lastFile);
-        } else if (lastFile.isFile() && !lastFile.exists()) {
-          fc.setCurrentDirectory(lastFile.getParentFile());
-        }
-      } else {
-        File helloworldSourceFile =
-          new File(Cooja.getExternalToolsSetting("PATH_CONTIKI"), "examples/hello-world/hello-world.c");
-        try {
-          helloworldSourceFile = helloworldSourceFile.getCanonicalFile();
-          fc.setCurrentDirectory(helloworldSourceFile.getParentFile());
-          fc.setSelectedFile(helloworldSourceFile);
-        } catch (IOException e1) {
-        }
+      if (lastFile.isDirectory()) {
+        fc.setCurrentDirectory(lastFile);
+      } else if (lastFile.isFile() && lastFile.exists()) {
+        fc.setCurrentDirectory(lastFile.getParentFile());
+        fc.setSelectedFile(lastFile);
+      } else if (lastFile.isFile() && !lastFile.exists()) {
+        fc.setCurrentDirectory(lastFile.getParentFile());
       }
 
       fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
