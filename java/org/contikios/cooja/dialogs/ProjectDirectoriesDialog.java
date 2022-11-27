@@ -65,13 +65,8 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -99,7 +94,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 	private final JTable table;
 	private final JTextArea projectInfo = new JTextArea("Extension information:");
-	private final DirectoryTreePanel treePanel;
 
 	private final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
 	private COOJAProject[] returnedProjects = null;
@@ -121,6 +115,7 @@ public class ProjectDirectoriesDialog extends JDialog {
   private ProjectDirectoriesDialog(Cooja cooja, COOJAProject[] projects) {
     super(Cooja.getTopParentContainer(), "Cooja extensions", ModalityType.APPLICATION_MODAL);
     gui = cooja;
+    final var treePanel = new DirectoryTreePanel(this);
 		table = new JTable(new AbstractTableModel() {
 			@Override
 			public int getColumnCount() {
@@ -152,16 +147,13 @@ public class ProjectDirectoriesDialog extends JDialog {
     table.setFillsViewportHeight(true);
 		table.setTableHeader(null);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				if (table.getSelectedRow() < 0) {
-					return;
-				}
-				selectTreeProject(currentProjects.get(table.getSelectedRow()));
-				showProjectInfo(currentProjects.get(table.getSelectedRow()));
-			}
-		});
+    table.getSelectionModel().addListSelectionListener(e -> {
+      if (table.getSelectedRow() < 0) {
+        return;
+      }
+      treePanel.selectProject(currentProjects.get(table.getSelectedRow()).dir);
+      showProjectInfo(currentProjects.get(table.getSelectedRow()));
+    });
 		table.getColumnModel().getColumn(0).setPreferredWidth(30);
 		table.getColumnModel().getColumn(0).setMaxWidth(30);
 		table.getColumnModel().getColumn(1).setCellRenderer(new DefaultTableCellRenderer() {
@@ -181,8 +173,9 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 		/* Add current extensions */
 		for (COOJAProject project : projects) {
-			addProjectDir(project);
-		}
+      currentProjects.add(project);
+      ((AbstractTableModel)table.getModel()).fireTableDataChanged();
+    }
 
 		Box mainPane = Box.createVerticalBox();
 		Box buttonPane = Box.createHorizontalBox();
@@ -195,47 +188,38 @@ public class ProjectDirectoriesDialog extends JDialog {
 			buttonPane.add(Box.createHorizontalGlue());
 
 			button = new JButton("View config");
-			button.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					try {
-						/* Default config */
-						ProjectConfig config = new ProjectConfig(true);
+      button.addActionListener(e -> {
+        try {
+          /* Default config */
+          ProjectConfig config = new ProjectConfig(true);
 
-						/* Merge configs */
-						for (COOJAProject project : getProjects()) {
-							config.appendConfig(project.config);
-						}
-
-						ConfigViewer.showDialog(ProjectDirectoriesDialog.this, config);
-					} catch (Exception ex) {
-						logger.fatal("Error when merging config: " + ex.getMessage(), ex);
+          /* Merge configs */
+          for (COOJAProject project : getProjects()) {
+            config.appendConfig(project.config);
           }
-				}
-			});
+          var myDialog = new ConfigViewer(ProjectDirectoriesDialog.this, config);
+          myDialog.setVisible(true);
+        } catch (Exception ex) {
+          logger.fatal("Error when merging config: " + ex.getMessage(), ex);
+        }
+      });
 			buttonPane.add(button);
 			buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
 
 			button = new JButton("Cancel");
-			button.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					ProjectDirectoriesDialog.this.returnedProjects = null;
-					dispose();
-				}
-			});
+      button.addActionListener(e -> {
+        ProjectDirectoriesDialog.this.returnedProjects = null;
+        dispose();
+      });
 			buttonPane.add(button);
 
 			buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
 
 			button = new JButton("Apply for session");
-			button.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					ProjectDirectoriesDialog.this.returnedProjects = currentProjects.toArray(new COOJAProject[0]);
-					dispose();
-				}
-			});
+      button.addActionListener(e -> {
+        ProjectDirectoriesDialog.this.returnedProjects = currentProjects.toArray(new COOJAProject[0]);
+        dispose();
+      });
 			buttonPane.add(button);
 
 			buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -280,72 +264,59 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 		/* Center: Tree and list*/
 		{
-			treePanel = new DirectoryTreePanel(this);
-
 			sortPane = new JPanel(new BorderLayout());
 			button = new JButton("Move up");
-			button.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					int selectedIndex = table.getSelectedRow();
-					if (selectedIndex <= 0) {
-						return;
-					}
-					COOJAProject project = currentProjects.get(selectedIndex);
-					removeProjectDir(project);
-					addProjectDir(project, selectedIndex - 1);
-					table.getSelectionModel().setSelectionInterval(selectedIndex - 1, selectedIndex - 1);
-				}
-			});
+      button.addActionListener(e -> {
+        int selectedIndex = table.getSelectedRow();
+        if (selectedIndex <= 0) {
+          return;
+        }
+        COOJAProject project = currentProjects.get(selectedIndex);
+        removeProjectDir(project);
+        addProjectDir(project, selectedIndex - 1);
+        table.getSelectionModel().setSelectionInterval(selectedIndex - 1, selectedIndex - 1);
+      });
 			sortPane.add(BorderLayout.NORTH, button);
 			
 			button = new JButton("Move down");
-			button.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					int selectedIndex = table.getSelectedRow();
-					if (selectedIndex < 0) {
-						return;
-					}
-					if (selectedIndex >= currentProjects.size() - 1) {
-						return;
-					}
-					COOJAProject project = currentProjects.get(selectedIndex);
-					removeProjectDir(project);
-					addProjectDir(project, selectedIndex + 1);
-					table.getSelectionModel().setSelectionInterval(selectedIndex + 1, selectedIndex + 1);
-				}
-			});
+      button.addActionListener(e -> {
+        int selectedIndex = table.getSelectedRow();
+        if (selectedIndex < 0) {
+          return;
+        }
+        if (selectedIndex >= currentProjects.size() - 1) {
+          return;
+        }
+        COOJAProject project = currentProjects.get(selectedIndex);
+        removeProjectDir(project);
+        addProjectDir(project, selectedIndex + 1);
+        table.getSelectionModel().setSelectionInterval(selectedIndex + 1, selectedIndex + 1);
+      });
 			sortPane.add(BorderLayout.SOUTH, button);
 
 			{
 				button = new JButton("Remove");
-				
-				button.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						int selectedIndex = table.getSelectedRow();
-						if (selectedIndex < 0) {
-							return;
-						}
-						if (selectedIndex >= currentProjects.size()) {
-							return;
-						}
-						COOJAProject project = currentProjects.get(selectedIndex);
-
-						String s1 = "Remove";
-						String s2 = "Cancel";
-						Object[] options = { s1, s2 };
-						int n = JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
-								"Remove Cooja project?\n" + project,
-								"Remove Cooja project?", JOptionPane.YES_NO_OPTION,
-								JOptionPane.WARNING_MESSAGE, null, options, s1);
-						if (n != JOptionPane.YES_OPTION) {
-							return;
-						}
-						removeProjectDir(project);
-					}
-				});
+        button.addActionListener(e -> {
+          int selectedIndex = table.getSelectedRow();
+          if (selectedIndex < 0) {
+            return;
+          }
+          if (selectedIndex >= currentProjects.size()) {
+            return;
+          }
+          COOJAProject project = currentProjects.get(selectedIndex);
+          String s1 = "Remove";
+          String s2 = "Cancel";
+          Object[] options = {s1, s2};
+          int n = JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
+                  "Remove Cooja project?\n" + project,
+                  "Remove Cooja project?", JOptionPane.YES_NO_OPTION,
+                  JOptionPane.WARNING_MESSAGE, null, options, s1);
+          if (n != JOptionPane.YES_OPTION) {
+            return;
+          }
+          removeProjectDir(project);
+        });
 				JPanel p = new JPanel(new BorderLayout());
 				p.add(BorderLayout.SOUTH, button);
 				sortPane.add(BorderLayout.CENTER, p);
@@ -364,14 +335,8 @@ public class ProjectDirectoriesDialog extends JDialog {
 			final JSplitPane listPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 			listPane.setLeftComponent(treePanel);
 			listPane.setRightComponent(projectPane);
-
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					projectPane.setDividerLocation(0.6);
-					listPane.setDividerLocation(0.5);
-				}
-			});
+      projectPane.setDividerLocation(0.6);
+      listPane.setDividerLocation(0.5);
 			mainPane.add(listPane);
 		}
 
@@ -457,10 +422,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 	public COOJAProject[] getProjects() {
 		return currentProjects.toArray(new COOJAProject[0]);
 	}
-	protected void addProjectDir(COOJAProject project) {
-		currentProjects.add(project);
-		((AbstractTableModel)table.getModel()).fireTableDataChanged();
-	}
 	protected void addProjectDir(File dir) {
     try {
       currentProjects.add(new COOJAProject(dir));
@@ -486,14 +447,12 @@ public class ProjectDirectoriesDialog extends JDialog {
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 		repaint();
 	}
-	private int getProjectListIndex(COOJAProject project) {
-		return currentProjects.indexOf(project);
-	}
-	public void selectListProject(File dir) {
+
+  public void selectListProject(File dir) {
 		/* Check if project exists */
 		for (COOJAProject p: currentProjects) {
 			if (dir.equals(p.dir)) {
-				int i = getProjectListIndex(p);
+        int i = currentProjects.indexOf(p);
 				if (i >= 0) {
 					table.getSelectionModel().setSelectionInterval(i, i);
 				}
@@ -501,9 +460,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 			}
 		}
 
-	}
-	public void selectTreeProject(COOJAProject project) {
-		treePanel.selectProject(project.dir);
 	}
 }
 
@@ -640,36 +596,30 @@ class DirectoryTreePanel extends JPanel {
 				}
 
 				if (pd.isProject()) {
-					/* Remove project */
 					DirectoryTreePanel.this.parent.removeProjectDir(pd.dir);
-					DirectoryTreePanel.this.parent.repaint();
 				} else if (pd.containsConfig()) {
-					/* Add project */
 					DirectoryTreePanel.this.parent.addProjectDir(pd.dir);
-					DirectoryTreePanel.this.parent.repaint();
 				}
+        DirectoryTreePanel.this.parent.repaint();
 			}
 		});
-		tree.addTreeSelectionListener(new TreeSelectionListener() {
-			@Override
-			public void valueChanged(TreeSelectionEvent e) {
-				TreePath selPath = e.getPath();
-				if (selPath == null) {
-					return;
-				}
-				Object o = selPath.getLastPathComponent();
-				if (!(o instanceof DefaultMutableTreeNode)) {
-					return;
-				}
-				if (!(((DefaultMutableTreeNode) o).getUserObject() instanceof TreeDirectory)) {
-					return;
-				}
-				TreeDirectory pd = (TreeDirectory) ((DefaultMutableTreeNode) o).getUserObject();
-				if (pd.isProject()) {
-					DirectoryTreePanel.this.parent.selectListProject(pd.dir);
-				}
-			}
-		});
+    tree.addTreeSelectionListener(e -> {
+      TreePath selPath = e.getPath();
+      if (selPath == null) {
+        return;
+      }
+      Object o = selPath.getLastPathComponent();
+      if (!(o instanceof DefaultMutableTreeNode)) {
+        return;
+      }
+      if (!(((DefaultMutableTreeNode) o).getUserObject() instanceof TreeDirectory)) {
+        return;
+      }
+      TreeDirectory pd = (TreeDirectory) ((DefaultMutableTreeNode) o).getUserObject();
+      if (pd.isProject()) {
+        DirectoryTreePanel.this.parent.selectListProject(pd.dir);
+      }
+    });
 
 		/* Try to expand current COOJA projects */
 		for (COOJAProject project: parent.getProjects()) {
@@ -681,7 +631,6 @@ class DirectoryTreePanel extends JPanel {
 				String projectCanonical = project.dir.getCanonicalPath();
 				TreePath tp = new TreePath(tree.getModel().getRoot());
 				tp = buildTreePath(projectCanonical, treeRoot, tp, tree);
-				/*logger.info("Expanding: " + tp);*/
 				if (tp != null) {
 					tree.expandPath(tp.getParentPath());
 				}
@@ -933,12 +882,7 @@ class DirectoryTreePanel extends JPanel {
  * @author Fredrik Osterlind
  */
 class ConfigViewer extends JDialog {
-	public static void showDialog(Dialog parentDialog, ProjectConfig config) {
-		ConfigViewer myDialog = new ConfigViewer(parentDialog, config);
-		myDialog.setVisible(true);
-	}
-
-	private ConfigViewer(Dialog dialog, ProjectConfig config) {
+  public ConfigViewer(Dialog dialog, ProjectConfig config) {
 		super(dialog, "Merged project configuration", true);
 		JPanel configPane = new JPanel(new BorderLayout());
 
