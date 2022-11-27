@@ -65,7 +65,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.TreeModelListener;
 import javax.swing.table.AbstractTableModel;
@@ -336,14 +335,8 @@ public class ProjectDirectoriesDialog extends JDialog {
 			final JSplitPane listPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 			listPane.setLeftComponent(treePanel);
 			listPane.setRightComponent(projectPane);
-
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					projectPane.setDividerLocation(0.6);
-					listPane.setDividerLocation(0.5);
-				}
-			});
+      projectPane.setDividerLocation(0.6);
+      listPane.setDividerLocation(0.5);
 			mainPane.add(listPane);
 		}
 
