@@ -105,7 +105,7 @@ public class ExternalToolsDialog extends JDialog {
 
     button = new JButton("Reset");
     button.addActionListener(e -> {
-      Cooja.loadExternalToolsDefaultSettings();
+      Cooja.resetExternalToolsSettings();
       updateTextFields();
     });
     buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));

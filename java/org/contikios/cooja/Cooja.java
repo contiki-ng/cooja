@@ -140,8 +140,8 @@ public class Cooja extends Observable {
   public static File externalToolsUserSettingsFile = null;
 
   // External tools setting names
-  private static final Properties defaultExternalToolsSettings = loadExternalToolsDefaultSettings();
-  public static Properties currentExternalToolsSettings;
+  private static final Properties defaultExternalToolsSettings = getExternalToolsDefaultSettings();
+  private static Properties currentExternalToolsSettings;
 
   static GUI gui = null;
 
@@ -1026,10 +1026,13 @@ public class Cooja extends Observable {
     currentExternalToolsSettings.setProperty(name, newVal);
   }
 
-  /**
-   * Load external tools settings from default file.
-   */
-  public static Properties loadExternalToolsDefaultSettings() {
+  /** Set the external tools settings to default. */
+  public static void resetExternalToolsSettings() {
+    currentExternalToolsSettings = (Properties) defaultExternalToolsSettings.clone();
+  }
+
+  /** Get default external tools settings. */
+  private static Properties getExternalToolsDefaultSettings() {
     Properties settings = new Properties();
     settings.put("PATH_COOJA", "./");
     settings.put("PATH_CONTIKI", "../../");
@@ -1091,7 +1094,6 @@ public class Cooja extends Observable {
         logger.warn("Unknown system: " + osName + ", using Linux settings");
       }
     }
-    currentExternalToolsSettings = settings;
     return settings;
   }
 
@@ -1230,11 +1232,11 @@ public class Cooja extends Observable {
    */
   public static void go(Config config, List<Simulation.SimConfig> simConfigs) {
     configuration = config;
+    // Load default and overwrite with user settings (if any).
+    resetExternalToolsSettings();
     externalToolsUserSettingsFile = config.externalToolsConfig == null
             ? new File(System.getProperty("user.home"), ".cooja.user.properties")
             : new File(config.externalToolsConfig);
-    // Load default and overwrite with user settings (if any).
-    loadExternalToolsDefaultSettings();
     if (externalToolsUserSettingsFile.exists()) {
       var settings = new Properties();
       try (var in = new FileInputStream(externalToolsUserSettingsFile)) {
