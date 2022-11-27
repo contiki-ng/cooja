@@ -770,21 +770,18 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   }
 
   public void trySelectTime(final long time) {
-    java.awt.EventQueue.invokeLater(() -> {
-      for (int i=0; i < logs.size(); i++) {
-        if (logs.get(i).ev.getTime() < time) {
-          continue;
-        }
-
-        int view = logTable.convertRowIndexToView(i);
-        if (view < 0) {
-          continue;
-        }
-        logTable.scrollRectToVisible(logTable.getCellRect(view, 0, true));
-        logTable.setRowSelectionInterval(view, view);
-        return;
+    for (int i = 0; i < logs.size(); i++) {
+      if (logs.get(i).ev.getTime() < time) {
+        continue;
       }
-    });
+      int view = logTable.convertRowIndexToView(i);
+      if (view < 0) {
+        continue;
+      }
+      logTable.scrollRectToVisible(logTable.getCellRect(view, 0, true));
+      logTable.setRowSelectionInterval(view, view);
+      return;
+    }
   }
 
   private enum FilterState { NONE, PASS, REJECTED }
