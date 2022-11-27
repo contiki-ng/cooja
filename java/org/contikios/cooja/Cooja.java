@@ -172,7 +172,6 @@ public class Cooja extends Observable {
   public static Config configuration = null;
   private Simulation mySimulation = null;
 
-  private final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
   private final ArrayList<Plugin> startedPlugins = new ArrayList<>();
 
   // Platform configuration variables
@@ -396,7 +395,9 @@ public class Cooja extends Observable {
   public void reparseProjectConfig() throws ParseProjectsException {
     /* Remove current dependencies */
     moteTypeClasses.clear();
-    menuMotePluginClasses.clear();
+    if (gui != null) {
+      gui.menuMotePluginClasses.clear();
+    }
     pluginClasses.clear();
     positionerClasses.clear();
     radioMediumClasses.clear();
@@ -807,10 +808,6 @@ public class Cooja extends Observable {
     return plugin;
   }
 
-  List<Class<? extends Plugin>> getMenuMotePluginClasses() {
-    return menuMotePluginClasses;
-  }
-
   /**
    * Unregister a plugin class. Removes any plugin menu items links as well.
    *
@@ -818,7 +815,9 @@ public class Cooja extends Observable {
    */
   public void unregisterPlugin(Class<? extends Plugin> pluginClass) {
     pluginClasses.remove(pluginClass);
-    menuMotePluginClasses.remove(pluginClass);
+    if (gui != null) {
+      gui.menuMotePluginClasses.remove(pluginClass);
+    }
   }
 
   /**
@@ -836,7 +835,9 @@ public class Cooja extends Observable {
 
     switch (annotation.value()) {
       case MOTE_PLUGIN:
-        menuMotePluginClasses.add(pluginClass);
+        if (gui != null) {
+          gui.menuMotePluginClasses.add(pluginClass);
+        }
       case COOJA_PLUGIN:
       case COOJA_STANDARD_PLUGIN:
       case SIM_PLUGIN:

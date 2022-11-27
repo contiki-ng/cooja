@@ -123,6 +123,7 @@ public class GUI {
   private static JProgressBar PROGRESS_BAR = null;
   private static final ArrayList<String> PROGRESS_WARNINGS = new ArrayList<>();
 
+  final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
   private final JTextPane quickHelpTextPane;
   private final JMenu menuMoteTypeClasses;
   private final JMenu menuMoteTypes;
@@ -1097,7 +1098,7 @@ public class GUI {
 
   public JMenu createMotePluginsSubmenu(Mote mote) {
     JMenu menuMotePlugins = new JMenu("Mote tools for " + mote);
-    for (var motePluginClass: cooja.getMenuMotePluginClasses()) {
+    for (var motePluginClass: menuMotePluginClasses) {
       if (!Cooja.isMotePluginCompatible(motePluginClass, mote)) {
         continue;
       }
