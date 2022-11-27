@@ -181,8 +181,9 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 		/* Add current extensions */
 		for (COOJAProject project : projects) {
-			addProjectDir(project);
-		}
+      currentProjects.add(project);
+      ((AbstractTableModel)table.getModel()).fireTableDataChanged();
+    }
 
 		Box mainPane = Box.createVerticalBox();
 		Box buttonPane = Box.createHorizontalBox();
@@ -454,10 +455,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 	public COOJAProject[] getProjects() {
 		return currentProjects.toArray(new COOJAProject[0]);
-	}
-	protected void addProjectDir(COOJAProject project) {
-		currentProjects.add(project);
-		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 	}
 	protected void addProjectDir(File dir) {
     try {
