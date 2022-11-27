@@ -728,26 +728,20 @@ public class RadioLogger extends VisPlugin {
    * @param time Start time
    */
   public void trySelectTime(final long time) {
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        if (dataTable.getRowCount() == 0) {
-          return;
-        }
-        for (int ai = 0; ai < model.getRowCount(); ai++) {
-          int index = dataTable.convertRowIndexToModel(ai);
-          if (connections.get(index).endTime < time) {
-            continue;
-          }
-
-          dataTable.scrollRectToVisible(dataTable.getCellRect(ai, 0, true));
-          dataTable.setRowSelectionInterval(ai, ai);
-          return;
-        }
-        dataTable.scrollRectToVisible(dataTable.getCellRect(dataTable.getRowCount() - 1, 0, true));
-        dataTable.setRowSelectionInterval(dataTable.getRowCount() - 1, dataTable.getRowCount() - 1);
+    if (dataTable.getRowCount() == 0) {
+      return;
+    }
+    for (int ai = 0; ai < model.getRowCount(); ai++) {
+      int index = dataTable.convertRowIndexToModel(ai);
+      if (connections.get(index).endTime < time) {
+        continue;
       }
-    });
+      dataTable.scrollRectToVisible(dataTable.getCellRect(ai, 0, true));
+      dataTable.setRowSelectionInterval(ai, ai);
+      return;
+    }
+    dataTable.scrollRectToVisible(dataTable.getCellRect(dataTable.getRowCount() - 1, 0, true));
+    dataTable.setRowSelectionInterval(dataTable.getRowCount() - 1, dataTable.getRowCount() - 1);
   }
 
   private void applyFilter() {
@@ -986,13 +980,8 @@ public class RadioLogger extends VisPlugin {
         String analyzerName = element.getAttributeValue("name");
         final Action action;
         if (analyzerName != null && ((action = analyzerMap.get(analyzerName)) != null)) {
-          java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              action.putValue(Action.SELECTED_KEY, Boolean.TRUE);
-              action.actionPerformed(null);
-            }
-          });
+          action.putValue(Action.SELECTED_KEY, Boolean.TRUE);
+          action.actionPerformed(null);
         }
       } else if (name.equals("pcap_file")) {
         pcapFile = simulation.getCooja().restorePortablePath(new File(element.getText()));
