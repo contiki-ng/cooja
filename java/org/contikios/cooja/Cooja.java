@@ -161,7 +161,7 @@ public class Cooja extends Observable {
   private final ArrayList<Plugin> startedPlugins = new ArrayList<>();
 
   // Platform configuration variables
-  // Maintained via method reparseProjectConfig()
+  // Maintained via method parseProjectConfig()
   private ProjectConfig projectConfig;
 
   final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
@@ -374,23 +374,19 @@ public class Cooja extends Observable {
     return radioMediumClasses;
   }
 
-  /**
-   * Builds new extension configuration using current extension directories settings.
-   * Re-registers mote types, plugins, positioners and radio mediums.
-   */
-  public void reparseProjectConfig() throws ParseProjectsException {
+  void clearProjectConfig() {
     /* Remove current dependencies */
     moteTypeClasses.clear();
-    if (gui != null) {
-      gui.menuMotePluginClasses.clear();
-    }
     pluginClasses.clear();
     positionerClasses.clear();
     radioMediumClasses.clear();
     projectDirClassLoader = null;
-    parseProjectConfig();
   }
 
+  /**
+   * Builds extension configuration using extension directories settings.
+   * Registers mote types, plugins, positioners and radio mediums.
+   */
   void parseProjectConfig() throws ParseProjectsException {
     /* Build cooja configuration */
     projectConfig = new ProjectConfig(true);

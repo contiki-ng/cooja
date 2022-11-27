@@ -1705,8 +1705,10 @@ public class GUI {
           if (newProjects != null) {
             cooja.currentProjects.clear();
             cooja.currentProjects.addAll(Arrays.asList(newProjects));
+            cooja.clearProjectConfig();
+            menuMotePluginClasses.clear();
             try {
-              cooja.reparseProjectConfig();
+              cooja.parseProjectConfig();
             } catch (Cooja.ParseProjectsException ex) {
               logger.fatal("Error when loading extensions: " + ex.getMessage(), ex);
               JOptionPane.showMessageDialog(frame,
