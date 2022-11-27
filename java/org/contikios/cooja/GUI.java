@@ -147,17 +147,17 @@ public class GUI {
       @Override
       public void setBounds(int x, int y, int w, int h) {
         super.setBounds(x, y, w, h);
-        updateDesktopSize(this);
+        updateDesktopSize();
       }
       @Override
       public void remove(Component c) {
         super.remove(c);
-        updateDesktopSize(this);
+        updateDesktopSize();
       }
       @Override
       public Component add(Component comp) {
         Component c = super.add(comp);
-        updateDesktopSize(this);
+        updateDesktopSize();
         return c;
       }
     };
@@ -165,12 +165,12 @@ public class GUI {
       @Override
       public void endResizingFrame(JComponent f) {
         super.endResizingFrame(f);
-        updateDesktopSize(myDesktopPane);
+        updateDesktopSize();
       }
       @Override
       public void endDraggingFrame(JComponent f) {
         super.endDraggingFrame(f);
-        updateDesktopSize(myDesktopPane);
+        updateDesktopSize();
       }
     });
     myDesktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
@@ -910,7 +910,7 @@ public class GUI {
         quickHelpScroll.setVisible(show);
         Cooja.setExternalToolsSetting("SHOW_QUICKHELP", Boolean.toString(show));
         frame.getContentPane().revalidate();
-        updateDesktopSize(myDesktopPane);
+        updateDesktopSize();
       }
 
       @Override
@@ -982,7 +982,7 @@ public class GUI {
     frame.addComponentListener(new ComponentAdapter() {
       @Override
       public void componentResized(ComponentEvent e) {
-        updateDesktopSize(myDesktopPane);
+        updateDesktopSize();
       }
     });
 
@@ -1456,14 +1456,14 @@ public class GUI {
     updateProgress(false);
   }
 
-  private static void updateDesktopSize(final JDesktopPane desktop) {
-    if (desktop == null || !desktop.isVisible() || desktop.getParent() == null) {
+  private void updateDesktopSize() {
+    if (!myDesktopPane.isVisible() || myDesktopPane.getParent() == null) {
       return;
     }
 
-    var rect = desktop.getVisibleRect();
+    var rect = myDesktopPane.getVisibleRect();
     var pref = new Dimension(rect.width - 1, rect.height - 1);
-    for (var frame : desktop.getAllFrames()) {
+    for (var frame : myDesktopPane.getAllFrames()) {
       if (pref.width < frame.getX() + frame.getWidth() - 20) {
         pref.width = frame.getX() + frame.getWidth();
       }
@@ -1471,8 +1471,8 @@ public class GUI {
         pref.height = frame.getY() + frame.getHeight();
       }
     }
-    desktop.setPreferredSize(pref);
-    desktop.revalidate();
+    myDesktopPane.setPreferredSize(pref);
+    myDesktopPane.revalidate();
   }
 
   public static void setProgressMessage(String msg, int type) {
