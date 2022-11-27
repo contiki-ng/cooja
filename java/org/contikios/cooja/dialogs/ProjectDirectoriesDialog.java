@@ -158,7 +158,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 				if (table.getSelectedRow() < 0) {
 					return;
 				}
-				selectTreeProject(currentProjects.get(table.getSelectedRow()));
+        treePanel.selectProject(currentProjects.get(table.getSelectedRow()).dir);
 				showProjectInfo(currentProjects.get(table.getSelectedRow()));
 			}
 		});
@@ -501,9 +501,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 			}
 		}
 
-	}
-	public void selectTreeProject(COOJAProject project) {
-		treePanel.selectProject(project.dir);
 	}
 }
 
