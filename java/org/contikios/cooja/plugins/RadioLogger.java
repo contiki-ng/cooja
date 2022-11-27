@@ -980,13 +980,8 @@ public class RadioLogger extends VisPlugin {
         String analyzerName = element.getAttributeValue("name");
         final Action action;
         if (analyzerName != null && ((action = analyzerMap.get(analyzerName)) != null)) {
-          java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              action.putValue(Action.SELECTED_KEY, Boolean.TRUE);
-              action.actionPerformed(null);
-            }
-          });
+          action.putValue(Action.SELECTED_KEY, Boolean.TRUE);
+          action.actionPerformed(null);
         }
       } else if (name.equals("pcap_file")) {
         pcapFile = simulation.getCooja().restorePortablePath(new File(element.getText()));
