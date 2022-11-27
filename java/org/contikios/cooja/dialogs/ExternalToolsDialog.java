@@ -57,8 +57,30 @@ import org.contikios.cooja.Cooja;
 public class ExternalToolsDialog extends JDialog {
   private final static int LABEL_WIDTH = 220;
   private final static int LABEL_HEIGHT = 15;
+  private static final String[] settingsNames = new String[] {
+    "PATH_COOJA",
+    "PATH_CONTIKI", "PATH_APPS",
+    "PATH_APPSEARCH",
 
-  private final JTextField[] textFields = new JTextField[Cooja.getExternalToolsSettingsCount()];
+    "PATH_MAKE",
+    "PATH_C_COMPILER", "COMPILER_ARGS",
+
+    "DEFAULT_PROJECTDIRS",
+
+    "PARSE_WITH_COMMAND",
+
+    "READELF_COMMAND",
+
+    "PARSE_COMMAND",
+    "COMMAND_VAR_NAME_ADDRESS_SIZE",
+    "COMMAND_DATA_START", "COMMAND_DATA_END",
+    "COMMAND_BSS_START", "COMMAND_BSS_END",
+    "COMMAND_COMMON_START", "COMMAND_COMMON_END",
+
+    "HIDE_WARNINGS"
+  };
+
+  private final JTextField[] textFields = new JTextField[settingsNames.length];
 
   /** Creates a dialog for viewing/editing external tools settings. */
   public static void showDialog() {
@@ -92,7 +114,7 @@ public class ExternalToolsDialog extends JDialog {
     button = new JButton("Save");
     button.addActionListener(e -> {
       for (int i = 0; i < textFields.length; i++) {
-        Cooja.setExternalToolsSetting(Cooja.getExternalToolsSettingName(i), textFields[i].getText().trim());
+        Cooja.setExternalToolsSetting(settingsNames[i], textFields[i].getText().trim());
       }
       Cooja.saveExternalToolsUserSettings();
       dispose();
@@ -115,7 +137,7 @@ public class ExternalToolsDialog extends JDialog {
       var smallPane = new JPanel();
       smallPane.setAlignmentX(Component.LEFT_ALIGNMENT);
       smallPane.setLayout(new BoxLayout(smallPane, BoxLayout.X_AXIS));
-      var label = new JLabel(Cooja.getExternalToolsSettingName(i));
+      var label = new JLabel(settingsNames[i]);
       label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
       var textField = new JTextField(35);
@@ -148,7 +170,7 @@ public class ExternalToolsDialog extends JDialog {
 
   private void updateTextFields() {
     for (int i = 0; i < textFields.length; i++) {
-      textFields[i].setText(Cooja.getExternalToolsSetting(Cooja.getExternalToolsSettingName(i), ""));
+      textFields[i].setText(Cooja.getExternalToolsSetting(settingsNames[i], ""));
     }
     compareWithDefaults();
   }
@@ -158,7 +180,7 @@ public class ExternalToolsDialog extends JDialog {
       String currentValue = textFields[i].getText();
 
       // Compare with default value
-      String defaultValue = Cooja.getExternalToolsDefaultSetting(Cooja.getExternalToolsSettingName(i), "");
+      var defaultValue = Cooja.getExternalToolsDefaultSetting(settingsNames[i], "");
       if (currentValue.equals(defaultValue)) {
         textFields[i].setBackground(Color.WHITE);
         textFields[i].setToolTipText("");

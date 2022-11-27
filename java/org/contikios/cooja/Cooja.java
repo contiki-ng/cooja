@@ -143,29 +143,6 @@ public class Cooja extends Observable {
   public static Properties defaultExternalToolsSettings;
   public static Properties currentExternalToolsSettings;
 
-  private static final String[] externalToolsSettingNames = new String[] {
-    "PATH_COOJA",
-    "PATH_CONTIKI", "PATH_APPS",
-    "PATH_APPSEARCH",
-
-    "PATH_MAKE",
-    "PATH_C_COMPILER", "COMPILER_ARGS",
-
-    "DEFAULT_PROJECTDIRS",
-
-    "PARSE_WITH_COMMAND",
-
-    "READELF_COMMAND",
-
-    "PARSE_COMMAND",
-    "COMMAND_VAR_NAME_ADDRESS_SIZE",
-    "COMMAND_DATA_START", "COMMAND_DATA_END",
-    "COMMAND_BSS_START", "COMMAND_BSS_END",
-    "COMMAND_COMMON_START", "COMMAND_COMMON_END",
-
-    "HIDE_WARNINGS"
-  };
-
   static GUI gui = null;
 
   /** The Cooja startup configuration. */
@@ -1000,24 +977,6 @@ public class Cooja extends Observable {
     }
 
   // // EXTERNAL TOOLS SETTINGS METHODS ////
-
-  /**
-   * @return Number of external tools settings
-   */
-  public static int getExternalToolsSettingsCount() {
-    return externalToolsSettingNames.length;
-  }
-
-  /**
-   * Get name of external tools setting at given index.
-   *
-   * @param index
-   *          Setting index
-   * @return Name
-   */
-  public static String getExternalToolsSettingName(int index) {
-    return externalToolsSettingNames[index];
-  }
 
   /**
    * @param name
