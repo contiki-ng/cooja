@@ -434,15 +434,8 @@ public class ProjectDirectoriesDialog extends JDialog {
 		currentProjects.add(index, project);
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 	}
-	protected void removeProjectDir(File dir) {
-		COOJAProject[] ps = getProjects();
-		for (COOJAProject p: ps) {
-			if (p.dir.equals(dir)) {
-				removeProjectDir(p);
-			}
-		}
-	}
-	protected void removeProjectDir(COOJAProject project) {
+
+  protected void removeProjectDir(COOJAProject project) {
 		currentProjects.remove(project);
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 		repaint();
@@ -596,8 +589,12 @@ class DirectoryTreePanel extends JPanel {
 				}
 
 				if (pd.isProject()) {
-					DirectoryTreePanel.this.parent.removeProjectDir(pd.dir);
-				} else if (pd.containsConfig()) {
+          for (var p : DirectoryTreePanel.this.parent.getProjects()) {
+            if (p.dir.equals(pd.dir)) {
+              DirectoryTreePanel.this.parent.removeProjectDir(p);
+            }
+          }
+        } else if (pd.containsConfig()) {
 					DirectoryTreePanel.this.parent.addProjectDir(pd.dir);
 				}
         DirectoryTreePanel.this.parent.repaint();
