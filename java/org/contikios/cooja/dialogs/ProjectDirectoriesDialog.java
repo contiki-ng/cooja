@@ -828,12 +828,7 @@ class DirectoryTreePanel extends JPanel {
 		@Override
 		public void removeTreeModelListener(TreeModelListener l) {}
 
-    private final FileFilter DIRECTORIES = file -> {
-      if (!file.isDirectory()) {
-        return false;
-      }
-      return !file.getName().startsWith(".");
-    };
+    private final FileFilter DIRECTORIES = file -> file.isDirectory() && !file.getName().startsWith(".");
 		private File[] getDirectoryList(File parent) {
 			File[] dirs = parent.listFiles(DIRECTORIES);
 			Arrays.sort(dirs);
