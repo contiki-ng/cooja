@@ -176,15 +176,12 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 		Box mainPane = Box.createVerticalBox();
 		Box buttonPane = Box.createHorizontalBox();
-		JPanel sortPane;
-		JButton button;
-
 		/* Lower buttons */
 		{
 			buttonPane.setBorder(BorderFactory.createEmptyBorder(0,3,3,3));
 			buttonPane.add(Box.createHorizontalGlue());
 
-			button = new JButton("View config");
+      var button = new JButton("View config");
       button.addActionListener(e -> {
         try {
           /* Default config */
@@ -251,8 +248,8 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 		/* Center: Tree and list*/
 		{
-			sortPane = new JPanel(new BorderLayout());
-			button = new JButton("Move up");
+      var sortPane = new JPanel(new BorderLayout());
+      var button = new JButton("Move up");
       button.addActionListener(e -> {
         int selectedIndex = table.getSelectedRow();
         if (selectedIndex <= 0) {
