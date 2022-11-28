@@ -74,8 +74,6 @@ public class ImportAppMoteDialog extends JDialog {
 
   public ImportAppMoteDialog(final Simulation simulation, final ImportAppMoteType moteType) {
     super(Cooja.getTopParentContainer(), "Create Mote Type: Application Mote", ModalityType.APPLICATION_MODAL);
-    JPanel mainPanel = new JPanel(new BorderLayout());
-
     JPanel topPanel = new JPanel();
     topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
     topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -196,6 +194,7 @@ public class ImportAppMoteDialog extends JDialog {
     buttonPanel.add(cancelButton);
 
     /* Build panel */
+    var mainPanel = new JPanel(new BorderLayout());
     mainPanel.add(BorderLayout.NORTH, topPanel);
     mainPanel.add(buttonPanel, BorderLayout.SOUTH);
     setContentPane(mainPanel);
