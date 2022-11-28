@@ -281,10 +281,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 			button = new JButton("Move down");
       button.addActionListener(e -> {
         int selectedIndex = table.getSelectedRow();
-        if (selectedIndex < 0) {
-          return;
-        }
-        if (selectedIndex >= currentProjects.size() - 1) {
+        if (selectedIndex < 0 || selectedIndex >= currentProjects.size() - 1) {
           return;
         }
         COOJAProject project = currentProjects.get(selectedIndex);
@@ -298,10 +295,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 				button = new JButton("Remove");
         button.addActionListener(e -> {
           int selectedIndex = table.getSelectedRow();
-          if (selectedIndex < 0) {
-            return;
-          }
-          if (selectedIndex >= currentProjects.size()) {
+          if (selectedIndex < 0 || selectedIndex >= currentProjects.size()) {
             return;
           }
           COOJAProject project = currentProjects.get(selectedIndex);
