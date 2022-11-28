@@ -886,13 +886,8 @@ class ConfigViewer extends JDialog {
 		Enumeration<String> allPropertyNames = config.getPropertyNames();
 		while (allPropertyNames.hasMoreElements()) {
 			String propertyName = allPropertyNames.nextElement();
-
 			keyPane.add(new JLabel(propertyName));
-			if (config.getStringValue(propertyName).equals("")) {
-				valuePane.add(new JLabel(" "));
-			} else {
-				valuePane.add(new JLabel(config.getStringValue(propertyName)));
-			}
+      valuePane.add(new JLabel(config.getStringValue(propertyName).equals("") ? "" : config.getStringValue(propertyName)));
 		}
 
 		Container contentPane = getContentPane();
