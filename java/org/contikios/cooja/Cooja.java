@@ -44,13 +44,13 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -66,7 +66,6 @@ import org.contikios.cooja.VisPlugin.PluginRequiresVisualizationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.CreateSimDialog;
 import org.contikios.cooja.dialogs.MessageListUI;
-import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.motes.DisturberMoteType;
 import org.contikios.cooja.motes.ImportAppMoteType;
 import org.contikios.cooja.mspmote.SkyMoteType;
@@ -107,7 +106,6 @@ import org.contikios.mrm.MRM;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.filter.ElementFilter;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
@@ -156,6 +154,10 @@ public class Cooja extends Observable {
 
   /** The Cooja startup configuration. */
   public static Config configuration = null;
+
+  /** Used mote type IDs. Used by mote types to ensure uniqueness during Cooja lifetime. */
+  public static final Set<String> usedMoteTypeIDs = new HashSet<>();
+
   private Simulation mySimulation = null;
 
   private final ArrayList<Plugin> startedPlugins = new ArrayList<>();
@@ -1354,61 +1356,6 @@ public class Cooja extends Observable {
   Simulation createSimulation(Simulation.SimConfig cfg, Element root, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
     boolean projectsOk = verifyProjects(root);
-
-    // GENERATE UNIQUE MOTE TYPE IDENTIFIERS.
-
-    // Locate Contiki mote types in config.
-    var readNames = new ArrayList<String>();
-    var moteTypes = root.getDescendants(new ElementFilter("motetype"));
-    while (moteTypes.hasNext()) {
-      var e = (Element)moteTypes.next();
-      if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
-        readNames.add(e.getChild("identifier").getValue());
-      }
-    }
-    // Only renumber motes if their names can collide with existing motes.
-    if (!cfg.updateSim()) {
-      // Create old to new identifier mappings.
-      var moteTypeIDMappings = new HashMap<String, String>();
-      var reserved = new HashSet<>(readNames);
-      var existingMoteTypes = mySimulation == null ? null : mySimulation.getMoteTypes();
-      if (existingMoteTypes != null) {
-        for (var mote : existingMoteTypes) {
-          reserved.add(mote.getIdentifier());
-        }
-      }
-      for (var existingIdentifier : readNames) {
-        String newID = BaseContikiMoteType.generateUniqueMoteTypeID("mtype", reserved);
-        moteTypeIDMappings.put(existingIdentifier, newID);
-        reserved.add(newID);
-      }
-
-      // Replace all <motetype>..ContikiMoteType.class<identifier>mtypeXXX</identifier>...
-      // in the config with the new identifiers.
-      moteTypes = root.getDescendants(new ElementFilter("motetype"));
-      while (moteTypes.hasNext()) {
-        var e = (Element) moteTypes.next();
-        if (ContikiMoteType.class.getName().equals(e.getContent(0).getValue().trim())) {
-          var idNode = e.getChild("identifier");
-          var newName = moteTypeIDMappings.get(idNode.getValue());
-          idNode.setText(newName);
-        }
-      }
-      // Replace all <mote>...<motetype_identifier>mtypeXXX</motetype_identifier>...
-      // in the config with the new identifiers.
-      var motes = root.getDescendants(new ElementFilter("mote"));
-      while (motes.hasNext()) {
-        var e = (Element) motes.next();
-        var idNode = e.getChild("motetype_identifier");
-        if (idNode == null) {
-          continue;
-        }
-        var newName = moteTypeIDMappings.get(idNode.getValue());
-        if (newName != null) {
-          idNode.setText(newName);
-        }
-      }
-    }
     doRemoveSimulation();
     System.gc();
     var simCfg = root.getChild("simulation");

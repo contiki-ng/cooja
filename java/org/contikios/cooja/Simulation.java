@@ -30,6 +30,7 @@ package org.contikios.cooja;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Random;
@@ -254,6 +255,8 @@ public final class Simulation extends Observable {
     }, "sim");
     simulationThread.start();
     if (root != null) {
+      // Track identifier of mote types to deal with the legacy-XML format that used <motetype_identifier>.
+      var moteTypesMap = new HashMap<String, MoteType>();
       // Parse elements
       for (var element : root.getChild("simulation").getChildren()) {
         switch (element.getName()) {
@@ -303,22 +306,24 @@ public final class Simulation extends Observable {
               throw new MoteType.MoteTypeCreationException("Mote type was not created: " + element.getText().trim());
             }
             addMoteType(moteType);
+            for (var mote : element.getChildren("mote")) {
+              createMote(moteType, mote);
+            }
+            var id = element.getChild("identifier");
+            if (id != null) {
+              moteTypesMap.put(id.getText(), moteType);
+            }
           }
           case "mote" -> {
             var subElement = element.getChild("motetype_identifier");
             if (subElement == null) {
               throw new MoteType.MoteTypeCreationException("No motetype_identifier specified for mote");
             }
-            var moteType = getMoteType(subElement.getText());
+            var moteType = moteTypesMap.get(subElement.getText());
             if (moteType == null) {
               throw new MoteType.MoteTypeCreationException("No mote type '" + subElement.getText() + "' for mote");
             }
-            Mote mote = moteType.generateMote(this);
-            if (!mote.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
-              logger.fatal("Mote was not created: " + element.getText().trim());
-              throw new MoteType.MoteTypeCreationException("Could not configure mote " + moteType);
-            }
-            addMote(mote);
+            createMote(moteType, element);
           }
         }
       }
@@ -369,6 +374,15 @@ public final class Simulation extends Observable {
         throw ret;
       }
     }
+  }
+
+  private void createMote(MoteType moteType, Element root) throws MoteType.MoteTypeCreationException {
+    var mote = moteType.generateMote(this);
+    if (!mote.setConfigXML(this, root.getChildren(), Cooja.isVisualized())) {
+      logger.fatal("Mote was not created: " + root.getText().trim());
+      throw new MoteType.MoteTypeCreationException("Could not configure mote " + moteType);
+    }
+    addMote(mote);
   }
 
   private SimulationCreationException startPlugins(Element root, Cooja cooja) {
@@ -681,27 +695,20 @@ public final class Simulation extends Observable {
       if (moteTypeXML != null) {
         element.addContent(moteTypeXML);
       }
-      config.add(element);
-    }
-
-    // Motes
-    for (Mote mote : motes) {
-      element = new Element("mote");
-
-      Collection<Element> moteConfig = mote.getConfigXML();
-      if (moteConfig == null) {
-        moteConfig = new ArrayList<>();
+      // Motes
+      var moteTypeId = moteType.getIdentifier();
+      var moteConfigs = new ArrayList<Element>();
+      for (var mote : motes) {
+        if (!moteTypeId.equals(mote.getType().getIdentifier())) {
+          continue;
+        }
+        var moteElem = new Element("mote");
+        moteElem.addContent(mote.getConfigXML());
+        moteConfigs.add(moteElem);
       }
-
-      /* Add mote type identifier */
-      Element typeIdentifier = new Element("motetype_identifier");
-      typeIdentifier.setText(mote.getType().getIdentifier());
-      moteConfig.add(typeIdentifier);
-
-      element.addContent(moteConfig);
+      element.addContent(moteConfigs);
       config.add(element);
     }
-
     return config;
   }
 
@@ -864,6 +871,7 @@ public final class Simulation extends Observable {
    * @param newMoteType Mote type
    */
   public void addMoteType(MoteType newMoteType) {
+    Cooja.usedMoteTypeIDs.add(newMoteType.getIdentifier());
     moteTypes.add(newMoteType);
 
     this.setChanged();
