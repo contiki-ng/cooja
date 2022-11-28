@@ -742,9 +742,9 @@ class DirectoryTreePanel extends JPanel {
 		}
 		@Override
 		public int getChildCount(Object parent) {
-			if ((parent instanceof DefaultMutableTreeNode)) {
-				parent = ((DefaultMutableTreeNode)parent).getUserObject();
-			}
+      if (parent instanceof DefaultMutableTreeNode node) {
+        parent = node.getUserObject();
+      }
 			if (!(parent instanceof TreeDirectory)) {
 				/* Computer node */
 				return computerNode.getChildCount();
@@ -765,9 +765,9 @@ class DirectoryTreePanel extends JPanel {
 		}
 		@Override
 		public Object getChild(Object parent, int index) {
-			if ((parent instanceof DefaultMutableTreeNode)) {
-				parent = ((DefaultMutableTreeNode)parent).getUserObject();
-			}
+      if (parent instanceof DefaultMutableTreeNode node) {
+        parent = node.getUserObject();
+      }
 			if (!(parent instanceof TreeDirectory)) {
 				/* Computer node */
 				return computerNode.getChildAt(index);
@@ -788,9 +788,9 @@ class DirectoryTreePanel extends JPanel {
 		}
 		@Override
 		public int getIndexOfChild(Object parent, Object child) {
-			if ((parent instanceof DefaultMutableTreeNode)) {
-				parent = ((DefaultMutableTreeNode)parent).getUserObject();
-			}
+      if (parent instanceof DefaultMutableTreeNode node) {
+        parent = node.getUserObject();
+      }
 			if (!(parent instanceof TreeDirectory)) {
 				/* Computer node */
 				for(int i=0; i < computerNode.getChildCount(); i++) {
