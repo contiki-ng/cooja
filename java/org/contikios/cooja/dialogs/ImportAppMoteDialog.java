@@ -32,7 +32,6 @@ package org.contikios.cooja.dialogs;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -104,37 +103,32 @@ public class ImportAppMoteDialog extends JDialog {
     }
 
     JButton browseButton = new JButton("Browse");
-    browseButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        JFileChooser fc = new JFileChooser();
-
-        String path = pathField.getText();
-        String name = classField.getText();
-        if (name.indexOf('/') >= 0 || name.indexOf(File.separatorChar) >= 0) {
-          // Already full path
-          fc.setSelectedFile(new File(name));
-        } else if (name.length() > 0) {
-          fc.setSelectedFile(new File(new File(path), name.replace(".", "/") + ".class"));
+    browseButton.addActionListener(e -> {
+      JFileChooser fc = new JFileChooser();
+      String path = pathField.getText();
+      String name = classField.getText();
+      if (name.indexOf('/') >= 0 || name.indexOf(File.separatorChar) >= 0) {
+        // Already full path
+        fc.setSelectedFile(new File(name));
+      } else if (name.length() > 0) {
+        fc.setSelectedFile(new File(new File(path), name.replace(".", "/") + ".class"));
+      } else {
+        File fp = simulation.getCooja()
+            .restorePortablePath(new File(Cooja.getExternalToolsSetting("IMPORT_APP_LAST",
+                "mymote.class")));
+        if (path.length() > 0 && !fp.getAbsolutePath().startsWith(path)) {
+          fc.setCurrentDirectory(new File(path));
         } else {
-          File fp = simulation.getCooja()
-              .restorePortablePath(new File(Cooja.getExternalToolsSetting("IMPORT_APP_LAST",
-                  "mymote.class")));
-          if (path.length() > 0 && !fp.getAbsolutePath().startsWith(path)) {
-            fc.setCurrentDirectory(new File(path));
-          } else {
-            fc.setSelectedFile(fp);
-          }
+          fc.setSelectedFile(fp);
         }
-
-        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fc.setFileFilter(new FileNameExtensionFilter("Application Mote Java Class", "class"));
-        fc.setDialogTitle("Select Application Mote Java Class");
-        if (fc.showOpenDialog(ImportAppMoteDialog.this) == JFileChooser.APPROVE_OPTION) {
-          File fp = fc.getSelectedFile();
-          if (fp != null) {
-            trySetClass(simulation, fp);
-          }
+      }
+      fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+      fc.setFileFilter(new FileNameExtensionFilter("Application Mote Java Class", "class"));
+      fc.setDialogTitle("Select Application Mote Java Class");
+      if (fc.showOpenDialog(ImportAppMoteDialog.this) == JFileChooser.APPROVE_OPTION) {
+        File fp = fc.getSelectedFile();
+        if (fp != null) {
+          trySetClass(simulation, fp);
         }
       }
     });
@@ -151,40 +145,34 @@ public class ImportAppMoteDialog extends JDialog {
     getRootPane().registerKeyboardAction(cancelAction, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
 
     var createButton = new JButton("Create");
-    createButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String className = classField.getText();
-        if (className.length() == 0) {
-          JOptionPane.showMessageDialog(ImportAppMoteDialog.this,
-              "No class specified", "Failed to load class", JOptionPane.ERROR_MESSAGE);
-          return;
-        }
-        File classFile;
-        if (className.indexOf('/') >= 0 || className.indexOf(File.separatorChar) >= 0) {
-          classFile = new File(className);
+    createButton.addActionListener(e -> {
+      String className = classField.getText();
+      if (className.length() == 0) {
+        JOptionPane.showMessageDialog(ImportAppMoteDialog.this,
+            "No class specified", "Failed to load class", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      File classFile;
+      if (className.indexOf('/') >= 0 || className.indexOf(File.separatorChar) >= 0) {
+        classFile = new File(className);
+      } else {
+        classFile = new File(new File(pathField.getText()), className.replace(".", "/") + ".class");
+      }
+      if (trySetClass(simulation, classFile)) {
+        moteType.setDescription(descriptionField.getText());
+        String path = pathField.getText();
+        if (path.length() > 0) {
+          moteType.setMoteClassPath(new File(path));
+          lastPath = path;
         } else {
-          classFile = new File(new File(pathField.getText()),
-              className.replace(".", "/") + ".class");
+          moteType.setMoteClassPath(null);
+          lastPath = null;
         }
-        if (trySetClass(simulation, classFile)) {
-          moteType.setDescription(descriptionField.getText());
-          String path = pathField.getText();
-          if (path.length() > 0) {
-            moteType.setMoteClassPath(new File(path));
-            lastPath = path;
-          } else {
-            moteType.setMoteClassPath(null);
-            lastPath = null;
-          }
-          moteType.setMoteClassName(classField.getText());
-          lastFile = classField.getText();
-
-          hasSelected = true;
-
-          ImportAppMoteDialog.this.setVisible(false);
-          ImportAppMoteDialog.this.dispose();
-        }
+        moteType.setMoteClassName(classField.getText());
+        lastFile = classField.getText();
+        hasSelected = true;
+        ImportAppMoteDialog.this.setVisible(false);
+        ImportAppMoteDialog.this.dispose();
       }
     });
     getRootPane().setDefaultButton(createButton);
