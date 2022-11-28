@@ -305,14 +305,11 @@ public class ProjectDirectoriesDialog extends JDialog {
             return;
           }
           COOJAProject project = currentProjects.get(selectedIndex);
-          String s1 = "Remove";
-          String s2 = "Cancel";
-          Object[] options = {s1, s2};
-          int n = JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
+          Object[] options = {"Remove", "Cancel"};
+          if (JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
                   "Remove Cooja project?\n" + project,
                   "Remove Cooja project?", JOptionPane.YES_NO_OPTION,
-                  JOptionPane.WARNING_MESSAGE, null, options, s1);
-          if (n != JOptionPane.YES_OPTION) {
+                  JOptionPane.WARNING_MESSAGE, null, options, options[0]) != JOptionPane.YES_OPTION) {
             return;
           }
           removeProjectDir(project);
