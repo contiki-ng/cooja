@@ -39,8 +39,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -49,7 +47,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -225,33 +222,28 @@ public class ProjectDirectoriesDialog extends JDialog {
 			buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
 			
 			button = new JButton("Save");
-			button.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					var newDefaultProjectDirs = new StringBuilder();
-					for (COOJAProject p: currentProjects) {
-						if (newDefaultProjectDirs.length() > 0) {
-							newDefaultProjectDirs.append(";");
-						}
-
-						newDefaultProjectDirs.append(gui.createPortablePath(p.dir, false).getPath());
-					}
-					newDefaultProjectDirs = new StringBuilder(newDefaultProjectDirs.toString().replace('\\', '/'));
-          Object[] options = {"Ok", "Cancel"};
-          if (JOptionPane.showOptionDialog(ProjectDirectoriesDialog.this,
-                  "External tools setting DEFAULT_PROJECTDIRS will change from:\n"
-                          + Cooja.getExternalToolsSetting("DEFAULT_PROJECTDIRS", "").replace(';', '\n')
-                          + "\n\n to:\n\n"
-                          + newDefaultProjectDirs.toString().replace(';', '\n'),
-                  "Change external tools settings?", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
-                  options, options[0]) != JOptionPane.YES_OPTION) {
-            return;
+      button.addActionListener(e -> {
+        var newDefaultProjectDirs = new StringBuilder();
+        for (COOJAProject p : currentProjects) {
+          if (newDefaultProjectDirs.length() > 0) {
+            newDefaultProjectDirs.append(";");
           }
-
-					Cooja.setExternalToolsSetting("DEFAULT_PROJECTDIRS", newDefaultProjectDirs.toString());
-					dispose();
-				}
-			});
+          newDefaultProjectDirs.append(gui.createPortablePath(p.dir, false).getPath());
+        }
+        newDefaultProjectDirs = new StringBuilder(newDefaultProjectDirs.toString().replace('\\', '/'));
+        Object[] options = {"Ok", "Cancel"};
+        if (JOptionPane.showOptionDialog(ProjectDirectoriesDialog.this,
+                "External tools setting DEFAULT_PROJECTDIRS will change from:\n"
+                        + Cooja.getExternalToolsSetting("DEFAULT_PROJECTDIRS", "").replace(';', '\n')
+                        + "\n\n to:\n\n"
+                        + newDefaultProjectDirs.toString().replace(';', '\n'),
+                "Change external tools settings?", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                options, options[0]) != JOptionPane.YES_OPTION) {
+          return;
+        }
+        Cooja.setExternalToolsSetting("DEFAULT_PROJECTDIRS", newDefaultProjectDirs.toString());
+        dispose();
+      });
 			buttonPane.add(button);
 
 			this.getRootPane().setDefaultButton(button);
