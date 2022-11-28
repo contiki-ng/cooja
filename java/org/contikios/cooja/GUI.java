@@ -196,17 +196,7 @@ public class GUI {
     }
 
     // Parse current extension configuration.
-    try {
-      cooja.parseProjectConfig();
-    } catch (Cooja.ParseProjectsException e) {
-      logger.fatal("Error when loading extensions: " + e.getMessage(), e);
-      JOptionPane.showMessageDialog(frame,
-              "All Cooja extensions could not load.\n\n" +
-                      "To manage Cooja extensions:\n" +
-                      "Menu->Settings->Cooja extensions",
-              "Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
-      showErrorDialog("Cooja extensions load error", e, false);
-    }
+    parseProjectConfig();
 
     // Start all standard GUI plugins
     for (var pluginClass : cooja.getRegisteredPlugins()) {
@@ -1021,6 +1011,20 @@ public class GUI {
     frame.setVisible(true);
   }
 
+  private void parseProjectConfig() {
+    try {
+      cooja.parseProjectConfig();
+    } catch (Cooja.ParseProjectsException e) {
+      logger.fatal("Error when loading extensions: " + e.getMessage(), e);
+      JOptionPane.showMessageDialog(frame,
+              "All Cooja extensions could not load.\n\n" +
+                      "To manage Cooja extensions:\n" +
+                      "Menu->Settings->Cooja extensions",
+              "Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
+      showErrorDialog("Cooja extensions load error", e, false);
+    }
+  }
+
   public void loadQuickHelp(final Object obj) {
     String help;
     if (obj instanceof HasQuickHelp) {
@@ -1707,17 +1711,7 @@ public class GUI {
             cooja.currentProjects.addAll(Arrays.asList(newProjects));
             cooja.clearProjectConfig();
             menuMotePluginClasses.clear();
-            try {
-              cooja.parseProjectConfig();
-            } catch (Cooja.ParseProjectsException ex) {
-              logger.fatal("Error when loading extensions: " + ex.getMessage(), ex);
-              JOptionPane.showMessageDialog(frame,
-                      "All Cooja extensions could not load.\n\n" +
-                              "To manage Cooja extensions:\n" +
-                              "Menu->Settings->Cooja extensions",
-                      "Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
-              showErrorDialog("Cooja extensions load error", ex, false);
-            }
+            parseProjectConfig();
           }
         }
         default -> logger.warn("Unhandled action: " + cmd);
