@@ -68,10 +68,8 @@ public class ImportAppMoteDialog extends JDialog {
   private static String lastPath;
   private static String lastFile;
 
-  private final JTextField descriptionField;
   private final JTextField pathField;
   private final JTextField classField;
-  private final JButton cancelButton;
   private boolean hasSelected = false;
 
   public ImportAppMoteDialog(final Simulation simulation, final ImportAppMoteType moteType) {
@@ -82,7 +80,7 @@ public class ImportAppMoteDialog extends JDialog {
     topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
     topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    descriptionField = new JTextField(40);
+    var descriptionField = new JTextField(40);
     if (moteType.getDescription() != null) {
       descriptionField.setText(moteType.getDescription());
     } else {
@@ -148,7 +146,7 @@ public class ImportAppMoteDialog extends JDialog {
       setVisible(false);
       dispose();
     };
-    cancelButton = new JButton("Cancel");
+    var cancelButton = new JButton("Cancel");
     cancelButton.addActionListener(cancelAction);
 
     KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
