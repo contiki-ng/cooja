@@ -822,7 +822,7 @@ class DirectoryTreePanel extends JPanel {
 		@Override
 		public void removeTreeModelListener(TreeModelListener l) {}
 
-    private File[] getDirectoryList(File parent) {
+    private static File[] getDirectoryList(File parent) {
       var dirs = parent.listFiles(file -> file.isDirectory() && !file.getName().startsWith("."));
 			Arrays.sort(dirs);
 			return dirs;
