@@ -89,10 +89,10 @@ public class ProjectDirectoriesDialog extends JDialog {
 
   private final Cooja gui;
 
-	private final JTable table;
+  final JTable table;
 	private final JTextArea projectInfo = new JTextArea("Extension information:");
 
-	private final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
+  final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
 	private COOJAProject[] returnedProjects = null;
 
 	/**
@@ -394,15 +394,8 @@ public class ProjectDirectoriesDialog extends JDialog {
 	public COOJAProject[] getProjects() {
 		return currentProjects.toArray(new COOJAProject[0]);
 	}
-	protected void addProjectDir(File dir) {
-    try {
-      currentProjects.add(new COOJAProject(dir));
-      ((AbstractTableModel) table.getModel()).fireTableDataChanged();
-    } catch (IOException e) {
-      logger.error("Failed to parse Cooja project: {}", dir, e);
-    }
-	}
-	protected void addProjectDir(COOJAProject project, int index) {
+
+  protected void addProjectDir(COOJAProject project, int index) {
 		currentProjects.add(index, project);
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 	}
@@ -567,8 +560,13 @@ class DirectoryTreePanel extends JPanel {
             }
           }
         } else if (pd.containsConfig()) {
-					DirectoryTreePanel.this.parent.addProjectDir(pd.dir);
-				}
+          try {
+            DirectoryTreePanel.this.parent.currentProjects.add(new COOJAProject(pd.dir));
+            ((AbstractTableModel) DirectoryTreePanel.this.parent.table.getModel()).fireTableDataChanged();
+          } catch (IOException e1) {
+            logger.error("Failed to parse Cooja project: {}", pd.dir, e1);
+          }
+        }
         DirectoryTreePanel.this.parent.repaint();
 			}
 		});
