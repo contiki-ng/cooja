@@ -42,7 +42,6 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -828,9 +827,8 @@ class DirectoryTreePanel extends JPanel {
 		@Override
 		public void removeTreeModelListener(TreeModelListener l) {}
 
-    private final FileFilter DIRECTORIES = file -> file.isDirectory() && !file.getName().startsWith(".");
-		private File[] getDirectoryList(File parent) {
-			File[] dirs = parent.listFiles(DIRECTORIES);
+    private File[] getDirectoryList(File parent) {
+      var dirs = parent.listFiles(file -> file.isDirectory() && !file.getName().startsWith("."));
 			Arrays.sort(dirs);
 			return dirs;
 		}
