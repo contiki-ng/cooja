@@ -39,17 +39,13 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -92,10 +88,10 @@ public class ProjectDirectoriesDialog extends JDialog {
 
   private final Cooja gui;
 
-	private final JTable table;
+  final JTable table;
 	private final JTextArea projectInfo = new JTextArea("Extension information:");
 
-	private final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
+  final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
 	private COOJAProject[] returnedProjects = null;
 
 	/**
@@ -151,7 +147,18 @@ public class ProjectDirectoriesDialog extends JDialog {
       if (table.getSelectedRow() < 0) {
         return;
       }
-      treePanel.selectProject(currentProjects.get(table.getSelectedRow()).dir);
+      // Expand view.
+      try {
+        var projectCanonical = currentProjects.get(table.getSelectedRow()).dir.getCanonicalPath();
+        var tp = new TreePath(treePanel.tree.getModel().getRoot());
+        tp = DirectoryTreePanel.buildTreePath(projectCanonical, treePanel.treeRoot, tp, treePanel.tree);
+        if (tp != null) {
+          treePanel.tree.setSelectionPath(tp);
+          treePanel.tree.scrollPathToVisible(tp);
+        }
+      } catch (IOException ex) {
+        logger.warn("Error when expanding projects: " + ex.getMessage());
+      }
       showProjectInfo(currentProjects.get(table.getSelectedRow()));
     });
 		table.getColumnModel().getColumn(0).setPreferredWidth(30);
@@ -179,15 +186,12 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 		Box mainPane = Box.createVerticalBox();
 		Box buttonPane = Box.createHorizontalBox();
-		JPanel sortPane;
-		JButton button;
-
 		/* Lower buttons */
 		{
 			buttonPane.setBorder(BorderFactory.createEmptyBorder(0,3,3,3));
 			buttonPane.add(Box.createHorizontalGlue());
 
-			button = new JButton("View config");
+      var button = new JButton("View config");
       button.addActionListener(e -> {
         try {
           /* Default config */
@@ -225,38 +229,28 @@ public class ProjectDirectoriesDialog extends JDialog {
 			buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
 			
 			button = new JButton("Save");
-			button.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					Object[] options = { "Ok", "Cancel" };
-
-					var newDefaultProjectDirs = new StringBuilder();
-					for (COOJAProject p: currentProjects) {
-						if (newDefaultProjectDirs.length() > 0) {
-							newDefaultProjectDirs.append(";");
-						}
-
-						newDefaultProjectDirs.append(gui.createPortablePath(p.dir, false).getPath());
-					}
-					newDefaultProjectDirs = new StringBuilder(newDefaultProjectDirs.toString().replace('\\', '/'));
-
-					String question = "External tools setting DEFAULT_PROJECTDIRS will change from:\n"
-						+ Cooja.getExternalToolsSetting("DEFAULT_PROJECTDIRS", "").replace(';', '\n')
-						+ "\n\n to:\n\n"
-						+ newDefaultProjectDirs.toString().replace(';', '\n');
-					String title = "Change external tools settings?";
-					int answer = JOptionPane.showOptionDialog(ProjectDirectoriesDialog.this, question, title,
-							JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
-							options, options[0]);
-
-					if (answer != JOptionPane.YES_OPTION) {
-						return;
-					}
-
-					Cooja.setExternalToolsSetting("DEFAULT_PROJECTDIRS", newDefaultProjectDirs.toString());
-					dispose();
-				}
-			});
+      button.addActionListener(e -> {
+        var newDefaultProjectDirs = new StringBuilder();
+        for (COOJAProject p : currentProjects) {
+          if (newDefaultProjectDirs.length() > 0) {
+            newDefaultProjectDirs.append(";");
+          }
+          newDefaultProjectDirs.append(gui.createPortablePath(p.dir, false).getPath());
+        }
+        newDefaultProjectDirs = new StringBuilder(newDefaultProjectDirs.toString().replace('\\', '/'));
+        Object[] options = {"Ok", "Cancel"};
+        if (JOptionPane.showOptionDialog(ProjectDirectoriesDialog.this,
+                "External tools setting DEFAULT_PROJECTDIRS will change from:\n"
+                        + Cooja.getExternalToolsSetting("DEFAULT_PROJECTDIRS", "").replace(';', '\n')
+                        + "\n\n to:\n\n"
+                        + newDefaultProjectDirs.toString().replace(';', '\n'),
+                "Change external tools settings?", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                options, options[0]) != JOptionPane.YES_OPTION) {
+          return;
+        }
+        Cooja.setExternalToolsSetting("DEFAULT_PROJECTDIRS", newDefaultProjectDirs.toString());
+        dispose();
+      });
 			buttonPane.add(button);
 
 			this.getRootPane().setDefaultButton(button);
@@ -264,8 +258,8 @@ public class ProjectDirectoriesDialog extends JDialog {
 
 		/* Center: Tree and list*/
 		{
-			sortPane = new JPanel(new BorderLayout());
-			button = new JButton("Move up");
+      var sortPane = new JPanel(new BorderLayout());
+      var button = new JButton("Move up");
       button.addActionListener(e -> {
         int selectedIndex = table.getSelectedRow();
         if (selectedIndex <= 0) {
@@ -281,10 +275,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 			button = new JButton("Move down");
       button.addActionListener(e -> {
         int selectedIndex = table.getSelectedRow();
-        if (selectedIndex < 0) {
-          return;
-        }
-        if (selectedIndex >= currentProjects.size() - 1) {
+        if (selectedIndex < 0 || selectedIndex >= currentProjects.size() - 1) {
           return;
         }
         COOJAProject project = currentProjects.get(selectedIndex);
@@ -298,21 +289,15 @@ public class ProjectDirectoriesDialog extends JDialog {
 				button = new JButton("Remove");
         button.addActionListener(e -> {
           int selectedIndex = table.getSelectedRow();
-          if (selectedIndex < 0) {
-            return;
-          }
-          if (selectedIndex >= currentProjects.size()) {
+          if (selectedIndex < 0 || selectedIndex >= currentProjects.size()) {
             return;
           }
           COOJAProject project = currentProjects.get(selectedIndex);
-          String s1 = "Remove";
-          String s2 = "Cancel";
-          Object[] options = {s1, s2};
-          int n = JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
+          Object[] options = {"Remove", "Cancel"};
+          if (JOptionPane.showOptionDialog(Cooja.getTopParentContainer(),
                   "Remove Cooja project?\n" + project,
                   "Remove Cooja project?", JOptionPane.YES_NO_OPTION,
-                  JOptionPane.WARNING_MESSAGE, null, options, s1);
-          if (n != JOptionPane.YES_OPTION) {
+                  JOptionPane.WARNING_MESSAGE, null, options, options[0]) != JOptionPane.YES_OPTION) {
             return;
           }
           removeProjectDir(project);
@@ -374,8 +359,7 @@ public class ProjectDirectoriesDialog extends JDialog {
     for (var plugin : gui.getRegisteredPlugins()) {
       sb.append(' ').append(plugin);
     }
-    sb.append("\n");
-    projectInfo.append(sb.toString());
+    projectInfo.append(sb.append("\n").toString());
     sb.setLength(0);
 		if (project.getConfigJARs() != null) {
 			String[] jars = project.getConfigJARs();
@@ -397,8 +381,7 @@ public class ProjectDirectoriesDialog extends JDialog {
       for (var moteType : moteTypes) {
         sb.append(' ').append(moteType.toString());
       }
-      sb.append("\n");
-      projectInfo.append(sb.toString());
+      projectInfo.append(sb.append("\n").toString());
       sb.setLength(0);
     }
     var radioMediums = gui.getRegisteredRadioMediums();
@@ -407,8 +390,7 @@ public class ProjectDirectoriesDialog extends JDialog {
       for (var medium : radioMediums) {
         sb.append(' ').append(medium.toString());
       }
-      sb.append("\n");
-      projectInfo.append(sb.toString());
+      projectInfo.append(sb.append("\n").toString());
       sb.setLength(0);
     }
 		if (project.getConfigMoteInterfaces() != null) {
@@ -422,27 +404,13 @@ public class ProjectDirectoriesDialog extends JDialog {
 	public COOJAProject[] getProjects() {
 		return currentProjects.toArray(new COOJAProject[0]);
 	}
-	protected void addProjectDir(File dir) {
-    try {
-      currentProjects.add(new COOJAProject(dir));
-      ((AbstractTableModel) table.getModel()).fireTableDataChanged();
-    } catch (IOException e) {
-      logger.error("Failed to parse Cooja project: {}", dir, e);
-    }
-	}
-	protected void addProjectDir(COOJAProject project, int index) {
+
+  protected void addProjectDir(COOJAProject project, int index) {
 		currentProjects.add(index, project);
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 	}
-	protected void removeProjectDir(File dir) {
-		COOJAProject[] ps = getProjects();
-		for (COOJAProject p: ps) {
-			if (p.dir.equals(dir)) {
-				removeProjectDir(p);
-			}
-		}
-	}
-	protected void removeProjectDir(COOJAProject project) {
+
+  protected void removeProjectDir(COOJAProject project) {
 		currentProjects.remove(project);
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 		repaint();
@@ -472,8 +440,8 @@ class DirectoryTreePanel extends JPanel {
 	private static final Logger logger = LogManager.getLogger(DirectoryTreePanel.class);
 
 	private final ProjectDirectoriesDialog parent;
-	private final JTree tree;
-	private final DefaultMutableTreeNode treeRoot;
+	final JTree tree;
+	final DefaultMutableTreeNode treeRoot;
 	public DirectoryTreePanel(ProjectDirectoriesDialog parent) {
 		super(new BorderLayout());
 		this.parent = parent;
@@ -596,10 +564,19 @@ class DirectoryTreePanel extends JPanel {
 				}
 
 				if (pd.isProject()) {
-					DirectoryTreePanel.this.parent.removeProjectDir(pd.dir);
-				} else if (pd.containsConfig()) {
-					DirectoryTreePanel.this.parent.addProjectDir(pd.dir);
-				}
+          for (var p : DirectoryTreePanel.this.parent.getProjects()) {
+            if (p.dir.equals(pd.dir)) {
+              DirectoryTreePanel.this.parent.removeProjectDir(p);
+            }
+          }
+        } else if (pd.containsConfig()) {
+          try {
+            DirectoryTreePanel.this.parent.currentProjects.add(new COOJAProject(pd.dir));
+            ((AbstractTableModel) DirectoryTreePanel.this.parent.table.getModel()).fireTableDataChanged();
+          } catch (IOException e1) {
+            logger.error("Failed to parse Cooja project: {}", pd.dir, e1);
+          }
+        }
         DirectoryTreePanel.this.parent.repaint();
 			}
 		});
@@ -641,23 +618,7 @@ class DirectoryTreePanel extends JPanel {
 		add(BorderLayout.CENTER, new JScrollPane(tree));
 	}
 
-	public void selectProject(File dir) {
-		/* Expand view */
-		try {
-			String projectCanonical = dir.getCanonicalPath();
-			TreePath tp = new TreePath(tree.getModel().getRoot());
-			tp = buildTreePath(projectCanonical, treeRoot, tp, tree);
-			/*logger.info("Expanding: " + tp);*/
-			if (tp != null) {
-				tree.setSelectionPath(tp);
-				tree.scrollPathToVisible(tp);
-			}
-		} catch (IOException ex) {
-			logger.warn("Error when expanding projects: " + ex.getMessage());
-		}
-	}
-
-	private static TreePath buildTreePath(String projectCanonical, DefaultMutableTreeNode parent, TreePath tp, JTree tree)
+  static TreePath buildTreePath(String projectCanonical, DefaultMutableTreeNode parent, TreePath tp, JTree tree)
 	throws IOException {
 		/* Force filesystem listing */
 		tree.getModel().getChildCount(parent);
@@ -773,9 +734,9 @@ class DirectoryTreePanel extends JPanel {
 		}
 		@Override
 		public int getChildCount(Object parent) {
-			if ((parent instanceof DefaultMutableTreeNode)) {
-				parent = ((DefaultMutableTreeNode)parent).getUserObject();
-			}
+      if (parent instanceof DefaultMutableTreeNode node) {
+        parent = node.getUserObject();
+      }
 			if (!(parent instanceof TreeDirectory)) {
 				/* Computer node */
 				return computerNode.getChildCount();
@@ -796,9 +757,9 @@ class DirectoryTreePanel extends JPanel {
 		}
 		@Override
 		public Object getChild(Object parent, int index) {
-			if ((parent instanceof DefaultMutableTreeNode)) {
-				parent = ((DefaultMutableTreeNode)parent).getUserObject();
-			}
+      if (parent instanceof DefaultMutableTreeNode node) {
+        parent = node.getUserObject();
+      }
 			if (!(parent instanceof TreeDirectory)) {
 				/* Computer node */
 				return computerNode.getChildAt(index);
@@ -819,9 +780,9 @@ class DirectoryTreePanel extends JPanel {
 		}
 		@Override
 		public int getIndexOfChild(Object parent, Object child) {
-			if ((parent instanceof DefaultMutableTreeNode)) {
-				parent = ((DefaultMutableTreeNode)parent).getUserObject();
-			}
+      if (parent instanceof DefaultMutableTreeNode node) {
+        parent = node.getUserObject();
+      }
 			if (!(parent instanceof TreeDirectory)) {
 				/* Computer node */
 				for(int i=0; i < computerNode.getChildCount(); i++) {
@@ -861,14 +822,8 @@ class DirectoryTreePanel extends JPanel {
 		@Override
 		public void removeTreeModelListener(TreeModelListener l) {}
 
-    private final FileFilter DIRECTORIES = file -> {
-      if (!file.isDirectory()) {
-        return false;
-      }
-      return !file.getName().startsWith(".");
-    };
-		private File[] getDirectoryList(File parent) {
-			File[] dirs = parent.listFiles(DIRECTORIES);
+    private static File[] getDirectoryList(File parent) {
+      var dirs = parent.listFiles(file -> file.isDirectory() && !file.getName().startsWith("."));
 			Arrays.sort(dirs);
 			return dirs;
 		}
@@ -917,13 +872,8 @@ class ConfigViewer extends JDialog {
 		Enumeration<String> allPropertyNames = config.getPropertyNames();
 		while (allPropertyNames.hasMoreElements()) {
 			String propertyName = allPropertyNames.nextElement();
-
 			keyPane.add(new JLabel(propertyName));
-			if (config.getStringValue(propertyName).equals("")) {
-				valuePane.add(new JLabel(" "));
-			} else {
-				valuePane.add(new JLabel(config.getStringValue(propertyName)));
-			}
+      valuePane.add(new JLabel(config.getStringValue(propertyName).equals("") ? "" : config.getStringValue(propertyName)));
 		}
 
 		Container contentPane = getContentPane();
