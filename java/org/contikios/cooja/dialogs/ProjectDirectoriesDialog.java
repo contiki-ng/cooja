@@ -228,8 +228,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 			button.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Object[] options = { "Ok", "Cancel" };
-
 					var newDefaultProjectDirs = new StringBuilder();
 					for (COOJAProject p: currentProjects) {
 						if (newDefaultProjectDirs.length() > 0) {
@@ -239,19 +237,16 @@ public class ProjectDirectoriesDialog extends JDialog {
 						newDefaultProjectDirs.append(gui.createPortablePath(p.dir, false).getPath());
 					}
 					newDefaultProjectDirs = new StringBuilder(newDefaultProjectDirs.toString().replace('\\', '/'));
-
-					String question = "External tools setting DEFAULT_PROJECTDIRS will change from:\n"
-						+ Cooja.getExternalToolsSetting("DEFAULT_PROJECTDIRS", "").replace(';', '\n')
-						+ "\n\n to:\n\n"
-						+ newDefaultProjectDirs.toString().replace(';', '\n');
-					String title = "Change external tools settings?";
-					int answer = JOptionPane.showOptionDialog(ProjectDirectoriesDialog.this, question, title,
-							JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
-							options, options[0]);
-
-					if (answer != JOptionPane.YES_OPTION) {
-						return;
-					}
+          Object[] options = {"Ok", "Cancel"};
+          if (JOptionPane.showOptionDialog(ProjectDirectoriesDialog.this,
+                  "External tools setting DEFAULT_PROJECTDIRS will change from:\n"
+                          + Cooja.getExternalToolsSetting("DEFAULT_PROJECTDIRS", "").replace(';', '\n')
+                          + "\n\n to:\n\n"
+                          + newDefaultProjectDirs.toString().replace(';', '\n'),
+                  "Change external tools settings?", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                  options, options[0]) != JOptionPane.YES_OPTION) {
+            return;
+          }
 
 					Cooja.setExternalToolsSetting("DEFAULT_PROJECTDIRS", newDefaultProjectDirs.toString());
 					dispose();
