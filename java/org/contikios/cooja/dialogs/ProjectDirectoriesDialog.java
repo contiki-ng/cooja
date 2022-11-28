@@ -147,7 +147,18 @@ public class ProjectDirectoriesDialog extends JDialog {
       if (table.getSelectedRow() < 0) {
         return;
       }
-      treePanel.selectProject(currentProjects.get(table.getSelectedRow()).dir);
+      // Expand view.
+      try {
+        var projectCanonical = currentProjects.get(table.getSelectedRow()).dir.getCanonicalPath();
+        var tp = new TreePath(treePanel.tree.getModel().getRoot());
+        tp = DirectoryTreePanel.buildTreePath(projectCanonical, treePanel.treeRoot, tp, treePanel.tree);
+        if (tp != null) {
+          treePanel.tree.setSelectionPath(tp);
+          treePanel.tree.scrollPathToVisible(tp);
+        }
+      } catch (IOException ex) {
+        logger.warn("Error when expanding projects: " + ex.getMessage());
+      }
       showProjectInfo(currentProjects.get(table.getSelectedRow()));
     });
 		table.getColumnModel().getColumn(0).setPreferredWidth(30);
@@ -429,8 +440,8 @@ class DirectoryTreePanel extends JPanel {
 	private static final Logger logger = LogManager.getLogger(DirectoryTreePanel.class);
 
 	private final ProjectDirectoriesDialog parent;
-	private final JTree tree;
-	private final DefaultMutableTreeNode treeRoot;
+	final JTree tree;
+	final DefaultMutableTreeNode treeRoot;
 	public DirectoryTreePanel(ProjectDirectoriesDialog parent) {
 		super(new BorderLayout());
 		this.parent = parent;
@@ -607,23 +618,7 @@ class DirectoryTreePanel extends JPanel {
 		add(BorderLayout.CENTER, new JScrollPane(tree));
 	}
 
-	public void selectProject(File dir) {
-		/* Expand view */
-		try {
-			String projectCanonical = dir.getCanonicalPath();
-			TreePath tp = new TreePath(tree.getModel().getRoot());
-			tp = buildTreePath(projectCanonical, treeRoot, tp, tree);
-			/*logger.info("Expanding: " + tp);*/
-			if (tp != null) {
-				tree.setSelectionPath(tp);
-				tree.scrollPathToVisible(tp);
-			}
-		} catch (IOException ex) {
-			logger.warn("Error when expanding projects: " + ex.getMessage());
-		}
-	}
-
-	private static TreePath buildTreePath(String projectCanonical, DefaultMutableTreeNode parent, TreePath tp, JTree tree)
+  static TreePath buildTreePath(String projectCanonical, DefaultMutableTreeNode parent, TreePath tp, JTree tree)
 	throws IOException {
 		/* Force filesystem listing */
 		tree.getModel().getChildCount(parent);
