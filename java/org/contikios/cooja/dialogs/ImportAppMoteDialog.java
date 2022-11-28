@@ -71,7 +71,7 @@ public class ImportAppMoteDialog extends JDialog {
   private final JTextField classField;
   private boolean hasSelected = false;
 
-  public ImportAppMoteDialog(final Simulation simulation, final ImportAppMoteType moteType) {
+  public ImportAppMoteDialog(final Cooja cooja, final ImportAppMoteType moteType) {
     super(Cooja.getTopParentContainer(), "Create Mote Type: Application Mote", ModalityType.APPLICATION_MODAL);
     JPanel topPanel = new JPanel();
     topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
@@ -101,7 +101,6 @@ public class ImportAppMoteDialog extends JDialog {
     } else if (lastFile != null) {
       classField.setText(lastFile);
     }
-
     JButton browseButton = new JButton("Browse");
     browseButton.addActionListener(e -> {
       JFileChooser fc = new JFileChooser();
@@ -113,9 +112,7 @@ public class ImportAppMoteDialog extends JDialog {
       } else if (name.length() > 0) {
         fc.setSelectedFile(new File(new File(path), name.replace(".", "/") + ".class"));
       } else {
-        File fp = simulation.getCooja()
-            .restorePortablePath(new File(Cooja.getExternalToolsSetting("IMPORT_APP_LAST",
-                "mymote.class")));
+        var fp = cooja.restorePortablePath(new File(Cooja.getExternalToolsSetting("IMPORT_APP_LAST", "mymote.class")));
         if (path.length() > 0 && !fp.getAbsolutePath().startsWith(path)) {
           fc.setCurrentDirectory(new File(path));
         } else {
@@ -128,7 +125,7 @@ public class ImportAppMoteDialog extends JDialog {
       if (fc.showOpenDialog(ImportAppMoteDialog.this) == JFileChooser.APPROVE_OPTION) {
         File fp = fc.getSelectedFile();
         if (fp != null) {
-          trySetClass(simulation, fp);
+          trySetClass(cooja, fp);
         }
       }
     });
@@ -158,7 +155,7 @@ public class ImportAppMoteDialog extends JDialog {
       } else {
         classFile = new File(new File(pathField.getText()), className.replace(".", "/") + ".class");
       }
-      if (trySetClass(simulation, classFile)) {
+      if (trySetClass(cooja, classFile)) {
         moteType.setDescription(descriptionField.getText());
         String path = pathField.getText();
         if (path.length() > 0) {
@@ -202,8 +199,8 @@ public class ImportAppMoteDialog extends JDialog {
     setLocationRelativeTo(Cooja.getTopParentContainer());
   }
 
-  private boolean trySetClass(Simulation simulation, File classFile) {
-    try (var loader = ImportAppMoteType.createTestLoader(simulation, classFile)) {
+  private boolean trySetClass(Cooja cooja, File classFile) {
+    try (var loader = ImportAppMoteType.createTestLoader(cooja, classFile)) {
       if (!loader.isTestSubclass(Mote.class)) {
         JOptionPane.showMessageDialog(ImportAppMoteDialog.this,
             "Class '" + classFile + "'\n is not of type Mote", "Failed to load class",
@@ -211,8 +208,7 @@ public class ImportAppMoteDialog extends JDialog {
       } else {
         pathField.setText(loader.getTestClassPath().getPath());
         classField.setText(loader.getTestClassName());
-        Cooja.setExternalToolsSetting("IMPORT_APP_LAST",
-            simulation.getCooja().createPortablePath(classFile).getPath());
+        Cooja.setExternalToolsSetting("IMPORT_APP_LAST", cooja.createPortablePath(classFile).getPath());
         return true;
       }
     } catch (FileNotFoundException e1) {
