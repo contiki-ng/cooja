@@ -110,8 +110,8 @@ tasks.register('fullJar', Jar) {
 run {
   // Bad Cooja location detected with gradle run, explicitly pass -cooja.
   doFirst {
-    args += ['-cooja', "$projectDir",
-             '-javac', javaToolchains.compilerFor {
+    args += ['--cooja', "$projectDir",
+             '--javac', javaToolchains.compilerFor {
                          languageVersion = JavaLanguageVersion.of(javaVersion)
                        }.get().executablePath]
   }
