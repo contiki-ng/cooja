@@ -349,8 +349,7 @@ public class ProjectDirectoriesDialog extends JDialog {
     for (var plugin : gui.getRegisteredPlugins()) {
       sb.append(' ').append(plugin);
     }
-    sb.append("\n");
-    projectInfo.append(sb.toString());
+    projectInfo.append(sb.append("\n").toString());
     sb.setLength(0);
 		if (project.getConfigJARs() != null) {
 			String[] jars = project.getConfigJARs();
@@ -372,8 +371,7 @@ public class ProjectDirectoriesDialog extends JDialog {
       for (var moteType : moteTypes) {
         sb.append(' ').append(moteType.toString());
       }
-      sb.append("\n");
-      projectInfo.append(sb.toString());
+      projectInfo.append(sb.append("\n").toString());
       sb.setLength(0);
     }
     var radioMediums = gui.getRegisteredRadioMediums();
@@ -382,8 +380,7 @@ public class ProjectDirectoriesDialog extends JDialog {
       for (var medium : radioMediums) {
         sb.append(' ').append(medium.toString());
       }
-      sb.append("\n");
-      projectInfo.append(sb.toString());
+      projectInfo.append(sb.append("\n").toString());
       sb.setLength(0);
     }
 		if (project.getConfigMoteInterfaces() != null) {
