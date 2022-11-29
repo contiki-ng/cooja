@@ -1673,23 +1673,15 @@ public class Cooja extends Observable {
    * @return Portable file, or original file is conversion failed
    */
   public File createPortablePath(File file) {
-    return createPortablePath(file, true);
-  }
-
-  public File createPortablePath(File file, boolean allowConfigRelativePaths) {
     File contikiBase = createContikiRelativePath(file);
-    if (allowConfigRelativePaths) {
-      var configBase = createConfigRelativePath(file, currentConfigFile);
-      if (configBase != null &&
-          (contikiBase == null || configBase.toString().length() <= contikiBase.toString().length())) {
-        return configBase;
-      }
+    var configBase = createConfigRelativePath(file, currentConfigFile);
+    if (configBase != null &&
+        (contikiBase == null || configBase.toString().length() <= contikiBase.toString().length())) {
+      return configBase;
     }
-
     if (contikiBase != null) {
       return contikiBase;
     }
-
     logger.warn("Path is not portable: '" + file.getPath());
     return file;
   }
@@ -1721,7 +1713,7 @@ public class Cooja extends Observable {
     return file;
   }
 
-  private static File createContikiRelativePath(File file) {
+  public static File createContikiRelativePath(File file) {
     int elem = PATH_IDENTIFIER.length;
     File[] path = new File[elem];
     String[] canonicals = new String[elem];
