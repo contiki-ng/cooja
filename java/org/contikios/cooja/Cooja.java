@@ -730,30 +730,37 @@ public class Cooja extends Observable {
             var size = new Dimension(100, 100);
             var location = new Point(100, 100);
             for (var cfgElem : root.getChildren()) {
-              if (cfgElem.getName().equals("width")) {
-                size.width = Integer.parseInt(cfgElem.getText());
-                plugin.getCooja().setSize(size);
-              } else if (cfgElem.getName().equals("height")) {
-                size.height = Integer.parseInt(cfgElem.getText());
-                plugin.getCooja().setSize(size);
-              } else if (cfgElem.getName().equals("z")) {
-                int zOrder = Integer.parseInt(cfgElem.getText());
-                plugin.getCooja().putClientProperty("zorder", zOrder);
-              } else if (cfgElem.getName().equals("location_x")) {
-                location.x = Integer.parseInt(cfgElem.getText());
-                plugin.getCooja().setLocation(location);
-              } else if (cfgElem.getName().equals("location_y")) {
-                location.y = Integer.parseInt(cfgElem.getText());
-                plugin.getCooja().setLocation(location);
-              } else if (cfgElem.getName().equals("minimized")) {
-                final var pluginGUI = plugin.getCooja();
-                if (Boolean.parseBoolean(cfgElem.getText()) && pluginGUI != null) {
-                  SwingUtilities.invokeLater(() -> {
-                    try {
-                      pluginGUI.setIcon(true);
-                    } catch (PropertyVetoException e) {
-                    }
-                  });
+              switch (cfgElem.getName()) {
+                case "width" -> {
+                  size.width = Integer.parseInt(cfgElem.getText());
+                  plugin.getCooja().setSize(size);
+                }
+                case "height" -> {
+                  size.height = Integer.parseInt(cfgElem.getText());
+                  plugin.getCooja().setSize(size);
+                }
+                case "z" -> {
+                  int zOrder = Integer.parseInt(cfgElem.getText());
+                  plugin.getCooja().putClientProperty("zorder", zOrder);
+                }
+                case "location_x" -> {
+                  location.x = Integer.parseInt(cfgElem.getText());
+                  plugin.getCooja().setLocation(location);
+                }
+                case "location_y" -> {
+                  location.y = Integer.parseInt(cfgElem.getText());
+                  plugin.getCooja().setLocation(location);
+                }
+                case "minimized" -> {
+                  final var pluginGUI = plugin.getCooja();
+                  if (Boolean.parseBoolean(cfgElem.getText()) && pluginGUI != null) {
+                    SwingUtilities.invokeLater(() -> {
+                      try {
+                        pluginGUI.setIcon(true);
+                      } catch (PropertyVetoException e) {
+                      }
+                    });
+                  }
                 }
               }
             }
