@@ -1360,8 +1360,6 @@ public class Cooja extends Observable {
    */
   Simulation createSimulation(Simulation.SimConfig cfg, Element root, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
-    doRemoveSimulation();
-    System.gc();
     var simCfg = root.getChild("simulation");
     var title = simCfg.getChild("title").getText();
     var cfgSeed = simCfg.getChild("randomseed").getText();
@@ -1383,6 +1381,8 @@ public class Cooja extends Observable {
       medium = config.radioMedium();
       delay = config.moteStartDelay();
     }
+    doRemoveSimulation();
+    System.gc();
     Simulation sim;
     try {
       sim = new Simulation(cfg, this, title, generatedSeed, seed, medium, delay, quick, root);
