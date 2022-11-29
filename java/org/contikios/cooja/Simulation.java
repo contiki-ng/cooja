@@ -644,10 +644,8 @@ public final class Simulation extends Observable {
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
 
-    Element element;
-
     // Title
-    element = new Element("title");
+    var element = new Element("title");
     element.setText(title);
     config.add(element);
 
