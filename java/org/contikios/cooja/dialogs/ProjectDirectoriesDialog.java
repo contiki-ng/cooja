@@ -235,7 +235,11 @@ public class ProjectDirectoriesDialog extends JDialog {
           if (newDefaultProjectDirs.length() > 0) {
             newDefaultProjectDirs.append(";");
           }
-          newDefaultProjectDirs.append(gui.createPortablePath(p.dir, false).getPath());
+          var portablePath = Cooja.createContikiRelativePath(p.dir);
+          if (portablePath == null) {
+            portablePath = p.dir;
+          }
+          newDefaultProjectDirs.append(portablePath.getPath());
         }
         newDefaultProjectDirs = new StringBuilder(newDefaultProjectDirs.toString().replace('\\', '/'));
         Object[] options = {"Ok", "Cancel"};
