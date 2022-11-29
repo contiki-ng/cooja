@@ -1714,32 +1714,28 @@ public class Cooja extends Observable {
   }
 
   public static File createContikiRelativePath(File file) {
-    String[] canonicals = new String[PATH_IDENTIFIER.length];
-    int match = -1;
     // Not so nice, but goes along with GUI.getExternalToolsSetting
-    String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
+    String defp = Cooja.getExternalToolsSetting("PATH_COOJA");
     String fileCanonical;
+    String best = null;
+    String replacement = null;
     try {
-      int mlength = 0;
       fileCanonical = file.getCanonicalPath();
-      for (int i = 0; i < PATH_IDENTIFIER.length; i++) {
-        var path = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));
-        canonicals[i] = path.getCanonicalPath();
-        if (fileCanonical.startsWith(canonicals[i])) {
-          if (mlength < canonicals[i].length()) {
-            mlength = canonicals[i].length();
-            match = i;
-          }
+      for (var strings : PATH_IDENTIFIER) {
+        var path = new File(Cooja.getExternalToolsSetting(strings[1], defp + strings[2]));
+        var candidate = path.getCanonicalPath();
+        if (fileCanonical.startsWith(candidate) && (best == null || best.length() < candidate.length())) {
+          best = candidate;
+          replacement = strings[0];
         }
       }
     } catch (IOException e1) {
       return null;
     }
-    if (match == -1) return null;
+    if (replacement == null) return null;
     // Replace Contiki's canonical path with Contiki identifier.
     File portable = new File(fileCanonical.replaceFirst(
-            Matcher.quoteReplacement(canonicals[match]),
-            Matcher.quoteReplacement(PATH_IDENTIFIER[match][0])));
+            Matcher.quoteReplacement(best), Matcher.quoteReplacement(replacement)));
     // Verify conversion.
     File verify = restoreContikiRelativePath(portable);
     if (verify == null || !verify.exists()) {
