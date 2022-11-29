@@ -1,5 +1,19 @@
 # Cooja v4.9
 
+## Cooja User Interface Changes
+
+### Deprecated `-nogui` parameter
+
+Graphical/headless mode is now controlled by separate parameter (`--[no-]gui`),
+so `-nogui` has been deprecated. The old behavior for `-nogui=file.csc` is now
+accomplished with `--quickstart=file.csc --no-gui`.
+
+### Double dash before long command line options
+
+The implementation of the command line option `--[no-]gui` was required to use
+a double dash, so the other command line options have been converted to also
+use a double dash for consistency.
+
 ## Cooja API changes for plugins outside the main tree
 
 ### Contiki-NG-specific moved from MoteType to BaseContikiMoteType

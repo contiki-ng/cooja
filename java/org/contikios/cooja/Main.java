@@ -69,55 +69,55 @@ class Main {
   /**
    * Option for specifying log4j2 config file.
    */
-  @Option(names = "-log4j2", paramLabel = "FILE", description = "the log4j2 config file")
+  @Option(names = "--log4j2", paramLabel = "FILE", description = "the log4j2 config file")
   String logConfigFile;
 
   /**
    * Option for specifying log directory.
    */
-  @Option(names = "-logdir", paramLabel = "DIR", description = "the log directory use")
+  @Option(names = {"-logdir", "--logdir"}, paramLabel = "DIR", description = "the log directory use")
   String logDir = ".";
 
   /**
    * Option for also logging stdout output to a file.
    */
-  @Option(names = "-logname", paramLabel = "NAME", description = "the filename for the log")
+  @Option(names = "--logname", paramLabel = "NAME", description = "the filename for the log")
   String logName;
 
   /**
    * Option for specifying Contiki-NG path.
    */
-  @Option(names = "-contiki", paramLabel = "DIR", description = "the Contiki-NG directory")
+  @Option(names = {"-contiki", "--contiki"}, paramLabel = "DIR", description = "the Contiki-NG directory")
   String contikiPath;
 
   /**
    * Option for specifying Cooja path.
    */
-  @Option(names = "-cooja", paramLabel = "DIR", description = "the Cooja directory")
+  @Option(names = "--cooja", paramLabel = "DIR", description = "the Cooja directory")
   String coojaPath;
 
   /**
    * Option for specifying javac path.
    */
-  @Option(names = "-javac", paramLabel = "FILE", description = "the javac binary", required = true)
+  @Option(names = "--javac", paramLabel = "FILE", description = "the javac binary", required = true)
   String javac;
 
   /**
    * Option for specifying external config file of tools.
    */
-  @Option(names = "-external_tools_config", paramLabel = "FILE", description = "the filename for external config")
+  @Option(names = "--external_tools_config", paramLabel = "FILE", description = "the filename for external config")
   String externalToolsConfig;
 
   /**
    * Option for specifying seed used for simulation.
    */
-  @Option(names = "-random-seed", paramLabel = "SEED", description = "the random seed")
+  @Option(names = {"-random-seed", "--random-seed"}, paramLabel = "SEED", description = "the random seed")
   Long randomSeed;
 
   /**
    * Automatically start simulations.
    */
-  @Option(names = "-autostart", description = "automatically start -nogui/-quickstart simulations")
+  @Option(names = "--autostart", description = "automatically start -nogui/-quickstart simulations")
   boolean autoStart;
 
   /**
@@ -133,20 +133,20 @@ class Main {
     /**
      * Option for specifying file to start the simulation with.
      */
-    @Option(names = "-quickstart", paramLabel = "FILE", description = "start simulation with file")
+    @Option(names = {"-quickstart", "--quickstart"}, paramLabel = "FILE", description = "start simulation with file")
     String[] quickstart;
 
     /**
      * Option for specifying file to start the simulation with.
      */
-    @Option(names = "-nogui", paramLabel = "FILE", description = "start simulation with file")
+    @Option(names = {"-nogui", "--nogui"}, paramLabel = "FILE", description = "start simulation with file [DEPRECATED]")
     String[] nogui;
   }
 
   /**
    * Option for instructing Cooja to update the simulation file (.csc).
    */
-  @Option(names = "-update-simulation", description = "write an updated simulation file (.csc) and exit")
+  @Option(names = "--update-simulation", description = "write an updated simulation file (.csc) and exit")
   boolean updateSimulation;
 
   @Option(names = "--version", versionHelp = true,
