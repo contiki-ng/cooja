@@ -72,13 +72,8 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   public Collection<Element> getConfigXML(Simulation simulation) {
     ArrayList<Element> config = new ArrayList<>();
 
-    // Identifier
-    var element = new Element("identifier");
-    element.setText(getIdentifier());
-    config.add(element);
-
     // Description
-    element = new Element("description");
+    var element = new Element("description");
     element.setText(getDescription());
     config.add(element);
 
