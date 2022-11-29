@@ -133,7 +133,20 @@ public class AddMoteDialog extends JDialog {
     numberOfMotesField.setFocusLostBehavior(JFormattedTextField.PERSIST);
     numberOfMotesField.setValue(1);
     numberOfMotesField.setColumns(10);
-    numberOfMotesField.addFocusListener(myEventHandler);
+    var focusListener = new FocusListener() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        if (e.getSource() instanceof JFormattedTextField src) {
+          SwingUtilities.invokeLater(src::selectAll);
+        }
+      }
+
+      @Override
+      public void focusLost(FocusEvent focusEvent) {
+        checkSettings();
+      }
+    };
+    numberOfMotesField.addFocusListener(focusListener);
     numberOfMotesField.addPropertyChangeListener("value", myEventHandler);
 
     smallPane.add(label);
@@ -159,7 +172,7 @@ public class AddMoteDialog extends JDialog {
     positionDistributionBox = new JComboBox<>(posDistributions);
     positionDistributionBox.setSelectedIndex(0);
     positionDistributionBox.addActionListener(myEventHandler);
-    positionDistributionBox.addFocusListener(myEventHandler);
+    positionDistributionBox.addFocusListener(focusListener);
     label.setLabelFor(positionDistributionBox);
 
     smallPane.add(label);
@@ -187,7 +200,7 @@ public class AddMoteDialog extends JDialog {
     startX.setFocusLostBehavior(JFormattedTextField.PERSIST);
     startX.setValue(0.0);
     startX.setColumns(4);
-    startX.addFocusListener(myEventHandler);
+    startX.addFocusListener(focusListener);
     startX.addPropertyChangeListener("value", myEventHandler);
     smallPane.add(startX);
     smallPane.add(Box.createHorizontalStrut(10));
@@ -200,7 +213,7 @@ public class AddMoteDialog extends JDialog {
     endX.setFocusLostBehavior(JFormattedTextField.PERSIST);
     endX.setValue(100.0);
     endX.setColumns(4);
-    endX.addFocusListener(myEventHandler);
+    endX.addFocusListener(focusListener);
     endX.addPropertyChangeListener("value", myEventHandler);
     smallPane.add(endX);
     smallPane.add(Box.createHorizontalStrut(10));
@@ -226,7 +239,7 @@ public class AddMoteDialog extends JDialog {
     startY.setFocusLostBehavior(JFormattedTextField.PERSIST);
     startY.setValue(0.0);
     startY.setColumns(4);
-    startY.addFocusListener(myEventHandler);
+    startY.addFocusListener(focusListener);
     startY.addPropertyChangeListener("value", myEventHandler);
     smallPane.add(startY);
     smallPane.add(Box.createHorizontalStrut(10));
@@ -239,7 +252,7 @@ public class AddMoteDialog extends JDialog {
     endY.setFocusLostBehavior(JFormattedTextField.PERSIST);
     endY.setValue(100.0);
     endY.setColumns(4);
-    endY.addFocusListener(myEventHandler);
+    endY.addFocusListener(focusListener);
     endY.addPropertyChangeListener("value", myEventHandler);
     smallPane.add(endY);
     smallPane.add(Box.createHorizontalStrut(10));
@@ -265,7 +278,7 @@ public class AddMoteDialog extends JDialog {
     startZ.setFocusLostBehavior(JFormattedTextField.PERSIST);
     startZ.setValue(0.0);
     startZ.setColumns(4);
-    startZ.addFocusListener(myEventHandler);
+    startZ.addFocusListener(focusListener);
     startZ.addPropertyChangeListener("value", myEventHandler);
     smallPane.add(startZ);
     smallPane.add(Box.createHorizontalStrut(10));
@@ -278,7 +291,7 @@ public class AddMoteDialog extends JDialog {
     endZ.setFocusLostBehavior(JFormattedTextField.PERSIST);
     endZ.setValue(0.0);
     endZ.setColumns(4);
-    endZ.addFocusListener(myEventHandler);
+    endZ.addFocusListener(focusListener);
     endZ.addPropertyChangeListener("value", myEventHandler);
     smallPane.add(endZ);
     smallPane.add(Box.createHorizontalStrut(10));
@@ -354,20 +367,9 @@ public class AddMoteDialog extends JDialog {
   private class AddMotesEventHandler
       implements
         ActionListener,
-        FocusListener,
         PropertyChangeListener {
     @Override
     public void propertyChange(PropertyChangeEvent e) {
-      checkSettings();
-    }
-    @Override
-    public void focusGained(final FocusEvent e) {
-      if (e.getSource() instanceof JFormattedTextField src) {
-        SwingUtilities.invokeLater(src::selectAll);
-      }
-    }
-    @Override
-    public void focusLost(FocusEvent e) {
       checkSettings();
     }
     @Override
