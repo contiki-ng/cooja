@@ -589,6 +589,27 @@ public class GUI {
 
     // File menu.
     fileMenu.addMenuListener(new MenuListener() {
+      private void selectAndLoadAsync(boolean quick) {
+        JFileChooser fc = newFileChooser();
+        // Suggest file using file history.
+        File suggestedFile = getLastOpenedFile();
+        if (suggestedFile != null) {
+          fc.setSelectedFile(suggestedFile);
+        }
+        if (fc.showOpenDialog(frame) != JFileChooser.APPROVE_OPTION) {
+          return;
+        }
+        var file = fc.getSelectedFile();
+        if (!file.exists()) {  // Try default file extension.
+          file = new File(file.getParent(), file.getName() + ".csc");
+        }
+        if (!file.exists() || !file.canRead()) {
+          logger.fatal("No read access to file: " + file);
+          return;
+        }
+        doLoadConfigAsync(quick, file);
+      }
+
       @Override
       public void menuSelected(MenuEvent e) {
         updateGUIComponentState();
@@ -601,7 +622,7 @@ public class GUI {
         menuOpenSimulation.removeAll();
         JMenu reconfigureMenu = new JMenu("Open and Reconfigure");
         JMenuItem browseItem2 = new JMenuItem("Browse...");
-        browseItem2.addActionListener(e1 -> doLoadConfigAsync(false, null));
+        browseItem2.addActionListener(e1 -> selectAndLoadAsync(false));
         reconfigureMenu.add(browseItem2);
         reconfigureMenu.add(new JSeparator());
         File[] openFilesHistory = getFileHistory();
@@ -609,7 +630,7 @@ public class GUI {
 
         // Open menu.
         JMenuItem browseItem = new JMenuItem("Browse...");
-        browseItem.addActionListener(e1 -> doLoadConfigAsync(true, null));
+        browseItem.addActionListener(e1 -> selectAndLoadAsync(true));
         menuOpenSimulation.add(browseItem);
         menuOpenSimulation.add(new JSeparator());
         menuOpenSimulation.add(reconfigureMenu);
@@ -1154,13 +1175,11 @@ public class GUI {
    */
   private void doLoadConfigAsync(final boolean quick, File file) {
     // Warn about memory usage.
-    if (warnMemory()) {
+    if (warnMemory() || file == null || !file.canRead()) {
       return;
     }
 
-    final var cfgFile = validateFileOrSelectNew(file);
-    if (cfgFile == null) return;
-    var cfg = new Simulation.SimConfig(cfgFile.getAbsolutePath(), false, false,
+    var cfg = new Simulation.SimConfig(file.getAbsolutePath(), false, false,
             cooja.configuration.logDir(), new HashMap<>());
     var worker = createLoadSimWorker(cfg, quick, null);
     if (worker == null) return;
@@ -1188,35 +1207,6 @@ public class GUI {
       cooja.doRemoveSimulation();
       return null;
     }
-  }
-
-  /** Opens a file chooser if the file cannot be read. */
-  private static File validateFileOrSelectNew(File file) {
-    if (file != null && file.canRead()) {
-      return file;
-    }
-    JFileChooser fc = newFileChooser();
-    if (file != null && file.isDirectory()) {
-      fc.setCurrentDirectory(file);
-    } else {
-      // Suggest file using file history.
-      File suggestedFile = getLastOpenedFile();
-      if (suggestedFile != null) {
-        fc.setSelectedFile(suggestedFile);
-      }
-    }
-    if (fc.showOpenDialog(frame) != JFileChooser.APPROVE_OPTION) {
-      return null;
-    }
-    File file2 = fc.getSelectedFile();
-    if (!file2.exists()) {  // Try default file extension.
-      file2 = new File(file2.getParent(), file2.getName() + ".csc");
-    }
-    if (!file2.exists() || !file2.canRead()) {
-      logger.fatal("No read access to file");
-      return null;
-    }
-    return file2;
   }
 
   public File doSaveConfig() {
