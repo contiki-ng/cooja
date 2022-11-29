@@ -198,16 +198,10 @@ public class Position extends MoteInterface {
     double x = 0, y = 0, z = 0;
 
     for (Element element : configXML) {
-      if (element.getName().equals("x")) {
-        x = Double.parseDouble(element.getText());
-      }
-
-      if (element.getName().equals("y")) {
-        y = Double.parseDouble(element.getText());
-      }
-
-      if (element.getName().equals("z")) {
-        z = Double.parseDouble(element.getText());
+      switch (element.getName()) {
+        case "x" -> x = Double.parseDouble(element.getText());
+        case "y" -> y = Double.parseDouble(element.getText());
+        case "z" -> z = Double.parseDouble(element.getText());
       }
     }
 
