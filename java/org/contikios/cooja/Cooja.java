@@ -726,36 +726,47 @@ public class Cooja extends Observable {
 
         @Override
         public Boolean work() {
+          boolean hasLocation = false;
           if (root != null) {
-            var size = new Dimension(100, 100);
-            var location = new Point(100, 100);
+            var location = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
+            var size = new Dimension();
+            int zOrder = 0;
+            boolean minimized = false;
             for (var cfgElem : root.getChildren()) {
-              if (cfgElem.getName().equals("width")) {
-                size.width = Integer.parseInt(cfgElem.getText());
-                plugin.getCooja().setSize(size);
-              } else if (cfgElem.getName().equals("height")) {
-                size.height = Integer.parseInt(cfgElem.getText());
-                plugin.getCooja().setSize(size);
-              } else if (cfgElem.getName().equals("z")) {
-                int zOrder = Integer.parseInt(cfgElem.getText());
-                plugin.getCooja().putClientProperty("zorder", zOrder);
-              } else if (cfgElem.getName().equals("location_x")) {
-                location.x = Integer.parseInt(cfgElem.getText());
-                plugin.getCooja().setLocation(location);
-              } else if (cfgElem.getName().equals("location_y")) {
-                location.y = Integer.parseInt(cfgElem.getText());
-                plugin.getCooja().setLocation(location);
-              } else if (cfgElem.getName().equals("minimized")) {
-                final var pluginGUI = plugin.getCooja();
-                if (Boolean.parseBoolean(cfgElem.getText()) && pluginGUI != null) {
-                  SwingUtilities.invokeLater(() -> {
-                    try {
-                      pluginGUI.setIcon(true);
-                    } catch (PropertyVetoException e) {
-                    }
-                  });
+              switch (cfgElem.getName()) {
+                case "width" -> size.width = Integer.parseInt(cfgElem.getText());
+                case "height" -> size.height = Integer.parseInt(cfgElem.getText());
+                case "z" -> zOrder = Integer.parseInt(cfgElem.getText());
+                case "location_x" -> location.x = Integer.parseInt(cfgElem.getText());
+                case "location_y" -> location.y = Integer.parseInt(cfgElem.getText());
+                case "minimized" -> minimized = Boolean.parseBoolean(cfgElem.getText());
+                case "bounds" -> {
+                  location.x = getAttributeAsInt(cfgElem, "x", location.x);
+                  location.y = getAttributeAsInt(cfgElem, "y", location.y);
+                  size.width = getAttributeAsInt(cfgElem, "width", size.width);
+                  size.height = getAttributeAsInt(cfgElem, "height", size.height);
+                  zOrder = getAttributeAsInt(cfgElem, "z", zOrder);
+                  minimized = minimized || Boolean.parseBoolean(cfgElem.getAttributeValue("minimized"));
                 }
               }
+            }
+            if (size.width > 0 && size.height > 0) {
+              pluginFrame.setSize(size);
+            }
+            if (location.x != Integer.MIN_VALUE && location.y != Integer.MIN_VALUE) {
+              pluginFrame.setLocation(location);
+              hasLocation = true;
+            }
+            if (zOrder != Integer.MIN_VALUE) {
+              pluginFrame.putClientProperty("zorder", zOrder);
+            }
+            if (minimized) {
+              SwingUtilities.invokeLater(() -> {
+                try {
+                  pluginFrame.setIcon(true);
+                } catch (PropertyVetoException e1) {
+                }
+              });
             }
           }
 
@@ -766,7 +777,7 @@ public class Cooja extends Observable {
             pluginFrame.setSize(FRAME_STANDARD_WIDTH, FRAME_STANDARD_HEIGHT);
           }
           // Set location if not already set.
-          if (pluginFrame.getLocation().x <= 0 && pluginFrame.getLocation().y <= 0) {
+          if (!hasLocation) {
             var iframes = gui.myDesktopPane.getAllFrames();
             Point topFrameLoc = iframes.length > 1
                     ? iframes[1].getLocation()
@@ -790,6 +801,11 @@ public class Cooja extends Observable {
     }
 
     return plugin;
+  }
+
+  private static int getAttributeAsInt(Element element, String name, int defaultValue) {
+    String v = element.getAttributeValue(name);
+    return v == null ? defaultValue : Integer.parseInt(v);
   }
 
   /**
@@ -1470,31 +1486,23 @@ public class Cooja extends Observable {
       if (startedPlugin.getCooja() != null) {
         JInternalFrame pluginFrame = startedPlugin.getCooja();
 
-        var pluginSubElement = new Element("width");
-        pluginSubElement.setText(String.valueOf(pluginFrame.getSize().width));
-        pluginElement.addContent(pluginSubElement);
+        var pluginSubElement = new Element("bounds");
+        var bounds = pluginFrame.getBounds();
+        pluginSubElement.setAttribute("x", String.valueOf(bounds.x));
+        pluginSubElement.setAttribute("y", String.valueOf(bounds.y));
+        pluginSubElement.setAttribute("height", String.valueOf(bounds.height));
+        pluginSubElement.setAttribute("width", String.valueOf(bounds.width));
 
-        pluginSubElement = new Element("z");
-        pluginSubElement.setText(String.valueOf(getDesktopPane().getComponentZOrder(pluginFrame)));
-        pluginElement.addContent(pluginSubElement);
-
-        pluginSubElement = new Element("height");
-        pluginSubElement.setText(String.valueOf(pluginFrame.getSize().height));
-        pluginElement.addContent(pluginSubElement);
-
-        pluginSubElement = new Element("location_x");
-        pluginSubElement.setText(String.valueOf(pluginFrame.getLocation().x));
-        pluginElement.addContent(pluginSubElement);
-
-        pluginSubElement = new Element("location_y");
-        pluginSubElement.setText(String.valueOf(pluginFrame.getLocation().y));
-        pluginElement.addContent(pluginSubElement);
+        int z = getDesktopPane().getComponentZOrder(pluginFrame);
+        if (z != 0) {
+          pluginSubElement.setAttribute("z", String.valueOf(z));
+        }
 
         if (pluginFrame.isIcon()) {
-          pluginSubElement = new Element("minimized");
-          pluginSubElement.setText("" + true);
-          pluginElement.addContent(pluginSubElement);
+          pluginSubElement.setAttribute("minimized", String.valueOf(true));
         }
+
+        pluginElement.addContent(pluginSubElement);
       }
 
       config.add(pluginElement);
