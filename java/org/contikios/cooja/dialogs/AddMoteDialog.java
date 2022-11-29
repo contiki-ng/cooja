@@ -74,7 +74,6 @@ public class AddMoteDialog extends JDialog {
   private final JFormattedTextField endY;
   private final JFormattedTextField startZ;
   private final JFormattedTextField endZ;
-  private final JComboBox<String> positionDistributionBox;
   private MoteAdditions returnValue = null;
 
   /**
@@ -168,7 +167,7 @@ public class AddMoteDialog extends JDialog {
       posDistributions[i] = Cooja.getDescriptionOf(positioners.get(i));
     }
 
-    positionDistributionBox = new JComboBox<>(posDistributions);
+    var positionDistributionBox = new JComboBox<>(posDistributions);
     positionDistributionBox.setSelectedIndex(0);
     positionDistributionBox.addFocusListener(focusListener);
     label.setLabelFor(positionDistributionBox);
