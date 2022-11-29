@@ -115,6 +115,8 @@ public final class Simulation extends Observable {
   /** List of active script engines. */
   private final ArrayList<LogScriptEngine> scriptEngines = new ArrayList<>();
 
+  private final SimEventCentral eventCentral = new SimEventCentral(this);
+
   /** The return value from startSimulation. */
   private volatile Integer returnValue = null;
 
@@ -629,7 +631,6 @@ public final class Simulation extends Observable {
     return randomGenerator;
   }
 
-  private final SimEventCentral eventCentral = new SimEventCentral(this);
   public SimEventCentral getEventCentral() {
     return eventCentral;
   }
