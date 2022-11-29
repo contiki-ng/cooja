@@ -484,6 +484,165 @@ public class AreaViewer extends VisPlugin {
 
     noneButton = new JRadioButton("No obstacles");
     noneButton.setActionCommand("set no obstacles");
+    // FIXME: make separate action listeners of this.
+    var obstacleHandler = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+          case "set custom bitmap":
+            if (!setCustomBitmap() || !analyzeBitmapForObstacles()) {
+              backgroundImage = null;
+              currentChannelModel.removeAllObstacles();
+              noneButton.setSelected(true);
+              repaint();
+            }
+            break;
+          case "set predefined 1":
+            currentChannelModel.removeAllObstacles();
+            currentChannelModel.addRectObstacle(0, 0, 50, 5, false);
+            currentChannelModel.addRectObstacle(0, 5, 5, 50, false);
+            currentChannelModel.addRectObstacle(70, 0, 20, 5, false);
+            currentChannelModel.addRectObstacle(0, 70, 5, 20, false);
+            currentChannelModel.notifySettingsChanged();
+            repaint();
+            break;
+          case "set predefined 2":
+            currentChannelModel.removeAllObstacles();
+            currentChannelModel.addRectObstacle(0, 0, 10, 10, false);
+            currentChannelModel.addRectObstacle(30, 0, 10, 10, false);
+            currentChannelModel.addRectObstacle(60, 0, 10, 10, false);
+            currentChannelModel.addRectObstacle(90, 0, 10, 10, false);
+            currentChannelModel.addRectObstacle(5, 90, 10, 10, false);
+            currentChannelModel.addRectObstacle(25, 90, 10, 10, false);
+            currentChannelModel.addRectObstacle(45, 90, 10, 10, false);
+            currentChannelModel.addRectObstacle(65, 90, 10, 10, false);
+            currentChannelModel.addRectObstacle(85, 90, 10, 10, false);
+            currentChannelModel.notifySettingsChanged();
+            repaint();
+            break;
+          case "set no obstacles":
+            backgroundImage = null;
+            currentChannelModel.removeAllObstacles();
+            repaint();
+            break;
+          default:
+            logger.fatal("Unhandled action command: " + e.getActionCommand());
+            break;
+        }
+      }
+
+      private boolean setCustomBitmap() {
+        JFileChooser fileChooser = new JFileChooser();
+        var filter = new FileNameExtensionFilter("All supported images", "gif", "jpg", "jpeg", "png");
+        fileChooser.setFileFilter(filter);
+        if (fileChooser.showOpenDialog(canvas) != JFileChooser.APPROVE_OPTION) {
+          return false;
+        }
+        File file = fileChooser.getSelectedFile();
+        if (!filter.accept(file)) {
+          logger.fatal("Non-supported file type, aborting");
+          return false;
+        }
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Image image = toolkit.getImage(file.getAbsolutePath());
+        MediaTracker tracker = new MediaTracker(canvas);
+        tracker.addImage(image, 1);
+        try {
+          tracker.waitForAll();
+          if (tracker.isErrorAny() || image == null) {
+            logger.info("Error when loading '" + file.getAbsolutePath() + "'");
+            return false;
+          }
+        } catch (InterruptedException ex) {
+          logger.fatal("Interrupted during image loading, aborting");
+          return false;
+        }
+
+        // Set virtual size of image.
+        var dialog = new ImageSettingsDialog();
+        if (!dialog.terminatedOK()) {
+          logger.fatal("User canceled, aborting");
+          return false;
+        }
+
+        // Show loaded image.
+        backgroundStartX = dialog.getVirtualStartX();
+        backgroundStartY = dialog.getVirtualStartY();
+        backgroundWidth = dialog.getVirtualWidth();
+        backgroundHeight = dialog.getVirtualHeight();
+        backgroundImage = image;
+        backgroundImageFile = file;
+        return true;
+      }
+
+      private boolean analyzeBitmapForObstacles() {
+        if (backgroundImage == null) {
+          return false;
+        }
+
+        var parentContainer = Cooja.getTopParentContainer();
+        if (parentContainer == null) {
+          logger.fatal("Unknown parent container");
+          return false;
+        }
+        // Show obstacle finder dialog.
+        var obstacleFinderDialog = new ObstacleFinderDialog(backgroundImage, currentChannelModel, parentContainer);
+        if (!obstacleFinderDialog.exitedOK) {
+          return false;
+        }
+
+        // Register obstacles.
+        final var obstacleArray = obstacleFinderDialog.obstacleArray;
+        final int boxSize = obstacleFinderDialog.sizeSlider.getValue();
+        final ProgressMonitor pm = new ProgressMonitor(Cooja.getTopParentContainer(), "Registering obstacles",
+                null,0, obstacleArray.length - 1);
+        // Thread that will perform the work
+        Thread thread = new Thread(() -> {
+          try {
+            // Remove already existing obstacles.
+            currentChannelModel.removeAllObstacles();
+
+            int foundObstacles = 0;
+            for (int x = 0; x < obstacleArray.length; x++) {
+              for (int y = 0; y < (obstacleArray[0]).length; y++) {
+                if (obstacleArray[x][y]) { // Register obstacle.
+                  double realWidth = (boxSize * backgroundWidth) / backgroundImage.getWidth(null);
+                  double realHeight = (boxSize * backgroundHeight) / backgroundImage.getHeight(null);
+                  double realStartX = backgroundStartX + x * realWidth;
+                  double realStartY = backgroundStartY + y * realHeight;
+                  foundObstacles++;
+                  if (realStartX + realWidth > backgroundStartX + backgroundWidth) {
+                    realWidth = backgroundStartX + backgroundWidth - realStartX;
+                  }
+                  if (realStartY + realHeight > backgroundStartY + backgroundHeight) {
+                    realHeight = backgroundStartY + backgroundHeight - realStartY;
+                  }
+                  currentChannelModel.addRectObstacle(realStartX, realStartY, realWidth, realHeight, false);
+                }
+              }
+              if (pm.isCanceled()) { // User aborted.
+                return;
+              }
+              pm.setProgress(x);
+              pm.setNote("After/Before merging: " + currentChannelModel.getNumberOfObstacles() + "/" + foundObstacles);
+            }
+            currentChannelModel.notifySettingsChanged();
+            AreaViewer.this.repaint();
+          } catch (Exception ex) {
+            if (pm.isCanceled()) {
+              return;
+            }
+            logger.fatal("Obstacle adding exception: " + ex.getMessage());
+            ex.printStackTrace();
+            pm.close();
+            return;
+          }
+          pm.close();
+        }, "analyzeBitmapForObstacles");
+        thread.start();
+        return true;
+      }
+    };
     noneButton.addActionListener(obstacleHandler);
     noneButton.setSelected(true);
 
@@ -859,194 +1018,6 @@ public class AreaViewer extends VisPlugin {
 
       canvas.repaint();
     }
-  };
-
-  /**
-   * Helps user set a background image which can be analysed for obstacles/freespace.
-   */
-  private final ActionListener obstacleHandler = new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      switch (e.getActionCommand()) {
-        case "set custom bitmap":
-          if (!setCustomBitmap() || !analyzeBitmapForObstacles()) {
-            backgroundImage = null;
-            currentChannelModel.removeAllObstacles();
-            noneButton.setSelected(true);
-            repaint();
-          }
-          break;
-        case "set predefined 1":
-          currentChannelModel.removeAllObstacles();
-          currentChannelModel.addRectObstacle(0, 0, 50, 5, false);
-          currentChannelModel.addRectObstacle(0, 5, 5, 50, false);
-          currentChannelModel.addRectObstacle(70, 0, 20, 5, false);
-          currentChannelModel.addRectObstacle(0, 70, 5, 20, false);
-          currentChannelModel.notifySettingsChanged();
-          repaint();
-          break;
-        case "set predefined 2":
-          currentChannelModel.removeAllObstacles();
-          currentChannelModel.addRectObstacle(0, 0, 10, 10, false);
-          currentChannelModel.addRectObstacle(30, 0, 10, 10, false);
-          currentChannelModel.addRectObstacle(60, 0, 10, 10, false);
-          currentChannelModel.addRectObstacle(90, 0, 10, 10, false);
-          currentChannelModel.addRectObstacle(5, 90, 10, 10, false);
-          currentChannelModel.addRectObstacle(25, 90, 10, 10, false);
-          currentChannelModel.addRectObstacle(45, 90, 10, 10, false);
-          currentChannelModel.addRectObstacle(65, 90, 10, 10, false);
-          currentChannelModel.addRectObstacle(85, 90, 10, 10, false);
-          currentChannelModel.notifySettingsChanged();
-          repaint();
-          break;
-        case "set no obstacles":
-          backgroundImage = null;
-          currentChannelModel.removeAllObstacles();
-          repaint();
-          break;
-        default:
-          logger.fatal("Unhandled action command: " + e.getActionCommand());
-          break;
-      }
-    }
-
-    private boolean setCustomBitmap() {
-
-      /* Select image file */
-      JFileChooser fileChooser = new JFileChooser();
-      var filter = new FileNameExtensionFilter("All supported images", "gif", "jpg", "jpeg", "png");
-      fileChooser.setFileFilter(filter);
-
-      int returnVal = fileChooser.showOpenDialog(canvas);
-      if (returnVal != JFileChooser.APPROVE_OPTION) {
-        return false;
-      }
-
-      File file = fileChooser.getSelectedFile();
-      if (!filter.accept(file)) {
-        logger.fatal("Non-supported file type, aborting");
-        return false;
-      }
-
-      logger.info("Opening '" + file.getAbsolutePath() + "'");
-
-      /* Load image data */
-      Toolkit toolkit = Toolkit.getDefaultToolkit();
-      Image image = toolkit.getImage(file.getAbsolutePath());
-
-      MediaTracker tracker = new MediaTracker(canvas);
-      tracker.addImage(image, 1);
-
-      try {
-        tracker.waitForAll();
-        if (tracker.isErrorAny() || image == null) {
-          logger.info("Error when loading '" + file.getAbsolutePath() + "'");
-          return false;
-        }
-      } catch (InterruptedException ex) {
-        logger.fatal("Interrupted during image loading, aborting");
-        return false;
-      }
-
-      /* Set virtual size of image */
-      var dialog = new ImageSettingsDialog();
-      if (!dialog.terminatedOK()) {
-        logger.fatal("User canceled, aborting");
-        return false;
-      }
-
-      /* Show loaded image */
-      backgroundStartX = dialog.getVirtualStartX();
-      backgroundStartY = dialog.getVirtualStartY();
-      backgroundWidth = dialog.getVirtualWidth();
-      backgroundHeight = dialog.getVirtualHeight();
-
-      backgroundImage = image;
-      backgroundImageFile = file;
-
-      return true;
-    }
-
-    private boolean analyzeBitmapForObstacles() {
-      if (backgroundImage == null) {
-        return false;
-      }
-
-      var parentContainer = Cooja.getTopParentContainer();
-      if (parentContainer == null) {
-        logger.fatal("Unknown parent container");
-        return false;
-      }
-      /* Show obstacle finder dialog */
-      var obstacleFinderDialog = new ObstacleFinderDialog(
-            backgroundImage, currentChannelModel, parentContainer
-        );
-
-      if (!obstacleFinderDialog.exitedOK) {
-        return false;
-      }
-
-      /* Register obstacles */
-      final boolean[][] obstacleArray = obstacleFinderDialog.obstacleArray;
-      final int boxSize = obstacleFinderDialog.sizeSlider.getValue();
-
-      // Create progress monitor
-      final ProgressMonitor pm = new ProgressMonitor(
-          Cooja.getTopParentContainer(),
-          "Registering obstacles",
-          null,
-          0,
-          obstacleArray.length - 1
-      );
-
-      // Thread that will perform the work
-      Thread thread = new Thread(() -> {
-        try {
-          // Remove already existing obstacles.
-          currentChannelModel.removeAllObstacles();
-
-          int foundObstacles = 0;
-          for (int x=0; x < obstacleArray.length; x++) {
-            for (int y=0; y < (obstacleArray[0]).length; y++) {
-              if (obstacleArray[x][y]) { // Register obstacle.
-                double realWidth = (boxSize * backgroundWidth) / backgroundImage.getWidth(null);
-                double realHeight = (boxSize * backgroundHeight) / backgroundImage.getHeight(null);
-                double realStartX = backgroundStartX + x * realWidth;
-                double realStartY = backgroundStartY + y * realHeight;
-                foundObstacles++;
-                if (realStartX + realWidth > backgroundStartX + backgroundWidth) {
-                  realWidth = backgroundStartX + backgroundWidth - realStartX;
-                }
-                if (realStartY + realHeight > backgroundStartY + backgroundHeight) {
-                  realHeight = backgroundStartY + backgroundHeight - realStartY;
-                }
-                currentChannelModel.addRectObstacle(realStartX, realStartY, realWidth, realHeight, false);
-              }
-            }
-            if (pm.isCanceled()) { // User aborted.
-              return;
-            }
-            pm.setProgress(x);
-            pm.setNote("After/Before merging: " + currentChannelModel.getNumberOfObstacles() + "/" + foundObstacles);
-          }
-          currentChannelModel.notifySettingsChanged();
-          AreaViewer.this.repaint();
-        } catch (Exception ex) {
-          if (pm.isCanceled()) {
-            return;
-          }
-          logger.fatal("Obstacle adding exception: " + ex.getMessage());
-          ex.printStackTrace();
-          pm.close();
-          return;
-        }
-        pm.close();
-      }, "analyzeBitmapForObstacles");
-      thread.start();
-
-      return true;
-    }
-
   };
 
   static class ObstacleFinderDialog extends JDialog {
