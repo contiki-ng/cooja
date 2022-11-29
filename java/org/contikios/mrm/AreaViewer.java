@@ -867,44 +867,46 @@ public class AreaViewer extends VisPlugin {
   private final ActionListener obstacleHandler = new ActionListener() {
     @Override
     public void actionPerformed(ActionEvent e) {
-      if (e.getActionCommand().equals("set custom bitmap")) {
-        if (!setCustomBitmap() || !analyzeBitmapForObstacles()) {
+      switch (e.getActionCommand()) {
+        case "set custom bitmap":
+          if (!setCustomBitmap() || !analyzeBitmapForObstacles()) {
+            backgroundImage = null;
+            currentChannelModel.removeAllObstacles();
+            noneButton.setSelected(true);
+            repaint();
+          }
+          break;
+        case "set predefined 1":
+          currentChannelModel.removeAllObstacles();
+          currentChannelModel.addRectObstacle(0, 0, 50, 5, false);
+          currentChannelModel.addRectObstacle(0, 5, 5, 50, false);
+          currentChannelModel.addRectObstacle(70, 0, 20, 5, false);
+          currentChannelModel.addRectObstacle(0, 70, 5, 20, false);
+          currentChannelModel.notifySettingsChanged();
+          repaint();
+          break;
+        case "set predefined 2":
+          currentChannelModel.removeAllObstacles();
+          currentChannelModel.addRectObstacle(0, 0, 10, 10, false);
+          currentChannelModel.addRectObstacle(30, 0, 10, 10, false);
+          currentChannelModel.addRectObstacle(60, 0, 10, 10, false);
+          currentChannelModel.addRectObstacle(90, 0, 10, 10, false);
+          currentChannelModel.addRectObstacle(5, 90, 10, 10, false);
+          currentChannelModel.addRectObstacle(25, 90, 10, 10, false);
+          currentChannelModel.addRectObstacle(45, 90, 10, 10, false);
+          currentChannelModel.addRectObstacle(65, 90, 10, 10, false);
+          currentChannelModel.addRectObstacle(85, 90, 10, 10, false);
+          currentChannelModel.notifySettingsChanged();
+          repaint();
+          break;
+        case "set no obstacles":
           backgroundImage = null;
           currentChannelModel.removeAllObstacles();
-
-          noneButton.setSelected(true);
           repaint();
-        }
-      } else if (e.getActionCommand().equals("set predefined 1")) {
-        currentChannelModel.removeAllObstacles();
-        currentChannelModel.addRectObstacle(0, 0, 50, 5, false);
-        currentChannelModel.addRectObstacle(0, 5, 5, 50, false);
-
-        currentChannelModel.addRectObstacle(70, 0, 20, 5, false);
-        currentChannelModel.addRectObstacle(0, 70, 5, 20, false);
-
-        currentChannelModel.notifySettingsChanged();
-        repaint();
-      } else if (e.getActionCommand().equals("set predefined 2")) {
-        currentChannelModel.removeAllObstacles();
-        currentChannelModel.addRectObstacle(0, 0, 10, 10, false);
-        currentChannelModel.addRectObstacle(30, 0, 10, 10, false);
-        currentChannelModel.addRectObstacle(60, 0, 10, 10, false);
-        currentChannelModel.addRectObstacle(90, 0, 10, 10, false);
-
-        currentChannelModel.addRectObstacle(5, 90, 10, 10, false);
-        currentChannelModel.addRectObstacle(25, 90, 10, 10, false);
-        currentChannelModel.addRectObstacle(45, 90, 10, 10, false);
-        currentChannelModel.addRectObstacle(65, 90, 10, 10, false);
-        currentChannelModel.addRectObstacle(85, 90, 10, 10, false);
-        currentChannelModel.notifySettingsChanged();
-        repaint();
-      } else if (e.getActionCommand().equals("set no obstacles")) {
-        backgroundImage = null;
-        currentChannelModel.removeAllObstacles();
-        repaint();
-      } else {
-        logger.fatal("Unhandled action command: " + e.getActionCommand());
+          break;
+        default:
+          logger.fatal("Unhandled action command: " + e.getActionCommand());
+          break;
       }
     }
 
