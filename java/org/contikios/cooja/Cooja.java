@@ -128,6 +128,12 @@ public class Cooja extends Observable {
   public static final String VERSION = "4.8";
 
   /**
+   *  Version used to detect incompatibility with the Cooja simulation config files.
+   *  The format is &lt;YYYY&gt;&lt;MM&gt;&lt;DD&gt;&lt;2 digit sequence number&gt;.
+   */
+  public static final String SIMULATION_CONFIG_VERSION = "2022112801";
+
+  /**
    *  Version used to detect incompatibility with the Contiki-NG
    *  build system. The format is &lt;YYYY&gt;&lt;MM&gt;&lt;DD&gt;&lt;2 digit sequence number&gt;.
    */
@@ -1421,6 +1427,7 @@ public class Cooja extends Observable {
   Element extractSimulationConfig() {
     // Create simulation config
     Element root = new Element("simconf");
+    root.setAttribute("version", Cooja.SIMULATION_CONFIG_VERSION);
 
     /* Store extension directories meta data */
     for (COOJAProject project: currentProjects) {
