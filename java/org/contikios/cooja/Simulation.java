@@ -971,10 +971,7 @@ public final class Simulation extends Observable {
    * @return Max simulation speed ratio. Returns null if no limit.
    */
   public Double getSpeedLimit() {
-    if (speedLimitNone) {
-      return null;
-    }
-    return speedLimit;
+    return speedLimitNone ? null : speedLimit;
   }
 
   /**
