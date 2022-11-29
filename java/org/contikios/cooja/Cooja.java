@@ -138,9 +138,9 @@ public class Cooja extends Observable {
   private static final String PATH_CONFIG_IDENTIFIER = "[CONFIG_DIR]";
 
   private static final String[][] PATH_IDENTIFIER = {
-          {"[CONTIKI_DIR]","PATH_CONTIKI",""},
-          {"[COOJA_DIR]","PATH_COOJA",""},
-          {"[APPS_DIR]","PATH_APPS","apps"}
+          {"[CONTIKI_DIR]","PATH_CONTIKI"},
+          {"[COOJA_DIR]","PATH_COOJA"},
+          {"[APPS_DIR]","PATH_APPS"}
   };
 
   public static File externalToolsUserSettingsFile = null;
