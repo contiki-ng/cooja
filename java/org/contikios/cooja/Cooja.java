@@ -1334,6 +1334,7 @@ public class Cooja extends Observable {
         logger.fatal("Not a valid Cooja simulation config.");
         return null;
       }
+      boolean projectsOk = verifyProjects(root);
       sim = createSimulation(cfg, root, quick, manualRandomSeed);
     } catch (JDOMException e) {
       throw new SimulationCreationException("Config not well-formed", e);
@@ -1359,7 +1360,6 @@ public class Cooja extends Observable {
    */
   Simulation createSimulation(Simulation.SimConfig cfg, Element root, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
-    boolean projectsOk = verifyProjects(root);
     doRemoveSimulation();
     System.gc();
     var simCfg = root.getChild("simulation");
