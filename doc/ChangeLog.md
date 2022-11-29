@@ -17,7 +17,7 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
-### Contiki-NG-specific moved from MoteType to BaseContikiMoteType
+### Contiki-NG-specific methods moved from MoteType to BaseContikiMoteType
 
 Contiki-NG specific methods were moved from MoteType to BaseContikiMoteType
 ([#857](https://github.com/contiki-ng/cooja/pull/857)).
