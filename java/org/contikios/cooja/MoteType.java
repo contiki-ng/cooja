@@ -28,7 +28,6 @@
 package org.contikios.cooja;
 
 import java.awt.Container;
-import java.io.File;
 import java.util.Collection;
 
 import javax.swing.JComponent;
@@ -185,12 +184,6 @@ public interface MoteType {
     public MoteTypeCreationException(String message, Throwable cause, MessageList output) {
       super(message, cause);
       compilationOutput = output;
-    }
-    public boolean hasCompilationOutput() {
-      return compilationOutput != null;
-    }
-    public void setCompilationOutput(MessageList compilationOutput) {
-      this.compilationOutput = compilationOutput;
     }
     public MessageList getCompilationOutput() {
       return compilationOutput;
