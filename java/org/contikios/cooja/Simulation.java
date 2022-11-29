@@ -612,7 +612,7 @@ public final class Simulation extends Observable {
         stopSimulation();
       }
     };
-    scheduleEvent(stopEvent, getSimulationTime()+Simulation.MILLISECOND);
+    invokeSimulationThread(() -> scheduleEvent(stopEvent, getSimulationTime() + Simulation.MILLISECOND));
     startSimulation();
   }
 
