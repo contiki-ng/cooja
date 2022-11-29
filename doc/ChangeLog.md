@@ -8,6 +8,12 @@ Graphical/headless mode is now controlled by separate parameter (`--[no-]gui`),
 so `-nogui` has been deprecated. The old behavior for `-nogui=file.csc` is now
 accomplished with `--quickstart=file.csc --no-gui`.
 
+### Renamed `--external_tools_config` parameter to `--config`
+
+This parameter specifies a configuration file not only with user specified
+external tools, but also other user settings such as window location,
+file history, etc.
+
 ### Double dash before long command line options
 
 The implementation of the command line option `--[no-]gui` was required to use
