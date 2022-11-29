@@ -181,13 +181,12 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
   }
 
   private static ClassLoader getParentClassLoader(Cooja cooja) {
-    ClassLoader ldr = null;
     try {
-      ldr = cooja.getProjectClassLoader();
+      return cooja.getProjectClassLoader();
     } catch (Exception e) {
       logger.warn("Could not get Cooja classloader: " + e);
+      return ClassLoader.getSystemClassLoader();
     }
-    return ldr == null ? ClassLoader.getSystemClassLoader() : ldr;
   }
 
   public static TestLoader createTestLoader(Cooja cooja, File classFile) throws IOException {
