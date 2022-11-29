@@ -86,7 +86,6 @@ public class AddMoteDialog extends JDialog {
    */
   public static MoteAdditions showDialog(Simulation sim, MoteType moteType) {
     var myDialog = new AddMoteDialog(sim, moteType);
-    myDialog.setVisible(true);
     return myDialog.returnValue;
   }
 
@@ -317,6 +316,7 @@ public class AddMoteDialog extends JDialog {
     pack();
     setLocationRelativeTo(Cooja.getTopParentContainer());
     checkSettings();
+    setVisible(true);
   }
 
   private boolean checkSettings() {
