@@ -30,6 +30,7 @@ package org.contikios.cooja;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Filter;
@@ -44,6 +45,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
 import java.awt.GraphicsEnvironment;
 import java.io.File;
@@ -133,7 +135,7 @@ class Main {
     /**
      * Option for specifying file to start the simulation with.
      */
-    @Option(names = {"-quickstart", "--quickstart"}, paramLabel = "FILE", description = "start simulation with file")
+    @Option(names = {"-quickstart", "--quickstart"}, paramLabel = "FILE", description = "start simulation with file [DEPRECATED]")
     String[] quickstart;
 
     /**
@@ -142,6 +144,12 @@ class Main {
     @Option(names = {"-nogui", "--nogui"}, paramLabel = "FILE", description = "start simulation with file [DEPRECATED]")
     String[] nogui;
   }
+
+  /**
+   * Option for specifying simulation files to load.
+   */
+  @Parameters(paramLabel = "FILE", description = "one or more simulation files")
+  String[] simulationFiles;
 
   /**
    * Option for instructing Cooja to update the simulation file (.csc).
@@ -201,44 +209,48 @@ class Main {
       }
     }
 
-    // Parse and verify soundness of -nogui/-quickstart argument.
-    ArrayList<Simulation.SimConfig> simConfigs = new ArrayList<>();
+    ArrayList<String> simulationFiles = new ArrayList<>();
     if (options.action != null) {
-      for (String arg : options.action.nogui == null ? options.action.quickstart : options.action.nogui) {
-        // Argument on the form "file.csc[,key1=value1,key2=value2, ..]"
-        var map = new HashMap<String, String>();
-        String file = null;
-        for (var item : arg.split(",", -1)) {
-          if (file == null) {
-            file = item;
-            continue;
-          }
-          var pair = item.split("=", -1);
-          if (pair.length != 2) {
-            System.err.println("Faulty key=value specification: " + item);
-            System.exit(1);
-          }
-          map.put(pair[0], pair[1]);
-        }
+      Collections.addAll(simulationFiles, options.action.nogui == null ? options.action.quickstart : options.action.nogui);
+    }
+    if (options.simulationFiles != null) {
+      Collections.addAll(simulationFiles, options.simulationFiles);
+    }
+    // Parse and verify soundness of -nogui/-quickstart/files argument.
+    ArrayList<Simulation.SimConfig> simConfigs = new ArrayList<>();
+    for (String arg : simulationFiles) {
+      // Argument on the form "file.csc[,key1=value1,key2=value2, ..]"
+      var map = new HashMap<String, String>();
+      String file = null;
+      for (var item : arg.split(",", -1)) {
         if (file == null) {
-          System.err.println("Failed argument parsing of -nogui/-quickstart: " + arg);
+          file = item;
+          continue;
+        }
+        var pair = item.split("=", -1);
+        if (pair.length != 2) {
+          System.err.println("Faulty key=value specification: " + item);
           System.exit(1);
         }
-        if (!file.endsWith(".csc") && !file.endsWith(".csc.gz")) {
-          String option = options.action.nogui == null ? "-quickstart" : "-nogui";
-          System.err.println("Cooja " + option + " expects a filename extension of '.csc'");
-          System.exit(1);
-        }
-        if (!Files.exists(Path.of(file))) {
-          System.err.println("File '" + file + "' does not exist");
-          System.exit(1);
-        }
-        var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || !options.gui));
-        var updateSim = map.getOrDefault("update-simulation", Boolean.toString(options.updateSimulation));
-        var logDir = map.getOrDefault("logdir", options.logDir);
-        simConfigs.add(new Simulation.SimConfig(file, Boolean.parseBoolean(autoStart), Boolean.parseBoolean(updateSim),
-                logDir, map));
+        map.put(pair[0], pair[1]);
       }
+      if (file == null) {
+        System.err.println("Failed argument parsing of simulation file " + arg);
+        System.exit(1);
+      }
+      if (!file.endsWith(".csc") && !file.endsWith(".csc.gz")) {
+        System.err.println("Cooja expects simulation filenames to have an extension of '.csc' or '.csc.gz");
+        System.exit(1);
+      }
+      if (!Files.exists(Path.of(file))) {
+        System.err.println("File '" + file + "' does not exist");
+        System.exit(1);
+      }
+      var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || !options.gui));
+      var updateSim = map.getOrDefault("update-simulation", Boolean.toString(options.updateSimulation));
+      var logDir = map.getOrDefault("logdir", options.logDir);
+      simConfigs.add(new Simulation.SimConfig(file, Boolean.parseBoolean(autoStart), Boolean.parseBoolean(updateSim),
+                                              logDir, map));
     }
 
     if (options.logConfigFile != null && !Files.exists(Path.of(options.logConfigFile))) {
