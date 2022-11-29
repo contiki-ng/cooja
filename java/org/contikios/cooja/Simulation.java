@@ -115,6 +115,8 @@ public final class Simulation extends Observable {
   /** List of active script engines. */
   private final ArrayList<LogScriptEngine> scriptEngines = new ArrayList<>();
 
+  private final SimEventCentral eventCentral = new SimEventCentral(this);
+
   /** The return value from startSimulation. */
   private volatile Integer returnValue = null;
 
@@ -610,7 +612,7 @@ public final class Simulation extends Observable {
         stopSimulation();
       }
     };
-    scheduleEvent(stopEvent, getSimulationTime()+Simulation.MILLISECOND);
+    invokeSimulationThread(() -> scheduleEvent(stopEvent, getSimulationTime() + Simulation.MILLISECOND));
     startSimulation();
   }
 
@@ -629,7 +631,6 @@ public final class Simulation extends Observable {
     return randomGenerator;
   }
 
-  private final SimEventCentral eventCentral = new SimEventCentral(this);
   public SimEventCentral getEventCentral() {
     return eventCentral;
   }
@@ -643,10 +644,8 @@ public final class Simulation extends Observable {
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
 
-    Element element;
-
     // Title
-    element = new Element("title");
+    var element = new Element("title");
     element.setText(title);
     config.add(element);
 
@@ -659,11 +658,7 @@ public final class Simulation extends Observable {
 
     // Random seed
     element = new Element("randomseed");
-    if (randomSeedGenerated) {
-      element.setText("generated");
-    } else {
-      element.setText(Long.toString(getRandomSeed()));
-    }
+    element.setText(randomSeedGenerated ? "generated" : String.valueOf(randomSeed));
     config.add(element);
 
     // Max mote startup delay
@@ -974,10 +969,7 @@ public final class Simulation extends Observable {
    * @return Max simulation speed ratio. Returns null if no limit.
    */
   public Double getSpeedLimit() {
-    if (speedLimitNone) {
-      return null;
-    }
-    return speedLimit;
+    return speedLimitNone ? null : speedLimit;
   }
 
   /**
