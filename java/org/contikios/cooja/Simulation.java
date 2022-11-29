@@ -659,11 +659,7 @@ public final class Simulation extends Observable {
 
     // Random seed
     element = new Element("randomseed");
-    if (randomSeedGenerated) {
-      element.setText("generated");
-    } else {
-      element.setText(Long.toString(getRandomSeed()));
-    }
+    element.setText(randomSeedGenerated ? "generated" : String.valueOf(randomSeed));
     config.add(element);
 
     // Max mote startup delay
