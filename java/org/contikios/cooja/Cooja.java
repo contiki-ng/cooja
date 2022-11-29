@@ -1339,6 +1339,10 @@ public class Cooja extends Observable {
       throw new SimulationCreationException("Config not well-formed", e);
     } catch (IOException e) {
       throw new SimulationCreationException("Load simulation error", e);
+    } catch (Exception e) {
+      // Wrap everything else in a SimulationCreationException, so the SwingWorker works as intended.
+      // (SwingWorker communicates internally through SimulationCreationExceptions.)
+      throw new SimulationCreationException("Unknown error", e);
     }
     return sim;
   }
