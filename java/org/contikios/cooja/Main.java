@@ -246,11 +246,6 @@ class Main {
       System.exit(1);
     }
 
-    if (options.externalUserConfig != null && !Files.exists(Path.of(options.externalUserConfig))) {
-      System.err.println("Specified external user configuration '" + options.externalUserConfig + "' not found");
-      System.exit(1);
-    }
-
     if (options.contikiPath != null && !Files.exists(Path.of(options.contikiPath))) {
       System.err.println("Contiki-NG path '" + options.contikiPath + "' does not exist");
       System.exit(1);
