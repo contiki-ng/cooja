@@ -1000,70 +1000,48 @@ public class AreaViewer extends VisPlugin {
       );
 
       // Thread that will perform the work
-      final Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-          try {
-            /* Remove already existing obstacles */
-            currentChannelModel.removeAllObstacles();
+      Thread thread = new Thread(() -> {
+        try {
+          // Remove already existing obstacles.
+          currentChannelModel.removeAllObstacles();
 
-            int foundObstacles = 0;
-            for (int x=0; x < obstacleArray.length; x++) {
-              for (int y=0; y < (obstacleArray[0]).length; y++) {
-
-                if (obstacleArray[x][y]) {
-                  /* Register obstacle */
-                  double realWidth = (boxSize * backgroundWidth) / backgroundImage.getWidth(null);
-                  double realHeight = (boxSize * backgroundHeight) / backgroundImage.getHeight(null);
-                  double realStartX = backgroundStartX + x * realWidth;
-                  double realStartY = backgroundStartY + y * realHeight;
-
-                  foundObstacles++;
-
-                  if (realStartX + realWidth > backgroundStartX + backgroundWidth) {
-                    realWidth = backgroundStartX + backgroundWidth - realStartX;
-                  }
-                  if (realStartY + realHeight > backgroundStartY + backgroundHeight) {
-                    realHeight = backgroundStartY + backgroundHeight - realStartY;
-                  }
-
-                  currentChannelModel.addRectObstacle(
-                      realStartX, realStartY,
-                      realWidth, realHeight,
-                      false
-                  );
+          int foundObstacles = 0;
+          for (int x=0; x < obstacleArray.length; x++) {
+            for (int y=0; y < (obstacleArray[0]).length; y++) {
+              if (obstacleArray[x][y]) { // Register obstacle.
+                double realWidth = (boxSize * backgroundWidth) / backgroundImage.getWidth(null);
+                double realHeight = (boxSize * backgroundHeight) / backgroundImage.getHeight(null);
+                double realStartX = backgroundStartX + x * realWidth;
+                double realStartY = backgroundStartY + y * realHeight;
+                foundObstacles++;
+                if (realStartX + realWidth > backgroundStartX + backgroundWidth) {
+                  realWidth = backgroundStartX + backgroundWidth - realStartX;
                 }
+                if (realStartY + realHeight > backgroundStartY + backgroundHeight) {
+                  realHeight = backgroundStartY + backgroundHeight - realStartY;
+                }
+                currentChannelModel.addRectObstacle(realStartX, realStartY, realWidth, realHeight, false);
               }
-
-              /* Check if user has aborted */
-              if (pm.isCanceled()) {
-                return;
-              }
-
-              /* Update progress monitor */
-              pm.setProgress(x);
-              pm.setNote("After/Before merging: " +
-                  currentChannelModel.getNumberOfObstacles() + "/" + foundObstacles);
             }
-
-            currentChannelModel.notifySettingsChanged();
-            AreaViewer.this.repaint();
-
-          } catch (Exception ex) {
-            if (pm.isCanceled()) {
+            if (pm.isCanceled()) { // User aborted.
               return;
             }
-            logger.fatal("Obstacle adding exception: " + ex.getMessage());
-            ex.printStackTrace();
-            pm.close();
+            pm.setProgress(x);
+            pm.setNote("After/Before merging: " + currentChannelModel.getNumberOfObstacles() + "/" + foundObstacles);
+          }
+          currentChannelModel.notifySettingsChanged();
+          AreaViewer.this.repaint();
+        } catch (Exception ex) {
+          if (pm.isCanceled()) {
             return;
           }
+          logger.fatal("Obstacle adding exception: " + ex.getMessage());
+          ex.printStackTrace();
           pm.close();
+          return;
         }
-      };
-
-      /* Start thread */
-      Thread thread = new Thread(runnable, "analyzeBitmapForObstacles");
+        pm.close();
+      }, "analyzeBitmapForObstacles");
       thread.start();
 
       return true;
