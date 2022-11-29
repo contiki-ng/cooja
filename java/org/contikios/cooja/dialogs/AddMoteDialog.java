@@ -35,8 +35,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
@@ -109,13 +107,8 @@ public class AddMoteDialog extends JDialog {
     buttonPane.add(Box.createHorizontalGlue());
 
     var button = new JButton("Do not add motes");
-    button.setActionCommand("cancel");
-    var myEventHandler = new AddMotesEventHandler();
-    button.addActionListener(myEventHandler);
+    button.addActionListener(e -> dispose());
     buttonPane.add(button);
-
-    addButton.setActionCommand("add");
-    addButton.addActionListener(myEventHandler);
     this.getRootPane().setDefaultButton(addButton);
     buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
     buttonPane.add(addButton);
@@ -177,7 +170,6 @@ public class AddMoteDialog extends JDialog {
 
     positionDistributionBox = new JComboBox<>(posDistributions);
     positionDistributionBox.setSelectedIndex(0);
-    positionDistributionBox.addActionListener(myEventHandler);
     positionDistributionBox.addFocusListener(focusListener);
     label.setLabelFor(positionDistributionBox);
 
@@ -311,6 +303,18 @@ public class AddMoteDialog extends JDialog {
     contentPane.add(mainPane, BorderLayout.NORTH);
     contentPane.add(buttonPane, BorderLayout.SOUTH);
 
+    addButton.addActionListener(e -> {
+      // Validate input
+      if (!checkSettings()) {
+        return;
+      }
+      returnValue = new MoteAdditions(((Number) numberOfMotesField.getValue()).intValue(),
+              Objects.requireNonNull(positionDistributionBox.getSelectedItem()).toString(),
+              ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
+              ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
+              ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
+      dispose();
+    });
     pack();
     setLocationRelativeTo(Cooja.getTopParentContainer());
     checkSettings();
@@ -368,26 +372,6 @@ public class AddMoteDialog extends JDialog {
     end.setBackground(Color.RED);
     end.setToolTipText("Malformed interval");
     return false;
-  }
-
-  private class AddMotesEventHandler implements ActionListener {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      if (e.getActionCommand().equals("cancel")) {
-        dispose();
-      } else if (e.getActionCommand().equals("add")) {
-        // Validate input
-        if (!checkSettings()) {
-          return;
-        }
-        returnValue = new MoteAdditions(((Number) numberOfMotesField.getValue()).intValue(),
-                Objects.requireNonNull(positionDistributionBox.getSelectedItem()).toString(),
-                ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
-                ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
-                ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
-        dispose();
-      }
-    }
   }
 
   public record MoteAdditions(int numMotes, String positioner,
