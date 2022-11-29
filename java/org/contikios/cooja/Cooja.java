@@ -1748,19 +1748,19 @@ public class Cooja extends Observable {
   
   
   private static File restoreContikiRelativePath(File portable) {
-  	int elem = PATH_IDENTIFIER.length;
-
     try {
     	String portablePath = portable.getPath();
-        int i = 0;
-    	for(; i < elem; i++){
-    		if (portablePath.startsWith(PATH_IDENTIFIER[i][0])) break;
+      String[] found = null;
+      for (var strings : PATH_IDENTIFIER) {
+        if (portablePath.startsWith(strings[0])) {
+          found = strings;
+          break;
+        }
     	}
-    	if(i == elem) return null;
-      var value = Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1]);
+      if (found == null) return null;
+      var value = Cooja.getExternalToolsSetting(found[1]);
       if (value == null) return null;
-      var canonical = new File(value).getCanonicalPath();
-    	File absolute = new File(portablePath.replace(PATH_IDENTIFIER[i][0], canonical));
+      var absolute = new File(portablePath.replace(found[0], new File(value).getCanonicalPath()));
 		if(!absolute.exists()){
       logger.warn("Replaced " + portable + " with " + absolute + ", but could not find it. This does not have to be an error, as the file might be created later.");
 		}
