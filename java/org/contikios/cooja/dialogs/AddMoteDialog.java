@@ -35,8 +35,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
@@ -76,7 +74,6 @@ public class AddMoteDialog extends JDialog {
   private final JFormattedTextField endY;
   private final JFormattedTextField startZ;
   private final JFormattedTextField endZ;
-  private final JComboBox<String> positionDistributionBox;
   private MoteAdditions returnValue = null;
 
   /**
@@ -89,7 +86,6 @@ public class AddMoteDialog extends JDialog {
    */
   public static MoteAdditions showDialog(Simulation sim, MoteType moteType) {
     var myDialog = new AddMoteDialog(sim, moteType);
-    myDialog.setVisible(true);
     return myDialog.returnValue;
   }
 
@@ -109,13 +105,8 @@ public class AddMoteDialog extends JDialog {
     buttonPane.add(Box.createHorizontalGlue());
 
     var button = new JButton("Do not add motes");
-    button.setActionCommand("cancel");
-    var myEventHandler = new AddMotesEventHandler();
-    button.addActionListener(myEventHandler);
+    button.addActionListener(e -> dispose());
     buttonPane.add(button);
-
-    addButton.setActionCommand("add");
-    addButton.addActionListener(myEventHandler);
     this.getRootPane().setDefaultButton(addButton);
     buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
     buttonPane.add(addButton);
@@ -133,8 +124,27 @@ public class AddMoteDialog extends JDialog {
     numberOfMotesField.setFocusLostBehavior(JFormattedTextField.PERSIST);
     numberOfMotesField.setValue(1);
     numberOfMotesField.setColumns(10);
-    numberOfMotesField.addFocusListener(myEventHandler);
-    numberOfMotesField.addPropertyChangeListener("value", myEventHandler);
+    var focusListener = new FocusListener() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        if (e.getSource() instanceof JFormattedTextField src) {
+          SwingUtilities.invokeLater(src::selectAll);
+        }
+      }
+
+      @Override
+      public void focusLost(FocusEvent focusEvent) {
+        checkSettings();
+      }
+    };
+    numberOfMotesField.addFocusListener(focusListener);
+    var propertyChangeListener = new PropertyChangeListener() {
+      @Override
+      public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        checkSettings();
+      }
+    };
+    numberOfMotesField.addPropertyChangeListener("value", propertyChangeListener);
 
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
@@ -156,10 +166,9 @@ public class AddMoteDialog extends JDialog {
       posDistributions[i] = Cooja.getDescriptionOf(positioners.get(i));
     }
 
-    positionDistributionBox = new JComboBox<>(posDistributions);
+    var positionDistributionBox = new JComboBox<>(posDistributions);
     positionDistributionBox.setSelectedIndex(0);
-    positionDistributionBox.addActionListener(myEventHandler);
-    positionDistributionBox.addFocusListener(myEventHandler);
+    positionDistributionBox.addFocusListener(focusListener);
     label.setLabelFor(positionDistributionBox);
 
     smallPane.add(label);
@@ -187,8 +196,8 @@ public class AddMoteDialog extends JDialog {
     startX.setFocusLostBehavior(JFormattedTextField.PERSIST);
     startX.setValue(0.0);
     startX.setColumns(4);
-    startX.addFocusListener(myEventHandler);
-    startX.addPropertyChangeListener("value", myEventHandler);
+    startX.addFocusListener(focusListener);
+    startX.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(startX);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -200,8 +209,8 @@ public class AddMoteDialog extends JDialog {
     endX.setFocusLostBehavior(JFormattedTextField.PERSIST);
     endX.setValue(100.0);
     endX.setColumns(4);
-    endX.addFocusListener(myEventHandler);
-    endX.addPropertyChangeListener("value", myEventHandler);
+    endX.addFocusListener(focusListener);
+    endX.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(endX);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -226,8 +235,8 @@ public class AddMoteDialog extends JDialog {
     startY.setFocusLostBehavior(JFormattedTextField.PERSIST);
     startY.setValue(0.0);
     startY.setColumns(4);
-    startY.addFocusListener(myEventHandler);
-    startY.addPropertyChangeListener("value", myEventHandler);
+    startY.addFocusListener(focusListener);
+    startY.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(startY);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -239,8 +248,8 @@ public class AddMoteDialog extends JDialog {
     endY.setFocusLostBehavior(JFormattedTextField.PERSIST);
     endY.setValue(100.0);
     endY.setColumns(4);
-    endY.addFocusListener(myEventHandler);
-    endY.addPropertyChangeListener("value", myEventHandler);
+    endY.addFocusListener(focusListener);
+    endY.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(endY);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -265,8 +274,8 @@ public class AddMoteDialog extends JDialog {
     startZ.setFocusLostBehavior(JFormattedTextField.PERSIST);
     startZ.setValue(0.0);
     startZ.setColumns(4);
-    startZ.addFocusListener(myEventHandler);
-    startZ.addPropertyChangeListener("value", myEventHandler);
+    startZ.addFocusListener(focusListener);
+    startZ.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(startZ);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -278,8 +287,8 @@ public class AddMoteDialog extends JDialog {
     endZ.setFocusLostBehavior(JFormattedTextField.PERSIST);
     endZ.setValue(0.0);
     endZ.setColumns(4);
-    endZ.addFocusListener(myEventHandler);
-    endZ.addPropertyChangeListener("value", myEventHandler);
+    endZ.addFocusListener(focusListener);
+    endZ.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(endZ);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -292,9 +301,22 @@ public class AddMoteDialog extends JDialog {
     contentPane.add(mainPane, BorderLayout.NORTH);
     contentPane.add(buttonPane, BorderLayout.SOUTH);
 
+    addButton.addActionListener(e -> {
+      // Validate input
+      if (!checkSettings()) {
+        return;
+      }
+      returnValue = new MoteAdditions(((Number) numberOfMotesField.getValue()).intValue(),
+              Objects.requireNonNull(positionDistributionBox.getSelectedItem()).toString(),
+              ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
+              ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
+              ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
+      dispose();
+    });
     pack();
     setLocationRelativeTo(Cooja.getTopParentContainer());
     checkSettings();
+    setVisible(true);
   }
 
   private boolean checkSettings() {
@@ -349,44 +371,6 @@ public class AddMoteDialog extends JDialog {
     end.setBackground(Color.RED);
     end.setToolTipText("Malformed interval");
     return false;
-  }
-
-  private class AddMotesEventHandler
-      implements
-        ActionListener,
-        FocusListener,
-        PropertyChangeListener {
-    @Override
-    public void propertyChange(PropertyChangeEvent e) {
-      checkSettings();
-    }
-    @Override
-    public void focusGained(final FocusEvent e) {
-      if (e.getSource() instanceof JFormattedTextField src) {
-        SwingUtilities.invokeLater(src::selectAll);
-      }
-    }
-    @Override
-    public void focusLost(FocusEvent e) {
-      checkSettings();
-    }
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      if (e.getActionCommand().equals("cancel")) {
-        dispose();
-      } else if (e.getActionCommand().equals("add")) {
-        // Validate input
-        if (!checkSettings()) {
-          return;
-        }
-        returnValue = new MoteAdditions(((Number) numberOfMotesField.getValue()).intValue(),
-                Objects.requireNonNull(positionDistributionBox.getSelectedItem()).toString(),
-                ((Number) startX.getValue()).doubleValue(), ((Number) endX.getValue()).doubleValue(),
-                ((Number) startY.getValue()).doubleValue(), ((Number) endY.getValue()).doubleValue(),
-                ((Number) startZ.getValue()).doubleValue(), ((Number) endZ.getValue()).doubleValue());
-        dispose();
-      }
-    }
   }
 
   public record MoteAdditions(int numMotes, String positioner,
