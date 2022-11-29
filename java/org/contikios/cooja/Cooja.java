@@ -1714,16 +1714,17 @@ public class Cooja extends Observable {
   }
 
   public static File createContikiRelativePath(File file) {
-    // Not so nice, but goes along with GUI.getExternalToolsSetting
-    String defp = Cooja.getExternalToolsSetting("PATH_COOJA");
     String fileCanonical;
     String best = null;
     String replacement = null;
     try {
       fileCanonical = file.getCanonicalPath();
       for (var strings : PATH_IDENTIFIER) {
-        var path = new File(Cooja.getExternalToolsSetting(strings[1], defp + strings[2]));
-        var candidate = path.getCanonicalPath();
+        var path = Cooja.getExternalToolsSetting(strings[1]);
+        if (path == null) {
+          continue;
+        }
+        var candidate = new File(path).getCanonicalPath();
         if (fileCanonical.startsWith(candidate) && (best == null || best.length() < candidate.length())) {
           best = candidate;
           replacement = strings[0];
@@ -1756,15 +1757,12 @@ public class Cooja extends Observable {
     		if (portablePath.startsWith(PATH_IDENTIFIER[i][0])) break;
     	}
     	if(i == elem) return null;
-
-      // Not so nice, but goes along with GUI.getExternalToolsSetting
-			String defp = Cooja.getExternalToolsSetting("PATH_COOJA", null);
-      var path = new File(Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1], defp + PATH_IDENTIFIER[i][2]));
-    	
-      var canonical = path.getCanonicalPath();
+      var value = Cooja.getExternalToolsSetting(PATH_IDENTIFIER[i][1]);
+      if (value == null) return null;
+      var canonical = new File(value).getCanonicalPath();
     	File absolute = new File(portablePath.replace(PATH_IDENTIFIER[i][0], canonical));
 		if(!absolute.exists()){
-			logger.warn("Replaced " + portable  + " with " + absolute + " (default: "+ defp + PATH_IDENTIFIER[i][2] +"), but could not find it. This does not have to be an error, as the file might be created later.");
+      logger.warn("Replaced " + portable + " with " + absolute + ", but could not find it. This does not have to be an error, as the file might be created later.");
 		}
     	return absolute;
     } catch (IOException e) {
