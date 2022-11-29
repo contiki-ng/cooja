@@ -17,6 +17,12 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Method updates in MoteTypeCreationException
+
+The `hasCompilationOutput` and `setCompilationOutput` methods were removed from
+MoteTypeCreationException. The setter was replaced with constructors that accept
+the compilation output as the third argument.
+
 ### Contiki-NG-specific methods moved from MoteType to BaseContikiMoteType
 
 Contiki-NG specific methods were moved from MoteType to BaseContikiMoteType
