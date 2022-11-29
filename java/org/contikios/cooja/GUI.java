@@ -610,6 +610,24 @@ public class GUI {
         doLoadConfigAsync(quick, file);
       }
 
+      private void populateMenuWithHistory(JMenu menu, final boolean quick, File[] openFilesHistory) {
+        int index = 0;
+        for (final var file: openFilesHistory) {
+          JMenuItem lastItem;
+          if (index < 10) {
+            char mnemonic = (char) ('0' + (++index % 10));
+            lastItem = new JMenuItem(mnemonic + " " + file.getName());
+            lastItem.setMnemonic(mnemonic);
+          } else {
+            lastItem = new JMenuItem(file.getName());
+          }
+          lastItem.addActionListener(e -> doLoadConfigAsync(quick, file));
+          lastItem.putClientProperty("file", file);
+          lastItem.setToolTipText(file.getAbsolutePath());
+          menu.add(lastItem);
+        }
+      }
+
       @Override
       public void menuSelected(MenuEvent e) {
         updateGUIComponentState();
@@ -1133,25 +1151,6 @@ public class GUI {
       menuMotePlugins.add(menuItem);
     }
     return menuMotePlugins;
-  }
-
-  private void populateMenuWithHistory(JMenu menu, final boolean quick, File[] openFilesHistory) {
-    JMenuItem lastItem;
-    int index = 0;
-    for (File file: openFilesHistory) {
-      if (index < 10) {
-        char mnemonic = (char) ('0' + (++index % 10));
-        lastItem = new JMenuItem(mnemonic + " " + file.getName());
-        lastItem.setMnemonic(mnemonic);
-      } else {
-        lastItem = new JMenuItem(file.getName());
-      }
-      final File f = file;
-      lastItem.addActionListener(e -> doLoadConfigAsync(quick, f));
-      lastItem.putClientProperty("file", file);
-      lastItem.setToolTipText(file.getAbsolutePath());
-      menu.add(lastItem);
-    }
   }
 
   /**
