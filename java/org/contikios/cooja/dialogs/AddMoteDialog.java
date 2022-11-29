@@ -147,7 +147,13 @@ public class AddMoteDialog extends JDialog {
       }
     };
     numberOfMotesField.addFocusListener(focusListener);
-    numberOfMotesField.addPropertyChangeListener("value", myEventHandler);
+    var propertyChangeListener = new PropertyChangeListener() {
+      @Override
+      public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        checkSettings();
+      }
+    };
+    numberOfMotesField.addPropertyChangeListener("value", propertyChangeListener);
 
     smallPane.add(label);
     smallPane.add(Box.createHorizontalStrut(10));
@@ -201,7 +207,7 @@ public class AddMoteDialog extends JDialog {
     startX.setValue(0.0);
     startX.setColumns(4);
     startX.addFocusListener(focusListener);
-    startX.addPropertyChangeListener("value", myEventHandler);
+    startX.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(startX);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -214,7 +220,7 @@ public class AddMoteDialog extends JDialog {
     endX.setValue(100.0);
     endX.setColumns(4);
     endX.addFocusListener(focusListener);
-    endX.addPropertyChangeListener("value", myEventHandler);
+    endX.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(endX);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -240,7 +246,7 @@ public class AddMoteDialog extends JDialog {
     startY.setValue(0.0);
     startY.setColumns(4);
     startY.addFocusListener(focusListener);
-    startY.addPropertyChangeListener("value", myEventHandler);
+    startY.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(startY);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -253,7 +259,7 @@ public class AddMoteDialog extends JDialog {
     endY.setValue(100.0);
     endY.setColumns(4);
     endY.addFocusListener(focusListener);
-    endY.addPropertyChangeListener("value", myEventHandler);
+    endY.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(endY);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -279,7 +285,7 @@ public class AddMoteDialog extends JDialog {
     startZ.setValue(0.0);
     startZ.setColumns(4);
     startZ.addFocusListener(focusListener);
-    startZ.addPropertyChangeListener("value", myEventHandler);
+    startZ.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(startZ);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -292,7 +298,7 @@ public class AddMoteDialog extends JDialog {
     endZ.setValue(0.0);
     endZ.setColumns(4);
     endZ.addFocusListener(focusListener);
-    endZ.addPropertyChangeListener("value", myEventHandler);
+    endZ.addPropertyChangeListener("value", propertyChangeListener);
     smallPane.add(endZ);
     smallPane.add(Box.createHorizontalStrut(10));
 
@@ -364,14 +370,7 @@ public class AddMoteDialog extends JDialog {
     return false;
   }
 
-  private class AddMotesEventHandler
-      implements
-        ActionListener,
-        PropertyChangeListener {
-    @Override
-    public void propertyChange(PropertyChangeEvent e) {
-      checkSettings();
-    }
+  private class AddMotesEventHandler implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("cancel")) {
