@@ -865,117 +865,6 @@ public class AreaViewer extends VisPlugin {
    * Helps user set a background image which can be analysed for obstacles/freespace.
    */
   private final ActionListener obstacleHandler = new ActionListener() {
-    class ImageSettingsDialog extends JDialog {
-      private double
-      virtualStartX = 0.0,
-      virtualStartY = 0.0,
-      virtualWidth = 0.0,
-      virtualHeight = 0.0;
-
-      private final JFormattedTextField virtualStartXField;
-      private final JFormattedTextField virtualStartYField;
-      private final JFormattedTextField virtualWidthField;
-      private final JFormattedTextField virtualHeightField;
-
-      private boolean terminatedOK = false;
-
-      /**
-       * Creates a new dialog for settings background parameters
-       */
-      private ImageSettingsDialog() {
-        super(Cooja.getTopParentContainer(), "Image settings");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        // Set layout and add components
-        var mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-
-        var tempPanel = new JPanel(new GridLayout(1, 2));
-        tempPanel.add(new JLabel("Start X (m)     "));
-        var doubleFormat = NumberFormat.getNumberInstance();
-        doubleFormat.setMinimumIntegerDigits(1);
-        virtualStartXField = new JFormattedTextField(doubleFormat);
-        virtualStartXField.setValue(0.0);
-        tempPanel.add(virtualStartXField);
-        mainPanel.add(tempPanel);
-
-        tempPanel = new JPanel(new GridLayout(1, 2));
-        tempPanel.add(new JLabel("Start Y (m)"));
-        virtualStartYField = new JFormattedTextField(doubleFormat);
-        virtualStartYField.setValue(0.0);
-        tempPanel.add(virtualStartYField);
-        mainPanel.add(tempPanel);
-
-        tempPanel = new JPanel(new GridLayout(1, 2));
-        tempPanel.add(new JLabel("Width (m)"));
-        virtualWidthField = new JFormattedTextField(doubleFormat);
-        virtualWidthField.setValue(100.0);
-        tempPanel.add(virtualWidthField);
-        mainPanel.add(tempPanel);
-
-        tempPanel = new JPanel(new GridLayout(1, 2));
-        tempPanel.add(new JLabel("Height (m)"));
-        virtualHeightField = new JFormattedTextField(doubleFormat);
-        virtualHeightField.setValue(100.0);
-        tempPanel.add(virtualHeightField);
-        mainPanel.add(tempPanel);
-
-        mainPanel.add(Box.createVerticalGlue());
-        mainPanel.add(Box.createVerticalStrut(10));
-
-        tempPanel = new JPanel();
-        tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(Box.createHorizontalGlue());
-
-        final JButton okButton = new JButton("OK");
-        this.getRootPane().setDefaultButton(okButton);
-        final JButton cancelButton = new JButton("Cancel");
-        okButton.addActionListener(e -> {
-          virtualStartX = ((Number) virtualStartXField.getValue()).doubleValue();
-          virtualStartY = ((Number) virtualStartYField.getValue()).doubleValue();
-          virtualWidth = ((Number) virtualWidthField.getValue()).doubleValue();
-          virtualHeight = ((Number) virtualHeightField.getValue()).doubleValue();
-
-          terminatedOK = true;
-          dispose();
-        });
-        cancelButton.addActionListener(e -> {
-          terminatedOK = false;
-          dispose();
-        });
-
-        tempPanel.add(okButton);
-        tempPanel.add(cancelButton);
-        mainPanel.add(tempPanel);
-
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        add(mainPanel);
-
-        // Show dialog
-        setModal(true);
-        pack();
-        setLocationRelativeTo(this.getParent());
-        setVisible(true);
-      }
-
-      public boolean terminatedOK() {
-        return terminatedOK;
-      }
-      public double getVirtualStartX() {
-        return virtualStartX;
-      }
-      public double getVirtualStartY() {
-        return virtualStartY;
-      }
-      public double getVirtualWidth() {
-        return virtualWidth;
-      }
-      public double getVirtualHeight() {
-        return virtualHeight;
-      }
-
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
       if (e.getActionCommand().equals("set custom bitmap")) {
@@ -2411,5 +2300,110 @@ public class AreaViewer extends VisPlugin {
     return true;
   }
 
+  static class ImageSettingsDialog extends JDialog {
+    private double virtualStartX = 0.0;
+    private double virtualStartY = 0.0;
+    private double virtualWidth = 0.0;
+    private double virtualHeight = 0.0;
 
+    private final JFormattedTextField virtualStartXField;
+    private final JFormattedTextField virtualStartYField;
+    private final JFormattedTextField virtualWidthField;
+    private final JFormattedTextField virtualHeightField;
+    private boolean terminatedOK = false;
+
+    /**
+     * Creates a new dialog for settings background parameters
+     */
+    private ImageSettingsDialog() {
+      super(Cooja.getTopParentContainer(), "Image settings");
+      setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+      // Set layout and add components
+      var mainPanel = new JPanel();
+      mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+
+      var tempPanel = new JPanel(new GridLayout(1, 2));
+      tempPanel.add(new JLabel("Start X (m)     "));
+      var doubleFormat = NumberFormat.getNumberInstance();
+      doubleFormat.setMinimumIntegerDigits(1);
+      virtualStartXField = new JFormattedTextField(doubleFormat);
+      virtualStartXField.setValue(0.0);
+      tempPanel.add(virtualStartXField);
+      mainPanel.add(tempPanel);
+
+      tempPanel = new JPanel(new GridLayout(1, 2));
+      tempPanel.add(new JLabel("Start Y (m)"));
+      virtualStartYField = new JFormattedTextField(doubleFormat);
+      virtualStartYField.setValue(0.0);
+      tempPanel.add(virtualStartYField);
+      mainPanel.add(tempPanel);
+
+      tempPanel = new JPanel(new GridLayout(1, 2));
+      tempPanel.add(new JLabel("Width (m)"));
+      virtualWidthField = new JFormattedTextField(doubleFormat);
+      virtualWidthField.setValue(100.0);
+      tempPanel.add(virtualWidthField);
+      mainPanel.add(tempPanel);
+
+      tempPanel = new JPanel(new GridLayout(1, 2));
+      tempPanel.add(new JLabel("Height (m)"));
+      virtualHeightField = new JFormattedTextField(doubleFormat);
+      virtualHeightField.setValue(100.0);
+      tempPanel.add(virtualHeightField);
+      mainPanel.add(tempPanel);
+
+      mainPanel.add(Box.createVerticalGlue());
+      mainPanel.add(Box.createVerticalStrut(10));
+
+      tempPanel = new JPanel();
+      tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
+      tempPanel.add(Box.createHorizontalGlue());
+
+      final var okButton = new JButton("OK");
+      this.getRootPane().setDefaultButton(okButton);
+      final var cancelButton = new JButton("Cancel");
+      okButton.addActionListener(e -> {
+        virtualStartX = ((Number) virtualStartXField.getValue()).doubleValue();
+        virtualStartY = ((Number) virtualStartYField.getValue()).doubleValue();
+        virtualWidth = ((Number) virtualWidthField.getValue()).doubleValue();
+        virtualHeight = ((Number) virtualHeightField.getValue()).doubleValue();
+        terminatedOK = true;
+        dispose();
+      });
+      cancelButton.addActionListener(e -> {
+        terminatedOK = false;
+        dispose();
+      });
+
+      tempPanel.add(okButton);
+      tempPanel.add(cancelButton);
+      mainPanel.add(tempPanel);
+
+      mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+      add(mainPanel);
+
+      // Show dialog
+      setModal(true);
+      pack();
+      setLocationRelativeTo(this.getParent());
+      setVisible(true);
+    }
+
+    public boolean terminatedOK() {
+      return terminatedOK;
+    }
+    public double getVirtualStartX() {
+      return virtualStartX;
+    }
+    public double getVirtualStartY() {
+      return virtualStartY;
+    }
+    public double getVirtualWidth() {
+      return virtualWidth;
+    }
+    public double getVirtualHeight() {
+      return virtualHeight;
+    }
+  }
 }
