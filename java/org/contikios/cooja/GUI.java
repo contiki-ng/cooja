@@ -32,7 +32,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -1022,28 +1021,21 @@ public class GUI {
     String frameScreen = Cooja.getExternalToolsSetting("FRAME_SCREEN", "");
 
     // Restore position to the same graphics device.
-    GraphicsDevice device = null;
     for (var gd : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
       if (gd.getIDstring().equals(frameScreen)) {
-        device = gd;
-        break;
-      }
-    }
-
-    // Restore frame size and position.
-    if (device != null) {
-      if (frameWidth == Integer.MAX_VALUE && frameHeight == Integer.MAX_VALUE) {
-        frame.setLocation(device.getDefaultConfiguration().getBounds().getLocation());
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-      } else if (frameWidth > 0 && frameHeight > 0) {
-        // Ensure Cooja is visible on screen.
-        boolean intersects =
-                device.getDefaultConfiguration().getBounds().intersects(
-                        new Rectangle(framePosX, framePosY, frameWidth, frameHeight));
-        if (intersects) {
-          frame.setLocation(framePosX, framePosY);
-          frame.setSize(frameWidth, frameHeight);
+        var bounds = gd.getDefaultConfiguration().getBounds();
+        // Restore frame size and position.
+        if (frameWidth == Integer.MAX_VALUE && frameHeight == Integer.MAX_VALUE) {
+          frame.setLocation(bounds.getLocation());
+          frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } else if (frameWidth > 0 && frameHeight > 0) {
+          // Ensure Cooja is visible on screen.
+          if (bounds.intersects(new Rectangle(framePosX, framePosY, frameWidth, frameHeight))) {
+            frame.setLocation(framePosX, framePosY);
+            frame.setSize(frameWidth, frameHeight);
+          }
         }
+        break;
       }
     }
     updateProgress(false);
