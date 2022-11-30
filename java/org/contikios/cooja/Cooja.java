@@ -243,6 +243,16 @@ public class Cooja extends Observable {
 
     if (configuration.vis) {
       gui = new GUI(this);
+      // Allocate GUI before parsing project config, otherwise gui is null and
+      // gui.menuMotePluginClasses becomes empty.
+      gui.parseProjectConfig();
+      // Start all standard GUI plugins
+      for (var pluginClass : getRegisteredPlugins()) {
+        var pluginType = pluginClass.getAnnotation(PluginType.class).value();
+        if (pluginType == PluginType.PType.COOJA_STANDARD_PLUGIN) {
+          tryStartPlugin(pluginClass, null, null);
+        }
+      }
     } else {
       parseProjectConfig();
     }

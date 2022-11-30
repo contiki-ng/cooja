@@ -195,17 +195,6 @@ public class GUI {
       });
     }
 
-    // Parse current extension configuration.
-    parseProjectConfig();
-
-    // Start all standard GUI plugins
-    for (var pluginClass : cooja.getRegisteredPlugins()) {
-      var pluginType = pluginClass.getAnnotation(PluginType.class).value();
-      if (pluginType == PluginType.PType.COOJA_STANDARD_PLUGIN) {
-        cooja.tryStartPlugin(pluginClass, null, null);
-      }
-    }
-
     frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
     // Menu bar.
@@ -1050,7 +1039,7 @@ public class GUI {
     frame.setVisible(true);
   }
 
-  private void parseProjectConfig() {
+  void parseProjectConfig() {
     try {
       cooja.parseProjectConfig();
     } catch (Cooja.ParseProjectsException e) {
