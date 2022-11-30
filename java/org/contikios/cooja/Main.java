@@ -105,10 +105,10 @@ class Main {
   String javac;
 
   /**
-   * Option for specifying external config file of tools.
+   * Option for specifying external user config file.
    */
-  @Option(names = "--external_tools_config", paramLabel = "FILE", description = "the filename for external config")
-  String externalToolsConfig;
+  @Option(names = "--config", paramLabel = "FILE", description = "the filename for external user config")
+  String externalUserConfig;
 
   /**
    * Option for specifying seed used for simulation.
@@ -258,11 +258,6 @@ class Main {
       System.exit(1);
     }
 
-    if (options.externalToolsConfig != null && !Files.exists(Path.of(options.externalToolsConfig))) {
-      System.err.println("Specified external tools configuration '" + options.externalToolsConfig + "' not found");
-      System.exit(1);
-    }
-
     if (options.contikiPath != null && !Files.exists(Path.of(options.contikiPath))) {
       System.err.println("Contiki-NG path '" + options.contikiPath + "' does not exist");
       System.exit(1);
@@ -305,7 +300,7 @@ class Main {
       options.logName += ".log";
     }
 
-    var cfg = new Config(options.gui, options.randomSeed, options.externalToolsConfig,
+    var cfg = new Config(options.gui, options.randomSeed, options.externalUserConfig,
             options.logDir, options.contikiPath, options.coojaPath, options.javac);
     // Configure logger
     if (options.logConfigFile == null) {

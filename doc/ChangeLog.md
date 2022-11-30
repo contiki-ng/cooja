@@ -9,6 +9,12 @@ so `-nogui` and `-quickstart` have been deprecated. The old behavior for
 `-nogui=file.csc` is now accomplished with `--no-gui file.csc`, and
 `-quickstart=file.csc` is now accomplished with `file.csc`.
 
+### Renamed `--external_tools_config` parameter to `--config`
+
+This parameter specifies a configuration file not only with user specified
+external tools, but also other user settings such as window location,
+file history, etc.
+
 ### Double dash before long command line options
 
 The implementation of the command line option `--[no-]gui` was required to use
