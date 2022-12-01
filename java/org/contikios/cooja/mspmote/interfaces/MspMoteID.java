@@ -29,7 +29,6 @@
  */
 
 package org.contikios.cooja.mspmote.interfaces;
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JLabel;
@@ -171,13 +170,7 @@ public class MspMoteID extends MoteID {
 		panel.add(idLabel);
 
 		Observer observer;
-		this.addObserver(observer = new Observer() {
-			@Override
-			public void update(Observable obs, Object obj) {
-				idLabel.setText("Mote ID: " + getMoteID());
-			}
-		});
-
+		this.addObserver(observer = (obs, obj) -> idLabel.setText("Mote ID: " + getMoteID()));
 		panel.putClientProperty("intf_obs", observer);
 
 		return panel;

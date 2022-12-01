@@ -43,7 +43,6 @@ import java.util.Properties;
 
 import se.sics.mspsim.core.Chip;
 import se.sics.mspsim.core.EventListener;
-import se.sics.mspsim.core.EventSource;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.Profiler;
 import se.sics.mspsim.profiler.SimpleProfiler;
@@ -193,12 +192,7 @@ public class ProfilerCommands implements CommandBundle {
                     return 1;
                 }
             }
-            eventListener = new EventListener() {
-                @Override
-                public void event(EventSource source, String event, Object data) {
-                    context.out.println("Event:" + source.getName() + ":" + event);
-                }
-            };
+            eventListener = (source, event, data) -> context.out.println("Event:" + source.getName() + ":" + event);
             for (Chip chip : chips) {
                 chip.addEventListener(eventListener);
             }

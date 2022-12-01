@@ -57,14 +57,9 @@ public class MspLED extends LED {
         if (leds == null) {
             throw new IllegalStateException("Mote is not equipped with leds");
         }
-        leds.addStateChangeListener(new StateChangeListener() {
-
-            @Override
-            public void stateChanged(Object source, int oldState, int newState) {
-                setChanged();
-                notifyObservers();
-            }
-
+        leds.addStateChangeListener((source, oldState, newState) -> {
+            setChanged();
+            notifyObservers();
         });
     }
 

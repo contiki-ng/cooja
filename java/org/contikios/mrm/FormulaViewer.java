@@ -36,9 +36,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -413,20 +410,17 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     textField.setValue(initialValue);
     textField.setColumns(4);
     textField.putClientProperty("id", id);
-    textField.addPropertyChangeListener("value", new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent e) {
-        JFormattedTextField textField = (JFormattedTextField) e.getSource();
-        Parameter id = (Parameter) textField.getClientProperty("id");
-        Double val = ((Number) e.getNewValue()).doubleValue();
-        channelModel.setParameterValue(id, val);
-        if (!Parameter.getDefaultValue(id).equals(val)) {
-          textField.setBackground(Color.LIGHT_GRAY);
-          textField.setToolTipText("Default value: " + Parameter.getDefaultValue(id));
-        } else {
-          textField.setBackground(null);
-          textField.setToolTipText(null);
-        }
+    textField.addPropertyChangeListener("value", e -> {
+      JFormattedTextField textField1 = (JFormattedTextField) e.getSource();
+      Parameter id1 = (Parameter) textField1.getClientProperty("id");
+      Double val = ((Number) e.getNewValue()).doubleValue();
+      channelModel.setParameterValue(id1, val);
+      if (!Parameter.getDefaultValue(id1).equals(val)) {
+        textField1.setBackground(Color.LIGHT_GRAY);
+        textField1.setToolTipText("Default value: " + Parameter.getDefaultValue(id1));
+      } else {
+        textField1.setBackground(null);
+        textField1.setToolTipText(null);
       }
     });
     if (!Parameter.getDefaultValue(id).equals(initialValue)) {
@@ -469,20 +463,17 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     textField.setValue((double) initialValue);
     textField.setColumns(4);
     textField.putClientProperty("id", id);
-    textField.addPropertyChangeListener("value", new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent e) {
-        JFormattedTextField textField = (JFormattedTextField) e.getSource();
-        Parameter id = (Parameter) textField.getClientProperty("id");
-        Integer val = ((Number) e.getNewValue()).intValue();
-        channelModel.setParameterValue(id, val);
-        if (!Parameter.getDefaultValue(id).equals(val)) {
-          textField.setBackground(Color.LIGHT_GRAY);
-          textField.setToolTipText("Default value: " + Parameter.getDefaultValue(id));
-        } else {
-          textField.setBackground(null);
-          textField.setToolTipText(null);
-        }
+    textField.addPropertyChangeListener("value", e -> {
+      JFormattedTextField textField1 = (JFormattedTextField) e.getSource();
+      Parameter id1 = (Parameter) textField1.getClientProperty("id");
+      Integer val = ((Number) e.getNewValue()).intValue();
+      channelModel.setParameterValue(id1, val);
+      if (!Parameter.getDefaultValue(id1).equals(val)) {
+        textField1.setBackground(Color.LIGHT_GRAY);
+        textField1.setToolTipText("Default value: " + Parameter.getDefaultValue(id1));
+      } else {
+        textField1.setBackground(null);
+        textField1.setToolTipText(null);
       }
     });
     if (!Parameter.getDefaultValue(id).equals(initialValue)) {
@@ -524,18 +515,15 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     panel.add(checkBox = new JCheckBox());
     checkBox.setSelected(initialValue);
     checkBox.putClientProperty("id", id);
-    checkBox.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        JCheckBox checkBox = (JCheckBox) e.getSource();
-        Parameter id = (Parameter) checkBox.getClientProperty("id");
-        Object val = checkBox.isSelected();
-        channelModel.setParameterValue(id, val);
-        if (!Parameter.getDefaultValue(id).equals(val)) {
-          checkBox.setText("<");
-        } else {
-          checkBox.setText("");
-        }
+    checkBox.addActionListener(e -> {
+      JCheckBox checkBox1 = (JCheckBox) e.getSource();
+      Parameter id1 = (Parameter) checkBox1.getClientProperty("id");
+      Object val = checkBox1.isSelected();
+      channelModel.setParameterValue(id1, val);
+      if (!Parameter.getDefaultValue(id1).equals(val)) {
+        checkBox1.setText("<");
+      } else {
+        checkBox1.setText("");
       }
     });
     if (!Parameter.getDefaultValue(id).equals(initialValue)) {

@@ -30,7 +30,6 @@
 package se.sics.mspsim.core;
 
 import se.sics.mspsim.chip.CC1101;
-import se.sics.mspsim.chip.CC1101.GDOListener;
 import se.sics.mspsim.core.IOPort.PinState;
 
 public class RF1A extends IOUnit implements InterruptHandler {
@@ -72,13 +71,10 @@ public class RF1A extends IOUnit implements InterruptHandler {
     public RF1A(final MSP430Core cpu, int[] memory) {
         super("RF1A", "RF1A", cpu, memory, ADDRESS);
         cc1101 = new CC1101(cpu);
-        cc1101.setGDO0Listener(new GDOListener() {
-          @Override
-          public void event(PinState state) {
-            /* cc430f5137 datasheet p. 17 */
-            gdo0IsHigh = (state == PinState.HI);
-            cpu.flagInterrupt(53, RF1A.this, gdo0IsHigh);
-          }
+        cc1101.setGDO0Listener(state -> {
+          /* cc430f5137 datasheet p. 17 */
+          gdo0IsHigh = state == PinState.HI;
+          cpu.flagInterrupt(53, RF1A.this, gdo0IsHigh);
         });
 
         reset(0);

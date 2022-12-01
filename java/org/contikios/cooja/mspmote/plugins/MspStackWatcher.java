@@ -32,8 +32,6 @@ package org.contikios.cooja.mspmote.plugins;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -93,22 +91,19 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
     getContentPane().setLayout(new BorderLayout());
 
     toggleButton = new JToggleButton("Click to monitor for stack overflows");
-    toggleButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (toggleButton.isSelected()) {
-          toggleButton.setText("Monitoring for stack overflows");
-          if (!activate(true)) {
-            toggleButton.setBackground(Color.RED);
-            toggleButton.setText("Monitoring for stack overflows - FAILED!");
-            toggleButton.setSelected(false);
-          }
-          toggleButton.setBackground(null);
-        } else {
-          toggleButton.setBackground(null);
-          toggleButton.setText("Click to monitor for stack overflows");
-          deactivate();
+    toggleButton.addActionListener(e -> {
+      if (toggleButton.isSelected()) {
+        toggleButton.setText("Monitoring for stack overflows");
+        if (!activate(true)) {
+          toggleButton.setBackground(Color.RED);
+          toggleButton.setText("Monitoring for stack overflows - FAILED!");
+          toggleButton.setSelected(false);
         }
+        toggleButton.setBackground(null);
+      } else {
+        toggleButton.setBackground(null);
+        toggleButton.setText("Click to monitor for stack overflows");
+        deactivate();
       }
     });
 
@@ -195,18 +190,13 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
           }
           
           if (available <= 0) {
-            SwingUtilities.invokeLater(new Runnable() {
-              @Override
-              public void run() {
-                JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-                    String.format("Stack overflow!\n\n" +
-                    		"\tSP = 0x%05x\n" +
-                    		"\tHeap start = 0x%05x\n\n" +
-                    		"\tAvailable = %d\n", sp, heapStartAddress, available),
-                    		"Stack overflow on " + mspMote,
-                    JOptionPane.ERROR_MESSAGE);
-              }
-            });
+            SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
+                String.format("Stack overflow!\n\n" +
+                    "\tSP = 0x%05x\n" +
+                    "\tHeap start = 0x%05x\n\n" +
+                    "\tAvailable = %d\n", sp, heapStartAddress, available),
+                    "Stack overflow on " + mspMote,
+                JOptionPane.ERROR_MESSAGE));
             simulation.stopSimulation();
           }
         }

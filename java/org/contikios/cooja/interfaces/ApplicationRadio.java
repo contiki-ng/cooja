@@ -31,12 +31,7 @@
 package org.contikios.cooja.interfaces;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Box;
@@ -317,16 +312,13 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
         "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
         "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"
     });
-    channelMenu.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        var m = (JComboBox<?>) e.getSource();
-        String s = (String) m.getSelectedItem();
-        if (s == null || s.equals("ALL")) {
-          setChannel(-1);
-        } else {
-          setChannel(Integer.parseInt(s));
-        }
+    channelMenu.addActionListener(e -> {
+      var m = (JComboBox<?>) e.getSource();
+      String s = (String) m.getSelectedItem();
+      if (s == null || s.equals("ALL")) {
+        setChannel(-1);
+      } else {
+        setChannel(Integer.parseInt(s));
       }
     });
     if (getChannel() == -1) {
@@ -335,12 +327,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
       channelMenu.setSelectedIndex(getChannel());
     }
     final JFormattedTextField outputPower = new JFormattedTextField(getCurrentOutputPower());
-    outputPower.addPropertyChangeListener("value", new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent evt) {
-        setOutputPower(((Number)outputPower.getValue()).doubleValue());
-      }
-    });
+    outputPower.addPropertyChangeListener("value", evt -> setOutputPower(((Number)outputPower.getValue()).doubleValue()));
 
     box.add(statusLabel);
     box.add(lastEventLabel);
@@ -351,33 +338,25 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     box.add(powerLabel);
     box.add(outputPower);
 
-    updateButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        ssLabel.setText("Signal strength (not auto-updated): "
-            + String.format("%1.1f", getCurrentSignalStrength()) + " dBm");
+    updateButton.addActionListener(e -> ssLabel.setText("Signal strength (not auto-updated): "
+        + String.format("%1.1f", getCurrentSignalStrength()) + " dBm"));
+
+    final Observer observer = (obs, obj) -> {
+      if (isTransmitting()) {
+        statusLabel.setText("Transmitting");
+      } else if (isReceiving()) {
+        statusLabel.setText("Receiving");
+      } else {
+        statusLabel.setText("Listening");
       }
-    });
 
-    final Observer observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        if (isTransmitting()) {
-          statusLabel.setText("Transmitting");
-        } else if (isReceiving()) {
-          statusLabel.setText("Receiving");
-        } else {
-          statusLabel.setText("Listening");
-        }
-
-        lastEventLabel.setText("Last event (time=" + lastEventTime + "): " + lastEvent);
-        ssLabel.setText("Signal strength (not auto-updated): "
-            + String.format("%1.1f", getCurrentSignalStrength()) + " dBm");
-        if (getChannel() == -1) {
-          channelLabel.setText("Current channel: ALL");
-        } else {
-          channelLabel.setText("Current channel: " + getChannel());
-        }
+      lastEventLabel.setText("Last event (time=" + lastEventTime + "): " + lastEvent);
+      ssLabel.setText("Signal strength (not auto-updated): "
+          + String.format("%1.1f", getCurrentSignalStrength()) + " dBm");
+      if (getChannel() == -1) {
+        channelLabel.setText("Current channel: ALL");
+      } else {
+        channelLabel.setText("Current channel: " + getChannel());
       }
     };
     this.addObserver(observer);

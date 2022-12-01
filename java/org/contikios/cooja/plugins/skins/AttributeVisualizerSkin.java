@@ -34,7 +34,6 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.logging.log4j.Logger;
@@ -62,12 +61,7 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private final Observer attributesObserver = new Observer() {
-    @Override
-    public void update(Observable obs, Object obj) {
-      visualizer.repaint();
-    }
-  };
+  private final Observer attributesObserver = (obs, obj) -> visualizer.repaint();
   private final MoteCountListener newMotesListener = new MoteCountListener() {
     @Override
     public void moteWasAdded(Mote mote) {
