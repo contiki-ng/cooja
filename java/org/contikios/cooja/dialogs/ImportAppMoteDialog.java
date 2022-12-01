@@ -53,7 +53,6 @@ import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.Simulation;
 import org.contikios.cooja.motes.ImportAppMoteType;
 
 /**
