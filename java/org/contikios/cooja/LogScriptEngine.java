@@ -145,12 +145,10 @@ public class LogScriptEngine {
       return;
     }
     logWriter = null;
-    scriptLogObserver = (obs, obj) -> {
-      java.awt.EventQueue.invokeLater(() -> {
-        logTextArea.append((String) obj);
-        logTextArea.setCaretPosition(logTextArea.getText().length());
-      });
-    };
+    scriptLogObserver = (obs, obj) -> java.awt.EventQueue.invokeLater(() -> {
+      logTextArea.append((String) obj);
+      logTextArea.setCaretPosition(logTextArea.getText().length());
+    });
   }
 
   /* Only called from the simulation loop */
