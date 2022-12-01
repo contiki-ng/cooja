@@ -297,18 +297,15 @@ public class DGRMConfigurator extends VisPlugin {
 
     /* Parse and import edges */
     try {
-    	importEdges(parseDGRMLinksFile(file, gui.getSimulation()));
+      var edges = parseDGRMLinksFile(file, gui.getSimulation());
+      Arrays.sort(edges, Comparator.comparingInt(o -> o.source.getMote().getID()));
+      for (var e : edges) {
+        radioMedium.addEdge(e);
+      }
+      logger.info("Imported " + edges.length + " DGRM edges");
     } catch (Exception e) {
       Cooja.showErrorDialog("Error when importing DGRM links from " + file.getName(), e, false);
     }
-	}
-
-	private void importEdges(DirectedGraphMedium.Edge[] edges) {
-    Arrays.sort(edges, Comparator.comparingInt(o -> o.source.getMote().getID()));
-		for (DirectedGraphMedium.Edge e: edges) {
-			radioMedium.addEdge(e);
-		}
-		logger.info("Imported " + edges.length + " DGRM edges");
 	}
 
 	static final int INDEX_SRC = 0;
