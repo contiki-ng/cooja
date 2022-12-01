@@ -357,13 +357,10 @@ public class Cooja extends Observable {
   /**
    * Register new positioner class.
    *
-   * @param positionerClass
-   *          Class to register
-   * @return True if class was registered
+   * @param positionerClass Class to register
    */
-  public boolean registerPositioner(Class<? extends Positioner> positionerClass) {
+  public void registerPositioner(Class<? extends Positioner> positionerClass) {
     positionerClasses.add(positionerClass);
-    return true;
   }
 
   /**
@@ -376,13 +373,10 @@ public class Cooja extends Observable {
   /**
    * Register new radio medium class.
    *
-   * @param radioMediumClass
-   *          Class to register
-   * @return True if class was registered
+   * @param radioMediumClass Class to register
    */
-  public boolean registerRadioMedium(Class<? extends RadioMedium> radioMediumClass) {
+  public void registerRadioMedium(Class<? extends RadioMedium> radioMediumClass) {
     radioMediumClasses.add(radioMediumClass);
-    return true;
   }
 
   /**
