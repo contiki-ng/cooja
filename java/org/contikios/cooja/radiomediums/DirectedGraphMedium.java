@@ -247,7 +247,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     /* Create new radio connection using edge hash table */
     RadioConnection newConn = new RadioConnection(source);
     DGRMDestinationRadio[] destinations = getPotentialDestinations(source);
-    if (destinations == null || destinations.length == 0) {
+    if (destinations == null) {
       /* No destinations */
       /*logger.info(sendingRadio + ": No dest");*/
       return newConn;
