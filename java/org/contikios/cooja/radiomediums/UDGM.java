@@ -37,6 +37,7 @@ import java.util.Random;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.Cooja;
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -147,15 +148,18 @@ public class UDGM extends AbstractRadioMedium {
     }
     dgrm.requestEdgeAnalysis();
 
-    /* Register visualizer skin */
-    Visualizer.registerVisualizerSkin(UDGMVisualizerSkin.class);
+    if (Cooja.isVisualized()) {
+      Visualizer.registerVisualizerSkin(UDGMVisualizerSkin.class);
+    }
   }
 
   @Override
   public void removed() {
   	super.removed();
-  	
-		Visualizer.unregisterVisualizerSkin(UDGMVisualizerSkin.class);
+
+    if (Cooja.isVisualized()) {
+      Visualizer.unregisterVisualizerSkin(UDGMVisualizerSkin.class);
+    }
   }
   
   public void setTxRange(double r) {
