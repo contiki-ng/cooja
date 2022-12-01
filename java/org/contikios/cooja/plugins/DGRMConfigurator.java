@@ -36,7 +36,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.DefaultCellEditor;
@@ -49,8 +48,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
@@ -69,7 +66,6 @@ import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 import org.contikios.cooja.radiomediums.DGRMDestinationRadio;
 import org.contikios.cooja.radiomediums.DirectedGraphMedium;
-import org.contikios.cooja.radiomediums.DirectedGraphMedium.Edge;
 import org.contikios.cooja.util.StringUtils;
 
 /**
@@ -109,12 +105,7 @@ public class DGRMConfigurator extends VisPlugin {
     radioMedium = (DirectedGraphMedium) sim.getRadioMedium();
 
     /* Listen for graph updates */
-    radioMedium.addRadioTransmissionObserver(radioMediumObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        model.fireTableDataChanged();
-      }
-    });
+    radioMedium.addRadioTransmissionObserver(radioMediumObserver = (obs, obj) -> model.fireTableDataChanged());
 
     /* Represent directed graph by table */
     graphTable = new JTable(model) {
@@ -209,15 +200,12 @@ public class DGRMConfigurator extends VisPlugin {
     add(BorderLayout.CENTER, new JScrollPane(graphTable));
     add(BorderLayout.SOUTH, southPanel);
 
-    graphTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-      @Override
-      public void valueChanged(ListSelectionEvent e) {
-    		ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-    		if (e.getValueIsAdjusting()) {
-    			return;
-    		}
-    		removeButton.setEnabled(!lsm.isSelectionEmpty());
-    	}
+    graphTable.getSelectionModel().addListSelectionListener(e -> {
+      ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+      if (e.getValueIsAdjusting()) {
+        return;
+      }
+      removeButton.setEnabled(!lsm.isSelectionEmpty());
     });
 
     model.fireTableDataChanged();
@@ -309,23 +297,15 @@ public class DGRMConfigurator extends VisPlugin {
 
     /* Parse and import edges */
     try {
-    	importEdges(parseDGRMLinksFile(file, gui.getSimulation()));
+      var edges = parseDGRMLinksFile(file, gui.getSimulation());
+      Arrays.sort(edges, Comparator.comparingInt(o -> o.source.getMote().getID()));
+      for (var e : edges) {
+        radioMedium.addEdge(e);
+      }
+      logger.info("Imported " + edges.length + " DGRM edges");
     } catch (Exception e) {
       Cooja.showErrorDialog("Error when importing DGRM links from " + file.getName(), e, false);
     }
-	}
-
-	private void importEdges(DirectedGraphMedium.Edge[] edges) {
-		Arrays.sort(edges, new Comparator<>() {
-      @Override
-      public int compare(Edge o1, Edge o2) {
-        return o1.source.getMote().getID() - o2.source.getMote().getID();
-      }
-    });
-		for (DirectedGraphMedium.Edge e: edges) {
-			radioMedium.addEdge(e);
-		}
-		logger.info("Imported " + edges.length + " DGRM edges");
 	}
 
 	static final int INDEX_SRC = 0;

@@ -75,8 +75,6 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.RowFilter;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -372,22 +370,19 @@ public class RadioLogger extends VisPlugin {
     }
     dataTable.setRowSorter(logFilter);
 
-    dataTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-      @Override
-      public void valueChanged(ListSelectionEvent e) {
-        int row = dataTable.getSelectedRow();
-        if (row < 0) {
-          return;
+    dataTable.getSelectionModel().addListSelectionListener(e -> {
+      int row = dataTable.getSelectedRow();
+      if (row < 0) {
+        return;
+      }
+      int modelRowIndex = dataTable.convertRowIndexToModel(row);
+      if (modelRowIndex >= 0) {
+        RadioConnectionLog conn = connections.get(modelRowIndex);
+        if (conn.tooltip == null) {
+          prepareTooltipString(conn);
         }
-        int modelRowIndex = dataTable.convertRowIndexToModel(row);
-        if (modelRowIndex >= 0) {
-          RadioConnectionLog conn = connections.get(modelRowIndex);
-          if (conn.tooltip == null) {
-            prepareTooltipString(conn);
-          }
-          verboseBox.setText(conn.tooltip);
-          verboseBox.setCaretPosition(0);
-        }
+        verboseBox.setText(conn.tooltip);
+        verboseBox.setCaretPosition(0);
       }
     });
     // Set data column width greedy

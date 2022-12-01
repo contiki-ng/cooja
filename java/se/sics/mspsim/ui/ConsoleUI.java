@@ -600,27 +600,24 @@ public class ConsoleUI extends JComponent {
 
   public void setCommandHandler(CommandHandler commandHandler) {
     this.commandHandler = commandHandler;
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        while (true) {
-          String command = null;
-          try {
-            synchronized (commands) {
-              while (commands.isEmpty()) {
-                commands.wait();
-              }
-              command = commands.removeFirst();
+    new Thread(() -> {
+      while (true) {
+        String command = null;
+        try {
+          synchronized (commands) {
+            while (commands.isEmpty()) {
+              commands.wait();
             }
-          } catch (InterruptedException e) {
-            e.printStackTrace();
+            command = commands.removeFirst();
           }
-          if (command != null) {
-            ConsoleUI.this.commandHandler.lineRead(command);
-            output('>');
-            layoutRows();
-            repaint();
-          }
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        if (command != null) {
+          ConsoleUI.this.commandHandler.lineRead(command);
+          output('>');
+          layoutRows();
+          repaint();
         }
       }
     }, "setCommandHandler").start();

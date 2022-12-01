@@ -38,8 +38,6 @@
 package se.sics.mspsim.ui;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayDeque;
@@ -113,40 +111,30 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
 
     JPopupMenu popupMenu = new JPopupMenu();
     JMenuItem clearItem = new JMenuItem("Clear");
-    clearItem.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        textArea.setText("");
-        lines = 0;
-      }
-
+    clearItem.addActionListener(e -> {
+      textArea.setText("");
+      lines = 0;
     });
     popupMenu.add(clearItem);
     textArea.setComponentPopupMenu(popupMenu);
 
     commandField = new JTextField();
-    commandField.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String command = commandField.getText().trim();
-        if (command.length() > 0) {
-          if (sendCommand(command)) {
-            int previous = historyCount - 1;
-            if (previous < 0) previous += history.length;
-            if (!command.equals(history[previous])) {
-                history[historyCount] = command;
-                historyCount = (historyCount + 1) % history.length;
-            }
-            historyPos = historyCount;
-            commandField.setText("");
-          } else {
-            commandField.getToolkit().beep();
+    commandField.addActionListener(e -> {
+      String command = commandField.getText().trim();
+      if (command.length() > 0) {
+        if (sendCommand(command)) {
+          int previous = historyCount - 1;
+          if (previous < 0) previous += history.length;
+          if (!command.equals(history[previous])) {
+              history[historyCount] = command;
+              historyCount = (historyCount + 1) % history.length;
           }
+          historyPos = historyCount;
+          commandField.setText("");
+        } else {
+          commandField.getToolkit().beep();
         }
       }
-
     });
     commandField.addKeyListener(new KeyAdapter() {
 
@@ -229,17 +217,13 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     // Collapse several immediate updates
     if (!isUpdatePending) {
       isUpdatePending = true;
-      EventQueue.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            isUpdatePending = false;
-
-            final String newText = text;
-            textArea.setText(newText);
-            textArea.setCaretPosition(newText.length());
-            textArea.repaint();
-          }
-        });
+      EventQueue.invokeLater(() -> {
+        isUpdatePending = false;
+        final String newText = text;
+        textArea.setText(newText);
+        textArea.setCaretPosition(newText.length());
+        textArea.repaint();
+      });
     }
   }
 
@@ -290,12 +274,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
       dataReceived(usart, c);
     }
     if (updateCommand && !commandField.isEnabled()) {
-      EventQueue.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          commandField.setEnabled(true);
-        }
-      });
+      EventQueue.invokeLater(() -> commandField.setEnabled(true));
     }
   }
 }

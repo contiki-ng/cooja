@@ -32,9 +32,6 @@ package org.contikios.cooja.mspmote.plugins;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.BorderFactory;
@@ -78,20 +75,12 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
     getContentPane().setLayout(new BorderLayout());
 
     JButton updateButton = new JButton("Update");
-    updateButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        updateLabels();
-      }
-    });
+    updateButton.addActionListener(e -> updateLabels());
 
     JButton resetButton = new JButton("Reset");
-    resetButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        cycleReset = cpu.cycles;
-        updateLabels();
-      }
+    resetButton.addActionListener(e -> {
+      cycleReset = cpu.cycles;
+      updateLabels();
     });
 
     JPanel controlPanel = new JPanel(new GridLayout(2,3,5,5));
@@ -107,12 +96,7 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
 
     setSize(370, 100);
 
-    simulation.addObserver(simObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        updateLabels();
-      }
-    });
+    simulation.addObserver(simObserver = (obs, obj) -> updateLabels());
 
     updateLabels();
 
