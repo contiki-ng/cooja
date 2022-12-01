@@ -90,7 +90,7 @@ jar {
 }
 
 tasks.register('fullJar', Jar) {
-  archiveClassifier = 'full'
+  archiveClassifier.set('full')
   reproducibleFileOrder = true
   manifest {
     attributes 'Main-Class': 'org.contikios.cooja.Main',
@@ -100,7 +100,7 @@ tasks.register('fullJar', Jar) {
 
   from sourceSets.main.output
 
-  duplicatesStrategy = 'exclude'
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   dependsOn configurations.runtimeClasspath
   from {
     configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
