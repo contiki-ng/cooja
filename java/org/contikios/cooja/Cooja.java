@@ -1350,10 +1350,10 @@ public class Cooja extends Observable {
   Simulation loadSimulationConfig(Simulation.SimConfig cfg, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
     var file = new File(cfg.file());
-    this.currentConfigFile = file; /* Used to generate config relative paths */
     try {
-      this.currentConfigFile = this.currentConfigFile.getCanonicalFile();
+      currentConfigFile = file.getCanonicalFile(); // Used to generate config relative paths.
     } catch (IOException e) {
+      currentConfigFile = file;
     }
 
     Simulation sim;
@@ -1431,10 +1431,10 @@ public class Cooja extends Observable {
    * @param file File to write
    */
    void saveSimulationConfig(File file) {
-    this.currentConfigFile = file; /* Used to generate config relative paths */
     try {
-      this.currentConfigFile = this.currentConfigFile.getCanonicalFile();
+      currentConfigFile = file.getCanonicalFile();  // Used to generate config relative paths.
     } catch (IOException e) {
+      currentConfigFile = file;
     }
 
     try (var out = file.getName().endsWith(".gz")
