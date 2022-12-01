@@ -70,7 +70,7 @@ application {
     '--enable-native-access', 'ALL-UNNAMED', '--add-modules', 'jdk.incubator.foreign']
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
   options.compilerArgs += ['--add-modules', 'jdk.incubator.foreign']
 }
 
