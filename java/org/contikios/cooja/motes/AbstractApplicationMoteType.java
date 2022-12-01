@@ -28,7 +28,6 @@
 package org.contikios.cooja.motes;
 
 import java.awt.Container;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 

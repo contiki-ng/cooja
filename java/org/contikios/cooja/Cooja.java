@@ -548,7 +548,7 @@ public class Cooja extends Observable {
               var projectConfig = new ProjectConfig(false);
               projectConfig.appendProjectDir(projectDir);
               var projectJarFiles = projectConfig.getStringArrayValue(Cooja.class, "JARFILES");
-              if (projectJarFiles != null && projectJarFiles.length > 0) {
+              if (projectJarFiles != null) {
                 for (String jarfile : projectJarFiles) {
                   File jarpath = findJarFile(projectDir, jarfile);
                   if (jarpath == null) {
