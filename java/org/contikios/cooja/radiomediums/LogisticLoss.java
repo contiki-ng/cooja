@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.Cooja;
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -224,15 +225,17 @@ public class LogisticLoss extends AbstractRadioMedium {
         }
         dgrm.requestEdgeAnalysis();
 
-        /* Register visualizer skin */
-        Visualizer.registerVisualizerSkin(LogisticLossVisualizerSkin.class);
+        if (Cooja.isVisualized()) {
+            Visualizer.registerVisualizerSkin(LogisticLossVisualizerSkin.class);
+        }
     }
 
     @Override
     public void removed() {
         super.removed();
-
-        Visualizer.unregisterVisualizerSkin(LogisticLossVisualizerSkin.class);
+        if (Cooja.isVisualized()) {
+            Visualizer.unregisterVisualizerSkin(LogisticLossVisualizerSkin.class);
+        }
     }
   
     @Override
