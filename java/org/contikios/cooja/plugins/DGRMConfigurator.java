@@ -35,6 +35,7 @@ import java.awt.GridLayout;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Observer;
 
 import javax.swing.DefaultCellEditor;
@@ -303,7 +304,7 @@ public class DGRMConfigurator extends VisPlugin {
 	}
 
 	private void importEdges(DirectedGraphMedium.Edge[] edges) {
-    Arrays.sort(edges, (o1, o2) -> o1.source.getMote().getID() - o2.source.getMote().getID());
+    Arrays.sort(edges, Comparator.comparingInt(o -> o.source.getMote().getID()));
 		for (DirectedGraphMedium.Edge e: edges) {
 			radioMedium.addEdge(e);
 		}
