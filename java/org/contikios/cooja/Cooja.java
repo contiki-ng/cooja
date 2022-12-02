@@ -1329,6 +1329,35 @@ public class Cooja extends Observable {
     }
   }
 
+  Element readSimulationConfig(Simulation.SimConfig cfg) throws SimulationCreationException {
+    var file = new File(cfg.file());
+    try {
+      currentConfigFile = file.getCanonicalFile(); // Used to generate config relative paths.
+    } catch (IOException e) {
+      currentConfigFile = file;
+    }
+
+    Element root;
+    try (InputStream in = file.getName().endsWith(".gz")
+            ? new GZIPInputStream(new FileInputStream(file)) : new FileInputStream(file)) {
+      final var doc = new SAXBuilder().build(in);
+      root = doc.getRootElement();
+      boolean projectsOk = verifyProjects(root);
+    } catch (JDOMException e) {
+      throw new SimulationCreationException("Config not well-formed", e);
+    } catch (IOException e) {
+      throw new SimulationCreationException("Load simulation error", e);
+    } catch (Exception e) {
+      // Wrap everything else in a SimulationCreationException, so the SwingWorker works as intended.
+      // (SwingWorker communicates internally through SimulationCreationExceptions.)
+      throw new SimulationCreationException("Unknown error", e);
+    }
+    if (!root.getName().equals("simconf")) {
+      throw new SimulationCreationException("Not a valid simulation configuration file", null);
+    }
+    return root;
+  }
+
   /**
    * Loads a simulation configuration from given file.
    * <p>
@@ -1343,29 +1372,11 @@ public class Cooja extends Observable {
    */
   Simulation loadSimulationConfig(Simulation.SimConfig cfg, boolean quick, Long manualRandomSeed)
   throws SimulationCreationException {
-    var file = new File(cfg.file());
-    try {
-      currentConfigFile = file.getCanonicalFile(); // Used to generate config relative paths.
-    } catch (IOException e) {
-      currentConfigFile = file;
-    }
-
     Simulation sim;
-    try (InputStream in = file.getName().endsWith(".gz")
-            ? new GZIPInputStream(new FileInputStream(file)) : new FileInputStream(file)) {
-      final var doc = new SAXBuilder().build(in);
-      var root = doc.getRootElement();
-      // Check that config file version is correct
-      if (!root.getName().equals("simconf")) {
-        logger.fatal("Not a valid Cooja simulation config.");
-        return null;
-      }
+    try {
+      var root = readSimulationConfig(cfg);
       boolean projectsOk = verifyProjects(root);
       sim = createSimulation(cfg, root, quick, manualRandomSeed);
-    } catch (JDOMException e) {
-      throw new SimulationCreationException("Config not well-formed", e);
-    } catch (IOException e) {
-      throw new SimulationCreationException("Load simulation error", e);
     } catch (Exception e) {
       // Wrap everything else in a SimulationCreationException, so the SwingWorker works as intended.
       // (SwingWorker communicates internally through SimulationCreationExceptions.)
