@@ -1539,11 +1539,10 @@ public class GUI {
         // Optionally show compilation warnings.
         var hideWarn = Boolean.parseBoolean(Cooja.getExternalToolsSetting("HIDE_WARNINGS", "false"));
         if (quick && !hideWarn && !PROGRESS_WARNINGS.isEmpty()) {
-          final String[] warnings = PROGRESS_WARNINGS.toArray(new String[0]);
           final JDialog dialog = new JDialog(GUI.frame, "Compilation warnings", false);
           // Warnings message list.
           MessageListUI compilationOutput = new MessageListUI();
-          for (String w : warnings) {
+          for (var w : PROGRESS_WARNINGS) {
             compilationOutput.addMessage(w, MessageList.ERROR);
           }
           compilationOutput.addPopupMenuItem(null, true);
