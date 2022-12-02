@@ -344,7 +344,7 @@ public class DotDiagram extends JComponent {
       sizeX = width - 2;
 
       if (totMax < 0) {
-        factor = (sizeY - 15) / (double) (0 - totMin);
+        factor = (sizeY - 15) / (double) -totMin;
       } else if (totMax == totMin) {
         factor = 1;
       } else {
@@ -362,7 +362,7 @@ public class DotDiagram extends JComponent {
     x = x + 2;
 
     // Draw grid...
-    int zero = y + lowerY - (int) (factor * (0 - totMin));
+    int zero = y + lowerY - (int) (factor * -totMin);
 
     if (gridVisible) {
       g.setColor(Color.lightGray);
