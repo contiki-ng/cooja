@@ -169,21 +169,6 @@ public class DotDiagram extends JComponent {
     this.xLabel = xLabel;
   }
 
-  public void setName(int index, String name) {
-//     if (names == null) {
-//       names = new String[diagrams];
-//     }
-//     names[index] = name;
-//     StringBuilder sb = new StringBuilder();
-//     for (int i = 0, n = names.length; i < n; i++) {
-//       // Setup JLables...
-//     }
-  }
-
-  public void setToolTipVisible(boolean showToolTip) {
-//     setToolTipText(showToolTip ? toolTipText : null);
-  }
-
   public void addConstant(Color color, int y) {
     int index;
     if (constantY == null) {
