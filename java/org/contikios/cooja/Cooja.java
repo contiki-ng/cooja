@@ -1710,7 +1710,7 @@ public class Cooja {
   }
   public static void setProgressMessage(String msg, int type) {
     if (gui != null) {
-      GUI.setProgressMessage(msg, type);
+      gui.setProgressMessage(msg, type);
     }
   }
 
