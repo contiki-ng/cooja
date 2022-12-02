@@ -54,17 +54,7 @@ import java.util.StringTokenizer;
 
 public class ConfigManager {
 
-  protected final ConfigManager parent;
   protected Properties properties = null;
-
-  public ConfigManager() {
-    this(null);
-  }
-
-  public ConfigManager(ConfigManager parent) {
-    this.parent = parent;
-  }
-
 
 
   // -------------------------------------------------------------------
@@ -161,9 +151,7 @@ public class ConfigManager {
         : null;
 
     if (value == null || value.length() == 0) {
-      value = parent != null
-      ? parent.getProperty(name, defaultValue)
-          : defaultValue;
+      return defaultValue;
     }
     return value;
   }
