@@ -74,7 +74,7 @@ public class EmuLink {
         return !isConnected;
     }
 
-    String[] getNodes(JSONObject json) {
+    static String[] getNodes(JSONObject json) {
         JSONArray nodes;
         String node;
         String[] nString = null;
