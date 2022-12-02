@@ -845,22 +845,6 @@ public final class Simulation extends Observable {
   }
 
   /**
-   * Returns mote type with given identifier.
-   *
-   * @param identifier
-   *          Mote type identifier
-   * @return Mote type or null if not found
-   */
-  public MoteType getMoteType(String identifier) {
-    for (MoteType moteType : getMoteTypes()) {
-      if (moteType.getIdentifier().equals(identifier)) {
-        return moteType;
-      }
-    }
-    return null;
-  }
-
-  /**
    * Adds given mote type to simulation.
    *
    * @param newMoteType Mote type

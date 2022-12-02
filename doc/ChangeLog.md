@@ -23,6 +23,12 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed getMoteType(String identifier) method in Simulation
+
+The mote type identifier is no longer exposed in the simulation files,
+so the method is no longer used by Cooja. The mote type can be accessed
+through a mote by calling the `getType()` method.
+
 ### Method updates in MoteTypeCreationException
 
 The `hasCompilationOutput` and `setCompilationOutput` methods were removed from
