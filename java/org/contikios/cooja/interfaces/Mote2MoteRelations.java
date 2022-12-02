@@ -78,8 +78,6 @@ public class Mote2MoteRelations extends MoteInterface {
   private final Mote mote;
 
   private final ArrayList<Mote> relations = new ArrayList<>();
-  private final Cooja gui;
-
   private Observer logObserver = new Observer() {
     @Override
     public void update(Observable o, Object arg) {
@@ -149,7 +147,6 @@ public class Mote2MoteRelations extends MoteInterface {
   
   public Mote2MoteRelations(Mote mote) {
     this.mote = mote;
-    this.gui = mote.getSimulation().getCooja();
   }
 
   @Override
