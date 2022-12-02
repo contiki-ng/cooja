@@ -298,7 +298,7 @@ public class CommandHandler implements ActiveComponent, LineListener {
     return exitCommands(contexts);
   }
 
-  private boolean exitCommands(CommandContext[] contexts) {
+  private static boolean exitCommands(CommandContext[] contexts) {
       if (contexts != null) {
         for (CommandContext context : contexts) {
           context.stopCommand();
