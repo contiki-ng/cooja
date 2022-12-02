@@ -108,7 +108,7 @@ public class IPUtils {
    */
   public static void getUncompressedIPv6AddressString(StringBuilder builder, byte[] ip) {
     for (int i = 0; i < 14; i += 2) {
-      builder.append(String.format("%02x%02x:", 0xFF & ip[i + 0], 0xFF & ip[i + 1]));
+      builder.append(String.format("%02x%02x:", 0xFF & ip[i], 0xFF & ip[i + 1]));
     }
     builder.append(String.format("%02x%02x", 0xFF & ip[14], 0xFF & ip[15]));
   }
