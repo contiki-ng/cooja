@@ -173,13 +173,7 @@ public class BaseRSSIconf extends VisPlugin {
 				return "";
 			}
 			Radio radio = radioMedium.getRegisteredRadios()[row]; // sim.getMotes()...
-			if (column == IDX_Mote) {
-				return radio.getMote();
-			}
-			if (column == IDX_BaseRSSI) {
-				return radioMedium.getBaseRssi(radio);
-			}
-			return "";
+      return column == IDX_Mote ? radio.getMote() : radioMedium.getBaseRssi(radio);
 		}
 
 		@Override
