@@ -166,10 +166,8 @@ public class BaseRSSIconf extends VisPlugin {
 
 		@Override
 		public Object getValueAt(int row, int column) {
-			if (row < 0 || row >= radioMedium.getRegisteredRadios().length) {
-				return "";
-			}
-			if (column < 0 || column >= COLUMN_NAMES.length) {
+      if (row < 0 || row >= radioMedium.getRegisteredRadios().length ||
+          column < 0 || column >= COLUMN_NAMES.length) {
 				return "";
 			}
 			Radio radio = radioMedium.getRegisteredRadios()[row]; // sim.getMotes()...
@@ -178,10 +176,8 @@ public class BaseRSSIconf extends VisPlugin {
 
 		@Override
 		public void setValueAt(Object value, int row, int column) {
-			if (row < 0 || row >= radioMedium.getRegisteredRadios().length) {
-				return;
-			}
-			if (column < 0 || column >= COLUMN_NAMES.length) {
+      if (row < 0 || row >= radioMedium.getRegisteredRadios().length ||
+          column < 0 || column >= COLUMN_NAMES.length) {
 				return;
 			}
 
