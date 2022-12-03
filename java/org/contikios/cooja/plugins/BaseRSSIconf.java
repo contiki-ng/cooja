@@ -80,7 +80,78 @@ public class BaseRSSIconf extends VisPlugin {
 		super("Base RSSI Configurator", gui);
 		this.sim = sim;
 		radioMedium = (AbstractRadioMedium) sim.getRadioMedium();
-		changeObserver = (obs, obj) -> model.fireTableDataChanged();
+    final var model = new AbstractTableModel() {
+      @Override
+      public String getColumnName(int column) {
+        if (column < 0 || column >= COLUMN_NAMES.length) {
+          return "";
+        }
+        return COLUMN_NAMES[column];
+      }
+
+      @Override
+      public int getRowCount() {
+        return radioMedium.getRegisteredRadios().length;
+      }
+
+      @Override
+      public int getColumnCount() {
+        return COLUMN_NAMES.length;
+      }
+
+      @Override
+      public Object getValueAt(int row, int column) {
+        if (row < 0 || row >= radioMedium.getRegisteredRadios().length ||
+                column < 0 || column >= COLUMN_NAMES.length) {
+          return "";
+        }
+        Radio radio = radioMedium.getRegisteredRadios()[row];
+        return column == IDX_Mote ? radio.getMote() : radioMedium.getBaseRssi(radio);
+      }
+
+      @Override
+      public void setValueAt(Object value, int row, int column) {
+        if (row < 0 || row >= radioMedium.getRegisteredRadios().length ||
+                column < 0 || column >= COLUMN_NAMES.length) {
+          return;
+        }
+
+        Radio radio = radioMedium.getRegisteredRadios()[row];
+        try {
+          if (column == IDX_BaseRSSI) {
+            radioMedium.setBaseRssi(radio,((Number) value).doubleValue());
+          } else {
+            super.setValueAt(value, row, column);
+          }
+        } catch (ClassCastException e) {
+        }
+      }
+
+      @Override
+      public boolean isCellEditable(int row, int column) {
+        if (row < 0 || row >= radioMedium.getRegisteredRadios().length) {
+          return false;
+        }
+
+        if (column == IDX_Mote) {
+          Cooja.signalMoteHighlight(radioMedium.getRegisteredRadios()[row]
+                  .getMote());
+          return false;
+        }
+        if (column == IDX_BaseRSSI) {
+          Cooja.signalMoteHighlight(radioMedium.getRegisteredRadios()[row]
+                  .getMote());
+          return true;
+        }
+        return false;
+      }
+
+      @Override
+      public Class<?> getColumnClass(int c) {
+        return getValueAt(0, c).getClass();
+      }
+    };
+    changeObserver = (obs, obj) -> model.fireTableDataChanged();
 		radioMedium.addRadioMediumObserver(changeObserver);
 		sim.addObserver(changeObserver);
 
@@ -143,81 +214,6 @@ public class BaseRSSIconf extends VisPlugin {
 		model.fireTableDataChanged();
 		setSize(400, 300);
 	}
-
-
-	final AbstractTableModel model = new AbstractTableModel() {
-		@Override
-		public String getColumnName(int column) {
-			if (column < 0 || column >= COLUMN_NAMES.length) {
-				return "";
-			}
-			return COLUMN_NAMES[column];
-		}
-
-		@Override
-		public int getRowCount() {
-			return radioMedium.getRegisteredRadios().length;
-		}
-
-		@Override
-		public int getColumnCount() {
-			return COLUMN_NAMES.length;
-		}
-
-		@Override
-		public Object getValueAt(int row, int column) {
-      if (row < 0 || row >= radioMedium.getRegisteredRadios().length ||
-          column < 0 || column >= COLUMN_NAMES.length) {
-				return "";
-			}
-			Radio radio = radioMedium.getRegisteredRadios()[row]; // sim.getMotes()...
-      return column == IDX_Mote ? radio.getMote() : radioMedium.getBaseRssi(radio);
-		}
-
-		@Override
-		public void setValueAt(Object value, int row, int column) {
-      if (row < 0 || row >= radioMedium.getRegisteredRadios().length ||
-          column < 0 || column >= COLUMN_NAMES.length) {
-				return;
-			}
-
-			Radio radio = radioMedium.getRegisteredRadios()[row];
-			try {
-				if (column == IDX_BaseRSSI) {
-					radioMedium.setBaseRssi(radio,
-							((Number) value).doubleValue());
-				} else {
-					super.setValueAt(value, row, column);
-				}
-								
-			} catch (ClassCastException e) {
-			}
-		}
-
-		@Override
-		public boolean isCellEditable(int row, int column) {
-			if (row < 0 || row >= radioMedium.getRegisteredRadios().length) {
-				return false;
-			}
-
-			if (column == IDX_Mote) {
-				Cooja.signalMoteHighlight(radioMedium.getRegisteredRadios()[row]
-						.getMote());
-				return false;
-			}
-			if (column == IDX_BaseRSSI) {
-				Cooja.signalMoteHighlight(radioMedium.getRegisteredRadios()[row]
-						.getMote());
-				return true;
-			}
-			return false;
-		}
-
-		@Override
-		public Class<?> getColumnClass(int c) {
-			return getValueAt(0, c).getClass();
-		}
-	};
 
 	@Override
 	public void closePlugin() {
