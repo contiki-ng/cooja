@@ -169,21 +169,6 @@ public class DotDiagram extends JComponent {
     this.xLabel = xLabel;
   }
 
-  public void setName(int index, String name) {
-//     if (names == null) {
-//       names = new String[diagrams];
-//     }
-//     names[index] = name;
-//     StringBuilder sb = new StringBuilder();
-//     for (int i = 0, n = names.length; i < n; i++) {
-//       // Setup JLables...
-//     }
-  }
-
-  public void setToolTipVisible(boolean showToolTip) {
-//     setToolTipText(showToolTip ? toolTipText : null);
-  }
-
   public void addConstant(Color color, int y) {
     int index;
     if (constantY == null) {
@@ -359,7 +344,7 @@ public class DotDiagram extends JComponent {
       sizeX = width - 2;
 
       if (totMax < 0) {
-        factor = (sizeY - 15) / (double) (0 - totMin);
+        factor = (sizeY - 15) / (double) -totMin;
       } else if (totMax == totMin) {
         factor = 1;
       } else {
@@ -377,7 +362,7 @@ public class DotDiagram extends JComponent {
     x = x + 2;
 
     // Draw grid...
-    int zero = y + lowerY - (int) (factor * (0 - totMin));
+    int zero = y + lowerY - (int) (factor * -totMin);
 
     if (gridVisible) {
       g.setColor(Color.lightGray);

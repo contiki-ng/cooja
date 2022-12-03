@@ -756,7 +756,7 @@ public class BufferListener extends VisPlugin {
     setLocation(0, Cooja.getDesktopPane().getHeight() - 300);
   }
 
-  private boolean startMonitoring(Mote mote) throws Exception {
+  private void startMonitoring(Mote mote) throws Exception {
     /* If this is a pointer buffer,
      * we must observe both the pointer itself, and the pointed to memory */
 
@@ -766,7 +766,6 @@ public class BufferListener extends VisPlugin {
       motes.add(mote);
     }
     updateTitle();
-    return true;
   }
 
   public enum MemoryMonitorType { SEGMENT, POINTER, CONSTPOINTER }

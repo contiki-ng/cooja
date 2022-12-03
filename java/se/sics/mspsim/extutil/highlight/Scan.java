@@ -16,12 +16,12 @@ public class Scan {
     if (args.length != 1) {
       System.out.println("Usage: java Scan filename");
     } else {
-      program.scan(args[0]);
+      Scan.scan(args[0]);
     }
   }
 
   // Scan each line in turn
-  public void scan(String filename) throws IOException {
+  public static void scan(String filename) throws IOException {
     File file = new File(filename);
     int len = (int) file.length();
     char[] buffer = new char[len];

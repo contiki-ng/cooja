@@ -54,17 +54,7 @@ import java.util.StringTokenizer;
 
 public class ConfigManager {
 
-  protected final ConfigManager parent;
   protected Properties properties = null;
-
-  public ConfigManager() {
-    this(null);
-  }
-
-  public ConfigManager(ConfigManager parent) {
-    this.parent = parent;
-  }
-
 
 
   // -------------------------------------------------------------------
@@ -161,9 +151,7 @@ public class ConfigManager {
         : null;
 
     if (value == null || value.length() == 0) {
-      value = parent != null
-      ? parent.getProperty(name, defaultValue)
-          : defaultValue;
+      return defaultValue;
     }
     return value;
   }
@@ -224,7 +212,7 @@ public class ConfigManager {
     }
   }
 
-  private int[] parseIntArray(String valueList, String secondaryValue) {
+  private static int[] parseIntArray(String valueList, String secondaryValue) {
     StringTokenizer tok = new StringTokenizer(valueList, ", \t/");
     int len = tok.countTokens();
     if (len > 0) {
@@ -272,7 +260,7 @@ public class ConfigManager {
         : defaultValue;
   }
 
-  protected int parseInt(String name, String value, int defaultValue) {
+  protected static int parseInt(String name, String value, int defaultValue) {
     try {
       return Integer.parseInt(value);
     } catch (Exception e) {
@@ -282,7 +270,7 @@ public class ConfigManager {
     return defaultValue;
   }
 
-  protected long parseLong(String name, String value, long defaultValue) {
+  protected static long parseLong(String name, String value, long defaultValue) {
     try {
       return Long.parseLong(value);
     } catch (Exception e) {
@@ -292,7 +280,7 @@ public class ConfigManager {
     return defaultValue;
   }
 
-  protected float parseFloat(String name, String value, float defaultValue) {
+  protected static float parseFloat(String name, String value, float defaultValue) {
     try {
       return Float.parseFloat(value);
     } catch (Exception e) {
@@ -302,8 +290,7 @@ public class ConfigManager {
     return defaultValue;
   }
 
-  protected double parseDouble(String name, String value,
-      double defaultValue) {
+  protected static double parseDouble(String name, String value, double defaultValue) {
     try {
       return Double.parseDouble(value);
     } catch (Exception e) {
@@ -313,8 +300,7 @@ public class ConfigManager {
     return defaultValue;
   }
 
-  protected boolean parseBoolean(String name, String value,
-      boolean defaultValue) {
+  protected static boolean parseBoolean(String name, String value, boolean defaultValue) {
     return "true".equals(value) || "yes".equals(value) || "1".equals(value);
   }
 
