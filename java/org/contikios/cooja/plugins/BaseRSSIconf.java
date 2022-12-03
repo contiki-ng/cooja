@@ -72,7 +72,6 @@ public class BaseRSSIconf extends VisPlugin {
 
 	private final AbstractRadioMedium radioMedium;
 	private final Observer changeObserver;
-	private final JComboBox<Number> combo = new JComboBox<>();
 	private final Simulation sim;
 	
 	
@@ -86,6 +85,7 @@ public class BaseRSSIconf extends VisPlugin {
 		sim.addObserver(changeObserver);
 
 		/* Represent motes and RSSI by table */
+    final var combo = new JComboBox<Number>();
 		var motesTable = new JTable(model) {
 			@Override
 			public TableCellEditor getCellEditor(int row, int column) {
