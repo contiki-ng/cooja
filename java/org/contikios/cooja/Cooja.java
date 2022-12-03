@@ -736,7 +736,6 @@ public class Cooja extends Observable {
 
         @Override
         public Boolean work() {
-          boolean hasLocation = false;
           if (root != null) {
             var location = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
             var size = new Dimension();
@@ -765,7 +764,6 @@ public class Cooja extends Observable {
             }
             if (location.x != Integer.MIN_VALUE && location.y != Integer.MIN_VALUE) {
               pluginFrame.setLocation(location);
-              hasLocation = true;
             }
             if (zOrder != Integer.MIN_VALUE) {
               pluginFrame.putClientProperty("zorder", zOrder);
@@ -787,7 +785,7 @@ public class Cooja extends Observable {
             pluginFrame.setSize(FRAME_STANDARD_WIDTH, FRAME_STANDARD_HEIGHT);
           }
           // Set location if not already set.
-          if (!hasLocation) {
+          if (pluginFrame.getLocation().x < 0 && pluginFrame.getLocation().y < 0) {
             var iframes = gui.myDesktopPane.getAllFrames();
             Point topFrameLoc = iframes.length > 1
                     ? iframes[1].getLocation()
