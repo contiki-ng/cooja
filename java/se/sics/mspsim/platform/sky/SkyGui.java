@@ -66,12 +66,7 @@ public class SkyGui extends AbstractNodeGUI {
   private static final Rectangle LEDS_BOUNDS = new Rectangle(LED_X, RED_Y, 9, BLUE_Y - RED_Y + 5);
 
   private final MoteIVNode node;
-  private final StateChangeListener ledsListener = new StateChangeListener() {
-      @Override
-      public void stateChanged(Object source, int oldState, int newState) {
-          repaint(LEDS_BOUNDS);
-      }
-  };
+  private final StateChangeListener ledsListener = (source, oldState, newState) -> repaint(LEDS_BOUNDS);
 
   public SkyGui(MoteIVNode node) {
     super("SkyGui", "images/sky.jpg");

@@ -35,7 +35,6 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 import java.util.Observer;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -67,16 +66,13 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
 
   private final List<RadioConnectionArrow> historyList = new ArrayList<>();
 
-  private final Observer radioMediumObserver = new Observer() {
-    @Override
-    public void update(Observable obs, Object obj) {
-      RadioConnection last = radioMedium.getLastConnection();
-      if (last != null && historyList.size() < MAX_HISTORY_SIZE) {
-        synchronized(historyList) {
-          historyList.add(new RadioConnectionArrow(last));
-        }
-        java.awt.EventQueue.invokeLater(() -> visualizer.repaint(500));
+  private final Observer radioMediumObserver = (obs, obj) -> {
+    RadioConnection last = radioMedium.getLastConnection();
+    if (last != null && historyList.size() < MAX_HISTORY_SIZE) {
+      synchronized(historyList) {
+        historyList.add(new RadioConnectionArrow(last));
       }
+      java.awt.EventQueue.invokeLater(() -> visualizer.repaint(500));
     }
   };
 
@@ -109,17 +105,12 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
     this.visualizer = vis;
     this.active = true;
 
-    simulation.invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        historyList.clear();
-
-        /* Start observing radio medium for transmissions */
-        radioMedium.addRadioTransmissionObserver(radioMediumObserver);
-
-        /* Fade away arrows */
-        simulation.scheduleEvent(ageArrowsTimeEvent, simulation.getSimulationTime() + 100*Simulation.MILLISECOND);
-      }
+    simulation.invokeSimulationThread(() -> {
+      historyList.clear();
+      /* Start observing radio medium for transmissions */
+      radioMedium.addRadioTransmissionObserver(radioMediumObserver);
+      /* Fade away arrows */
+      simulation.scheduleEvent(ageArrowsTimeEvent, simulation.getSimulationTime() + 100*Simulation.MILLISECOND);
     });
   }
 

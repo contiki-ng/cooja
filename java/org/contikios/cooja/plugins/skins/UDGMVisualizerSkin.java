@@ -51,8 +51,6 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -156,40 +154,21 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
     successRatioTxSpinner.setToolTipText("Transmission success ratio (%)");
     successRatioRxSpinner.setToolTipText("Reception success ratio (%)");
 
-    txRangeSpinner.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(ChangeEvent e) {
-        radioMedium.setTxRange(((SpinnerNumberModel) txRangeSpinner.getModel())
-                .getNumber().doubleValue());
-        visualizer.repaint();
-      }
+    txRangeSpinner.addChangeListener(e -> {
+      radioMedium.setTxRange(((SpinnerNumberModel) txRangeSpinner.getModel()).getNumber().doubleValue());
+      visualizer.repaint();
     });
-
-    interferenceRangeSpinner.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(ChangeEvent e) {
-        radioMedium.setInterferenceRange(((SpinnerNumberModel) interferenceRangeSpinner.getModel())
-                .getNumber().doubleValue());
-        visualizer.repaint();
-      }
+    interferenceRangeSpinner.addChangeListener(e -> {
+      radioMedium.setInterferenceRange(((SpinnerNumberModel) interferenceRangeSpinner.getModel()).getNumber().doubleValue());
+      visualizer.repaint();
     });
-
-    successRatioTxSpinner.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(ChangeEvent e) {
-        radioMedium.SUCCESS_RATIO_TX = ((SpinnerNumberModel) successRatioTxSpinner.getModel())
-                .getNumber().doubleValue();
-        visualizer.repaint();
-      }
+    successRatioTxSpinner.addChangeListener(e -> {
+      radioMedium.SUCCESS_RATIO_TX = ((SpinnerNumberModel) successRatioTxSpinner.getModel()).getNumber().doubleValue();
+      visualizer.repaint();
     });
-
-    successRatioRxSpinner.addChangeListener(new ChangeListener() {
-      @Override
-      public void stateChanged(ChangeEvent e) {
-        radioMedium.SUCCESS_RATIO_RX = ((SpinnerNumberModel) successRatioRxSpinner.getModel())
-                .getNumber().doubleValue();
-        visualizer.repaint();
-      }
+    successRatioRxSpinner.addChangeListener(e -> {
+      radioMedium.SUCCESS_RATIO_RX = ((SpinnerNumberModel) successRatioRxSpinner.getModel()).getNumber().doubleValue();
+      visualizer.repaint();
     });
 
     /* Register menu actions */

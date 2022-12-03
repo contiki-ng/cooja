@@ -16,8 +16,6 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.mspmote.Exp5438Mote;
 import se.sics.mspsim.core.IOPort;
-import se.sics.mspsim.core.IOUnit;
-import se.sics.mspsim.core.PortListener;
 
 /**
  * @author Fredrik Osterlind
@@ -42,20 +40,15 @@ public class TrxebLEDs extends LED {
 
 	public TrxebLEDs(Mote mote) {
 		var mspMote = (Exp5438Mote) mote;
-
-		IOUnit unit = mspMote.getCPU().getIOUnit("P4");
-		if (unit instanceof IOPort) {
-			((IOPort) unit).addPortListener(new PortListener() {
-				@Override
-				public void portWrite(IOPort source, int data) {
-					redOn = (data & (1<<0)) == 0;
-					yellowOn = (data & (1<<1)) == 0;
-					greenOn = (data & (1<<2)) == 0;
-					blueOn = (data & (1<<3)) == 0;
-					setChanged();
-					notifyObservers();
-				}
-			});
+    if (mspMote.getCPU().getIOUnit("P4") instanceof IOPort unit) {
+      unit.addPortListener((source, data) -> {
+        redOn = (data & (1 << 0)) == 0;
+        yellowOn = (data & (1 << 1)) == 0;
+        greenOn = (data & (1 << 2)) == 0;
+        blueOn = (data & (1 << 3)) == 0;
+        setChanged();
+        notifyObservers();
+      });
 		}
 	}
 

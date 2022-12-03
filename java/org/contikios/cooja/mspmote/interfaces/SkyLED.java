@@ -44,8 +44,6 @@ import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.mspmote.SkyMote;
 
 import se.sics.mspsim.core.IOPort;
-import se.sics.mspsim.core.IOUnit;
-import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.platform.sky.SkyNode;
 
 /**
@@ -68,18 +66,13 @@ public class SkyLED extends LED {
 
   public SkyLED(Mote mote) {
     var mspMote = (SkyMote) mote;
-
-    IOUnit unit = mspMote.getCPU().getIOUnit("Port 5");
-    if (unit instanceof IOPort) {
-      ((IOPort) unit).addPortListener(new PortListener() {
-        @Override
-        public void portWrite(IOPort source, int data) {
-          blueOn = (data & SkyNode.BLUE_LED) == 0;
-          greenOn = (data & SkyNode.GREEN_LED) == 0;
-          redOn = (data & SkyNode.RED_LED) == 0;
-          setChanged();
-          notifyObservers();
-        }
+    if (mspMote.getCPU().getIOUnit("Port 5") instanceof IOPort unt) {
+      unt.addPortListener((source, data) -> {
+        blueOn = (data & SkyNode.BLUE_LED) == 0;
+        greenOn = (data & SkyNode.GREEN_LED) == 0;
+        redOn = (data & SkyNode.RED_LED) == 0;
+        setChanged();
+        notifyObservers();
       });
     }
   }

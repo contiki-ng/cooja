@@ -33,7 +33,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -148,39 +147,36 @@ public abstract class SerialUI extends Log implements SerialPort {
     final JTextField commandField = new JTextField(15);
     JButton sendButton = new JButton("Send data");
 
-    ActionListener sendCommandAction = new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        final String command = trim(commandField.getText());
-        if (command == null) {
-          commandField.getToolkit().beep();
-          return;
-        }
+    ActionListener sendCommandAction = e -> {
+      final String command = trim(commandField.getText());
+      if (command == null) {
+        commandField.getToolkit().beep();
+        return;
+      }
 
-        try {
-          /* Add to history */
-          if (history.isEmpty() || !command.equals(history.get(0))) {
-            history.add(0, command);
-            while (history.size() > HISTORY_SIZE) {
-              history.remove(HISTORY_SIZE-1);
-            }
+      try {
+        /* Add to history */
+        if (history.isEmpty() || !command.equals(history.get(0))) {
+          history.add(0, command);
+          while (history.size() > HISTORY_SIZE) {
+            history.remove(HISTORY_SIZE-1);
           }
-          historyPos = -1;
-
-          appendToTextArea(logTextPane, "> " + command);
-          commandField.setText("");
-          if (getMote().getSimulation().isRunning()) {
-            getMote().getSimulation().invokeSimulationThread(() -> writeString(command));
-          } else {
-            writeString(command);
-          }
-        } catch (Exception ex) {
-          logger.error("could not send '" + command + "':", ex);
-          JOptionPane.showMessageDialog(
-              logTextPane,
-              "Could not send '" + command + "':\n" + ex.getMessage(), "Error sending message",
-              JOptionPane.ERROR_MESSAGE);
         }
+        historyPos = -1;
+
+        appendToTextArea(logTextPane, "> " + command);
+        commandField.setText("");
+        if (getMote().getSimulation().isRunning()) {
+          getMote().getSimulation().invokeSimulationThread(() -> writeString(command));
+        } else {
+          writeString(command);
+        }
+      } catch (Exception ex) {
+        logger.error("could not send '" + command + "':", ex);
+        JOptionPane.showMessageDialog(
+            logTextPane,
+            "Could not send '" + command + "':\n" + ex.getMessage(), "Error sending message",
+            JOptionPane.ERROR_MESSAGE);
       }
     };
     commandField.addActionListener(sendCommandAction);
