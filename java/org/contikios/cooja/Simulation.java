@@ -723,7 +723,7 @@ public final class Simulation extends Observable {
 
   private void doRemoveMote(Mote mote) {
     motes.remove(mote);
-    currentRadioMedium.unregisterMote(mote, Simulation.this);
+    currentRadioMedium.unregisterRadioInterface(mote.getInterfaces().getRadio(), this);
 
     /* Dispose mote interface resources */
     mote.removed();
@@ -772,8 +772,7 @@ public final class Simulation extends Observable {
       }
 
       motes.add(mote);
-      currentRadioMedium.registerMote(mote, Simulation.this);
-
+      currentRadioMedium.registerRadioInterface(mote.getInterfaces().getRadio(), this);
       /* Notify mote interfaces that node was added */
       for (MoteInterface i: mote.getInterfaces().getInterfaces()) {
         i.added();

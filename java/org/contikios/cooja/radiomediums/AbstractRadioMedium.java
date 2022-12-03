@@ -41,7 +41,6 @@ import java.util.Observer;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.RadioMedium;
 import org.contikios.cooja.RadioPacket;
@@ -428,17 +427,7 @@ public abstract class AbstractRadioMedium extends RadioMedium {
 			}
 		}
 	};
-	
-	@Override
-	public void registerMote(Mote mote, Simulation sim) {
-		registerRadioInterface(mote.getInterfaces().getRadio(), sim);
-	}
-	
-	@Override
-	public void unregisterMote(Mote mote, Simulation sim) {
-		unregisterRadioInterface(mote.getInterfaces().getRadio(), sim);
-	}
-	
+
 	@Override
 	public void registerRadioInterface(Radio radio, Simulation sim) {
 		if (radio == null) {

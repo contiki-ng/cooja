@@ -23,6 +23,10 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed registerMote/unregisterMote in RadioMedium
+
+Use registerRadioInterface/unregisterRadioInterface instead.
+
 ### Removed getMoteType(String identifier) method in Simulation
 
 The mote type identifier is no longer exposed in the simulation files,
