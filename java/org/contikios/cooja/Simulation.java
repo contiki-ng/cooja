@@ -397,8 +397,9 @@ public final class Simulation extends Observable {
       if (pluginClassName.startsWith("se.sics")) {
         pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
       }
-      // Skip SimControl, functionality is now in Cooja class.
-      if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName)) {
+      // Skip plugins that have been removed or merged into other classes.
+      if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName) ||
+          "org.contikios.cooja.plugins.SimInformation".equals(pluginClassName)) {
         continue;
       }
       // Backwards compatibility: old visualizers were replaced.

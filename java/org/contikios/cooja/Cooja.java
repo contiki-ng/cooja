@@ -86,7 +86,6 @@ import org.contikios.cooja.plugins.Notes;
 import org.contikios.cooja.plugins.PowerTracker;
 import org.contikios.cooja.plugins.RadioLogger;
 import org.contikios.cooja.plugins.ScriptRunner;
-import org.contikios.cooja.plugins.SimInformation;
 import org.contikios.cooja.plugins.TimeLine;
 import org.contikios.cooja.plugins.VariableWatcher;
 import org.contikios.cooja.plugins.Visualizer;
@@ -436,7 +435,6 @@ public class Cooja {
     }
 
     // Register plugins
-    registerPlugin(SimInformation.class);
     registerPlugin(MoteTypeInformation.class);
     registerPlugin(Visualizer.class);
     registerPlugin(LogListener.class);
