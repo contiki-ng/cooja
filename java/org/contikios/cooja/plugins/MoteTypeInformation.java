@@ -30,7 +30,6 @@
 package org.contikios.cooja.plugins;
 
 import java.awt.BorderLayout;
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.BorderFactory;
@@ -63,32 +62,29 @@ public class MoteTypeInformation extends VisPlugin {
   public MoteTypeInformation(Simulation simulation, Cooja gui) {
     super("Mote Type Information", gui);
     this.simulation = simulation;
-    simulation.addObserver(simObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        if (simulation.getMoteTypes().length == nrMotesTypes) {
-          return;
-        }
-        nrMotesTypes = simulation.getMoteTypes().length;
-        getContentPane().removeAll();
-        var box = Box.createVerticalBox();
-        box.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        for (var moteType : simulation.getMoteTypes()) {
-          var visualizer = moteType.getTypeVisualizer();
-          if (visualizer == null) {
-            visualizer = new JLabel("[no information available]");
-          }
-          visualizer.setAlignmentX(Box.LEFT_ALIGNMENT);
-          var moteTypeString = Cooja.getDescriptionOf(moteType) + ": \"" + moteType.getDescription() + "\"";
-          visualizer.setBorder(BorderFactory.createTitledBorder(moteTypeString));
-          box.add(visualizer);
-          box.add(Box.createVerticalStrut(15));
-        }
-        getContentPane().add(BorderLayout.CENTER,
-            new JScrollPane(box, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
-        revalidate();
-        repaint();
+    simulation.addObserver(simObserver = (obs, obj) -> {
+      if (simulation.getMoteTypes().length == nrMotesTypes) {
+        return;
       }
+      nrMotesTypes = simulation.getMoteTypes().length;
+      getContentPane().removeAll();
+      var box = Box.createVerticalBox();
+      box.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+      for (var moteType : simulation.getMoteTypes()) {
+        var visualizer = moteType.getTypeVisualizer();
+        if (visualizer == null) {
+          visualizer = new JLabel("[no information available]");
+        }
+        visualizer.setAlignmentX(Box.LEFT_ALIGNMENT);
+        var moteTypeString = Cooja.getDescriptionOf(moteType) + ": \"" + moteType.getDescription() + "\"";
+        visualizer.setBorder(BorderFactory.createTitledBorder(moteTypeString));
+        box.add(visualizer);
+        box.add(Box.createVerticalStrut(15));
+      }
+      getContentPane().add(BorderLayout.CENTER,
+          new JScrollPane(box, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+      revalidate();
+      repaint();
     });
     simObserver.update(null, null);
     setSize(Math.min(getWidth(), 600), Math.min(getHeight(), 600));
