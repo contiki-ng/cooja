@@ -46,32 +46,6 @@ import org.contikios.cooja.interfaces.Radio;
  * @author Fredrik Osterlind
  */
 public abstract class RadioMedium {
-
-  /**
-   * Registers a mote to this medium.
-   * <p>
-   * How radio data will be received from and sent to this mote depends on the
-   * medium implementation. Common factors may be random, distance from sending
-   * to receiving mote and interference with other radio transmitters in some
-   * range.
-   *
-   * @param mote
-   *          Mote to register
-   * @param sim
-   *          Simulation holding mote
-   */
-  public abstract void registerMote(Mote mote, Simulation sim);
-
-  /**
-   * Unregisters a mote from this medium.
-   *
-   * @param mote
-   *          Mote to unregister
-   * @param sim
-   *          Simulation holding mote
-   */
-  public abstract void unregisterMote(Mote mote, Simulation sim);
-
   /**
    * Register a radio to this radio medium.
    * <p>
