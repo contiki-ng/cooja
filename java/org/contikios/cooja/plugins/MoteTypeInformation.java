@@ -37,6 +37,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.contikios.cooja.ClassDescription;
@@ -56,7 +57,7 @@ import org.contikios.cooja.VisPlugin;
 public class MoteTypeInformation extends VisPlugin {
   private final Simulation simulation;
   private final Observer simObserver;
-  private int nrMotesTypes;
+  private int nrMotesTypes = 0;
 
   /**
    * @param simulation Simulation
@@ -65,31 +66,24 @@ public class MoteTypeInformation extends VisPlugin {
   public MoteTypeInformation(Simulation simulation, Cooja gui) {
     super("Mote Type Information", gui);
     this.simulation = simulation;
-
-    this.getContentPane().add(BorderLayout.CENTER,
-        new JScrollPane(createPanel(),
-        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
-    pack();
-    setSize(Math.min(getWidth(), 600), Math.min(getHeight(), 600));
-    nrMotesTypes = simulation.getMoteTypes().length;
-
     simulation.addObserver(simObserver = new Observer() {
       @Override
       public void update(Observable obs, Object obj) {
-        if (MoteTypeInformation.this.simulation.getMoteTypes().length == nrMotesTypes) {
+        if (simulation.getMoteTypes().length == nrMotesTypes) {
           return;
         }
-        nrMotesTypes = MoteTypeInformation.this.simulation.getMoteTypes().length;
-        MoteTypeInformation.this.getContentPane().removeAll();
-        MoteTypeInformation.this.getContentPane().add(BorderLayout.CENTER,
-            new JScrollPane(createPanel(),
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+        nrMotesTypes = simulation.getMoteTypes().length;
+        getContentPane().removeAll();
+        var panel = createPanel();
+        getContentPane().add(BorderLayout.CENTER,
+            new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
         revalidate();
         repaint();
       }
     });
+    simObserver.update(null, null);
+    setSize(Math.min(getWidth(), 600), Math.min(getHeight(), 600));
+    pack();
   }
 
   private JComponent createPanel() {
