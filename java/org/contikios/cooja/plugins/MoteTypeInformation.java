@@ -92,10 +92,7 @@ public class MoteTypeInformation extends VisPlugin {
 
     /* Mote types */
     for (MoteType moteType: simulation.getMoteTypes()) {
-      String moteTypeString =
-        Cooja.getDescriptionOf(moteType) +": " +
-        "ID=" + moteType.getIdentifier() +
-        ", \"" + moteType.getDescription() + "\"";
+      String moteTypeString = Cooja.getDescriptionOf(moteType) +": \"" + moteType.getDescription() + "\"";
 
       JComponent moteTypeVisualizer = moteType.getTypeVisualizer();
       if (moteTypeVisualizer == null) {
