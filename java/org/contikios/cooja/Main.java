@@ -52,7 +52,6 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
  * Contains the command line parameters and is the main entry point for Cooja.
@@ -267,7 +266,7 @@ class Main {
       try {
         /* Find path to Cooja installation directory from code base */
         URI domain_uri = Cooja.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-        Path path = Paths.get(domain_uri).toAbsolutePath();
+        Path path = Path.of(domain_uri).toAbsolutePath();
         File fp = path.toFile();
         if (fp.isFile()) {
           // Get the directory where the JAR file is placed
