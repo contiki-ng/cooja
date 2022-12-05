@@ -63,12 +63,7 @@ public class Z1Gui extends AbstractNodeGUI {
     private boolean resetDown = false;
 
     private final Z1Node node;
-    private final StateChangeListener ledsListener = new StateChangeListener() {
-        @Override
-        public void stateChanged(Object source, int oldState, int newState) {
-            repaint(LEDS_BOUNDS);
-        }
-    };
+    private final StateChangeListener ledsListener = (source, oldState, newState) -> repaint(LEDS_BOUNDS);
 
     public Z1Gui(Z1Node node) {
         super("Z1Gui", "images/z1.jpg");

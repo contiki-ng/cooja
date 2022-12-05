@@ -62,12 +62,7 @@ public class WismoteGui extends AbstractNodeGUI {
             LED_Y - 1, RED2_X - RED1_X + LED_HEIGHT, LED_WIDTH);
 
     private final WismoteNode node;
-    private final StateChangeListener ledsListener = new StateChangeListener() {
-        @Override
-        public void stateChanged(Object source, int oldState, int newState) {
-            repaint(LEDS_BOUNDS);
-        }
-    };
+    private final StateChangeListener ledsListener = (source, oldState, newState) -> repaint(LEDS_BOUNDS);
     private boolean buttonDown = false;
     private boolean resetDown = false;
 

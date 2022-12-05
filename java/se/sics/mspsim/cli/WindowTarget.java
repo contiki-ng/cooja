@@ -35,12 +35,7 @@ public class WindowTarget extends Target {
   @Override
   protected void handleLine(final CommandContext context, final String line) {
     if (line != null && window != null) {
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        @Override
-        public void run() {
-          processLine(context, line);
-        }
-      });
+      java.awt.EventQueue.invokeLater(() -> processLine(context, line));
     }
   }
 

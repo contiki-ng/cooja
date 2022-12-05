@@ -30,7 +30,6 @@
 
 package org.contikios.cooja.interfaces;
 
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JLabel;
@@ -42,7 +41,6 @@ import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor;
 import org.contikios.cooja.mote.memory.VarMemory;
 
@@ -65,15 +63,12 @@ public class RimeAddress extends MoteInterface {
   public RimeAddress(final Mote mote) {
     moteMem = new VarMemory(mote.getMemory());
     if (hasRimeAddress()) {
-      memMonitor = new SegmentMonitor() {
-        @Override
-        public void memoryChanged(MemoryInterface memory, SegmentMonitor.EventType type, long address) {
-          if (type != SegmentMonitor.EventType.WRITE) {
-            return;
-          }
-          setChanged();
-          notifyObservers();
+      memMonitor = (memory, type, address) -> {
+        if (type != SegmentMonitor.EventType.WRITE) {
+          return;
         }
+        setChanged();
+        notifyObservers();
       };
       /* TODO XXX Timeout? */
       moteMem.addVarMonitor(SegmentMonitor.EventType.WRITE, "linkaddr_node_addr", memMonitor);
@@ -108,12 +103,7 @@ public class RimeAddress extends MoteInterface {
     panel.add(ipLabel);
 
     Observer observer;
-    this.addObserver(observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        ipLabel.setText("Rime address: " + getAddressString());
-      }
-    });
+    addObserver(observer = (obs, obj) -> ipLabel.setText("Rime address: " + getAddressString()));
 
     panel.putClientProperty("intf_obs", observer);
 

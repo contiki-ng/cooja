@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.Reader;
 import javax.swing.JTextPane;
 import java.awt.geom.Rectangle2D;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -53,35 +51,27 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
     initStyles();
 
     // Quick fix to highlight selected line
-    addCaretListener(new CaretListener() {
-
-      @Override
-      public void caretUpdate(CaretEvent e) {
-        int caret = getCaretPosition();
-        if (caret >= 0) {
-          try {
-            Rectangle2D r = getUI().modelToView2D(SyntaxHighlighter.this, caret, Position.Bias.Forward);
-            if (currentHeight > 0) {
-              repaint(0, currentY, getWidth(), currentHeight);
-            }
-            if (r != null && r.getHeight() > 0) {
-              currentY = (int) r.getY();
-              currentHeight = (int) r.getHeight();
-              repaint(0, currentY, getWidth(), currentHeight);
-            } else {
-              currentHeight = -1;
-            }
-
-          } catch (BadLocationException e1) {
-            // Ignore
+    addCaretListener(e -> {
+      int caret = getCaretPosition();
+      if (caret >= 0) {
+        try {
+          Rectangle2D r = getUI().modelToView2D(SyntaxHighlighter.this, caret, Position.Bias.Forward);
+          if (currentHeight > 0) {
+            repaint(0, currentY, getWidth(), currentHeight);
           }
+          if (r != null && r.getHeight() > 0) {
+            currentY = (int) r.getY();
+            currentHeight = (int) r.getHeight();
+            repaint(0, currentY, getWidth(), currentHeight);
+          } else {
+            currentHeight = -1;
+          }
+        } catch (BadLocationException e1) {
+          // Ignore
         }
       }
-
     });
-
     setOpaque(false);
-
   }
 
   public int getColumns() {

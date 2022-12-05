@@ -32,7 +32,6 @@ package org.contikios.cooja.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -261,27 +260,20 @@ public class IPAddress extends MoteInterface {
     final JLabel ipLabel = new JLabel();
 
     Observer observer;
-    this.addObserver(observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        StringBuilder ipStr = new StringBuilder();
-        ipStr.append("<html>");
-        for (IPContainer ipc: ipList) {
-          if (ipVersion == IPv.IPv6) {
-            ipStr.append(ipc.isGlobal() ? "Global" : "Local")
-                    .append(" IPv6 address(#")
-                    .append(ipc.getAddID())
-                    .append("): ")
-                    .append(ipc)
-                    .append("<br>");
-          }
-          else {
-            ipStr.append("Unknown IP<br>");
-          }
+    this.addObserver(observer = (obs, obj) -> {
+      StringBuilder ipStr = new StringBuilder();
+      ipStr.append("<html>");
+      for (IPContainer ipc: ipList) {
+        if (ipVersion == IPv.IPv6) {
+          ipStr.append(ipc.isGlobal() ? "Global" : "Local")
+                  .append(" IPv6 address(#").append(ipc.getAddID()).append("): ").append(ipc)
+                  .append("<br>");
+        } else {
+          ipStr.append("Unknown IP<br>");
         }
-        ipStr.append("</html>");
-        ipLabel.setText(ipStr.toString());
       }
+      ipStr.append("</html>");
+      ipLabel.setText(ipStr.toString());
     });
     observer.update(null, null);
 

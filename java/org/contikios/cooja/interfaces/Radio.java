@@ -29,9 +29,6 @@
 package org.contikios.cooja.interfaces;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Box;
@@ -244,33 +241,25 @@ public abstract class Radio extends MoteInterface {
     box.add(updateButton);
     box.add(channelLabel);
 
-    updateButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        ssLabel.setText("Signal strength (not auto-updated): "
-            + String.format("%1.1f", getCurrentSignalStrength()) + " dBm");
+    updateButton.addActionListener(e -> ssLabel.setText("Signal strength (not auto-updated): "
+        + String.format("%1.1f", getCurrentSignalStrength()) + " dBm"));
+
+    final Observer observer = (obs, obj) -> {
+      if (isTransmitting()) {
+        statusLabel.setText("Transmitting");
+      } else if (isReceiving()) {
+        statusLabel.setText("Receiving");
+      } else {
+        statusLabel.setText("Listening");
       }
-    });
 
-    final Observer observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        if (isTransmitting()) {
-          statusLabel.setText("Transmitting");
-        } else if (isReceiving()) {
-          statusLabel.setText("Receiving");
-        } else {
-          statusLabel.setText("Listening");
-        }
-
-        lastEventLabel.setText("Last event: " + getLastEvent());
-        ssLabel.setText("Signal strength (not auto-updated): "
-            + String.format("%1.1f", getCurrentSignalStrength()) + " dBm");
-        if (getChannel() == -1) {
-          channelLabel.setText("Current channel: ALL");
-        } else {
-          channelLabel.setText("Current channel: " + getChannel());
-        }
+      lastEventLabel.setText("Last event: " + getLastEvent());
+      ssLabel.setText("Signal strength (not auto-updated): "
+          + String.format("%1.1f", getCurrentSignalStrength()) + " dBm");
+      if (getChannel() == -1) {
+        channelLabel.setText("Current channel: ALL");
+      } else {
+        channelLabel.setText("Current channel: " + getChannel());
       }
     };
     this.addObserver(observer);

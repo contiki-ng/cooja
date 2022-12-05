@@ -38,8 +38,6 @@ package se.sics.mspsim.chip;
 import se.sics.mspsim.core.Chip;
 import se.sics.mspsim.core.MSP430Core;
 import se.sics.mspsim.core.USART;
-import se.sics.mspsim.core.USARTListener;
-import se.sics.mspsim.core.USARTSource;
 
 /**
  *
@@ -61,19 +59,15 @@ public class TR1001 extends Chip implements RFListener, RFSource {
     this.usart = usart;
     setModeNames(MODE_NAMES);
     setMode(MODE_TXRX_OFF);
-    usart.addUSARTListener(new USARTListener() {
-
-      @Override
-      public void dataReceived(USARTSource source, int data) {
-        RFListener listener = rfListener;
-        if (getMode() != MODE_TXRX_ON) {
-          // Radio is turned off during transmission
-          if (DEBUG) {
-            log(" ----- TR1001 OFF DURING TRANSMISSION -----");
-          }
-        } else if (listener != null) {
-          listener.receivedByte((byte) (data & 0xff));
+    usart.addUSARTListener((source, data) -> {
+      RFListener listener = rfListener;
+      if (getMode() != MODE_TXRX_ON) {
+        // Radio is turned off during transmission
+        if (DEBUG) {
+          log(" ----- TR1001 OFF DURING TRANSMISSION -----");
         }
+      } else if (listener != null) {
+        listener.receivedByte((byte) (data & 0xff));
       }
     });
   }
