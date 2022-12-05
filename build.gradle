@@ -74,7 +74,16 @@ tasks.withType(JavaCompile).configureEach {
   options.compilerArgs += ['--add-modules', 'jdk.incubator.foreign']
 }
 
+tasks.register('copyDependencies', Copy) {
+  description = "Copy jar dependencies into ${buildDir}/libs/lib/."
+  group = "Build"
+  from configurations.runtimeClasspath.files
+  into "build/libs/lib"
+}
+
+// Run Cooja with: java <JVM parameters> -jar build/libs/cooja.jar <Cooja parameters>
 jar {
+  dependsOn copyDependencies
   reproducibleFileOrder = true
   manifest {
     // Set Multi-Release to true to ensure the JVM uses the right class from log4j.
@@ -82,14 +91,11 @@ jar {
       'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' '),
       'Multi-Release': 'true'
   }
-//  copy {
-//    from file("lib")
-//    into file("build/libs")
-//    include('*.jar')
-//  }
 }
 
 tasks.register('fullJar', Jar) {
+  description = "Assembles a jar that contains all dependencies."
+  group = "Build"
   archiveClassifier.set('full')
   reproducibleFileOrder = true
   manifest {
