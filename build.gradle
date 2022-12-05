@@ -94,6 +94,8 @@ jar {
 }
 
 tasks.register('fullJar', Jar) {
+  description = "Assembles a jar that contains all dependencies."
+  group = "Build"
   archiveClassifier.set('full')
   reproducibleFileOrder = true
   manifest {
