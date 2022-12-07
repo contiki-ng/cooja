@@ -878,6 +878,22 @@ public class Cooja extends Observable {
     return null;
   }
 
+  /**
+   * Returns all started plugins that are assignable by the given class, if any.
+   *
+   * @param pluginClass a class specifying the class of plugin
+   * @return A list of plugin instances
+   */
+  public <T extends Plugin> List<T> getPlugins(Class<T> pluginClass) {
+    var list = new ArrayList<T>();
+    for (Plugin p: startedPlugins) {
+      if (pluginClass.isInstance(p)) {
+        list.add(pluginClass.cast(p));
+      }
+    }
+    return list;
+  }
+
   public boolean hasStartedPlugins() {
     return !startedPlugins.isEmpty();
   }
