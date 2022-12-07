@@ -1375,6 +1375,8 @@ public class Cooja extends Observable {
       var root = readSimulationConfig(cfg);
       boolean projectsOk = verifyProjects(root);
       sim = createSimulation(cfg, root, quick, manualRandomSeed);
+    } catch (SimulationCreationException e) {
+      throw e;
     } catch (Exception e) {
       // Wrap everything else in a SimulationCreationException, so the SwingWorker works as intended.
       // (SwingWorker communicates internally through SimulationCreationExceptions.)

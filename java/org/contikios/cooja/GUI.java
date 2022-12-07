@@ -1546,7 +1546,8 @@ public class GUI {
     if (e != null) {
       // Stack trace.
       MessageListUI stackTrace = new MessageListUI();
-      e.printStackTrace(stackTrace.getInputStream(MessageListUI.NORMAL));
+      stackTrace.setAutoScrolling(false);
+      stackTrace.addMessage(e, MessageList.NORMAL);
       stackTrace.addPopupMenuItem(null, true);
       tabbedPane.addTab("Java stack trace", new JScrollPane(stackTrace));
 
