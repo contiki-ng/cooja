@@ -79,7 +79,7 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
 
   private JPopupMenu popup = null;
   private boolean hideNormal = false;
-
+  private boolean isAutoScrolling = true;
   private int max = -1;
   
   public MessageListUI() {
@@ -97,6 +97,14 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
   public MessageListUI(int max) {
     this();
     this.max = max;
+  }
+
+  public boolean isAutoScrolling() {
+    return isAutoScrolling;
+  }
+
+  public void setAutoScrolling(boolean isAutoScrolling) {
+    this.isAutoScrolling = isAutoScrolling;
   }
 
   public Color getForeground(int type) {
@@ -161,7 +169,7 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
   }
 
   private void updateModel() {
-    boolean scroll = getLastVisibleIndex() >= getModel().getSize() - 2;
+    boolean scroll = isAutoScrolling && getLastVisibleIndex() >= getModel().getSize() - 2;
 
     while (messages.size() > getModel().getSize()) {
       ((DefaultListModel<MessageContainer>) getModel()).addElement(messages.get(getModel().getSize()));
