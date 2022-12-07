@@ -70,7 +70,7 @@ public class VisPlugin extends JInternalFrame implements Plugin {
       @Override
       public void internalFrameClosing(InternalFrameEvent e) {
         gui.removePlugin(parent);
-        if (!gui.hasStartedPlugins()) {
+        if (!gui.getSimulation().hasStartedPlugins()) {
           Cooja.gui.doRemoveSimulation();
         }
       }
