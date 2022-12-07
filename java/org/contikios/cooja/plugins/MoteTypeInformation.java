@@ -30,18 +30,15 @@
 package org.contikios.cooja.plugins;
 
 import java.awt.BorderLayout;
-import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.MoteType;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
@@ -56,7 +53,7 @@ import org.contikios.cooja.VisPlugin;
 public class MoteTypeInformation extends VisPlugin {
   private final Simulation simulation;
   private final Observer simObserver;
-  private int nrMotesTypes;
+  private int nrMotesTypes = 0;
 
   /**
    * @param simulation Simulation
@@ -65,56 +62,34 @@ public class MoteTypeInformation extends VisPlugin {
   public MoteTypeInformation(Simulation simulation, Cooja gui) {
     super("Mote Type Information", gui);
     this.simulation = simulation;
-
-    this.getContentPane().add(BorderLayout.CENTER,
-        new JScrollPane(createPanel(),
-        JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
-    pack();
-    setSize(Math.min(getWidth(), 600), Math.min(getHeight(), 600));
-    nrMotesTypes = simulation.getMoteTypes().length;
-
-    simulation.addObserver(simObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        if (MoteTypeInformation.this.simulation.getMoteTypes().length == nrMotesTypes) {
-          return;
+    simulation.addObserver(simObserver = (obs, obj) -> {
+      if (simulation.getMoteTypes().length == nrMotesTypes) {
+        return;
+      }
+      nrMotesTypes = simulation.getMoteTypes().length;
+      getContentPane().removeAll();
+      var box = Box.createVerticalBox();
+      box.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+      for (var moteType : simulation.getMoteTypes()) {
+        var visualizer = moteType.getTypeVisualizer();
+        if (visualizer == null) {
+          visualizer = new JLabel("[no information available]");
         }
-        nrMotesTypes = MoteTypeInformation.this.simulation.getMoteTypes().length;
-        MoteTypeInformation.this.getContentPane().removeAll();
-        MoteTypeInformation.this.getContentPane().add(BorderLayout.CENTER,
-            new JScrollPane(createPanel(),
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
-        revalidate();
-        repaint();
+        visualizer.setAlignmentX(Box.LEFT_ALIGNMENT);
+        var moteTypeString = Cooja.getDescriptionOf(moteType) + ": \"" + moteType.getDescription() + "\"";
+        visualizer.setBorder(BorderFactory.createTitledBorder(moteTypeString));
+        box.add(visualizer);
+        box.add(Box.createVerticalStrut(15));
       }
+      getContentPane().add(BorderLayout.CENTER,
+          new JScrollPane(box, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+      revalidate();
+      repaint();
     });
+    simObserver.update(null, null);
+    setSize(Math.min(getWidth(), 600), Math.min(getHeight(), 600));
+    pack();
   }
-
-  private JComponent createPanel() {
-    Box box = Box.createVerticalBox();
-    box.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-    /* Mote types */
-    for (MoteType moteType: simulation.getMoteTypes()) {
-      String moteTypeString =
-        Cooja.getDescriptionOf(moteType) +": " +
-        "ID=" + moteType.getIdentifier() +
-        ", \"" + moteType.getDescription() + "\"";
-
-      JComponent moteTypeVisualizer = moteType.getTypeVisualizer();
-      if (moteTypeVisualizer == null) {
-        moteTypeVisualizer = new JLabel("[no information available]");
-      }
-      moteTypeVisualizer.setAlignmentX(Box.LEFT_ALIGNMENT);
-      moteTypeVisualizer.setBorder(BorderFactory.createTitledBorder(moteTypeString));
-      box.add(moteTypeVisualizer);
-      box.add(Box.createVerticalStrut(15));
-    }
-    return box;
-  }
-
 
   @Override
   public void closePlugin() {
