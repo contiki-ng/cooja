@@ -616,7 +616,7 @@ public class Cooja extends Observable {
       new RunnableInEDT<Boolean>() {
         @Override
         public Boolean work() {
-          updateGUIComponentState();
+          gui.updateGUIComponentState();
 
           // Dispose visualized components.
           if (plugin.getCooja() != null) {
