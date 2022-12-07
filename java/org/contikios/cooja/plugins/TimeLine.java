@@ -83,7 +83,6 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
@@ -133,7 +132,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private final Simulation simulation;
   private final LogOutputListener newMotesListener;
   
-  /* Expermental features: Use currently active plugin to filter Timeline Log outputs */
+  /* Experimental features: Use currently active plugin to filter Timeline Log outputs */
   private LogListener logEventFilterPlugin = null;
   private String      logEventFilterLast = "";
   private boolean     logEventFilterChanged = true;
@@ -373,19 +372,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     showLogsCheckBox.addActionListener(e -> {
       showLogOutputs = ((JCheckBox) e.getSource()).isSelected();
       // Check whether there is an active log listener that is used to filter logs.
-      for (var p : simulation.getCooja().getStartedPlugins()) {
-        if (p instanceof LogListener plugin) {
-          logEventFilterPlugin = plugin;
-          break;
-        }
-      }
+      logEventFilterPlugin = simulation.getCooja().getPlugin(LogListener.class);
       // Invalidate filter stamp.
       logEventFilterLast = "";
       logEventFilterChanged = true;
 
       if (showLogOutputs) {
         if (logEventFilterPlugin != null) {
-          logger.info("Filtering shown log outputs by use of " + Cooja.getDescriptionOf(LogListener.class) + " plugin");
+          logger.info("Filtering shown log outputs by use of " + Cooja.getDescriptionOf(logEventFilterPlugin) + " plugin");
         } else {
           logger.info("No active " + Cooja.getDescriptionOf(LogListener.class) + " plugin, not filtering log outputs");
         }
@@ -801,15 +795,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
       long time = (long) (popupLocation.x*currentPixelDivisor);
 
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-      	if (!(p instanceof RadioLogger)) {
-      		continue;
-      	}
-
-        /* Select simulation time */
-        ((RadioLogger) p).trySelectTime(time);
-      }
+      simulation.getCooja().getPlugins(RadioLogger.class).forEach(p -> p.trySelectTime(time));
     }
   };
   private final Action logListenerAction = new AbstractAction("Show in " + Cooja.getDescriptionOf(LogListener.class)) {
@@ -820,15 +806,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
       long time = (long) (popupLocation.x*currentPixelDivisor);
 
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-      	if (!(p instanceof LogListener)) {
-      		continue;
-      	}
-
-        /* Select simulation time */
-        ((LogListener) p).trySelectTime(time);
-      }
+      simulation.getCooja().getPlugins(LogListener.class).forEach(p -> p.trySelectTime(time));
     }
   };
 
@@ -1280,18 +1258,11 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             showInAllAction.actionPerformed(null);
 
             long time = (long) (popupLocation.x*currentPixelDivisor);
-            Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-            for (Plugin p: plugins) {
-            	if (!(p instanceof TimeLine)) {
-            		continue;
-            	}
-            	if (p == TimeLine.this) {
-            		continue;
-            	}
-              /* Select simulation time */
-              ((TimeLine) p).trySelectTime(time);
-            }
-
+            simulation.getCooja().getPlugins(TimeLine.class).forEach(p -> {
+              if (p != TimeLine.this) {
+                p.trySelectTime(time);
+              }
+            });
           }
           lastClick = System.currentTimeMillis();
         }
@@ -2129,7 +2100,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       while (ev != null && ev.time < end) {
           int position = (int)(ev.time/currentPixelDivisor);
           if (ev.time < time_start ){
-              /* Skip painting event over alredy painted one*/
+              /* Skip painting event over already painted one*/
               ev = (LogEvent) ev.next;
               continue;
           }

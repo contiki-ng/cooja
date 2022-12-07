@@ -88,7 +88,6 @@ import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.Simulation;
@@ -646,16 +645,7 @@ public class BufferListener extends VisPlugin {
         }
         int model1 = logTable.convertRowIndexToModel(view);
         long time = logs.get(model1).time;
-
-        Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-        for (Plugin p : plugins) {
-          if (!(p instanceof BufferListener)) {
-            continue;
-          }
-          // Select simulation time.
-          BufferListener plugin = (BufferListener) p;
-          plugin.trySelectTime(time);
-        }
+        simulation.getCooja().getPlugins(BufferListener.class).forEach(p -> p.trySelectTime(time));
       }
     }));
     popupMenu.add(focusMenu);
@@ -1186,16 +1176,7 @@ public class BufferListener extends VisPlugin {
       int model = logTable.convertRowIndexToModel(view);
       long time = logs.get(model).time;
 
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-        if (!(p instanceof TimeLine)) {
-          continue;
-        }
-
-        /* Select simulation time */
-        TimeLine plugin = (TimeLine) p;
-        plugin.trySelectTime(time);
-      }
+      simulation.getCooja().getPlugins(TimeLine.class).forEach(p -> p.trySelectTime(time));
     }
   };
 
@@ -1209,16 +1190,7 @@ public class BufferListener extends VisPlugin {
       int model = logTable.convertRowIndexToModel(view);
       long time = logs.get(model).time;
 
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-        if (!(p instanceof RadioLogger)) {
-          continue;
-        }
-
-        /* Select simulation time */
-        RadioLogger plugin = (RadioLogger) p;
-        plugin.trySelectTime(time);
-      }
+      simulation.getCooja().getPlugins(RadioLogger.class).forEach(p -> p.trySelectTime(time));
     }
   };
 

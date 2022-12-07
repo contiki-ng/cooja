@@ -83,7 +83,6 @@ import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.ConvertedRadioPacket;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.RadioMedium;
@@ -1065,17 +1064,7 @@ public class RadioLogger extends VisPlugin {
       if (selectedRow < 0) return;
 
       long time = connections.get(selectedRow).startTime;
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-        if (!(p instanceof TimeLine)) {
-          continue;
-        }
-
-        /* Select simulation time */
-        TimeLine plugin = (TimeLine) p;
-        plugin.trySelectTime(time);
-      }
+      simulation.getCooja().getPlugins(TimeLine.class).forEach(p -> p.trySelectTime(time));
     }
   };
 
@@ -1089,16 +1078,7 @@ public class RadioLogger extends VisPlugin {
 
       long time = connections.get(selectedRow).startTime;
 
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-        if (!(p instanceof LogListener)) {
-          continue;
-        }
-
-        /* Select simulation time */
-        LogListener plugin = (LogListener) p;
-        plugin.trySelectTime(time);
-      }
+      simulation.getCooja().getPlugins(LogListener.class).forEach(p -> p.trySelectTime(time));
     }
   };
 
