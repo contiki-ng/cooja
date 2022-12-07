@@ -848,21 +848,6 @@ public class Cooja extends Observable {
     return false;
   }
 
-  /**
-   * Returns started plugin that ends with given class name, if any.
-   *
-   * @param classname Class name
-   * @return Plugin instance
-   */
-  public Plugin getPlugin(String classname) {
-    for (Plugin p: startedPlugins) {
-      if (p.getClass().getName().endsWith(classname)) {
-        return p;
-      }
-    }
-    return null;
-  }
-
   public boolean hasStartedPlugins() {
     return !startedPlugins.isEmpty();
   }

@@ -23,6 +23,10 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed getPlugin(String) in Cooja
+
+Iterate over getStartedPlugins instead.
+
 ### Removed registerMote/unregisterMote in RadioMedium
 
 Use registerRadioInterface/unregisterRadioInterface instead.
