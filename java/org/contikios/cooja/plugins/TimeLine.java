@@ -83,7 +83,6 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
@@ -796,15 +795,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
       long time = (long) (popupLocation.x*currentPixelDivisor);
 
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-      	if (!(p instanceof RadioLogger)) {
-      		continue;
-      	}
-
-        /* Select simulation time */
-        ((RadioLogger) p).trySelectTime(time);
-      }
+      simulation.getCooja().getPlugins(RadioLogger.class).forEach(p -> p.trySelectTime(time));
     }
   };
   private final Action logListenerAction = new AbstractAction("Show in " + Cooja.getDescriptionOf(LogListener.class)) {
@@ -815,15 +806,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
       long time = (long) (popupLocation.x*currentPixelDivisor);
 
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-      	if (!(p instanceof LogListener)) {
-      		continue;
-      	}
-
-        /* Select simulation time */
-        ((LogListener) p).trySelectTime(time);
-      }
+      simulation.getCooja().getPlugins(LogListener.class).forEach(p -> p.trySelectTime(time));
     }
   };
 
@@ -1275,18 +1258,11 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             showInAllAction.actionPerformed(null);
 
             long time = (long) (popupLocation.x*currentPixelDivisor);
-            Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-            for (Plugin p: plugins) {
-            	if (!(p instanceof TimeLine)) {
-            		continue;
-            	}
-            	if (p == TimeLine.this) {
-            		continue;
-            	}
-              /* Select simulation time */
-              ((TimeLine) p).trySelectTime(time);
-            }
-
+            simulation.getCooja().getPlugins(TimeLine.class).forEach(p -> {
+              if (p != TimeLine.this) {
+                p.trySelectTime(time);
+              }
+            });
           }
           lastClick = System.currentTimeMillis();
         }

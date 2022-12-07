@@ -85,7 +85,6 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
@@ -867,17 +866,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
       int model = logTable.convertRowIndexToModel(view);
       long time = logs.get(model).ev.getTime();
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-      	if (!(p instanceof TimeLine)) {
-      		continue;
-      	}
-
-        /* Select simulation time */
-      	TimeLine plugin = (TimeLine) p;
-        plugin.trySelectTime(time);
-      }
+      simulation.getCooja().getPlugins(TimeLine.class).forEach(p -> p.trySelectTime(time));
     }
   };
 
@@ -890,17 +879,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
       int model = logTable.convertRowIndexToModel(view);
       long time = logs.get(model).ev.getTime();
-
-      Plugin[] plugins = simulation.getCooja().getStartedPlugins();
-      for (Plugin p: plugins) {
-      	if (!(p instanceof RadioLogger)) {
-      		continue;
-      	}
-
-        /* Select simulation time */
-      	RadioLogger plugin = (RadioLogger) p;
-        plugin.trySelectTime(time);
-      }
+      simulation.getCooja().getPlugins(RadioLogger.class).forEach(p -> p.trySelectTime(time));
     }
   };
 
