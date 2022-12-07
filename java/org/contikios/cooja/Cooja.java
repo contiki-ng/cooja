@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
 import java.util.Random;
@@ -121,7 +120,7 @@ import org.jdom2.output.XMLOutputter;
  *
  * @author Fredrik Osterlind
  */
-public class Cooja extends Observable {
+public class Cooja {
   /**
    * Version of Cooja.
    */
@@ -956,9 +955,6 @@ public class Cooja extends Observable {
     if (gui != null) {
       GUI.frame.setTitle(sim.getTitle() + " - " + WINDOW_TITLE);
     }
-
-    setChanged();
-    notifyObservers();
   }
 
   /**
@@ -988,10 +984,6 @@ public class Cooja extends Observable {
       updateGUIComponentState();
       GUI.frame.setTitle(WINDOW_TITLE);
     }
-
-    setChanged();
-    notifyObservers();
-
     return true;
   }
 
