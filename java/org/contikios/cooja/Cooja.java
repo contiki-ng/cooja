@@ -849,7 +849,7 @@ public class Cooja extends Observable {
   }
 
   /**
-   * Returns started plugin that ends with given class name, if any.
+   * Returns the first started plugin that ends with given class name, if any.
    *
    * @param classname Class name
    * @return Plugin instance
@@ -858,6 +858,21 @@ public class Cooja extends Observable {
     for (Plugin p: startedPlugins) {
       if (p.getClass().getName().endsWith(classname)) {
         return p;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns the first started plugin that is assignable by the given class, if any.
+   *
+   * @param pluginClass a class specifying the class of plugin
+   * @return Plugin instance
+   */
+  public <T extends Plugin> T getPlugin(Class<T> pluginClass) {
+    for (Plugin p: startedPlugins) {
+      if (pluginClass.isInstance(p)) {
+        return pluginClass.cast(p);
       }
     }
     return null;
