@@ -14,7 +14,9 @@ public interface MessageList {
 
     void addMessage(String string);
 
-    void addMessage(String string, int normal);
+    void addMessage(String string, int type);
+
+    void addMessage(Throwable throwable, int type);
 
     OutputStream getInputStream(int type);
 

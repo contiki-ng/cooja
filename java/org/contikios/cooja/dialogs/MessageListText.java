@@ -29,6 +29,11 @@ public class MessageListText implements MessageList {
     }
 
     @Override
+    public void addMessage(Throwable throwable, int type) {
+        throwable.printStackTrace(System.out);
+    }
+
+    @Override
     public OutputStream getInputStream(int type) {
         // TODO Auto-generated method stub
         return System.out;

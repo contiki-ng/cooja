@@ -47,6 +47,8 @@ import java.io.InputStreamReader;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -188,6 +190,17 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
       messages.add(msg);
       updateModel();
     });
+  }
+
+  @Override
+  public void addMessage(final Throwable throwable, int type) {
+    StringWriter sw = new StringWriter();
+    try (PrintWriter pw = new PrintWriter(sw)) {
+      throwable.printStackTrace(pw);
+    }
+    for (var line: sw.toString().split("\n")) {
+      addMessage(line, type);
+    }
   }
 
   @Override
