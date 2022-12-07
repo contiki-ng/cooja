@@ -413,6 +413,9 @@ public final class Simulation extends Observable {
       var pluginClass = cooja.tryLoadClass(this, Plugin.class, pluginClassName);
       if (pluginClass == null) {
         logger.fatal("Could not load plugin class: " + pluginClassName);
+        for (var plugin : startedPlugins) {
+          cooja.removePlugin(plugin);
+        }
         return new SimulationCreationException("Could not load plugin class " + pluginClassName, null);
       }
       // Skip plugins that require visualization in headless mode.
@@ -441,6 +444,9 @@ public final class Simulation extends Observable {
     }
     // Non-GUI Cooja requires a simulation controller, ensure one is started.
     if (!Cooja.isVisualized() && !hasController) {
+      for (var plugin : startedPlugins) {
+        cooja.removePlugin(plugin);
+      }
       return new SimulationCreationException("No plugin controlling simulation, aborting", null);
     }
     return null;
