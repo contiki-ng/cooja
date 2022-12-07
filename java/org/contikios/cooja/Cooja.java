@@ -644,19 +644,9 @@ public class Cooja extends Observable {
     try {
       return startPlugin(pluginClass, sim, mote, null);
     } catch (PluginConstructionException ex) {
+      logger.fatal("Error when starting plugin", ex);
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog("Error when starting plugin", ex, false);
-      } else {
-        /* If the plugin requires visualization, inform user */
-        Throwable cause = ex;
-        do {
-          if (cause instanceof PluginRequiresVisualizationException) {
-            logger.debug("Visualized plugin was not started: " + pluginClass);
-            return null;
-          }
-        } while ((cause = cause.getCause()) != null);
-
-        logger.fatal("Error when starting plugin", ex);
       }
     }
     return null;
