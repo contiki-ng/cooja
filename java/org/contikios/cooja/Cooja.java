@@ -616,7 +616,7 @@ public class Cooja extends Observable {
       new RunnableInEDT<Boolean>() {
         @Override
         public Boolean work() {
-          updateGUIComponentState();
+          gui.updateGUIComponentState();
 
           // Dispose visualized components.
           if (plugin.getCooja() != null) {
@@ -951,10 +951,10 @@ public class Cooja extends Observable {
     // Delete simulation
     mySimulation.removed();
     mySimulation = null;
-    updateGUIComponentState();
 
     // Reset frame title
     if (isVisualized()) {
+      updateGUIComponentState();
       GUI.frame.setTitle(WINDOW_TITLE);
     }
 
