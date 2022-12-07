@@ -132,7 +132,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private final Simulation simulation;
   private final LogOutputListener newMotesListener;
   
-  /* Expermental features: Use currently active plugin to filter Timeline Log outputs */
+  /* Experimental features: Use currently active plugin to filter Timeline Log outputs */
   private LogListener logEventFilterPlugin = null;
   private String      logEventFilterLast = "";
   private boolean     logEventFilterChanged = true;
@@ -2100,7 +2100,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       while (ev != null && ev.time < end) {
           int position = (int)(ev.time/currentPixelDivisor);
           if (ev.time < time_start ){
-              /* Skip painting event over alredy painted one*/
+              /* Skip painting event over already painted one*/
               ev = (LogEvent) ev.next;
               continue;
           }
