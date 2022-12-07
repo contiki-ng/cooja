@@ -151,11 +151,6 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
     }
   }
 
-  @Override
-  public void addMessage(String message) {
-    addMessage(message, NORMAL);
-  }
-
   private final ArrayList<MessageContainer> messages = new ArrayList<>();
 
   @Override
@@ -177,6 +172,11 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
     if (scroll) {
       ensureIndexIsVisible(getModel().getSize() - 1);
     }
+  }
+
+  @Override
+  public void addMessage(String message) {
+    addMessage(message, NORMAL);
   }
 
   @Override

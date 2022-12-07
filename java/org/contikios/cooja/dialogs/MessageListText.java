@@ -8,11 +8,6 @@ public class MessageListText implements MessageList {
     }
     
     @Override
-    public void addMessage(String string, int type) {
-        System.out.println(string);
-    }
-
-    @Override
     public MessageContainer[] getMessages() {
         // TODO Auto-generated method stub
         return new MessageContainer[0];
@@ -25,6 +20,11 @@ public class MessageListText implements MessageList {
 
     @Override
     public void addMessage(String string) {
+        System.out.println(string);
+    }
+
+    @Override
+    public void addMessage(String string, int type) {
         System.out.println(string);
     }
 
