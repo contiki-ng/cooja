@@ -373,19 +373,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     showLogsCheckBox.addActionListener(e -> {
       showLogOutputs = ((JCheckBox) e.getSource()).isSelected();
       // Check whether there is an active log listener that is used to filter logs.
-      for (var p : simulation.getCooja().getStartedPlugins()) {
-        if (p instanceof LogListener plugin) {
-          logEventFilterPlugin = plugin;
-          break;
-        }
-      }
+      logEventFilterPlugin = simulation.getCooja().getPlugin(LogListener.class);
       // Invalidate filter stamp.
       logEventFilterLast = "";
       logEventFilterChanged = true;
 
       if (showLogOutputs) {
         if (logEventFilterPlugin != null) {
-          logger.info("Filtering shown log outputs by use of " + Cooja.getDescriptionOf(LogListener.class) + " plugin");
+          logger.info("Filtering shown log outputs by use of " + Cooja.getDescriptionOf(logEventFilterPlugin) + " plugin");
         } else {
           logger.info("No active " + Cooja.getDescriptionOf(LogListener.class) + " plugin, not filtering log outputs");
         }
