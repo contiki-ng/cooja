@@ -237,20 +237,16 @@ public class SerialSocketServer implements Plugin, MotePlugin {
 
     frame.add(BorderLayout.SOUTH, statusBarPanel);
 
-    serverStartButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("Start")) {
-          try {
-            listenPortField.commitEdit();
-          } catch (ParseException ex) {
-            logger.error(ex);
-          }
-          startServer(((Long) listenPortField.getValue()).intValue());
-        } else {
-          stopServer();
+    serverStartButton.addActionListener(e -> {
+      if (e.getActionCommand().equals("Start")) {
+        try {
+          listenPortField.commitEdit();
+        } catch (ParseException ex) {
+          logger.error(ex);
         }
+        startServer(((Long) listenPortField.getValue()).intValue());
+      } else {
+        stopServer();
       }
     });
 
@@ -261,71 +257,50 @@ public class SerialSocketServer implements Plugin, MotePlugin {
 
       @Override
       public void onServerStarted(final int port) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            System.out.println("onServerStarted");
-            socketStatusLabel.setForeground(COLOR_NEUTRAL);
-            socketStatusLabel.setText("Listening on port " + port);
-            listenPortField.setEnabled(false);
-            serverStartButton.setText("Stop");
-          }
+        SwingUtilities.invokeLater(() -> {
+          System.out.println("onServerStarted");
+          socketStatusLabel.setForeground(COLOR_NEUTRAL);
+          socketStatusLabel.setText("Listening on port " + port);
+          listenPortField.setEnabled(false);
+          serverStartButton.setText("Stop");
         });
       }
 
       @Override
       public void onClientConnected(final Socket client) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            socketStatusLabel.setForeground(COLOR_POSITIVE);
-            socketStatusLabel.setText("Client "
-                    + client.getInetAddress() + ":" + client.getPort()
-                    + " connected.");
-          }
+        SwingUtilities.invokeLater(() -> {
+          socketStatusLabel.setForeground(COLOR_POSITIVE);
+          socketStatusLabel.setText("Client "
+                  + client.getInetAddress() + ":" + client.getPort() + " connected.");
         });
       }
 
       @Override
       public void onClientDisconnected() {
-        SwingUtilities.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            // XXX check why needed
-            if (serverSocket != null) {
-              socketStatusLabel.setForeground(COLOR_NEUTRAL);
-              socketStatusLabel.setText("Listening on port " + serverSocket.getLocalPort());
-            }
+        SwingUtilities.invokeLater(() -> {
+          // XXX check why needed
+          if (serverSocket != null) {
+            socketStatusLabel.setForeground(COLOR_NEUTRAL);
+            socketStatusLabel.setText("Listening on port " + serverSocket.getLocalPort());
           }
         });
       }
 
       @Override
       public void onServerStopped() {
-        SwingUtilities.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            listenPortField.setEnabled(true);
-            serverStartButton.setText("Start");
-            socketStatusLabel.setForeground(COLOR_NEUTRAL);
-            socketStatusLabel.setText("Idle");
-          }
+        SwingUtilities.invokeLater(() -> {
+          listenPortField.setEnabled(true);
+          serverStartButton.setText("Start");
+          socketStatusLabel.setForeground(COLOR_NEUTRAL);
+          socketStatusLabel.setText("Idle");
         });
       }
 
       @Override
       public void onServerError(final String msg) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            socketStatusLabel.setForeground(COLOR_NEGATIVE);
-            socketStatusLabel.setText(msg);
-          }
+        SwingUtilities.invokeLater(() -> {
+          socketStatusLabel.setForeground(COLOR_NEGATIVE);
+          socketStatusLabel.setText(msg);
         });
       }
 
@@ -392,58 +367,53 @@ public class SerialSocketServer implements Plugin, MotePlugin {
       notifyServerError(ex.getMessage());
       return false;
     }
+    new Thread(() -> {
+      Thread incomingDataHandler = null;
+      while (!serverSocket.isClosed()) {
+        try {
+          // wait for next client
+          Socket candidateSocket = serverSocket.accept();
 
-    new Thread(new Runnable() {
-      private Thread incomingDataHandler;
-      @Override
-      public void run() {
-        while (!serverSocket.isClosed()) {
+          // reject connection if already one client connected
+          if (clientSocket != null && !clientSocket.isClosed()) {
+            logger.info("Refused connection of client " + candidateSocket.getInetAddress());
+            candidateSocket.close();
+            continue;
+          }
+
+          clientSocket = candidateSocket;
+
+          /* Start handler for data input from socket */
+          incomingDataHandler = new Thread(new IncomingDataHandler(), "incomingDataHandler");
+          incomingDataHandler.start();
+
+          /* Observe serial port for outgoing data */
+          serialDataObserver = new SerialDataObserver();
+          serialPort.addSerialDataObserver(serialDataObserver);
+
+          inBytes = outBytes = 0;
+
+          logger.info("Client connected: " + clientSocket.getInetAddress());
+          notifyClientConnected(clientSocket);
+        } catch (IOException e) {
+          logger.info("Listening thread shut down: " + e.getMessage());
           try {
-            // wait for next client
-            Socket candidateSocket = serverSocket.accept();
-
-            // reject connection if already one client connected
-            if (clientSocket != null && !clientSocket.isClosed()) {
-              logger.info("Refused connection of client " + candidateSocket.getInetAddress());
-              candidateSocket.close();
-              continue;
-            }
-
-            clientSocket = candidateSocket;
-
-            /* Start handler for data input from socket */
-            incomingDataHandler = new Thread(new IncomingDataHandler(), "incomingDataHandler");
-            incomingDataHandler.start();
-
-            /* Observe serial port for outgoing data */
-            serialDataObserver = new SerialDataObserver();
-            serialPort.addSerialDataObserver(serialDataObserver);
-
-            inBytes = outBytes = 0;
-
-            logger.info("Client connected: " + clientSocket.getInetAddress());
-            notifyClientConnected(clientSocket);
-
-          } catch (IOException e) {
-            logger.info("Listening thread shut down: " + e.getMessage());
-            try {
-              serverSocket.close();
-            } catch (IOException ex) {
-              logger.error(ex);
-            }
+            serverSocket.close();
+          } catch (IOException ex) {
+            logger.error(ex);
           }
         }
-        cleanupClient();
-        if (incomingDataHandler != null) {
-          // Wait for reader thread to terminate
-          try {
-            incomingDataHandler.join(500);
-          } catch (InterruptedException ex) {
-            logger.warn(ex);
-          }
-        }
-        notifyServerStopped();
       }
+      cleanupClient();
+      if (incomingDataHandler != null) {
+        // Wait for reader thread to terminate
+        try {
+          incomingDataHandler.join(500);
+        } catch (InterruptedException ex) {
+          logger.warn(ex);
+        }
+      }
+      notifyServerStopped();
     }, "SerialSocketServer").start();
 
     if (commands != null && !simulation.getCfg().updateSim()) {
@@ -502,15 +472,11 @@ public class SerialSocketServer implements Plugin, MotePlugin {
         final int finalNumRead = numRead;
         final byte[] finalData = data;
         /* We are not on the simulation thread */
-        simulation.invokeSimulationThread(new Runnable() {
-
-          @Override
-          public void run() {
-            for (int i = 0; i < finalNumRead; i++) {
-              serialPort.writeByte(finalData[i]);
-            }
-            inBytes += finalNumRead;
+        simulation.invokeSimulationThread(() -> {
+          for (int i = 0; i < finalNumRead; i++) {
+            serialPort.writeByte(finalData[i]);
           }
+          inBytes += finalNumRead;
         });
 
         try {
@@ -534,6 +500,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
         out = new DataOutputStream(clientSocket.getOutputStream());
       } catch (IOException ex) {
         logger.error(ex);
+        // FIXME: this should fail, not continue and produce invisible updates.
         out = null;
       }
     }
@@ -558,11 +525,10 @@ public class SerialSocketServer implements Plugin, MotePlugin {
   @Override
   public Collection<Element> getConfigXML() {
     List<Element> config = new ArrayList<>();
-    Element element;
-    
+
     // XXX isVisualized guards?
 
-    element = new Element("port");
+    var element = new Element("port");
     if (serverSocket == null || !serverSocket.isBound()) {
       try {
         listenPortField.commitEdit();
@@ -673,16 +639,13 @@ public class SerialSocketServer implements Plugin, MotePlugin {
   private final Timer updateTimer = new Timer(UPDATE_INTERVAL, new ActionListener() {
     @Override
 	  public void actionPerformed(ActionEvent e) {
-	  	if (Cooja.isVisualized()) {
-		  if (closed) {
-			  updateTimer.stop();
-			  return;
-		  }
-		  
-		  socketToMoteLabel.setText(inBytes + " bytes");
-		  moteToSocketLabel.setText(outBytes + " bytes");
-	  }
-	  }
+      if (closed) {
+        updateTimer.stop();
+        return;
+      }
+      socketToMoteLabel.setText(inBytes + " bytes");
+      moteToSocketLabel.setText(outBytes + " bytes");
+    }
   });
 }
 
