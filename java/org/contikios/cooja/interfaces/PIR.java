@@ -40,7 +40,7 @@ import org.contikios.cooja.MoteInterface;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Passive IR")
-public abstract class PIR extends MoteInterface {
+public abstract class PIR implements MoteInterface {
 
   /**
    * Simulates a change in the PIR sensor.

@@ -35,6 +35,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Observable;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import org.contikios.cooja.ClassDescription;
@@ -51,106 +52,110 @@ import org.contikios.cooja.Simulation;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Button")
-public abstract class Button extends MoteInterface {
-
-  private final Simulation sim;
-
-  private final MoteTimeEvent pressButtonEvent;
-  private final MoteTimeEvent releaseButtonEvent;
-
-  public Button(Mote mote) {
-    sim = mote.getSimulation();
-
-    pressButtonEvent = new MoteTimeEvent(mote) {
-      @Override
-      public void execute(long t) {
-        doPressButton();
-      }
-    };
-    releaseButtonEvent = new MoteTimeEvent(mote) {
-      @Override
-      public void execute(long t) {
-        doReleaseButton();
-      }
-    };
-  }
+public interface Button extends MoteInterface {
+  /**
+   * @return True if button is pressed
+   */
+  boolean isPressed();
 
   /**
    * Clicks button. Button will be pressed for some time and then automatically
    * released.
    */
-  public void clickButton() {
-    sim.invokeSimulationThread(() -> {
-      sim.scheduleEvent(pressButtonEvent, sim.getSimulationTime());
-      sim.scheduleEvent(releaseButtonEvent, sim.getSimulationTime() + Simulation.MILLISECOND);
-    });
-  }
+  void clickButton();
 
   /**
    * Presses button.
    */
-  public void pressButton() {
-    sim.invokeSimulationThread(() -> sim.scheduleEvent(pressButtonEvent, sim.getSimulationTime()));
-  }
-
-  /**
-   * Node-type dependent implementation of pressing a button.
-   */
-  protected abstract void doPressButton();
+  void pressButton();
 
   /**
    * Releases button.
    */
-  public void releaseButton() {
-    sim.invokeSimulationThread(() -> sim.scheduleEvent(releaseButtonEvent, sim.getSimulationTime()));
+  void releaseButton();
+
+  abstract class AbstractButton extends Observable implements Button {
+
+    private final Simulation sim;
+
+    private final MoteTimeEvent pressButtonEvent;
+    private final MoteTimeEvent releaseButtonEvent;
+
+    public AbstractButton(Mote mote) {
+      sim = mote.getSimulation();
+      pressButtonEvent = new MoteTimeEvent(mote) {
+        @Override
+        public void execute(long t) {
+          doPressButton();
+        }
+      };
+      releaseButtonEvent = new MoteTimeEvent(mote) {
+        @Override
+        public void execute(long t) {
+          doReleaseButton();
+        }
+      };
+    }
+
+    @Override
+    public void clickButton() {
+      sim.invokeSimulationThread(() -> {
+        sim.scheduleEvent(pressButtonEvent, sim.getSimulationTime());
+        sim.scheduleEvent(releaseButtonEvent, sim.getSimulationTime() + Simulation.MILLISECOND);
+      });
+    }
+
+    @Override
+    public void pressButton() {
+      sim.invokeSimulationThread(() -> sim.scheduleEvent(pressButtonEvent, sim.getSimulationTime()));
+    }
+
+    /**
+     * Node-type dependent implementation of pressing a button.
+     */
+    protected abstract void doPressButton();
+
+    @Override
+    public void releaseButton() {
+      sim.invokeSimulationThread(() -> sim.scheduleEvent(releaseButtonEvent, sim.getSimulationTime()));
+    }
+
+    /**
+     * Node-type dependent implementation of releasing a button.
+     */
+    protected abstract void doReleaseButton();
+
+    @Override
+    public JPanel getInterfaceVisualizer() {
+      final var clickButton = new JButton("Click button");
+      clickButton.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mousePressed(MouseEvent e) {
+          sim.invokeSimulationThread(() -> doPressButton());
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+          sim.invokeSimulationThread(() -> doReleaseButton());
+        }
+      });
+      clickButton.addKeyListener(new KeyAdapter() {
+        @Override
+        public void keyPressed(KeyEvent e) {
+          sim.invokeSimulationThread(() -> doPressButton());
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+          sim.invokeSimulationThread(() -> doReleaseButton());
+        }
+      });
+      var panel = new JPanel();
+      panel.add(clickButton);
+      return panel;
+    }
+
+    @Override
+    public void releaseInterfaceVisualizer(JPanel panel) {}
   }
-
-  /**
-   * Node-type dependent implementation of releasing a button.
-   */
-  protected abstract void doReleaseButton();
-
-  /**
-   * @return True if button is pressed
-   */
-  public abstract boolean isPressed();
-
-  @Override
-  public JPanel getInterfaceVisualizer() {
-    JPanel panel = new JPanel();
-    final JButton clickButton = new JButton("Click button");
-
-    panel.add(clickButton);
-    
-    clickButton.addMouseListener(new MouseAdapter() {
-      @Override
-      public void mousePressed(MouseEvent e) {
-        sim.invokeSimulationThread(() -> doPressButton());
-      }
-
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        sim.invokeSimulationThread(() -> doReleaseButton());
-      }
-    });
-
-    clickButton.addKeyListener(new KeyAdapter() {
-      @Override
-      public void keyPressed(KeyEvent e) {
-        sim.invokeSimulationThread(() -> doPressButton());
-      }
-
-      @Override
-      public void keyReleased(KeyEvent e) {
-        sim.invokeSimulationThread(() -> doReleaseButton());
-      }
-    });
-
-    return panel;
-  }
-
-  @Override
-  public void releaseInterfaceVisualizer(JPanel panel) {
-  }
-
 }

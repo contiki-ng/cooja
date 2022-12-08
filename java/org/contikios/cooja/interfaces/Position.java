@@ -33,6 +33,7 @@ package org.contikios.cooja.interfaces;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Observable;
 import java.util.Observer;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -53,7 +54,7 @@ import org.jdom2.Element;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Position")
-public class Position extends MoteInterface {
+public class Position extends Observable implements MoteInterface {
   private static final Logger logger = LogManager.getLogger(Position.class);
   private final Mote mote;
   private final double[] coords = new double[3];

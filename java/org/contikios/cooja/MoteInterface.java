@@ -31,7 +31,6 @@
 package org.contikios.cooja;
 
 import java.util.Collection;
-import java.util.Observable;
 import javax.swing.JPanel;
 import org.jdom2.Element;
 
@@ -60,7 +59,7 @@ import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
  *
  * @author Fredrik Osterlind
  */
-public abstract class MoteInterface extends Observable {
+public interface MoteInterface {
   /**
    * Returns a panel visualizing this interface. This could for
    * example show last messages sent/received for a radio interface, or logged
@@ -74,7 +73,7 @@ public abstract class MoteInterface extends Observable {
    * @see #releaseInterfaceVisualizer(JPanel)
    * @return Interface visualizer or null
    */
-  public abstract JPanel getInterfaceVisualizer();
+  JPanel getInterfaceVisualizer();
 
   /**
    * This method should be called when a visualizer panel is no longer in use.
@@ -86,7 +85,7 @@ public abstract class MoteInterface extends Observable {
    *          An interface visualizer panel fetched earlier for this mote
    *          interface.
    */
-  public abstract void releaseInterfaceVisualizer(JPanel panel);
+  void releaseInterfaceVisualizer(JPanel panel);
 
   /**
    * Returns XML elements representing the current config of this mote
@@ -99,7 +98,7 @@ public abstract class MoteInterface extends Observable {
    * @see #setConfigXML(Collection, boolean)
    * @return XML elements representing the current interface config
    */
-  public Collection<Element> getConfigXML() {
+  default Collection<Element> getConfigXML() {
     return null;
   }
 
@@ -112,20 +111,16 @@ public abstract class MoteInterface extends Observable {
    * @param visAvailable
    *          Is this object allowed to show a visualizer?
    */
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-  }
+  default void setConfigXML(Collection<Element> configXML, boolean visAvailable) {}
   
   /**
    * Called to free resources used by the mote interface.
    * This method is called when the mote is removed from the simulation.
    */
-  public void removed() {
-  }
+  default void removed() {}
   
   /**
    * Called when all mote interfaces have been added to mote.
    */
-  public void added() {
-  }
-
+  default void added() {}
 }

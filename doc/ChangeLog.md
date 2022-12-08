@@ -23,6 +23,13 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Converted MoteInterface/Beeper/Button/MoteID into interfaces
+
+To reduce the scope of the deprecated Observable, MoteInterface was converted
+from a class to an interface. This also forced Beeper, Button and MoteID
+to be made into interfaces. The abstract class Button was renamed to
+AbstractButton and resides inside the Button interface.
+
 ### Removed registerMote/unregisterMote in RadioMedium
 
 Use registerRadioInterface/unregisterRadioInterface instead.

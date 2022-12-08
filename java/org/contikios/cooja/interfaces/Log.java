@@ -30,6 +30,7 @@
 
 package org.contikios.cooja.interfaces;
 
+import java.util.Observable;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.MoteInterface;
 
@@ -40,7 +41,7 @@ import org.contikios.cooja.MoteInterface;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Log Output")
-public abstract class Log extends MoteInterface {
+public abstract class Log extends Observable implements MoteInterface {
 
   /**
    * @return Last log message. Note that several messages may appear during one tick.

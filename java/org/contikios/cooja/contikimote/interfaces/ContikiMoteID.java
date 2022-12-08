@@ -30,6 +30,7 @@
 
 package org.contikios.cooja.contikimote.interfaces;
 
+import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -56,7 +57,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  *
  * @author Fredrik Osterlind
  */
-public class ContikiMoteID extends MoteID {
+public class ContikiMoteID extends Observable implements MoteID {
   private final VarMemory moteMem;
   private static final Logger logger = LogManager.getLogger(ContikiMoteID.class);
 

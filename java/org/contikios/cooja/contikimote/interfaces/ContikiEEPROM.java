@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Formatter;
+import java.util.Observable;
 import java.util.Observer;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -78,7 +79,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Claes Jakobsson (based on ContikiCFS by Fredrik Osterlind)
  */
 @ClassDescription("EEPROM")
-public class ContikiEEPROM extends MoteInterface implements PolledAfterActiveTicks {
+public class ContikiEEPROM extends Observable implements MoteInterface, PolledAfterActiveTicks {
   private static final Logger logger = LogManager.getLogger(ContikiEEPROM.class);
 
   public static final int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */

@@ -32,6 +32,7 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.BoxLayout;
@@ -59,7 +60,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  *
  * @author Fredrik Osterlind
  */
-public class ContikiBeeper extends Beeper implements PolledAfterActiveTicks {
+public class ContikiBeeper extends Observable implements Beeper, PolledAfterActiveTicks {
   private final Mote mote;
   private final VarMemory moteMem;
   private static final Logger logger = LogManager.getLogger(ContikiBeeper.class);

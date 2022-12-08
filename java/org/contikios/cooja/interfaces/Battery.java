@@ -47,7 +47,7 @@ import org.contikios.cooja.MoteInterface;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Battery")
-public class Battery extends MoteInterface {
+public class Battery implements MoteInterface {
   /**
    * @param mote Mote
    */

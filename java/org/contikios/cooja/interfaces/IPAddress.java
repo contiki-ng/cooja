@@ -32,6 +32,7 @@ package org.contikios.cooja.interfaces;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -53,7 +54,7 @@ import org.contikios.cooja.util.IPUtils;
  * @author Enrico Joerns
  */
 @ClassDescription("IP Addresses")
-public class IPAddress extends MoteInterface {
+public class IPAddress extends Observable implements MoteInterface {
 
   private static final Logger logger = LogManager.getLogger(IPAddress.class);
   private static final int IPv6_MAX_ADDRESSES = 4;
@@ -246,7 +247,6 @@ public class IPAddress extends MoteInterface {
 
   @Override
   public void removed() {
-    super.removed();
     if (memMonitor != null && ipVersion == IPv.IPv6) {
       moteMem.removeVarMonitor("uip_ds6_netif_addr_list_offset", memMonitor);
       moteMem.removeVarMonitor("uip_ds6_addr_size", memMonitor);

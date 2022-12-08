@@ -38,7 +38,7 @@ import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.mspmote.SkyMote;
 
 @ClassDescription("Temperature")
-public class SkyTemperature extends MoteInterface {
+public class SkyTemperature implements MoteInterface {
 
   private final SkyMote skyMote;
 

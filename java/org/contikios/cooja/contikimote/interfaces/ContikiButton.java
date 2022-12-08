@@ -49,7 +49,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  *
  * @author Fredrik Osterlind
  */
-public class ContikiButton extends Button {
+public class ContikiButton extends Button.AbstractButton {
   private final VarMemory moteMem;
   private final ContikiMote mote;
 

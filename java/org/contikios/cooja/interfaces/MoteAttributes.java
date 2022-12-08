@@ -32,6 +32,7 @@ package org.contikios.cooja.interfaces;
 
 import java.awt.BorderLayout;
 import java.util.HashMap;
+import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JPanel;
@@ -75,7 +76,7 @@ import org.contikios.cooja.plugins.skins.AttributeVisualizerSkin;
  * @author Joakim Eriksson
  */
 @ClassDescription("Mote Attributes")
-public class MoteAttributes extends MoteInterface {
+public class MoteAttributes extends Observable implements MoteInterface {
   private static final Logger logger = LogManager.getLogger(MoteAttributes.class);
   private final Mote mote;
 
@@ -92,24 +93,20 @@ public class MoteAttributes extends MoteInterface {
 
   @Override
   public void added() {
-    super.added();
-
     /* Observe log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
-      if (mi instanceof Log) {
-        mi.addObserver(logObserver);
+      if (mi instanceof Log log) {
+        log.addObserver(logObserver);
       }
     }
   }
 
   @Override
   public void removed() {
-    super.removed();
-
     /* Stop observing log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
-      if (mi instanceof Log) {
-        mi.deleteObserver(logObserver);
+      if (mi instanceof Log log) {
+        log.deleteObserver(logObserver);
       }
     }
     logObserver = null;

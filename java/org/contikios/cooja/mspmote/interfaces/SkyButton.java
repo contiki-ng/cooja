@@ -36,7 +36,7 @@ import org.contikios.cooja.interfaces.Button;
 import org.contikios.cooja.mspmote.SkyMote;
 
 @ClassDescription("Button")
-public class SkyButton extends Button {
+public class SkyButton extends Button.AbstractButton {
   private final SkyMote skyMote;
 
   public SkyButton(Mote mote) {

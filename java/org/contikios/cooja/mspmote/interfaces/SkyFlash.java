@@ -35,6 +35,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -52,7 +53,7 @@ import org.contikios.cooja.mspmote.MspMote;
  * @author Fredrik Osterlind
  */
 @ClassDescription("M25P80 Flash")
-public class SkyFlash extends MoteInterface {
+public class SkyFlash extends Observable implements MoteInterface {
   private static final Logger logger = LogManager.getLogger(SkyFlash.class);
 
   protected final CoojaM25P80 m24p80;

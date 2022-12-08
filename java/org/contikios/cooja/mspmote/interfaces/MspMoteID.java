@@ -29,6 +29,7 @@
  */
 
 package org.contikios.cooja.mspmote.interfaces;
+import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JLabel;
@@ -49,7 +50,7 @@ import se.sics.mspsim.core.MemoryMonitor;
  *
  * @author Fredrik Osterlind
  */
-public class MspMoteID extends MoteID {
+public class MspMoteID extends Observable implements MoteID {
 	private static final Logger logger = LogManager.getLogger(MspMoteID.class);
 
 	private final MspMote mote;
@@ -189,7 +190,6 @@ public class MspMoteID extends MoteID {
 
 	@Override
 	public void removed() {
-	  super.removed();
 	  if (memoryMonitor != null) {
 	      removeMonitor("node_id", memoryMonitor);
 	      removeMonitor("TOS_NODE_ID", memoryMonitor);
