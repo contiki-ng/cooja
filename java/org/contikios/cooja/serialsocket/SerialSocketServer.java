@@ -369,9 +369,9 @@ public class SerialSocketServer implements Plugin, MotePlugin {
     }
 
     new Thread(new Runnable() {
-      private Thread incomingDataHandler;
       @Override
       public void run() {
+        Thread incomingDataHandler = null;
         while (!serverSocket.isClosed()) {
           try {
             // wait for next client
