@@ -673,16 +673,13 @@ public class SerialSocketServer implements Plugin, MotePlugin {
   private final Timer updateTimer = new Timer(UPDATE_INTERVAL, new ActionListener() {
     @Override
 	  public void actionPerformed(ActionEvent e) {
-	  	if (Cooja.isVisualized()) {
-		  if (closed) {
-			  updateTimer.stop();
-			  return;
-		  }
-		  
-		  socketToMoteLabel.setText(inBytes + " bytes");
-		  moteToSocketLabel.setText(outBytes + " bytes");
-	  }
-	  }
+      if (closed) {
+        updateTimer.stop();
+        return;
+      }
+      socketToMoteLabel.setText(inBytes + " bytes");
+      moteToSocketLabel.setText(outBytes + " bytes");
+    }
   });
 }
 
