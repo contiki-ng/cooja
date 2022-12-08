@@ -524,11 +524,10 @@ public class SerialSocketServer implements Plugin, MotePlugin {
   @Override
   public Collection<Element> getConfigXML() {
     List<Element> config = new ArrayList<>();
-    Element element;
-    
+
     // XXX isVisualized guards?
 
-    element = new Element("port");
+    var element = new Element("port");
     if (serverSocket == null || !serverSocket.isBound()) {
       try {
         listenPortField.commitEdit();
