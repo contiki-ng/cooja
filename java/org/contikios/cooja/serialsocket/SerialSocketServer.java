@@ -237,20 +237,16 @@ public class SerialSocketServer implements Plugin, MotePlugin {
 
     frame.add(BorderLayout.SOUTH, statusBarPanel);
 
-    serverStartButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("Start")) {
-          try {
-            listenPortField.commitEdit();
-          } catch (ParseException ex) {
-            logger.error(ex);
-          }
-          startServer(((Long) listenPortField.getValue()).intValue());
-        } else {
-          stopServer();
+    serverStartButton.addActionListener(e -> {
+      if (e.getActionCommand().equals("Start")) {
+        try {
+          listenPortField.commitEdit();
+        } catch (ParseException ex) {
+          logger.error(ex);
         }
+        startServer(((Long) listenPortField.getValue()).intValue());
+      } else {
+        stopServer();
       }
     });
 
@@ -261,71 +257,50 @@ public class SerialSocketServer implements Plugin, MotePlugin {
 
       @Override
       public void onServerStarted(final int port) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            System.out.println("onServerStarted");
-            socketStatusLabel.setForeground(COLOR_NEUTRAL);
-            socketStatusLabel.setText("Listening on port " + port);
-            listenPortField.setEnabled(false);
-            serverStartButton.setText("Stop");
-          }
+        SwingUtilities.invokeLater(() -> {
+          System.out.println("onServerStarted");
+          socketStatusLabel.setForeground(COLOR_NEUTRAL);
+          socketStatusLabel.setText("Listening on port " + port);
+          listenPortField.setEnabled(false);
+          serverStartButton.setText("Stop");
         });
       }
 
       @Override
       public void onClientConnected(final Socket client) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            socketStatusLabel.setForeground(COLOR_POSITIVE);
-            socketStatusLabel.setText("Client "
-                    + client.getInetAddress() + ":" + client.getPort()
-                    + " connected.");
-          }
+        SwingUtilities.invokeLater(() -> {
+          socketStatusLabel.setForeground(COLOR_POSITIVE);
+          socketStatusLabel.setText("Client "
+                  + client.getInetAddress() + ":" + client.getPort() + " connected.");
         });
       }
 
       @Override
       public void onClientDisconnected() {
-        SwingUtilities.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            // XXX check why needed
-            if (serverSocket != null) {
-              socketStatusLabel.setForeground(COLOR_NEUTRAL);
-              socketStatusLabel.setText("Listening on port " + serverSocket.getLocalPort());
-            }
+        SwingUtilities.invokeLater(() -> {
+          // XXX check why needed
+          if (serverSocket != null) {
+            socketStatusLabel.setForeground(COLOR_NEUTRAL);
+            socketStatusLabel.setText("Listening on port " + serverSocket.getLocalPort());
           }
         });
       }
 
       @Override
       public void onServerStopped() {
-        SwingUtilities.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            listenPortField.setEnabled(true);
-            serverStartButton.setText("Start");
-            socketStatusLabel.setForeground(COLOR_NEUTRAL);
-            socketStatusLabel.setText("Idle");
-          }
+        SwingUtilities.invokeLater(() -> {
+          listenPortField.setEnabled(true);
+          serverStartButton.setText("Start");
+          socketStatusLabel.setForeground(COLOR_NEUTRAL);
+          socketStatusLabel.setText("Idle");
         });
       }
 
       @Override
       public void onServerError(final String msg) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            socketStatusLabel.setForeground(COLOR_NEGATIVE);
-            socketStatusLabel.setText(msg);
-          }
+        SwingUtilities.invokeLater(() -> {
+          socketStatusLabel.setForeground(COLOR_NEGATIVE);
+          socketStatusLabel.setText(msg);
         });
       }
 
