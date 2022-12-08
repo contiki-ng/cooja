@@ -367,58 +367,53 @@ public class SerialSocketServer implements Plugin, MotePlugin {
       notifyServerError(ex.getMessage());
       return false;
     }
+    new Thread(() -> {
+      Thread incomingDataHandler = null;
+      while (!serverSocket.isClosed()) {
+        try {
+          // wait for next client
+          Socket candidateSocket = serverSocket.accept();
 
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        Thread incomingDataHandler = null;
-        while (!serverSocket.isClosed()) {
+          // reject connection if already one client connected
+          if (clientSocket != null && !clientSocket.isClosed()) {
+            logger.info("Refused connection of client " + candidateSocket.getInetAddress());
+            candidateSocket.close();
+            continue;
+          }
+
+          clientSocket = candidateSocket;
+
+          /* Start handler for data input from socket */
+          incomingDataHandler = new Thread(new IncomingDataHandler(), "incomingDataHandler");
+          incomingDataHandler.start();
+
+          /* Observe serial port for outgoing data */
+          serialDataObserver = new SerialDataObserver();
+          serialPort.addSerialDataObserver(serialDataObserver);
+
+          inBytes = outBytes = 0;
+
+          logger.info("Client connected: " + clientSocket.getInetAddress());
+          notifyClientConnected(clientSocket);
+        } catch (IOException e) {
+          logger.info("Listening thread shut down: " + e.getMessage());
           try {
-            // wait for next client
-            Socket candidateSocket = serverSocket.accept();
-
-            // reject connection if already one client connected
-            if (clientSocket != null && !clientSocket.isClosed()) {
-              logger.info("Refused connection of client " + candidateSocket.getInetAddress());
-              candidateSocket.close();
-              continue;
-            }
-
-            clientSocket = candidateSocket;
-
-            /* Start handler for data input from socket */
-            incomingDataHandler = new Thread(new IncomingDataHandler(), "incomingDataHandler");
-            incomingDataHandler.start();
-
-            /* Observe serial port for outgoing data */
-            serialDataObserver = new SerialDataObserver();
-            serialPort.addSerialDataObserver(serialDataObserver);
-
-            inBytes = outBytes = 0;
-
-            logger.info("Client connected: " + clientSocket.getInetAddress());
-            notifyClientConnected(clientSocket);
-
-          } catch (IOException e) {
-            logger.info("Listening thread shut down: " + e.getMessage());
-            try {
-              serverSocket.close();
-            } catch (IOException ex) {
-              logger.error(ex);
-            }
+            serverSocket.close();
+          } catch (IOException ex) {
+            logger.error(ex);
           }
         }
-        cleanupClient();
-        if (incomingDataHandler != null) {
-          // Wait for reader thread to terminate
-          try {
-            incomingDataHandler.join(500);
-          } catch (InterruptedException ex) {
-            logger.warn(ex);
-          }
-        }
-        notifyServerStopped();
       }
+      cleanupClient();
+      if (incomingDataHandler != null) {
+        // Wait for reader thread to terminate
+        try {
+          incomingDataHandler.join(500);
+        } catch (InterruptedException ex) {
+          logger.warn(ex);
+        }
+      }
+      notifyServerStopped();
     }, "SerialSocketServer").start();
 
     if (commands != null && !simulation.getCfg().updateSim()) {
@@ -477,15 +472,11 @@ public class SerialSocketServer implements Plugin, MotePlugin {
         final int finalNumRead = numRead;
         final byte[] finalData = data;
         /* We are not on the simulation thread */
-        simulation.invokeSimulationThread(new Runnable() {
-
-          @Override
-          public void run() {
-            for (int i = 0; i < finalNumRead; i++) {
-              serialPort.writeByte(finalData[i]);
-            }
-            inBytes += finalNumRead;
+        simulation.invokeSimulationThread(() -> {
+          for (int i = 0; i < finalNumRead; i++) {
+            serialPort.writeByte(finalData[i]);
           }
+          inBytes += finalNumRead;
         });
 
         try {
