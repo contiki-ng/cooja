@@ -500,6 +500,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
         out = new DataOutputStream(clientSocket.getOutputStream());
       } catch (IOException ex) {
         logger.error(ex);
+        // FIXME: this should fail, not continue and produce invisible updates.
         out = null;
       }
     }
