@@ -42,8 +42,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Formatter;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.LinkedHashMap;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -80,20 +79,15 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Claes Jakobsson (based on ContikiCFS by Fredrik Osterlind)
  */
 @ClassDescription("EEPROM")
-public class ContikiEEPROM extends Observable implements MoteInterface, PolledAfterActiveTicks {
+public class ContikiEEPROM implements MoteInterface, PolledAfterActiveTicks {
   private static final Logger logger = LogManager.getLogger(ContikiEEPROM.class);
 
   public static final int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */
   private final Mote mote;
   private final VarMemory moteMem;
-
-  private final JTextArea dataViewArea;
-  private final JLabel lastTimeLabel;
-  private final JLabel lastReadLabel;
-  private final JLabel lastWrittenLabel;
-
   private int lastRead = 0;
   private int lastWritten = 0;
+  private final LinkedHashMap<JPanel, Updates> labels = new LinkedHashMap<>();
 
   /**
    * Creates an interface to the EEPROM at mote.
@@ -105,10 +99,6 @@ public class ContikiEEPROM extends Observable implements MoteInterface, PolledAf
   public ContikiEEPROM(Mote mote) {
     this.mote = mote;
     this.moteMem = new VarMemory(mote.getMemory());
-    dataViewArea = Cooja.isVisualized() ? new JTextArea() : null;
-    lastTimeLabel = Cooja.isVisualized() ? new JLabel("Last change at: ?") : null;
-    lastReadLabel = Cooja.isVisualized() ? new JLabel("Last change read bytes: 0") : null;
-    lastWrittenLabel = Cooja.isVisualized() ? new JLabel("Last change wrote bytes: 0") : null;
   }
 
   @Override
@@ -116,13 +106,20 @@ public class ContikiEEPROM extends Observable implements MoteInterface, PolledAf
     if (moteMem.getByteValueOf("simEEPROMChanged") == 1) {
       lastRead = moteMem.getIntValueOf("simEEPROMRead");
       lastWritten = moteMem.getIntValueOf("simEEPROMWritten");
-
       moteMem.setIntValueOf("simEEPROMRead", 0);
       moteMem.setIntValueOf("simEEPROMWritten", 0);
       moteMem.setByteValueOf("simEEPROMChanged", (byte) 0);
-
-      this.setChanged();
-      this.notifyObservers(mote);
+      if (Cooja.isVisualized()) {
+        final var currentTime = mote.getSimulation().getSimulationTime();
+        EventQueue.invokeLater(() -> {
+          for (var updates : labels.values()) {
+            updates.lastTimeLabel.setText("Last change at time: " + currentTime);
+            updates.lastReadLabel.setText("Last change read bytes: " + getLastReadCount());
+            updates.lastWrittenLabel.setText("Last change wrote bytes: " + getLastWrittenCount());
+            redrawDataView(updates.dataArea);
+          }
+        });
+      }
     }
   }
 
@@ -190,7 +187,7 @@ public class ContikiEEPROM extends Observable implements MoteInterface, PolledAf
       return sb.toString();
   }
   
-  void redrawDataView() {
+  void redrawDataView(JTextArea textArea) {
       StringBuilder sb = new StringBuilder();
       Formatter fmt = new Formatter(sb);
       byte[] data = getEEPROMData();
@@ -198,8 +195,8 @@ public class ContikiEEPROM extends Observable implements MoteInterface, PolledAf
       for (int i = 0; i < EEPROM_SIZE; i += 16) {
           fmt.format("%04d  %s | %s |\n", i, byteArrayToHexList(data, i, 16), byteArrayToPrintableCharacters(data, i, 16));
       }
-      dataViewArea.setText(sb.toString());
-      dataViewArea.setCaretPosition(0);
+      textArea.setText(sb.toString());
+      textArea.setCaretPosition(0);
   }
   
   @Override
@@ -207,8 +204,12 @@ public class ContikiEEPROM extends Observable implements MoteInterface, PolledAf
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
+    var lastTimeLabel = new JLabel("Last change at: ?");
+    var lastReadLabel = new JLabel("Last change read bytes: 0");
+    var lastWrittenLabel = new JLabel("Last change wrote bytes: 0");
     final JButton uploadButton = new JButton("Upload binary file");
     final JButton clearButton = new JButton("Reset EEPROM to zero");
+    var dataViewArea = new JTextArea();
     final JScrollPane dataViewScrollPane = new JScrollPane(dataViewArea);
     
     panel.add(lastTimeLabel);
@@ -231,7 +232,7 @@ public class ContikiEEPROM extends Observable implements MoteInterface, PolledAf
                                           "Error uploading EEPROM data", JOptionPane.ERROR_MESSAGE);
           } else if (setEEPROMData(eepromData)) {
             logger.info("Done! (" + eepromData.length + " bytes written to EEPROM)");
-            redrawDataView();
+            redrawDataView(dataViewArea);
           } else {
             JOptionPane.showMessageDialog(uploadButton, "Failed to upload EEPROM data to mote",
                                           "Error uploading EEPROM data", JOptionPane.ERROR_MESSAGE);
@@ -250,22 +251,8 @@ public class ContikiEEPROM extends Observable implements MoteInterface, PolledAf
       if (setEEPROMData(eepromData)) {
           logger.info("Done! (EEPROM reset to zero)");
       }
-      redrawDataView();
+      redrawDataView(dataViewArea);
     });
-
-    Observer observer = (obs, obj) -> {
-      final long currentTime = mote.getSimulation().getSimulationTime();
-      EventQueue.invokeLater(() -> {
-        lastTimeLabel.setText("Last change at time: " + currentTime);
-        lastReadLabel.setText("Last change read bytes: " + getLastReadCount());
-        lastWrittenLabel.setText("Last change wrote bytes: " + getLastWrittenCount());
-        redrawDataView();
-      });
-    };
-    this.addObserver(observer);
-
-    // Saving observer reference for releaseInterfaceVisualizer
-    panel.putClientProperty("intf_obs", observer);
 
     panel.setMinimumSize(new Dimension(140, 60));
     panel.setPreferredSize(new Dimension(140, 60));
@@ -275,19 +262,14 @@ public class ContikiEEPROM extends Observable implements MoteInterface, PolledAf
     dataViewArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
     dataViewScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     dataViewScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    redrawDataView();
+    redrawDataView(dataViewArea);
+    labels.put(panel, new Updates(lastTimeLabel, lastReadLabel, lastWrittenLabel, dataViewArea));
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
-      return;
-    }
-
-    this.deleteObserver(observer);
+    labels.remove(panel);
   }
 
   @Override
@@ -352,4 +334,6 @@ public class ContikiEEPROM extends Observable implements MoteInterface, PolledAf
     return true;
   }
 
+  private record Updates(JLabel lastTimeLabel, JLabel lastReadLabel, JLabel lastWrittenLabel,
+                         JTextArea dataArea) {}
 }
