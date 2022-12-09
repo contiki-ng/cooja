@@ -23,6 +23,11 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed setMoteInterfaceClasses in MoteType
+
+This method is not required by Cooja itself, so make it a mote-internal
+question of how to implement the support.
+
 ### Converted MoteInterface/Beeper/Button/MoteID into interfaces
 
 To reduce the scope of the deprecated Observable, MoteInterface was converted

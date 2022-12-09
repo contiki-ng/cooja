@@ -128,11 +128,6 @@ public abstract class AbstractApplicationMoteType implements MoteType {
   }
 
   @Override
-  public void setMoteInterfaceClasses(Class<? extends MoteInterface>[] moteInterfaces) {
-    throw new RuntimeException("Can not change the mote interface classes");
-  }
-
-  @Override
   public JComponent getTypeVisualizer() {
     StringBuilder sb = new StringBuilder();
     // Identifier
