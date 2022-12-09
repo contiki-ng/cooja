@@ -130,8 +130,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
   @Override
   public boolean setConfigXML(Simulation simulation,
       Collection<Element> configXML, boolean visAvailable) {
-    moteInterfaces.getRadio().addObserver(radioDataObserver);
-
     for (Element element : configXML) {
       String name = element.getName();
       if (name.equals("interface_config")) {
