@@ -271,16 +271,9 @@ public class LogScriptEngine {
         try {
           var obj = script.eval();
           rv = obj == null ? 1 : (int) obj;
-          switch (rv) {
-            case -1:
-              // Something else is shutting down Cooja, for example the SerialSocket commands in 17-tun-rpl-br.
-              break;
-            case 0:
-              scriptLog("TEST OK\n");
-              break;
-            default:
-              scriptLog("TEST FAILED\n");
-              break;
+          // rv == -1 means something else is shutting down Cooja, for example the SerialSocket commands in 17-tun-rpl-br.
+          if (rv != -1) {
+            scriptLog(rv == 0 ? "TEST OK\n" : "TEST FAILED\n");
           }
         } catch (Exception e) {
           rv = 1;
