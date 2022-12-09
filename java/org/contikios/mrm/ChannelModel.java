@@ -229,7 +229,7 @@ public class ChannelModel {
       parameters.put(p, Parameter.getDefaultValue(p));
     }
 
-    parametersDefaults = (HashMap<Parameter,Object>) parameters.clone();
+    parametersDefaults = new HashMap<>(parameters);
 
     // Ray Tracer - Use scattering
     //parameters.put(Parameters.rt_use_scattering, Parameter.getDefaultValue(Parameters.rt_use_scattering)); // TODO Not used yet
