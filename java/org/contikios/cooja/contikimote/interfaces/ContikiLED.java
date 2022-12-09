@@ -74,9 +74,6 @@ public class ContikiLED extends LED implements PolledAfterActiveTicks {
   private static final Color YELLOW = new Color(255, 255, 0);
   private static final Color RED = new Color(255, 0, 0);
 
-  public ContikiLED() {
-  }
-
   /**
    * Creates an interface to LEDs at mote.
    *
