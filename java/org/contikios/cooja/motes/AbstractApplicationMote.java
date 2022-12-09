@@ -31,8 +31,6 @@ package org.contikios.cooja.motes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Observer;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
@@ -64,19 +62,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
 
   protected MoteInterfaceHandler moteInterfaces;
 
-  /* Observe our own radio for incoming radio packets */
-  private final Observer radioDataObserver = (obs, obj) -> {
-    ApplicationRadio radio = (ApplicationRadio) obs;
-    if (radio.getLastEvent() == Radio.RadioEvent.RECEPTION_FINISHED) {
-      /* only send in packets when they exist */
-      if (radio.getLastPacketReceived() != null)
-          receivedPacket(radio.getLastPacketReceived());
-    } else if (radio.getLastEvent() == Radio.RadioEvent.TRANSMISSION_FINISHED) {
-      if (radio.getLastPacketTransmitted() != null)
-          sentPacket(radio.getLastPacketTransmitted());
-    }
-  };
-
   public abstract void receivedPacket(RadioPacket p);
   public abstract void sentPacket(RadioPacket p);
   
@@ -85,7 +70,17 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
     this.moteType = moteType;
     this.memory = new SectionMoteMemory(new HashMap<>());
     this.moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
-    this.moteInterfaces.getRadio().addObserver(radioDataObserver);
+    // Observe our own radio for incoming radio packets.
+    moteInterfaces.getRadio().addObserver((obs, obj) -> {
+      var radio = (ApplicationRadio) obs;
+      if (radio.getLastEvent() == Radio.RadioEvent.RECEPTION_FINISHED) {
+        if (radio.getLastPacketReceived() != null) // Only send in packets when they exist.
+          receivedPacket(radio.getLastPacketReceived());
+      } else if (radio.getLastEvent() == Radio.RadioEvent.TRANSMISSION_FINISHED) {
+        if (radio.getLastPacketTransmitted() != null)
+          sentPacket(radio.getLastPacketTransmitted());
+      }
+    });
     requestImmediateWakeup();
   }
 
