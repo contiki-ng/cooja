@@ -1072,7 +1072,7 @@ public class Cooja {
 
   /** Set the external tools settings to default. */
   public static void resetExternalToolsSettings() {
-    currentExternalToolsSettings = (Properties) defaultExternalToolsSettings.clone();
+    currentExternalToolsSettings = new Properties(defaultExternalToolsSettings);
   }
 
   /** Get default external tools settings. */
