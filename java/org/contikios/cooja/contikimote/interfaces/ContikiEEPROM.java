@@ -87,6 +87,10 @@ public class ContikiEEPROM extends MoteInterface implements PolledAfterActiveTic
   private final VarMemory moteMem;
 
   private final JTextArea dataViewArea;
+  private final JLabel lastTimeLabel;
+  private final JLabel lastReadLabel;
+  private final JLabel lastWrittenLabel;
+
   private int lastRead = 0;
   private int lastWritten = 0;
 
@@ -101,6 +105,9 @@ public class ContikiEEPROM extends MoteInterface implements PolledAfterActiveTic
     this.mote = mote;
     this.moteMem = new VarMemory(mote.getMemory());
     dataViewArea = Cooja.isVisualized() ? new JTextArea() : null;
+    lastTimeLabel = Cooja.isVisualized() ? new JLabel("Last change at: ?") : null;
+    lastReadLabel = Cooja.isVisualized() ? new JLabel("Last change read bytes: 0") : null;
+    lastWrittenLabel = Cooja.isVisualized() ? new JLabel("Last change wrote bytes: 0") : null;
   }
 
   @Override
@@ -199,9 +206,6 @@ public class ContikiEEPROM extends MoteInterface implements PolledAfterActiveTic
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    final JLabel lastTimeLabel = new JLabel("Last change at: ?");
-    final JLabel lastReadLabel = new JLabel("Last change read bytes: 0");
-    final JLabel lastWrittenLabel = new JLabel("Last change wrote bytes: 0");
     final JButton uploadButton = new JButton("Upload binary file");
     final JButton clearButton = new JButton("Reset EEPROM to zero");
     final JScrollPane dataViewScrollPane = new JScrollPane(dataViewArea);
