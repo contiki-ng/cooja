@@ -40,7 +40,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.Observer;
 import java.util.concurrent.Semaphore;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
@@ -113,16 +112,16 @@ public class LogScriptEngine {
   private Semaphore semaphoreScript = null; /* Semaphores blocking script/simulation */
   private Semaphore semaphoreSim = null;
   private Thread scriptThread = null; /* Script thread */
-  private final Observer scriptLogObserver;
-
   private final Simulation simulation;
 
   private long timeout;
   private long startTime;
   private long startRealTime;
+  private final JTextArea textArea;
 
   protected LogScriptEngine(Simulation simulation, int logNumber, JTextArea logTextArea) {
     this.simulation = simulation;
+    textArea = logTextArea;
     if (!Cooja.isVisualized()) {
       var logName = logNumber == 0 ? "COOJA.testlog" : String.format("COOJA-%02d.testlog", logNumber);
       var logFile = Path.of(simulation.getCfg().logDir(), logName);
@@ -134,21 +133,9 @@ public class LogScriptEngine {
         logger.fatal("Could not create {}: {}", logFile, e.toString());
         throw new RuntimeException(e);
       }
-      scriptLogObserver = (obs, obj) -> {
-        try {
-          logWriter.write((String) obj);
-          logWriter.flush();
-        } catch (IOException e) {
-          logger.fatal("Error when writing to test log file: " + obj, e);
-        }
-      };
       return;
     }
     logWriter = null;
-    scriptLogObserver = (obs, obj) -> java.awt.EventQueue.invokeLater(() -> {
-      logTextArea.append((String) obj);
-      logTextArea.setCaretPosition(logTextArea.getText().length());
-    });
   }
 
   /* Only called from the simulation loop */
@@ -171,6 +158,22 @@ public class LogScriptEngine {
     }
 
     /* ... script is now again waiting for script semaphore ... */
+  }
+
+  public void scriptLog(String msg) {
+    if (Cooja.isVisualized()) {
+      java.awt.EventQueue.invokeLater(() -> {
+        textArea.append(msg);
+        textArea.setCaretPosition(textArea.getText().length());
+      });
+      return;
+    }
+    try {
+      logWriter.write(msg);
+      logWriter.flush();
+    } catch (IOException e) {
+      logger.fatal("Error when writing to test log file: " + msg, e);
+    }
   }
 
   protected void closeLog() {
@@ -273,10 +276,10 @@ public class LogScriptEngine {
               // Something else is shutting down Cooja, for example the SerialSocket commands in 17-tun-rpl-br.
               break;
             case 0:
-              scriptLogObserver.update(null, "TEST OK\n");
+              scriptLog("TEST OK\n");
               break;
             default:
-              scriptLogObserver.update(null, "TEST FAILED\n");
+              scriptLog("TEST FAILED\n");
               break;
           }
         } catch (Exception e) {
@@ -333,7 +336,7 @@ public class LogScriptEngine {
   private final ScriptLog scriptLog = new ScriptLog() {
     @Override
     public void log(String msg) {
-      scriptLogObserver.update(null, msg);
+      scriptLog(msg);
     }
     @Override
     public void append(String filename, String msg) {
