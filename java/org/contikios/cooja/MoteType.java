@@ -83,16 +83,8 @@ public interface MoteType {
 
   /**
    * @return Mote interface classes of mote type.
-   * @see #setMoteInterfaceClasses(Class[])
    */
   Class<? extends MoteInterface>[] getMoteInterfaceClasses();
-
-  /**
-   * Sets mote interface Java classes of mote type.
-   *
-   * @param classes Mote interface classes
-   */
-  void setMoteInterfaceClasses(Class<? extends MoteInterface>[] classes);
 
   /**
    * Returns a panel with mote type specific data.

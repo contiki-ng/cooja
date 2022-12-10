@@ -179,12 +179,6 @@ public abstract class BaseContikiMoteType implements MoteType {
     return arr;
   }
 
-  @Override
-  public void setMoteInterfaceClasses(Class<? extends MoteInterface>[] moteInterfaces) {
-    moteInterfaceClasses.clear();
-    moteInterfaceClasses.addAll(Arrays.asList(moteInterfaces));
-  }
-
   public abstract Class<? extends MoteInterface>[] getAllMoteInterfaceClasses();
   public abstract Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses();
 
@@ -298,7 +292,8 @@ public abstract class BaseContikiMoteType implements MoteType {
         fileFirmware = new File(cfg.file);
       }
       compileCommands = cfg.commands;
-      setMoteInterfaceClasses(cfg.interfaces);
+      moteInterfaceClasses.clear();
+      moteInterfaceClasses.addAll(Arrays.asList(cfg.interfaces));
     } else {
       // Handle multiple compilation commands one by one.
       final var output = MessageContainer.createMessageList(vis);
