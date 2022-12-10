@@ -35,8 +35,6 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.util.Observable;
-import java.util.Observer;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -53,7 +51,7 @@ import org.contikios.cooja.mspmote.MspMote;
  * @author Fredrik Osterlind
  */
 @ClassDescription("M25P80 Flash")
-public class SkyFlash extends Observable implements MoteInterface {
+public class SkyFlash implements MoteInterface {
   private static final Logger logger = LogManager.getLogger(SkyFlash.class);
 
   protected final CoojaM25P80 m24p80;
@@ -109,26 +107,11 @@ public class SkyFlash extends Observable implements MoteInterface {
       m24p80.readFully(data);
       writeDialogFileBytes(data);
     });
-
-    Observer observer;
-    this.addObserver(observer = (obs, obj) -> {});
-
-    // Saving observer reference for releaseInterfaceVisualizer
-    panel.putClientProperty("intf_obs", observer);
-
     return panel;
   }
 
   @Override
-  public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
-      return;
-    }
-
-    this.deleteObserver(observer);
-  }
+  public void releaseInterfaceVisualizer(JPanel panel) {}
 
   public static void writeDialogFileBytes(byte[] data) {
     JFileChooser fc = new JFileChooser();
