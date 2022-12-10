@@ -56,7 +56,7 @@ import org.jdom2.Element;
  *         Andreas Löscher
  */
 @ClassDescription("Clock")
-public abstract class Clock extends MoteInterface {
+public abstract class Clock implements MoteInterface {
   /**
    * Set mote's time to given time.
    *

@@ -65,7 +65,7 @@ import org.contikios.cooja.dialogs.TableColumnAdjuster;
  * @author Fredrik Osterlind, Nicolas Tsiftes
  */
 @ClassDescription("Coffee Filesystem")
-public class SkyCoffeeFilesystem extends MoteInterface {
+public class SkyCoffeeFilesystem implements MoteInterface {
   private static final Logger logger = LogManager.getLogger(SkyCoffeeFilesystem.class);
 
   private final Mote mote;

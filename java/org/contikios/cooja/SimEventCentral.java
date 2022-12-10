@@ -123,8 +123,8 @@ public class SimEventCentral {
         if (logOutputListeners.length > 0) {
           // Add another log output observation (supports multiple log interfaces per mote).
           for (MoteInterface mi: evMote.getInterfaces().getInterfaces()) {
-            if (mi instanceof Log) {
-              moteObservations.add(new MoteObservation(evMote, mi, logOutputObserver));
+            if (mi instanceof Log log) {
+              moteObservations.add(new MoteObservation(evMote, log, logOutputObserver));
             }
           }
         }
@@ -229,8 +229,8 @@ public class SimEventCentral {
       Mote[] motes = simulation.getMotes();
       for (Mote m: motes) {
         for (MoteInterface mi: m.getInterfaces().getInterfaces()) {
-          if (mi instanceof Log) {
-            moteObservations.add(new MoteObservation(m, mi, logOutputObserver));
+          if (mi instanceof Log log) {
+            moteObservations.add(new MoteObservation(m, log, logOutputObserver));
           }
         }
       }

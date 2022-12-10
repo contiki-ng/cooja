@@ -35,6 +35,7 @@ import java.awt.Dimension;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Observable;
 import java.util.Observer;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -66,7 +67,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Filesystem (CFS)")
-public class ContikiCFS extends MoteInterface implements PolledAfterActiveTicks {
+public class ContikiCFS extends Observable implements MoteInterface, PolledAfterActiveTicks {
   private static final Logger logger = LogManager.getLogger(ContikiCFS.class);
 
   public static final int FILESYSTEM_SIZE = 4000; /* Configure CFS size here and in cfs-cooja.c */

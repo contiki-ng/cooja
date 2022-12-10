@@ -30,6 +30,7 @@
 
 package org.contikios.cooja.interfaces;
 
+import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JLabel;
@@ -52,7 +53,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Rime address")
-public class RimeAddress extends MoteInterface {
+public class RimeAddress extends Observable implements MoteInterface {
   private static final Logger logger = LogManager.getLogger(RimeAddress.class);
   private final VarMemory moteMem;
 
@@ -123,7 +124,6 @@ public class RimeAddress extends MoteInterface {
 
   @Override
   public void removed() {
-    super.removed();
     if (memMonitor != null) {
       moteMem.removeVarMonitor("linkaddr_node_addr", memMonitor);
     }

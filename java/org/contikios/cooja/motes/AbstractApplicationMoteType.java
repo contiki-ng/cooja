@@ -191,7 +191,7 @@ public abstract class AbstractApplicationMoteType implements MoteType {
     return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
   }
 
-  public static class SimpleMoteID extends MoteID {
+  public static class SimpleMoteID implements MoteID {
     private int id = -1;
     public SimpleMoteID(Mote mote) {
     }

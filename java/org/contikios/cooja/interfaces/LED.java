@@ -30,6 +30,7 @@
 
 package org.contikios.cooja.interfaces;
 
+import java.util.Observable;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.MoteInterface;
 
@@ -40,7 +41,7 @@ import org.contikios.cooja.MoteInterface;
  * @author Fredrik Osterlind
  */
 @ClassDescription("LEDs")
-public abstract class LED extends MoteInterface {
+public abstract class LED extends Observable implements MoteInterface {
   
   /**
    * @return True if any LED is on, false otherwise

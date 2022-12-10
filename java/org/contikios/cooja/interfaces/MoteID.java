@@ -45,21 +45,20 @@ import org.contikios.cooja.MoteInterface;
  * @author Fredrik Osterlind
  */
 @ClassDescription("ID")
-public abstract class MoteID extends MoteInterface {
-
+public interface MoteID extends MoteInterface {
   /**
    * @return Current mote ID number
    */
-  public abstract int getMoteID();
+  int getMoteID();
   
   /**
    * Sets mote ID to given number.
    * @param id New mote ID number
    */
-  public abstract void setMoteID(int id);
+  void setMoteID(int id);
   
   @Override
-  public Collection<Element> getConfigXML() {
+  default Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
     Element element = new Element("id");
     element.setText(Integer.toString(getMoteID()));
@@ -68,7 +67,7 @@ public abstract class MoteID extends MoteInterface {
   }
 
   @Override
-  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  default void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("id")) {
         setMoteID(Integer.parseInt(element.getText()));

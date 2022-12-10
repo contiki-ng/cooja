@@ -37,7 +37,7 @@ import org.contikios.cooja.mspmote.MspMote;
  * @author Fredrik Osterlind, Niclas Finne
  */
 @ClassDescription("Button")
-public class MspButton extends Button {
+public class MspButton extends Button.AbstractButton {
     private final se.sics.mspsim.chip.Button button;
 
     public MspButton(Mote mote) {

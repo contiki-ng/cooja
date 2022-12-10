@@ -41,10 +41,10 @@ import org.contikios.cooja.MoteInterface;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Beeper")
-public abstract class Beeper extends MoteInterface {
+public interface Beeper extends MoteInterface {
 
   /**
    * @return True if beeper is beeping
    */
-  public abstract boolean isBeeping();
+  boolean isBeeping();
 }

@@ -286,9 +286,8 @@ public class EventListener extends VisPlugin {
         for (int i = 0; i < mySimulation.getMotesCount(); i++) {
           MoteInterface moteInterface = mySimulation.getMote(i).getInterfaces()
               .getInterfaceOfType(interfaceClass);
-          if (moteInterface != null) {
-            allObservers.add(new InterfaceEventObserver(myPlugin, mySimulation
-                .getMote(i), moteInterface));
+          if (moteInterface instanceof Observable obs) {
+            allObservers.add(new InterfaceEventObserver(myPlugin, mySimulation.getMote(i), obs));
           }
         }
       }

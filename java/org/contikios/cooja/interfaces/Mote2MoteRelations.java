@@ -43,7 +43,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
-import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.SimEventCentral.MoteCountListener;
@@ -73,7 +72,7 @@ import org.contikios.cooja.SimEventCentral.MoteCountListener;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Mote2Mote Relations")
-public class Mote2MoteRelations extends MoteInterface {
+public class Mote2MoteRelations extends Observable implements MoteInterface {
   private static final Logger logger = LogManager.getLogger(Mote2MoteRelations.class);
   private final Mote mote;
 
@@ -151,12 +150,10 @@ public class Mote2MoteRelations extends MoteInterface {
 
   @Override
   public void added() {
-    super.added();
-    
     /* Observe log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
-      if (mi instanceof Log) {
-        mi.addObserver(logObserver);
+      if (mi instanceof Log log) {
+        log.addObserver(logObserver);
       }
     }
 
@@ -184,12 +181,10 @@ public class Mote2MoteRelations extends MoteInterface {
   
   @Override
   public void removed() {
-    super.removed();
-
     /* Stop observing log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
-      if (mi instanceof Log) {
-        mi.deleteObserver(logObserver);
+      if (mi instanceof Log log) {
+        log.deleteObserver(logObserver);
       }
     }
     logObserver = null;
