@@ -96,8 +96,8 @@ public class ProjectConfig {
    */
   public static final String PROJECT_CONFIG_FILENAME = "cooja.config";
 
-  private Properties myConfig = new Properties();
-  private ArrayList<File> myProjectDirHistory = new ArrayList<>();
+  private final Properties myConfig;
+  private final ArrayList<File> myProjectDirHistory = new ArrayList<>();
 
   /**
    * Creates new project configuration.
@@ -106,12 +106,19 @@ public class ProjectConfig {
    *          If true the default configuration will be loaded
    */
   public ProjectConfig(boolean useDefault) {
+    myConfig = new Properties();
     if (useDefault) {
       var settings = new Properties();
       settings.put("org.contikios.cooja.contikimote.interfaces.ContikiRadio.RADIO_TRANSMISSION_RATE_kbps", "250");
       settings.put("org.contikios.cooja.contikimote.ContikiMoteType.C_SOURCES", "");
       appendConfig(myConfig, settings);
     }
+  }
+
+  /** Copy constructor. */
+  public ProjectConfig(ProjectConfig other) {
+    myConfig = new Properties(other.myConfig);
+    myProjectDirHistory.addAll(other.myProjectDirHistory);
   }
 
   /**
@@ -485,17 +492,5 @@ public class ProjectConfig {
    */
   public boolean getBooleanValue(Class<?> callingClass, String id) {
     return getBooleanValue(callingClass, id, false);
-  }
-
-  @Override
-  public ProjectConfig clone() {
-    try {
-      ProjectConfig clone = new ProjectConfig(false);
-      clone.myConfig = (Properties) this.myConfig.clone();
-      clone.myProjectDirHistory = (ArrayList<File>) this.myProjectDirHistory.clone();
-      return clone;
-    } catch (Exception e) {
-      return null;
-    }
   }
 }

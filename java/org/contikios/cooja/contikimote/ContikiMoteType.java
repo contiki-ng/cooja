@@ -59,6 +59,7 @@ import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteInterfaceHandler;
+import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.interfaces.ContikiBeeper;
 import org.contikios.cooja.contikimote.interfaces.ContikiButton;
@@ -176,7 +177,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   public ContikiMoteType(Cooja gui) {
     this.gui = gui;
-    projectConfig = gui.getProjectConfig().clone();
+    projectConfig = new ProjectConfig(gui.getProjectConfig());
   }
 
   @Override
