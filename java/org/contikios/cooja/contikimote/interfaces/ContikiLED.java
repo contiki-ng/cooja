@@ -59,8 +59,8 @@ import org.contikios.cooja.mote.memory.VarMemory;
 public class ContikiLED extends LED implements PolledAfterActiveTicks {
   private static final Logger logger = LogManager.getLogger(ContikiLED.class);
 
-  private Mote mote = null;
-  private VarMemory moteMem = null;
+  private final Mote mote;
+  private final VarMemory moteMem;
   private byte currentLedValue = 0;
 
   private static final byte LEDS_GREEN = 1;
