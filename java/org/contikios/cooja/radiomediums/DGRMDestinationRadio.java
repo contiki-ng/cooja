@@ -53,17 +53,6 @@ public class DGRMDestinationRadio extends DestinationRadio {
 	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		DGRMDestinationRadio clone = new DGRMDestinationRadio(this.radio);
-		clone.ratio = this.ratio;
-		clone.delay = this.delay;
-		clone.signal = this.signal;
-		clone.lqi = this.lqi;
-		clone.channel = this.channel;
-		return clone;
-	}
-	
-	@Override
 	public Collection<Element> getConfigXML() {
 		Collection<Element> config = super.getConfigXML();
 		Element element;
