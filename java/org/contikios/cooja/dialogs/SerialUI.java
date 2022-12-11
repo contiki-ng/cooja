@@ -126,6 +126,7 @@ public abstract class SerialUI extends Log implements SerialPort {
         lastLogMessage = "# [1024 bytes, no line ending]: " +
             newMessage.substring(0, Math.min(20, newMessage.length())) + "...";
         newMessage.setLength(0);
+        charactersReceived = 0;
         this.setChanged();
         this.notifyObservers(getMote());
       }
