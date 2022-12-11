@@ -60,6 +60,8 @@ public class ContikiBeeper implements Beeper, PolledAfterActiveTicks {
   private final VarMemory moteMem;
   /** Ordered map of labels that are updated when mote beeps. */
   private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
+  /** The time of the last beep */
+  private long lastBeepTime;
 
   /**
    * Creates an interface to the beeper at mote.
@@ -82,11 +84,11 @@ public class ContikiBeeper implements Beeper, PolledAfterActiveTicks {
   @Override
   public void doActionsAfterTick() {
     if (moteMem.getByteValueOf("simBeeped") == 1) {
+      lastBeepTime = mote.getSimulation().getSimulationTime();
       if (Cooja.isVisualized()) {
-        final var now = mote.getSimulation().getSimulationTime();
         java.awt.EventQueue.invokeLater(() -> {
           for (var label : labels.values()) {
-            label.setText("Last beep at time: " + now);
+            label.setText("Last beep at time: " + lastBeepTime);
             // Beep on speakers.
             Toolkit.getDefaultToolkit().beep();
           }
@@ -100,7 +102,7 @@ public class ContikiBeeper implements Beeper, PolledAfterActiveTicks {
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    final JLabel statusLabel = new JLabel("Last beep at time: ?");
+    final JLabel statusLabel = new JLabel("Last beep at time: " + (lastBeepTime == 0 ? "?" : String.valueOf(lastBeepTime)));
     panel.add(statusLabel);
     panel.setMinimumSize(new Dimension(140, 60));
     panel.setPreferredSize(new Dimension(140, 60));
