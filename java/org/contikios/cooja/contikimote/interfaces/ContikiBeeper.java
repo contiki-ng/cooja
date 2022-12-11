@@ -89,9 +89,9 @@ public class ContikiBeeper implements Beeper, PolledAfterActiveTicks {
         java.awt.EventQueue.invokeLater(() -> {
           for (var label : labels.values()) {
             label.setText("Last beep at time: " + lastBeepTime);
-            // Beep on speakers.
-            Toolkit.getDefaultToolkit().beep();
           }
+          // Beep on speakers.
+          Toolkit.getDefaultToolkit().beep();
         });
       }
       moteMem.setByteValueOf("simBeeped", (byte) 0);
