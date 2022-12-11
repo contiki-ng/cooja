@@ -46,6 +46,7 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.SimEventCentral.MoteCountListener;
+import org.contikios.cooja.ui.ColorUtils;
 
 /**
  * Mote2Mote Relations is used to show mote relations in simulated
@@ -131,7 +132,7 @@ public class Mote2MoteRelations extends Observable implements MoteInterface {
           return;
         }
         relations.add(destinationMote);
-        mote.getSimulation().addMoteRelation(mote, destinationMote, decodeColor(colorName));
+        mote.getSimulation().addMoteRelation(mote, destinationMote, ColorUtils.decodeColor(colorName));
       } else {
         relations.remove(destinationMote);
         mote.getSimulation().removeMoteRelation(mote, destinationMote);
@@ -197,29 +198,6 @@ public class Mote2MoteRelations extends Observable implements MoteInterface {
     relations.clear();
 
     mote.getSimulation().getEventCentral().removeMoteCountListener(moteCountListener);
-  }
-
-  private static Color decodeColor(String colorString) {
-    if (colorString == null) {
-      return null;
-    }
-    switch (colorString.toLowerCase()) {
-      case "red": return Color.RED;
-      case "green": return Color.GREEN;
-      case "blue": return Color.BLUE;
-      case "orange": return Color.ORANGE;
-      case "pink": return Color.PINK;
-      case "yellow": return Color.YELLOW;
-      case "gray": return Color.GRAY;
-      case "magenta": return Color.MAGENTA;
-      case "black": return Color.BLACK;
-      default:
-        try {
-          return Color.decode(colorString);
-        } catch (NumberFormatException e) {
-          return null;
-        }
-    }
   }
 
   @Override

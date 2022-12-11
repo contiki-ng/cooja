@@ -47,6 +47,7 @@ import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
+import org.contikios.cooja.ui.ColorUtils;
 
 /**
  * Visualizer skin for mote attributes.
@@ -119,25 +120,13 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
   }
 
   private static Color parseAttributeColor(String colorString) {
-    if (colorString.equalsIgnoreCase("red")) {
-      return Color.RED;
-    } else if (colorString.equalsIgnoreCase("green")) {
-      return Color.GREEN;
-    } else if (colorString.equalsIgnoreCase("blue")) {
-      return Color.BLUE;
-    } else if (colorString.equalsIgnoreCase("orange")) {
-      return Color.ORANGE;
-    } else if (colorString.equalsIgnoreCase("pink")) {
-      return Color.PINK;
-    } else {
-      try {
-        return Color.decode(colorString);
-      } catch (NumberFormatException e) {
-        logger.warn("Unknown color attribute: " + colorString);
-      }
-      return null;
+    var color = ColorUtils.decodeColor(colorString);
+    if (color == null && colorString != null) {
+      logger.warn("Unknown color attribute: " + colorString);
     }
+    return color;
   }
+
   @Override
   public void paintBeforeMotes(Graphics g) {
   }
