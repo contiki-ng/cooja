@@ -32,16 +32,11 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.util.Observable;
-import java.util.Observer;
-
+import java.util.LinkedHashMap;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.Beeper;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
@@ -60,10 +55,11 @@ import org.contikios.cooja.mote.memory.VarMemory;
  *
  * @author Fredrik Osterlind
  */
-public class ContikiBeeper extends Observable implements Beeper, PolledAfterActiveTicks {
+public class ContikiBeeper implements Beeper, PolledAfterActiveTicks {
   private final Mote mote;
   private final VarMemory moteMem;
-  private static final Logger logger = LogManager.getLogger(ContikiBeeper.class);
+  /** Ordered map of labels that are updated when mote beeps. */
+  private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
 
   /**
    * Creates an interface to the beeper at mote.
@@ -86,9 +82,16 @@ public class ContikiBeeper extends Observable implements Beeper, PolledAfterActi
   @Override
   public void doActionsAfterTick() {
     if (moteMem.getByteValueOf("simBeeped") == 1) {
-      this.setChanged();
-      this.notifyObservers(mote);
-
+      if (Cooja.isVisualized()) {
+        final var now = mote.getSimulation().getSimulationTime();
+        java.awt.EventQueue.invokeLater(() -> {
+          for (var label : labels.values()) {
+            label.setText("Last beep at time: " + now);
+            // Beep on speakers.
+            Toolkit.getDefaultToolkit().beep();
+          }
+        });
+      }
       moteMem.setByteValueOf("simBeeped", (byte) 0);
     }
   }
@@ -97,41 +100,16 @@ public class ContikiBeeper extends Observable implements Beeper, PolledAfterActi
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
     final JLabel statusLabel = new JLabel("Last beep at time: ?");
     panel.add(statusLabel);
-
-    Observer observer;
-    this.addObserver(observer = (obs, obj) -> {
-      if (!isBeeping()) {
-        return;
-      }
-
-      long currentTime = mote.getSimulation().getSimulationTime();
-      statusLabel.setText("Last beep at time: " + currentTime);
-
-      /* Beep on speakers */
-      Toolkit.getDefaultToolkit().beep();
-    });
-
-    // Saving observer reference for releaseInterfaceVisualizer
-    panel.putClientProperty("intf_obs", observer);
-
     panel.setMinimumSize(new Dimension(140, 60));
     panel.setPreferredSize(new Dimension(140, 60));
-
+    labels.put(panel, statusLabel);
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
-      return;
-    }
-
-    this.deleteObserver(observer);
+    labels.remove(panel);
   }
-
 }
