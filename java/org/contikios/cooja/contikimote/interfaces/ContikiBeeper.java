@@ -87,6 +87,9 @@ public class ContikiBeeper implements Beeper, PolledAfterActiveTicks {
       lastBeepTime = mote.getSimulation().getSimulationTime();
       if (Cooja.isVisualized()) {
         java.awt.EventQueue.invokeLater(() -> {
+          if (labels.isEmpty()) {
+            return;
+          }
           for (var label : labels.values()) {
             label.setText("Last beep at time: " + lastBeepTime);
           }
