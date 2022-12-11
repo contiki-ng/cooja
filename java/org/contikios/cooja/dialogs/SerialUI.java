@@ -109,6 +109,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     return lastSerialData;
   }
   public void dataReceived(int data) {
+    charactersReceived++;
     if (data == '\n') {
       lastLogMessage = newMessage.toString();
       newMessage.setLength(0);
@@ -117,7 +118,6 @@ public abstract class SerialUI extends Log implements SerialPort {
       this.notifyObservers(getMote());
     } else {
       // FIXME: Make next 5 lines unconditional first part of method, set lastLogMessage conditionally after that.
-      charactersReceived++;
       char ch = (char) data;
       if (Character.isLetterOrDigit(ch) || Character.isWhitespace(ch) || punctuation.test(String.valueOf(ch))) {
         newMessage.append(ch);
