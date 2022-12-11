@@ -54,7 +54,7 @@ sourceSets {
       exclude 'org/contikios/cooja/corecomm/CoreCommTemplate.java'
     }
     resources {
-      srcDirs = [corecomm.resources, data.resources, 'config', 'images']
+      srcDirs = [corecomm.resources, data.resources, 'config']
     }
   }
 }
