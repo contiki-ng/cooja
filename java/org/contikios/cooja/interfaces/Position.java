@@ -30,17 +30,17 @@
 
 package org.contikios.cooja.interfaces;
 
+import java.awt.EventQueue;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Observable;
-import java.util.Observer;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.jdom2.Element;
@@ -55,9 +55,9 @@ import org.jdom2.Element;
  */
 @ClassDescription("Position")
 public class Position extends Observable implements MoteInterface {
-  private static final Logger logger = LogManager.getLogger(Position.class);
   private final Mote mote;
   private final double[] coords = new double[3];
+  private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
 
   /**
    * Creates a position for given mote with coordinates (x=0, y=0, z=0).
@@ -86,7 +86,16 @@ public class Position extends Observable implements MoteInterface {
     coords[0] = x;
     coords[1] = y;
     coords[2] = z;
-
+    if (Cooja.isVisualized()) {
+      EventQueue.invokeLater(() -> {
+        final var number = NumberFormat.getNumberInstance();
+        for (var label : labels.values()) {
+          label.setText("x=" + number.format(getXCoordinate()) + " "
+                  + "y=" + number.format(getYCoordinate()) + " "
+                  + "z=" + number.format(getZCoordinate()));
+        }
+      });
+    }
     this.setChanged();
     this.notifyObservers(mote);
   }
@@ -149,27 +158,13 @@ public class Position extends Observable implements MoteInterface {
         + "z=" + form.format(getZCoordinate()));
 
     panel.add(positionLabel);
-
-    Observer observer;
-    this.addObserver(observer = (obs, obj) -> positionLabel.setText("x=" + form.format(getXCoordinate()) + " "
-        + "y=" + form.format(getYCoordinate()) + " "
-        + "z=" + form.format(getZCoordinate())));
-
-    // Saving observer reference for releaseInterfaceVisualizer
-    panel.putClientProperty("intf_obs", observer);
-
+    labels.put(panel, positionLabel);
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
-      return;
-    }
-
-    this.deleteObserver(observer);
+    labels.remove(panel);
   }
 
   @Override
