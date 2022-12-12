@@ -877,7 +877,10 @@ class ConfigViewer extends JDialog {
 		while (allPropertyNames.hasMoreElements()) {
 			String propertyName = allPropertyNames.nextElement();
 			keyPane.add(new JLabel(propertyName));
-      valuePane.add(new JLabel(config.getStringValue(propertyName).equals("") ? "" : config.getStringValue(propertyName)));
+      var val = config.getStringValue(propertyName);
+      // Add artificial space so the valuePane contains something. Otherwise, the next
+      // row will have its values displayed on this row.
+      valuePane.add(new JLabel(val.equals("") ? " " : val));
 		}
 
 		Container contentPane = getContentPane();
