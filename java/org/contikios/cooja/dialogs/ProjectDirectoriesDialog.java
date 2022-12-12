@@ -455,7 +455,6 @@ class DirectoryTreePanel extends JPanel {
 		tree = new JTree(treeRoot);
 		tree.setRootVisible(false);
 		tree.setShowsRootHandles(true);
-		tree.expandRow(0);
 		tree.setCellRenderer(new DefaultTreeCellRenderer() {
 			private final Icon unselectedIcon = new CheckboxIcon(null);
 			private final Icon selectedIcon = new CheckboxIcon(new Color(0, 255, 0, 128));
@@ -620,6 +619,7 @@ class DirectoryTreePanel extends JPanel {
 			}
 		}
 		add(BorderLayout.CENTER, new JScrollPane(tree));
+    tree.expandRow(0);
 	}
 
   static TreePath buildTreePath(String projectCanonical, DefaultMutableTreeNode parent, TreePath tp, JTree tree)
