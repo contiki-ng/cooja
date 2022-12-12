@@ -35,7 +35,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Observable;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import org.contikios.cooja.ClassDescription;
@@ -74,7 +73,7 @@ public interface Button extends MoteInterface {
    */
   void releaseButton();
 
-  abstract class AbstractButton extends Observable implements Button {
+  abstract class AbstractButton implements Button {
 
     private final Simulation sim;
 
