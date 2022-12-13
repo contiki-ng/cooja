@@ -36,11 +36,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,6 +48,7 @@ import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -59,17 +56,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
-import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
-import javax.swing.event.TreeModelListener;
+import javax.swing.filechooser.FileView;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -111,7 +102,6 @@ public class ProjectDirectoriesDialog extends JDialog {
   private ProjectDirectoriesDialog(Cooja cooja, COOJAProject[] projects) {
     super(Cooja.getTopParentContainer(), "Cooja extensions", ModalityType.APPLICATION_MODAL);
     gui = cooja;
-    final var treePanel = new DirectoryTreePanel(this);
 		table = new JTable(new AbstractTableModel() {
 			@Override
 			public int getColumnCount() {
@@ -146,18 +136,6 @@ public class ProjectDirectoriesDialog extends JDialog {
     table.getSelectionModel().addListSelectionListener(e -> {
       if (table.getSelectedRow() < 0) {
         return;
-      }
-      // Expand view.
-      try {
-        var projectCanonical = currentProjects.get(table.getSelectedRow()).dir.getCanonicalPath();
-        var tp = new TreePath(treePanel.tree.getModel().getRoot());
-        tp = DirectoryTreePanel.buildTreePath(projectCanonical, treePanel.treeRoot, tp, treePanel.tree);
-        if (tp != null) {
-          treePanel.tree.setSelectionPath(tp);
-          treePanel.tree.scrollPathToVisible(tp);
-        }
-      } catch (IOException ex) {
-        logger.warn("Error when expanding projects: " + ex.getMessage());
       }
       showProjectInfo(currentProjects.get(table.getSelectedRow()));
     });
@@ -290,7 +268,47 @@ public class ProjectDirectoriesDialog extends JDialog {
 			sortPane.add(BorderLayout.SOUTH, button);
 
 			{
-				button = new JButton("Remove");
+        button = new JButton("Add");
+        button.addActionListener(e -> {
+          var chooser = new JFileChooser();
+          chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+          chooser.setCurrentDirectory(new File(Cooja.getExternalToolsSetting("PATH_COOJA")));
+          // Only enable "Open button" when there is a cooja.config in the selected directory.
+          final var okButton = chooser.getUI().getDefaultButton(chooser);
+          okButton.setEnabled(false);
+          chooser.addPropertyChangeListener(e1 -> {
+            var prop = e1.getPropertyName();
+            if (JFileChooser.DIRECTORY_CHANGED_PROPERTY.equals(prop)) {
+              okButton.setEnabled(false);
+            } else if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equals(prop)) {
+              var file = (File) e1.getNewValue();
+              var specialDir = file.isDirectory() && new File(file, ProjectConfig.PROJECT_CONFIG_FILENAME).exists();
+              okButton.setEnabled(specialDir);
+            }
+          });
+          // Give directories with a cooja.config a special look.
+          chooser.setFileView(new FileView() {
+            private final Icon extensionIcon = new CheckboxIcon(new Color(0, 255, 0, 128));
+
+            @Override
+            public Icon getIcon(File f) {
+              var specialDir = f.isDirectory() && new File(f, ProjectConfig.PROJECT_CONFIG_FILENAME).exists();
+              return specialDir ? extensionIcon : super.getIcon(f);
+            }
+          });
+          if (chooser.showOpenDialog(Cooja.getTopParentContainer()) != JFileChooser.APPROVE_OPTION) {
+            return;
+          }
+          try {
+            currentProjects.add(new COOJAProject(chooser.getSelectedFile()));
+            ((AbstractTableModel)table.getModel()).fireTableDataChanged();
+          } catch (IOException ex) {
+            logger.error("Failed to parse Cooja project: {}", chooser.getSelectedFile(), ex);
+          }
+        });
+        var p = new JPanel(new BorderLayout());
+        p.add(BorderLayout.NORTH, button);
+        button = new JButton("Remove");
         button.addActionListener(e -> {
           int selectedIndex = table.getSelectedRow();
           if (selectedIndex < 0 || selectedIndex >= currentProjects.size()) {
@@ -306,7 +324,6 @@ public class ProjectDirectoriesDialog extends JDialog {
           }
           removeProjectDir(project);
         });
-				JPanel p = new JPanel(new BorderLayout());
 				p.add(BorderLayout.SOUTH, button);
 				sortPane.add(BorderLayout.CENTER, p);
 			}
@@ -320,13 +337,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 			projectPane.setTopComponent(tableAndSort);
 			projectInfo.setEditable(false);
 			projectPane.setBottomComponent(new JScrollPane(projectInfo));
-
-			final JSplitPane listPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-			listPane.setLeftComponent(treePanel);
-			listPane.setRightComponent(projectPane);
-      projectPane.setDividerLocation(0.6);
-      listPane.setDividerLocation(0.5);
-			mainPane.add(listPane);
+      mainPane.add(projectPane);
 		}
 
 		JPanel topPanel = new JPanel(new BorderLayout());
@@ -419,419 +430,47 @@ public class ProjectDirectoriesDialog extends JDialog {
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 		repaint();
 	}
-
-  public void selectListProject(File dir) {
-		/* Check if project exists */
-		for (COOJAProject p: currentProjects) {
-			if (dir.equals(p.dir)) {
-        int i = currentProjects.indexOf(p);
-				if (i >= 0) {
-					table.getSelectionModel().setSelectionInterval(i, i);
-				}
-				return;
-			}
-		}
-
-	}
 }
 
-/**
- * Shows a directory tree, and allows for selecting directories with a cooja.config file.  
- * 
- * @author Fredrik Osterlind
- */
-class DirectoryTreePanel extends JPanel {
-	private static final Logger logger = LogManager.getLogger(DirectoryTreePanel.class);
+class CheckboxIcon implements Icon {
+  private Icon icon;
+  private final Color color;
 
-	private final ProjectDirectoriesDialog parent;
-	final JTree tree;
-	final DefaultMutableTreeNode treeRoot;
-	public DirectoryTreePanel(ProjectDirectoriesDialog parent) {
-		super(new BorderLayout());
-		this.parent = parent;
+  public CheckboxIcon(Color color) {
+    this.icon = (Icon) UIManager.get("CheckBox.icon");
+    this.color = color;
+  }
 
-		/* Build directory tree */
-		treeRoot = new DefaultMutableTreeNode("My Computer");
-		tree = new JTree(treeRoot);
-		tree.setRootVisible(false);
-		tree.setShowsRootHandles(true);
-		tree.expandRow(0);
-		tree.setCellRenderer(new DefaultTreeCellRenderer() {
-			private final Icon unselectedIcon = new CheckboxIcon(null);
-			private final Icon selectedIcon = new CheckboxIcon(new Color(0, 255, 0, 128));
-			private final Icon errorIcon = new CheckboxIcon(new Color(255, 0, 0, 128));
-			private Font boldFont = null;
-			private Font normalFont = null;
-			@Override
-			public Component getTreeCellRendererComponent(JTree tree,
-					Object value, boolean sel, boolean expanded, boolean leaf,
-					int row, boolean hasFocus) {
-				super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf,
-						row, hasFocus);
-				if (value instanceof DefaultMutableTreeNode) {
-					value = ((DefaultMutableTreeNode) value).getUserObject();
-				}
-				if (!(value instanceof TreeDirectory)) {
-					return this;
-				}
-				TreeDirectory td = (TreeDirectory) value;
+  @Override
+  public int getIconHeight() {
+    return icon == null ? 18 : icon.getIconHeight();
+  }
 
-				if (boldFont == null) {
-					normalFont = getFont();
-					boldFont = getFont().deriveFont( Font.BOLD );
-				}
+  @Override
+  public int getIconWidth() {
+    return icon == null ? 18 : icon.getIconWidth();
+  }
 
-				/* Style */
-				setFont(normalFont);
-				if (td.isProject()) {
-					if (td.containsConfig()) {
-						setIcon(selectedIcon);
-					} else {
-						/* Error: no cooja.config */
-						setIcon(errorIcon);
-						setFont(boldFont);
-					}
-				} else if (td.containsConfig()) {
-					setIcon(unselectedIcon);
-				} else if (td.subtreeContainsProject()) {
-					setFont(boldFont);
-				}
-
-				return this;
-			}
-			class CheckboxIcon implements Icon {
-				Icon icon;
-				final Color color;
-				public CheckboxIcon(Color color) {
-					this.icon = (Icon) UIManager.get("CheckBox.icon");
-					this.color = color;
-				}
-				@Override
-				public int getIconHeight() {
-					if (icon == null) {
-						return 18;
-					}
-					return icon.getIconHeight();
-				}
-				@Override
-				public int getIconWidth() {
-					if (icon == null) {
-						return 18;
-					}
-					return icon.getIconWidth();
-				}
-				@Override
-				public void paintIcon(Component c, Graphics g, int x, int y) {
-					if (icon != null) {
-						try {
-							icon.paintIcon(c, g, x, y);
-						} catch (Exception e) {
-							icon = null;
-						}
-					}
-					if (icon == null) {
-						g.setColor(Color.WHITE);
-						g.fillRect(x+1, y+1, 16, 16);
-						g.setColor(Color.BLACK);
-						g.drawRect(x+1, y+1, 16, 16);
-					}
-					if (color != null) {
-						g.setColor(color);
-						g.fillRect(x, y, getIconWidth(), getIconHeight());
-					}
-				}
-			}
-		});
-		tree.setModel(new COOJAProjectTreeModel(treeRoot));
-		tree.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-				if (selPath == null) {
-					return;
-				}
-				if (e.getClickCount() != 1) {
-					return;
-				}
-				Object o = selPath.getLastPathComponent();
-				if (!(o instanceof DefaultMutableTreeNode)) {
-					return;
-				}
-				if (!(((DefaultMutableTreeNode) o).getUserObject() instanceof TreeDirectory)) {
-					return;
-				}
-				TreeDirectory pd = (TreeDirectory) ((DefaultMutableTreeNode) o).getUserObject();
-				Rectangle r = tree.getPathBounds(selPath);
-				int delta = e.getX() - r.x;
-				if (delta > 18 /* XXX Icon width */) {
-					return;
-				}
-
-				if (pd.isProject()) {
-          for (var p : DirectoryTreePanel.this.parent.getProjects()) {
-            if (p.dir.equals(pd.dir)) {
-              DirectoryTreePanel.this.parent.removeProjectDir(p);
-            }
-          }
-        } else if (pd.containsConfig()) {
-          try {
-            DirectoryTreePanel.this.parent.currentProjects.add(new COOJAProject(pd.dir));
-            ((AbstractTableModel) DirectoryTreePanel.this.parent.table.getModel()).fireTableDataChanged();
-          } catch (IOException e1) {
-            logger.error("Failed to parse Cooja project: {}", pd.dir, e1);
-          }
-        }
-        DirectoryTreePanel.this.parent.repaint();
-			}
-		});
-    tree.addTreeSelectionListener(e -> {
-      TreePath selPath = e.getPath();
-      if (selPath == null) {
-        return;
+  @Override
+  public void paintIcon(Component c, Graphics g, int x, int y) {
+    if (icon != null) {
+      try {
+        icon.paintIcon(c, g, x, y);
+      } catch (Exception e) {
+        icon = null;
       }
-      Object o = selPath.getLastPathComponent();
-      if (!(o instanceof DefaultMutableTreeNode)) {
-        return;
-      }
-      if (!(((DefaultMutableTreeNode) o).getUserObject() instanceof TreeDirectory)) {
-        return;
-      }
-      TreeDirectory pd = (TreeDirectory) ((DefaultMutableTreeNode) o).getUserObject();
-      if (pd.isProject()) {
-        DirectoryTreePanel.this.parent.selectListProject(pd.dir);
-      }
-    });
-
-		/* Try to expand current COOJA projects */
-		for (COOJAProject project: parent.getProjects()) {
-			if (!project.dir.exists()) {
-				logger.fatal("Project directory not found: " + project.dir);
-				continue;
-			}
-			try {
-				String projectCanonical = project.dir.getCanonicalPath();
-				TreePath tp = new TreePath(tree.getModel().getRoot());
-				tp = buildTreePath(projectCanonical, treeRoot, tp, tree);
-				if (tp != null) {
-					tree.expandPath(tp.getParentPath());
-				}
-			} catch (IOException ex) {
-				logger.warn("Error when expanding projects: " + ex.getMessage());
-			}
-		}
-		add(BorderLayout.CENTER, new JScrollPane(tree));
-	}
-
-  static TreePath buildTreePath(String projectCanonical, DefaultMutableTreeNode parent, TreePath tp, JTree tree)
-	throws IOException {
-		/* Force filesystem listing */
-		tree.getModel().getChildCount(parent);
-
-		for (int i=0; i < tree.getModel().getChildCount(parent); i++) {
-			DefaultMutableTreeNode child = (DefaultMutableTreeNode) tree.getModel().getChild(parent, i);
-			Object userObject = child.getUserObject();
-			if (!(userObject instanceof TreeDirectory)) {
-				logger.fatal("Bad tree element: " + userObject.getClass());
-				continue;
-			}
-			TreeDirectory td = (TreeDirectory) userObject;
-			String treeCanonical = td.dir.getCanonicalPath();
-
-			projectCanonical = projectCanonical.replace('\\', '/');
-			if (!projectCanonical.endsWith("/")) {
-				projectCanonical += "/";
-			}
-			treeCanonical = treeCanonical.replace('\\', '/');
-			if (!treeCanonical.endsWith("/")) {
-				treeCanonical += "/";
-			}
-
-			if (projectCanonical.startsWith(treeCanonical)) {
-				tp = tp.pathByAddingChild(child);
-				if (projectCanonical.equals(treeCanonical)) {
-					return tp;
-				}
-
-				return buildTreePath(projectCanonical, child, tp, tree);
-			}
-		}
-		return null;
-	}
-
-	private class TreeDirectory {
-		final File dir;
-		File[] subdirs = null;
-
-		public TreeDirectory(File file) {
-			this.dir = file;
-		}
-
-		boolean isProject() {
-			for (COOJAProject project: parent.getProjects()) {
-				if (project.dir.equals(dir)) {
-					return true;
-				}
-			}
-			return false;
-		}
-		boolean containsConfig() {
-			return new File(dir, ProjectConfig.PROJECT_CONFIG_FILENAME).exists();
-		}
-		boolean subtreeContainsProject() {
-			try {
-				String dirCanonical = dir.getCanonicalPath();
-				for (COOJAProject project: parent.getProjects()) {
-					if (!project.dir.exists()) {
-						continue;
-					}
-					String projectCanonical = project.dir.getCanonicalPath();
-					if (projectCanonical.startsWith(dirCanonical)) {
-						return true;
-					}
-				}
-			} catch (IOException ex) {
-			}
-			return false;
-		}
-		@Override
-		public String toString() {
-			if (dir.getName().isEmpty()) {
-				return dir.getAbsolutePath();
-			}
-			return dir.getName();
-		}
-	}
-	private class COOJAProjectTreeModel extends DefaultTreeModel {
-		private final DefaultMutableTreeNode computerNode;
-
-		public COOJAProjectTreeModel(DefaultMutableTreeNode computerNode) {
-			super(computerNode);
-			this.computerNode = computerNode;
-
-			/* List roots */
-			File[] devices = File.listRoots();
-			if (devices == null) {
-				logger.fatal("Could not list filesystem");
-				return;
-			}
-			for (File device: devices) {
-				DefaultMutableTreeNode deviceNode = new DefaultMutableTreeNode(new TreeDirectory(device));
-				computerNode.add(deviceNode);
-			}
-		}
-		@Override
-		public Object getRoot() {
-			return computerNode.getUserObject();
-		}
-		@Override
-		public boolean isLeaf(Object node) {
-			if ((node instanceof DefaultMutableTreeNode)) {
-				node = ((DefaultMutableTreeNode)node).getUserObject();
-			}
-			if (!(node instanceof TreeDirectory)) {
-				/* Computer node */
-				return false;
-			}
-			TreeDirectory td = ((TreeDirectory)node);
-
-			return td.dir.isFile();
-		}
-		@Override
-		public int getChildCount(Object parent) {
-      if (parent instanceof DefaultMutableTreeNode node) {
-        parent = node.getUserObject();
-      }
-			if (!(parent instanceof TreeDirectory)) {
-				/* Computer node */
-				return computerNode.getChildCount();
-			}
-			TreeDirectory td = ((TreeDirectory)parent);
-
-			File[] children;
-			if (td.subdirs != null) {
-				children = td.subdirs;
-			} else {
-				children = getDirectoryList(td.dir);
-				td.subdirs = children;
-			}
-			if (children == null) {
-				return 0;
-			}
-			return children.length;
-		}
-		@Override
-		public Object getChild(Object parent, int index) {
-      if (parent instanceof DefaultMutableTreeNode node) {
-        parent = node.getUserObject();
-      }
-			if (!(parent instanceof TreeDirectory)) {
-				/* Computer node */
-				return computerNode.getChildAt(index);
-			}
-			TreeDirectory td = ((TreeDirectory)parent);
-
-			File[] children;
-			if (td.subdirs != null) {
-				children = td.subdirs;
-			} else {
-				children = getDirectoryList(td.dir);
-				td.subdirs = children;
-			}
-			if ((children == null) || (index >= children.length)) {
-				return null;
-			}
-			return new DefaultMutableTreeNode(new TreeDirectory(children[index]));
-		}
-		@Override
-		public int getIndexOfChild(Object parent, Object child) {
-      if (parent instanceof DefaultMutableTreeNode node) {
-        parent = node.getUserObject();
-      }
-			if (!(parent instanceof TreeDirectory)) {
-				/* Computer node */
-				for(int i=0; i < computerNode.getChildCount(); i++) {
-					if (computerNode.getChildAt(i).equals(child)) {
-						return i;
-					}
-				}
-			}
-			TreeDirectory td = ((TreeDirectory)parent);
-
-			File[] children;
-			if (td.subdirs != null) {
-				children = td.subdirs;
-			} else {
-				children = getDirectoryList(td.dir);
-				td.subdirs = children;
-			}
-			if (children == null) {
-				return -1;
-			}
-			if (child instanceof DefaultMutableTreeNode) {
-				child = ((DefaultMutableTreeNode)child).getUserObject();
-			}
-			File subDir = ((TreeDirectory)child).dir;
-			for(int i = 0; i < children.length; i++) {
-				if (subDir.equals(children[i])) {
-					return i;
-				}
-			}
-			return -1;
-		}
-
-		@Override
-		public void valueForPathChanged(TreePath path, Object newvalue) {}
-		@Override
-		public void addTreeModelListener(TreeModelListener l) {}
-		@Override
-		public void removeTreeModelListener(TreeModelListener l) {}
-
-    private static File[] getDirectoryList(File parent) {
-      var dirs = parent.listFiles(file -> file.isDirectory() && !file.getName().startsWith("."));
-			Arrays.sort(dirs);
-			return dirs;
-		}
-	}
+    }
+    if (icon == null) {
+      g.setColor(Color.WHITE);
+      g.fillRect(x + 1, y + 1, 16, 16);
+      g.setColor(Color.BLACK);
+      g.drawRect(x + 1, y + 1, 16, 16);
+    }
+    if (color != null) {
+      g.setColor(color);
+      g.fillRect(x, y, getIconWidth(), getIconHeight());
+    }
+  }
 }
 
 /**
