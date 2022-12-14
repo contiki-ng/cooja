@@ -109,25 +109,19 @@ public abstract class SerialUI extends Log implements SerialPort {
     return lastSerialData;
   }
   public void dataReceived(int data) {
-    if (data == '\n') {
-      lastLogMessage = newMessage.toString();
+    charactersReceived++;
+    if (data == '\n' || charactersReceived > MAX_LENGTH) {
+      lastLogMessage = data == '\n'
+              ? newMessage.toString()
+              : "# [1024 bytes, no line ending]: " + newMessage.substring(0, Math.min(20, newMessage.length())) + "...";
       newMessage.setLength(0);
       charactersReceived = 0;
       this.setChanged();
       this.notifyObservers(getMote());
     } else {
-      // FIXME: Make next 5 lines unconditional first part of method, set lastLogMessage conditionally after that.
-      charactersReceived++;
       char ch = (char) data;
       if (Character.isLetterOrDigit(ch) || Character.isWhitespace(ch) || punctuation.test(String.valueOf(ch))) {
         newMessage.append(ch);
-      }
-      if (charactersReceived > MAX_LENGTH) {
-        lastLogMessage = "# [1024 bytes, no line ending]: " +
-            newMessage.substring(0, Math.min(20, newMessage.length())) + "...";
-        newMessage.setLength(0);
-        this.setChanged();
-        this.notifyObservers(getMote());
       }
     }
 
