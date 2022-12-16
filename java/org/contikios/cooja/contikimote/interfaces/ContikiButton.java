@@ -75,9 +75,6 @@ public class ContikiButton extends Button.AbstractButton {
 
       /* If mote is inactive, wake it up */
       mote.requestImmediateWakeup();
-
-      setChanged();
-      notifyObservers();
     }
   }
 
@@ -90,9 +87,6 @@ public class ContikiButton extends Button.AbstractButton {
 
       /* If mote is inactive, wake it up */
       mote.requestImmediateWakeup();
-
-      setChanged();
-      notifyObservers();
     }
   }
 
