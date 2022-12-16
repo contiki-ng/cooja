@@ -30,12 +30,11 @@
 
 package org.contikios.cooja.contikimote.interfaces;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.awt.EventQueue;
+import java.util.LinkedHashMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 
 import org.contikios.cooja.interfaces.MoteID;
@@ -57,14 +56,14 @@ import org.contikios.cooja.mote.memory.VarMemory;
  *
  * @author Fredrik Osterlind
  */
-public class ContikiMoteID extends Observable implements MoteID {
+public class ContikiMoteID implements MoteID {
   private final VarMemory moteMem;
-  private static final Logger logger = LogManager.getLogger(ContikiMoteID.class);
 
   private int moteID = 0;
 
   private final Mote mote;
-  
+  private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
+
   /**
    * Creates an interface to the mote ID at mote.
    *
@@ -89,8 +88,13 @@ public class ContikiMoteID extends Observable implements MoteID {
     moteMem.setIntValueOf("simMoteID", moteID);
     moteMem.setByteValueOf("simMoteIDChanged", (byte) 1);
     moteMem.setIntValueOf("simRandomSeed", (int) (mote.getSimulation().getRandomSeed() + newID));
-    setChanged();
-    notifyObservers();
+    if (Cooja.isVisualized()) {
+      EventQueue.invokeLater(() -> {
+        for (var label : labels.values()) {
+          label.setText("Mote ID: " + moteID);
+        }
+      });
+    }
   }
 
   @Override
@@ -101,24 +105,12 @@ public class ContikiMoteID extends Observable implements MoteID {
     idLabel.setText("Mote ID: " + moteID);
 
     panel.add(idLabel);
-
-    Observer observer;
-    this.addObserver(observer = (obs, obj) -> idLabel.setText("Mote ID: " + moteID));
-    // Saving observer reference for releaseInterfaceVisualizer
-    panel.putClientProperty("intf_obs", observer);
-
+    labels.put(panel, idLabel);
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
-      return;
-    }
-
-    this.deleteObserver(observer);
+    labels.remove(panel);
   }
-
 }
