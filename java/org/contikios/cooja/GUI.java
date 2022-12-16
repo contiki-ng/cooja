@@ -61,6 +61,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultDesktopManager;
 import javax.swing.InputMap;
@@ -108,7 +109,6 @@ import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.plugins.MoteTypeInformation;
-import org.contikios.cooja.plugins.SimInformation;
 import org.contikios.cooja.util.ScnObservable;
 import org.jdom2.Element;
 
@@ -680,11 +680,81 @@ public class GUI {
     reloadSimulationMenuItem.add(new JMenuItem(reloadRandomSimulationAction));
     simulationMenu.add(reloadSimulationMenuItem);
 
-    var guiAction = new StartPluginGUIAction("Information...");
-    var menuItem = new JMenuItem(guiAction);
-    guiActions.add(guiAction);
+    var infoAction = new GUIAction("Information...") {
+      @Override
+      public void actionPerformed(ActionEvent actionEvent) {
+        final var LABEL_WIDTH = 170;
+        final var LABEL_HEIGHT = 15;
+
+        // Radio Medium type.
+        var smallPane = new JPanel();
+        // FIXME: Simplify code with a GridLayout.
+        smallPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        smallPane.setLayout(new BoxLayout(smallPane, BoxLayout.X_AXIS));
+        var label = new JLabel("Radio medium");
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+        smallPane.add(label);
+        smallPane.add(Box.createHorizontalStrut(10));
+        smallPane.add(Box.createHorizontalGlue());
+
+        final var sim = cooja.getSimulation();
+        smallPane.add(new JLabel(Cooja.getDescriptionOf(sim.getRadioMedium().getClass())));
+        var mainPane = new JPanel();
+        mainPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
+        mainPane.add(smallPane);
+        mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
+
+        // Status information.
+        smallPane = new JPanel();
+        smallPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        smallPane.setLayout(new BoxLayout(smallPane, BoxLayout.X_AXIS));
+        label = new JLabel("Status");
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+        smallPane.add(label);
+        smallPane.add(Box.createHorizontalStrut(10));
+        smallPane.add(Box.createHorizontalGlue());
+        smallPane.add(new JLabel(sim.isRunning() ? "RUNNING" : "STOPPED"));
+        mainPane.add(smallPane);
+        mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
+
+        // Number of motes.
+        smallPane = new JPanel();
+        smallPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        smallPane.setLayout(new BoxLayout(smallPane, BoxLayout.X_AXIS));
+        label = new JLabel("Number of motes");
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+        smallPane.add(label);
+        smallPane.add(Box.createHorizontalStrut(10));
+        smallPane.add(Box.createHorizontalGlue());
+        smallPane.add(new JLabel(String.valueOf(sim.getMotesCount())));
+        mainPane.add(smallPane);
+        mainPane.add(Box.createRigidArea(new Dimension(0, 5)));
+
+        // Number of mote types.
+        smallPane = new JPanel();
+        smallPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        smallPane.setLayout(new BoxLayout(smallPane, BoxLayout.X_AXIS));
+        label = new JLabel("Number of mote types");
+        label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
+        smallPane.add(label);
+        smallPane.add(Box.createHorizontalStrut(10));
+        smallPane.add(Box.createHorizontalGlue());
+        smallPane.add(new JLabel(String.valueOf(sim.getMoteTypes().length)));
+
+        mainPane.add(smallPane);
+        JOptionPane.showMessageDialog(Cooja.getTopParentContainer(), mainPane,
+                "Simulation Information", JOptionPane.INFORMATION_MESSAGE);
+      }
+
+      @Override
+      public boolean shouldBeEnabled() {
+        return cooja.getSimulation() != null;
+      }
+    };
+    var menuItem = new JMenuItem(infoAction);
+    guiActions.add(infoAction);
     menuItem.setMnemonic(KeyEvent.VK_I);
-    menuItem.putClientProperty("class", SimInformation.class);
     simulationMenu.add(menuItem);
 
     // Mote type menu
@@ -796,7 +866,7 @@ public class GUI {
     });
     motesMenu.add(menuMoteTypes);
 
-    guiAction = new StartPluginGUIAction("Mote types...");
+    var guiAction = new StartPluginGUIAction("Mote types...");
     menuItem = new JMenuItem(guiAction);
     guiActions.add(guiAction);
     menuItem.putClientProperty("class", MoteTypeInformation.class);
@@ -841,7 +911,7 @@ public class GUI {
         // Simulation plugins.
         boolean hasSimPlugins = false;
         for (Class<? extends Plugin> pluginClass : cooja.getRegisteredPlugins()) {
-          if (pluginClass.equals(SimInformation.class) || pluginClass.equals(MoteTypeInformation.class)) {
+          if (pluginClass.equals(MoteTypeInformation.class)) {
             continue; // Ignore.
           }
 
