@@ -36,7 +36,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ import java.util.Enumeration;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -57,8 +55,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
-import javax.swing.UIManager;
-import javax.swing.filechooser.FileView;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import org.apache.logging.log4j.Logger;
@@ -271,36 +268,23 @@ public class ProjectDirectoriesDialog extends JDialog {
         button = new JButton("Add");
         button.addActionListener(e -> {
           var chooser = new JFileChooser();
-          chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-          chooser.setCurrentDirectory(new File(Cooja.getExternalToolsSetting("PATH_COOJA")));
-          // Only enable "Open button" when there is a cooja.config in the selected directory.
-          final var okButton = chooser.getUI().getDefaultButton(chooser);
-          okButton.setEnabled(false);
-          chooser.addPropertyChangeListener(e1 -> {
-            var prop = e1.getPropertyName();
-            if (JFileChooser.DIRECTORY_CHANGED_PROPERTY.equals(prop)) {
-              okButton.setEnabled(false);
-            } else if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equals(prop)) {
-              var file = (File) e1.getNewValue();
-              var specialDir = file.isDirectory() && new File(file, ProjectConfig.PROJECT_CONFIG_FILENAME).exists();
-              okButton.setEnabled(specialDir);
+          chooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+              return file.isDirectory() || "cooja.config".equals(file.getName());
             }
-          });
-          // Give directories with a cooja.config a special look.
-          chooser.setFileView(new FileView() {
-            private final Icon extensionIcon = new CheckboxIcon(new Color(0, 255, 0, 128));
 
             @Override
-            public Icon getIcon(File f) {
-              var specialDir = f.isDirectory() && new File(f, ProjectConfig.PROJECT_CONFIG_FILENAME).exists();
-              return specialDir ? extensionIcon : super.getIcon(f);
+            public String getDescription() {
+              return "Cooja extension config files (cooja.config)";
             }
           });
+          chooser.setCurrentDirectory(new File(Cooja.getExternalToolsSetting("PATH_COOJA")));
           if (chooser.showOpenDialog(Cooja.getTopParentContainer()) != JFileChooser.APPROVE_OPTION) {
             return;
           }
           try {
-            currentProjects.add(new COOJAProject(chooser.getSelectedFile()));
+            currentProjects.add(new COOJAProject(chooser.getSelectedFile().getParentFile()));
             ((AbstractTableModel)table.getModel()).fireTableDataChanged();
           } catch (IOException ex) {
             logger.error("Failed to parse Cooja project: {}", chooser.getSelectedFile(), ex);
@@ -430,47 +414,6 @@ public class ProjectDirectoriesDialog extends JDialog {
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 		repaint();
 	}
-}
-
-class CheckboxIcon implements Icon {
-  private Icon icon;
-  private final Color color;
-
-  public CheckboxIcon(Color color) {
-    this.icon = (Icon) UIManager.get("CheckBox.icon");
-    this.color = color;
-  }
-
-  @Override
-  public int getIconHeight() {
-    return icon == null ? 18 : icon.getIconHeight();
-  }
-
-  @Override
-  public int getIconWidth() {
-    return icon == null ? 18 : icon.getIconWidth();
-  }
-
-  @Override
-  public void paintIcon(Component c, Graphics g, int x, int y) {
-    if (icon != null) {
-      try {
-        icon.paintIcon(c, g, x, y);
-      } catch (Exception e) {
-        icon = null;
-      }
-    }
-    if (icon == null) {
-      g.setColor(Color.WHITE);
-      g.fillRect(x + 1, y + 1, 16, 16);
-      g.setColor(Color.BLACK);
-      g.drawRect(x + 1, y + 1, 16, 16);
-    }
-    if (color != null) {
-      g.setColor(color);
-      g.fillRect(x, y, getIconWidth(), getIconHeight());
-    }
-  }
 }
 
 /**
