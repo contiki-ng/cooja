@@ -77,16 +77,13 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     this.mote = m;
     this.simulation = s;
 
-    JLabel label;
-    JPanel smallPane;
-
     JPanel mainPane = new JPanel();
     mainPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
 
     /* Mote type */
-    smallPane = new JPanel(new BorderLayout());
-    label = new JLabel("Mote type");
+    var smallPane = new JPanel(new BorderLayout());
+    var label = new JLabel("Mote type");
     label.setPreferredSize(size);
     smallPane.add(BorderLayout.WEST, label);
     label = new JLabel(mote.getType().getDescription());
