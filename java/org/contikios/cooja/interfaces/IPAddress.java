@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.Observable;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -57,8 +55,6 @@ import org.contikios.cooja.util.IPUtils;
  */
 @ClassDescription("IP Addresses")
 public class IPAddress extends Observable implements MoteInterface {
-
-  private static final Logger logger = LogManager.getLogger(IPAddress.class);
   private static final int IPv6_MAX_ADDRESSES = 4;
 
   private enum IPv {
@@ -160,7 +156,6 @@ public class IPAddress extends Observable implements MoteInterface {
     if (moteMem.variableExists("uip_ds6_netif_addr_list_offset")
             && moteMem.variableExists("uip_ds6_addr_size")
             && moteMem.variableExists("uip_ds6_if")) {
-      logger.debug("IPv6 detected");
       ipVersion = IPv.IPv6;
       moteMem.addVarMonitor(
               SegmentMonitor.EventType.WRITE,
