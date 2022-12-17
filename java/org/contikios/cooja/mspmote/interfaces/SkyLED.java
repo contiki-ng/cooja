@@ -32,13 +32,12 @@ package org.contikios.cooja.mspmote.interfaces;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.ArrayList;
 import javax.swing.JPanel;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.mspmote.SkyMote;
@@ -51,8 +50,6 @@ import se.sics.mspsim.platform.sky.SkyNode;
  */
 @ClassDescription("Sky LED")
 public class SkyLED extends LED {
-  private static final Logger logger = LogManager.getLogger(SkyLED.class);
-
   private boolean blueOn = false;
   private boolean greenOn = false;
   private boolean redOn = false;
@@ -63,6 +60,7 @@ public class SkyLED extends LED {
   private static final Color BLUE = new Color(0, 0, 255);
   private static final Color GREEN = new Color(0, 255, 0);
   private static final Color RED = new Color(255, 0, 0);
+  private final ArrayList<JPanel> labels = new ArrayList<>();
 
   public SkyLED(Mote mote) {
     var mspMote = (SkyMote) mote;
@@ -71,6 +69,13 @@ public class SkyLED extends LED {
         blueOn = (data & SkyNode.BLUE_LED) == 0;
         greenOn = (data & SkyNode.GREEN_LED) == 0;
         redOn = (data & SkyNode.RED_LED) == 0;
+        if (Cooja.isVisualized()) {
+          EventQueue.invokeLater(() ->  {
+            for (var panel : labels) {
+              panel.repaint();
+            }
+          });
+        }
         setChanged();
         notifyObservers();
       });
@@ -143,33 +148,14 @@ public class SkyLED extends LED {
         }
       }
     };
-
-    Observer observer;
-    this.addObserver(observer = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        panel.repaint();
-      }
-    });
-
-    // Saving observer reference for releaseInterfaceVisualizer
-    panel.putClientProperty("intf_obs", observer);
-
     panel.setMinimumSize(new Dimension(140, 60));
     panel.setPreferredSize(new Dimension(140, 60));
-
+    labels.add(panel);
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
-      return;
-    }
-
-    this.deleteObserver(observer);
+    labels.remove(panel);
   }
-
 }
