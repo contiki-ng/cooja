@@ -126,11 +126,8 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
       label = new JLabel("CPU frequency");
       label.setPreferredSize(size);
       smallPane.add(BorderLayout.WEST, label);
-      if (emulatedMote.getCPUFrequency() < 0) {
-        label = new JLabel("[unknown]");
-      } else {
-        label = new JLabel(emulatedMote.getCPUFrequency() + " Hz");
-      }
+      var freq = emulatedMote.getCPUFrequency();
+      label = new JLabel(freq < 0 ? "[unknown]" : emulatedMote.getCPUFrequency() + " Hz");
       label.setPreferredSize(size);
       smallPane.add(BorderLayout.EAST, label);
       mainPane.add(smallPane);
