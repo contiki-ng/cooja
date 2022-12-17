@@ -63,19 +63,16 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
   private final static int LABEL_HEIGHT = 20;
   private final static Dimension size = new Dimension(LABEL_WIDTH,LABEL_HEIGHT);
   
-  private final Simulation simulation;
-
   /**
    * Create a new mote information window.
    *
    * @param m Mote
-   * @param s Simulation
+   * @param simulation Simulation
    * @param gui Simulator
    */
-  public MoteInformation(Mote m, Simulation s, Cooja gui) {
+  public MoteInformation(Mote m, Simulation simulation, Cooja gui) {
     super("Mote Information (" + m + ")", gui);
     this.mote = m;
-    this.simulation = s;
 
     JPanel mainPane = new JPanel();
     mainPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
