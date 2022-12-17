@@ -1,18 +1,14 @@
 package org.contikios.cooja.interfaces;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.util.Observer;
-
+import java.util.ArrayList;
 import javax.swing.JPanel;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 
 public class ApplicationLED extends LED {
-    private static final Logger logger = LogManager.getLogger(ApplicationLED.class);
-
     private final Mote mote;
     private byte currentLedValue = 0;
 
@@ -26,6 +22,7 @@ public class ApplicationLED extends LED {
     private static final Color GREEN = new Color(0, 255, 0);
     private static final Color YELLOW = new Color(255, 255, 0);
     private static final Color RED = new Color(255, 0, 0);
+    private final ArrayList<JPanel> labels = new ArrayList<>();
 
      public ApplicationLED(Mote mote) {
        this.mote = mote;
@@ -57,6 +54,13 @@ public class ApplicationLED extends LED {
 
        currentLedValue = (byte) led;
        if (ledChanged) {
+         if (Cooja.isVisualized()) {
+           EventQueue.invokeLater(() -> {
+             for (var panel : labels) {
+               panel.repaint();
+             }
+           });
+         }
          this.setChanged();
          this.notifyObservers(mote);
        }
@@ -108,27 +112,14 @@ public class ApplicationLED extends LED {
            }
          }
        };
-
-       Observer observer;
-       this.addObserver(observer = (obs, obj) -> panel.repaint());
-       // Saving observer reference for releaseInterfaceVisualizer
-       panel.putClientProperty("intf_obs", observer);
-
        panel.setMinimumSize(new Dimension(140, 60));
        panel.setPreferredSize(new Dimension(140, 60));
-
+       labels.add(panel);
        return panel;
      }
 
      @Override
      public void releaseInterfaceVisualizer(JPanel panel) {
-       Observer observer = (Observer) panel.getClientProperty("intf_obs");
-       if (observer == null) {
-         logger.fatal("Error when releasing panel, observer is null");
-         return;
-       }
-
-       this.deleteObserver(observer);
+       labels.remove(panel);
      }
-
 }
