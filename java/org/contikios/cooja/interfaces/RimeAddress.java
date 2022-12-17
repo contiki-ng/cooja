@@ -30,16 +30,13 @@
 
 package org.contikios.cooja.interfaces;
 
+import java.awt.EventQueue;
+import java.util.LinkedHashMap;
 import java.util.Observable;
-import java.util.Observer;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor;
@@ -54,12 +51,13 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 @ClassDescription("Rime address")
 public class RimeAddress extends Observable implements MoteInterface {
-  private static final Logger logger = LogManager.getLogger(RimeAddress.class);
   private final VarMemory moteMem;
 
   public static final int RIME_ADDR_LENGTH = 2;
 
   private SegmentMonitor memMonitor = null;
+
+  private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
 
   public RimeAddress(final Mote mote) {
     moteMem = new VarMemory(mote.getMemory());
@@ -67,6 +65,13 @@ public class RimeAddress extends Observable implements MoteInterface {
       memMonitor = (memory, type, address) -> {
         if (type != SegmentMonitor.EventType.WRITE) {
           return;
+        }
+        if (Cooja.isVisualized()) {
+          EventQueue.invokeLater(() -> {
+            for (var label : labels.values()) {
+              label.setText("Rime address: " + getAddressString());
+            }
+          });
         }
         setChanged();
         notifyObservers();
@@ -102,24 +107,13 @@ public class RimeAddress extends Observable implements MoteInterface {
     ipLabel.setText("Rime address: " + getAddressString());
 
     panel.add(ipLabel);
-
-    Observer observer;
-    addObserver(observer = (obs, obj) -> ipLabel.setText("Rime address: " + getAddressString()));
-
-    panel.putClientProperty("intf_obs", observer);
-
+    labels.put(panel, ipLabel);
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
-      return;
-    }
-
-    this.deleteObserver(observer);
+    labels.remove(panel);
   }
 
   @Override
