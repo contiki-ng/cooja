@@ -29,15 +29,11 @@
  */
 
 package org.contikios.cooja.mspmote.interfaces;
-import java.util.Observable;
-import java.util.Observer;
-
+import java.awt.EventQueue;
+import java.util.LinkedHashMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.mote.memory.VarMemory;
@@ -50,9 +46,7 @@ import se.sics.mspsim.core.MemoryMonitor;
  *
  * @author Fredrik Osterlind
  */
-public class MspMoteID extends Observable implements MoteID {
-	private static final Logger logger = LogManager.getLogger(MspMoteID.class);
-
+public class MspMoteID implements MoteID {
 	private final MspMote mote;
 	private final VarMemory moteMem;
 
@@ -60,7 +54,9 @@ public class MspMoteID extends Observable implements MoteID {
 	private int moteID = -1;
 
 	private MemoryMonitor memoryMonitor;
-	
+
+  private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
+
 	/**
 	 * Creates an interface to the mote ID at mote.
 	 *
@@ -82,7 +78,13 @@ public class MspMoteID extends Observable implements MoteID {
 	public void setMoteID(int newID) {
 		if (moteID != newID) {
 			mote.idUpdated(newID);
-			setChanged();
+      if (Cooja.isVisualized()) {
+        EventQueue.invokeLater(() -> {
+          for (var label : labels.values()) {
+            label.setText("Mote ID: " + getMoteID());
+          }
+        });
+      }
 		}
 		moteID = newID;
 
@@ -157,8 +159,6 @@ public class MspMoteID extends Observable implements MoteID {
                     addMonitor("ActiveMessageAddressC__addr", memoryMonitor);
                     addMonitor("ActiveMessageAddressC$addr", memoryMonitor);
 		}
-
-		notifyObservers();
 	}
 
 	@Override
@@ -169,23 +169,13 @@ public class MspMoteID extends Observable implements MoteID {
 		idLabel.setText("Mote ID: " + getMoteID());
 
 		panel.add(idLabel);
-
-		Observer observer;
-		this.addObserver(observer = (obs, obj) -> idLabel.setText("Mote ID: " + getMoteID()));
-		panel.putClientProperty("intf_obs", observer);
-
+		labels.put(panel, idLabel);
 		return panel;
 	}
 
 	@Override
 	public void releaseInterfaceVisualizer(JPanel panel) {
-		Observer observer = (Observer) panel.getClientProperty("intf_obs");
-		if (observer == null) {
-			logger.fatal("Error when releasing panel, observer is null");
-			return;
-		}
-
-		this.deleteObserver(observer);
+    labels.remove(panel);
 	}
 
 	@Override
