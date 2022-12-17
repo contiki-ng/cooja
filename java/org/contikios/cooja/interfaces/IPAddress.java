@@ -30,15 +30,17 @@
 
 package org.contikios.cooja.interfaces;
 
+import java.awt.EventQueue;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface;
@@ -76,6 +78,8 @@ public class IPAddress extends Observable implements MoteInterface {
 
   private int ipv6_addr_size = 0;
   private int ipv6_addr_list_offset = 0;
+
+  private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
 
   public IPAddress(final Mote mote) {
     moteMem = new VarMemory(mote.getMemory());
@@ -116,6 +120,7 @@ public class IPAddress extends Observable implements MoteInterface {
             /* Initial scan for IP address */
             updateIPAddresses();
             if (ipList.size() > 0) {
+              updateUI();
               setChanged();
               notifyObservers();
             }
@@ -130,6 +135,7 @@ public class IPAddress extends Observable implements MoteInterface {
             lastAccess = address;
             if (accessCount == 16) {
               updateIPAddresses();
+              updateUI();
               setChanged();
               notifyObservers();
               lastAccess = 0;
@@ -139,6 +145,7 @@ public class IPAddress extends Observable implements MoteInterface {
             /* Check if ip write was interrupted unexpectedly last time */
             if (lastAccess != 0) {
               updateIPAddresses();
+              updateUI();
               setChanged();
               notifyObservers();
             }
@@ -254,43 +261,42 @@ public class IPAddress extends Observable implements MoteInterface {
     }
   }
 
+  // FIXME: Call inside updateIPAddresses() instead.
+  private void updateUI() {
+    if (!Cooja.isVisualized()) {
+      return;
+    }
+    EventQueue.invokeLater(() -> {
+      for (var label : labels.values()) {
+        var ipStr = new StringBuilder();
+        ipStr.append("<html>");
+        for (IPContainer ipc : ipList) {
+          if (ipVersion == IPv.IPv6) {
+            ipStr.append(ipc.isGlobal() ? "Global" : "Local")
+                    .append(" IPv6 address(#").append(ipc.getAddID()).append("): ").append(ipc).append("<br>");
+          } else {
+            ipStr.append("Unknown IP<br>");
+          }
+        }
+        ipStr.append("</html>");
+        label.setText(ipStr.toString());
+      }
+    });
+  }
+
   @Override
   public JPanel getInterfaceVisualizer() {
     JPanel panel = new JPanel();
     final JLabel ipLabel = new JLabel();
-
-    Observer observer;
-    this.addObserver(observer = (obs, obj) -> {
-      StringBuilder ipStr = new StringBuilder();
-      ipStr.append("<html>");
-      for (IPContainer ipc: ipList) {
-        if (ipVersion == IPv.IPv6) {
-          ipStr.append(ipc.isGlobal() ? "Global" : "Local")
-                  .append(" IPv6 address(#").append(ipc.getAddID()).append("): ").append(ipc)
-                  .append("<br>");
-        } else {
-          ipStr.append("Unknown IP<br>");
-        }
-      }
-      ipStr.append("</html>");
-      ipLabel.setText(ipStr.toString());
-    });
-    observer.update(null, null);
-
     panel.add(ipLabel);
-    panel.putClientProperty("intf_obs", observer);
-
+    labels.put(panel, ipLabel);
+    updateUI();
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
-      return;
-    }
-    this.deleteObserver(observer);
+    labels.remove(panel);
   }
 
   /**
