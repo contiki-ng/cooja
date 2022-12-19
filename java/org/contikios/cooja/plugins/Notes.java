@@ -107,12 +107,9 @@ public class Notes extends VisPlugin {
   }
 
   private void setDecorationsVisible(boolean visible) {
-    if (getUI() instanceof BasicInternalFrameUI ui) {
-      try {
-        ui.getNorthPane().setPreferredSize(visible ? null : new Dimension(0, 0));
-      } catch (NullPointerException e) {
-        // This catches an error where the defined look and feel makes north pane null.
-      }
+    // Some look and feels can make the north pane null.
+    if (getUI() instanceof BasicInternalFrameUI frameUI && frameUI.getNorthPane() != null) {
+      frameUI.getNorthPane().setPreferredSize(visible ? null : new Dimension(0, 0));
       revalidate();
       SwingUtilities.invokeLater(Notes.this::repaint);
       decorationsVisible = visible;
