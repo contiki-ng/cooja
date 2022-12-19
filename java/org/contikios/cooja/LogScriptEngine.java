@@ -268,11 +268,10 @@ public class LogScriptEngine {
     scriptThread = new Thread(new Runnable() {
       @Override
       public void run() {
-        int rv;
+        int rv = 1;
         try {
           rv = (int) Objects.requireNonNullElse(script.eval(), 1);
         } catch (Exception e) {
-          rv = 1;
           logger.fatal("Script error:", e);
           if (Cooja.isVisualized()) {
             Cooja.showErrorDialog("Script error", e, false);
