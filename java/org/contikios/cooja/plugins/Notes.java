@@ -32,6 +32,7 @@ package org.contikios.cooja.plugins;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import org.jdom2.Element;
@@ -111,7 +111,7 @@ public class Notes extends VisPlugin {
     if (getUI() instanceof BasicInternalFrameUI frameUI && frameUI.getNorthPane() != null) {
       frameUI.getNorthPane().setPreferredSize(visible ? null : new Dimension(0, 0));
       revalidate();
-      SwingUtilities.invokeLater(Notes.this::repaint);
+      EventQueue.invokeLater(Notes.this::repaint);
       decorationsVisible = visible;
     }
   }
