@@ -84,7 +84,6 @@ import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
@@ -571,12 +570,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     /* Start observing motes for new log output */
     logUpdateAggregator.start();
     simulation.getEventCentral().addLogOutputListener(logOutputListener = new LogOutputListener() {
-      @Override
-      public void moteWasAdded(Mote mote) {
-      }
-      @Override
-      public void moteWasRemoved(Mote mote) {
-      }
       @Override
       public void newLogOutput(LogOutputEvent ev) {
         if (!hasHours && ev.getTime() > TIME_HOUR) {

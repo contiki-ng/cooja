@@ -74,12 +74,6 @@ public class LogScriptEngine {
 
   private final LogOutputListener logOutputListener = new LogOutputListener() {
     @Override
-    public void moteWasAdded(Mote mote) {
-    }
-    @Override
-    public void moteWasRemoved(Mote mote) {
-    }
-    @Override
     public void newLogOutput(LogOutputEvent ev) {
       if (scriptThread == null || !scriptThread.isAlive()) {
         logger.warn("No script thread, deactivate script.");
