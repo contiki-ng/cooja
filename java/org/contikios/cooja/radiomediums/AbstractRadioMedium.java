@@ -67,7 +67,7 @@ import org.jdom2.Element;
  *
  * @author Fredrik Osterlind
  */
-public abstract class AbstractRadioMedium extends RadioMedium {
+public abstract class AbstractRadioMedium implements RadioMedium {
 	private static final Logger logger = LogManager.getLogger(AbstractRadioMedium.class);
 	
 	/* Signal strengths in dBm.
