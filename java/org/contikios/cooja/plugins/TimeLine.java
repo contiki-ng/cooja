@@ -1113,7 +1113,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       Cooja.deleteMoteHighlightObserver(moteHighlightObserver);
     }
 
-    simulation.getEventCentral().removeMoteCountListener(newMotesListener);
+    simulation.getEventCentral().removeLogOutputListener(newMotesListener);
 
     /* Remove active mote interface observers */
     for (MoteObservation o: activeMoteObservers) {
