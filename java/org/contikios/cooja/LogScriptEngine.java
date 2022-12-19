@@ -40,6 +40,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.Semaphore;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
@@ -269,8 +270,7 @@ public class LogScriptEngine {
       public void run() {
         int rv;
         try {
-          var obj = script.eval();
-          rv = obj == null ? 1 : (int) obj;
+          rv = (int) Objects.requireNonNullElse(script.eval(), 1);
           // rv == -1 means something else is shutting down Cooja, for example the SerialSocket commands in 17-tun-rpl-br.
           if (rv != -1) {
             scriptLog(rv == 0 ? "TEST OK\n" : "TEST FAILED\n");
