@@ -1223,7 +1223,119 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       setLayout(null);
       setToolTipText(null);
       setBackground(COLOR_BACKGROUND);
+      var mouseAdapter = new MouseAdapter() {
+        private Popup popUpToolTip = null;
+        private double zoomInitialPixelDivisor;
+        private int zoomInitialMouseY;
+        private long zoomCenterTime = -1;
+        private double zoomCenter = -1;
 
+        @Override
+        public void mouseDragged(MouseEvent e) {
+          super.mouseDragged(e);
+          if (e.isControlDown()) { // Zoom with mouse.
+            if (zoomCenterTime < 0) {
+              return;
+            }
+            var factor = Math.exp(0.01 * (e.getY() - zoomInitialMouseY));
+            zoomFinish(zoomInitialPixelDivisor * factor, zoomCenterTime, zoomCenter);
+            return;
+          }
+          if (e.isAltDown()) { // Pan with mouse.
+            if (zoomCenterTime < 0) {
+              return;
+            }
+            zoomCenter = (double) (e.getX() - timeline.getVisibleRect().x) / timeline.getVisibleRect().width;
+            forceRepaintAndFocus(zoomCenterTime, zoomCenter);
+            return;
+          }
+          if (mousePixelPositionX >= 0) {
+            mousePixelPositionX = e.getX();
+            mousePixelPositionY = e.getY();
+            repaint();
+          }
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+          if (e.isControlDown()) { // Zoom with mouse.
+            zoomInitialMouseY = e.getY();
+            zoomInitialPixelDivisor = currentPixelDivisor;
+            zoomCenterTime = (long) (e.getX() * currentPixelDivisor);
+            zoomCenter = (double) (e.getX() - timeline.getVisibleRect().x) / timeline.getVisibleRect().width;
+            return;
+          }
+          if (e.isAltDown()) { // Pan with mouse.
+            zoomCenterTime = (long) (e.getX() * currentPixelDivisor);
+            return;
+          }
+          if (popUpToolTip != null) {
+            popUpToolTip.hide();
+            popUpToolTip = null;
+          }
+          if (e.getPoint().getY() < FIRST_MOTE_PIXEL_OFFSET) {
+            mousePixelPositionX = e.getX();
+            mouseDownPixelPositionX = e.getX();
+            mousePixelPositionY = e.getY();
+            repaint();
+          } else { // Trigger tooltip.
+            JToolTip t = timeline.createToolTip();
+            t.setTipText(Timeline.this.getMouseToolTipText(e));
+            if (t.getTipText() == null || t.getTipText().equals("")) {
+              return;
+            }
+            t.validate();
+
+            // Check tooltip width.
+            var screenBounds = timeline.getGraphicsConfiguration().getBounds();
+            int x;
+            {
+              int tooltip = e.getLocationOnScreen().x + t.getPreferredSize().width;
+              int screen = screenBounds.x + screenBounds.width;
+              if (tooltip > screen) {
+                x = e.getLocationOnScreen().x - (tooltip - screen);
+              } else {
+                x = e.getLocationOnScreen().x;
+              }
+            }
+
+            // Check tooltip height.
+            int y;
+            {
+              int tooltip = e.getLocationOnScreen().y + t.getPreferredSize().height;
+              int screen = screenBounds.y + screenBounds.height;
+              if (tooltip > screen) {
+                y = e.getLocationOnScreen().y - (tooltip - screen);
+              } else {
+                y = e.getLocationOnScreen().y;
+              }
+            }
+            popUpToolTip = PopupFactory.getSharedInstance().getPopup(null, t, x, y);
+            popUpToolTip.show();
+          }
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+          zoomCenterTime = -1;
+          if (popUpToolTip != null) {
+            popUpToolTip.hide();
+            popUpToolTip = null;
+          }
+          super.mouseReleased(e);
+          mousePixelPositionX = -1;
+          repaint();
+        }
+
+        @Override
+        public void mouseWheelMoved(MouseWheelEvent e) {
+          if (e.isControlDown()) {
+            final long zct = (long) (e.getX() * currentPixelDivisor);
+            final double zc = (double) (e.getX() - timeline.getVisibleRect().x) / timeline.getVisibleRect().width;
+            zoomFinishLevel(e.getWheelRotation(), zct, zc);
+          }
+        }
+      };
       addMouseListener(mouseAdapter);
       addMouseMotionListener(mouseAdapter);
       addMouseWheelListener(mouseAdapter);
@@ -1282,125 +1394,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         }
       });
     }
-
-    private final MouseAdapter mouseAdapter = new MouseAdapter() {
-      private Popup popUpToolTip = null;
-      private double zoomInitialPixelDivisor;
-      private int zoomInitialMouseY;
-      private long zoomCenterTime = -1;
-      private double zoomCenter = -1;
-      @Override
-      public void mouseDragged(MouseEvent e) {
-        super.mouseDragged(e);
-        if (e.isControlDown()) {
-          /* Zoom with mouse */
-          if (zoomCenterTime < 0) {
-            return;
-          }
-          var factor = Math.exp(0.01 * (e.getY() - zoomInitialMouseY));
-          zoomFinish(zoomInitialPixelDivisor * factor, zoomCenterTime, zoomCenter);
-          return;
-        }
-        if (e.isAltDown()) {
-          /* Pan with mouse */
-          if (zoomCenterTime < 0) {
-            return;
-          }
-
-          zoomCenter = (double) (e.getX() - timeline.getVisibleRect().x) / timeline.getVisibleRect().width;
-          forceRepaintAndFocus(zoomCenterTime, zoomCenter);
-          return;
-        }
-
-        if (mousePixelPositionX >= 0) {
-          mousePixelPositionX = e.getX();
-          mousePixelPositionY = e.getY();
-          repaint();
-        }
-      }
-      @Override
-      public void mousePressed(MouseEvent e) {
-        if (e.isControlDown()) {
-          /* Zoom with mouse */
-          zoomInitialMouseY = e.getY();
-          zoomInitialPixelDivisor = currentPixelDivisor;
-          zoomCenterTime = (long) (e.getX()*currentPixelDivisor);
-          zoomCenter = (double) (e.getX() - timeline.getVisibleRect().x) / timeline.getVisibleRect().width;
-          return;
-        }
-        if (e.isAltDown()) {
-          /* Pan with mouse */
-          zoomCenterTime = (long) (e.getX()*currentPixelDivisor);
-          return;
-        }
-
-        if (popUpToolTip != null) {
-          popUpToolTip.hide();
-          popUpToolTip = null;
-        }
-        if (e.getPoint().getY() < FIRST_MOTE_PIXEL_OFFSET) {
-          mousePixelPositionX = e.getX();
-          mouseDownPixelPositionX = e.getX();
-          mousePixelPositionY = e.getY();
-          repaint();
-        } else {
-          /* Trigger tooltip */
-          JToolTip t = timeline.createToolTip();
-          t.setTipText(Timeline.this.getMouseToolTipText(e));
-          if (t.getTipText() == null || t.getTipText().equals("")) {
-            return;
-          }
-          t.validate();
-
-          /* Check tooltip width */
-          Rectangle screenBounds = timeline.getGraphicsConfiguration().getBounds();
-          int x;
-          {
-            int tooltip = e.getLocationOnScreen().x + t.getPreferredSize().width;
-            int screen = screenBounds.x + screenBounds.width;
-            if (tooltip > screen) {
-              x = e.getLocationOnScreen().x - (tooltip-screen);
-            } else {
-              x = e.getLocationOnScreen().x;
-            }
-          }
-
-          /* Check tooltip height */
-          int y;
-          {
-            int tooltip = e.getLocationOnScreen().y + t.getPreferredSize().height;
-            int screen = screenBounds.y + screenBounds.height;
-            if (tooltip > screen) {
-              y = e.getLocationOnScreen().y - (tooltip-screen);
-            } else {
-              y = e.getLocationOnScreen().y;
-            }
-          }
-
-          popUpToolTip = PopupFactory.getSharedInstance().getPopup(null, t, x, y);
-          popUpToolTip.show();
-        }
-      }
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        zoomCenterTime = -1;
-        if (popUpToolTip != null) {
-          popUpToolTip.hide();
-          popUpToolTip = null;
-        }
-        super.mouseReleased(e);
-        mousePixelPositionX = -1;
-        repaint();
-      }
-      @Override
-      public void mouseWheelMoved(MouseWheelEvent e) {
-        if (e.isControlDown()) {
-          final long zct = (long) (e.getX()*currentPixelDivisor);
-          final double zc = (double) (e.getX() - timeline.getVisibleRect().x) / timeline.getVisibleRect().width;
-          zoomFinishLevel(e.getWheelRotation(), zct, zc);
-        }
-      }
-    };
 
     private final Color SEPARATOR_COLOR = new Color(220, 220, 220);
     @Override
