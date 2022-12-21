@@ -38,10 +38,6 @@ import java.awt.Point;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.util.Set;
-
-import javax.swing.Box;
-import javax.swing.JInternalFrame;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -79,9 +75,6 @@ public class LogisticLossVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
   private LogisticLoss radioMedium = null;
-
-  private JInternalFrame rrFrame;
-  private Box ratioRX, ratioTX, rangeTX, rangeINT;
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
