@@ -40,6 +40,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.Semaphore;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
@@ -267,20 +268,18 @@ public class LogScriptEngine {
     scriptThread = new Thread(new Runnable() {
       @Override
       public void run() {
-        int rv;
+        int rv = 1;
         try {
-          var obj = script.eval();
-          rv = obj == null ? 1 : (int) obj;
-          // rv == -1 means something else is shutting down Cooja, for example the SerialSocket commands in 17-tun-rpl-br.
-          if (rv != -1) {
-            scriptLog(rv == 0 ? "TEST OK\n" : "TEST FAILED\n");
-          }
+          rv = (int) Objects.requireNonNullElse(script.eval(), 1);
         } catch (Exception e) {
-          rv = 1;
           logger.fatal("Script error:", e);
           if (Cooja.isVisualized()) {
             Cooja.showErrorDialog("Script error", e, false);
           }
+        }
+        // rv == -1 means something else is shutting down Cooja, for example the SerialSocket commands in 17-tun-rpl-br.
+        if (rv != -1) {
+          scriptLog(rv == 0 ? "TEST OK\n" : "TEST FAILED\n");
         }
         deactivateScript();
         simulation.stopSimulation(rv > 0 ? rv : null);
