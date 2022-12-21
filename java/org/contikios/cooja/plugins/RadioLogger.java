@@ -952,7 +952,7 @@ public class RadioLogger extends VisPlugin {
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     for (Element element : configXML) {
       String name = element.getName();
       if ("alias".equals(name)) {

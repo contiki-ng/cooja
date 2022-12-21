@@ -487,7 +487,7 @@ public class SerialSocketClient implements Plugin, MotePlugin {
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     String host = null;
     Integer port = null;
     boolean bound = false;

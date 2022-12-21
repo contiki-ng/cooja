@@ -802,7 +802,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     for (Element element : configXML) {
       switch (element.getName()) {
         case "varname" -> varNameCombo.setSelectedItem(element.getText());

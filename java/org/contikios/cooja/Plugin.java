@@ -56,9 +56,9 @@ public interface Plugin {
 
   /**
    * This method is called to activate a new plugin, after constructing it.
-   * If a simulation is loaded, this method is called after {@link #setConfigXML(Collection, boolean)}.
+   * If a simulation is loaded, this method is called after {@link #setConfigXML(Simulation, Collection)}.
    * 
-   * @see #setConfigXML(Collection, boolean)
+   * @see #setConfigXML(Simulation, Collection)
    * @see #closePlugin()
    */
   void startPlugin();
@@ -78,7 +78,7 @@ public interface Plugin {
    * such as the value of a mote LED, or total number of motes. (All nodes are
    * restarted when loading a simulation.)
    *
-   * @see #setConfigXML(Collection, boolean)
+   * @see #setConfigXML(Simulation, Collection)
    * @return XML elements representing the current radio medium config
    */
   Collection<Element> getConfigXML();
@@ -87,11 +87,9 @@ public interface Plugin {
    * Sets the current plugin config depending on the given XML elements.
    *
    * @see #getConfigXML()
-   * @param configXML
-   *          Config XML elements
+   * @param sim Simulation
+   * @param configXML Config XML elements
    * @return True if config was set successfully, false otherwise
    */
-  boolean setConfigXML(Collection<Element> configXML,
-      boolean visAvailable);
-
+  boolean setConfigXML(Simulation sim, Collection<Element> configXML);
 }

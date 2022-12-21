@@ -237,8 +237,7 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML,
-      boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     for (Element element : configXML) {
         if (element.getName().equals("monitoring")) {
             boolean monitor = Boolean.parseBoolean(element.getText());

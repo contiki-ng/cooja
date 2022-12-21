@@ -439,7 +439,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     if (Cooja.isVisualized()) {
       editorTabs.removeAll(); // Remove the example tab opened by the constructor.
     }

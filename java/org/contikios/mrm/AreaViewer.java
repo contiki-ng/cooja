@@ -2071,13 +2071,6 @@ public class AreaViewer extends VisPlugin {
     }
   }
 
-
-  /**
-   * Returns XML elements representing the current configuration.
-   *
-   * @see #setConfigXML(Collection, boolean) 
-   * @return XML element collection
-   */
   @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
@@ -2159,16 +2152,8 @@ public class AreaViewer extends VisPlugin {
     return config;
   }
 
-  /**
-   * Sets the configuration depending on the given XML elements.
-   *
-   * @see #getConfigXML()
-   * @param configXML
-   *          Config XML elements
-   * @return True if config was set successfully, false otherwise
-   */
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     for (Element element : configXML) {
       var name = element.getName();
       switch (name) {

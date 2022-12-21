@@ -133,7 +133,7 @@ public class Notes extends VisPlugin {
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     for (Element element : configXML) {
       if (element.getName().equals("notes")) {
         notes.setText(element.getText());

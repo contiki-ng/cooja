@@ -1475,7 +1475,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     loadedConfig = true;
     showMoteToMoteRelations = false;
 

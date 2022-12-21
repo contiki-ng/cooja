@@ -677,7 +677,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     for (Element element : configXML) {
       String name = element.getName();
       if ("filter".equals(name)) {

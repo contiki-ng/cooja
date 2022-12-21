@@ -97,7 +97,7 @@ public class VisPlugin extends JInternalFrame implements Plugin {
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     return false;
   }
 

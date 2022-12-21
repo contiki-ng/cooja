@@ -709,7 +709,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     boolean clearedRules = false;
     for (Element element : configXML) {
       if (element.getName().equals("tab")) {

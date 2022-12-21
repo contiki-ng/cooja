@@ -553,7 +553,7 @@ public class PowerTracker implements Plugin {
     return null;
   }
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     return true;
   }
 

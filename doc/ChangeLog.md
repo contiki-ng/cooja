@@ -23,6 +23,12 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Changed signature for setConfigXML in Plugin
+
+The method setConfigXML changed signature, the first parameter is now
+the Simulation and the last parameter visAvailable was removed. Plugins
+should use `Cooja.isVisualized()` to decide if visualization is available.
+
 ### RadioMedium converted to interface
 
 RadioMediums should now implement the interface instead of extending the class.

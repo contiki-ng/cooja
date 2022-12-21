@@ -706,7 +706,7 @@ public class Cooja {
 
     if (root != null) {
       for (var cfg : root.getChildren("plugin_config")) {
-        if (!plugin.setConfigXML(cfg.getChildren(), isVisualized())) {
+        if (!plugin.setConfigXML(sim, cfg.getChildren())) {
           throw new PluginConstructionException("Failed to set config for " + pluginClass.getName());
         }
       }

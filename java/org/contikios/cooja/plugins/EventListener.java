@@ -354,8 +354,7 @@ public class EventListener extends VisPlugin {
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     /* Load general observers */
     for (Element element : configXML) {
       if (element.getName().equals("general")) {

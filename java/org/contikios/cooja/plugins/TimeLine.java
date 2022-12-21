@@ -1168,7 +1168,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     showRadioRXTX = false;
     showRadioChannels = false;
     showRadioOnoff = false;

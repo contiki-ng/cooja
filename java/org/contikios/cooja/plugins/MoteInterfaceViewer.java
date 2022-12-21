@@ -195,7 +195,7 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
   }
 
   @Override
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML) {
     for (Element element : configXML) {
       if (element.getName().equals("interface")) {
         setSelectedInterface(element.getText());
