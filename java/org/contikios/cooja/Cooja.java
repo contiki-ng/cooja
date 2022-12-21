@@ -732,11 +732,11 @@ public class Cooja {
 
         @Override
         public Boolean work() {
+          boolean minimized = false;
           if (root != null) {
             var location = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
             var size = new Dimension();
             int zOrder = 0;
-            boolean minimized = false;
             for (var cfgElem : root.getChildren()) {
               switch (cfgElem.getName()) {
                 case "width" -> size.width = Integer.parseInt(cfgElem.getText());
@@ -764,14 +764,6 @@ public class Cooja {
             if (zOrder != Integer.MIN_VALUE) {
               pluginFrame.putClientProperty("zorder", zOrder);
             }
-            if (minimized) {
-              SwingUtilities.invokeLater(() -> {
-                try {
-                  pluginFrame.setIcon(true);
-                } catch (PropertyVetoException e1) {
-                }
-              });
-            }
           }
 
           gui.myDesktopPane.add(pluginFrame);
@@ -790,12 +782,16 @@ public class Cooja {
           }
           pluginFrame.setVisible(true);
 
-          // Select plugin.
+          // Minimize plugin or select and bring to front.
           try {
-            pluginFrame.setSelected(true);
+            if (minimized) {
+              pluginFrame.setIcon(true);
+            } else {
+              pluginFrame.setSelected(true);
+              gui.myDesktopPane.moveToFront(pluginFrame);
+            }
           } catch (Exception e) {
           }
-          gui.myDesktopPane.moveToFront(pluginFrame);
           return true;
         }
       }.invokeAndWait();
