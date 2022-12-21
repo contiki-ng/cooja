@@ -753,7 +753,6 @@ public final class Simulation extends Observable {
    */
   void removed() {
     deleteObservers();
-    stopSimulation(); // FIXME: check if this is required.
     if (!isShutdown) {
       commandQueue.add(Command.QUIT);
     }
