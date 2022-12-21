@@ -27,9 +27,9 @@ use a double dash for consistency.
 
 RadioMediums should now implement the interface instead of extending the class.
 
-### Removed setMoteInterfaceClasses in MoteType
+### Removed setIdentifier/setMoteInterfaceClasses in MoteType
 
-This method is not required by Cooja itself, so make it a mote-internal
+These methods are not required by Cooja itself, so make it a mote-internal
 question of how to implement the support.
 
 ### Converted MoteInterface/Beeper/Button/MoteID into interfaces

@@ -120,11 +120,6 @@ public abstract class BaseContikiMoteType implements MoteType {
     return identifier;
   }
 
-  @Override
-  public void setIdentifier(String identifier) {
-    this.identifier = identifier;
-  }
-
   /**
    * Generates a unique mote type ID.
    *

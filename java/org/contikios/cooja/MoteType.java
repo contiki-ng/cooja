@@ -74,14 +74,6 @@ public interface MoteType {
   String getIdentifier();
 
   /**
-   * Sets the mote type identifier.
-   *
-   * @param identifier
-   *          New identifier
-   */
-  void setIdentifier(String identifier);
-
-  /**
    * @return Mote interface classes of mote type.
    */
   Class<? extends MoteInterface>[] getMoteInterfaceClasses();
