@@ -107,9 +107,18 @@ public interface Mote {
       Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException;
 
   /**
-   * Called when mote is removed from simulation
+   * Called when mote is added to simulation, so interfaces are added.
    */
-  void removed();
+  default void added() {
+    getInterfaces().added();
+  }
+
+  /**
+   * Called when mote is removed from simulation, so interfaces are removed.
+   */
+  default void removed() {
+    getInterfaces().removed();
+  }
 
   void setProperty(String key, Object obj);
   Object getProperty(String key);
