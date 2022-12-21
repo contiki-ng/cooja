@@ -249,6 +249,11 @@ public final class Simulation extends Observable {
         engine.closeLog();
       }
 
+      // Clear current mote relations.
+      for (var r: getMoteRelations()) {
+        removeMoteRelation(r.source, r.dest);
+      }
+
       // Remove the radio medium
       currentRadioMedium.removed();
 
@@ -758,11 +763,6 @@ public final class Simulation extends Observable {
     stopSimulation(); // FIXME: check if this is required.
     if (!isShutdown) {
       commandQueue.add(Command.QUIT);
-    }
-    // Clear current mote relations.
-    var relations = getMoteRelations();
-    for (var r: relations) {
-      removeMoteRelation(r.source, r.dest);
     }
   }
 
