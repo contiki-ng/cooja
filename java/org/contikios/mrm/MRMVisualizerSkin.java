@@ -107,7 +107,7 @@ public class MRMVisualizerSkin implements VisualizerSkin {
 
       /* Print transmission success probabilities */
       Mote[] dests = simulation.getMotes();
-      if (dests == null || dests.length == 0) {
+      if (dests.length == 0) {
         String msg = "No edges";
         int msgWidth = fm.stringWidth(msg);
         g.setColor(Color.BLACK);
