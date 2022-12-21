@@ -730,7 +730,7 @@ public final class Simulation extends Observable {
     for (MoteInterface i: mote.getInterfaces().getInterfaces()) {
       i.removed();
     }
-
+    eventCentral.removeMote(mote);
     setChanged();
     notifyObservers(mote);
 
@@ -786,7 +786,7 @@ public final class Simulation extends Observable {
       for (MoteInterface i: mote.getInterfaces().getInterfaces()) {
         i.added();
       }
-
+      eventCentral.addMote(mote);
       setChanged();
       notifyObservers(mote);
       Cooja.updateGUIComponentState();

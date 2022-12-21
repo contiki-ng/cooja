@@ -100,70 +100,41 @@ public class SimEventCentral {
   }
   /** Mote count notifications. */
   private MoteCountListener[] moteCountListeners = new MoteCountListener[0];
-  private final Observer moteCountObserver = new Observer() {
-    @Override
-    public void update(Observable obs, Object obj) {
-      if (!(obj instanceof Mote)) {
-        return;
-      }
-      Mote evMote = (Mote) obj;
 
-      /* Check whether mote was added or removed */
-      Mote[] allMotes = simulation.getMotes();
-      boolean exists = false;
-      for (Mote m: allMotes) {
-        if (m == evMote) {
-          exists = true;
-          break;
-        }
-      }
-
-      if (exists) {
-        /* Mote was added */
-        if (logOutputListeners.length > 0) {
-          // Add another log output observation (supports multiple log interfaces per mote).
-          for (MoteInterface mi: evMote.getInterfaces().getInterfaces()) {
-            if (mi instanceof Log log) {
-              moteObservations.add(new MoteObservation(evMote, log, logOutputObserver));
-            }
-          }
-        }
-        /* Notify external listeners */
-        for (MoteCountListener l: moteCountListeners) {
-          l.moteWasAdded(evMote);
-        }
-      } else {
-        /* Mote was removed */
-        // Disconnect and remove mote observations.
-        MoteObservation[] observations = moteObservations.toArray(new MoteObservation[0]);
-        for (MoteObservation o: observations) {
-          if (o.mote() == evMote) {
-            o.disconnect();
-            moteObservations.remove(o);
-          }
-        }
-        /* Notify external listeners */
-        for (MoteCountListener l: moteCountListeners) {
-          l.moteWasRemoved(evMote);
+  void addMote(Mote mote) {
+    if (logOutputListeners.length > 0) {
+      // Add another log output observation (supports multiple log interfaces per mote).
+      for (var mi : mote.getInterfaces().getInterfaces()) {
+        if (mi instanceof Log log) {
+          moteObservations.add(new MoteObservation(mote, log, logOutputObserver));
         }
       }
     }
-  };
+    // Notify external listeners.
+    for (var l : moteCountListeners) {
+      l.moteWasAdded(mote);
+    }
+  }
+
+  void removeMote(Mote mote) {
+    // Disconnect and remove mote observations.
+    for (var o : moteObservations.toArray(new MoteObservation[0])) {
+      if (o.mote() == mote) {
+        o.disconnect();
+        moteObservations.remove(o);
+      }
+    }
+    // Notify external listeners.
+    for (var l : moteCountListeners) {
+      l.moteWasRemoved(mote);
+    }
+  }
+
   public void addMoteCountListener(MoteCountListener listener) {
-    if (moteCountListeners.length == 0) {
-      /* Observe simulation for added/removed motes */
-      simulation.addObserver(moteCountObserver);
-    }
-
     moteCountListeners = ArrayUtils.add(moteCountListeners, listener);
   }
   public void removeMoteCountListener(MoteCountListener listener) {
     moteCountListeners = ArrayUtils.remove(moteCountListeners, listener);
-
-    if (moteCountListeners.length == 0) {
-      /* Stop observing simulation for added/removed motes */
-      simulation.deleteObserver(moteCountObserver);
-    }
   }
 
 
