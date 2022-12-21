@@ -94,8 +94,8 @@ public class Notes extends VisPlugin {
 
 
     /* XXX HACK: here we set the position and size of the window when it appears on a blank simulation screen. */
-    this.setLocation(680, 0);
-    this.setSize(Cooja.getDesktopPane().getWidth() - 680, 160);
+    this.setLocation(400, 0);
+    this.setSize(Cooja.getDesktopPane().getWidth() - 400, 160);
   }
 
   public String getNotes() {
