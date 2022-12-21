@@ -44,6 +44,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Observer;
@@ -588,14 +589,14 @@ public class Cooja {
    * @param mote Mote
    */
   public void closeMotePlugins(Mote mote) {
-    for (Plugin p: startedPlugins.toArray(new Plugin[0])) {
+    for (Plugin p: mySimulation.startedPlugins.toArray(new Plugin[0])) {
       if (!(p instanceof MotePlugin)) {
         continue;
       }
 
       Mote pluginMote = ((MotePlugin)p).getMote();
       if (pluginMote == mote) {
-        removePlugin(p);
+        removePlugin(mySimulation.startedPlugins, p);
       }
     }
   }
@@ -606,9 +607,16 @@ public class Cooja {
    * @param plugin Plugin to remove
    */
   public void removePlugin(final Plugin plugin) {
-    plugin.closePlugin();
-    startedPlugins.remove(plugin);
+    if (startedPlugins.contains(plugin)) {
+      removePlugin(startedPlugins, plugin);
+    } else if (mySimulation != null) {
+      removePlugin(mySimulation.startedPlugins, plugin);
+    }
+  }
 
+  static void removePlugin(List<Plugin> plugins, final Plugin plugin) {
+    plugin.closePlugin();
+    plugins.remove(plugin);
     if (isVisualized()) {
       new RunnableInEDT<Boolean>() {
         @Override
@@ -707,7 +715,8 @@ public class Cooja {
     plugin.startPlugin();
 
     // Add to active plugins list
-    startedPlugins.add(plugin);
+    var coojaPlugin = pluginType == PluginType.PType.COOJA_PLUGIN || pluginType == PluginType.PType.COOJA_STANDARD_PLUGIN;
+    (coojaPlugin ? startedPlugins : sim.startedPlugins).add(plugin);
     updateGUIComponentState();
 
     // Show plugin if visualizer type
@@ -852,7 +861,7 @@ public class Cooja {
    * @return Plugin instance
    */
   public Plugin getPlugin(String classname) {
-    for (Plugin p: startedPlugins) {
+    for (Plugin p: mySimulation.startedPlugins) {
       if (p.getClass().getName().endsWith(classname)) {
         return p;
       }
@@ -867,7 +876,7 @@ public class Cooja {
    * @return Plugin instance
    */
   public <T extends Plugin> T getPlugin(Class<T> pluginClass) {
-    for (Plugin p: startedPlugins) {
+    for (Plugin p: mySimulation.startedPlugins) {
       if (pluginClass.isInstance(p)) {
         return pluginClass.cast(p);
       }
@@ -883,7 +892,7 @@ public class Cooja {
    */
   public <T extends Plugin> List<T> getPlugins(Class<T> pluginClass) {
     var list = new ArrayList<T>();
-    for (Plugin p: startedPlugins) {
+    for (Plugin p: mySimulation.startedPlugins) {
       if (pluginClass.isInstance(p)) {
         list.add(pluginClass.cast(p));
       }
@@ -891,12 +900,9 @@ public class Cooja {
     return list;
   }
 
-  public boolean hasStartedPlugins() {
-    return !startedPlugins.isEmpty();
-  }
-
   public Plugin[] getStartedPlugins() {
-    return startedPlugins.toArray(new Plugin[0]);
+    List<Plugin> l = mySimulation == null ? Collections.emptyList() : mySimulation.startedPlugins;
+    return l.toArray(new Plugin[0]);
   }
 
   static boolean isMotePluginCompatible(Class<? extends Plugin> motePluginClass, Mote mote) {
@@ -965,14 +971,6 @@ public class Cooja {
       return true;
     }
 
-    // Close all started non-GUI plugins
-    for (var startedPlugin : startedPlugins.toArray(new Plugin[0])) {
-      var pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
-      if (pluginType != PluginType.PType.COOJA_PLUGIN && pluginType != PluginType.PType.COOJA_STANDARD_PLUGIN) {
-        removePlugin(startedPlugin);
-      }
-    }
-
     // Delete simulation
     mySimulation.removed();
     mySimulation = null;
@@ -997,7 +995,7 @@ public class Cooja {
     try {
       doRemoveSimulation();
       for (var plugin : startedPlugins.toArray(new Plugin[0])) {
-        removePlugin(plugin);
+        removePlugin(startedPlugins, plugin);
       }
     } catch (Exception e) {
       logger.error("Failed to remove simulation/plugins on shutdown.", e);
@@ -1484,18 +1482,12 @@ public class Cooja {
 
     // Create started plugins config
     ArrayList<Element> config = new ArrayList<>();
-    for (Plugin startedPlugin : startedPlugins) {
-      var pluginType = startedPlugin.getClass().getAnnotation(PluginType.class).value();
-      // Ignore GUI plugins
-      if (pluginType == PluginType.PType.COOJA_PLUGIN || pluginType == PluginType.PType.COOJA_STANDARD_PLUGIN) {
-        continue;
-      }
-
+    for (var startedPlugin : mySimulation.startedPlugins) {
       var pluginElement = new Element("plugin");
       pluginElement.setText(startedPlugin.getClass().getName());
 
       // Create mote argument config (if mote plugin)
-      if (pluginType == PluginType.PType.MOTE_PLUGIN) {
+      if (startedPlugin.getClass().getAnnotation(PluginType.class).value() == PluginType.PType.MOTE_PLUGIN) {
         var pluginSubElement = new Element("mote_arg");
         Mote taggedMote = ((MotePlugin) startedPlugin).getMote();
         for (int moteNr = 0; moteNr < mySimulation.getMotesCount(); moteNr++) {

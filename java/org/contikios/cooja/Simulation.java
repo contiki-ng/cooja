@@ -71,6 +71,9 @@ public final class Simulation extends Observable {
   /* indicator to components setting up that they need to respect the fast setup mode */
   private boolean quick;
 
+  /** Started simulation plugins. */
+  final ArrayList<Plugin> startedPlugins = new ArrayList<>();
+
   private final ArrayList<Mote> motes = new ArrayList<>();
   private final ArrayList<MoteType> moteTypes = new ArrayList<>();
 
@@ -337,18 +340,15 @@ public final class Simulation extends Observable {
       setChanged();
       notifyObservers(this);
     }
+    SimulationCreationException ret = null;
     if (root == null) {
-      // Keep track of started plugins, so they can be removed on failure.
-      var startedPlugins = new ArrayList<Plugin>();
       for (var pluginClass : cooja.getRegisteredPlugins()) {
         if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.PType.SIM_STANDARD_PLUGIN) {
           try {
-            startedPlugins.add(cooja.startPlugin(pluginClass, this, null, null));
+            cooja.startPlugin(pluginClass, this, null, null);
           } catch (PluginConstructionException e) {
-            for (var plugin : startedPlugins) {
-              cooja.removePlugin(plugin);
-            }
-            throw new SimulationCreationException("Failed to start plugin: " + e.getMessage(), e);
+            ret = new SimulationCreationException("Failed to start plugin: " + e.getMessage(), e);
+            break;
           }
         }
       }
@@ -361,7 +361,6 @@ public final class Simulation extends Observable {
       } catch (InterruptedException e) {
         throw new SimulationCreationException("Simulation creation interrupted", e);
       }
-      SimulationCreationException ret;
       if (Cooja.isVisualized()) {
         ret = new Cooja.RunnableInEDT<SimulationCreationException>() {
           @Override
@@ -372,9 +371,10 @@ public final class Simulation extends Observable {
       } else {
         ret = startPlugins(root, cooja);
       }
-      if (ret != null) {
-        throw ret;
-      }
+    }
+    if (ret != null) {
+      removed();
+      throw ret;
     }
   }
 
@@ -388,8 +388,6 @@ public final class Simulation extends Observable {
   }
 
   private SimulationCreationException startPlugins(Element root, Cooja cooja) {
-    // Keep track of started plugins, so they can be removed on failure.
-    var startedPlugins = new ArrayList<Plugin>();
     // Restart plugins from config
     boolean hasController = false;
     for (var pluginElement : root.getChildren("plugin")) {
@@ -414,9 +412,6 @@ public final class Simulation extends Observable {
       var pluginClass = cooja.tryLoadClass(this, Plugin.class, pluginClassName);
       if (pluginClass == null) {
         logger.fatal("Could not load plugin class: " + pluginClassName);
-        for (var plugin : startedPlugins) {
-          cooja.removePlugin(plugin);
-        }
         return new SimulationCreationException("Could not load plugin class " + pluginClassName, null);
       }
       // Skip plugins that require visualization in headless mode.
@@ -435,19 +430,13 @@ public final class Simulation extends Observable {
         }
       }
       try {
-        startedPlugins.add(cooja.startPlugin(pluginClass, this, mote, pluginElement));
+        cooja.startPlugin(pluginClass, this, mote, pluginElement);
       } catch (PluginConstructionException ex) {
-        for (var plugin : startedPlugins) {
-          cooja.removePlugin(plugin);
-        }
         return new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
       }
     }
     // Non-GUI Cooja requires a simulation controller, ensure one is started.
     if (!Cooja.isVisualized() && !hasController) {
-      for (var plugin : startedPlugins) {
-        cooja.removePlugin(plugin);
-      }
       return new SimulationCreationException("No plugin controlling simulation, aborting", null);
     }
     return null;
@@ -718,6 +707,10 @@ public final class Simulation extends Observable {
       return quick;
   }
 
+  public boolean hasStartedPlugins() {
+    return !startedPlugins.isEmpty();
+  }
+
   /**
    * Removes a mote from this simulation
    *
@@ -743,8 +736,13 @@ public final class Simulation extends Observable {
 
     // Delete all events associated with deleted mote.
     eventQueue.removeIf(ev -> ev instanceof MoteTimeEvent moteTimeEvent && moteTimeEvent.getMote() == mote);
-
-    getCooja().closeMotePlugins(mote);
+    for (var p : startedPlugins.toArray(new Plugin[0])) {
+      if (p instanceof MotePlugin plugin) {
+        if (mote == plugin.getMote()) {
+          Cooja.removePlugin(startedPlugins, p);
+        }
+      }
+    }
   }
 
   /**
@@ -752,6 +750,10 @@ public final class Simulation extends Observable {
    * This method is called just before the simulation is removed.
    */
   void removed() {
+    // Close all simulation plugins.
+    for (var startedPlugin : startedPlugins.toArray(new Plugin[0])) {
+      Cooja.removePlugin(startedPlugins, startedPlugin);
+    }
     deleteObservers();
     stopSimulation(); // FIXME: check if this is required.
     if (!isShutdown) {
