@@ -31,15 +31,12 @@ package org.contikios.cooja.mspmote.interfaces;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.util.Observer;
-
+import java.util.ArrayList;
 import javax.swing.JPanel;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.mspmote.Exp5438Mote;
@@ -52,8 +49,6 @@ import se.sics.mspsim.platform.ti.Exp5438Node;
  */
 @ClassDescription("Exp5438 LEDs")
 public class Exp5438LED extends LED {
-  private static final Logger logger = LogManager.getLogger(Exp5438LED.class);
-
   private boolean redOn = false;
   private boolean yellowOn = false;
 
@@ -61,6 +56,7 @@ public class Exp5438LED extends LED {
   private static final Color DARK_RED = new Color(100, 0, 0);
   private static final Color YELLOW = new Color(255, 255, 0);
   private static final Color DARK_YELLOW = new Color(184,134,11);
+  private final ArrayList<JPanel> labels = new ArrayList<>();
 
   public Exp5438LED(Mote mote) {
     var mspMote = (Exp5438Mote) mote;
@@ -69,6 +65,13 @@ public class Exp5438LED extends LED {
       ((IOPort) unit).addPortListener((source, data) -> {
         redOn = (data & Exp5438Node.LEDS_CONF_RED) != 0;
         yellowOn = (data & Exp5438Node.LEDS_CONF_YELLOW) != 0;
+        if (Cooja.isVisualized()) {
+          EventQueue.invokeLater(() -> {
+            for (var panel : labels) {
+              panel.repaint();
+            }
+          });
+        }
         setChanged();
         notifyObservers();
       });
@@ -129,28 +132,14 @@ public class Exp5438LED extends LED {
         }
       }
     };
-
-    Observer observer;
-    this.addObserver(observer = (obs, obj) -> panel.repaint());
-
-    // Saving observer reference for releaseInterfaceVisualizer
-    panel.putClientProperty("intf_obs", observer);
-
     panel.setMinimumSize(new Dimension(140, 60));
     panel.setPreferredSize(new Dimension(140, 60));
-
+    labels.add(panel);
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
-      return;
-    }
-
-    this.deleteObserver(observer);
+    labels.remove(panel);
   }
-
 }
