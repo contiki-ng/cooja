@@ -792,9 +792,6 @@ public class Cooja {
 
           // Select plugin.
           try {
-            for (var existingPlugin : gui.myDesktopPane.getAllFrames()) {
-              existingPlugin.setSelected(false);
-            }
             pluginFrame.setSelected(true);
           } catch (Exception e) {
           }
