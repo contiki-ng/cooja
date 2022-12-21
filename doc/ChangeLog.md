@@ -23,6 +23,10 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### RadioMedium converted to interface
+
+RadioMediums should now implement the interface instead of extending the class.
+
 ### Removed setMoteInterfaceClasses in MoteType
 
 This method is not required by Cooja itself, so make it a mote-internal

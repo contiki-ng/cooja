@@ -38,14 +38,14 @@ import org.jdom2.Element;
 import org.contikios.cooja.interfaces.Radio;
 
 /**
- * The abstract class RadioMedium should be implemented by all COOJA radio
+ * The RadioMedium interface should be implemented by all COOJA radio
  * mediums. Radios registered in this medium can both send and receive radio
  * data. Depending on the implementation of this interface, more or less
- * accurate radio behaviour imitation is aquired.
+ * accurate radio behaviour imitation is acquired.
  *
  * @author Fredrik Osterlind
  */
-public abstract class RadioMedium {
+public interface RadioMedium {
   /**
    * Register a radio to this radio medium.
    * <p>
@@ -58,7 +58,7 @@ public abstract class RadioMedium {
    * @param sim
    *          Simulation holding radio
    */
-  public abstract void registerRadioInterface(Radio radio, Simulation sim);
+  void registerRadioInterface(Radio radio, Simulation sim);
 
   /**
    * Unregister given radio interface from this medium.
@@ -68,7 +68,7 @@ public abstract class RadioMedium {
    * @param sim
    *          Simulation holding radio
    */
-  public abstract void unregisterRadioInterface(Radio radio, Simulation sim);
+  void unregisterRadioInterface(Radio radio, Simulation sim);
 
   /**
    * Adds an observer which is notified each time a radio connection has finished.
@@ -77,12 +77,12 @@ public abstract class RadioMedium {
    * @see #deleteRadioTransmissionObserver(Observer)
    * @param observer New observer
    */
-  public abstract void addRadioTransmissionObserver(Observer observer);
+  void addRadioTransmissionObserver(Observer observer);
 
   /**
    * @return Radio medium observable
    */
-  public abstract Observable getRadioTransmissionObservable();
+  Observable getRadioTransmissionObservable();
 
   /**
    * Deletes an radio medium observer.
@@ -91,12 +91,12 @@ public abstract class RadioMedium {
    * @param observer
    *          Observer to delete
    */
-  public abstract void deleteRadioTransmissionObserver(Observer observer);
+  void deleteRadioTransmissionObserver(Observer observer);
 
   /**
    * @return Last radio connection finished in the radio medium
    */
-  public abstract RadioConnection getLastConnection();
+  RadioConnection getLastConnection();
 
   /**
    * Returns XML elements representing the current config of this radio medium.
@@ -109,7 +109,7 @@ public abstract class RadioMedium {
    * @see #setConfigXML(Collection, boolean)
    * @return XML elements representing the current radio medium config
    */
-  public abstract Collection<Element> getConfigXML();
+  Collection<Element> getConfigXML();
 
   /**
    * Sets the current radio medium config depending on the given XML elements.
@@ -119,17 +119,15 @@ public abstract class RadioMedium {
    *          Config XML elements
    * @return True if config was set successfully, false otherwise
    */
-  public abstract boolean setConfigXML(Collection<Element> configXML, boolean visAvailable);
+  boolean setConfigXML(Collection<Element> configXML, boolean visAvailable);
 
   /**
    * Called when radio medium is removed. 
    */
-  public void removed() {
-  }
+  default void removed() {}
 
-	/**
-	 * Notifies radio medium that the simulation finished loading.
-	 */
-	public void simulationFinishedLoading() {
-	}
+  /**
+   * Notifies radio medium that the simulation finished loading.
+   */
+  default void simulationFinishedLoading() {}
 }
