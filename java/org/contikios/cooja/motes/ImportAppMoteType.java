@@ -102,19 +102,18 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
         moteClassPath = simulation.getCooja().restorePortablePath(new File(element.getText()));
       }
     }
-
-    return super.setConfigXML(simulation, configXML, visAvailable);
+    return super.setConfigXML(simulation, configXML, Cooja.isVisualized());
   }
 
   @Override
   public boolean configureAndInit(Container parentContainer,
       Simulation simulation, boolean visAvailable)
   throws MoteTypeCreationException {
-    if (!super.configureAndInit(parentContainer, simulation, visAvailable)) {
+    if (!super.configureAndInit(parentContainer, simulation, Cooja.isVisualized())) {
       return false;
     }
 
-    if (visAvailable) {
+    if (Cooja.isVisualized()) {
       /* Select mote class file */
       ImportAppMoteDialog dialog = new ImportAppMoteDialog(simulation.getCooja(), this);
       if (!dialog.waitForUserResponse()) {

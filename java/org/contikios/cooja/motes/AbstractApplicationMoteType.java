@@ -182,8 +182,7 @@ public abstract class AbstractApplicationMoteType implements MoteType {
         description = element.getText();
       }
     }
-
-    return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
+    return configureAndInit(Cooja.getTopParentContainer(), simulation, Cooja.isVisualized());
   }
 
   public static class SimpleMoteID implements MoteID {
