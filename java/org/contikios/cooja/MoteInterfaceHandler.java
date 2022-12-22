@@ -423,4 +423,18 @@ public class MoteInterfaceHandler {
   public String toString() {
     return "Mote interfaces handler (" + moteInterfaces.size() + " mote interfaces)";
   }
+
+  /** Called when the mote is added to the simulation. */
+  void added() {
+    for (var i : moteInterfaces) {
+      i.added();
+    }
+  }
+
+  /** Called when the mote is removed from the simulation. */
+  void removed() {
+    for (var i : moteInterfaces) {
+      i.removed();
+    }
+  }
 }
