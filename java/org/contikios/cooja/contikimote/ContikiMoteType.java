@@ -271,7 +271,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     // Allocate core communicator class
     final var firmwareFile = getContikiFirmwareFile();
-    myCoreComm = createCoreComm(gui, tmpDir, firmwareFile);
+    myCoreComm = createCoreComm(tmpDir, firmwareFile);
 
     /* Parse addresses using map file
      * or output of command specified in external tools settings (e.g. nm -a )
@@ -869,13 +869,12 @@ public class ContikiMoteType extends BaseContikiMoteType {
   /**
    * Compiles Java class.
    *
-   * @param cooja Cooja object
-   * @param tempDir Directory for temporary files
+   * @param tempDir   Directory for temporary files
    * @param className Java class name (without extension)
    * @throws MoteTypeCreationException If Java class compilation error occurs
    */
-  private static void compileSourceFile(Cooja cooja, Path tempDir, String className) throws MoteTypeCreationException {
-    String[] cmd = new String[] {cooja.configuration.javac(),
+  private static void compileSourceFile(Path tempDir, String className) throws MoteTypeCreationException {
+    String[] cmd = new String[] {Cooja.configuration.javac(),
             "-cp", System.getProperty("java.class.path"), "--release", String.valueOf(Runtime.version().feature()),
             // Disable warnings to avoid 3 lines of "warning: using incubating module(s): jdk.incubator.foreign".
             "-nowarn", "--add-modules", "jdk.incubator.foreign",
@@ -916,16 +915,15 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * Create and return an instance of the core communicator identified by
    * className. This core communicator will load the native library libFile.
    *
-   * @param cooja Cooja object
    * @param tempDir Directory for temporary files
    * @param libFile Native library file
    * @return Core Communicator
    */
-  private static CoreComm createCoreComm(Cooja cooja, Path tempDir, File libFile) throws MoteTypeCreationException {
+  private static CoreComm createCoreComm(Path tempDir, File libFile) throws MoteTypeCreationException {
     // Loading a class might leave residue in the JVM so use a new name for the next call.
     final var className = "Lib" + fileCounter++;
     generateLibSourceFile(tempDir, className);
-    compileSourceFile(cooja, tempDir, className);
+    compileSourceFile(tempDir, className);
 
     Class<?> newCoreCommClass;
     try (var loader = URLClassLoader.newInstance(new URL[]{tempDir.toUri().toURL()})) {
