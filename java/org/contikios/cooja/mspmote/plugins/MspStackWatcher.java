@@ -177,7 +177,6 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
     	int min = Integer.MAX_VALUE;
         @Override
         public void notifyWriteBefore(int register, final int sp, AccessMode mode) {
-          /*logger.debug("SP is now: 0x" + Integer.toHexString(sp));*/
           final int available = sp - heapStartAddress;
 
           if (available < min) {

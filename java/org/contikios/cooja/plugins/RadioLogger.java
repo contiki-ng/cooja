@@ -585,7 +585,6 @@ public class RadioLogger extends VisPlugin {
                   suite.getDescription(), suiteName, suiteAnalyzers, false));
           group.add(rbMenuItem);
           analyzerMenu.add(rbMenuItem);
-          logger.debug("Loaded radio logger analyzers: " + suite.getDescription());
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e1) {
           logger.warn("Failed to load analyzer suite '" + suiteName + "': " + e1.getMessage());
         }
@@ -853,7 +852,7 @@ public class RadioLogger extends VisPlugin {
         }
       }
     } catch (Exception e) {
-      logger.debug("Error when analyzing packet: " + e.getMessage(), e);
+      logger.warn("Error when analyzing packet: " + e.getMessage(), e);
       return false;
     }
     return brief.length() > 0;

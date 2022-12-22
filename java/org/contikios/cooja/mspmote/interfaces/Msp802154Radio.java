@@ -166,7 +166,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
   private void finishTransmission()
   {
     if (isTransmitting()) {
-      //logger.debug("----- 802.15.4 TRANSMISSION FINISHED -----");
       isTransmitting = false;
       isSynchronized = false;
       lastEvent = RadioEvent.TRANSMISSION_FINISHED;
