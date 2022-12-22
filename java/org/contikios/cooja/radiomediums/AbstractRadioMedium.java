@@ -551,14 +551,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	public void addRadioMediumObserver(Observer observer) {
 		radioMediumObservable.addObserver(observer);
 	}
-	
-	/**
-	 * @return the radioMediumObservable
-	 */
-	public Observable getRadioMediumObservable() {
-		return radioMediumObservable;
-	}
-	
+
 	public void deleteRadioMediumObserver(Observer observer) {
 		radioMediumObservable.deleteObserver(observer);
 	}
