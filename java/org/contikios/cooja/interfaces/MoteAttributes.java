@@ -31,10 +31,10 @@
 package org.contikios.cooja.interfaces;
 
 import java.awt.BorderLayout;
+import java.awt.EventQueue;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -42,6 +42,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.plugins.skins.AttributeVisualizerSkin;
@@ -81,6 +82,7 @@ public class MoteAttributes extends Observable implements MoteInterface {
   private final Mote mote;
 
   private final HashMap<String, Object> attributes = new HashMap<>();
+  private final HashMap<JPanel, JTextArea> labels = new HashMap<>();
 
   private Observer logObserver = (o, arg) -> {
     String msg = ((Log) o).getLastLogMessage();
@@ -128,7 +130,13 @@ public class MoteAttributes extends Observable implements MoteInterface {
     msg = msg.substring(3);
 
     setAttributes(msg);
-
+    if (Cooja.isVisualized()) {
+      EventQueue.invokeLater(() -> {
+        for (var text : labels.values()) {
+          text.setText(getText());
+        }
+      });
+    }
     setChanged();
     notifyObservers();
   }
@@ -170,24 +178,12 @@ public class MoteAttributes extends Observable implements MoteInterface {
     attributes.setEditable(false);
     panel.add(attributes);
     attributes.setText(getText());
-
-    Observer observer;
-    this.addObserver(observer = (obs, obj) -> attributes.setText(getText()));
-
-    // Saving observer reference for releaseInterfaceVisualizer
-    panel.putClientProperty("intf_obs", observer);
-
+    labels.put(panel, attributes);
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
-      return;
-    }
-    this.deleteObserver(observer);
+    labels.remove(panel);
   }
-
 }
