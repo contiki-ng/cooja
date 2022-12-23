@@ -1380,7 +1380,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
         return rssi;
     }
 
-    private boolean isDefinedTxPower(int txpower) {
+    private static boolean isDefinedTxPower(int txpower) {
         return switch (txpower) {
             case 0xf7, 0xf2, 0xab, 0x88, 0x81, 0x32, 0x2c, 0x13, 0x03 -> true;
             default -> false;

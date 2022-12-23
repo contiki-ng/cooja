@@ -115,7 +115,7 @@ public class DS2411 extends Chip {
     super("DS2411", "Silicon Serial Number", cpu);
   }
 
-  private int crcAdd(int acc, int data) {
+  private static int crcAdd(int acc, int data) {
     int i;
     acc ^= data;
     for (i = 0; i < 8; i++) {
@@ -127,7 +127,7 @@ public class DS2411 extends Chip {
     return acc;
   }
 
-  private int crc8(int[] buf, int len) {
+  private static int crc8(int[] buf, int len) {
     int acc = 0;
     for (int i = 0; i < len; i++) {
       acc = crcAdd(acc, buf[i]);

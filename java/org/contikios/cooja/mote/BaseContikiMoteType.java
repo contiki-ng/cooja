@@ -132,7 +132,7 @@ public abstract class BaseContikiMoteType implements MoteType {
    * @param reservedIdentifiers Already reserved identifiers
    * @return Unique mote type ID.
    */
-  public static String generateUniqueMoteTypeID(String prefix, Set<String> reservedIdentifiers) {
+  private static String generateUniqueMoteTypeID(String prefix, Set<String> reservedIdentifiers) {
     String testID = "";
     boolean available = false;
     while (!available) {

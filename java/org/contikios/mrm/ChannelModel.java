@@ -417,7 +417,7 @@ public class ChannelModel {
    * @param rectangle Rectangle which line may intersect
    * @return Intersection line of given line and rectangle (or null)
    */
-  private Line2D getIntersectionLine(double x1, double y1, double x2, double y2, Rectangle2D rectangle) {
+  private static Line2D getIntersectionLine(double x1, double y1, double x2, double y2, Rectangle2D rectangle) {
 
     // Check if entire line is inside rectangle
     if (rectangle.contains(x1, y1) && rectangle.contains(x2, y2)) {

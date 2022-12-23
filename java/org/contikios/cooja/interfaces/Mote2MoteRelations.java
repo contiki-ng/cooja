@@ -30,7 +30,6 @@
 
 package org.contikios.cooja.interfaces;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
