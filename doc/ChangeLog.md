@@ -23,6 +23,12 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed simulationFinishedLoading from RadioMedium interface
+
+Cooja now calls setConfigXML on the radio medium last, so the hook is
+no longer required. Update by moving the body of simulationFinishedLoading
+into setConfigXML.
+
 ### LogOutputListener interface no longer extends MoteCountListener
 
 Plugins that need to observe both logs and motes added/removed should

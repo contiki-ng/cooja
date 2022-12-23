@@ -336,7 +336,6 @@ public final class Simulation extends Observable {
       } else {
         logger.info("Radio Medium changed - ignoring radio medium specific config");
       }
-      currentRadioMedium.simulationFinishedLoading();
 
       // Quick load mode only during loading
       this.quick = false;
