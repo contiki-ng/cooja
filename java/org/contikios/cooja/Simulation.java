@@ -755,7 +755,6 @@ public final class Simulation extends Observable {
       Cooja.removePlugin(startedPlugins, startedPlugin);
     }
     deleteObservers();
-    stopSimulation(); // FIXME: check if this is required.
     if (!isShutdown) {
       commandQueue.add(Command.QUIT);
     }
