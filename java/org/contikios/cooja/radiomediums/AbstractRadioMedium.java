@@ -579,30 +579,18 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 
 		return config;
 	}
-	
-	private Collection<Element> delayedConfiguration = null;
-	
-	@Override
-	public boolean setConfigXML(final Collection<Element> configXML, boolean visAvailable) {
-		delayedConfiguration = configXML;
-		return true;
-	}
-	
-	@Override
-	public void simulationFinishedLoading() {
-		if (delayedConfiguration == null) {
-			return;
-		}
 
-		for (Element element : delayedConfiguration) {
-			if (element.getName().equals("BaseRSSIConfig")) {
-				Radio r = simulation.getMoteWithID(Integer.parseInt(element.getAttribute("Mote").getValue())).getInterfaces().getRadio();				
-				setBaseRssi(r, Double.parseDouble(element.getText()));
-			} else 	if (element.getName().equals("SendRSSIConfig")) {
-				Radio r = simulation.getMoteWithID(Integer.parseInt(element.getAttribute("Mote").getValue())).getInterfaces().getRadio();				
-				setSendRssi(r, Double.parseDouble(element.getText()));
-			} 
-		}
-	}
-
+  @Override
+  public boolean setConfigXML(final Collection<Element> configXML, boolean visAvailable) {
+    for (var element : configXML) {
+      if (element.getName().equals("BaseRSSIConfig")) {
+        Radio r = simulation.getMoteWithID(Integer.parseInt(element.getAttribute("Mote").getValue())).getInterfaces().getRadio();
+        setBaseRssi(r, Double.parseDouble(element.getText()));
+      } else if (element.getName().equals("SendRSSIConfig")) {
+        Radio r = simulation.getMoteWithID(Integer.parseInt(element.getAttribute("Mote").getValue())).getInterfaces().getRadio();
+        setSendRssi(r, Double.parseDouble(element.getText()));
+      }
+    }
+    return true;
+  }
 }

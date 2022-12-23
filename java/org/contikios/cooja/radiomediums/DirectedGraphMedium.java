@@ -341,28 +341,13 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     return config;
   }
 
-  private Collection<Element> delayedConfiguration = null;
   @Override
   public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     super.setConfigXML(configXML, visAvailable);
-
-    /* Wait until simulation has been loaded */
-    delayedConfiguration = configXML;
-    return true;
-  }
-  
-  @Override
-  public void simulationFinishedLoading() {
-    if (delayedConfiguration == null) {
-      return;
-    }
-
-    super.simulationFinishedLoading();
-
     boolean oldConfig = false;
-    for (Element element : delayedConfiguration) {
+    for (var element : configXML) {
       if (element.getName().equals("edge")) {
-		Collection<Element> edgeConfig = element.getChildren();
+        Collection<Element> edgeConfig = element.getChildren();
         Radio source = null;
         DGRMDestinationRadio dest = null;
         for (Element edgeElement : edgeConfig) {
@@ -370,7 +355,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
             oldConfig = true;
 
             /* Old config: lookup source mote */
-            for (Mote m: simulation.getMotes()) {
+            for (Mote m : simulation.getMotes()) {
               if (m.toString().equals(edgeElement.getText())) {
                 logger.info("Old config: mapping '" + edgeElement.getText() + "' to node " + m.getID());
                 source = m.getInterfaces().getRadio();
@@ -379,7 +364,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
             }
           } else if (edgeElement.getName().equals("source")) {
             source = simulation.getMoteWithID(
-                Integer.parseInt(edgeElement.getText())).getInterfaces().getRadio();
+                    Integer.parseInt(edgeElement.getText())).getInterfaces().getRadio();
           } else if (oldConfig && edgeElement.getName().equals("ratio")) {
             /* Old config: parse link ratio */
             dest.ratio = Double.parseDouble(edgeElement.getText());
@@ -387,7 +372,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
             if (oldConfig) {
               /* Old config: create simple destination link */
               Radio destRadio = null;
-              for (Mote m: simulation.getMotes()) {
+              for (Mote m : simulation.getMotes()) {
                 if (m.toString().equals(edgeElement.getText())) {
                   logger.info("Old config: mapping '" + edgeElement.getText() + "' to node " + m.getID());
                   destRadio = m.getInterfaces().getRadio();
@@ -402,16 +387,16 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
               }
               /* Backwards compatibility: se.sics -> org.contikios */
               destClassName = destClassName.replaceFirst("^se\\.sics", "org.contikios");
-              
+
               Class<? extends DGRMDestinationRadio> destClass =
-                simulation.getCooja().tryLoadClass(this, DGRMDestinationRadio.class, destClassName);
+                      simulation.getCooja().tryLoadClass(this, DGRMDestinationRadio.class, destClassName);
               if (destClass == null) {
                 throw new RuntimeException("Could not load class: " + destClassName);
               }
               try {
                 dest = destClass.getDeclaredConstructor().newInstance();
-				List<Element> children = edgeElement.getChildren();
-				dest.setConfigXML(children, simulation);
+                List<Element> children = edgeElement.getChildren();
+                dest.setConfigXML(children, simulation);
               } catch (Exception e) {
                 throw new RuntimeException("Unknown class: " + destClassName, e);
               }
@@ -420,14 +405,14 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
         }
         if (source == null || dest == null) {
           logger.fatal("Failed loading DGRM links, aborting");
-          return;
+          return false;
         } else {
           addEdge(new Edge(source, dest));
         }
       }
     }
     requestEdgeAnalysis();
-    delayedConfiguration = null;
+    return true;
   }
 
   public static class Edge {

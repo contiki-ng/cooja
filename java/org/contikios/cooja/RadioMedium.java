@@ -113,6 +113,8 @@ public interface RadioMedium {
 
   /**
    * Sets the current radio medium config depending on the given XML elements.
+   * <p>
+   * This method is called after the simulation has finished loading.
    *
    * @see #getConfigXML()
    * @param configXML
@@ -125,9 +127,4 @@ public interface RadioMedium {
    * Called when radio medium is removed. 
    */
   default void removed() {}
-
-  /**
-   * Notifies radio medium that the simulation finished loading.
-   */
-  default void simulationFinishedLoading() {}
 }
