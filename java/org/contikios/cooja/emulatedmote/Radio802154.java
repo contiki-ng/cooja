@@ -79,7 +79,6 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
         if (len == 0) {
             lastEventTime = mote.getSimulation().getSimulationTime();
             lastEvent = RadioEvent.TRANSMISSION_STARTED;
-            if (DEBUG) logger.debug("----- 802.15.4 TRANSMISSION STARTED -----");
             setChanged();
             notifyObservers();
         }
@@ -99,17 +98,13 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
         }
 
         if (len == expLen) {
-            if (DEBUG) logger.debug("----- 802.15.4 CUSTOM DATA TRANSMITTED -----");
-
             lastOutgoingPacket = Radio802154PacketConverter.fromCC2420ToCooja(buffer);
             lastEventTime = mote.getSimulation().getSimulationTime();
             lastEvent = RadioEvent.PACKET_TRANSMITTED;
-            if (DEBUG) logger.debug("----- 802.15.4 PACKET TRANSMITTED -----");
             setChanged();
             notifyObservers();
 
             lastEventTime = mote.getSimulation().getSimulationTime();
-            logger.debug("----- 802.15.4 TRANSMISSION FINISHED -----");
             lastEvent = RadioEvent.TRANSMISSION_FINISHED;
             setChanged();
             notifyObservers();
@@ -200,7 +195,6 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
         lastEventTime = mote.getSimulation().getSimulationTime();
         lastEvent = RadioEvent.RECEPTION_STARTED;
-        if (DEBUG) logger.debug("----- 802.15.4 RECEPTION STARTED -----");
         setChanged();
         notifyObservers();
     }
@@ -218,7 +212,6 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
         lastEventTime = mote.getSimulation().getSimulationTime();
         lastEvent = RadioEvent.RECEPTION_FINISHED;
-        if (DEBUG) logger.debug("----- 802.15.4 RECEPTION FINISHED -----");
         setChanged();
         notifyObservers();
     }
@@ -243,7 +236,6 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
         lastEventTime = mote.getSimulation().getSimulationTime();
         lastEvent = RadioEvent.RECEPTION_INTERFERED;
-        /*logger.debug("----- SKY RECEPTION INTERFERED -----");*/
         setChanged();
         notifyObservers();
     }

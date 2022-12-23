@@ -99,7 +99,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 					isTransmitting = true;
 					len = 0;
 					gotSynchbyte = false;
-					/*logger.debug("----- CCC1120 TRANSMISSION STARTED -----");*/
 					setChanged();
 					notifyObservers();
 				}
@@ -131,8 +130,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 				buffer[len++] = data;
 
 				if (len == expLen) {
-					/*logger.debug("----- CCC1120 CUSTOM DATA TRANSMITTED -----");*/
-
 					final byte[] buf = new byte[expLen];
 					System.arraycopy(buffer, 0, buf, 0, expLen);
 					lastOutgoingPacket = new RadioPacket() {
@@ -143,11 +140,9 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 					};
 
 					lastEvent = RadioEvent.PACKET_TRANSMITTED;
-					/*logger.debug("----- CCC1120 PACKET TRANSMITTED -----");*/
 					setChanged();
 					notifyObservers();
 
-					/*logger.debug("----- CCC1120 TRANSMISSION FINISHED -----");*/
 					isTransmitting = false;
 					lastEvent = RadioEvent.TRANSMISSION_FINISHED;
 					setChanged();
@@ -196,12 +191,10 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 			};
 
 			lastEvent = RadioEvent.PACKET_TRANSMITTED;
-			/*logger.debug("----- CCC1120 PACKET TRANSMITTED -----");*/
 			setChanged();
 			notifyObservers();
 
 			/* Register that transmission ended in radio medium */
-			/*logger.debug("----- CCC1120 TRANSMISSION FINISHED -----");*/
 			isTransmitting = false;
 			lastEvent = RadioEvent.TRANSMISSION_FINISHED;
 			setChanged();
@@ -321,7 +314,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		isReceiving = true;
 
 		lastEvent = RadioEvent.RECEPTION_STARTED;
-		/*logger.debug("----- CCC1120 RECEPTION STARTED -----");*/
 		setChanged();
 		notifyObservers();
 	}
@@ -333,7 +325,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		isInterfered = false;
 
 		lastEvent = RadioEvent.RECEPTION_FINISHED;
-		/*logger.debug("----- CCC1120 RECEPTION FINISHED -----");*/
 		setChanged();
 		notifyObservers();
 	}
@@ -350,7 +341,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		lastIncomingPacket = null;
 
 		lastEvent = RadioEvent.RECEPTION_INTERFERED;
-		/*logger.debug("----- CCC1120 RECEPTION INTERFERED -----");*/
 		setChanged();
 		notifyObservers();
 	}

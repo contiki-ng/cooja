@@ -343,7 +343,6 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
       lastEvent = RadioEvent.TRANSMISSION_FINISHED;
       this.setChanged();
       this.notifyObservers();
-      /*logger.debug("----- CONTIKI TRANSMISSION ENDED -----");*/
     }
 
     /* New transmission */
@@ -377,13 +376,11 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
       lastEvent = RadioEvent.TRANSMISSION_STARTED;
       this.setChanged();
       this.notifyObservers();
-      //logger.debug("----- NEW CONTIKI TRANSMISSION DETECTED -----");
 
       // Deliver packet right away
       lastEvent = RadioEvent.PACKET_TRANSMITTED;
       this.setChanged();
       this.notifyObservers();
-      //logger.debug("----- CONTIKI PACKET DELIVERED -----");
     }
 
     if (isTransmitting && transmissionEndTime > now) {
@@ -416,7 +413,6 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
          for (Element element : configXML) {
                  if (element.getName().equals("bitrate")) {
                          radioTransmissionRateKBPS = Double.parseDouble(element.getText());
-                         logger.debug("Radio bitrate reconfigured to (kbps): " + radioTransmissionRateKBPS);
                  }
          }
   }

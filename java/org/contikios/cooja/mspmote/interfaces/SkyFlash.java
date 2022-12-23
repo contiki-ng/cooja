@@ -189,7 +189,7 @@ public class SkyFlash implements MoteInterface {
       dataIn.close();
       fileIn.close();
     } catch (Exception ex) {
-      logger.debug("Exception ex: " + ex);
+      logger.warn("Exception ex: " + ex);
       return null;
     }
 

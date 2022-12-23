@@ -590,8 +590,7 @@ class ObstacleWorld {
       for (int y=0; y < spatialResolution; y++) 
         for (int i=0; i < allObstaclesSpatial[x][y].size(); i++) 
           allSpatialObstacles++;
-    logger.debug(". All spatial obstacles:\t" + allSpatialObstacles);
-    
+
     logger.info(". Spatial map counts:");
     for (int y=0; y < spatialResolution; y++) {
       for (int x=0; x < spatialResolution; x++) {

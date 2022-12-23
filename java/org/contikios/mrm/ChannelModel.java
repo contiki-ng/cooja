@@ -885,7 +885,6 @@ public class ChannelModel {
     // Destination inside an obstacle? => no reflection factor
     for (int i=0; i < myObstacleWorld.getNrObstacles(); i++) {
       if (myObstacleWorld.getObstacle(i).contains(dest)) {
-        //logger.debug("Destination inside obstacle, aborting fast fading");
         return 0;
       }
     }

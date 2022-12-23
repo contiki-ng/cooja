@@ -328,7 +328,6 @@ public class ProjectConfig {
    */
   public String getStringValue(String name) {
     if (!myConfig.containsKey(name)) {
-      /*logger.debug("Could not find key named '" + name + "'");*/
     	return null;
     }
 

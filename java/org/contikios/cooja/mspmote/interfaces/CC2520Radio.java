@@ -67,7 +67,6 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
           lastEvent = RadioEvent.TRANSMISSION_STARTED;
           isTransmitting = true;
           len = 0;
-          /*logger.debug("----- CC2520 TRANSMISSION STARTED -----");*/
           setChanged();
           notifyObservers();
         }
@@ -92,7 +91,6 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
         }
 
         if (len == expLen) {
-          /*logger.debug("----- CC2520 CUSTOM DATA TRANSMITTED -----");*/
 		len -= 4; /* preamble */
 		len -= 1; /* synch */
 		len -= radio.getFooterLength(); /* footer */
@@ -105,11 +103,9 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
 			}
 		};
 
-          /*logger.debug("----- CC2520 PACKET TRANSMITTED -----");*/
           setChanged();
           notifyObservers();
 
-          /*logger.debug("----- CC2520 TRANSMISSION FINISHED -----");*/
           isTransmitting = false;
           lastEvent = RadioEvent.TRANSMISSION_FINISHED;
           setChanged();
@@ -158,12 +154,10 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
       };
 
       lastEvent = RadioEvent.PACKET_TRANSMITTED;
-      /*logger.debug("----- CC2520 PACKET TRANSMITTED -----");*/
       setChanged();
       notifyObservers();
 
       /* Register that transmission ended in radio medium */
-      /*logger.debug("----- CC2520 TRANSMISSION FINISHED -----");*/
       isTransmitting = false;
       lastEvent = RadioEvent.TRANSMISSION_FINISHED;
       setChanged();
@@ -257,7 +251,6 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
     isReceiving = true;
 
     lastEvent = RadioEvent.RECEPTION_STARTED;
-    /*logger.debug("----- CC2520 RECEPTION STARTED -----");*/
     setChanged();
     notifyObservers();
   }
@@ -269,7 +262,6 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
     isInterfered = false;
 
     lastEvent = RadioEvent.RECEPTION_FINISHED;
-    /*logger.debug("----- CC2520 RECEPTION FINISHED -----");*/
     setChanged();
     notifyObservers();
   }
@@ -286,7 +278,6 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
     lastIncomingPacket = null;
 
     lastEvent = RadioEvent.RECEPTION_INTERFERED;
-    /*logger.debug("----- CC2520 RECEPTION INTERFERED -----");*/
     setChanged();
     notifyObservers();
   }
