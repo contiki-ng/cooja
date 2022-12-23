@@ -108,11 +108,6 @@ public abstract class AbstractApplicationMoteType implements MoteType {
   }
 
   @Override
-  public void setIdentifier(String identifier) {
-    this.identifier = identifier;
-  }
-
-  @Override
   public String getDescription() {
     return description;
   }
