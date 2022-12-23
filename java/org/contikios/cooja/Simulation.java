@@ -271,13 +271,6 @@ public final class Simulation extends Observable {
       for (var element : root.getChild("simulation").getChildren()) {
         switch (element.getName()) {
           case "speedlimit" -> setSpeedLimit(element.getText().equals("null") ? null : Double.parseDouble(element.getText()));
-          case "radiomedium" -> {
-            if (element.getText().trim().equals(currentRadioMedium.getClass().getName())) {
-              currentRadioMedium.setConfigXML(element.getChildren(), Cooja.isVisualized());
-            } else {
-              logger.info("Radio Medium changed - ignoring radio medium specific config");
-            }
-          }
           case "events" -> eventCentral.setConfigXML(element.getChildren());
           case "motetype" -> {
             String moteTypeClassName = element.getText().trim();
@@ -336,6 +329,12 @@ public final class Simulation extends Observable {
             createMote(moteType, element);
           }
         }
+      }
+      var mediumCfg = root.getChild("simulation").getChild("radiomedium");
+      if (mediumCfg.getText().trim().equals(currentRadioMedium.getClass().getName())) {
+        currentRadioMedium.setConfigXML(mediumCfg.getChildren(), Cooja.isVisualized());
+      } else {
+        logger.info("Radio Medium changed - ignoring radio medium specific config");
       }
       currentRadioMedium.simulationFinishedLoading();
 
