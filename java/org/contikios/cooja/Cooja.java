@@ -1384,6 +1384,7 @@ public class Cooja {
       // (SwingWorker communicates internally through SimulationCreationExceptions.)
       throw new SimulationCreationException("Unknown error", e);
     }
+    setSimulation(sim);
     return sim;
   }
 
@@ -1428,7 +1429,6 @@ public class Cooja {
     } catch (MoteTypeCreationException e) {
       throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
     }
-    setSimulation(sim);
     return sim;
   }
 

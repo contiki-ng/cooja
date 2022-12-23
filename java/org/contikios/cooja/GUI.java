@@ -30,8 +30,8 @@ package org.contikios.cooja;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -54,9 +54,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedTransferQueue;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -1244,19 +1245,19 @@ public class GUI {
    * @return The simulation
    */
   Simulation doLoadConfig(Simulation.SimConfig cfg, Long manualRandomSeed) {
-    final var worker = new Cooja.RunnableInEDT<SwingWorker<Simulation, Cooja.SimulationCreationException>>() {
+    final var worker = new Cooja.RunnableInEDT<SwingWorker<Simulation, Element>>() {
       @Override
-      public SwingWorker<Simulation, Cooja.SimulationCreationException> work() {
+      public SwingWorker<Simulation, Element> work() {
         return createLoadSimWorker(cfg, true, manualRandomSeed);
       }
     }.invokeAndWait();
     worker.execute();
     try {
-      return worker.get();
+      worker.get();
     } catch (CancellationException | ExecutionException | InterruptedException e) {
       cooja.doRemoveSimulation();
-      return null;
     }
+    return cooja.getSimulation();
   }
 
   public File doSaveConfig() {
@@ -1316,8 +1317,8 @@ public class GUI {
    * @param manualRandomSeed The random seed to use for the simulation
    * @return The worker that will load the simulation.
    */
-  public SwingWorker<Simulation, Cooja.SimulationCreationException> createLoadSimWorker(Simulation.SimConfig cfg, final boolean quick,
-                                                                                         Long manualRandomSeed) {
+  public SwingWorker<Simulation, Element> createLoadSimWorker(Simulation.SimConfig cfg, final boolean quick,
+                                                              Long manualRandomSeed) {
     assert java.awt.EventQueue.isDispatchThread() : "Call from AWT thread";
     final var configFile = cfg == null ? null : new File(cfg.file());
     final var autoStart = configFile == null && cooja.getSimulation().isRunning();
@@ -1330,13 +1331,15 @@ public class GUI {
       addToFileHistory(configFile);
     }
 
-    final JPanel progressPanel;
+    // SwingWorker can pass information from worker to process() through publish().
+    // Communicate information the other way through this shared queue.
+    final var channel = new LinkedTransferQueue<Optional<Simulation>>();
     final JDialog progressDialog;
     if (quick) {
       final String progressTitle = "Loading " + (configFile == null ? "" : configFile.getAbsolutePath());
-      progressDialog = new JDialog(frame, progressTitle, Dialog.ModalityType.APPLICATION_MODAL);
+      progressDialog = new JDialog(frame, progressTitle);
 
-      progressPanel = new JPanel(new BorderLayout());
+      var progressPanel = new JPanel(new BorderLayout());
       var progressBar = new JProgressBar(0, 100);
       progressBar.setValue(0);
       progressBar.setIndeterminate(true);
@@ -1344,7 +1347,7 @@ public class GUI {
       PROGRESS_BAR = progressBar; // Allow various parts of Cooja to show messages.
 
       var button = new JButton("Abort");
-
+      button.addActionListener(e -> channel.put(Optional.empty()));
       progressPanel.add(BorderLayout.CENTER, progressBar);
       progressPanel.add(BorderLayout.SOUTH, button);
       progressPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -1355,58 +1358,74 @@ public class GUI {
       progressDialog.getRootPane().setDefaultButton(button);
       progressDialog.setLocationRelativeTo(frame);
       progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+      // Fake a modal dialog by disabling the Cooja window. This is required since
+      // the entire load is done in the AWT thread, forced by the plugin API design.
+      frame.setEnabled(false);
+      progressPanel.setVisible(true);
+      progressDialog.setVisible(true);
     } else {
-      progressPanel = null;
       progressDialog = null;
     }
 
-    // SwingWorker can pass information from worker to process() through publish().
-    // Communicate information the other way through this shared queue.
-    final var channel = new SynchronousQueue<Integer>(true);
-    var worker = new SwingWorker<Simulation, Cooja.SimulationCreationException>() {
+    return new SwingWorker<>() {
       @Override
       public Simulation doInBackground() {
-        Element root = configFile == null ? cooja.extractSimulationConfig() : null;
-        boolean shouldRetry;
-        Simulation newSim = null;
-        do {
-          try {
-            shouldRetry = false;
-            PROGRESS_WARNINGS.clear();
-            newSim = configFile == null
-                    ? cooja.createSimulation(cooja.getSimulation().getCfg(), root, quick, manualRandomSeed)
-                    : cooja.loadSimulationConfig(cfg, quick, manualRandomSeed);
-            if (newSim != null && autoStart) {
-              newSim.startSimulation();
-            }
-          } catch (Cooja.SimulationCreationException e) {
-            publish(e);
-            try {
-              shouldRetry = channel.take() == 1;
-            } catch (InterruptedException ex) {
-              cooja.doRemoveSimulation();
-              return null;
-            }
-          }
-        } while (shouldRetry);
+        try {
+          publish(configFile == null ? cooja.extractSimulationConfig() : cooja.readSimulationConfig(cfg));
+        } catch (Exception e) {
+          Cooja.showErrorDialog("Config file read error", e, false);
+          frame.setEnabled(true);
+          return null;
+        }
+        Simulation newSim;
+        try {
+          newSim = channel.take().orElse(null);
+        } catch (InterruptedException e) {
+          newSim = null;
+        }
+        if (newSim == null) {
+          frame.setEnabled(true);
+          return null;
+        }
+        cooja.setSimulation(newSim);
+        if (autoStart) {
+          newSim.startSimulation();
+        }
         return newSim;
       }
 
       @Override
-      protected void process(List<Cooja.SimulationCreationException> exs) {
-        for (var e : exs) {
-          var retry = showErrorDialog("Simulation load error", e, true);
+      protected void process(List<Element> exs) {
+        var newCfg = cfg == null ? cooja.getSimulation().getCfg() : cfg;
+        boolean shouldRetry;
+        do {
           try {
-            channel.put(retry ? 1 : 0);
-          } catch (InterruptedException ex) {
-            cancel(true);
-            return;
+            shouldRetry = false;
+            PROGRESS_WARNINGS.clear();
+            var newSim = cooja.createSimulation(newCfg, exs.get(0), quick, manualRandomSeed);
+            // Yield from AWT-thread so latent cancel button presses can get processed.
+            EventQueue.invokeLater(() -> {
+              if (progressDialog != null && frame.isEnabled()) { // Cancelled, clean up newSim resources.
+                newSim.removed();
+              } else {
+                channel.put(Optional.of(newSim));
+              }
+            });
+          } catch (Cooja.SimulationCreationException e) {
+            shouldRetry = showErrorDialog("Simulation load error", e, true);
+            if (!shouldRetry) {
+              channel.put(Optional.empty());
+            }
           }
-        }
+        } while (shouldRetry);
       }
 
       @Override
       protected void done() {
+        if (progressDialog != null && frame.isEnabled()) { // doInBackground() returned null.
+          progressDialog.dispose();
+          return;
+        }
         // Simulation loaded, plugins started, now Z-order visualized plugins.
         for (int z = 0; z < myDesktopPane.getAllFrames().length; z++) {
           for (var plugin : myDesktopPane.getAllFrames()) {
@@ -1470,18 +1489,10 @@ public class GUI {
         PROGRESS_WARNINGS.clear();
         if (progressDialog != null && progressDialog.isDisplayable()) {
           progressDialog.dispose();
+          frame.setEnabled(true);
         }
       }
     };
-
-    if (progressDialog != null) {
-      java.awt.EventQueue.invokeLater(() -> {
-        progressPanel.setVisible(true);
-        progressDialog.getRootPane().getDefaultButton().addActionListener(e -> worker.cancel(true));
-        progressDialog.setVisible(true);
-      });
-    }
-    return worker;
   }
 
   public void updateProgress(boolean stoppedSimulation) {
