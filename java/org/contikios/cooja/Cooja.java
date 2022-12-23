@@ -1379,7 +1379,6 @@ public class Cooja {
     Simulation sim;
     try {
       var root = readSimulationConfig(cfg);
-      boolean projectsOk = verifyProjects(root);
       sim = createSimulation(cfg, root, quick, manualRandomSeed);
     } catch (SimulationCreationException e) {
       throw e;
