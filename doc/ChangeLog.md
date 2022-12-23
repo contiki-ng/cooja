@@ -23,6 +23,11 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### LogOutputListener interface no longer extends MoteCountListener
+
+Plugins that need to observe both logs and motes added/removed should
+install separate listeners for the two.
+
 ### RadioMedium converted to interface
 
 RadioMediums should now implement the interface instead of extending the class.

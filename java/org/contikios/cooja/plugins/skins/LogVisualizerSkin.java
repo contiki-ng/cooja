@@ -38,6 +38,7 @@ import java.awt.Point;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
+import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
@@ -60,14 +61,6 @@ public class LogVisualizerSkin implements VisualizerSkin {
 
   private final LogOutputListener logOutputListener = new LogOutputListener() {
     @Override
-    public void moteWasAdded(Mote mote) {
-      visualizer.repaint();
-    }
-    @Override
-    public void moteWasRemoved(Mote mote) {
-      visualizer.repaint();
-    }
-    @Override
     public void newLogOutput(LogOutputEvent ev) {
       visualizer.repaint();
     }
@@ -76,16 +69,28 @@ public class LogVisualizerSkin implements VisualizerSkin {
     }
   };
 
+  private final MoteCountListener moteCountListener = new MoteCountListener() {
+    @Override
+    public void moteWasAdded(Mote mote) {
+      visualizer.repaint();
+    }
+    @Override
+    public void moteWasRemoved(Mote mote) {
+      visualizer.repaint();
+    }
+  };
+
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
-
     simulation.getEventCentral().addLogOutputListener(logOutputListener);
+    simulation.getEventCentral().addMoteCountListener(moteCountListener);
   }
 
   @Override
   public void setInactive() {
+    simulation.getEventCentral().removeMoteCountListener(moteCountListener);
     simulation.getEventCentral().removeLogOutputListener(logOutputListener);
   }
 

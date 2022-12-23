@@ -152,7 +152,7 @@ public class SimEventCentral {
   /** Default buffer sizes. */
   private int logOutputBufferSize = Integer.parseInt(Cooja.getExternalToolsSetting("BUFFERSIZE_LOGOUTPUT", "" + 40000));
   private final ArrayDeque<LogOutputEvent> logOutputEvents = new ArrayDeque<>();
-  public interface LogOutputListener extends MoteCountListener {
+  public interface LogOutputListener {
     void removedLogOutput(LogOutputEvent ev);
     void newLogOutput(LogOutputEvent ev);
   }
@@ -208,12 +208,9 @@ public class SimEventCentral {
     }
 
     logOutputListeners = ArrayUtils.add(logOutputListeners, listener);
-    addMoteCountListener(listener);
   }
   public void removeLogOutputListener(LogOutputListener listener) {
     logOutputListeners = ArrayUtils.remove(logOutputListeners, listener);
-    removeMoteCountListener(listener);
-
     if (logOutputListeners.length == 0) {
       /* Stop observing all log interfaces */
       MoteObservation[] observations = moteObservations.toArray(new MoteObservation[0]);

@@ -86,6 +86,7 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
+import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.Watchpoint;
@@ -131,6 +132,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   private final Simulation simulation;
   private final LogOutputListener newMotesListener;
+  private final MoteCountListener moteCountListener;
   
   /* Experimental features: Use currently active plugin to filter Timeline Log outputs */
   private LogListener logEventFilterPlugin = null;
@@ -425,14 +427,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     // Automatically add/delete motes. This listener also observes mote log outputs.
     simulation.getEventCentral().addLogOutputListener(newMotesListener = new LogOutputListener() {
       @Override
-      public void moteWasAdded(Mote mote) {
-        addMote(mote);
-      }
-      @Override
-      public void moteWasRemoved(Mote mote) {
-        removeMote(mote);
-      }
-      @Override
       public void removedLogOutput(LogOutputEvent ev) {
       }
       @Override
@@ -448,6 +442,16 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             break;
           }
         }
+      }
+    });
+    simulation.getEventCentral().addMoteCountListener(moteCountListener = new MoteCountListener() {
+      @Override
+      public void moteWasAdded(Mote mote) {
+        addMote(mote);
+      }
+      @Override
+      public void moteWasRemoved(Mote mote) {
+        removeMote(mote);
       }
     });
     for (Mote m: simulation.getMotes()) {
@@ -1112,7 +1116,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     if (moteHighlightObserver != null) {
       Cooja.deleteMoteHighlightObserver(moteHighlightObserver);
     }
-
+    simulation.getEventCentral().removeMoteCountListener(moteCountListener);
     simulation.getEventCentral().removeLogOutputListener(newMotesListener);
 
     /* Remove active mote interface observers */
