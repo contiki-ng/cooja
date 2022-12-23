@@ -271,7 +271,7 @@ public abstract class BaseContikiMoteType implements MoteType {
 
   @Override
   public boolean configureAndInit(Container top, Simulation sim, boolean vis) throws MoteTypeCreationException {
-    if (vis && !sim.isQuickSetup()) {
+    if (Cooja.isVisualized() && !sim.isQuickSetup()) {
       var currDesc = getDescription();
       var desc = currDesc == null ? getMoteName() + " Mote Type #" + (sim.getMoteTypes().length + 1) : currDesc;
       final var source = getContikiSourceFile();

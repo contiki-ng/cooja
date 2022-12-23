@@ -825,7 +825,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     if (getCompileCommands() == null) {
       throw new MoteTypeCreationException("No compile commands specified");
     }
-    return configureAndInit(Cooja.getTopParentContainer(), simulation, visAvailable);
+    return configureAndInit(Cooja.getTopParentContainer(), simulation, Cooja.isVisualized());
   }
 
   /**

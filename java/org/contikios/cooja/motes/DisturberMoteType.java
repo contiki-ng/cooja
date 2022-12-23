@@ -36,6 +36,7 @@ import java.awt.Container;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.COOJARadioPacket;
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteTimeEvent;
 import org.contikios.cooja.MoteType;
@@ -64,7 +65,7 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
   public boolean configureAndInit(Container parentContainer,
       Simulation simulation, boolean visAvailable) 
   throws MoteTypeCreationException {
-    if (!super.configureAndInit(parentContainer, simulation, visAvailable)) {
+    if (!super.configureAndInit(parentContainer, simulation, Cooja.isVisualized())) {
       return false;
     }
     setDescription("Disturber Mote Type #" + getIdentifier());
