@@ -242,6 +242,7 @@ public final class Simulation extends Observable {
       } while (isAlive);
       isShutdown = true;
       commandQueue.clear();
+      eventQueue.clear();
 
       // Deactivate all script engines
       for (var engine : scriptEngines) {
@@ -254,14 +255,14 @@ public final class Simulation extends Observable {
         removeMoteRelation(r.source, r.dest);
       }
 
-      // Remove the radio medium
-      currentRadioMedium.removed();
-
       // Remove all motes
       Mote[] motes = getMotes();
       for (Mote m: motes) {
         doRemoveMote(m);
       }
+
+      // Remove the radio medium
+      currentRadioMedium.removed();
     }, "sim");
     simulationThread.start();
     if (root != null) {
