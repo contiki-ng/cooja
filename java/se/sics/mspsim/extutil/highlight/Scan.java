@@ -6,13 +6,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.Files;
 
 public class Scan {
   // Get the filename from the command line
   public static void main(String[] args) throws IOException {
-    Scan program = new Scan();
     if (args.length != 1) {
       System.out.println("Usage: java Scan filename");
     } else {
@@ -25,9 +23,11 @@ public class Scan {
     File file = new File(filename);
     int len = (int) file.length();
     char[] buffer = new char[len];
-    Reader in = Files.newBufferedReader(file.toPath(), UTF_8);
-    in.read(buffer);
-    in.close();
+    try (var in = Files.newBufferedReader(file.toPath(), UTF_8)) {
+      if (in.read(buffer) < 0) {
+        throw new IOException("in.read failed");
+      }
+    }
 
     Scanner scanner = new Scanner();
     scanner.change(0, 0, len);

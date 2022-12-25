@@ -241,7 +241,7 @@ public class RTC extends IOUnit {
         /**
          * In calendar mode, use a gregorian calendar
          */
-        private GregorianCalendar cal = new GregorianCalendar(0, 1, 1, 0, 0, 0);
+        private GregorianCalendar cal = new GregorianCalendar(0, Calendar.JANUARY, 1, 0, 0, 0);
 
         /**
          * Timer to generate the interrupts and handle the calendar
@@ -379,7 +379,7 @@ public class RTC extends IOUnit {
          * Reset the calendar to 01.01.0000
          */
         private void resetCalendar() {
-                cal = new GregorianCalendar(0, 1, 1, 0, 0, 0);
+                cal = new GregorianCalendar(0, Calendar.JANUARY, 1, 0, 0, 0);
         }
 
         /**
