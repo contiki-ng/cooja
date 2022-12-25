@@ -189,12 +189,6 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	 * @param radio Radio
 	 */
 	private void removeFromActiveConnections(Radio radio) {
-		/* This radio must not be a connection source */
-		RadioConnection connection = getActiveConnectionFrom(radio);
-		if (connection != null) {
-			logger.fatal("Connection source turned off radio: " + radio);
-		}
-		
 		/* Set interfered if currently a connection destination */
 		for (RadioConnection conn : activeConnections) {
 			if (conn.isDestination(radio)) {
@@ -243,6 +237,11 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 				}
 				break;
 				case HW_OFF: {
+          // This radio must not be a connection source.
+          if (getActiveConnectionFrom(radio) != null) {
+            logger.fatal("Connection source turned off radio: " + radio);
+          }
+
 					/* Remove any radio connections from this radio */
 					removeFromActiveConnections(radio);
 					/* Update signal strengths */
