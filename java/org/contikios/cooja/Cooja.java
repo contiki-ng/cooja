@@ -32,7 +32,6 @@ import static org.contikios.cooja.GUI.WINDOW_TITLE;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -58,7 +57,6 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
-import javax.swing.SwingUtilities;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
