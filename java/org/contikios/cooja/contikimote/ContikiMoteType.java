@@ -186,6 +186,12 @@ public class ContikiMoteType extends BaseContikiMoteType {
   }
 
   @Override
+  public String getMoteTypeIdentifierPrefix() {
+    // The "mtype" prefix for ContikiMoteType is hardcoded elsewhere, so use that instead of "cooja".
+    return "mtype";
+  }
+
+  @Override
   public String getMoteName() {
     return "Cooja";
   }

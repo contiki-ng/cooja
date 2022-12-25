@@ -91,12 +91,10 @@ public abstract class BaseContikiMoteType implements MoteType {
   private static final Random rnd = new Random();
 
   protected BaseContikiMoteType() {
-    var namePrefix = getMoteType();
     String testID = "";
     boolean available = false;
     while (!available) {
-      // The "mtype" prefix for ContikiMoteType is hardcoded elsewhere, so use that instead of "cooja".
-      testID = ("cooja".equals(namePrefix) ? "mtype" : namePrefix) + rnd.nextInt(1000000000);
+      testID = getMoteTypeIdentifierPrefix() + rnd.nextInt(1000000000);
       available = !Cooja.usedMoteTypeIDs.contains(testID);
       // FIXME: add check that the library name is not already used.
     }
@@ -105,6 +103,11 @@ public abstract class BaseContikiMoteType implements MoteType {
 
   /** Returns file name extension for firmware. */
   public abstract String getMoteType();
+
+  /** Returns the mote type identifier prefix. Should not be overridden, special case for ContikiMoteType. */
+  public String getMoteTypeIdentifierPrefix() {
+    return getMoteType();
+  }
 
   /** Returns human-readable name for mote type. */
   public abstract String getMoteName();
