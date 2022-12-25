@@ -242,6 +242,7 @@ public final class Simulation extends Observable {
       } while (isAlive);
       isShutdown = true;
       commandQueue.clear();
+      eventQueue.clear();
 
       // Deactivate all script engines
       for (var engine : scriptEngines) {
