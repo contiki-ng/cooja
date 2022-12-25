@@ -74,6 +74,11 @@ public abstract class AbstractApplicationMoteType implements MoteType {
     super();
   }
 
+  /** Returns the mote type identifier prefix. */
+  public String getMoteTypeIdentifierPrefix() {
+    return "apptype";
+  }
+
   @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
   throws MoteTypeCreationException {
@@ -83,7 +88,7 @@ public abstract class AbstractApplicationMoteType implements MoteType {
       boolean identifierOK = false;
       while (!identifierOK) {
         counter++;
-        identifier = "apptype" + counter;
+        identifier = getMoteTypeIdentifierPrefix() + counter;
         identifierOK = true;
 
         // Check if identifier is already used by some other type
