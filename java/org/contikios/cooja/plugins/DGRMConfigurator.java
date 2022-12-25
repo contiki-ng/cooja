@@ -148,11 +148,11 @@ public class DGRMConfigurator extends VisPlugin {
     graphTable.getColumnModel().getColumn(IDX_SIGNAL).setCellRenderer(new DefaultTableCellRenderer() {
 			@Override
 			public void setValue(Object value) {
-        if (!(value instanceof Long)) {
-          setText(value.toString());
+        if (value instanceof Number number) {
+          setText(String.format("%1.1f dBm", number.doubleValue()));
           return;
         }
-        setText(String.format("%1.1f dBm", (Double) value));
+        setText(value.toString());
       }
     });
     graphTable.getColumnModel().getColumn(IDX_LQI).setCellRenderer(new DefaultTableCellRenderer() {
