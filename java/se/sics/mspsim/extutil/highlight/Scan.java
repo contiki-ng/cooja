@@ -12,7 +12,6 @@ import java.nio.file.Files;
 public class Scan {
   // Get the filename from the command line
   public static void main(String[] args) throws IOException {
-    Scan program = new Scan();
     if (args.length != 1) {
       System.out.println("Usage: java Scan filename");
     } else {
