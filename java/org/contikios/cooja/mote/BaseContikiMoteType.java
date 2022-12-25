@@ -224,7 +224,7 @@ public abstract class BaseContikiMoteType implements MoteType {
     return null;
   }
 
-  protected boolean setBaseConfigXML(Simulation sim, Collection<Element> configXML) throws MoteTypeCreationException {
+  protected boolean setBaseConfigXML(Simulation sim, Collection<Element> configXML) {
     for (Element element : configXML) {
       switch (element.getName()) {
         case "description" -> description = element.getText();
