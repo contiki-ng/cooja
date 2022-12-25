@@ -42,7 +42,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.Action;
@@ -55,27 +54,19 @@ import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteInterfaceHandler;
-import org.contikios.cooja.MoteType;
-import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.AbstractCompileDialog;
 import org.contikios.cooja.dialogs.MessageContainer;
 import org.contikios.cooja.dialogs.MessageList;
+import org.contikios.cooja.motes.AbstractApplicationMoteType;
 import org.contikios.cooja.util.StringUtils;
 import org.jdom2.Element;
 
 /**
  * The common parts of mote types based on compiled Contiki-NG targets.
  */
-public abstract class BaseContikiMoteType implements MoteType {
+public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
   private static final Logger logger = LogManager.getLogger(BaseContikiMoteType.class);
-  /** Description of the mote type. */
-  protected String description = null;
-  /** Identifier of the mote type. */
-  protected String identifier;
-
-  /** Project configuration of the mote type. */
-  protected ProjectConfig projectConfig = null;
   // FIXME: combine fileSource and fileFirmware so only one can be active.
   /** Source file of the mote type. */
   protected File fileSource = null;
@@ -87,24 +78,15 @@ public abstract class BaseContikiMoteType implements MoteType {
   /** MoteInterface classes used by the mote type. */
   protected final ArrayList<Class<? extends MoteInterface>> moteInterfaceClasses = new ArrayList<>();
 
-  /** Random generator for generating a unique mote ID. */
-  private static final Random rnd = new Random();
-
   protected BaseContikiMoteType() {
-    String testID = "";
-    boolean available = false;
-    while (!available) {
-      testID = getMoteTypeIdentifierPrefix() + rnd.nextInt(1000000000);
-      available = !Cooja.usedMoteTypeIDs.contains(testID);
-      // FIXME: add check that the library name is not already used.
-    }
-    identifier = testID;
+    super();
   }
 
   /** Returns file name extension for firmware. */
   public abstract String getMoteType();
 
   /** Returns the mote type identifier prefix. Should not be overridden, special case for ContikiMoteType. */
+  @Override
   public String getMoteTypeIdentifierPrefix() {
     return getMoteType();
   }
@@ -113,26 +95,6 @@ public abstract class BaseContikiMoteType implements MoteType {
   public abstract String getMoteName();
 
   protected abstract String getMoteImage();
-
-  @Override
-  public String getDescription() {
-    return description;
-  }
-
-  @Override
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  @Override
-  public String getIdentifier() {
-    return identifier;
-  }
-
-  @Override
-  public ProjectConfig getConfig() {
-    return projectConfig;
-  }
 
   public File getContikiSourceFile() {
     return fileSource;

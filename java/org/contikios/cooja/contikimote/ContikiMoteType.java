@@ -177,7 +177,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   public ContikiMoteType(Cooja gui) {
     this.gui = gui;
-    projectConfig = new ProjectConfig(gui.getProjectConfig());
+    myConfig = new ProjectConfig(gui.getProjectConfig());
   }
 
   @Override
