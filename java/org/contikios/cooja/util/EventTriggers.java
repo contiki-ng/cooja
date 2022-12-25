@@ -43,6 +43,9 @@ import java.util.function.BiConsumer;
 public class EventTriggers<K, T> {
   /** Utility enum that indicates something was added or removed. */
   public enum AddRemove {ADD, REMOVE}
+  /** Utility enum that indicates something was updated. Improves readability, could be represented by Void. */
+  public enum Update {UPDATE}
+
   private final LinkedHashMap<Object, ArrayList<BiConsumer<K, T>>> triggers = new LinkedHashMap<>();
 
   /**
