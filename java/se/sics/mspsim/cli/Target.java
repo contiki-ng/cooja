@@ -158,15 +158,12 @@ public abstract class Target {
             }
         }
 
-        if (list != null) {
-            // Close any connected writers
-            for (CommandContext context : list) {
-                context.kill();
-            }
+        // Close any connected writers
+        for (CommandContext context : list) {
+            context.kill();
         }
         closeTarget();
     }
 
     protected abstract void closeTarget();
-
 }
