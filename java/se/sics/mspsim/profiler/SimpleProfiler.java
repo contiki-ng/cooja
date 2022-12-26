@@ -278,17 +278,13 @@ public class SimpleProfiler implements Profiler, EventListener {
 
   @Override
   public void clearProfile() {
-    if (profileData != null) {
-      CallEntry[] entries =
-        profileData.values().toArray(new CallEntry[0]);
-      for (CallEntry entry : entries) {
-        entry.cycles = 0;
-        entry.calls = 0;
-      }
-      for (CallEntry e : callStack) {
-        if (e != null) {
-          e.calls = -1;
-        }
+    for (var entry : profileData.values().toArray(new CallEntry[0])) {
+      entry.cycles = 0;
+      entry.calls = 0;
+    }
+    for (var e : callStack) {
+      if (e != null) {
+        e.calls = -1;
       }
     }
   }
