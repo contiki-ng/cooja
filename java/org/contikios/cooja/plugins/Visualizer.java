@@ -201,7 +201,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   private final Observer moteHighligtObserver;
   private final ArrayList<Mote> highlightedMotes = new ArrayList<>();
   private final static Color HIGHLIGHT_COLOR = Color.CYAN;
-  private final Observer moteRelationsObserver;
 
   /* Popup menu */
   public interface SimulationMenuAction {
@@ -481,7 +480,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     });
 
     /* Observe mote relations */
-    Cooja.addMoteRelationsObserver(moteRelationsObserver = (obs, obj) -> repaint());
+    simulation.getMoteRelationsTriggers().addTrigger(this, (k, v) -> repaint());
 
     canvas.getInputMap().put(KeyStroke.getKeyStroke("ESCAPE"), "abort_action");
     canvas.getInputMap().put(KeyStroke.getKeyStroke("DELETE"), "delete_motes");
@@ -1383,9 +1382,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     if (moteHighligtObserver != null) {
       Cooja.deleteMoteHighlightObserver(moteHighligtObserver);
     }
-    if (moteRelationsObserver != null) {
-      Cooja.deleteMoteRelationsObserver(moteRelationsObserver);
-    }
+    simulation.getMoteRelationsTriggers().deleteTriggers(this);
 
     simulation.getEventCentral().removeMoteCountListener(newMotesListener);
     for (Mote mote : simulation.getMotes()) {

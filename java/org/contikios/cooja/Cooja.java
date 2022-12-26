@@ -1663,30 +1663,6 @@ public class Cooja {
   }
 
   /**
-   * Adds mote relation observer.
-   * Typically, used by visualizer plugins.
-   *
-   * @param newObserver Observer
-   */
-  public static void addMoteRelationsObserver(Observer newObserver) {
-    if (gui != null) {
-      gui.moteRelationObservable.addObserver(newObserver);
-    }
-  }
-
-  /**
-   * Removes mote relation observer.
-   * Typically, used by visualizer plugins.
-   *
-   * @param observer Observer
-   */
-  public static void deleteMoteRelationsObserver(Observer observer) {
-    if (gui != null) {
-      gui.moteRelationObservable.deleteObserver(observer);
-    }
-  }
-
-  /**
    * Tries to convert given file to be "portable".
    * The portable path is either relative to Contiki, or to the configuration (.csc) file.
    * The config relative path is preferred if the two paths are the same length, otherwise
