@@ -61,12 +61,12 @@ import se.sics.mspsim.util.Utils;
 
 public class SimpleProfiler implements Profiler, EventListener {
 
-  private final HashMap<MapEntry,CallEntry> profileData;
-  private final HashMap<String, TagEntry> tagProfiles;
-  private final HashMap<String, TagEntry> startTags;
-  private final HashMap<String, TagEntry> endTags;
-  private final HashMap<String, String> ignoreFunctions;
-  private CallEntry[] callStack;
+  private final HashMap<MapEntry,CallEntry> profileData = new HashMap<>();
+  private final HashMap<String, TagEntry> tagProfiles = new HashMap<>();
+  private final HashMap<String, TagEntry> startTags = new HashMap<>();
+  private final HashMap<String, TagEntry> endTags = new HashMap<>();
+  private final HashMap<String, String> ignoreFunctions = new HashMap<>();
+  private CallEntry[] callStack = new CallEntry[64];;
   private int cSP = 0;
   private MSP430Core cpu;
   private PrintStream logger;
@@ -78,22 +78,12 @@ public class SimpleProfiler implements Profiler, EventListener {
   private final long[] lastInterruptTime = new long[64];
   private final long[] interruptTime = new long[64];
   private final long[] interruptCount = new long[64];
-  private int servicedInterrupt;
+  private int servicedInterrupt = -1;
   private int interruptLevel;
   private int interruptFrom;
   private boolean newIRQ;
 
   private StackMonitor stackMonitor;
-
-  public SimpleProfiler() {
-    profileData = new HashMap<>();
-    tagProfiles = new HashMap<>();
-    startTags = new HashMap<>();
-    endTags = new HashMap<>();
-    ignoreFunctions = new HashMap<>();
-    callStack = new CallEntry[64];
-    servicedInterrupt = -1;
-  }
 
   @Override
   public void setCPU(MSP430Core cpu) {
