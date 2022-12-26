@@ -33,8 +33,6 @@ package org.contikios.cooja.mspmote.interfaces;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -235,42 +233,28 @@ public class SkyCoffeeFilesystem implements MoteInterface {
     /* Update (force) */
     Box box = Box.createHorizontalBox();
     JButton update = new JButton("Update filesystem");
-    update.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        logger.info("Updating Coffee filesystem");
-        updateFS();
-      }
-    });
+    update.addActionListener(e -> updateFS());
     box.add(update);
 
     /* Insert */
     JButton insert = new JButton("Insert file");
-    insert.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        
-        JFileChooser fileChooser = new JFileChooser();
-        int reply = fileChooser.showOpenDialog(Cooja.getTopParentContainer());
-        if (reply != JFileChooser.APPROVE_OPTION) {
+    insert.addActionListener(e -> {
+      JFileChooser fileChooser = new JFileChooser();
+      int reply = fileChooser.showOpenDialog(Cooja.getTopParentContainer());
+      if (reply != JFileChooser.APPROVE_OPTION) {
+        return;
+      }
+
+      final File file = fileChooser.getSelectedFile();
+      new Thread(() -> {
+        try {
+          coffeeFS.insertFile(file);
+        } catch (IOException e1) {
+          logger.fatal("Coffee exception when adding file '{}': {}", file.getName(), e1.getMessage(), e1);
           return;
         }
-
-        final File file = fileChooser.getSelectedFile();
-        new Thread(new Runnable() {
-          @Override
-          public void run() {
-            logger.info("Adding file: " + file.getName());
-            try {
-              coffeeFS.insertFile(file);
-            } catch (IOException e1) {
-              logger.fatal("Coffee exception: " + e1.getMessage(), e1);
-              return;
-            }
-            updateFS();
-          }
-        }, "coffeeFS.insertFile").start();
-      }
+        updateFS();
+      }, "coffeeFS.insertFile").start();
     });
     box.add(insert);
 

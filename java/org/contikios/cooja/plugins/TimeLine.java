@@ -34,6 +34,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -72,7 +73,6 @@ import javax.swing.JToolTip;
 import javax.swing.KeyStroke;
 import javax.swing.Popup;
 import javax.swing.PopupFactory;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButtonMenuItem;
@@ -470,26 +470,23 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
         final Timer timer = new Timer(100, null);
         final Mote mote = (Mote) obj;
-        timer.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            /* Count down */
-            if (timer.getDelay() < 90) {
-              timer.stop();
-              highlightedMotes.remove(mote);
-              repaint();
-              return;
-            }
-
-            /* Toggle highlight state */
-            if (highlightedMotes.contains(mote)) {
-              highlightedMotes.remove(mote);
-            } else {
-              highlightedMotes.add(mote);
-            }
-            timer.setDelay(timer.getDelay()-1);
+        timer.addActionListener(e -> {
+          // Count down.
+          if (timer.getDelay() < 90) {
+            timer.stop();
+            highlightedMotes.remove(mote);
             repaint();
+            return;
           }
+
+          // Toggle highlight state.
+          if (highlightedMotes.contains(mote)) {
+            highlightedMotes.remove(mote);
+          } else {
+            highlightedMotes.add(mote);
+          }
+          timer.setDelay(timer.getDelay()-1);
+          repaint();
         });
         timer.start();
       }
@@ -519,28 +516,18 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private void forceRepaintAndFocus(final long focusTime, final double focusCenter, final boolean mark) {
     lastRepaintSimulationTime = -1; /* Force repaint */
     repaintTimelineTimer.getActionListeners()[0].actionPerformed(null); /* Force size update*/
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        int w = timeline.getVisibleRect().width;
+    EventQueue.invokeLater(() -> {
+      int w = timeline.getVisibleRect().width;
+      /* centerPixel-leftPixel <=> focusCenter*w; */
+      int centerPixel = (int) (focusTime/currentPixelDivisor);
+      int leftPixel = (int) (focusTime/currentPixelDivisor - focusCenter*w);
+      timeline.scrollRectToVisible(new Rectangle(leftPixel, 0, w, 1));
 
-        /* centerPixel-leftPixel <=> focusCenter*w; */
-        int centerPixel = (int) (focusTime/currentPixelDivisor);
-        int leftPixel = (int) (focusTime/currentPixelDivisor - focusCenter*w);
-
-        Rectangle r = new Rectangle(
-            leftPixel, 0,
-            w, 1
-        );
-
-        timeline.scrollRectToVisible(r);
-
-        /* Time ruler */
-        if (mark) {
-          mousePixelPositionX = centerPixel;
-          mouseDownPixelPositionX = centerPixel;
-          mousePixelPositionY = timeline.getHeight();
-        }
+      // Time ruler.
+      if (mark) {
+        mousePixelPositionX = centerPixel;
+        mouseDownPixelPositionX = centerPixel;
+        mousePixelPositionY = timeline.getHeight();
       }
     });
   }
@@ -770,24 +757,19 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
 
   public void trySelectTime(final long toTime) {
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        /* Mark selected time in time ruler */
-        final int toPixel = (int) (toTime / currentPixelDivisor);
-        mousePixelPositionX = toPixel;
-        mouseDownPixelPositionX = toPixel;
-        mousePixelPositionY = timeline.getHeight();
-
-        /* Check if time is already visible */
-        Rectangle vis = timeline.getVisibleRect();
-        if (toPixel >= vis.x && toPixel < vis.x + vis.width) {
-          repaint();
-          return;
-        }
-
-        forceRepaintAndFocus(toTime, 0.5, false);
+    EventQueue.invokeLater(() -> {
+      // Mark selected time in time ruler.
+      final int toPixel = (int) (toTime / currentPixelDivisor);
+      mousePixelPositionX = toPixel;
+      mouseDownPixelPositionX = toPixel;
+      mousePixelPositionY = timeline.getHeight();
+      // Check if time is already visible.
+      Rectangle vis = timeline.getVisibleRect();
+      if (toPixel >= vis.x && toPixel < vis.x + vis.width) {
+        repaint();
+        return;
       }
+      forceRepaintAndFocus(toTime, 0.5, false);
     });
   }
 
@@ -901,20 +883,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           moteLEDs.isYellowOn()
       );
       moteEvents.addLED(startupEv);
-      Observer observer = new Observer() {
-        @Override
-        public void update(Observable o, Object arg) {
-          LEDEvent ev = new LEDEvent(
-              simulation.getSimulationTime(),
-              moteLEDs.isRedOn(),
-              moteLEDs.isGreenOn(),
-              moteLEDs.isYellowOn()
-          );
-
-          moteEvents.addLED(ev);
-        }
-      };
-
+      Observer observer = (o, arg) -> moteEvents.addLED(new LEDEvent(simulation.getSimulationTime(),
+              moteLEDs.isRedOn(),moteLEDs.isGreenOn(), moteLEDs.isYellowOn()));
       moteLEDs.addObserver(observer);
       activeMoteObservers.add(new MoteObservation(mote, moteLEDs, observer));
     }

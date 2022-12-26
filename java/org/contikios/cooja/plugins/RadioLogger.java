@@ -33,6 +33,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -641,27 +642,24 @@ public class RadioLogger extends VisPlugin {
         loggedConn.startTime = conn.getStartTime();
         loggedConn.endTime = simulation.getSimulationTime();
         loggedConn.connection = conn;
-        java.awt.EventQueue.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            int lastSize = connections.size();
-            // Check if the last row is visible
-            boolean isVisible = false;
-            int rowCount = dataTable.getRowCount();
-            if (rowCount > 0) {
-              Rectangle lastRow = dataTable.getCellRect(rowCount - 1, 0, true);
-              Rectangle visible = dataTable.getVisibleRect();
-              isVisible = visible.y <= lastRow.y && visible.y + visible.height >= lastRow.y + lastRow.height;
-            }
-            connections.add(loggedConn);
-            if (connections.size() > lastSize) {
-              model.fireTableRowsInserted(lastSize, connections.size() - 1);
-            }
-            if (isVisible) {
-              dataTable.scrollRectToVisible(dataTable.getCellRect(dataTable.getRowCount() - 1, 0, true));
-            }
-            setTitle("Radio messages: showing " + dataTable.getRowCount() + "/" + connections.size() + " packets");
+        EventQueue.invokeLater(() -> {
+          int lastSize = connections.size();
+          // Check if the last row is visible.
+          boolean isVisible = false;
+          int rowCount = dataTable.getRowCount();
+          if (rowCount > 0) {
+            Rectangle lastRow = dataTable.getCellRect(rowCount - 1, 0, true);
+            Rectangle visible = dataTable.getVisibleRect();
+            isVisible = visible.y <= lastRow.y && visible.y + visible.height >= lastRow.y + lastRow.height;
           }
+          connections.add(loggedConn);
+          if (connections.size() > lastSize) {
+            model.fireTableRowsInserted(lastSize, connections.size() - 1);
+          }
+          if (isVisible) {
+            dataTable.scrollRectToVisible(dataTable.getCellRect(dataTable.getRowCount() - 1, 0, true));
+          }
+          setTitle("Radio messages: showing " + dataTable.getRowCount() + "/" + connections.size() + " packets");
         });
       }
     });
