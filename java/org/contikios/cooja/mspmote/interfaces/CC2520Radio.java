@@ -14,10 +14,7 @@ import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
 import se.sics.mspsim.chip.CC2520;
-import se.sics.mspsim.chip.ChannelListener;
 import se.sics.mspsim.chip.RFListener;
-import se.sics.mspsim.core.Chip;
-import se.sics.mspsim.core.OperatingModeListener;
 
 /**
  * MSPSim CC2520 radio to COOJA wrapper.
@@ -96,12 +93,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
 		len -= radio.getFooterLength(); /* footer */
 		final byte[] packetdata = new byte[len];
 		System.arraycopy(buffer, 4+1, packetdata, 0, len);
-		lastOutgoingPacket =  new RadioPacket() {
-			@Override
-			public byte[] getPacketData() {
-				return packetdata;
-			}
-		};
+          lastOutgoingPacket = () -> packetdata;
 
           setChanged();
           notifyObservers();
@@ -115,27 +107,21 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
       }
     });
 
-    radio.addOperatingModeListener(new OperatingModeListener() {
-      @Override
-      public void modeChanged(Chip source, int mode) {
-        if (radio.isReadyToReceive()) {
-          lastEvent = RadioEvent.HW_ON;
-          setChanged();
-          notifyObservers();
-        } else {
-          radioOff();
-        }
+    radio.addOperatingModeListener((source, mode) -> {
+      if (radio.isReadyToReceive()) {
+        lastEvent = RadioEvent.HW_ON;
+        setChanged();
+        notifyObservers();
+      } else {
+        radioOff();
       }
     });
 
-    radio.addChannelListener(new ChannelListener() {
-      @Override
-      public void channelChanged(int channel) {
-        /* XXX Currently assumes zero channel switch time */
-        lastEvent = RadioEvent.UNKNOWN;
-        setChanged();
-        notifyObservers();
-      }
+    radio.addChannelListener(channel -> {
+      /* XXX Currently assumes zero channel switch time */
+      lastEvent = RadioEvent.UNKNOWN;
+      setChanged();
+      notifyObservers();
     });
   }
 
@@ -146,12 +132,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
       logger.warn("Turning off radio while transmitting, ending packet prematurely");
 
       /* Simulate end of packet */
-      lastOutgoingPacket = new RadioPacket() {
-        @Override
-        public byte[] getPacketData() {
-          return new byte[0];
-        }
-      };
+      lastOutgoingPacket = () -> new byte[0];
 
       lastEvent = RadioEvent.PACKET_TRANSMITTED;
       setChanged();
