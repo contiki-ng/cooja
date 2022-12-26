@@ -332,7 +332,7 @@ public class SimpleProfiler implements Profiler, EventListener {
           String cyclesS = String.valueOf(entry.cycles);
           String exCyclesS = String.valueOf(entry.exclusiveCycles);
           String callS = String.valueOf(c);
-          String avgS = String.valueOf(c > 0 ? (entry.cycles / c) : 0);
+          String avgS = String.valueOf(entry.cycles / c);
           out.print(functionName);
           printSpace(out, 43 - functionName.length() - callS.length());
           out.print(callS);
