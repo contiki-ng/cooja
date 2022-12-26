@@ -32,7 +32,6 @@ package org.contikios.mrm;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
@@ -102,16 +101,12 @@ public class MRM extends AbstractRadioMedium {
     CAPTURE_EFFECT_THRESHOLD = currentChannelModel.getParameterDoubleValue(ChannelModel.Parameter.captureEffectSignalTreshold);
     CAPTURE_EFFECT_PREAMBLE_DURATION = currentChannelModel.getParameterDoubleValue(ChannelModel.Parameter.captureEffectPreambleDuration);
    
-    currentChannelModel.addSettingsObserver(channelModelObserver = new Observer() {
-      @Override
-      public void update(Observable o, Object arg) {
-        WITH_CAPTURE_EFFECT = currentChannelModel.getParameterBooleanValue(ChannelModel.Parameter.captureEffect);
-        CAPTURE_EFFECT_THRESHOLD = currentChannelModel.getParameterDoubleValue(ChannelModel.Parameter.captureEffectSignalTreshold);
-        CAPTURE_EFFECT_PREAMBLE_DURATION = currentChannelModel.getParameterDoubleValue(ChannelModel.Parameter.captureEffectPreambleDuration);
-        
-        /* Radio Medium changed here, so notify */
-        radioMediumObservable.setChangedAndNotify();
-      }
+    currentChannelModel.addSettingsObserver(channelModelObserver = (o, arg) -> {
+      WITH_CAPTURE_EFFECT = currentChannelModel.getParameterBooleanValue(Parameter.captureEffect);
+      CAPTURE_EFFECT_THRESHOLD = currentChannelModel.getParameterDoubleValue(Parameter.captureEffectSignalTreshold);
+      CAPTURE_EFFECT_PREAMBLE_DURATION = currentChannelModel.getParameterDoubleValue(Parameter.captureEffectPreambleDuration);
+      // Radio Medium changed here, so notify.
+      radioMediumObservable.setChangedAndNotify();
     });
     
     if (Cooja.isVisualized()) {
@@ -134,12 +129,7 @@ public class MRM extends AbstractRadioMedium {
     currentChannelModel.deleteSettingsObserver(channelModelObserver);
   }
   
-  private final NoiseLevelListener noiseListener = new NoiseLevelListener() {
-        @Override
-        public void noiseLevelChanged(NoiseSourceRadio radio, int signal) {
-                updateSignalStrengths();
-        }
-  };
+  private final NoiseLevelListener noiseListener = (radio, signal) -> updateSignalStrengths();
   @Override
   public void registerRadioInterface(Radio radio, Simulation sim) {
         super.registerRadioInterface(radio, sim);

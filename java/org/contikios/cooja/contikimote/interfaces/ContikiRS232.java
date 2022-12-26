@@ -102,30 +102,27 @@ public class ContikiRS232 extends SerialUI implements PolledAfterActiveTicks {
   public void writeString(String message) {
     final byte[] dataToAppend = message.getBytes(UTF_8);
 
-    mote.getSimulation().invokeSimulationThread(new Runnable() {
-      @Override
-      public void run() {
-        /* Append to existing buffer */
-        int oldSize = moteMem.getIntValueOf("simSerialReceivingLength");
-        int newSize = oldSize + dataToAppend.length;
-        if (newSize > SERIAL_BUF_SIZE) {
-        	logger.fatal("ContikiRS232: dropping rs232 data #1, buffer full: " + oldSize + " -> " + newSize);
-        	mote.requestImmediateWakeup();
-        	return;
-        }
-        moteMem.setIntValueOf("simSerialReceivingLength", newSize);
-
-        byte[] oldData = moteMem.getByteArray("simSerialReceivingData", oldSize);
-        byte[] newData = new byte[newSize];
-
-        System.arraycopy(oldData, 0, newData, 0, oldData.length);
-        System.arraycopy(dataToAppend, 0, newData, oldSize, dataToAppend.length);
-
-        moteMem.setByteArray("simSerialReceivingData", newData);
-
-        moteMem.setByteValueOf("simSerialReceivingFlag", (byte) 1);
+    mote.getSimulation().invokeSimulationThread(() -> {
+      /* Append to existing buffer */
+      int oldSize = moteMem.getIntValueOf("simSerialReceivingLength");
+      int newSize = oldSize + dataToAppend.length;
+      if (newSize > SERIAL_BUF_SIZE) {
+        logger.fatal("ContikiRS232: dropping rs232 data #1, buffer full: " + oldSize + " -> " + newSize);
         mote.requestImmediateWakeup();
+        return;
       }
+      moteMem.setIntValueOf("simSerialReceivingLength", newSize);
+
+      byte[] oldData = moteMem.getByteArray("simSerialReceivingData", oldSize);
+      byte[] newData = new byte[newSize];
+
+      System.arraycopy(oldData, 0, newData, 0, oldData.length);
+      System.arraycopy(dataToAppend, 0, newData, oldSize, dataToAppend.length);
+
+      moteMem.setByteArray("simSerialReceivingData", newData);
+
+      moteMem.setByteValueOf("simSerialReceivingFlag", (byte) 1);
+      mote.requestImmediateWakeup();
     });
   }
 

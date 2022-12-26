@@ -43,6 +43,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -125,30 +126,24 @@ public class HighlightSourceViewer implements SourceViewer {
     }
     currentFile = filename;
 
-    SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          setup();
-
-          File file = findSourceFile(path, filename);
-          if (file != null) {
-            try (var reader = Files.newBufferedReader(file.toPath(), UTF_8)) {
-              highlighter.read(reader, null);
-              // Workaround for bug 4782232 in Java 1.4
-              highlighter.setCaretPosition(1);
-              highlighter.setCaretPosition(0);
-              window.setTitle("Source Viewer (" + file.getAbsolutePath()
-                              + ')');
-              if (!window.isVisible()) {
-                window.setVisible(true);
-              }
+    EventQueue.invokeLater(() -> {
+      try {
+        setup();
+        File file = findSourceFile(path, filename);
+        if (file != null) {
+          try (var reader = Files.newBufferedReader(file.toPath(), UTF_8)) {
+            highlighter.read(reader, null);
+            // Workaround for bug 4782232 in Java 1.4
+            highlighter.setCaretPosition(1);
+            highlighter.setCaretPosition(0);
+            window.setTitle("Source Viewer (" + file.getAbsolutePath() + ')');
+            if (!window.isVisible()) {
+              window.setVisible(true);
             }
           }
-        } catch (IOException err) {
-          err.printStackTrace();
-          JOptionPane.showMessageDialog(window, "Failed to read the file '" + filename + '\'', "Could not read file", JOptionPane.ERROR_MESSAGE);
         }
+      } catch (IOException err) {
+        JOptionPane.showMessageDialog(window, "Failed to read the file '" + filename + '\'', "Could not read file", JOptionPane.ERROR_MESSAGE);
       }
     });
   }
