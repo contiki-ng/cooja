@@ -864,12 +864,6 @@ public final class Simulation extends Observable {
    * @param type Mote type
    */
   public void removeMoteType(MoteType type) {
-    if (!moteTypes.contains(type)) {
-      logger.fatal("Mote type is not registered: " + type);
-      return;
-    }
-
-    /* Remove motes */
     for (Mote m: getMotes()) {
       if (m.getType() == type) {
         removeMote(m);
