@@ -1498,220 +1498,194 @@ public class AreaViewer extends VisPlugin {
         );
 
         // Thread that will perform the work
-        final Runnable runnable = new Runnable() {
-          @Override
-          public void run() {
-            try {
 
-              // Available signal strength intervals
-              double lowestImageValue = Double.MAX_VALUE;
-              double highestImageValue = -Double.MAX_VALUE;
+    // Start thread
+    attenuatorThread = new Thread(() -> {
+      // Available signal strength intervals.
+      double lowestImageValue = Double.MAX_VALUE;
+      double highestImageValue = -Double.MAX_VALUE;
+      // Create image values (calculate each pixel).
+      double[][] imageValues = new double[resolution.width][resolution.height];
+      try {
+        for (int x = 0; x < resolution.width; x++) {
+          for (int y = 0; y < resolution.height; y++) {
+            final double xx = x;
+            final double yy = y;
+            var txPair = new TxPair() {
+              @Override
+              public double getDistance() {
+                double w = getFromX() - getToX();
+                double h = getFromY() - getToY();
+                return Math.sqrt(w * w + h * h);
+              }
 
-              // Create image values (calculate each pixel)
-              double[][] imageValues = new double[resolution.width][resolution.height];
-              for (int x=0; x < resolution.width; x++) {
-                for (int y=0; y < resolution.height; y++) {
-                  final double xx = x;
-                  final double yy = y;
-                  TxPair txPair = new TxPair() {
-                    @Override
-                    public double getDistance() {
-                      double w = getFromX() - getToX();
-                      double h = getFromY() - getToY();
-                      return Math.sqrt(w*w+h*h);
-                    }
-                    @Override
-                    public double getFromX() { return radioX; }
-                    @Override
-                    public double getFromY() { return radioY; }
-                    @Override
-                    public double getToX() { return startX + width * xx/resolution.width; }
-                    @Override
-                    public double getToY() { return startY + height * yy/resolution.height; }
-                    @Override
-                    public double getTxPower() { return selectedRadio.getCurrentOutputPower(); }
-                    @Override
-                    public double getTxGain() {
-                      if (!(selectedRadio instanceof DirectionalAntennaRadio)) {
-                        return 0;
-                      }
-                      DirectionalAntennaRadio r = (DirectionalAntennaRadio)selectedRadio;
-                      return r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
-                    }
-                    @Override
-                    public double getRxGain() {
-                      return 0;
-                    }
-                  };
+              @Override
+              public double getFromX() {
+                return radioX;
+              }
 
-                  if (dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH) {
-                    // Attenuate
-                    double[] signalStrength = currentChannelModel.getReceivedSignalStrength(txPair);
+              @Override
+              public double getFromY() {
+                return radioY;
+              }
 
-                    // Collecting signal strengths
-                    if (signalStrength[0] < lowestImageValue) {
-                      lowestImageValue = signalStrength[0];
-                    }
-                    if (signalStrength[0] > highestImageValue) {
-                      highestImageValue = signalStrength[0];
-                    }
+              @Override
+              public double getToX() {
+                return startX + width * xx / resolution.width;
+              }
 
-                    imageValues[x][y] = signalStrength[0];
+              @Override
+              public double getToY() {
+                return startY + height * yy / resolution.height;
+              }
 
-                  } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH_VAR) {
-                    // Attenuate
-                    double[] signalStrength = currentChannelModel.getReceivedSignalStrength(txPair);
+              @Override
+              public double getTxPower() {
+                return selectedRadio.getCurrentOutputPower();
+              }
 
-                    // Collecting variances
-                    if (signalStrength[1] < lowestImageValue) {
-                      lowestImageValue = signalStrength[1];
-                    }
-                    if (signalStrength[1] > highestImageValue) {
-                      highestImageValue = signalStrength[1];
-                    }
-
-                    imageValues[x][y] = signalStrength[1];
-
-                  } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR) {
-                    // Get signal-to-noise ratio
-                    double[] snr = currentChannelModel.getSINR(
-                        txPair,
-                        -Double.MAX_VALUE
-                    );
-
-                    // Collecting signal-to-noise ratio
-                    if (snr[0] < lowestImageValue) {
-                      lowestImageValue = snr[0];
-                    }
-                    if (snr[0] > highestImageValue) {
-                      highestImageValue = snr[0];
-                    }
-
-                    imageValues[x][y] = snr[0];
-
-                  } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR_VAR) {
-                    // Get signal-to-noise ratio
-                    double[] snr = currentChannelModel.getSINR(
-                        txPair,
-                        -Double.MAX_VALUE
-                    );
-
-                    // Collecting variances
-                    if (snr[1] < lowestImageValue) {
-                      lowestImageValue = snr[1];
-                    }
-                    if (snr[1] > highestImageValue) {
-                      highestImageValue = snr[1];
-                    }
-
-                    imageValues[x][y] = snr[1];
-                  } else if (dataTypeToVisualize == ChannelModel.TransmissionData.PROB_OF_RECEPTION) {
-                    // Get probability of receiving a packet TODO What size? Does it matter?
-                    double probability = currentChannelModel.getProbability(
-                        txPair, -Double.MAX_VALUE
-                    )[0];
-
-                    // Collecting variances
-                    if (probability < lowestImageValue) {
-                      lowestImageValue = probability;
-                    }
-                    if (probability > highestImageValue) {
-                      highestImageValue = probability;
-                    }
-
-                    imageValues[x][y] = probability;
-                  } else if (dataTypeToVisualize == ChannelModel.TransmissionData.DELAY_SPREAD_RMS) {
-                    // Get RMS delay spread of receiving a packet
-                    double rmsDelaySpread = currentChannelModel.getRMSDelaySpread(
-                        txPair
-                    );
-
-                    // Collecting variances
-                    if (rmsDelaySpread < lowestImageValue) {
-                      lowestImageValue = rmsDelaySpread;
-                    }
-                    if (rmsDelaySpread > highestImageValue) {
-                      highestImageValue = rmsDelaySpread;
-                    }
-
-                    imageValues[x][y] = rmsDelaySpread;
-                  }
-
-                  // Check if the dialog has been canceled
-                  if (pm.isCanceled()) {
-                    return;
-                  }
-
-                  // Update progress
-                  pm.setProgress(x);
-
+              @Override
+              public double getTxGain() {
+                if (!(selectedRadio instanceof DirectionalAntennaRadio)) {
+                  return 0;
                 }
+                DirectionalAntennaRadio r = (DirectionalAntennaRadio) selectedRadio;
+                return r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
               }
 
-              // Adjust coloring signal strength limit
-              if (coloringIsFixed) {
-                if (dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH) {
-                  lowestImageValue = -100;
-                  highestImageValue = 0;
-                } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH_VAR) {
-                  lowestImageValue = 0;
-                  highestImageValue = 20;
-                } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR) {
-                  lowestImageValue = -10;
-                  highestImageValue = 30;
-                } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR_VAR) {
-                  lowestImageValue = 0;
-                  highestImageValue = 20;
-                } else if (dataTypeToVisualize == ChannelModel.TransmissionData.PROB_OF_RECEPTION) {
-                  lowestImageValue = 0;
-                  highestImageValue = 1;
-                } else if (dataTypeToVisualize == ChannelModel.TransmissionData.DELAY_SPREAD_RMS) {
-                  lowestImageValue = 0;
-                  highestImageValue = 5;
-                }
+              @Override
+              public double getRxGain() {
+                return 0;
               }
-
-              // Save coloring high-low interval
-              coloringHighest = highestImageValue;
-              coloringLowest = lowestImageValue;
-
-              // Create image
-              for (int x=0; x < resolution.width; x++) {
-                for (int y=0; y < resolution.height; y++) {
-
-                  tempChannelImage.setRGB(
-                      x,
-                      y,
-                      getColorOfSignalStrength(imageValues[x][y], lowestImageValue, highestImageValue)
-                  );
-                }
+            };
+            if (dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH) {
+              // Attenuate
+              double[] signalStrength = currentChannelModel.getReceivedSignalStrength(txPair);
+              // Collecting signal strengths
+              if (signalStrength[0] < lowestImageValue) {
+                lowestImageValue = signalStrength[0];
               }
-              logger.info("Attenuating area done, time=" + (System.currentTimeMillis() - timeBeforeCalculating));
-
-              // Repaint to show the new channel propagation
-              channelStartX = startX;
-              channelStartY = startY;
-              channelWidth = width;
-              channelHeight = height;
-              channelImage = tempChannelImage;
-
-              AreaViewer.this.repaint();
-              coloringIntervalPanel.repaint();
-
-            } catch (Exception ex) {
-              if (pm.isCanceled()) {
-                return;
+              if (signalStrength[0] > highestImageValue) {
+                highestImageValue = signalStrength[0];
               }
-              logger.fatal("Attenuation aborted: " + ex);
-              ex.printStackTrace();
-              pm.close();
+              imageValues[x][y] = signalStrength[0];
+            } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH_VAR) {
+              // Attenuate
+              double[] signalStrength = currentChannelModel.getReceivedSignalStrength(txPair);
+              // Collecting variances
+              if (signalStrength[1] < lowestImageValue) {
+                lowestImageValue = signalStrength[1];
+              }
+              if (signalStrength[1] > highestImageValue) {
+                highestImageValue = signalStrength[1];
+              }
+              imageValues[x][y] = signalStrength[1];
+            } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR) {
+              // Get signal-to-noise ratio
+              double[] snr = currentChannelModel.getSINR(txPair, -Double.MAX_VALUE);
+              // Collecting signal-to-noise ratio
+              if (snr[0] < lowestImageValue) {
+                lowestImageValue = snr[0];
+              }
+              if (snr[0] > highestImageValue) {
+                highestImageValue = snr[0];
+              }
+              imageValues[x][y] = snr[0];
+            } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR_VAR) {
+              // Get signal-to-noise ratio
+              double[] snr = currentChannelModel.getSINR(txPair, -Double.MAX_VALUE);
+              // Collecting variances
+              if (snr[1] < lowestImageValue) {
+                lowestImageValue = snr[1];
+              }
+              if (snr[1] > highestImageValue) {
+                highestImageValue = snr[1];
+              }
+              imageValues[x][y] = snr[1];
+            } else if (dataTypeToVisualize == ChannelModel.TransmissionData.PROB_OF_RECEPTION) {
+              // Get probability of receiving a packet TODO What size? Does it matter?
+              double probability = currentChannelModel.getProbability(txPair, -Double.MAX_VALUE)[0];
+              // Collecting variances
+              if (probability < lowestImageValue) {
+                lowestImageValue = probability;
+              }
+              if (probability > highestImageValue) {
+                highestImageValue = probability;
+              }
+              imageValues[x][y] = probability;
+            } else if (dataTypeToVisualize == ChannelModel.TransmissionData.DELAY_SPREAD_RMS) {
+              // Get RMS delay spread of receiving a packet
+              double rmsDelaySpread = currentChannelModel.getRMSDelaySpread(txPair);
+              // Collecting variances
+              if (rmsDelaySpread < lowestImageValue) {
+                lowestImageValue = rmsDelaySpread;
+              }
+              if (rmsDelaySpread > highestImageValue) {
+                highestImageValue = rmsDelaySpread;
+              }
+              imageValues[x][y] = rmsDelaySpread;
             }
-            pm.close();
-          }
-        };
 
-        // Start thread
-        attenuatorThread = new Thread(runnable, "repaintRadioEnvironment");
+            // Check if the dialog has been canceled.
+            if (pm.isCanceled()) {
+              return;
+            }
+            // Update progress.
+            pm.setProgress(x);
+          }
+        }
+
+        // Adjust coloring signal strength limit
+        if (coloringIsFixed) {
+          if (dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH) {
+            lowestImageValue = -100;
+            highestImageValue = 0;
+          } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH_VAR) {
+            lowestImageValue = 0;
+            highestImageValue = 20;
+          } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR) {
+            lowestImageValue = -10;
+            highestImageValue = 30;
+          } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR_VAR) {
+            lowestImageValue = 0;
+            highestImageValue = 20;
+          } else if (dataTypeToVisualize == ChannelModel.TransmissionData.PROB_OF_RECEPTION) {
+            lowestImageValue = 0;
+            highestImageValue = 1;
+          } else if (dataTypeToVisualize == ChannelModel.TransmissionData.DELAY_SPREAD_RMS) {
+            lowestImageValue = 0;
+            highestImageValue = 5;
+          }
+        }
+
+        // Save coloring high-low interval
+        coloringHighest = highestImageValue;
+        coloringLowest = lowestImageValue;
+
+        // Create image
+        for (int x = 0; x < resolution.width; x++) {
+          for (int y = 0; y < resolution.height; y++) {
+            tempChannelImage.setRGB(x, y, getColorOfSignalStrength(imageValues[x][y], lowestImageValue, highestImageValue));
+          }
+        }
+        logger.info("Attenuating area done, time=" + (System.currentTimeMillis() - timeBeforeCalculating));
+
+        // Repaint to show the new channel propagation
+        channelStartX = startX;
+        channelStartY = startY;
+        channelWidth = width;
+        channelHeight = height;
+        channelImage = tempChannelImage;
+        AreaViewer.this.repaint();
+        coloringIntervalPanel.repaint();
+      } catch (Exception ex) {
+        if (pm.isCanceled()) {
+          return;
+        }
+        logger.fatal("Attenuation aborted: " + ex, ex);
+      }
+      pm.close();
+    }, "repaintRadioEnvironment");
         attenuatorThread.start();
   }
 

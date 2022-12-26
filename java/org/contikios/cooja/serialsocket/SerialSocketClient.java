@@ -34,6 +34,7 @@ package org.contikios.cooja.serialsocket;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -49,9 +50,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Observable;
 import java.util.Observer;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -61,14 +60,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.text.NumberFormatter;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -264,64 +260,51 @@ public class SerialSocketClient implements Plugin, MotePlugin {
 
 
     /* Observe serial port for outgoing data and write to socket */
-    serialPort.addSerialDataObserver(serialDataObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        if (out == null) {
-          return;
+    serialPort.addSerialDataObserver(serialDataObserver = (obs, obj) -> {
+      if (out == null) {
+        return;
+      }
+      try {
+        out.write(serialPort.getLastSerialData());
+        out.flush();
+        outBytes++;
+        if (Cooja.isVisualized()) {
+          moteToSocketLabel.setText(outBytes + " bytes");
         }
-        try {
-          out.write(serialPort.getLastSerialData());
-          out.flush();
-          outBytes++;
-          if (Cooja.isVisualized()) {
-            moteToSocketLabel.setText(outBytes + " bytes");
-          }
-        } catch (IOException ex) {
-          logger.error(ex.getMessage());
-          socketStatusLabel.setText("failed");
-          socketStatusLabel.setForeground(ST_COLOR_FAILED);
-        }
+      } catch (IOException ex) {
+        logger.error(ex.getMessage());
+        socketStatusLabel.setText("failed");
+        socketStatusLabel.setForeground(ST_COLOR_FAILED);
       }
     });
     addClientListener(new ClientListener() {
-
       @Override
       public void onError(final String msg) {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            socketStatusLabel.setForeground(ST_COLOR_FAILED);
-            socketStatusLabel.setText(msg);
-          }
+        EventQueue.invokeLater(() -> {
+          socketStatusLabel.setForeground(ST_COLOR_FAILED);
+          socketStatusLabel.setText(msg);
         });
       }
 
       @Override
       public void onConnected() {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            socketStatusLabel.setText("Connected");
-            socketStatusLabel.setForeground(ST_COLOR_CONNECTED);
-            serverHostField.setEnabled(false);
-            serverPortField.setEnabled(false);
-            serverSelectButton.setText("Disconnect");
-          }
+        EventQueue.invokeLater(() -> {
+          socketStatusLabel.setText("Connected");
+          socketStatusLabel.setForeground(ST_COLOR_CONNECTED);
+          serverHostField.setEnabled(false);
+          serverPortField.setEnabled(false);
+          serverSelectButton.setText("Disconnect");
         });
       }
 
       @Override
       public void onDisconnected() {
-        SwingUtilities.invokeLater(new Runnable() {
-          @Override
-          public void run() {
-            socketStatusLabel.setForeground(ST_COLOR_UNCONNECTED);
-            socketStatusLabel.setText("Disconnected");
-            serverHostField.setEnabled(true);
-            serverPortField.setEnabled(true);
-            serverSelectButton.setText("Connect");
-          }
+        EventQueue.invokeLater(() -> {
+          socketStatusLabel.setForeground(ST_COLOR_UNCONNECTED);
+          socketStatusLabel.setText("Disconnected");
+          serverHostField.setEnabled(true);
+          serverPortField.setEnabled(true);
+          serverSelectButton.setText("Connect");
         });
       }
     });
@@ -403,46 +386,37 @@ public class SerialSocketClient implements Plugin, MotePlugin {
 
   private void startSocketReadThread(final DataInputStream in) {
     /* Forward data: virtual port -> mote */
-    Thread incomingDataThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        int numRead = 0;
-        byte[] data = new byte[16*1024];
-        logger.info("Start forwarding: socket -> serial port");
-        while (numRead >= 0) {
-          try {
-            numRead = in.read(data);
-          } catch (IOException e) {
-            logger.info(e.getMessage());
-            numRead = -1;
-            continue;
-          }
-
-          if (numRead >= 0) {
-            final int finalNumRead = numRead;
-            final byte[] finalData = data;
-            /* We are not on the simulation thread */
-            simulation.invokeSimulationThread(new Runnable() {
-
-              @Override
-              public void run() {
-                for (int i = 0; i < finalNumRead; i++) {
-                  serialPort.writeByte(finalData[i]);
-                }
-              }
-            });
-
-            inBytes += numRead;
-            if (Cooja.isVisualized()) {
-              socketToMoteLabel.setText(inBytes + " bytes");
-            }
-          }
+    Thread incomingDataThread = new Thread(() -> {
+      int numRead = 0;
+      byte[] data = new byte[16*1024];
+      logger.info("Start forwarding: socket -> serial port");
+      while (numRead >= 0) {
+        try {
+          numRead = in.read(data);
+        } catch (IOException e) {
+          logger.info(e.getMessage());
+          numRead = -1;
+          continue;
         }
 
-        logger.info("Incoming data thread shut down");
-        cleanup();
-        notifyClientDisconnected();
+        if (numRead >= 0) {
+          final int finalNumRead = numRead;
+          final byte[] finalData = data;
+          /* We are not on the simulation thread */
+          simulation.invokeSimulationThread(() -> {
+            for (int i = 0; i < finalNumRead; i++) {
+              serialPort.writeByte(finalData[i]);
+            }
+          });
+          inBytes += numRead;
+          if (Cooja.isVisualized()) {
+            socketToMoteLabel.setText(inBytes + " bytes");
+          }
+        }
       }
+      logger.info("Incoming data thread shut down");
+      cleanup();
+      notifyClientDisconnected();
     }, "SerialSocketClient");
     incomingDataThread.start();
   }

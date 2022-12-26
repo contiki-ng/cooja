@@ -461,35 +461,32 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     /* Update timeline for the duration of the plugin */
     repaintTimelineTimer.start();
 
-    Cooja.addMoteHighlightObserver(moteHighlightObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        if (!(obj instanceof Mote)) {
+    Cooja.addMoteHighlightObserver(moteHighlightObserver = (obs, obj) -> {
+      if (!(obj instanceof Mote)) {
+        return;
+      }
+
+      final Timer timer = new Timer(100, null);
+      final Mote mote = (Mote) obj;
+      timer.addActionListener(e -> {
+        // Count down.
+        if (timer.getDelay() < 90) {
+          timer.stop();
+          highlightedMotes.remove(mote);
+          repaint();
           return;
         }
 
-        final Timer timer = new Timer(100, null);
-        final Mote mote = (Mote) obj;
-        timer.addActionListener(e -> {
-          // Count down.
-          if (timer.getDelay() < 90) {
-            timer.stop();
-            highlightedMotes.remove(mote);
-            repaint();
-            return;
-          }
-
-          // Toggle highlight state.
-          if (highlightedMotes.contains(mote)) {
-            highlightedMotes.remove(mote);
-          } else {
-            highlightedMotes.add(mote);
-          }
-          timer.setDelay(timer.getDelay()-1);
-          repaint();
-        });
-        timer.start();
-      }
+        // Toggle highlight state.
+        if (highlightedMotes.contains(mote)) {
+          highlightedMotes.remove(mote);
+        } else {
+          highlightedMotes.add(mote);
+        }
+        timer.setDelay(timer.getDelay()-1);
+        repaint();
+      });
+      timer.start();
     });
 
     /* XXX HACK: here we set the position and size of the window when it appears on a blank simulation screen. */
