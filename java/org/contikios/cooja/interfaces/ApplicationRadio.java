@@ -224,49 +224,36 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
    * @param duration Duration to transmit
    */
   public void startTransmittingPacket(final RadioPacket packet, final long duration) {
-    Runnable startTransmission = new Runnable() {
-      @Override
-      public void run() {
-        if (isTransmitting) {
-          logger.warn("Already transmitting, aborting new transmission");
-          return;
-        }
-
-        /* Start transmission */
-        isTransmitting = true;
-        lastEvent = RadioEvent.TRANSMISSION_STARTED;
-        lastEventTime = simulation.getSimulationTime();
-        ApplicationRadio.this.setChanged();
-        ApplicationRadio.this.notifyObservers();
-
-        /* Deliver data */
-        packetFromMote = packet;
-        lastEvent = RadioEvent.PACKET_TRANSMITTED;
-        ApplicationRadio.this.setChanged();
-        ApplicationRadio.this.notifyObservers();
-
-        /*logger.info("Transmission started");*/
-
-        /* Finish transmission */
-        simulation.scheduleEvent(new MoteTimeEvent(mote) {
-          @Override
-          public void execute(long t) {
-            isTransmitting = false;
-            lastEvent = RadioEvent.TRANSMISSION_FINISHED;
-            lastEventTime = t;
-            ApplicationRadio.this.setChanged();
-            ApplicationRadio.this.notifyObservers();
-            /*logger.info("Transmission finished");*/
-          }
-        }, simulation.getSimulationTime() + duration);
-      }
-    };
-
-    if (simulation.isSimulationThread()) {
-      startTransmission.run();
-    } else {
-      simulation.invokeSimulationThread(startTransmission);
+    assert simulation.isSimulationThread() : "Method must be called from the simulation thread";
+    if (isTransmitting) {
+      logger.warn("Already transmitting, aborting new transmission");
+      return;
     }
+
+    // Start transmission.
+    isTransmitting = true;
+    lastEvent = RadioEvent.TRANSMISSION_STARTED;
+    lastEventTime = simulation.getSimulationTime();
+    ApplicationRadio.this.setChanged();
+    ApplicationRadio.this.notifyObservers();
+
+    // Deliver data.
+    packetFromMote = packet;
+    lastEvent = RadioEvent.PACKET_TRANSMITTED;
+    ApplicationRadio.this.setChanged();
+    ApplicationRadio.this.notifyObservers();
+
+    // Finish transmission.
+    simulation.scheduleEvent(new MoteTimeEvent(mote) {
+      @Override
+      public void execute(long t) {
+        isTransmitting = false;
+        lastEvent = RadioEvent.TRANSMISSION_FINISHED;
+        lastEventTime = t;
+        ApplicationRadio.this.setChanged();
+        ApplicationRadio.this.notifyObservers();
+      }
+    }, simulation.getSimulationTime() + duration);
   }
 
   /**
