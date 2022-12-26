@@ -255,10 +255,12 @@ public final class Simulation extends Observable {
         removeMoteRelation(r.source, r.dest);
       }
 
-      // Remove all motes
-      Mote[] motes = getMotes();
-      for (Mote m: motes) {
+      // Remove all motes and mote types.
+      for (var m : motes.toArray(new Mote[0])) {
         doRemoveMote(m);
+      }
+      for (var m : moteTypes.toArray(new MoteType[0])) {
+        removeMoteType(m);
       }
 
       // Remove the radio medium
