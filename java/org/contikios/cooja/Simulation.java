@@ -141,18 +141,15 @@ public final class Simulation extends Observable {
       long diffRealtime = System.currentTimeMillis() - speedLimitLastRealtime; /* ms */
       long expectedDiffRealtime = (long) (diffSimtime/speedLimit);
       long sleep = expectedDiffRealtime - diffRealtime;
-      if (sleep >= 0) {
+      if (sleep > 0) { // Slow down simulation.
         scheduleEvent(this, t+MILLISECOND);
-        /* Slow down simulation */
         try {
           Thread.sleep(sleep);
         } catch (InterruptedException e) {
-          // Restore interrupted status
-          Thread.currentThread().interrupt();
+          Thread.currentThread().interrupt(); // Restore interrupted status.
         }
-      } else {
-        /* Reduce slow-down: execute this delay event less often */
-        scheduleEvent(this, t-sleep*MILLISECOND);
+      } else { // Speed up simulation.
+        scheduleEvent(this, t - Math.min(-1, sleep) * MILLISECOND);
       }
 
       /* Update counters every second */
