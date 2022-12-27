@@ -97,7 +97,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
       }
     };
 
-    PrintStream po = new PrintStream(new LineOutputStream(this::addCLIData));
+    PrintStream po = new PrintStream(new LineOutputStream(cliResponseAggregator::add));
     final CommandContext commandContext = new CommandContext(mspMote.getCLICommandHandler(), null, "", new String[0], 1, null);
     commandContext.out = po;
     commandContext.err = po;
@@ -122,7 +122,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
             historyCount = (historyCount + 1) % history.length;
           }
           historyPos = historyCount;
-          addCLIData("> " + command);
+          cliResponseAggregator.add("> " + command);
 
           mspMote.executeCLICommand(command, commandContext);
           commandField.setText("");
@@ -184,10 +184,6 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   @Override
   public void closePlugin() {
     cliResponseAggregator.stop();
-  }
-
-  public void addCLIData(final String text) {
-    cliResponseAggregator.add(text);
   }
 
   private static String trim(String text) {
