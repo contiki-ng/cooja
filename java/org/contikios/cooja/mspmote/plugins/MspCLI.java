@@ -31,8 +31,6 @@
 package org.contikios.cooja.mspmote.plugins;
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.PrintStream;
@@ -94,41 +92,35 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
     popupMenu.add(clearItem);
     logArea.setComponentPopupMenu(popupMenu);
 
-    ActionListener action = new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String command = trim(commandField.getText());
-        if (command != null) {
-          try {
-            int previous = historyCount - 1;
-            if (previous < 0) {
-              previous += history.length;
-            }
-            if (!command.equals(history[previous])) {
-              history[historyCount] = command;
-              historyCount = (historyCount + 1) % history.length;
-            }
-            historyPos = historyCount;
-            addCLIData("> " + command);
-
-            mspMote.executeCLICommand(command, commandContext);
-            commandField.setText("");
-          } catch (Exception ex) {
-            System.err.println("could not send '" + command + "':");
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(panel,
-                "could not send '" + command + "':\n"
-                + ex, "ERROR",
-                JOptionPane.ERROR_MESSAGE);
-          }
-        } else {
-          commandField.getToolkit().beep();
-        }
-      }
-
-    };
     commandField = new JTextField();
-    commandField.addActionListener(action);
+    commandField.addActionListener(e -> {
+      String command = trim(commandField.getText());
+      if (command != null) {
+        int previous = historyCount - 1;
+        if (previous < 0) {
+          previous += history.length;
+        }
+        try {
+          if (!command.equals(history[previous])) {
+            history[historyCount] = command;
+            historyCount = (historyCount + 1) % history.length;
+          }
+          historyPos = historyCount;
+          addCLIData("> " + command);
+
+          mspMote.executeCLICommand(command, commandContext);
+          commandField.setText("");
+        } catch (Exception ex) {
+          System.err.println("could not send '" + command + "':");
+          JOptionPane.showMessageDialog(panel,
+              "could not send '" + command + "':\n"
+              + ex, "ERROR",
+              JOptionPane.ERROR_MESSAGE);
+        }
+      } else {
+        commandField.getToolkit().beep();
+      }
+    });
     commandField.addKeyListener(new KeyAdapter() {
 
       @Override
