@@ -62,7 +62,6 @@ import se.sics.mspsim.cli.LineOutputStream;
 @SupportedArguments(motes = {MspMote.class})
 public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   private final MspMote mspMote;
-  private final JTextArea logArea;
   private final String[] history = new String[50];
   private int historyPos = 0;
   private int historyCount = 0;
@@ -75,7 +74,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
 
     final Container panel = getContentPane();
 
-    logArea = new JTextArea(4, 20);
+    final var logArea = new JTextArea(4, 20);
     logArea.setTabSize(8);
     logArea.setEditable(false);
     panel.add(new JScrollPane(logArea), BorderLayout.CENTER);
