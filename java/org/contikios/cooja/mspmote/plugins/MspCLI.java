@@ -66,6 +66,8 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   private final String[] history = new String[50];
   private int historyPos = 0;
   private int historyCount = 0;
+  private static final int UPDATE_INTERVAL = 250;
+  private final UpdateAggregator<String> cliResponseAggregator;
 
   public MspCLI(Mote mote, Simulation simulationToVisualize, Cooja gui) {
     super("Msp CLI (" + mote.getID() + ')', gui);
@@ -77,6 +79,24 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
     logArea.setTabSize(8);
     logArea.setEditable(false);
     panel.add(new JScrollPane(logArea), BorderLayout.CENTER);
+    cliResponseAggregator = new UpdateAggregator<>(UPDATE_INTERVAL) {
+      @Override
+      protected void handle(List<String> ls) {
+        String current = logArea.getText();
+        int len = current.length();
+        if (len > 4096) {
+          current = current.substring(len - 4096);
+        }
+
+        /* Add */
+        var sb = new StringBuilder(current);
+        for (String l : ls) {
+          sb.append(l).append('\n');
+        }
+        logArea.setText(sb.toString());
+        logArea.setCaretPosition(sb.length());
+      }
+    };
 
     PrintStream po = new PrintStream(new LineOutputStream(this::addCLIData));
     final CommandContext commandContext = new CommandContext(mspMote.getCLICommandHandler(), null, "", new String[0], 1, null);
@@ -156,7 +176,6 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
       }
 
     });
-
     cliResponseAggregator.start();
 
     panel.add(commandField, BorderLayout.SOUTH);
@@ -171,27 +190,6 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   public void addCLIData(final String text) {
     cliResponseAggregator.add(text);
   }
-
-  private static final int UPDATE_INTERVAL = 250;
-  private final UpdateAggregator<String> cliResponseAggregator = new UpdateAggregator<>(UPDATE_INTERVAL) {
-    @Override
-    protected void handle(List<String> ls) {
-      String current = logArea.getText();
-      int len = current.length();
-      if (len > 4096) {
-        current = current.substring(len - 4096);
-      }
-
-      /* Add */
-      StringBuilder sb = new StringBuilder(current);
-      for (String l : ls) {
-        sb.append(l);
-        sb.append('\n');
-      }
-      logArea.setText(sb.toString());
-      logArea.setCaretPosition(sb.length());
-    }
-  };
 
   private static String trim(String text) {
     return (text != null) && ((text = text.trim()).length() > 0) ? text : null;
