@@ -55,7 +55,6 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.UpdateAggregator;
 import org.contikios.cooja.mspmote.MspMote;
 import se.sics.mspsim.cli.CommandContext;
-import se.sics.mspsim.cli.LineListener;
 import se.sics.mspsim.cli.LineOutputStream;
 
 @ClassDescription("Msp CLI")
@@ -79,8 +78,7 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
     logArea.setEditable(false);
     panel.add(new JScrollPane(logArea), BorderLayout.CENTER);
 
-    LineListener lineListener = this::addCLIData;
-    PrintStream po = new PrintStream(new LineOutputStream(lineListener));
+    PrintStream po = new PrintStream(new LineOutputStream(this::addCLIData));
     final CommandContext commandContext = new CommandContext(mspMote.getCLICommandHandler(), null, "", new String[0], 1, null);
     commandContext.out = po;
     commandContext.err = po;
