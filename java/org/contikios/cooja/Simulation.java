@@ -43,7 +43,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Cooja.PluginConstructionException;
 import org.contikios.cooja.Cooja.SimulationCreationException;
-import org.contikios.cooja.mspmote.MspMote.MSPSimStop;
 import org.jdom2.Element;
 
 /**
@@ -212,8 +211,8 @@ public final class Simulation extends Observable {
               nextEvent.event.execute(currentSimulationTime);
             }
           }
-        } catch (MSPSimStop e) {
-          logger.info("Simulation stopped due to MSPSim breakpoint");
+        } catch (SimulationStop e) {
+          logger.info("Simulation stopped: {}", e.getMessage());
         } catch (RuntimeException e) {
           logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
           if (Cooja.isVisualized()) {
@@ -1018,6 +1017,13 @@ public final class Simulation extends Observable {
   /** Returns the simulation configuration. */
   public SimConfig getCfg() {
     return cfg;
+  }
+
+  /** Exception for signaling the simulation that an emulator has stopped. */
+  public static class SimulationStop extends RuntimeException {
+    public SimulationStop(String emulator, String reason) {
+      super(emulator + " requested simulation stop for " + reason);
+    }
   }
 
   /** Structure to hold the simulation parameters. */
