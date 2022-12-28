@@ -1294,6 +1294,7 @@ public class Cooja {
     int rv = 0;
     boolean autoQuit = !simConfigs.isEmpty() && !config.vis;
     for (var simConfig : simConfigs) {
+      logger.info("Loading " + simConfig.file() + " random seed: " + config.randomSeed);
       Simulation sim = null;
       try {
         sim = config.vis
@@ -1304,6 +1305,7 @@ public class Cooja {
       }
       if (sim == null) {
         autoQuit = true;
+        logger.warn("TEST FAILED\n");
         rv = Math.max(rv, 1);
       } else if (simConfig.updateSim()) {
         autoQuit = true;

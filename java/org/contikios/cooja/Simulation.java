@@ -174,7 +174,6 @@ public final class Simulation extends Observable {
                     String radioMediumClass, long moteStartDelay, boolean quick, Element root)
           throws MoteType.MoteTypeCreationException, SimulationCreationException {
     this.cfg = cfg;
-    logger.info("Simulation " + (cfg.file == null ? "(unnamed)" : cfg.file) + " random seed: " + seed);
     this.cooja = cooja;
     this.title = title;
     randomSeed = seed;
