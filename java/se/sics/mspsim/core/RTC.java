@@ -562,7 +562,7 @@ public class RTC extends IOUnit {
                                 parseCalReg(Calendar.SECOND, lo);
                                 parseCalReg(Calendar.MINUTE, hi);
                         } else {
-                                rtcCount &= 0xffff0000;
+                                rtcCount &= 0xffff0000L;
                                 rtcCount |= value;
                         }
                         break;
