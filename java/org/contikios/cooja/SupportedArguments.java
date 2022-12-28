@@ -49,19 +49,21 @@ import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SupportedArguments {
-
   /**
-   * @return List of accepted mote classes.
+   * Returns an array of the accepted mote classes.
+   * @return Array of accepted mote classes.
    */
   Class<? extends Mote>[] motes() default { Mote.class };
 
   /**
-   * @return List of accepted radio medium classes.
+   * Returns an array of accepted radio medium classes.
+   * @return Array of accepted radio medium classes.
    */
   Class<? extends RadioMedium>[] radioMediums() default { RadioMedium.class };
 
   /**
-   * @return List of required mote interfaces.
+   * Returns an array of required mote interface classes.
+   * @return Array of required mote interfaces.
    */
   Class<? extends MoteInterface>[] moteInterfaces() default { MoteInterface.class };
 }
