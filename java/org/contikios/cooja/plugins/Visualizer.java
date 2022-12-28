@@ -67,10 +67,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
@@ -430,12 +428,9 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         Position pos = mote.getInterfaces().getPosition();
         if (pos != null) {
           pos.addObserver(posObserver);
-          SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-              resetViewport = 1;
-              repaint();
-            }
+          EventQueue.invokeLater(() -> {
+            resetViewport = 1;
+            repaint();
           });
         }
       }
@@ -457,35 +452,32 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     }
 
     /* Observe mote highlights */
-    Cooja.addMoteHighlightObserver(moteHighligtObserver = new Observer() {
-      @Override
-      public void update(Observable obs, Object obj) {
-        if (!(obj instanceof Mote)) {
+    Cooja.addMoteHighlightObserver(moteHighligtObserver = (obs, obj) -> {
+      if (!(obj instanceof Mote)) {
+        return;
+      }
+
+      final Timer timer = new Timer(100, null);
+      final Mote mote = (Mote) obj;
+      timer.addActionListener(e -> {
+        // Count down.
+        if (timer.getDelay() < 90) {
+          timer.stop();
+          highlightedMotes.remove(mote);
+          repaint();
           return;
         }
 
-        final Timer timer = new Timer(100, null);
-        final Mote mote = (Mote) obj;
-        timer.addActionListener(e -> {
-          // Count down.
-          if (timer.getDelay() < 90) {
-            timer.stop();
-            highlightedMotes.remove(mote);
-            repaint();
-            return;
-          }
-
-          // Toggle highlight state.
-          if (highlightedMotes.contains(mote)) {
-            highlightedMotes.remove(mote);
-          } else {
-            highlightedMotes.add(mote);
-          }
-          timer.setDelay(timer.getDelay() - 1);
-          repaint();
-        });
-        timer.start();
-      }
+        // Toggle highlight state.
+        if (highlightedMotes.contains(mote)) {
+          highlightedMotes.remove(mote);
+        } else {
+          highlightedMotes.add(mote);
+        }
+        timer.setDelay(timer.getDelay() - 1);
+        repaint();
+      });
+      timer.start();
     });
 
     /* Observe mote relations */

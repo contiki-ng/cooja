@@ -259,25 +259,22 @@ public class LogScriptEngine {
     engine.put("mote", null);
     engine.put("msg", "");
     engine.put("node", new ScriptMote());
-    scriptThread = new Thread(new Runnable() {
-      @Override
-      public void run() {
-        int rv = 1;
-        try {
-          rv = (int) Objects.requireNonNullElse(script.eval(), 1);
-        } catch (Exception e) {
-          logger.fatal("Script error:", e);
-          if (Cooja.isVisualized()) {
-            Cooja.showErrorDialog("Script error", e, false);
-          }
+    scriptThread = new Thread(() -> {
+      int rv = 1;
+      try {
+        rv = (int) Objects.requireNonNullElse(script.eval(), 1);
+      } catch (Exception e) {
+        logger.fatal("Script error:", e);
+        if (Cooja.isVisualized()) {
+          Cooja.showErrorDialog("Script error", e, false);
         }
-        // rv == -1 means something else is shutting down Cooja, for example the SerialSocket commands in 17-tun-rpl-br.
-        if (rv != -1) {
-          scriptLog(rv == 0 ? "TEST OK\n" : "TEST FAILED\n");
-        }
-        deactivateScript();
-        simulation.stopSimulation(rv > 0 ? rv : null);
       }
+      // rv == -1 means something else is shutting down Cooja, for example the SerialSocket commands in 17-tun-rpl-br.
+      if (rv != -1) {
+        scriptLog(rv == 0 ? "TEST OK\n" : "TEST FAILED\n");
+      }
+      deactivateScript();
+      simulation.stopSimulation(rv > 0 ? rv : null);
     }, "script");
     scriptThread.start();
     try {
