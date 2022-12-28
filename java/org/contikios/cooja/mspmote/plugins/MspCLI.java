@@ -31,8 +31,6 @@
 package org.contikios.cooja.mspmote.plugins;
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.PrintStream;
@@ -57,7 +55,6 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.dialogs.UpdateAggregator;
 import org.contikios.cooja.mspmote.MspMote;
 import se.sics.mspsim.cli.CommandContext;
-import se.sics.mspsim.cli.LineListener;
 import se.sics.mspsim.cli.LineOutputStream;
 
 @ClassDescription("Msp CLI")
@@ -65,11 +62,11 @@ import se.sics.mspsim.cli.LineOutputStream;
 @SupportedArguments(motes = {MspMote.class})
 public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   private final MspMote mspMote;
-  private final JTextArea logArea;
-  private final JTextField commandField;
   private final String[] history = new String[50];
   private int historyPos = 0;
   private int historyCount = 0;
+  private static final int UPDATE_INTERVAL = 250;
+  private final UpdateAggregator<String> cliResponseAggregator;
 
   public MspCLI(Mote mote, Simulation simulationToVisualize, Cooja gui) {
     super("Msp CLI (" + mote.getID() + ')', gui);
@@ -77,13 +74,30 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
 
     final Container panel = getContentPane();
 
-    logArea = new JTextArea(4, 20);
+    final var logArea = new JTextArea(4, 20);
     logArea.setTabSize(8);
     logArea.setEditable(false);
     panel.add(new JScrollPane(logArea), BorderLayout.CENTER);
+    cliResponseAggregator = new UpdateAggregator<>(UPDATE_INTERVAL) {
+      @Override
+      protected void handle(List<String> ls) {
+        String current = logArea.getText();
+        int len = current.length();
+        if (len > 4096) {
+          current = current.substring(len - 4096);
+        }
 
-    LineListener lineListener = this::addCLIData;
-    PrintStream po = new PrintStream(new LineOutputStream(lineListener));
+        /* Add */
+        var sb = new StringBuilder(current);
+        for (String l : ls) {
+          sb.append(l).append('\n');
+        }
+        logArea.setText(sb.toString());
+        logArea.setCaretPosition(sb.length());
+      }
+    };
+
+    PrintStream po = new PrintStream(new LineOutputStream(cliResponseAggregator::add));
     final CommandContext commandContext = new CommandContext(mspMote.getCLICommandHandler(), null, "", new String[0], 1, null);
     commandContext.out = po;
     commandContext.err = po;
@@ -94,41 +108,35 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
     popupMenu.add(clearItem);
     logArea.setComponentPopupMenu(popupMenu);
 
-    ActionListener action = new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String command = trim(commandField.getText());
-        if (command != null) {
-          try {
-            int previous = historyCount - 1;
-            if (previous < 0) {
-              previous += history.length;
-            }
-            if (!command.equals(history[previous])) {
-              history[historyCount] = command;
-              historyCount = (historyCount + 1) % history.length;
-            }
-            historyPos = historyCount;
-            addCLIData("> " + command);
-
-            mspMote.executeCLICommand(command, commandContext);
-            commandField.setText("");
-          } catch (Exception ex) {
-            System.err.println("could not send '" + command + "':");
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(panel,
-                "could not send '" + command + "':\n"
-                + ex, "ERROR",
-                JOptionPane.ERROR_MESSAGE);
-          }
-        } else {
-          commandField.getToolkit().beep();
+    final var commandField = new JTextField();
+    commandField.addActionListener(e -> {
+      String command = trim(commandField.getText());
+      if (command != null) {
+        int previous = historyCount - 1;
+        if (previous < 0) {
+          previous += history.length;
         }
-      }
+        try {
+          if (!command.equals(history[previous])) {
+            history[historyCount] = command;
+            historyCount = (historyCount + 1) % history.length;
+          }
+          historyPos = historyCount;
+          cliResponseAggregator.add("> " + command);
 
-    };
-    commandField = new JTextField();
-    commandField.addActionListener(action);
+          mspMote.executeCLICommand(command, commandContext);
+          commandField.setText("");
+        } catch (Exception ex) {
+          System.err.println("could not send '" + command + "':");
+          JOptionPane.showMessageDialog(panel,
+              "could not send '" + command + "':\n"
+              + ex, "ERROR",
+              JOptionPane.ERROR_MESSAGE);
+        }
+      } else {
+        commandField.getToolkit().beep();
+      }
+    });
     commandField.addKeyListener(new KeyAdapter() {
 
       @Override
@@ -167,7 +175,6 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
       }
 
     });
-
     cliResponseAggregator.start();
 
     panel.add(commandField, BorderLayout.SOUTH);
@@ -178,31 +185,6 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   public void closePlugin() {
     cliResponseAggregator.stop();
   }
-
-  public void addCLIData(final String text) {
-    cliResponseAggregator.add(text);
-  }
-
-  private static final int UPDATE_INTERVAL = 250;
-  private final UpdateAggregator<String> cliResponseAggregator = new UpdateAggregator<>(UPDATE_INTERVAL) {
-    @Override
-    protected void handle(List<String> ls) {
-      String current = logArea.getText();
-      int len = current.length();
-      if (len > 4096) {
-        current = current.substring(len - 4096);
-      }
-
-      /* Add */
-      StringBuilder sb = new StringBuilder(current);
-      for (String l : ls) {
-        sb.append(l);
-        sb.append('\n');
-      }
-      logArea.setText(sb.toString());
-      logArea.setCaretPosition(sb.length());
-    }
-  };
 
   private static String trim(String text) {
     return (text != null) && ((text = text.trim()).length() > 0) ? text : null;
