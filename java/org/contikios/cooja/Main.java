@@ -59,7 +59,7 @@ import java.nio.file.Path;
 @Command(version = {
         "Cooja " + Cooja.VERSION + ", Contiki-NG build interface version " + Cooja.CONTIKI_NG_BUILD_VERSION,
         "JVM: ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})",
-        "OS: ${os.name} ${os.version} ${os.arch}"})
+        "OS: ${os.name} ${os.version} ${os.arch}"}, sortOptions = false, sortSynopsis = false)
 class Main {
   /**
    * Option for specifying if a GUI should be used.
