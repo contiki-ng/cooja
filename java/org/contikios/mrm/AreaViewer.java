@@ -586,7 +586,7 @@ public class AreaViewer extends VisPlugin {
           return false;
         }
         // Show obstacle finder dialog.
-        var obstacleFinderDialog = new ObstacleFinderDialog(backgroundImage, currentChannelModel, parentContainer);
+        var obstacleFinderDialog = new ObstacleFinderDialog(backgroundImage, parentContainer);
         if (!obstacleFinderDialog.exitedOK) {
           return false;
         }
@@ -1105,7 +1105,7 @@ public class AreaViewer extends VisPlugin {
       /**
        * Creates a new dialog for settings background parameters
        */
-      protected ObstacleFinderDialog(Image currentImage, ChannelModel currentChannelModel, Frame frame) {
+      protected ObstacleFinderDialog(Image currentImage, Frame frame) {
         super(frame, "Analyze for obstacles");
         JPanel mainPanel = new JPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
