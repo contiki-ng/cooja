@@ -390,8 +390,8 @@ public class GUI {
         var cfg = CreateSimDialog.showDialog(cooja, new CreateSimDialog.SimConfig(null, null,
                 false, 123456, 1000 * Simulation.MILLISECOND));
         if (cfg == null) return;
-        var config = new Simulation.SimConfig(null, false, false, cooja.configuration.logDir(),
-                new HashMap<>());
+        var config = new Simulation.SimConfig(null, cfg.randomSeed(), false, false,
+                Cooja.configuration.logDir(), new HashMap<>());
         Simulation sim;
         try {
           sim = new Simulation(config, cooja, cfg.title(), cfg.generatedSeed(),
@@ -1228,8 +1228,8 @@ public class GUI {
       return;
     }
 
-    var cfg = new Simulation.SimConfig(file.getAbsolutePath(), false, false,
-            cooja.configuration.logDir(), new HashMap<>());
+    var cfg = new Simulation.SimConfig(file.getAbsolutePath(), null, false, false,
+            Cooja.configuration.logDir(), new HashMap<>());
     var worker = createLoadSimWorker(cfg, quick, null);
     if (worker == null) return;
     worker.execute();
