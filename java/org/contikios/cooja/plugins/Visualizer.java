@@ -453,12 +453,11 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     /* Observe mote highlights */
     Cooja.addMoteHighlightObserver(moteHighligtObserver = (obs, obj) -> {
-      if (!(obj instanceof Mote)) {
+      if (!(obj instanceof final Mote mote)) {
         return;
       }
 
       final Timer timer = new Timer(100, null);
-      final Mote mote = (Mote) obj;
       timer.addActionListener(e -> {
         // Count down.
         if (timer.getDelay() < 90) {

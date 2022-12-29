@@ -337,11 +337,10 @@ public class MRM extends AbstractRadioMedium {
     /* Check for noise sources */
     if (!WITH_NOISE) return;
     for (Radio noiseRadio: getRegisteredRadios()) {
-      if (!(noiseRadio instanceof NoiseSourceRadio)) {
+      if (!(noiseRadio instanceof NoiseSourceRadio radio)) {
         continue;
       }
       final Radio fromRadio = noiseRadio;
-      NoiseSourceRadio radio = (NoiseSourceRadio) noiseRadio;
       int signalStrength = radio.getNoiseLevel();
       if (signalStrength == Integer.MIN_VALUE) {
         continue;

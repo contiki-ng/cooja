@@ -387,8 +387,7 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
     public void doAction(Visualizer visualizer, Simulation simulation) {
       VisualizerSkin[] skins = visualizer.getCurrentSkins();
       for (VisualizerSkin skin : skins) {
-        if (skin instanceof UDGMVisualizerSkin) {
-          UDGMVisualizerSkin vskin = ((UDGMVisualizerSkin) skin);
+        if (skin instanceof UDGMVisualizerSkin vskin) {
           vskin.rangeTX.setVisible(true);
           vskin.rangeINT.setVisible(true);
           vskin.updateRatioRangeFrame();
@@ -413,8 +412,7 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
     public void doAction(Visualizer visualizer, Simulation simulation) {
       VisualizerSkin[] skins = visualizer.getCurrentSkins();
       for (VisualizerSkin skin : skins) {
-        if (skin instanceof UDGMVisualizerSkin) {
-          UDGMVisualizerSkin vskin = ((UDGMVisualizerSkin) skin);
+        if (skin instanceof UDGMVisualizerSkin vskin) {
           vskin.ratioTX.setVisible(true);
           vskin.ratioRX.setVisible(true);
           vskin.updateRatioRangeFrame();

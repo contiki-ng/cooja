@@ -48,8 +48,7 @@ public class CommandContext {
     if (!exited) {
       exited = true;
 
-      if (command instanceof AsyncCommand) {
-        AsyncCommand ac = (AsyncCommand) command;
+      if (command instanceof AsyncCommand ac) {
         ac.stopCommand(this);
       }
     }

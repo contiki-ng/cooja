@@ -216,12 +216,10 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	private final Observer radioEventsObserver = new Observer() {
 		@Override
 		public void update(Observable obs, Object obj) {
-			if (!(obs instanceof Radio)) {
+      if (!(obs instanceof Radio radio)) {
 				logger.fatal("Radio event dispatched by non-radio object");
 				return;
 			}
-			Radio radio = (Radio) obs;
-			
 			final Radio.RadioEvent event = radio.getLastEvent();
 			
 			switch (event) {
