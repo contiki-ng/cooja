@@ -249,7 +249,7 @@ class Main {
       var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || !options.gui));
       var updateSim = map.getOrDefault("update-simulation", Boolean.toString(options.updateSimulation));
       var logDir = map.getOrDefault("logdir", options.logDir);
-      simConfigs.add(new Simulation.SimConfig(file, randomSeed == null ? options.randomSeed : Long.parseLong(randomSeed),
+      simConfigs.add(new Simulation.SimConfig(file, randomSeed == null ? options.randomSeed : Long.decode(randomSeed),
               Boolean.parseBoolean(autoStart), Boolean.parseBoolean(updateSim), logDir, map));
     }
 
