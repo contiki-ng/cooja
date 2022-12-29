@@ -76,7 +76,6 @@ public class LogScriptEngine {
     @Override
     public void newLogOutput(LogOutputEvent ev) {
       if (scriptThread == null || !scriptThread.isAlive()) {
-        logger.warn("No script thread, deactivate script.");
         return;
       }
 
@@ -117,6 +116,7 @@ public class LogScriptEngine {
   protected LogScriptEngine(Simulation simulation, int logNumber, JTextArea logTextArea) {
     this.simulation = simulation;
     textArea = logTextArea;
+    simulation.getEventCentral().addLogOutputListener(logOutputListener);
     if (!Cooja.isVisualized()) {
       var logName = logNumber == 0 ? "COOJA.testlog" : String.format("COOJA-%02d.testlog", logNumber);
       var logFile = Path.of(simulation.getCfg().logDir(), logName);
@@ -172,6 +172,7 @@ public class LogScriptEngine {
   }
 
   protected void closeLog() {
+    simulation.getEventCentral().removeLogOutputListener(logOutputListener);
     if (Cooja.isVisualized()) {
       return;
     }
@@ -189,8 +190,6 @@ public class LogScriptEngine {
   public void deactivateScript() {
     timeoutEvent.remove();
     timeoutProgressEvent.remove();
-
-    simulation.getEventCentral().removeLogOutputListener(logOutputListener);
 
     engine.put("SHUTDOWN", true);
 
@@ -245,8 +244,6 @@ public class LogScriptEngine {
       logger.fatal("Error when creating engine: " + e.getMessage(), e);
       return false;
     }
-    // Setup simulation observers.
-    simulation.getEventCentral().addLogOutputListener(logOutputListener);
     // Setup script variables.
     engine.put("TIMEOUT", false);
     engine.put("SHUTDOWN", false);
