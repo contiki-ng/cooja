@@ -93,31 +93,7 @@ public class StabDebug implements ELFDebug {
       }
       addr += dbgStab.getEntrySize();
     }
-    // getStabFiles();
   }
-
-  public StabFile[] getStabFiles() {
-      ArrayList<StabFile> files = new ArrayList<>();
-      StabFile currentFile = null;
-      for (int i = 0, n = stabs.length; i < n; i++) {
-          Stab stab = stabs[i];
-          switch(stab.type) {
-          case N_SO:
-              if (currentFile == null || currentFile.startAddress != stab.value) {
-                  /* end of file ? */
-                  currentFile = new StabFile();
-                  files.add(currentFile);
-                  currentFile.startAddress = stab.value;
-                  currentFile.stabIndex = i;
-                  currentFile.handleStabs(stabs);
-                  System.out.println("Found: " + currentFile);
-              }
-              break;
-          }
-      }
-      return files.toArray(new StabFile[0]);
-  }
-
 
   /* Just pick up file + some other things */
   @Override
