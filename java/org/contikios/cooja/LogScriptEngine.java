@@ -67,7 +67,6 @@ import org.slf4j.LoggerFactory;
 public class LogScriptEngine {
   private static final Logger logger = LoggerFactory.getLogger(LogScriptEngine.class);
   private static final long DEFAULT_TIMEOUT = 20*60*1000*Simulation.MILLISECOND; /* 1200s = 20 minutes */
-
   private final NashornScriptEngine engine;
 
   private final BufferedWriter logWriter; // For non-GUI tests.
@@ -153,6 +152,14 @@ public class LogScriptEngine {
     /* ... script is now again waiting for script semaphore ... */
   }
 
+  /** Called when the simulation exceeds its timeout. */
+  void timeout(long time) {
+    logger.info("Timeout event @ " + time);
+    engine.put("TIMEOUT", true);
+    stepScript();
+    deactivateScript();
+  }
+
   public void scriptLog(String msg) {
     if (Cooja.isVisualized()) {
       java.awt.EventQueue.invokeLater(() -> {
@@ -186,7 +193,7 @@ public class LogScriptEngine {
    * Deactivate script
    */
   public void deactivateScript() {
-    timeoutEvent.remove();
+    simulation.removeTimeout(this);
     timeoutProgressEvent.remove();
 
     engine.put("SHUTDOWN", true);
@@ -224,11 +231,11 @@ public class LogScriptEngine {
    *  Does not alter internal engine state that is difficult to undo. */
   public CompiledScript compileScript(String code) throws ScriptException {
     ScriptParser parser = new ScriptParser(code);
-    timeout = parser.getTimeoutTime();
+    var timeout = parser.getTimeoutTime();
     if (timeout < 0) {
       timeout = DEFAULT_TIMEOUT;
     }
-    logger.info("Script timeout in " + (timeout/Simulation.MILLISECOND) + " ms");
+    simulation.setTimeout(this, timeout);
     return engine.compile(parser.getJSCode());
   }
 
@@ -281,23 +288,11 @@ public class LogScriptEngine {
     }
     startRealTime = System.currentTimeMillis();
     startTime = simulation.getSimulationTime();
-    simulation.invokeSimulationThread(() -> {
-      simulation.scheduleEvent(timeoutProgressEvent, startTime + Math.max(1000, timeout / 20));
-      simulation.scheduleEvent(timeoutEvent, startTime + timeout);
-    });
+    simulation.invokeSimulationThread(() ->
+            simulation.scheduleEvent(timeoutProgressEvent, startTime + Math.max(1000, timeout / 20)));
     return true;
   }
 
-  private final TimeEvent timeoutEvent = new TimeEvent() {
-    @Override
-    public void execute(long t) {
-      logger.info("Timeout event @ " + t);
-      engine.put("TIMEOUT", true);
-      stepScript();
-      deactivateScript();
-      simulation.stopSimulation(); // stepScript will set return value.
-    }
-  };
   private final TimeEvent timeoutProgressEvent = new TimeEvent() {
     @Override
     public void execute(long t) {

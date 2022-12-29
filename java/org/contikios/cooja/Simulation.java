@@ -96,6 +96,8 @@ public final class Simulation {
   private long lastStartSimulationTime;
   private long currentSimulationTime;
 
+  private final HashMap<LogScriptEngine, Long> timeouts = new HashMap<>();
+
   private String title;
 
   private final RadioMedium currentRadioMedium;
@@ -218,6 +220,26 @@ public final class Simulation {
             } while (cmd != null && isAlive);
 
             if (isSimulationRunning) {
+              if (!timeouts.isEmpty()) {
+                Long nextTime = eventQueue.getFirstTime();
+                assert nextTime != null : "Ran out of events in eventQueue";
+                ArrayList<LogScriptEngine> deletes = null;
+                for (var tm : timeouts.entrySet()) {
+                  var timeout = tm.getValue();
+                  if (nextTime >= timeout) { // Check next event for timeout.
+                    tm.getKey().timeout(currentSimulationTime);
+                    // Reset timeout so simulation can continue if restarted.
+                    if (deletes == null) {
+                      deletes = new ArrayList<>();
+                    }
+                    deletes.add(tm.getKey());
+                  }
+                }
+                if (deletes != null) {
+                  final ArrayList<LogScriptEngine> finalDeletes = deletes;
+                  timeouts.entrySet().removeIf(e -> finalDeletes.contains(e.getKey()));
+                }
+              }
               // Handle one simulation event, and update simulation time.
               nextEvent = eventQueue.popFirst();
               assert nextEvent != null : "Ran out of events in eventQueue";
@@ -508,6 +530,17 @@ public final class Simulation {
   public void removeScriptEngine(LogScriptEngine engine) {
     engine.deactivateScript();
     scriptEngines.remove(engine);
+  }
+
+  /** Set the timeout for the script. There is no timeout by default. */
+  void setTimeout(LogScriptEngine engine, long timeout) {
+    timeouts.put(engine, timeout);
+    logger.info("Script timeout in " + (timeout / MILLISECOND) + " ms");
+  }
+
+  /** Remove the timeout for the script. */
+  void removeTimeout(LogScriptEngine engine) {
+    timeouts.remove(engine);
   }
 
   /**
