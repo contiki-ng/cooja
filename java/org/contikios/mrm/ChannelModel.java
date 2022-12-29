@@ -1849,18 +1849,16 @@ public class ChannelModel {
     }
     @Override
     public double getTxGain() {
-      if (!(getFromRadio() instanceof DirectionalAntennaRadio)) {
+      if (!(getFromRadio() instanceof DirectionalAntennaRadio r)) {
         return 0;
       }
-      DirectionalAntennaRadio r = (DirectionalAntennaRadio)getFromRadio();
       return r.getRelativeGain(r.getDirection() + getAngle(), getAngle());
     }
     @Override
     public double getRxGain() {
-      if (!(getToRadio() instanceof DirectionalAntennaRadio)) {
+      if (!(getToRadio() instanceof DirectionalAntennaRadio r)) {
         return 0;
       }
-      DirectionalAntennaRadio r = (DirectionalAntennaRadio)getToRadio();
       return r.getRelativeGain(r.getDirection() + getAngle() + Math.PI, getDistance());
     }
   }
