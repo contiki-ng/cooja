@@ -61,7 +61,6 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
  * @author      Fredrik Osterlind
  */
 public class ContikiMote extends AbstractWakeupMote implements Mote {
-  private final ContikiMoteType myType;
   private final SectionMoteMemory myMemory;
   private final ArrayList<PolledBeforeActiveTicks> polledBeforeActive = new ArrayList<>();
   private final ArrayList<PolledAfterActiveTicks> polledAfterActive = new ArrayList<>();
@@ -77,8 +76,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
    * @param sim Mote's simulation
    */
   protected ContikiMote(ContikiMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
-    super(sim);
-    this.myType = moteType;
+    super(moteType, sim);
     this.myMemory = moteType.createInitialMemory();
     moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     for (var intf : moteInterfaces.getInterfaces()) {
@@ -101,11 +99,6 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
   @Override
   public MemoryInterface getMemory() {
     return myMemory;
-  }
-
-  @Override
-  public MoteType getType() {
-    return myType;
   }
 
   /**
@@ -135,7 +128,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     ContikiMoteType.setCoreMemory(myMemory);
 
     /* Handle a single Contiki events */
-    myType.tick();
+    ((ContikiMoteType) moteType).tick();
 
     /* Copy mote memory from Contiki */
     ContikiMoteType.getCoreMemory(myMemory);

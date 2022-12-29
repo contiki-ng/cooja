@@ -33,16 +33,19 @@ import java.util.HashMap;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteTimeEvent;
+import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 
 public abstract class AbstractWakeupMote implements Mote {
   protected final Simulation simulation;
+  protected final MoteType moteType;
 
   protected MoteInterfaceHandler moteInterfaces;
   private long nextWakeupTime = -1;
 
-  public AbstractWakeupMote(Simulation sim) {
+  public AbstractWakeupMote(MoteType moteType, Simulation sim) {
+    this.moteType = moteType;
     this.simulation = sim;
   }
 
@@ -65,6 +68,11 @@ public abstract class AbstractWakeupMote implements Mote {
   @Override
   public MoteInterfaceHandler getInterfaces() {
     return moteInterfaces;
+  }
+
+  @Override
+  public MoteType getType() {
+    return moteType;
   }
 
   @Override

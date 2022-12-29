@@ -93,7 +93,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private final CommandHandler commandHandler = new CommandHandler(System.out, System.err);
   private final MSP430 myCpu;
-  private final MspMoteType myMoteType;
   private final MspMoteMemory myMemory;
   public final ComponentRegistry registry;
 
@@ -101,8 +100,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   private boolean stopNextInstruction = false;
 
   public MspMote(MspMoteType moteType, Simulation sim, GenericNode node) throws MoteType.MoteTypeCreationException {
-    super(sim);
-    myMoteType = moteType;
+    super(moteType, sim);
     registry = node.getRegistry();
     node.setCommandHandler(commandHandler);
     node.setup(new ConfigManager());
@@ -121,7 +119,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
         mlogger.warn(getID() + ": " + "# " + source.getID() + "[" + type + "]: " + message);
       }
     });
-    Cooja.setProgressMessage("Loading " + myMoteType.getContikiFirmwareFile().getName());
+    Cooja.setProgressMessage("Loading " + moteType.getContikiFirmwareFile().getName());
     ELF elf;
     try {
       elf = moteType.getELF();
@@ -222,11 +220,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   /* called when moteID is updated */
   public void idUpdated(int newID) {
-  }
-
-  @Override
-  public MoteType getType() {
-    return myMoteType;
   }
 
   private boolean booted = false;
@@ -511,7 +504,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   @Override
   public int getExecutableAddressOf(File file, int lineNr) {
-    return myMoteType.getExecutableAddressOf(file, lineNr);
+    return ((MspMoteType) moteType).getExecutableAddressOf(file, lineNr);
   }
 
   private long lastBreakpointCycles = -1;
