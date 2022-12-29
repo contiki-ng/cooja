@@ -46,9 +46,8 @@ public class Symbol {
    */
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof Symbol))
+    if (!(obj instanceof Symbol that))
       return false;
-    Symbol that = (Symbol) obj;
     return name.equals(that.name) && type == that.type;
   }
 }

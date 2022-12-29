@@ -182,8 +182,7 @@ public class StatCommands implements CommandBundle {
               for (int j = 0, n = sources.length; j < n; j++) {
                 Object s = sources[j];
                 if (j > 0) out.print(' ');
-                if (s instanceof MultiDataSource) {
-                  MultiDataSource ds = (MultiDataSource) s;
+                if (s instanceof MultiDataSource ds) {
                   for (int k = 0, m = ds.getModeMax(); k <= m; k++) {
                     if (k > 0) out.print(' ');
                     out.print(((int) (ds.getDoubleValue(k) * 100.0 + 0.5)) / 100.0);

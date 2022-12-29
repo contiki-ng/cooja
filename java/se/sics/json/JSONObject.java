@@ -57,13 +57,11 @@ public class JSONObject extends HashMap<String,Object> implements Jsonable {
         if (this == value) {
             throw new IllegalArgumentException("cycle detected");
         }
-        if (value instanceof JSONObject) {
-            JSONObject object = (JSONObject) value;
+        if (value instanceof JSONObject object) {
             for (Object v : object.values()) {
                 checkForCycles(v);
             }
-        } else if (value instanceof JSONArray) {
-            JSONArray list = (JSONArray) value;
+        } else if (value instanceof JSONArray list) {
             for (Object v : list) {
                 checkForCycles(v);
             }

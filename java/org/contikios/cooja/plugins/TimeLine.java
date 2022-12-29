@@ -462,12 +462,11 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     repaintTimelineTimer.start();
 
     Cooja.addMoteHighlightObserver(moteHighlightObserver = (obs, obj) -> {
-      if (!(obj instanceof Mote)) {
+      if (!(obj instanceof final Mote mote)) {
         return;
       }
 
       final Timer timer = new Timer(100, null);
-      final Mote mote = (Mote) obj;
       timer.addActionListener(e -> {
         // Count down.
         if (timer.getDelay() < 90) {
@@ -637,8 +636,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
       if (leds) {
         for (MoteEvent ev: moteEvents.ledEvents) {
-          if (!(ev instanceof LEDEvent)) continue;
-          LEDEvent ledEvent = (LEDEvent) ev;
+          if (!(ev instanceof LEDEvent ledEvent)) continue;
 
           /* Red */
           if (ledEvent.red) {
@@ -681,8 +679,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
       if (radioHW) {
         for (MoteEvent ev: moteEvents.radioHWEvents) {
-          if (!(ev instanceof RadioHWEvent)) continue;
-          RadioHWEvent hwEvent = (RadioHWEvent) ev;
+          if (!(ev instanceof RadioHWEvent hwEvent)) continue;
           if (hwEvent.on) {
             /* HW is on */
             if (hwEvent.next == null) {
@@ -696,8 +693,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
       if (radioRXTX) {
         for (MoteEvent ev: moteEvents.radioRXTXEvents) {
-          if (!(ev instanceof RadioRXTXEvent)) continue;
-          RadioRXTXEvent rxtxEvent = (RadioRXTXEvent) ev;
+          if (!(ev instanceof RadioRXTXEvent rxtxEvent)) continue;
           if (rxtxEvent.state == RXTXRadioEvent.IDLE) {
             continue;
           }

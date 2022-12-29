@@ -785,10 +785,9 @@ public class GUI {
           // Check if abstraction description already exists.
           JSeparator abstractionLevelSeparator = null;
           for (Component component: menuMoteTypeClasses.getMenuComponents()) {
-            if (!(component instanceof JSeparator)) {
+            if (!(component instanceof JSeparator existing)) {
               continue;
             }
-            JSeparator existing = (JSeparator) component;
             if (abstractionLevelDescription.equals(existing.getToolTipText())) {
               abstractionLevelSeparator = existing;
               break;

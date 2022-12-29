@@ -113,10 +113,9 @@ public class LogVisualizerSkin implements VisualizerSkin {
     for (Mote mote: allMotes) {
       String msg = null;
       for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
-        if (!(mi instanceof Log)) {
+        if (!(mi instanceof Log log)) {
           continue;
         }
-        Log log = (Log) mi;
         if (log.getLastLogMessage() == null) {
           continue;
         }

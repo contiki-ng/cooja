@@ -403,10 +403,9 @@ public class AreaViewer extends VisPlugin {
 
             @Override
             public double getTxGain() {
-              if (!(selectedRadio instanceof DirectionalAntennaRadio)) {
+              if (!(selectedRadio instanceof DirectionalAntennaRadio r)) {
                 return 0;
               }
-              DirectionalAntennaRadio r = (DirectionalAntennaRadio) selectedRadio;
               return r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
             }
 
@@ -1546,10 +1545,9 @@ public class AreaViewer extends VisPlugin {
 
               @Override
               public double getTxGain() {
-                if (!(selectedRadio instanceof DirectionalAntennaRadio)) {
+                if (!(selectedRadio instanceof DirectionalAntennaRadio r)) {
                   return 0;
                 }
-                DirectionalAntennaRadio r = (DirectionalAntennaRadio) selectedRadio;
                 return r.getRelativeGain(r.getDirection() + getAngle(), getDistance());
               }
 
