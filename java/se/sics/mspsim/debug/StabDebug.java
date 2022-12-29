@@ -261,26 +261,10 @@ public class StabDebug implements ELFDebug {
     return sourceFilesArray;
   }
 
-  public static class Stab {
-
-    public final String data;
-    public final int type;
-    public final int other;
-    public final int desc;
-    public final int value;
-
-    Stab(String data, int type, int other, int desc, int value) {
-      this.data = data;
-      this.type = type;
-      this.other = other;
-      this.desc = desc;
-      this.value = value;
-    }
-
+  public record Stab(String data, int type, int other, int desc, int value) {
    @Override
    public String toString() {
         return Integer.toHexString(type) + " " + data + "   [" + other + "," + desc + "," + value + "]";
     }
   }
-
 } // StabDebug
