@@ -149,6 +149,34 @@ public final class Simulation {
   private final EventTriggers<AddRemove, MoteRelation> moteRelationsTriggers = new EventTriggers<>();
   private final SimConfig cfg;
 
+  private final TimeEvent progressEvent = new TimeEvent() {
+    @Override
+    public void execute(long t) {
+      long timeout = 0;
+      for (var tm : timeouts.values()) {
+        timeout = Math.max(tm, timeout);
+      }
+      if (timeout == 0) return;
+      scheduleEvent(this, t + Math.max(1000, timeout / 20));
+      double progress = 1.0 * (t - lastStartSimulationTime) / timeout;
+      long realDuration = System.currentTimeMillis() - lastStartRealTime;
+      double estimatedLeft = 1.0 * realDuration / progress - realDuration;
+      if (estimatedLeft == 0) estimatedLeft = 1;
+      // String.format is still slow(ish) in Java 17 and will show up in performance profiles,
+      // so compute+format the percentage completed and time remaining by hand.
+      int percentage = (int) (100 * progress);
+      double secondsRemaining = estimatedLeft / 1000;
+      long seconds = (long) secondsRemaining;
+      int tenthOfSeconds = (int) Math.round((10 * (secondsRemaining - (double)seconds)));
+      if (tenthOfSeconds == 10) {
+        seconds++;
+        tenthOfSeconds = 0;
+      }
+      logger.info("{}{}% completed, {}{}.{} sec remaining", (percentage < 10 ? " " : ""), percentage,
+              (seconds < 10 ? " " : ""), seconds, tenthOfSeconds);
+    }
+  };
+
   private final TimeEvent delayEvent = new TimeEvent() {
     @Override
     public void execute(long t) {
@@ -534,13 +562,21 @@ public final class Simulation {
 
   /** Set the timeout for the script. There is no timeout by default. */
   void setTimeout(LogScriptEngine engine, long timeout) {
-    timeouts.put(engine, timeout);
-    logger.info("Script timeout in " + (timeout / MILLISECOND) + " ms");
+    invokeSimulationThread(() -> {
+      timeouts.put(engine, timeout);
+      logger.info("Script timeout in " + (timeout / MILLISECOND) + " ms");
+      if (progressEvent.isScheduled()) {
+        progressEvent.remove();
+      }
+      scheduleEvent(progressEvent, currentSimulationTime + Math.max(1000, timeout / 20));
+    });
   }
 
   /** Remove the timeout for the script. */
   void removeTimeout(LogScriptEngine engine) {
-    timeouts.remove(engine);
+    invokeSimulationThread(() -> {
+      timeouts.remove(engine);
+    });
   }
 
   /**

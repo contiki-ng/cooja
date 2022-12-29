@@ -104,9 +104,6 @@ public class LogScriptEngine {
   private Thread scriptThread; /* Script thread */
   private final Simulation simulation;
 
-  private long timeout;
-  private long startTime;
-  private long startRealTime;
   private final JTextArea textArea;
 
   LogScriptEngine(Simulation simulation, String nashornArgs, int logNumber, JTextArea logTextArea) {
@@ -194,10 +191,7 @@ public class LogScriptEngine {
    */
   public void deactivateScript() {
     simulation.removeTimeout(this);
-    timeoutProgressEvent.remove();
-
     engine.put("SHUTDOWN", true);
-
     try {
       if (semaphoreScript != null) {
         semaphoreScript.release(100);
@@ -286,36 +280,8 @@ public class LogScriptEngine {
       deactivateScript();
       return false;
     }
-    startRealTime = System.currentTimeMillis();
-    startTime = simulation.getSimulationTime();
-    simulation.invokeSimulationThread(() ->
-            simulation.scheduleEvent(timeoutProgressEvent, startTime + Math.max(1000, timeout / 20)));
     return true;
   }
-
-  private final TimeEvent timeoutProgressEvent = new TimeEvent() {
-    @Override
-    public void execute(long t) {
-      simulation.scheduleEvent(this, t + Math.max(1000, timeout / 20));
-
-      double progress = 1.0*(t - startTime)/timeout;
-      long realDuration = System.currentTimeMillis()-startRealTime;
-      double estimatedLeft = 1.0*realDuration/progress - realDuration;
-      if (estimatedLeft == 0) estimatedLeft = 1;
-      // String.format is still slow(ish) in Java 17 and will show up in performance profiles,
-      // so compute+format the percentage completed and time remaining by hand.
-      int percentage = (int) (100 * progress);
-      double secondsRemaining = estimatedLeft / 1000;
-      long seconds = (long) secondsRemaining;
-      int tenthOfSeconds = (int) Math.round((10 * (secondsRemaining - (double)seconds)));
-      if (tenthOfSeconds == 10) {
-        seconds++;
-        tenthOfSeconds = 0;
-      }
-      logger.info("{}{}% completed, {}{}.{} sec remaining", (percentage < 10 ? " " : ""), percentage,
-              (seconds < 10 ? " " : ""), seconds, tenthOfSeconds);
-    }
-  };
 
   private final ScriptLog scriptLog = new ScriptLog() {
     @Override
