@@ -38,8 +38,6 @@ import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -240,21 +238,16 @@ public class SerialSocketClient implements Plugin, MotePlugin {
 
     frame.add(BorderLayout.SOUTH, statusBarPanel);
 
-    serverSelectButton.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("Connect")) {
-          try {
-            serverPortField.commitEdit();
-            startClient(serverHostField.getText(), ((Long) serverPortField.getValue()).intValue());
-          } catch (ParseException ex) {
-            logger.error(ex);
-          }
-        } else {
-          // close socket
-          cleanup();
+    serverSelectButton.addActionListener(e -> {
+      if (e.getActionCommand().equals("Connect")) {
+        try {
+          serverPortField.commitEdit();
+          startClient(serverHostField.getText(), ((Long) serverPortField.getValue()).intValue());
+        } catch (ParseException ex) {
+          logger.error(ex);
         }
+      } else { // Close socket.
+        cleanup();
       }
     });
 
