@@ -106,7 +106,7 @@ public class StabDebug implements ELFDebug {
     int currentLineAdr = 0;
     for (Stab stab : stabs) {
       switch (stab.type) {
-        case N_SO:
+        case N_SO -> {
           if (stab.value < address) {
             if (stab.data != null && stab.data.endsWith("/")) {
               currentPath = stab.data;
@@ -124,8 +124,8 @@ public class StabDebug implements ELFDebug {
             }
             return null;
           }
-          break;
-        case N_SLINE:
+        }
+        case N_SLINE -> {
           if (currentPath != null) { /* only files with path... */
             if (currentLineAdr < address) {
               currentLine = stab.desc;
@@ -142,8 +142,8 @@ public class StabDebug implements ELFDebug {
               }
             }
           }
-          break;
-        case N_FUN:
+        }
+        case N_FUN -> {
           if (stab.value < address) {
             currentFunction = stab.data;
             lastAddress = stab.value;
@@ -153,7 +153,7 @@ public class StabDebug implements ELFDebug {
             }
             return null;
           }
-          break;
+        }
       }
     }
     return null;
@@ -172,33 +172,33 @@ public class StabDebug implements ELFDebug {
 //    int currentLine = 0;
     int currentLineAdr = 0;
     for (Stab stab : stabs) {
-      switch(stab.type) {
-      case N_SO:
-        if (stab.value < address) {
-          if (stab.data != null && stab.data.endsWith("/")) {
-            currentPath = stab.data;
+      switch (stab.type) {
+        case N_SO -> {
+          if (stab.value < address) {
+            if (stab.data != null && stab.data.endsWith("/")) {
+              currentPath = stab.data;
+            } else {
+              currentFile = stab.data;
+            }
+            lastAddress = stab.value;
+            allAddresses.add(lastAddress);
+            currentFunction = null;
           } else {
-            currentFile = stab.data;
+            /* requires sorted order of all file entries in stab section */
+            if (DEBUG) {
+              System.out.println("FILE: Already passed address..." +
+                      currentPath + " " +
+                      currentFile + " " + currentFunction);
+            }
+            return allAddresses;
           }
-          lastAddress = stab.value;
-          allAddresses.add(lastAddress);
-          currentFunction = null;
-        } else {
-          /* requires sorted order of all file entries in stab section */
-          if (DEBUG) {
-            System.out.println("FILE: Already passed address..." +
-                currentPath + " " +
-                currentFile + " " + currentFunction);
-          }
-          return allAddresses;
         }
-        break;
-      case N_SLINE:
-        if (currentPath != null) { /* only files with path... */
-          if (currentLineAdr < address) {
+        case N_SLINE -> {
+          if (currentPath != null) { /* only files with path... */
+            if (currentLineAdr < address) {
 //            currentLine = stab.desc;
-            currentLineAdr = lastAddress + stab.value;
-            allAddresses.add(currentLineAdr);
+              currentLineAdr = lastAddress + stab.value;
+              allAddresses.add(currentLineAdr);
             /*if (currentLineAdr >= address) {
               // Finished!!!
               if (DEBUG) {
@@ -209,21 +209,21 @@ public class StabDebug implements ELFDebug {
               return new DebugInfo(currentLine, currentPath, currentFile,
                   currentFunction);
             }*/
+            }
           }
         }
-        break;
-      case N_FUN:
-        if (stab.value < address) {
-          currentFunction = stab.data;
-          lastAddress = stab.value;
-          allAddresses.add(lastAddress);
-        } else {
-          if (DEBUG) {
-            System.out.println("FUN: Already passed address...");
+        case N_FUN -> {
+          if (stab.value < address) {
+            currentFunction = stab.data;
+            lastAddress = stab.value;
+            allAddresses.add(lastAddress);
+          } else {
+            if (DEBUG) {
+              System.out.println("FUN: Already passed address...");
+            }
+            return allAddresses;
           }
-          return allAddresses;
         }
-        break;
       }
     }
     return allAddresses;
@@ -261,26 +261,10 @@ public class StabDebug implements ELFDebug {
     return sourceFilesArray;
   }
 
-  public static class Stab {
-
-    public final String data;
-    public final int type;
-    public final int other;
-    public final int desc;
-    public final int value;
-
-    Stab(String data, int type, int other, int desc, int value) {
-      this.data = data;
-      this.type = type;
-      this.other = other;
-      this.desc = desc;
-      this.value = value;
-    }
-
+  public record Stab(String data, int type, int other, int desc, int value) {
    @Override
    public String toString() {
         return Integer.toHexString(type) + " " + data + "   [" + other + "," + desc + "," + value + "]";
     }
   }
-
 } // StabDebug
