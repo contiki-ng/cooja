@@ -1860,7 +1860,7 @@ public class ChannelModel {
       if (!(getToRadio() instanceof DirectionalAntennaRadio)) {
         return 0;
       }
-      DirectionalAntennaRadio r = (DirectionalAntennaRadio)getFromRadio();
+      DirectionalAntennaRadio r = (DirectionalAntennaRadio)getToRadio();
       return r.getRelativeGain(r.getDirection() + getAngle() + Math.PI, getDistance());
     }
   }
