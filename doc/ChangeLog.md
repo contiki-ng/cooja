@@ -23,6 +23,12 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Added MoteInterfaceHandler to AbstractWakeupMote
+
+AbstractWakeupMote now provides implementations of `getID` and
+`getInterfaces`. Motes still need to allocate the MoteInterfaceHandler
+in their constructor.
+
 ### Move handling of mote startup delay to the Clock interface
 
 The Clock interface now expects to be created with a Mote as argument

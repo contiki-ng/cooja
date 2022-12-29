@@ -63,8 +63,6 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
 public class ContikiMote extends AbstractWakeupMote implements Mote {
   private final ContikiMoteType myType;
   private final SectionMoteMemory myMemory;
-  private final MoteInterfaceHandler myInterfaceHandler;
-
   private final ArrayList<PolledBeforeActiveTicks> polledBeforeActive = new ArrayList<>();
   private final ArrayList<PolledAfterActiveTicks> polledAfterActive = new ArrayList<>();
   private final ArrayList<PolledBeforeAllTicks> polledBeforePassive = new ArrayList<>();
@@ -82,8 +80,8 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     super(sim);
     this.myType = moteType;
     this.myMemory = moteType.createInitialMemory();
-    this.myInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
-    for (var intf : myInterfaceHandler.getInterfaces()) {
+    moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
+    for (var intf : moteInterfaces.getInterfaces()) {
       if (intf instanceof PolledBeforeActiveTicks intf2) {
         polledBeforeActive.add(intf2);
       }
@@ -98,16 +96,6 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
       }
     }
     requestImmediateWakeup();
-  }
-
-  @Override
-  public int getID() {
-    return myInterfaceHandler.getMoteID().getMoteID();
-  }
-
-  @Override
-  public MoteInterfaceHandler getInterfaces() {
-    return myInterfaceHandler;
   }
 
   @Override
@@ -137,7 +125,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     polledBeforePassive.forEach(PolledBeforeAllTicks::doActionsBeforeTick);
 
     /* Check if pre-boot time */
-    var moteTime = myInterfaceHandler.getClock().getTime();
+    var moteTime = moteInterfaces.getClock().getTime();
     if (moteTime < 0) {
       scheduleNextWakeup(simTime + Math.abs(moteTime));
       return;

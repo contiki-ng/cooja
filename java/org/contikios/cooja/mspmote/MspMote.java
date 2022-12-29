@@ -95,7 +95,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   private final MSP430 myCpu;
   private final MspMoteType myMoteType;
   private final MspMoteMemory myMemory;
-  private final MoteInterfaceHandler myMoteInterfaceHandler;
   public final ComponentRegistry registry;
 
   /* Stack monitoring variables */
@@ -137,7 +136,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     // Create mote address memory.
     myMemory = new MspMoteMemory(elf.getMap().getAllEntries(), myCpu);
     myCpu.reset();
-    myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
+    moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     registry.removeComponent("windowManager");
     registry.registerComponent("windowManager", new WindowManager() {
       @Override
@@ -230,11 +229,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return myMoteType;
   }
 
-  @Override
-  public MoteInterfaceHandler getInterfaces() {
-    return myMoteInterfaceHandler;
-  }
-
   private boolean booted = false;
 
   private long lastExecute = -1; /* Last time mote executed */
@@ -247,7 +241,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   public void execute(long t, int duration) {
-    MspClock clock = ((MspClock) (myMoteInterfaceHandler.getClock()));
+    MspClock clock = ((MspClock) (moteInterfaces.getClock()));
     // Wait until mote boots.
     if (!booted && clock.getTime() < 0) {
       scheduleNextWakeup(t - clock.getTime());
@@ -341,11 +335,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   @Override
   public int getCPUFrequency() {
     return myCpu.getDCOFrequency();
-  }
-
-  @Override
-  public int getID() {
-    return getInterfaces().getMoteID().getMoteID();
   }
 
   @Override

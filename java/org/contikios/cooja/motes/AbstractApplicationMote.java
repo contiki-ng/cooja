@@ -54,8 +54,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
 
   private final SectionMoteMemory memory;
 
-  protected MoteInterfaceHandler moteInterfaces;
-
   public abstract void receivedPacket(RadioPacket p);
   public abstract void sentPacket(RadioPacket p);
   
@@ -82,11 +80,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
     ((ApplicationSerialPort)moteInterfaces.getLog()).triggerLog(msg);
   }
   
-  @Override
-  public MoteInterfaceHandler getInterfaces() {
-    return moteInterfaces;
-  }
-
   @Override
   public MemoryInterface getMemory() {
     return memory;
@@ -116,11 +109,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
     return true;
   }
 
-  @Override
-  public int getID() {
-    return moteInterfaces.getMoteID().getMoteID();
-  }
-  
   @Override
   public String toString() {
     return "AppMote " + getID();
