@@ -59,6 +59,10 @@ import se.sics.mspsim.util.ELF;
 public abstract class MspMoteType extends BaseContikiMoteType {
   private static final Logger logger = LogManager.getLogger(MspMoteType.class);
 
+  private boolean loadedDebugInfo = false;
+  private HashMap<File, HashMap<Integer, Integer>> debuggingInfo = null; /* cached */
+  private ELF elf; /* cached */
+
   @Override
   protected AbstractCompileDialog createCompilationDialog(Cooja gui, MoteTypeConfig cfg) {
     return new MspCompileDialog(gui, this, cfg);
@@ -134,7 +138,49 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return configureAndInit(Cooja.getTopParentContainer(), simulation, Cooja.isVisualized());
   }
 
-  private ELF elf; /* cached */
+  public int getExecutableAddressOf(File file, int lineNr) {
+    if (file == null || lineNr < 0) {
+      return -1;
+    }
+    if (!loadedDebugInfo) {
+      loadedDebugInfo = true;
+      try {
+        debuggingInfo = getFirmwareDebugInfo();
+      } catch (IOException e) {
+        logger.error("Failed reading debug info: {}", e.getMessage(), e);
+      }
+    }
+    if (debuggingInfo == null) {
+      return -1;
+    }
+
+    // Match file.
+    var lineTable = debuggingInfo.get(file);
+    if (lineTable == null) {
+      for (var entry : debuggingInfo.entrySet()) {
+        var f = entry.getKey();
+        if (f != null && f.getName().equals(file.getName())) {
+          lineTable = entry.getValue();
+          break;
+        }
+      }
+    }
+    if (lineTable == null) {
+      return -1;
+    }
+
+    // Match line number.
+    if (lineTable.get(lineNr) != null) {
+      for (var entry : lineTable.entrySet()) {
+        var l = entry.getKey();
+        if (l != null && l == lineNr) { // Found line address.
+          return entry.getValue();
+        }
+      }
+    }
+    return -1;
+  }
+
   public ELF getELF() throws IOException {
     if (elf == null) {
       elf = ELF.readELF(getContikiFirmwareFile().getPath());
@@ -142,7 +188,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return elf;
   }
 
-  private HashMap<File, HashMap<Integer, Integer>> debuggingInfo = null; /* cached */
   public HashMap<File, HashMap<Integer, Integer>> getFirmwareDebugInfo()
   throws IOException {
     if (debuggingInfo == null) {

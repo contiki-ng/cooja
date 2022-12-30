@@ -101,9 +101,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   /* Stack monitoring variables */
   private boolean stopNextInstruction = false;
-  private boolean loadedDebugInfo = false;
-  // FIXME: move to MspMoteType instead.
-  private HashMap<File, HashMap<Integer, Integer>> debuggingInfo = null;
 
   public MspMote(MspMoteType moteType, Simulation sim, GenericNode node) throws MoteType.MoteTypeCreationException {
     super(sim);
@@ -547,49 +544,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   @Override
   public int getExecutableAddressOf(File file, int lineNr) {
-    if (file == null || lineNr < 0) {
-      return -1;
-    }
-    if (!loadedDebugInfo) {
-      loadedDebugInfo = true;
-      try {
-        debuggingInfo = myMoteType.getFirmwareDebugInfo();
-      } catch (IOException e) {
-        logger.error("Failed reading debug info: {}", e.getMessage(), e);
-      }
-    }
-    if (debuggingInfo == null) {
-      return -1;
-    }
-
-    /* Match file */
-    HashMap<Integer, Integer> lineTable = debuggingInfo.get(file);
-    if (lineTable == null) {
-      for (var entry : debuggingInfo.entrySet()) {
-        File f = entry.getKey();
-        if (f != null && f.getName().equals(file.getName())) {
-          lineTable = entry.getValue();
-          break;
-        }
-      }
-    }
-    if (lineTable == null) {
-      return -1;
-    }
-
-    /* Match line number */
-    Integer address = lineTable.get(lineNr);
-    if (address != null) {
-      for (var entry : lineTable.entrySet()) {
-        Integer l = entry.getKey();
-        if (l != null && l == lineNr) {
-          /* Found line address */
-          return entry.getValue();
-        }
-      }
-    }
-
-    return -1;
+    return myMoteType.getExecutableAddressOf(file, lineNr);
   }
 
   private long lastBreakpointCycles = -1;
