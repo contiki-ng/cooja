@@ -190,10 +190,14 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
           
           if (available <= 0) {
             SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(Cooja.getTopParentContainer(),
-                String.format("Stack overflow!\n\n" +
-                    "\tSP = 0x%05x\n" +
-                    "\tHeap start = 0x%05x\n\n" +
-                    "\tAvailable = %d\n", sp, heapStartAddress, available),
+                String.format("""
+                        Stack overflow!
+
+                        \tSP = 0x%05x
+                        \tHeap start = 0x%05x
+
+                        \tAvailable = %d
+                        """, sp, heapStartAddress, available),
                     "Stack overflow on " + mspMote,
                 JOptionPane.ERROR_MESSAGE));
             simulation.stopSimulation();
