@@ -45,7 +45,6 @@ import org.jdom2.Element;
 import org.contikios.cooja.ContikiError;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
@@ -368,22 +367,11 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
           }
         }
       } else if (name.equals("interface_config")) {
-        String intfClass = element.getText().trim();
-        var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
-        if (moteInterfaceClass == null) {
-          logger.fatal("Could not load mote interface class: " + intfClass);
+        if (!getInterfaces().setConfigXML(simulation, element, this)) {
           return false;
         }
-
-        MoteInterface moteInterface = getInterfaces().getInterfaceOfType(moteInterfaceClass);
-        if (moteInterface == null) {
-            logger.fatal("Could not find mote interface of class: " + moteInterfaceClass);
-            return false;
-        }
-        moteInterface.setConfigXML(element.getChildren(), visAvailable);
       }
     }
-
     /* Schedule us immediately */
     requestImmediateWakeup();
     return true;
@@ -401,18 +389,8 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
       config.add(element);
     }
 
-    // Mote interfaces
-    for (MoteInterface moteInterface: getInterfaces().getInterfaces()) {
-      var element = new Element("interface_config");
-      element.setText(moteInterface.getClass().getName());
-
-      Collection<Element> interfaceXML = moteInterface.getConfigXML();
-      if (interfaceXML != null) {
-        element.addContent(interfaceXML);
-        config.add(element);
-      }
-    }
-
+    // Mote interfaces.
+    config.addAll(getInterfaces().getConfigXML());
     return config;
   }
 
