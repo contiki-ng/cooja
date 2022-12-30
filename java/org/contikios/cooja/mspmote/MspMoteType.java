@@ -188,17 +188,8 @@ public abstract class MspMoteType extends BaseContikiMoteType {
         file = file.getCanonicalFile();
       } catch (IOException e) {
       }
-
-      HashMap<Integer, Integer> lineToAddrHash = fileToLineHash.get(file);
-      if (lineToAddrHash == null) {
-        lineToAddrHash = new HashMap<>();
-        fileToLineHash.put(file, lineToAddrHash);
-      }
-
-      lineToAddrHash.put(info.getLine(), address);
+      fileToLineHash.computeIfAbsent(file, k -> new HashMap<>()).put(info.getLine(), address);
     }
-
     return fileToLineHash;
   }
-
 }
