@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Observer;
 import java.util.Random;
 import java.util.Vector;
@@ -978,11 +979,7 @@ public class ChannelModel {
         unhandledAngles.add(AngleInterval.getAngleIntervalOfLine(source, lookThrough).intersectWith(angleInterval));
       }
     } else {
-      if (angleInterval == null) {
-        unhandledAngles.add(new AngleInterval(0, 2*Math.PI));
-      } else {
-        unhandledAngles.add(angleInterval);
-      }
+      unhandledAngles.add(Objects.requireNonNullElseGet(angleInterval, () -> new AngleInterval(0, 2 * Math.PI)));
     }
 
     // Do forever (will break when no more unhandled angles exist)
