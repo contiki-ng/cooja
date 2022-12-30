@@ -28,14 +28,10 @@
 
 package org.contikios.cooja.motes;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.RadioPacket;
@@ -54,8 +50,6 @@ import org.contikios.cooja.mote.memory.MemoryInterface;
  * @author Fredrik Osterlind
  */
 public abstract class AbstractApplicationMote extends AbstractWakeupMote implements Mote {
-  private static final Logger logger = LogManager.getLogger(AbstractApplicationMote.class);
-
   private final MoteType moteType;
 
   private final SectionMoteMemory memory;
@@ -105,38 +99,17 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
 
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<>();
-    Element element;
-
-    for (MoteInterface moteInterface: moteInterfaces.getInterfaces()) {
-      element = new Element("interface_config");
-      element.setText(moteInterface.getClass().getName());
-
-      Collection<Element> interfaceXML = moteInterface.getConfigXML();
-      if (interfaceXML != null) {
-        element.addContent(interfaceXML);
-        config.add(element);
-      }
-    }
-
-    return config;
+    return getInterfaces().getConfigXML();
   }
 
   @Override
-  public boolean setConfigXML(Simulation simulation,
-      Collection<Element> configXML, boolean visAvailable) {
+  public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       String name = element.getName();
       if (name.equals("interface_config")) {
-        String intfClass = element.getText().trim();
-        var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
-        if (moteInterfaceClass == null) {
-          logger.warn("Can't find mote interface class: " + intfClass);
+        if (!getInterfaces().setConfigXML(simulation, element, this)) {
           return false;
         }
-
-        MoteInterface moteInterface = moteInterfaces.getInterfaceOfType(moteInterfaceClass);
-        moteInterface.setConfigXML(element.getChildren(), visAvailable);
       }
     }
     requestImmediateWakeup();

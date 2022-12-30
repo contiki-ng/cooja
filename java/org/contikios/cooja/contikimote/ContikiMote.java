@@ -32,16 +32,12 @@ package org.contikios.cooja.contikimote;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
 import org.jdom2.Element;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
@@ -65,8 +61,6 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
  * @author      Fredrik Osterlind
  */
 public class ContikiMote extends AbstractWakeupMote implements Mote {
-  private static final Logger logger = LogManager.getLogger(ContikiMote.class);
-
   private final ContikiMoteType myType;
   private final SectionMoteMemory myMemory;
   private final MoteInterfaceHandler myInterfaceHandler;
@@ -172,45 +166,19 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
    */
   @Override
   public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<>();
-
-    /* Mote interfaces */
-    for (MoteInterface moteInterface: getInterfaces().getInterfaces()) {
-      var element = new Element("interface_config");
-      element.setText(moteInterface.getClass().getName());
-
-      Collection<Element> interfaceXML = moteInterface.getConfigXML();
-      if (interfaceXML != null) {
-        element.addContent(interfaceXML);
-        config.add(element);
-      }
-    }
-
-    return config;
+    return getInterfaces().getConfigXML();
   }
 
   @Override
   public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) {
     for (Element element: configXML) {
       String name = element.getName();
-
       if (name.equals("interface_config")) {
-        String intfClass = element.getText().trim();
-        var moteInterfaceClass = MoteInterfaceHandler.getInterfaceClass(simulation.getCooja(), this, intfClass);
-        if (moteInterfaceClass == null) {
-          logger.fatal("Could not load mote interface class: " + intfClass);
+        if (!getInterfaces().setConfigXML(simulation, element, this)) {
           return false;
-        }
-
-        MoteInterface moteInterface = myInterfaceHandler.getInterfaceOfType(moteInterfaceClass);
-        if (moteInterface != null) {
-          moteInterface.setConfigXML(element.getChildren(), visAvailable);
-        } else {
-          logger.warn("Can't restore configuration for non-existing interface: " + moteInterfaceClass.getName());
         }
       }
     }
-
     requestImmediateWakeup();
     return true;
   }
