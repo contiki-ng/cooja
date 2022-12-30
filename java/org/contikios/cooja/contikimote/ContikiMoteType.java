@@ -177,12 +177,18 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   public ContikiMoteType(Cooja gui) {
     this.gui = gui;
-    projectConfig = new ProjectConfig(gui.getProjectConfig());
+    myConfig = new ProjectConfig(gui.getProjectConfig());
   }
 
   @Override
   public String getMoteType() {
     return "cooja";
+  }
+
+  @Override
+  public String getMoteTypeIdentifierPrefix() {
+    // The "mtype" prefix for ContikiMoteType is hardcoded elsewhere, so use that instead of "cooja".
+    return "mtype";
   }
 
   @Override

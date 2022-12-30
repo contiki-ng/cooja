@@ -30,7 +30,7 @@ package org.contikios.cooja.motes;
 import java.awt.Container;
 import java.util.ArrayList;
 import java.util.Collection;
-
+import java.util.Random;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -54,10 +54,13 @@ import org.contikios.cooja.interfaces.Position;
 
 @ClassDescription("Application Mote Type")
 public abstract class AbstractApplicationMoteType implements MoteType {
-  private final ProjectConfig myConfig = null;
+  /** Description of the mote type. */
+  protected String description = null;
+  /** Identifier of the mote type. */
+  protected String identifier;
 
-  private String identifier = null;
-  private String description = null;
+  /** Project configuration of the mote type. */
+  protected ProjectConfig myConfig = null;
 
   @SuppressWarnings("unchecked")
   private final Class<? extends MoteInterface>[] moteInterfaceClasses = new Class[] {
@@ -70,32 +73,29 @@ public abstract class AbstractApplicationMoteType implements MoteType {
       MoteAttributes.class
   };
 
+  /** Random generator for generating a unique mote ID. */
+  private static final Random rnd = new Random();
+
   public AbstractApplicationMoteType() {
     super();
+    String testID = "";
+    boolean available = false;
+    while (!available) {
+      testID = getMoteTypeIdentifierPrefix() + rnd.nextInt(1000000000);
+      available = !Cooja.usedMoteTypeIDs.contains(testID);
+      // FIXME: add check that the library name is not already used.
+    }
+    identifier = testID;
+  }
+
+  /** Returns the mote type identifier prefix. */
+  public String getMoteTypeIdentifierPrefix() {
+    return "apptype";
   }
 
   @Override
   public boolean configureAndInit(Container parentContainer, Simulation simulation, boolean visAvailable)
   throws MoteTypeCreationException {
-    if (identifier == null) {
-      /* Create unique identifier */
-      int counter = 0;
-      boolean identifierOK = false;
-      while (!identifierOK) {
-        counter++;
-        identifier = "apptype" + counter;
-        identifierOK = true;
-
-        // Check if identifier is already used by some other type
-        for (MoteType existingMoteType : simulation.getMoteTypes()) {
-          if (existingMoteType != this
-              && existingMoteType.getIdentifier().equals(identifier)) {
-            identifierOK = false;
-            break;
-          }
-        }
-      }
-    }
     if (description == null) {
       description = "Application Mote Type #" + identifier;
     }
