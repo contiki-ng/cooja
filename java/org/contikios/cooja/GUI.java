@@ -1106,9 +1106,11 @@ public class GUI {
     } catch (Cooja.ParseProjectsException e) {
       logger.fatal("Error when loading extensions: " + e.getMessage(), e);
       JOptionPane.showMessageDialog(frame,
-              "All Cooja extensions could not load.\n\n" +
-                      "To manage Cooja extensions:\n" +
-                      "Menu->Settings->Cooja extensions",
+              """
+                      All Cooja extensions could not load.
+
+                      To manage Cooja extensions:
+                      Menu->Settings->Cooja extensions""",
               "Reconfigure Cooja extensions", JOptionPane.INFORMATION_MESSAGE);
       showErrorDialog("Cooja extensions load error", e, false);
     }

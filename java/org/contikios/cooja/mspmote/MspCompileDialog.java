@@ -43,9 +43,10 @@ public class MspCompileDialog extends AbstractCompileDialog {
     setTitle("Create Mote Type: Compile Contiki for " + moteType.getMoteType());
     var textArea = new JTextArea();
     textArea.setEditable(false);
-    textArea.append("# Without low-power radio:\n" +
-    		"DEFINES=NETSTACK_MAC=nullmac_driver,NETSTACK_RDC=nullrdc_noframer_driver,CC2420_CONF_AUTOACK=0\n" +
-    		"# (remember to \"make clean\" after changing compilation flags)"
+    textArea.append("""
+            # Without low-power radio:
+            DEFINES=NETSTACK_MAC=nullmac_driver,NETSTACK_RDC=nullrdc_noframer_driver,CC2420_CONF_AUTOACK=0
+            # (remember to "make clean" after changing compilation flags)"""
     );
     tabbedPane.addTab("Tips", null, new JScrollPane(textArea), "Compilation tips");
   }
