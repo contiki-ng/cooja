@@ -40,15 +40,15 @@ import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.jdom2.Element;
 
-public abstract class AbstractWakeupMote implements Mote {
+public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInterface> implements Mote {
   protected final Simulation simulation;
-  protected final MoteType moteType;
-  protected MemoryInterface moteMemory;
+  protected final T moteType;
+  protected M moteMemory;
 
   protected MoteInterfaceHandler moteInterfaces;
   private long nextWakeupTime = -1;
 
-  public AbstractWakeupMote(MoteType moteType, Simulation sim) {
+  protected AbstractWakeupMote(T moteType, Simulation sim) {
     this.moteType = moteType;
     this.simulation = sim;
   }

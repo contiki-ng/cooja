@@ -76,7 +76,7 @@ import org.contikios.cooja.mspmote.interfaces.MspClock;
 /**
  * @author Fredrik Osterlind
  */
-public abstract class MspMote extends AbstractEmulatedMote implements Mote, WatchpointMote {
+public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteMemory> implements Mote, WatchpointMote {
   private static final Logger logger = LogManager.getLogger(MspMote.class);
 
   private final static int EXECUTE_DURATION_US = 1; /* We always execute in 1 us steps */
@@ -494,7 +494,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   @Override
   public int getExecutableAddressOf(File file, int lineNr) {
-    return ((MspMoteType) moteType).getExecutableAddressOf(file, lineNr);
+    return moteType.getExecutableAddressOf(file, lineNr);
   }
 
   private long lastBreakpointCycles = -1;
