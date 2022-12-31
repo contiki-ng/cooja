@@ -28,6 +28,7 @@
 
 package org.contikios.cooja.motes;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.contikios.cooja.Mote;
@@ -37,6 +38,7 @@ import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.mote.memory.MemoryInterface;
+import org.jdom2.Element;
 
 public abstract class AbstractWakeupMote implements Mote {
   protected final Simulation simulation;
@@ -85,6 +87,25 @@ public abstract class AbstractWakeupMote implements Mote {
   @Override
   public Simulation getSimulation() {
       return simulation;
+  }
+
+  @Override
+  public Collection<Element> getConfigXML() {
+    return getInterfaces().getConfigXML();
+  }
+
+  @Override
+  public boolean setConfigXML(Simulation sim, Collection<Element> configXML, boolean vis) throws MoteType.MoteTypeCreationException {
+    for (var element : configXML) {
+      var name = element.getName();
+      if (name.equals("interface_config")) {
+        if (!getInterfaces().setConfigXML(sim, element, this)) {
+          return false;
+        }
+      }
+    }
+    requestImmediateWakeup();
+    return true;
   }
 
   /**

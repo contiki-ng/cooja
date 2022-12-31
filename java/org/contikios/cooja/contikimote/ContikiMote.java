@@ -31,12 +31,10 @@
 package org.contikios.cooja.contikimote;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
-import org.jdom2.Element;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
@@ -132,34 +130,8 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     polledAfterPassive.forEach(PolledAfterAllTicks::doActionsAfterTick);
   }
 
-  /**
-   * Returns the current Contiki mote config represented by XML elements.
-   * This config also includes all mote interface configs.
-   *
-   * @return Current simulation config
-   */
-  @Override
-  public Collection<Element> getConfigXML() {
-    return getInterfaces().getConfigXML();
-  }
-
-  @Override
-  public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) {
-    for (Element element: configXML) {
-      String name = element.getName();
-      if (name.equals("interface_config")) {
-        if (!getInterfaces().setConfigXML(simulation, element, this)) {
-          return false;
-        }
-      }
-    }
-    requestImmediateWakeup();
-    return true;
-  }
-
   @Override
   public String toString() {
     return "Contiki " + getID();
   }
-
 }

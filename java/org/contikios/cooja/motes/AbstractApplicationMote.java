@@ -28,9 +28,7 @@
 
 package org.contikios.cooja.motes;
 
-import java.util.Collection;
 import java.util.HashMap;
-import org.jdom2.Element;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
@@ -74,25 +72,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
     ((ApplicationSerialPort)moteInterfaces.getLog()).triggerLog(msg);
   }
   
-  @Override
-  public Collection<Element> getConfigXML() {
-    return getInterfaces().getConfigXML();
-  }
-
-  @Override
-  public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) {
-    for (Element element : configXML) {
-      String name = element.getName();
-      if (name.equals("interface_config")) {
-        if (!getInterfaces().setConfigXML(simulation, element, this)) {
-          return false;
-        }
-      }
-    }
-    requestImmediateWakeup();
-    return true;
-  }
-
   @Override
   public String toString() {
     return "AppMote " + getID();

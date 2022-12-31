@@ -359,7 +359,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     // Mote interfaces.
-    config.addAll(getInterfaces().getConfigXML());
+    config.addAll(super.getConfigXML());
     return config;
   }
 
