@@ -23,6 +23,12 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Moved handling of radio register to the Radio interface
+
+The Radio interface will now register the radio to the radio medium
+via its `added()` method instead of the simulation. This is in preparation
+to support multiple radios.
+
 ### Removed addMoteRelationsObserver/deleteMoteRelationsObserver from Cooja
 
 Use `simulation.getMoteRelationsTriggers()` to get the object where triggers
