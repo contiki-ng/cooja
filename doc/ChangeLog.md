@@ -23,6 +23,13 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed addMoteRelationsObserver/deleteMoteRelationsObserver from Cooja
+
+Use `simulation.getMoteRelationsTriggers()` to get the object where triggers
+can be managed. The available methods are similar to the previous Observable
+interface, except an explicit owner is passed in (usually `this` in the caller):
+`addTrigger`/`removeTrigger`/`deleteTriggers`.
+
 ### Removed simulationFinishedLoading from RadioMedium interface
 
 Cooja now calls setConfigXML on the radio medium last, so the hook is

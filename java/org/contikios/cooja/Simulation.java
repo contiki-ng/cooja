@@ -43,6 +43,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Cooja.PluginConstructionException;
 import org.contikios.cooja.Cooja.SimulationCreationException;
+import org.contikios.cooja.util.EventTriggers;
+import org.contikios.cooja.util.EventTriggers.AddRemove;
 import org.jdom2.Element;
 
 /**
@@ -125,7 +127,7 @@ public final class Simulation extends Observable {
   /** Mote relation (directed). */
   public record MoteRelation(Mote source, Mote dest, Color color) {}
   private final ArrayList<MoteRelation> moteRelations = new ArrayList<>();
-
+  private final EventTriggers<AddRemove, MoteRelation> moteRelationsTriggers = new EventTriggers<>();
   private final SimConfig cfg;
 
   private final TimeEvent delayEvent = new TimeEvent() {
@@ -884,8 +886,9 @@ public final class Simulation extends Observable {
       return;
     }
     removeMoteRelation(source, dest); // Unique relations.
-    moteRelations.add(new MoteRelation(source, dest, color));
-    Cooja.gui.moteRelationObservable.setChangedAndNotify();
+    var r = new MoteRelation(source, dest, color);
+    moteRelations.add(r);
+    moteRelationsTriggers.trigger(AddRemove.ADD, r);
   }
 
   /**
@@ -902,7 +905,7 @@ public final class Simulation extends Observable {
     for (var r: arr) {
       if (r.source == source && r.dest == dest) {
         moteRelations.remove(r); // Relations are unique.
-        Cooja.gui.moteRelationObservable.setChangedAndNotify();
+        moteRelationsTriggers.trigger(AddRemove.REMOVE, r);
         break;
       }
     }
@@ -1017,6 +1020,11 @@ public final class Simulation extends Observable {
   /** Returns the simulation configuration. */
   public SimConfig getCfg() {
     return cfg;
+  }
+
+  /** Returns the mote relations triggers. */
+  public EventTriggers<AddRemove, MoteRelation> getMoteRelationsTriggers() {
+    return moteRelationsTriggers;
   }
 
   /** Exception for signaling the simulation that an emulator has stopped. */

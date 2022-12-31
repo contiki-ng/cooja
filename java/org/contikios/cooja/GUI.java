@@ -134,14 +134,12 @@ public class GUI {
 
   final ScnObservable moteHighlightObservable;
 
-  final ScnObservable moteRelationObservable;
   private final Cooja cooja;
   boolean hasFileHistoryChanged;
 
   public GUI(Cooja cooja) {
     this.cooja = cooja;
     moteHighlightObservable = new ScnObservable();
-    moteRelationObservable = new ScnObservable();
     myDesktopPane = new JDesktopPane() {
       @Override
       public void setBounds(int x, int y, int w, int h) {
