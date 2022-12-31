@@ -57,7 +57,7 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
  *
  * @author      Fredrik Osterlind
  */
-public class ContikiMote extends AbstractWakeupMote implements Mote {
+public class ContikiMote extends AbstractWakeupMote<ContikiMoteType, SectionMoteMemory> implements Mote {
   private final ArrayList<PolledBeforeActiveTicks> polledBeforeActive = new ArrayList<>();
   private final ArrayList<PolledAfterActiveTicks> polledAfterActive = new ArrayList<>();
   private final ArrayList<PolledBeforeAllTicks> polledBeforePassive = new ArrayList<>();
@@ -116,16 +116,16 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     }
 
     /* Copy mote memory to Contiki */
-    ContikiMoteType.setCoreMemory((SectionMoteMemory) moteMemory);
+    ContikiMoteType.setCoreMemory(moteMemory);
 
     /* Handle a single Contiki events */
-    ((ContikiMoteType) moteType).tick();
+    moteType.tick();
 
     /* Copy mote memory from Contiki */
-    ContikiMoteType.getCoreMemory((SectionMoteMemory) moteMemory);
+    ContikiMoteType.getCoreMemory(moteMemory);
 
     /* Poll mote interfaces */
-    ((SectionMoteMemory) moteMemory).pollForMemoryChanges();
+    moteMemory.pollForMemoryChanges();
     polledAfterActive.forEach(PolledAfterActiveTicks::doActionsAfterTick);
     polledAfterPassive.forEach(PolledAfterAllTicks::doActionsAfterTick);
   }

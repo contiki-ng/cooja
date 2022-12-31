@@ -46,7 +46,7 @@ import org.contikios.cooja.interfaces.Radio;
  *
  * @author Fredrik Osterlind
  */
-public abstract class AbstractApplicationMote extends AbstractWakeupMote implements Mote {
+public abstract class AbstractApplicationMote extends AbstractWakeupMote<MoteType, SectionMoteMemory> implements Mote {
   public abstract void receivedPacket(RadioPacket p);
   public abstract void sentPacket(RadioPacket p);
   
