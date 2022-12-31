@@ -32,12 +32,9 @@ package org.contikios.cooja.mspmote;
 
 import java.awt.Component;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Simulation.SimulationStop;
@@ -50,7 +47,6 @@ import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.Watchpoint;
 import org.contikios.cooja.WatchpointMote;
-import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.mspmote.plugins.CodeVisualizerSkin;
 import org.contikios.cooja.mspmote.plugins.MspBreakpoint;
@@ -93,7 +89,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private final CommandHandler commandHandler = new CommandHandler(System.out, System.err);
   private final MSP430 myCpu;
-  private final MspMoteMemory myMemory;
   public final ComponentRegistry registry;
 
   /* Stack monitoring variables */
@@ -132,7 +127,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     //myCpu.setThrowIfWarning(true);
 
     // Create mote address memory.
-    myMemory = new MspMoteMemory(elf.getMap().getAllEntries(), myCpu);
+    moteMemory = new MspMoteMemory(elf.getMap().getAllEntries(), myCpu);
     myCpu.reset();
     moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     registry.removeComponent("windowManager");
@@ -207,11 +202,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
    */
   public MSP430 getCPU() {
     return myCpu;
-  }
-
-  @Override
-  public MemoryInterface getMemory() {
-    return myMemory;
   }
 
   public CommandHandler getCLICommandHandler() {

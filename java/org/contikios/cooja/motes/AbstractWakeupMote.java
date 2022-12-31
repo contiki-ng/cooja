@@ -36,10 +36,12 @@ import org.contikios.cooja.MoteTimeEvent;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
+import org.contikios.cooja.mote.memory.MemoryInterface;
 
 public abstract class AbstractWakeupMote implements Mote {
   protected final Simulation simulation;
   protected final MoteType moteType;
+  protected MemoryInterface moteMemory;
 
   protected MoteInterfaceHandler moteInterfaces;
   private long nextWakeupTime = -1;
@@ -68,6 +70,11 @@ public abstract class AbstractWakeupMote implements Mote {
   @Override
   public MoteInterfaceHandler getInterfaces() {
     return moteInterfaces;
+  }
+
+  @Override
+  public MemoryInterface getMemory() {
+    return moteMemory;
   }
 
   @Override

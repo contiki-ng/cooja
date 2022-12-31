@@ -42,7 +42,6 @@ import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.motes.AbstractWakeupMote;
 
 /**
@@ -61,7 +60,6 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
  * @author      Fredrik Osterlind
  */
 public class ContikiMote extends AbstractWakeupMote implements Mote {
-  private final SectionMoteMemory myMemory;
   private final ArrayList<PolledBeforeActiveTicks> polledBeforeActive = new ArrayList<>();
   private final ArrayList<PolledAfterActiveTicks> polledAfterActive = new ArrayList<>();
   private final ArrayList<PolledBeforeAllTicks> polledBeforePassive = new ArrayList<>();
@@ -77,7 +75,7 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
    */
   protected ContikiMote(ContikiMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
     super(moteType, sim);
-    this.myMemory = moteType.createInitialMemory();
+    moteMemory = moteType.createInitialMemory();
     moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     for (var intf : moteInterfaces.getInterfaces()) {
       if (intf instanceof PolledBeforeActiveTicks intf2) {
@@ -94,11 +92,6 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
       }
     }
     requestImmediateWakeup();
-  }
-
-  @Override
-  public MemoryInterface getMemory() {
-    return myMemory;
   }
 
   /**
@@ -125,16 +118,16 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     }
 
     /* Copy mote memory to Contiki */
-    ContikiMoteType.setCoreMemory(myMemory);
+    ContikiMoteType.setCoreMemory((SectionMoteMemory) moteMemory);
 
     /* Handle a single Contiki events */
     ((ContikiMoteType) moteType).tick();
 
     /* Copy mote memory from Contiki */
-    ContikiMoteType.getCoreMemory(myMemory);
+    ContikiMoteType.getCoreMemory((SectionMoteMemory) moteMemory);
 
     /* Poll mote interfaces */
-    myMemory.pollForMemoryChanges();
+    ((SectionMoteMemory) moteMemory).pollForMemoryChanges();
     polledAfterActive.forEach(PolledAfterActiveTicks::doActionsAfterTick);
     polledAfterPassive.forEach(PolledAfterAllTicks::doActionsAfterTick);
   }

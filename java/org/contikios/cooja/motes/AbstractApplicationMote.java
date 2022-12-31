@@ -40,7 +40,6 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.ApplicationRadio;
 import org.contikios.cooja.interfaces.ApplicationSerialPort;
 import org.contikios.cooja.interfaces.Radio;
-import org.contikios.cooja.mote.memory.MemoryInterface;
 
 /**
  * Abstract application mote.
@@ -50,14 +49,12 @@ import org.contikios.cooja.mote.memory.MemoryInterface;
  * @author Fredrik Osterlind
  */
 public abstract class AbstractApplicationMote extends AbstractWakeupMote implements Mote {
-  private final SectionMoteMemory memory;
-
   public abstract void receivedPacket(RadioPacket p);
   public abstract void sentPacket(RadioPacket p);
   
   public AbstractApplicationMote(MoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
     super(moteType, sim);
-    this.memory = new SectionMoteMemory(new HashMap<>());
+    moteMemory = new SectionMoteMemory(new HashMap<>());
     this.moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     // Observe our own radio for incoming radio packets.
     moteInterfaces.getRadio().addObserver((obs, obj) -> {
@@ -77,11 +74,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
     ((ApplicationSerialPort)moteInterfaces.getLog()).triggerLog(msg);
   }
   
-  @Override
-  public MemoryInterface getMemory() {
-    return memory;
-  }
-
   @Override
   public Collection<Element> getConfigXML() {
     return getInterfaces().getConfigXML();
