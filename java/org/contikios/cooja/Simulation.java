@@ -734,10 +734,7 @@ public final class Simulation extends Observable {
 
   private void doRemoveMote(Mote mote) {
     motes.remove(mote);
-
-    /* Dispose mote interface resources */
     mote.removed();
-    mote.getInterfaces().removed();
     eventCentral.removeMote(mote);
     setChanged();
     notifyObservers(mote);
@@ -777,7 +774,7 @@ public final class Simulation extends Observable {
   public void addMote(final Mote mote) {
     invokeSimulationThread(() -> {
       motes.add(mote);
-      mote.getInterfaces().added();
+      mote.added();
       eventCentral.addMote(mote);
       setChanged();
       notifyObservers(mote);

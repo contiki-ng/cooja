@@ -457,14 +457,14 @@ public class MoteInterfaceHandler {
   }
 
   /** Called when the mote is added to the simulation. */
-  void added() {
+  public void added() {
     for (var i : moteInterfaces) {
       i.added();
     }
   }
 
   /** Called when the mote is removed from the simulation. */
-  void removed() {
+  public void removed() {
     for (var i : moteInterfaces) {
       i.removed();
     }

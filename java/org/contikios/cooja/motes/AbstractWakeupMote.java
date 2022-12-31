@@ -166,10 +166,6 @@ public abstract class AbstractWakeupMote implements Mote {
     return true;
   }
 
-  @Override
-  public void removed() {
-  }
-  
   private HashMap<String, Object> properties = null;
   @Override
   public void setProperty(String key, Object obj) {

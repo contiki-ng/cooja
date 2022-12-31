@@ -23,6 +23,10 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Add added/removed methods to Mote interface
+
+Cooja calls these methods when motes are added and removed from the simulation.
+
 ### Added MoteInterfaceHandler, MemoryInterface, and MoteType to AbstractWakeupMote
 
 AbstractWakeupMote now provides implementations of `getID`.
