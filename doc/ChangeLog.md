@@ -23,6 +23,12 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Move handling of mote startup delay to the Clock interface
+
+The Clock interface now expects to be created with a Mote as argument
+and is now responsible to set the mote startup delay. This enables
+a subclass to override this behaviour if desired.
+
 ### Moved handling of radio register to the Radio interface
 
 The Radio interface will now register the radio to the radio medium

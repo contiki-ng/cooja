@@ -620,6 +620,14 @@ public final class Simulation extends Observable {
   }
 
   /**
+   * Returns the maximal mote startup delay.
+   * @return the configured mote startup delay.
+   */
+  public long getMaxMoteStartupDelay() {
+    return maxMoteStartupDelay;
+  }
+
+  /**
    * @return Random seed
    */
   public long getRandomSeed() {
@@ -768,12 +776,6 @@ public final class Simulation extends Observable {
    */
   public void addMote(final Mote mote) {
     invokeSimulationThread(() -> {
-      var clock = mote.getInterfaces().getClock();
-      if (clock != null) {
-        var delay = maxMoteStartupDelay > 0 ? randomGenerator.nextInt((int)maxMoteStartupDelay) : 0;
-        clock.setDrift(-getSimulationTime() - delay);
-      }
-
       motes.add(mote);
       mote.getInterfaces().added();
       eventCentral.addMote(mote);
