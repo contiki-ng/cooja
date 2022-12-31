@@ -54,6 +54,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.SynchronousQueue;
@@ -1242,9 +1244,9 @@ public class GUI {
    * @return The simulation
    */
   Simulation doLoadConfig(Simulation.SimConfig cfg) {
-    final var worker = new Cooja.RunnableInEDT<SwingWorker<Simulation, Cooja.SimulationCreationException>>() {
+    final var worker = new Cooja.RunnableInEDT<SwingWorker<Simulation, Object>>() {
       @Override
-      public SwingWorker<Simulation, Cooja.SimulationCreationException> work() {
+      public SwingWorker<Simulation, Object> work() {
         return createLoadSimWorker(cfg, true, cfg.randomSeed());
       }
     }.invokeAndWait();
@@ -1314,8 +1316,8 @@ public class GUI {
    * @param manualRandomSeed The random seed to use for the simulation
    * @return The worker that will load the simulation.
    */
-  public SwingWorker<Simulation, Cooja.SimulationCreationException> createLoadSimWorker(Simulation.SimConfig cfg, final boolean quick,
-                                                                                         Long manualRandomSeed) {
+  public SwingWorker<Simulation, Object> createLoadSimWorker(Simulation.SimConfig cfg, final boolean quick,
+                                                             Long manualRandomSeed) {
     assert java.awt.EventQueue.isDispatchThread() : "Call from AWT thread";
     final var configFile = cfg == null ? null : new File(cfg.file());
     final var autoStart = configFile == null && cooja.getSimulation().isRunning();
@@ -1360,8 +1362,8 @@ public class GUI {
 
     // SwingWorker can pass information from worker to process() through publish().
     // Communicate information the other way through this shared queue.
-    final var channel = new SynchronousQueue<Integer>(true);
-    var worker = new SwingWorker<Simulation, Cooja.SimulationCreationException>() {
+    final var channel = new SynchronousQueue<>(true);
+    var worker = new SwingWorker<Simulation, Object>() {
       @Override
       public Simulation doInBackground() {
         Element root;
@@ -1370,6 +1372,28 @@ public class GUI {
         } catch (Exception e) {
           Cooja.showErrorDialog("Config file read error", e, false);
           return null;
+        }
+        if (!quick) { // Allow user to change simulation configuration.
+          publish(root);
+          Object rv;
+          try {
+            rv = channel.take();
+          } catch (InterruptedException ex) {
+            return null;
+          }
+          if (!(rv instanceof CreateSimDialog.SimConfig cfg)) return null;
+          // Modify XML config to reflect the new values from the user.
+          var simCfg = root.getChild("simulation");
+          simCfg.getChild("title").setText(cfg.title());
+          simCfg.getChild("randomseed").setText(cfg.generatedSeed() ? "generated" : String.valueOf(cfg.randomSeed()));
+          simCfg.getChild("radiomedium").setText(cfg.radioMedium());
+          var cfgDelay = simCfg.getChild("motedelay");
+          if (cfgDelay == null) {
+            cfgDelay = simCfg.getChild("motedelay_us");
+          } else {
+            cfgDelay.setName("motedelay_us");
+          }
+          cfgDelay.setText(String.valueOf(cfg.moteStartDelay()));
         }
         boolean shouldRetry;
         Simulation newSim = null;
@@ -1385,7 +1409,9 @@ public class GUI {
           } catch (Cooja.SimulationCreationException e) {
             publish(e);
             try {
-              shouldRetry = channel.take() == 1;
+              var rv = channel.take();
+              if (!(rv instanceof Integer i)) return null;
+              shouldRetry = i == 1;
             } catch (InterruptedException ex) {
               cooja.doRemoveSimulation();
               return null;
@@ -1396,12 +1422,31 @@ public class GUI {
       }
 
       @Override
-      protected void process(List<Cooja.SimulationCreationException> exs) {
-        for (var e : exs) {
-          var retry = showErrorDialog("Simulation load error", e, true);
+      protected void process(List<Object> exs) {
+        for (var ex : exs) {
+          Object rv = null;
+          if (ex instanceof Element root) { // Change simulation configuration.
+            var simCfg = root.getChild("simulation");
+            var title = simCfg.getChild("title").getText();
+            var cfgSeed = simCfg.getChild("randomseed").getText();
+            boolean generatedSeed = "generated".equals(cfgSeed);
+            long seed = manualRandomSeed != null ? manualRandomSeed
+                    : generatedSeed ? new Random().nextLong() : Long.parseLong(cfgSeed);
+            var medium = simCfg.getChild("radiomedium").getText().trim();
+            var cfgDelay = simCfg.getChild("motedelay");
+            long delay = cfgDelay == null
+                    ? Integer.parseInt(simCfg.getChild("motedelay_us").getText())
+                    : Integer.parseInt(cfgDelay.getText()) * Simulation.MILLISECOND;
+            var config = CreateSimDialog.showDialog(cooja, new CreateSimDialog.SimConfig(title, medium,
+                    generatedSeed, seed, delay));
+            rv = Objects.requireNonNullElse(config, false);
+          } else if (ex instanceof Cooja.SimulationCreationException e) { // Display failure + reload button.
+            var retry = showErrorDialog("Simulation load error", e, true);
+            rv = retry ? 1 : 0;
+          }
           try {
-            channel.put(retry ? 1 : 0);
-          } catch (InterruptedException ex) {
+            channel.put(rv);
+          } catch (InterruptedException e) {
             cancel(true);
             return;
           }
