@@ -32,12 +32,9 @@ package org.contikios.cooja.mspmote;
 
 import java.awt.Component;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Simulation.SimulationStop;
@@ -50,7 +47,6 @@ import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.Watchpoint;
 import org.contikios.cooja.WatchpointMote;
-import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.mspmote.plugins.CodeVisualizerSkin;
 import org.contikios.cooja.mspmote.plugins.MspBreakpoint;
@@ -93,17 +89,13 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   private final CommandHandler commandHandler = new CommandHandler(System.out, System.err);
   private final MSP430 myCpu;
-  private final MspMoteType myMoteType;
-  private final MspMoteMemory myMemory;
-  private final MoteInterfaceHandler myMoteInterfaceHandler;
   public final ComponentRegistry registry;
 
   /* Stack monitoring variables */
   private boolean stopNextInstruction = false;
 
   public MspMote(MspMoteType moteType, Simulation sim, GenericNode node) throws MoteType.MoteTypeCreationException {
-    super(sim);
-    myMoteType = moteType;
+    super(moteType, sim);
     registry = node.getRegistry();
     node.setCommandHandler(commandHandler);
     node.setup(new ConfigManager());
@@ -122,7 +114,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
         mlogger.warn(getID() + ": " + "# " + source.getID() + "[" + type + "]: " + message);
       }
     });
-    Cooja.setProgressMessage("Loading " + myMoteType.getContikiFirmwareFile().getName());
+    Cooja.setProgressMessage("Loading " + moteType.getContikiFirmwareFile().getName());
     ELF elf;
     try {
       elf = moteType.getELF();
@@ -135,9 +127,9 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     //myCpu.setThrowIfWarning(true);
 
     // Create mote address memory.
-    myMemory = new MspMoteMemory(elf.getMap().getAllEntries(), myCpu);
+    moteMemory = new MspMoteMemory(elf.getMap().getAllEntries(), myCpu);
     myCpu.reset();
-    myMoteInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
+    moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     registry.removeComponent("windowManager");
     registry.registerComponent("windowManager", new WindowManager() {
       @Override
@@ -212,27 +204,12 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     return myCpu;
   }
 
-  @Override
-  public MemoryInterface getMemory() {
-    return myMemory;
-  }
-
   public CommandHandler getCLICommandHandler() {
     return commandHandler;
   }
 
   /* called when moteID is updated */
   public void idUpdated(int newID) {
-  }
-
-  @Override
-  public MoteType getType() {
-    return myMoteType;
-  }
-
-  @Override
-  public MoteInterfaceHandler getInterfaces() {
-    return myMoteInterfaceHandler;
   }
 
   private boolean booted = false;
@@ -247,7 +224,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   public void execute(long t, int duration) {
-    MspClock clock = ((MspClock) (myMoteInterfaceHandler.getClock()));
+    MspClock clock = ((MspClock) (moteInterfaces.getClock()));
     // Wait until mote boots.
     if (!booted && clock.getTime() < 0) {
       scheduleNextWakeup(t - clock.getTime());
@@ -344,11 +321,6 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
   }
 
   @Override
-  public int getID() {
-    return getInterfaces().getMoteID().getMoteID();
-  }
-
-  @Override
   public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException {
     for (Element element: configXML) {
       String name = element.getName();
@@ -387,7 +359,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
     }
 
     // Mote interfaces.
-    config.addAll(getInterfaces().getConfigXML());
+    config.addAll(super.getConfigXML());
     return config;
   }
 
@@ -522,7 +494,7 @@ public abstract class MspMote extends AbstractEmulatedMote implements Mote, Watc
 
   @Override
   public int getExecutableAddressOf(File file, int lineNr) {
-    return myMoteType.getExecutableAddressOf(file, lineNr);
+    return ((MspMoteType) moteType).getExecutableAddressOf(file, lineNr);
   }
 
   private long lastBreakpointCycles = -1;

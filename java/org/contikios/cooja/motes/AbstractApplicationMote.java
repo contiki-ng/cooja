@@ -28,9 +28,7 @@
 
 package org.contikios.cooja.motes;
 
-import java.util.Collection;
 import java.util.HashMap;
-import org.jdom2.Element;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
@@ -40,7 +38,6 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.ApplicationRadio;
 import org.contikios.cooja.interfaces.ApplicationSerialPort;
 import org.contikios.cooja.interfaces.Radio;
-import org.contikios.cooja.mote.memory.MemoryInterface;
 
 /**
  * Abstract application mote.
@@ -50,19 +47,12 @@ import org.contikios.cooja.mote.memory.MemoryInterface;
  * @author Fredrik Osterlind
  */
 public abstract class AbstractApplicationMote extends AbstractWakeupMote implements Mote {
-  private final MoteType moteType;
-
-  private final SectionMoteMemory memory;
-
-  protected MoteInterfaceHandler moteInterfaces;
-
   public abstract void receivedPacket(RadioPacket p);
   public abstract void sentPacket(RadioPacket p);
   
   public AbstractApplicationMote(MoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
-    super(sim);
-    this.moteType = moteType;
-    this.memory = new SectionMoteMemory(new HashMap<>());
+    super(moteType, sim);
+    moteMemory = new SectionMoteMemory(new HashMap<>());
     this.moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
     // Observe our own radio for incoming radio packets.
     moteInterfaces.getRadio().addObserver((obs, obj) -> {
@@ -80,45 +70,6 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote impleme
 
   public void log(String msg) {
     ((ApplicationSerialPort)moteInterfaces.getLog()).triggerLog(msg);
-  }
-  
-  @Override
-  public MoteInterfaceHandler getInterfaces() {
-    return moteInterfaces;
-  }
-
-  @Override
-  public MemoryInterface getMemory() {
-    return memory;
-  }
-
-  @Override
-  public MoteType getType() {
-    return moteType;
-  }
-
-  @Override
-  public Collection<Element> getConfigXML() {
-    return getInterfaces().getConfigXML();
-  }
-
-  @Override
-  public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) {
-    for (Element element : configXML) {
-      String name = element.getName();
-      if (name.equals("interface_config")) {
-        if (!getInterfaces().setConfigXML(simulation, element, this)) {
-          return false;
-        }
-      }
-    }
-    requestImmediateWakeup();
-    return true;
-  }
-
-  @Override
-  public int getID() {
-    return moteInterfaces.getMoteID().getMoteID();
   }
   
   @Override

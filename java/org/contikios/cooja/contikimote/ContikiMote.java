@@ -31,18 +31,15 @@
 package org.contikios.cooja.contikimote;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
-import org.jdom2.Element;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.motes.AbstractWakeupMote;
 
 /**
@@ -61,10 +58,6 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
  * @author      Fredrik Osterlind
  */
 public class ContikiMote extends AbstractWakeupMote implements Mote {
-  private final ContikiMoteType myType;
-  private final SectionMoteMemory myMemory;
-  private final MoteInterfaceHandler myInterfaceHandler;
-
   private final ArrayList<PolledBeforeActiveTicks> polledBeforeActive = new ArrayList<>();
   private final ArrayList<PolledAfterActiveTicks> polledAfterActive = new ArrayList<>();
   private final ArrayList<PolledBeforeAllTicks> polledBeforePassive = new ArrayList<>();
@@ -79,11 +72,10 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
    * @param sim Mote's simulation
    */
   protected ContikiMote(ContikiMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
-    super(sim);
-    this.myType = moteType;
-    this.myMemory = moteType.createInitialMemory();
-    this.myInterfaceHandler = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
-    for (var intf : myInterfaceHandler.getInterfaces()) {
+    super(moteType, sim);
+    moteMemory = moteType.createInitialMemory();
+    moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
+    for (var intf : moteInterfaces.getInterfaces()) {
       if (intf instanceof PolledBeforeActiveTicks intf2) {
         polledBeforeActive.add(intf2);
       }
@@ -98,26 +90,6 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
       }
     }
     requestImmediateWakeup();
-  }
-
-  @Override
-  public int getID() {
-    return myInterfaceHandler.getMoteID().getMoteID();
-  }
-
-  @Override
-  public MoteInterfaceHandler getInterfaces() {
-    return myInterfaceHandler;
-  }
-
-  @Override
-  public MemoryInterface getMemory() {
-    return myMemory;
-  }
-
-  @Override
-  public MoteType getType() {
-    return myType;
   }
 
   /**
@@ -137,55 +109,29 @@ public class ContikiMote extends AbstractWakeupMote implements Mote {
     polledBeforePassive.forEach(PolledBeforeAllTicks::doActionsBeforeTick);
 
     /* Check if pre-boot time */
-    var moteTime = myInterfaceHandler.getClock().getTime();
+    var moteTime = moteInterfaces.getClock().getTime();
     if (moteTime < 0) {
       scheduleNextWakeup(simTime + Math.abs(moteTime));
       return;
     }
 
     /* Copy mote memory to Contiki */
-    ContikiMoteType.setCoreMemory(myMemory);
+    ContikiMoteType.setCoreMemory((SectionMoteMemory) moteMemory);
 
     /* Handle a single Contiki events */
-    myType.tick();
+    ((ContikiMoteType) moteType).tick();
 
     /* Copy mote memory from Contiki */
-    ContikiMoteType.getCoreMemory(myMemory);
+    ContikiMoteType.getCoreMemory((SectionMoteMemory) moteMemory);
 
     /* Poll mote interfaces */
-    myMemory.pollForMemoryChanges();
+    ((SectionMoteMemory) moteMemory).pollForMemoryChanges();
     polledAfterActive.forEach(PolledAfterActiveTicks::doActionsAfterTick);
     polledAfterPassive.forEach(PolledAfterAllTicks::doActionsAfterTick);
-  }
-
-  /**
-   * Returns the current Contiki mote config represented by XML elements.
-   * This config also includes all mote interface configs.
-   *
-   * @return Current simulation config
-   */
-  @Override
-  public Collection<Element> getConfigXML() {
-    return getInterfaces().getConfigXML();
-  }
-
-  @Override
-  public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) {
-    for (Element element: configXML) {
-      String name = element.getName();
-      if (name.equals("interface_config")) {
-        if (!getInterfaces().setConfigXML(simulation, element, this)) {
-          return false;
-        }
-      }
-    }
-    requestImmediateWakeup();
-    return true;
   }
 
   @Override
   public String toString() {
     return "Contiki " + getID();
   }
-
 }
