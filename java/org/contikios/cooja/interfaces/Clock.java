@@ -187,4 +187,11 @@ public abstract class Clock implements MoteInterface {
       }
     }
   }
+
+  @Override
+  public void added() {
+    var maxMoteStartupDelay = simulation.getMaxMoteStartupDelay();
+    var delay = maxMoteStartupDelay > 0 ? simulation.getRandomGenerator().nextInt((int)maxMoteStartupDelay) : 0;
+    setDrift(-simulation.getSimulationTime() - delay);
+  }
 }
