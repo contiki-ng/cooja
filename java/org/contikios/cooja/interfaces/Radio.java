@@ -282,4 +282,16 @@ public abstract class Radio extends Observable implements MoteInterface {
 
     this.deleteObserver(observer);
   }
+
+  @Override
+  public void added() {
+    var simulation = getMote().getSimulation();
+    simulation.getRadioMedium().registerRadioInterface(this, simulation);
+  }
+
+  @Override
+  public void removed() {
+    var simulation = getMote().getSimulation();
+    simulation.getRadioMedium().unregisterRadioInterface(this, simulation);
+  }
 }
