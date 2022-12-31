@@ -1364,16 +1364,21 @@ public class GUI {
     var worker = new SwingWorker<Simulation, Cooja.SimulationCreationException>() {
       @Override
       public Simulation doInBackground() {
-        Element root = configFile == null ? cooja.extractSimulationConfig() : null;
+        Element root;
+        try {
+          root = configFile == null ? cooja.extractSimulationConfig() : cooja.readSimulationConfig(cfg);
+        } catch (Exception e) {
+          Cooja.showErrorDialog("Config file read error", e, false);
+          return null;
+        }
         boolean shouldRetry;
         Simulation newSim = null;
+        var config = configFile == null ? cooja.getSimulation().getCfg() : cfg;
         do {
           try {
             shouldRetry = false;
             PROGRESS_WARNINGS.clear();
-            newSim = configFile == null
-                    ? cooja.createSimulation(cooja.getSimulation().getCfg(), root, quick, manualRandomSeed)
-                    : cooja.loadSimulationConfig(cfg, quick, manualRandomSeed);
+            newSim = cooja.createSimulation(config, root, quick, manualRandomSeed);
             if (newSim != null && autoStart) {
               newSim.startSimulation();
             }
