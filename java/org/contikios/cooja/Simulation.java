@@ -620,6 +620,14 @@ public final class Simulation extends Observable {
   }
 
   /**
+   * Returns the maximal mote startup delay.
+   * @return the configured mote startup delay.
+   */
+  public long getMaxMoteStartupDelay() {
+    return maxMoteStartupDelay;
+  }
+
+  /**
    * @return Random seed
    */
   public long getRandomSeed() {
