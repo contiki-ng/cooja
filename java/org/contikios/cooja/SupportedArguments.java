@@ -30,20 +30,13 @@ package org.contikios.cooja;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.contikios.cooja.plugins.Visualizer;
-import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
-
 /**
  * With this annotation, Cooja components (e.g. mote plugins) can be activated
  * or deactivated depending on the given argument (e.g. mote). This may for
  * example be used by a mote plugin that only accepts emulated motes, and that
- * consequently should be hidden in other non-emulated motes' plugin menues.
- * <p>
- * See below code usage examples.
+ * consequently should be hidden in other non-emulated motes' plugin menus.
  *
- * @see Cooja#createMotePluginsSubmenu(Mote)
- * @see Visualizer#isSkinCompatible(Class)
- * @see DGRMVisualizerSkin
+ * @see org.contikios.cooja.util.Annotations
  *
  * @author Fredrik Osterlind
  */

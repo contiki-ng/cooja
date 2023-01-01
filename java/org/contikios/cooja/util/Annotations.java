@@ -31,6 +31,7 @@
 package org.contikios.cooja.util;
 
 import org.contikios.cooja.Mote;
+import org.contikios.cooja.RadioMedium;
 import org.contikios.cooja.SupportedArguments;
 
 /**
@@ -60,6 +61,21 @@ public class Annotations {
     var clazz = mote.getClass();
     for (var supportedMote : annotation.motes()) {
       if (supportedMote.isAssignableFrom(clazz)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Return true if a radio medium is compatible with an annotation.
+   */
+  public static boolean isCompatible(SupportedArguments annotation, RadioMedium radioMedium) {
+    if (annotation == null) {
+      return true;
+    }
+    for (var o : annotation.radioMediums()) {
+      if (o.isAssignableFrom(radioMedium.getClass())) {
         return true;
       }
     }

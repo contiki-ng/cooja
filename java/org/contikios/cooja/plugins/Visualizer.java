@@ -87,10 +87,10 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.contikios.cooja.RadioMedium;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
 import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
+import org.contikios.cooja.util.Annotations;
 import org.contikios.cooja.util.EventTriggers;
 import org.contikios.mrm.MRMVisualizerSkin;
 import org.jdom2.Element;
@@ -257,7 +257,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         viewMenu.add(new JSeparator());
         for (var skinClass : visualizerSkins) {
           // Should skin be enabled in this simulation?
-          if (!isSkinCompatible(skinClass.getAnnotation(SupportedArguments.class), simulation.getRadioMedium())) {
+          if (!Annotations.isCompatible(skinClass.getAnnotation(SupportedArguments.class), simulation.getRadioMedium())) {
             continue;
           }
 
@@ -814,7 +814,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       }
     }
 
-    if (!isSkinCompatible(skinClass.getAnnotation(SupportedArguments.class), simulation.getRadioMedium())) {
+    if (!Annotations.isCompatible(skinClass.getAnnotation(SupportedArguments.class), simulation.getRadioMedium())) {
       return;
     }
 
@@ -910,20 +910,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   }
 
   private boolean showMoteToMoteRelations = true;
-
-  public static boolean isSkinCompatible(SupportedArguments annotation, RadioMedium radioMedium) {
-    // Check if skin depends on any particular radio medium.
-    boolean showMenuItem = true;
-    if (annotation != null) {
-      showMenuItem = false;
-      for (var o : annotation.radioMediums()) {
-        if (o.isAssignableFrom(radioMedium.getClass())) {
-          return true;
-        }
-      }
-    }
-    return showMenuItem;
-  }
 
   private void handleMousePress(MouseEvent mouseEvent) {
     int x = mouseEvent.getX();
