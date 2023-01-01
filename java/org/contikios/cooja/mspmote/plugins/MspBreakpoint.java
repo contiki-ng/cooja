@@ -128,7 +128,7 @@ public class MspBreakpoint implements Watchpoint {
     return lineNr;
   }
   @Override
-  public int getExecutableAddress() {
+  public long getExecutableAddress() {
     return address;
   }
 
