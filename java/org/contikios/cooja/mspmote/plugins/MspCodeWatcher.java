@@ -32,13 +32,13 @@ package org.contikios.cooja.mspmote.plugins;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Observer;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -61,6 +61,7 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.HasQuickHelp;
+import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -92,8 +93,6 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
 
   private static final Logger logger = LogManager.getLogger(MspCodeWatcher.class);
   private final Simulation simulation;
-  private Observer simObserver;
-
   private File currentCodeFile = null;
   private int currentLineNumber = -1;
 
@@ -242,14 +241,14 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     });
 
     /* Observe when simulation starts/stops */
-    simulation.addObserver(simObserver = (obs, obj) -> {
-      if (!simulation.isRunning()) {
+    simulation.getSimulationStateTriggers().addTrigger(this, (state, simulation) -> EventQueue.invokeLater(() -> {
+      if (state == EventTriggers.Operation.STOP) {
         stepAction.setEnabled(true);
         showCurrentPC();
       } else {
         stepAction.setEnabled(false);
       }
-    });
+    }));
 
     setSize(750, 500);
     showCurrentPC();
@@ -316,8 +315,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     watchpointMote.removeWatchpointListener(watchpointListener);
     watchpointListener = null;
 
-    simulation.deleteObserver(simObserver);
-    simObserver = null;
+    simulation.getSimulationStateTriggers().deleteTriggers(this);
 
     /* TODO XXX Unregister breakpoints? */
   }
