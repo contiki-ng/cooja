@@ -47,7 +47,6 @@ import org.contikios.cooja.mspmote.MspMoteType;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
 import se.sics.mspsim.core.MSP430;
-import se.sics.mspsim.util.DebugInfo;
 
 /**
  * Code visualizer skin for MSPSim motes.
@@ -93,12 +92,11 @@ public class CodeVisualizerSkin implements VisualizerSkin {
   }
 
   private static String getMoteString(Mote mote) {
-    if (!(mote instanceof MspMote)) {
+    if (!(mote instanceof MspMote mspMote)) {
       return null;
     }
     try {
-      DebugInfo debugInfo = 
-        ((MspMoteType)mote.getType()).getELF().getDebugInfo(((MspMote)mote).getCPU().reg[MSP430.PC]);
+      var debugInfo = ((MspMoteType)mote.getType()).getELF().getDebugInfo(mspMote.getCPU().reg[MSP430.PC]);
       if (debugInfo == null) {
         return null;
       }
