@@ -1295,7 +1295,7 @@ public class Cooja {
       try {
         sim = config.vis
                 ? Cooja.gui.doLoadConfig(simConfig)
-                : gui.loadSimulationConfig(simConfig, simConfig.randomSeed());
+                : gui.createSimulation(simConfig, gui.readSimulationConfig(simConfig), true, simConfig.randomSeed());
       } catch (Exception e) {
         logger.fatal("Exception when loading simulation: ", e);
       }
@@ -1352,22 +1352,6 @@ public class Cooja {
       throw new SimulationCreationException("Not a valid simulation configuration file", null);
     }
     return root;
-  }
-
-  /**
-   * Loads a simulation configuration from given file.
-   * <p>
-   * When loading Contiki mote types, the libraries must be recompiled. User may
-   * change mote type settings at this point.
-   *
-   * @param cfg Configuration to load
-   * @param manualRandomSeed The random seed.
-   * @return New simulation or null if recompiling failed or aborted
-   * @throws SimulationCreationException If loading fails.
-   * @see #saveSimulationConfig(File)
-   */
-  Simulation loadSimulationConfig(Simulation.SimConfig cfg, Long manualRandomSeed) throws SimulationCreationException {
-    return createSimulation(cfg, readSimulationConfig(cfg), true, manualRandomSeed);
   }
 
   /**
