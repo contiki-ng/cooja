@@ -1190,7 +1190,7 @@ public class GUI {
 
     int added = 0;
     for (var mote : cooja.getSimulation().getMotes()) {
-      if (!Cooja.isMotePluginCompatible(pluginClass, mote)) {
+      if (!Cooja.isMoteCompatible(pluginClass.getAnnotation(SupportedArguments.class), mote)) {
         continue;
       }
       JMenuItem menuItem = new JMenuItem(mote.toString() + "...");
@@ -1215,7 +1215,7 @@ public class GUI {
   public JMenu createMotePluginsSubmenu(Mote mote) {
     JMenu menuMotePlugins = new JMenu("Mote tools for " + mote);
     for (var motePluginClass: menuMotePluginClasses) {
-      if (!Cooja.isMotePluginCompatible(motePluginClass, mote)) {
+      if (!Cooja.isMoteCompatible(motePluginClass.getAnnotation(SupportedArguments.class), mote)) {
         continue;
       }
       var menuItem = new JMenuItem(new StartPluginGUIAction(Cooja.getDescriptionOf(motePluginClass) + "..."));

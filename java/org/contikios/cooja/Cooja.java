@@ -823,8 +823,7 @@ public class Cooja {
     return l.toArray(new Plugin[0]);
   }
 
-  static boolean isMotePluginCompatible(Class<? extends Plugin> motePluginClass, Mote mote) {
-    var supportedArgs = motePluginClass.getAnnotation(SupportedArguments.class);
+  static boolean isMoteCompatible(SupportedArguments supportedArgs, Mote mote) {
     if (supportedArgs == null) {
       return true;
     }
