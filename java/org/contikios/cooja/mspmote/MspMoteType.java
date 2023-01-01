@@ -138,7 +138,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return configureAndInit(Cooja.getTopParentContainer(), simulation, Cooja.isVisualized());
   }
 
-  public int getExecutableAddressOf(File file, int lineNr) {
+  public long getExecutableAddressOf(File file, int lineNr) {
     if (file == null || lineNr < 0) {
       return -1;
     }
@@ -205,13 +205,13 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     }
 
     /* Fetch all executable addresses */
-    ArrayList<Integer> addresses = elf.getDebug().getExecutableAddresses();
+    var addresses = elf.getDebug().getExecutableAddresses();
     if (addresses == null) {
       // No debug information is available
       return fileToLineHash;
     }
 
-    for (int address: addresses) {
+    for (var address: addresses) {
       DebugInfo info = elf.getDebugInfo(address);
       if (info == null) {
         continue;

@@ -440,7 +440,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   }
 
   @Override
-  public Watchpoint addBreakpoint(File codeFile, int lineNr, int address) {
+  public Watchpoint addBreakpoint(File codeFile, int lineNr, long address) {
     MspBreakpoint bp = new MspBreakpoint(this, address, codeFile, lineNr);
     watchpoints.add(bp);
 
@@ -464,7 +464,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   }
 
   @Override
-  public boolean breakpointExists(int address) {
+  public boolean breakpointExists(long address) {
     if (address < 0) {
       return false;
     }
@@ -493,7 +493,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   }
 
   @Override
-  public int getExecutableAddressOf(File file, int lineNr) {
+  public long getExecutableAddressOf(File file, int lineNr) {
     return moteType.getExecutableAddressOf(file, lineNr);
   }
 
