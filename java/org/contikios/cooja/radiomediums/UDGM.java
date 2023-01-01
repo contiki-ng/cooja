@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import org.contikios.cooja.Cooja;
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -42,7 +41,6 @@ import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
-import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,10 +124,6 @@ public class UDGM extends AbstractRadioMedium {
     simulation.getMoteTriggers().addTrigger(this, (o, m) -> dgrm.requestEdgeAnalysis());
 
     dgrm.requestEdgeAnalysis();
-
-    if (Cooja.isVisualized()) {
-      Visualizer.registerVisualizerSkin(UDGMVisualizerSkin.class);
-    }
   }
 
   @Override
@@ -150,15 +144,6 @@ public class UDGM extends AbstractRadioMedium {
     return list;
   }
 
-  @Override
-  public void removed() {
-  	super.removed();
-
-    if (Cooja.isVisualized()) {
-      Visualizer.unregisterVisualizerSkin(UDGMVisualizerSkin.class);
-    }
-  }
-  
   public void setTxRange(double r) {
     TRANSMITTING_RANGE = r;
     dgrm.requestEdgeAnalysis();
