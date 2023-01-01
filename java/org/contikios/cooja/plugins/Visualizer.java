@@ -87,6 +87,7 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.RadioMedium;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
 import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
@@ -256,7 +257,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         viewMenu.add(new JSeparator());
         for (var skinClass : visualizerSkins) {
           // Should skin be enabled in this simulation?
-          if (!isSkinCompatible(skinClass)) {
+          if (!isSkinCompatible(skinClass.getAnnotation(SupportedArguments.class), simulation.getRadioMedium())) {
             continue;
           }
 
@@ -813,7 +814,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       }
     }
 
-    if (!isSkinCompatible(skinClass)) {
+    if (!isSkinCompatible(skinClass.getAnnotation(SupportedArguments.class), simulation.getRadioMedium())) {
       return;
     }
 
@@ -910,18 +911,13 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
   private boolean showMoteToMoteRelations = true;
 
-  public boolean isSkinCompatible(Class<? extends VisualizerSkin> skinClass) {
-    if (skinClass == null) {
-      return false;
-    }
-
-    /* Check if skin depends on any particular radio medium */
+  public static boolean isSkinCompatible(SupportedArguments annotation, RadioMedium radioMedium) {
+    // Check if skin depends on any particular radio medium.
     boolean showMenuItem = true;
-    var annotation = skinClass.getAnnotation(SupportedArguments.class);
     if (annotation != null) {
       showMenuItem = false;
       for (var o : annotation.radioMediums()) {
-        if (o.isAssignableFrom(simulation.getRadioMedium().getClass())) {
+        if (o.isAssignableFrom(radioMedium.getClass())) {
           return true;
         }
       }
