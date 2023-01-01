@@ -116,6 +116,9 @@ public final class Simulation extends Observable {
   /* Event queue */
   private final EventQueue eventQueue = new EventQueue();
 
+  /** Simulation state change triggers */
+  private EventTriggers<EventTriggers.Operation, Simulation> simulationStateTriggers = new EventTriggers<>();
+
   /** List of active script engines. */
   private final ArrayList<LogScriptEngine> scriptEngines = new ArrayList<>();
 
@@ -262,6 +265,8 @@ public final class Simulation extends Observable {
 
       // Remove the radio medium
       currentRadioMedium.removed();
+
+      simulationStateTriggers.trigger(EventTriggers.Operation.REMOVE, this);
     }, "sim");
     simulationThread.start();
     if (root != null) {
@@ -474,6 +479,10 @@ public final class Simulation extends Observable {
     }
 
     Cooja.updateProgress(!isRunning);
+
+    simulationStateTriggers.trigger(isRunning ? EventTriggers.Operation.START : EventTriggers.Operation.STOP, this);
+
+    // TODO remove observable notification for state changes
     setChanged();
     notifyObservers(this);
   }
@@ -1018,6 +1027,13 @@ public final class Simulation extends Observable {
   /** Returns the simulation configuration. */
   public SimConfig getCfg() {
     return cfg;
+  }
+
+  /**
+   * Returns the simulation state change triggers.
+   */
+  public EventTriggers<EventTriggers.Operation, Simulation> getSimulationStateTriggers() {
+    return simulationStateTriggers;
   }
 
   /** Returns the mote relations triggers. */
