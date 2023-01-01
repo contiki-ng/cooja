@@ -1367,14 +1367,7 @@ public class Cooja {
    * @see #saveSimulationConfig(File)
    */
   Simulation loadSimulationConfig(Simulation.SimConfig cfg, Long manualRandomSeed) throws SimulationCreationException {
-    Simulation sim;
-    try {
-      var root = readSimulationConfig(cfg);
-      sim = createSimulation(cfg, root, true, manualRandomSeed);
-    } catch (SimulationCreationException e) {
-      throw e;
-    }
-    return sim;
+    return createSimulation(cfg, readSimulationConfig(cfg), true, manualRandomSeed);
   }
 
   /**
