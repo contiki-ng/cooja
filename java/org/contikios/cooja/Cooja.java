@@ -55,7 +55,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -1479,11 +1478,11 @@ public class Cooja {
       pluginElement.setText(startedPlugin.getClass().getName());
 
       // Create mote argument config (if mote plugin)
-      if (startedPlugin.getClass().getAnnotation(PluginType.class).value() == PluginType.PType.MOTE_PLUGIN) {
-        var pluginSubElement = new Element("mote_arg");
-        Mote taggedMote = ((MotePlugin) startedPlugin).getMote();
+      if (startedPlugin instanceof MotePlugin motePlugin) {
+        Mote taggedMote = motePlugin.getMote();
         for (int moteNr = 0; moteNr < mySimulation.getMotesCount(); moteNr++) {
           if (mySimulation.getMote(moteNr) == taggedMote) {
+            var pluginSubElement = new Element("mote_arg");
             pluginSubElement.setText(Integer.toString(moteNr));
             pluginElement.addContent(pluginSubElement);
             break;
@@ -1500,9 +1499,8 @@ public class Cooja {
       }
 
       // If plugin is visualizer plugin, create visualization arguments
-      if (startedPlugin.getCooja() != null) {
-        JInternalFrame pluginFrame = startedPlugin.getCooja();
-
+      var pluginFrame = startedPlugin.getCooja();
+      if (pluginFrame != null) {
         var pluginSubElement = new Element("bounds");
         var bounds = pluginFrame.getBounds();
         pluginSubElement.setAttribute("x", String.valueOf(bounds.x));
@@ -1521,7 +1519,6 @@ public class Cooja {
 
         pluginElement.addContent(pluginSubElement);
       }
-
       config.add(pluginElement);
     }
     root.addContent(config);
