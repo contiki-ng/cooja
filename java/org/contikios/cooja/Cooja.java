@@ -1373,10 +1373,6 @@ public class Cooja {
       sim = createSimulation(cfg, root, true, manualRandomSeed);
     } catch (SimulationCreationException e) {
       throw e;
-    } catch (Exception e) {
-      // Wrap everything else in a SimulationCreationException, so the SwingWorker works as intended.
-      // (SwingWorker communicates internally through SimulationCreationExceptions.)
-      throw new SimulationCreationException("Unknown error", e);
     }
     return sim;
   }
