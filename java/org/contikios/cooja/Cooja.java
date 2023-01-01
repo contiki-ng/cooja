@@ -1480,10 +1480,10 @@ public class Cooja {
 
       // Create mote argument config (if mote plugin)
       if (startedPlugin instanceof MotePlugin motePlugin) {
-        var pluginSubElement = new Element("mote_arg");
         Mote taggedMote = motePlugin.getMote();
         for (int moteNr = 0; moteNr < mySimulation.getMotesCount(); moteNr++) {
           if (mySimulation.getMote(moteNr) == taggedMote) {
+            var pluginSubElement = new Element("mote_arg");
             pluginSubElement.setText(Integer.toString(moteNr));
             pluginElement.addContent(pluginSubElement);
             break;
