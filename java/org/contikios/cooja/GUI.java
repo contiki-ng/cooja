@@ -934,11 +934,15 @@ public class GUI {
         }
 
         // Simulation plugins.
+        var radioMedium = cooja.getSimulation() == null ? null : cooja.getSimulation().getRadioMedium();
         boolean hasSimPlugins = false;
         for (Class<? extends Plugin> pluginClass : cooja.getRegisteredPlugins()) {
           var pluginType = pluginClass.getAnnotation(PluginType.class).value();
           if (pluginType != PluginType.PType.SIM_PLUGIN && pluginType != PluginType.PType.SIM_STANDARD_PLUGIN
                   && pluginType != PluginType.PType.SIM_CONTROL_PLUGIN) {
+            continue;
+          }
+          if (!Annotations.isCompatible(pluginClass.getAnnotation(SupportedArguments.class), radioMedium)) {
             continue;
           }
 
