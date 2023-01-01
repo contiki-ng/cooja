@@ -1238,15 +1238,14 @@ public class GUI {
   /**
    * Load a simulation configuration file from disk and return the simulation.
    *
-   * @param cfg Configuration to load, reloads current sim if null
-   * @param manualRandomSeed The random seed to use for the simulation
+   * @param cfg Configuration to load
    * @return The simulation
    */
-  Simulation doLoadConfig(Simulation.SimConfig cfg, Long manualRandomSeed) {
+  Simulation doLoadConfig(Simulation.SimConfig cfg) {
     final var worker = new Cooja.RunnableInEDT<SwingWorker<Simulation, Cooja.SimulationCreationException>>() {
       @Override
       public SwingWorker<Simulation, Cooja.SimulationCreationException> work() {
-        return createLoadSimWorker(cfg, true, manualRandomSeed);
+        return createLoadSimWorker(cfg, true, cfg.randomSeed());
       }
     }.invokeAndWait();
     worker.execute();

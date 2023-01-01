@@ -1298,7 +1298,7 @@ public class Cooja {
       Simulation sim = null;
       try {
         sim = config.vis
-                ? Cooja.gui.doLoadConfig(simConfig, simConfig.randomSeed())
+                ? Cooja.gui.doLoadConfig(simConfig)
                 : gui.loadSimulationConfig(simConfig, true, simConfig.randomSeed());
       } catch (Exception e) {
         logger.fatal("Exception when loading simulation: ", e);
