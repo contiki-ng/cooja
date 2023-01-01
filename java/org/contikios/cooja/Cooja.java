@@ -823,30 +823,6 @@ public class Cooja {
     return l.toArray(new Plugin[0]);
   }
 
-  static boolean isMoteCompatible(SupportedArguments supportedArgs, Mote mote) {
-    if (supportedArgs == null) {
-      return true;
-    }
-
-    /* Check mote interfaces */
-    final var moteInterfaces = mote.getInterfaces();
-    for (Class<? extends MoteInterface> requiredMoteInterface: supportedArgs.moteInterfaces()) {
-      if (moteInterfaces.getInterfaceOfType(requiredMoteInterface) == null) {
-        return false;
-      }
-    }
-
-    /* Check mote type */
-    final var clazz = mote.getClass();
-    for (Class<? extends Mote> supportedMote: supportedArgs.motes()) {
-      if (supportedMote.isAssignableFrom(clazz)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   public static JMenu createMotePluginsSubmenu(Class<? extends Plugin> pluginClass) {
     return gui.createMotePluginsSubmenu(pluginClass);
   }

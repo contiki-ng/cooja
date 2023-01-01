@@ -110,6 +110,7 @@ import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
+import org.contikios.cooja.util.Annotations;
 import org.jdom2.Element;
 import org.jdom2.Text;
 
@@ -1190,7 +1191,7 @@ public class GUI {
 
     int added = 0;
     for (var mote : cooja.getSimulation().getMotes()) {
-      if (!Cooja.isMoteCompatible(pluginClass.getAnnotation(SupportedArguments.class), mote)) {
+      if (!Annotations.isCompatible(pluginClass.getAnnotation(SupportedArguments.class), mote)) {
         continue;
       }
       JMenuItem menuItem = new JMenuItem(mote.toString() + "...");
@@ -1215,7 +1216,7 @@ public class GUI {
   public JMenu createMotePluginsSubmenu(Mote mote) {
     JMenu menuMotePlugins = new JMenu("Mote tools for " + mote);
     for (var motePluginClass: menuMotePluginClasses) {
-      if (!Cooja.isMoteCompatible(motePluginClass.getAnnotation(SupportedArguments.class), mote)) {
+      if (!Annotations.isCompatible(motePluginClass.getAnnotation(SupportedArguments.class), mote)) {
         continue;
       }
       var menuItem = new JMenuItem(new StartPluginGUIAction(Cooja.getDescriptionOf(motePluginClass) + "..."));
