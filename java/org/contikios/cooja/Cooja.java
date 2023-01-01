@@ -1479,9 +1479,9 @@ public class Cooja {
       pluginElement.setText(startedPlugin.getClass().getName());
 
       // Create mote argument config (if mote plugin)
-      if (startedPlugin.getClass().getAnnotation(PluginType.class).value() == PluginType.PType.MOTE_PLUGIN) {
+      if (startedPlugin instanceof MotePlugin motePlugin) {
         var pluginSubElement = new Element("mote_arg");
-        Mote taggedMote = ((MotePlugin) startedPlugin).getMote();
+        Mote taggedMote = motePlugin.getMote();
         for (int moteNr = 0; moteNr < mySimulation.getMotesCount(); moteNr++) {
           if (mySimulation.getMote(moteNr) == taggedMote) {
             pluginSubElement.setText(Integer.toString(moteNr));
