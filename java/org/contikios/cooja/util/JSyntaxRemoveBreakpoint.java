@@ -62,7 +62,7 @@ public class JSyntaxRemoveBreakpoint extends DefaultSyntaxAction {
 
     File file = (File) action.getValue("WatchpointFile");
     Integer line = (Integer) action.getValue("WatchpointLine");
-    Integer address = (Integer) action.getValue("WatchpointAddress");
+    var address = (Long) action.getValue("WatchpointAddress");
     if (file == null || line == null || address == null) {
       logger.warn("Error: Bad breakpoint info, cannot remove breakpoint");
       return;

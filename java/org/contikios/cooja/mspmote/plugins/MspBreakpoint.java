@@ -56,7 +56,7 @@ public class MspBreakpoint implements Watchpoint {
 
   private final MspMote mspMote;
 
-  private int address = -1; /* Binary address */
+  private long address = -1; /* Binary address */
   private File codeFile = null; /* Source code, may be null*/
   private int lineNr = -1; /* Source code line number, may be null */
 
@@ -74,7 +74,7 @@ public class MspBreakpoint implements Watchpoint {
     /* expects setConfigXML(..) */
   }
 
-  public MspBreakpoint(MspMote mote, Integer address, File codeFile, Integer lineNr) {
+  public MspBreakpoint(MspMote mote, long address, File codeFile, Integer lineNr) {
     this(mote);
     this.address = address;
     this.codeFile = codeFile;
@@ -101,9 +101,9 @@ public class MspBreakpoint implements Watchpoint {
   public String getDescription() {
     String desc = "";
     if (codeFile != null) {
-      desc += codeFile.getPath() + ":" + lineNr + " (0x" + Integer.toHexString(address) + ")";
+      desc += codeFile.getPath() + ":" + lineNr + " (0x" + Long.toHexString(address) + ")";
     } else if (address >= 0) {
-      desc += "0x" + Integer.toHexString(address);
+      desc += "0x" + Long.toHexString(address);
     }
     if (msg != null) {
       desc += "\n\n" + msg;
@@ -128,7 +128,7 @@ public class MspBreakpoint implements Watchpoint {
     return lineNr;
   }
   @Override
-  public int getExecutableAddress() {
+  public long getExecutableAddress() {
     return address;
   }
 
@@ -152,7 +152,7 @@ public class MspBreakpoint implements Watchpoint {
         mspMote.signalBreakpointTrigger(MspBreakpoint.this);
       }
     };
-    mspMote.getCPU().addWatchPoint(address, memoryMonitor);
+    mspMote.getCPU().addWatchPoint((int) address, memoryMonitor);
 
 
     /* Remember Contiki code, to verify it when reloaded */
@@ -169,7 +169,7 @@ public class MspBreakpoint implements Watchpoint {
   }
 
   public void unregisterBreakpoint() {
-    mspMote.getCPU().removeWatchPoint(address, memoryMonitor);
+    mspMote.getCPU().removeWatchPoint((int) address, memoryMonitor);
   }
 
   public Collection<Element> getConfigXML() {

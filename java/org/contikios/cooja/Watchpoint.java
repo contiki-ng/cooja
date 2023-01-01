@@ -49,7 +49,7 @@ public interface Watchpoint {
 
   File getCodeFile();
   int getLineNumber();
-  int getExecutableAddress();
+  long getExecutableAddress();
 
   void setStopsSimulation(boolean b);
   boolean stopsSimulation();
