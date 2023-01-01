@@ -55,7 +55,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -1500,9 +1499,8 @@ public class Cooja {
       }
 
       // If plugin is visualizer plugin, create visualization arguments
-      if (startedPlugin.getCooja() != null) {
-        JInternalFrame pluginFrame = startedPlugin.getCooja();
-
+      var pluginFrame = startedPlugin.getCooja();
+      if (pluginFrame != null) {
         var pluginSubElement = new Element("bounds");
         var bounds = pluginFrame.getBounds();
         pluginSubElement.setAttribute("x", String.valueOf(bounds.x));
@@ -1521,7 +1519,6 @@ public class Cooja {
 
         pluginElement.addContent(pluginSubElement);
       }
-
       config.add(pluginElement);
     }
     root.addContent(config);
