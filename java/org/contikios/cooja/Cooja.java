@@ -1295,7 +1295,7 @@ public class Cooja {
       try {
         sim = config.vis
                 ? Cooja.gui.doLoadConfig(simConfig)
-                : gui.loadSimulationConfig(simConfig, true, simConfig.randomSeed());
+                : gui.loadSimulationConfig(simConfig, simConfig.randomSeed());
       } catch (Exception e) {
         logger.fatal("Exception when loading simulation: ", e);
       }
@@ -1366,12 +1366,11 @@ public class Cooja {
    * @throws SimulationCreationException If loading fails.
    * @see #saveSimulationConfig(File)
    */
-  Simulation loadSimulationConfig(Simulation.SimConfig cfg, boolean quick, Long manualRandomSeed)
-  throws SimulationCreationException {
+  Simulation loadSimulationConfig(Simulation.SimConfig cfg, Long manualRandomSeed) throws SimulationCreationException {
     Simulation sim;
     try {
       var root = readSimulationConfig(cfg);
-      sim = createSimulation(cfg, root, quick, manualRandomSeed);
+      sim = createSimulation(cfg, root, true, manualRandomSeed);
     } catch (SimulationCreationException e) {
       throw e;
     } catch (Exception e) {
