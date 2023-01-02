@@ -1324,7 +1324,7 @@ public class GUI {
       return null;
     }
 
-    if (configFile != null) {
+    if (configFile != null && !cfg.updateSim()) {
       addToFileHistory(configFile);
     }
 
