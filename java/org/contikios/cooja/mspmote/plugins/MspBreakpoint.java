@@ -210,9 +210,8 @@ public class MspBreakpoint implements Watchpoint {
     return config;
   }
 
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-    /* Already knows mote and breakpoints */
-
+  public boolean setConfigXML(Collection<Element> configXML) {
+    // Already knows mote and breakpoints.
     for (Element element : configXML) {
       if (element.getName().equals("codefile")) {
         var file = mspMote.getSimulation().getCooja().restorePortablePath(new File(element.getText()));
