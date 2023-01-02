@@ -79,7 +79,6 @@ import org.contikios.cooja.plugins.LogListener;
 import org.contikios.cooja.plugins.Mobility;
 import org.contikios.cooja.plugins.MoteInformation;
 import org.contikios.cooja.plugins.MoteInterfaceViewer;
-import org.contikios.cooja.plugins.MoteTypeInformation;
 import org.contikios.cooja.plugins.Notes;
 import org.contikios.cooja.plugins.PowerTracker;
 import org.contikios.cooja.plugins.RadioLogger;
@@ -433,7 +432,6 @@ public class Cooja {
     }
 
     // Register plugins
-    registerPlugin(MoteTypeInformation.class);
     registerPlugin(Visualizer.class);
     registerPlugin(LogListener.class);
     registerPlugin(TimeLine.class);
