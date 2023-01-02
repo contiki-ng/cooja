@@ -805,7 +805,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         }
 
         /* Only accept single files */
-        File file;
         if (!transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
           return false;
         }
@@ -814,7 +813,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           if (list.size() != 1) {
             return false;
           }
-          file = list.get(0);
+          var file = list.get(0);
         }
         catch (UnsupportedFlavorException | IOException e) {
           return false;
