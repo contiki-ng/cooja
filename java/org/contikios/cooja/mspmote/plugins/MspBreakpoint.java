@@ -168,7 +168,8 @@ public class MspBreakpoint implements Watchpoint {
 
   }
 
-  public void unregisterBreakpoint() {
+  @Override
+  public void removed() {
     mspMote.getCPU().removeWatchPoint((int) address, memoryMonitor);
   }
 

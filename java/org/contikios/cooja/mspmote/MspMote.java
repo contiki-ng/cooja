@@ -451,7 +451,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   }
   @Override
   public void removeBreakpoint(Watchpoint watchpoint) {
-    ((MspBreakpoint)watchpoint).unregisterBreakpoint();
+    watchpoint.removed();
     watchpoints.remove(watchpoint);
 
     for (WatchpointListener listener: watchpointListeners) {

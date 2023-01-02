@@ -58,4 +58,6 @@ public interface Watchpoint {
 
   Collection<Element> getConfigXML();
   boolean setConfigXML(Collection<Element> configXML);
+
+  void removed();
 }
