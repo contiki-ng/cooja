@@ -35,7 +35,6 @@ import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Clock;
 
 /**
