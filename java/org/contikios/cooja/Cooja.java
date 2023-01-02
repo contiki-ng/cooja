@@ -1419,7 +1419,6 @@ public class Cooja {
       delay = config.moteStartDelay();
     }
     doRemoveSimulation();
-    System.gc();
     Simulation sim;
     try {
       sim = new Simulation(cfg, this, title, generatedSeed, seed, medium, delay, quick, root);
