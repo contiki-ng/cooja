@@ -78,7 +78,6 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     this.simulation = s;
 
     JLabel label;
-    JButton button;
     JPanel smallPane;
 
     JPanel mainPane = new JPanel();
@@ -96,16 +95,12 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     mainPane.add(smallPane);
 
     smallPane = new JPanel(new BorderLayout());
+    label = new JLabel("Mote type identifier");
+    label.setPreferredSize(size);
+    smallPane.add(BorderLayout.WEST, label);
     label = new JLabel(mote.getType().getIdentifier());
     label.setPreferredSize(size);
     smallPane.add(BorderLayout.EAST, label);
-    mainPane.add(smallPane);
-
-    smallPane = new JPanel(new BorderLayout());
-    button = new JButton("Mote type information");
-    button.setPreferredSize(size);
-    button.addActionListener(e -> simulation.getCooja().tryStartPlugin(MoteTypeInformation.class, simulation, mote));
-    smallPane.add(BorderLayout.EAST, button);
     mainPane.add(smallPane);
 
     /* Mote interfaces */
@@ -119,7 +114,7 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     mainPane.add(smallPane);
 
     smallPane = new JPanel(new BorderLayout());
-    button = new JButton("Mote interface viewer");
+    var button = new JButton("Mote interface viewer");
     button.setPreferredSize(size);
     button.addActionListener(e -> simulation.getCooja().tryStartPlugin(MoteInterfaceViewer.class, simulation, mote));
     smallPane.add(BorderLayout.EAST, button);
