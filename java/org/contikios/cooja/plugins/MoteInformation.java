@@ -115,7 +115,7 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     mainPane.add(smallPane);
     
     /* CPU frequency */
-    if (mote instanceof AbstractEmulatedMote emulatedMote) {
+    if (mote instanceof AbstractEmulatedMote<?, ?> emulatedMote) {
       smallPane = new JPanel(new BorderLayout());
       label = new JLabel("CPU frequency");
       label.setPreferredSize(size);
