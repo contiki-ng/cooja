@@ -172,6 +172,7 @@ public class MspBreakpoint implements Watchpoint {
     mspMote.getCPU().removeWatchPoint((int) address, memoryMonitor);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
     Element element;
@@ -210,6 +211,7 @@ public class MspBreakpoint implements Watchpoint {
     return config;
   }
 
+  @Override
   public boolean setConfigXML(Collection<Element> configXML) {
     // Already knows mote and breakpoints.
     for (Element element : configXML) {
