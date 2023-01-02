@@ -35,7 +35,6 @@ import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
@@ -57,7 +56,7 @@ import org.contikios.cooja.motes.AbstractWakeupMote;
  *
  * @author      Fredrik Osterlind
  */
-public class ContikiMote extends AbstractWakeupMote<ContikiMoteType, SectionMoteMemory> implements Mote {
+public class ContikiMote extends AbstractWakeupMote<ContikiMoteType, SectionMoteMemory> {
   private final ArrayList<PolledBeforeActiveTicks> polledBeforeActive = new ArrayList<>();
   private final ArrayList<PolledAfterActiveTicks> polledAfterActive = new ArrayList<>();
   private final ArrayList<PolledBeforeAllTicks> polledBeforePassive = new ArrayList<>();

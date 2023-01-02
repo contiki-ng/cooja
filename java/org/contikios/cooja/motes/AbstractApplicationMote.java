@@ -29,7 +29,6 @@
 package org.contikios.cooja.motes;
 
 import java.util.HashMap;
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.RadioPacket;
@@ -46,7 +45,7 @@ import org.contikios.cooja.interfaces.Radio;
  *
  * @author Fredrik Osterlind
  */
-public abstract class AbstractApplicationMote extends AbstractWakeupMote<MoteType, SectionMoteMemory> implements Mote {
+public abstract class AbstractApplicationMote extends AbstractWakeupMote<MoteType, SectionMoteMemory> {
   public abstract void receivedPacket(RadioPacket p);
   public abstract void sentPacket(RadioPacket p);
   
