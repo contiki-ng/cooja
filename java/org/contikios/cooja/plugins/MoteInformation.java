@@ -63,30 +63,24 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
   private final static int LABEL_HEIGHT = 20;
   private final static Dimension size = new Dimension(LABEL_WIDTH,LABEL_HEIGHT);
   
-  private final Simulation simulation;
-
   /**
    * Create a new mote information window.
    *
    * @param m Mote
-   * @param s Simulation
+   * @param simulation Simulation
    * @param gui Simulator
    */
-  public MoteInformation(Mote m, Simulation s, Cooja gui) {
+  public MoteInformation(Mote m, Simulation simulation, Cooja gui) {
     super("Mote Information (" + m + ")", gui);
     this.mote = m;
-    this.simulation = s;
-
-    JLabel label;
-    JPanel smallPane;
 
     JPanel mainPane = new JPanel();
     mainPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
 
     /* Mote type */
-    smallPane = new JPanel(new BorderLayout());
-    label = new JLabel("Mote type");
+    var smallPane = new JPanel(new BorderLayout());
+    var label = new JLabel("Mote type");
     label.setPreferredSize(size);
     smallPane.add(BorderLayout.WEST, label);
     label = new JLabel(mote.getType().getDescription());
@@ -121,17 +115,13 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
     mainPane.add(smallPane);
     
     /* CPU frequency */
-    if (mote instanceof AbstractEmulatedMote) {
-      AbstractEmulatedMote emulatedMote = (AbstractEmulatedMote) mote;
+    if (mote instanceof AbstractEmulatedMote<?, ?> emulatedMote) {
       smallPane = new JPanel(new BorderLayout());
       label = new JLabel("CPU frequency");
       label.setPreferredSize(size);
       smallPane.add(BorderLayout.WEST, label);
-      if (emulatedMote.getCPUFrequency() < 0) {
-        label = new JLabel("[unknown]");
-      } else {
-        label = new JLabel(emulatedMote.getCPUFrequency() + " Hz");
-      }
+      var freq = emulatedMote.getCPUFrequency();
+      label = new JLabel(freq < 0 ? "[unknown]" : emulatedMote.getCPUFrequency() + " Hz");
       label.setPreferredSize(size);
       smallPane.add(BorderLayout.EAST, label);
       mainPane.add(smallPane);
