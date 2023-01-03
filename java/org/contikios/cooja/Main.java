@@ -42,7 +42,6 @@ import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFact
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.contikios.cooja.Cooja.Config;
 import picocli.CommandLine;
-import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -76,7 +75,7 @@ class Main {
   /**
    * Option for specifying log directory.
    */
-  @Option(names = {"-logdir", "--logdir"}, paramLabel = "DIR", description = "the log directory use")
+  @Option(names = "--logdir", paramLabel = "DIR", description = "the log directory use")
   String logDir = ".";
 
   /**
@@ -88,7 +87,7 @@ class Main {
   /**
    * Option for specifying Contiki-NG path.
    */
-  @Option(names = {"-contiki", "--contiki"}, paramLabel = "DIR", description = "the Contiki-NG directory")
+  @Option(names = "--contiki", paramLabel = "DIR", description = "the Contiki-NG directory")
   String contikiPath;
 
   /**
@@ -112,37 +111,14 @@ class Main {
   /**
    * Option for specifying seed used for simulation.
    */
-  @Option(names = {"-random-seed", "--random-seed"}, paramLabel = "SEED", description = "the random seed")
+  @Option(names = "--random-seed", paramLabel = "SEED", description = "the random seed")
   Long randomSeed;
 
   /**
    * Automatically start simulations.
    */
-  @Option(names = "--autostart", description = "automatically start -nogui/-quickstart simulations")
+  @Option(names = "--autostart", description = "automatically start simulations")
   boolean autoStart;
-
-  /**
-   * The action to take after starting. No action means start GUI.
-   */
-  @ArgGroup(exclusive = true)
-  ExclusiveAction action;
-
-  /**
-   * Helper class to encode mutual exclusion between -nogui and -quickstart.
-   */
-  static class ExclusiveAction {
-    /**
-     * Option for specifying file to start the simulation with.
-     */
-    @Option(names = {"-quickstart", "--quickstart"}, paramLabel = "FILE", description = "start simulation with file [DEPRECATED]")
-    String[] quickstart;
-
-    /**
-     * Option for specifying file to start the simulation with.
-     */
-    @Option(names = {"-nogui", "--nogui"}, paramLabel = "FILE", description = "start simulation with file [DEPRECATED]")
-    String[] nogui;
-  }
 
   /**
    * Option for specifying simulation files to load.
@@ -181,8 +157,7 @@ class Main {
       commandLine.printVersionHelp(System.out);
       return;
     }
-    // Let gui control GUI mode, otherwise use -nogui as indicator for headless mode.
-    options.gui = options.gui == null ? options.action == null || options.action.nogui == null : options.gui;
+    options.gui = options.gui == null || options.gui;
 
     if (options.gui && GraphicsEnvironment.isHeadless()) {
       System.err.println("Trying to start GUI in headless environment, aborting");
@@ -209,13 +184,10 @@ class Main {
     }
 
     ArrayList<String> simulationFiles = new ArrayList<>();
-    if (options.action != null) {
-      Collections.addAll(simulationFiles, options.action.nogui == null ? options.action.quickstart : options.action.nogui);
-    }
     if (options.simulationFiles != null) {
       Collections.addAll(simulationFiles, options.simulationFiles);
     }
-    // Parse and verify soundness of -nogui/-quickstart/files argument.
+    // Parse and verify soundness of simulation files argument.
     ArrayList<Simulation.SimConfig> simConfigs = new ArrayList<>();
     for (String arg : simulationFiles) {
       // Argument on the form "file.csc[,key1=value1,key2=value2, ..]"

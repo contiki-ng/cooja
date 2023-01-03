@@ -2,10 +2,10 @@
 
 ## Cooja User Interface Changes
 
-### Deprecated `-nogui` and `-quickstart` parameters
+### Removed `-nogui` and `-quickstart` parameters
 
 Graphical/headless mode is now controlled by separate parameter (`--[no-]gui`),
-so `-nogui` and `-quickstart` have been deprecated. The old behavior for
+so `-nogui` and `-quickstart` have been removed. The old behavior for
 `-nogui=file.csc` is now accomplished with `--no-gui file.csc`, and
 `-quickstart=file.csc` is now accomplished with `file.csc`.
 
