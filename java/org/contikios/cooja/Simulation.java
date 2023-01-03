@@ -36,8 +36,6 @@ import java.util.Observable;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
-import javax.swing.JOptionPane;
-
 import javax.swing.JTextArea;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -283,28 +281,6 @@ public final class Simulation extends Observable {
             if (moteTypeClassName.startsWith("se.sics")) {
               moteTypeClassName = moteTypeClassName.replaceFirst("se\\.sics", "org.contikios");
             }
-
-            // Try to recreate simulation using a different mote type.
-            if (Cooja.isVisualized() && !quick) {
-              var availableMoteTypesObjs = cooja.getRegisteredMoteTypes();
-              String[] availableMoteTypes = new String[availableMoteTypesObjs.size()];
-              for (int i = 0; i < availableMoteTypes.length; i++) {
-                availableMoteTypes[i] = availableMoteTypesObjs.get(i).getName();
-              }
-              var newClass = (String) JOptionPane.showInputDialog(Cooja.getTopParentContainer(),
-                      "The simulation is about to load '" + moteTypeClassName + "'\n" +
-                              "You may try to load the simulation using a different mote type.\n",
-                      "Loading mote type", JOptionPane.QUESTION_MESSAGE, null, availableMoteTypes,
-                      moteTypeClassName);
-              if (newClass == null) {
-                throw new MoteType.MoteTypeCreationException("No mote type class selected");
-              }
-              if (!newClass.equals(moteTypeClassName)) {
-                logger.warn("Changing mote type class: " + moteTypeClassName + " -> " + newClass);
-                moteTypeClassName = newClass;
-              }
-            }
-
             var moteType = MoteInterfaceHandler.createMoteType(cooja, moteTypeClassName);
             if (moteType == null) {
               throw new MoteType.MoteTypeCreationException("Could not create: " + moteTypeClassName);
