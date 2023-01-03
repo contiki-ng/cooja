@@ -66,7 +66,7 @@ public class SimpleProfiler implements Profiler, EventListener {
   private final HashMap<String, TagEntry> startTags = new HashMap<>();
   private final HashMap<String, TagEntry> endTags = new HashMap<>();
   private final HashMap<String, String> ignoreFunctions = new HashMap<>();
-  private CallEntry[] callStack = new CallEntry[64];;
+  private CallEntry[] callStack = new CallEntry[64];
   private int cSP = 0;
   private MSP430Core cpu;
   private PrintStream logger;

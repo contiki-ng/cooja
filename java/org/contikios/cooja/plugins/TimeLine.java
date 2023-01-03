@@ -901,8 +901,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           RadioEvent radioEv = moteRadio.getLastEvent();
 
           String details = null;
-          if (executionDetails && mote instanceof AbstractEmulatedMote) {
-            details = ((AbstractEmulatedMote) mote).getExecutionDetails();
+          if (executionDetails && mote instanceof AbstractEmulatedMote<?, ?> emulatedMote) {
+            details = emulatedMote.getExecutionDetails();
             if (details != null) {
               details = "<br>" + details.replace("\n", "<br>");
             }
@@ -980,8 +980,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         public void watchpointTriggered(Watchpoint watchpoint) {
           WatchpointEvent ev = new WatchpointEvent(simulation.getSimulationTime(), watchpoint);
 
-          if (executionDetails && mote instanceof AbstractEmulatedMote) {
-            String details = ((AbstractEmulatedMote) mote).getExecutionDetails();
+          if (executionDetails && mote instanceof AbstractEmulatedMote<?, ?> emulatedMote) {
+            String details = emulatedMote.getExecutionDetails();
             if (details != null) {
               details = "<br>" + details.replace("\n", "<br>");
               ev.details = details;
