@@ -446,6 +446,8 @@ public class MoteInterfaceHandler {
       // Check for compatible interfaces, for example, when reconfiguring mote types.
       if (MoteID.class.isAssignableFrom(moteInterfaceClass)) {
         moteInterface = getMoteID();
+      } else if (Clock.class.isAssignableFrom(moteInterfaceClass)) {
+        moteInterface = getClock();
       }
       if (moteInterface == null) {
         logger.fatal("Cannot find mote interface of class: " + moteInterfaceClass);
