@@ -249,6 +249,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
         stepAction.setEnabled(false);
       }
     }));
+    stepAction.setEnabled(!simulation.isRunning());
 
     setSize(750, 500);
     showCurrentPC();
