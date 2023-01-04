@@ -206,7 +206,17 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
             logger.warn("Can't find mote interface class: " + name);
             return false;
           }
-          moteInterfaceClasses.add(clazz);
+          var hasInterface = false;
+          for (var moteInterface : getAllMoteInterfaceClasses()) {
+            if (moteInterface == clazz) {
+              hasInterface = true;
+              break;
+            }
+          }
+          // Skip incompatible interfaces. Required for changing mote type when reconfiguring a simulation.
+          if (hasInterface) {
+            moteInterfaceClasses.add(clazz);
+          }
         }
         case "contikibasedir", "contikicoredir", "projectdir", "compilefile", "process", "sensor", "coreinterface" -> {
           logger.fatal("Old Cooja mote type detected, aborting..");
