@@ -37,8 +37,6 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.util.Observer;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -62,28 +60,27 @@ public class AddressVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private final Observer addrObserver = (obs, obj) -> visualizer.repaint();
   private final MoteCountListener newMotesListener = new MoteCountListener() {
     @Override
     public void moteWasAdded(Mote mote) {
       IPAddress ipAddr = mote.getInterfaces().getIPAddress();
       if (ipAddr != null) {
-        ipAddr.addObserver(addrObserver);
+        ipAddr.getTriggers().addTrigger(this, (a, b) -> visualizer.repaint());
       }
       RimeAddress rimeAddr = mote.getInterfaces().getRimeAddress();
       if (rimeAddr != null) {
-        rimeAddr.addObserver(addrObserver);
+        rimeAddr.getTriggers().addTrigger(this, (a, b) -> visualizer.repaint());
       }
     }
     @Override
     public void moteWasRemoved(Mote mote) {
       IPAddress ipAddr = mote.getInterfaces().getIPAddress();
       if (ipAddr != null) {
-        ipAddr.deleteObserver(addrObserver);
+        ipAddr.getTriggers().deleteTriggers(this);
       }
       RimeAddress rimeAddr = mote.getInterfaces().getRimeAddress();
       if (rimeAddr != null) {
-        rimeAddr.deleteObserver(addrObserver);
+        rimeAddr.getTriggers().deleteTriggers(this);
       }
     }
   };

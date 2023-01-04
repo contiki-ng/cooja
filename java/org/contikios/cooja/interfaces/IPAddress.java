@@ -30,11 +30,12 @@
 
 package org.contikios.cooja.interfaces;
 
+import static org.contikios.cooja.util.EventTriggers.Update;
+
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Observable;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.contikios.cooja.ClassDescription;
@@ -45,6 +46,7 @@ import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor;
 import org.contikios.cooja.mote.memory.MemoryLayout;
 import org.contikios.cooja.mote.memory.VarMemory;
+import org.contikios.cooja.util.EventTriggers;
 import org.contikios.cooja.util.IPUtils;
 
 /**
@@ -54,7 +56,7 @@ import org.contikios.cooja.util.IPUtils;
  * @author Enrico Joerns
  */
 @ClassDescription("IP Addresses")
-public class IPAddress extends Observable implements MoteInterface {
+public class IPAddress implements MoteInterface {
   private static final int IPv6_MAX_ADDRESSES = 4;
 
   private enum IPv {
@@ -64,6 +66,7 @@ public class IPAddress extends Observable implements MoteInterface {
 
   private final IPv ipVersion;
 
+  private final Mote mote;
   private final VarMemory moteMem;
   private final MemoryLayout memLayout;
   private IPContainer localIPAddr = null;
@@ -76,8 +79,10 @@ public class IPAddress extends Observable implements MoteInterface {
   private int ipv6_addr_list_offset = 0;
 
   private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
+  private final EventTriggers<Update, Mote> triggers = new EventTriggers<>();
 
   public IPAddress(final Mote mote) {
+    this.mote = mote;
     moteMem = new VarMemory(mote.getMemory());
     memLayout = mote.getMemory().getLayout();
 
@@ -117,8 +122,6 @@ public class IPAddress extends Observable implements MoteInterface {
             updateIPAddresses();
             if (ipList.size() > 0) {
               updateUI();
-              setChanged();
-              notifyObservers();
             }
             // TODO: Remove other listeners?
           }
@@ -132,8 +135,6 @@ public class IPAddress extends Observable implements MoteInterface {
             if (accessCount == 16) {
               updateIPAddresses();
               updateUI();
-              setChanged();
-              notifyObservers();
               lastAccess = 0;
             }
           }
@@ -142,8 +143,6 @@ public class IPAddress extends Observable implements MoteInterface {
             if (lastAccess != 0) {
               updateIPAddresses();
               updateUI();
-              setChanged();
-              notifyObservers();
             }
             accessCount = 1;
             lastAccess = address;
@@ -258,6 +257,7 @@ public class IPAddress extends Observable implements MoteInterface {
 
   // FIXME: Call inside updateIPAddresses() instead.
   private void updateUI() {
+    triggers.trigger(Update.UPDATE, mote);
     if (!Cooja.isVisualized()) {
       return;
     }
@@ -292,6 +292,10 @@ public class IPAddress extends Observable implements MoteInterface {
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
     labels.remove(panel);
+  }
+
+  public EventTriggers<Update, Mote> getTriggers() {
+    return triggers;
   }
 
   /**

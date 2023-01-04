@@ -30,9 +30,10 @@
 
 package org.contikios.cooja.interfaces;
 
+import static org.contikios.cooja.util.EventTriggers.Update;
+
 import java.awt.EventQueue;
 import java.util.LinkedHashMap;
-import java.util.Observable;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.contikios.cooja.ClassDescription;
@@ -41,6 +42,7 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor;
 import org.contikios.cooja.mote.memory.VarMemory;
+import org.contikios.cooja.util.EventTriggers;
 
 /**
  * Read-only interface to Rime address read from Contiki variable: linkaddr_node_addr.
@@ -50,7 +52,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Rime address")
-public class RimeAddress extends Observable implements MoteInterface {
+public class RimeAddress implements MoteInterface {
   private final VarMemory moteMem;
 
   public static final int RIME_ADDR_LENGTH = 2;
@@ -58,6 +60,7 @@ public class RimeAddress extends Observable implements MoteInterface {
   private SegmentMonitor memMonitor = null;
 
   private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
+  private final EventTriggers<Update, Mote> triggers = new EventTriggers<>();
 
   public RimeAddress(final Mote mote) {
     moteMem = new VarMemory(mote.getMemory());
@@ -66,6 +69,7 @@ public class RimeAddress extends Observable implements MoteInterface {
         if (type != SegmentMonitor.EventType.WRITE) {
           return;
         }
+        triggers.trigger(Update.UPDATE, mote);
         if (Cooja.isVisualized()) {
           EventQueue.invokeLater(() -> {
             for (var label : labels.values()) {
@@ -73,8 +77,6 @@ public class RimeAddress extends Observable implements MoteInterface {
             }
           });
         }
-        setChanged();
-        notifyObservers();
       };
       /* TODO XXX Timeout? */
       moteMem.addVarMonitor(SegmentMonitor.EventType.WRITE, "linkaddr_node_addr", memMonitor);
@@ -123,4 +125,7 @@ public class RimeAddress extends Observable implements MoteInterface {
     }
   }
 
+  public EventTriggers<Update, Mote> getTriggers() {
+    return triggers;
+  }
 }
