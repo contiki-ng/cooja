@@ -132,6 +132,18 @@ class Main {
   @Option(names = "--update-simulation", description = "write an updated simulation file (.csc) and exit")
   boolean updateSimulation;
 
+  /**
+   * Option for instructing Cooja to print the expected Contiki-NG build version.
+   */
+  @Option(names = "--print-contiki-ng-build-version", description = "print Contiki-NG build version")
+  boolean contikiNgBuildVersion;
+
+  /**
+   * Option for instructing Cooja to print the simulation config version.
+   */
+  @Option(names = "--print-simulation-config-version", description = "print simulation config version")
+  boolean simulationConfigVersion;
+
   @Option(names = "--version", versionHelp = true,
           description = "print version information and exit")
   boolean versionRequested;
@@ -155,6 +167,18 @@ class Main {
     }
     if (options.versionRequested) {
       commandLine.printVersionHelp(System.out);
+      return;
+    }
+    boolean quitEarly = false;
+    if (options.contikiNgBuildVersion) {
+      System.out.println(Cooja.CONTIKI_NG_BUILD_VERSION);
+      quitEarly = true;
+    }
+    if (options.simulationConfigVersion) {
+      System.out.println(Cooja.SIMULATION_CONFIG_VERSION);
+      quitEarly = true;
+    }
+    if (quitEarly) {
       return;
     }
     options.gui = options.gui == null || options.gui;
