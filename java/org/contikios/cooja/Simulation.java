@@ -119,6 +119,9 @@ public final class Simulation extends Observable {
   /** Simulation state change triggers */
   private EventTriggers<EventTriggers.Operation, Simulation> simulationStateTriggers = new EventTriggers<>();
 
+  /** Mote type add and remove triggers. */
+  private final EventTriggers<EventTriggers.AddRemove, MoteType> moteTypeTriggers = new EventTriggers<>();
+
   /** List of active script engines. */
   private final ArrayList<LogScriptEngine> scriptEngines = new ArrayList<>();
 
@@ -859,7 +862,9 @@ public final class Simulation extends Observable {
   public void addMoteType(MoteType newMoteType) {
     Cooja.usedMoteTypeIDs.add(newMoteType.getIdentifier());
     moteTypes.add(newMoteType);
+    moteTypeTriggers.trigger(AddRemove.ADD, newMoteType);
 
+    // TODO remove observable notification for mote type changes
     this.setChanged();
     this.notifyObservers(this);
   }
@@ -876,7 +881,11 @@ public final class Simulation extends Observable {
       }
     }
 
-    moteTypes.remove(type);
+    if (moteTypes.remove(type)) {
+      moteTypeTriggers.trigger(AddRemove.REMOVE, type);
+    }
+
+    // TODO remove observable notifications for mote type changes
     this.setChanged();
     this.notifyObservers(this);
   }
@@ -1034,6 +1043,13 @@ public final class Simulation extends Observable {
    */
   public EventTriggers<EventTriggers.Operation, Simulation> getSimulationStateTriggers() {
     return simulationStateTriggers;
+  }
+
+  /*
+   * Returns the mote type add and remove triggers.
+   */
+  public EventTriggers<AddRemove, MoteType> getMoteTypeTriggers() {
+    return moteTypeTriggers;
   }
 
   /** Returns the mote relations triggers. */
