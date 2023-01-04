@@ -112,6 +112,7 @@ import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.util.ScnObservable;
 import org.jdom2.Element;
+import org.jdom2.Text;
 
 /** The graphical user interface for Cooja. */
 public class GUI {
@@ -1464,6 +1465,28 @@ public class GUI {
             var config = CreateSimDialog.showDialog(cooja, new CreateSimDialog.SimConfig(title, medium,
                     generatedSeed, seed, delay));
             rv = Objects.requireNonNullElse(config, false);
+            // Try to recreate simulation using a different mote type.
+            var availableMoteTypesObjs = cooja.getRegisteredMoteTypes();
+            var availableMoteTypes = new String[availableMoteTypesObjs.size()];
+            for (int i = 0; i < availableMoteTypes.length; i++) {
+              availableMoteTypes[i] = availableMoteTypesObjs.get(i).getName();
+            }
+            for (var elem : simCfg.getChildren("motetype")) {
+              var moteTypeClassName = elem.getText().trim();
+              var newClass = (String) JOptionPane.showInputDialog(Cooja.getTopParentContainer(),
+                      "The simulation is about to load '" + moteTypeClassName + "'\n" +
+                              "You may try to load the simulation using a different mote type.\n",
+                      "Loading mote type", JOptionPane.QUESTION_MESSAGE, null, availableMoteTypes,
+                      moteTypeClassName);
+              if (newClass == null) {
+                rv = false;
+              } else if (!newClass.equals(moteTypeClassName)) {
+                logger.warn("Changing mote type class: " + moteTypeClassName + " -> " + newClass);
+                // Remove the previous mote-interfaces to load the default interfaces.
+                elem.removeChildren("moteinterface");
+                elem.setContent(0, new Text(newClass));
+              }
+            }
           } else if (ex instanceof Cooja.SimulationCreationException e) { // Display failure + reload button.
             var retry = showErrorDialog("Simulation load error", e, true);
             rv = retry ? 1 : 0;
