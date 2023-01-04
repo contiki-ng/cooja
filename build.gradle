@@ -2,6 +2,8 @@ plugins {
     id 'application'
 }
 
+group = 'org.contikios.cooja'
+
 def javaVersion = 17
 
 java {
@@ -22,6 +24,8 @@ dependencies {
   implementation 'de.sciss:syntaxpane:1.2.1'
   // https://mvnrepository.com/artifact/info.picocli/picocli
   implementation 'info.picocli:picocli:4.7.0'
+  // https://mvnrepository.com/artifact/info.picocli/picocli-codegen
+  annotationProcessor 'info.picocli:picocli-codegen:4.7.0'
   // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
   implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
   // https://mvnrepository.com/artifact/org.jdom/jdom2
@@ -71,7 +75,8 @@ application {
 }
 
 tasks.withType(JavaCompile).configureEach {
-  options.compilerArgs += ['--add-modules', 'jdk.incubator.foreign']
+  options.compilerArgs += ['--add-modules', 'jdk.incubator.foreign',
+                           "-Aproject=${project.group}/${project.name}"]
 }
 
 tasks.register('copyDependencies', Copy) {
