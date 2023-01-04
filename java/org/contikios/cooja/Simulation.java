@@ -117,7 +117,7 @@ public final class Simulation extends Observable {
   private final EventQueue eventQueue = new EventQueue();
 
   /** Simulation state change triggers */
-  private EventTriggers<EventTriggers.Operation, Simulation> simulationStateTriggers = new EventTriggers<>();
+  private final EventTriggers<EventTriggers.Operation, Simulation> simulationStateTriggers = new EventTriggers<>();
 
   /** Mote type add and remove triggers. */
   private final EventTriggers<EventTriggers.AddRemove, MoteType> moteTypeTriggers = new EventTriggers<>();
