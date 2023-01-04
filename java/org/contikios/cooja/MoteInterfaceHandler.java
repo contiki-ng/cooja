@@ -443,8 +443,14 @@ public class MoteInterfaceHandler {
     }
     var moteInterface = getInterfaceOfType(moteInterfaceClass);
     if (moteInterface == null) {
-      logger.fatal("Cannot find mote interface of class: " + moteInterfaceClass);
-      return false;
+      // Check for compatible interfaces, for example, when reconfiguring mote types.
+      if (MoteID.class.isAssignableFrom(moteInterfaceClass)) {
+        moteInterface = getMoteID();
+      }
+      if (moteInterface == null) {
+        logger.fatal("Cannot find mote interface of class: " + moteInterfaceClass);
+        return false;
+      }
     }
     moteInterface.setConfigXML(element.getChildren(), Cooja.isVisualized());
     return true;
