@@ -61,7 +61,6 @@ import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.VisPlugin.PluginRequiresVisualizationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
-import org.contikios.cooja.dialogs.CreateSimDialog;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.motes.DisturberMoteType;
 import org.contikios.cooja.motes.ImportAppMoteType;
@@ -1406,16 +1405,6 @@ public class Cooja {
     long delay = cfgDelay == null
             ? Integer.parseInt(simCfg.getChild("motedelay_us").getText())
             : Integer.parseInt(cfgDelay.getText()) * Simulation.MILLISECOND;
-    if (Cooja.isVisualized() && !quick) {
-      var config = CreateSimDialog.showDialog(this, new CreateSimDialog.SimConfig(title, medium,
-              generatedSeed, seed, delay));
-      if (config == null) return null;
-      title = config.title();
-      generatedSeed = config.generatedSeed();
-      seed = config.randomSeed();
-      medium = config.radioMedium();
-      delay = config.moteStartDelay();
-    }
     doRemoveSimulation();
     Simulation sim;
     try {
