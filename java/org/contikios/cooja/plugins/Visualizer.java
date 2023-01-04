@@ -777,13 +777,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 
         try {
-          List<Object> transferList = List.of(
-                  transferable.getTransferData(DataFlavor.javaFileListFlavor)
-          );
-          if (transferList.size() != 1) {
-            return;
-          }
-          List<File> list = (List<File>) transferList.get(0);
+          List<File> list = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
           if (list.size() != 1) {
             return;
           }
@@ -811,22 +805,15 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         }
 
         /* Only accept single files */
-        File file;
         if (!transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
           return false;
         }
         try {
-          List<Object> transferList = List.of(
-                  transferable.getTransferData(DataFlavor.javaFileListFlavor)
-          );
-          if (transferList.size() != 1) {
-            return false;
-          }
-          List<File> list = (List<File>) transferList.get(0);
+          List<File> list = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
           if (list.size() != 1) {
             return false;
           }
-          file = list.get(0);
+          var file = list.get(0);
         }
         catch (UnsupportedFlavorException | IOException e) {
           return false;
