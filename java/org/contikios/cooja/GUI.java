@@ -108,7 +108,6 @@ import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
-import org.contikios.cooja.plugins.MoteTypeInformation;
 import org.contikios.cooja.util.ScnObservable;
 import org.jdom2.Element;
 
@@ -863,11 +862,40 @@ public class GUI {
     });
     motesMenu.add(menuMoteTypes);
 
-    var guiAction = new StartPluginGUIAction("Mote types...");
-    menuItem = new JMenuItem(guiAction);
-    guiActions.add(guiAction);
-    menuItem.putClientProperty("class", MoteTypeInformation.class);
+    var moteTypeInformation = new GUIAction("Mote types...") {
+      @Override
+      public void actionPerformed(ActionEvent actionEvent) {
+        var box = Box.createVerticalBox();
+        box.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        for (var moteType : cooja.getSimulation().getMoteTypes()) {
+          var visualizer = moteType.getTypeVisualizer();
+          if (visualizer == null) {
+            visualizer = new JLabel("[no information available]");
+          }
+          visualizer.setAlignmentX(Box.LEFT_ALIGNMENT);
+          var moteTypeString = Cooja.getDescriptionOf(moteType) + ": \"" + moteType.getDescription() + "\"";
+          visualizer.setBorder(BorderFactory.createTitledBorder(moteTypeString));
+          box.add(visualizer);
+          box.add(Box.createVerticalStrut(15));
+        }
+        var pane = new JScrollPane(box, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        // Create a dialog manually to be able to call setSize.
+        var optionPane = new JOptionPane(pane, JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION);
+        var dialog = optionPane.createDialog(Cooja.getTopParentContainer(), "Mote Type Information");
+        dialog.setModal(false);
+        dialog.pack();
+        dialog.setSize(Math.min(dialog.getWidth(), 800), Math.min(dialog.getHeight(), 800));
+        dialog.setLocationRelativeTo(Cooja.getTopParentContainer());
+        dialog.setVisible(true);
+      }
 
+      @Override
+      public boolean shouldBeEnabled() {
+        return cooja.getSimulation() != null;
+      }
+    };
+    menuItem = new JMenuItem(moteTypeInformation);
+    guiActions.add(moteTypeInformation);
     motesMenu.add(menuItem);
 
     motesMenu.add(new JMenuItem(removeAllMotesAction));
@@ -908,10 +936,6 @@ public class GUI {
         // Simulation plugins.
         boolean hasSimPlugins = false;
         for (Class<? extends Plugin> pluginClass : cooja.getRegisteredPlugins()) {
-          if (pluginClass.equals(MoteTypeInformation.class)) {
-            continue; // Ignore.
-          }
-
           var pluginType = pluginClass.getAnnotation(PluginType.class).value();
           if (pluginType != PluginType.PType.SIM_PLUGIN && pluginType != PluginType.PType.SIM_STANDARD_PLUGIN
                   && pluginType != PluginType.PType.SIM_CONTROL_PLUGIN) {
