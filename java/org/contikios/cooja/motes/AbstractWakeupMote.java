@@ -28,15 +28,19 @@
 
 package org.contikios.cooja.motes;
 
+import static org.contikios.cooja.WatchpointMote.WatchpointListener;
+
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteTimeEvent;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
+import org.contikios.cooja.Watchpoint;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.jdom2.Element;
 
@@ -47,6 +51,9 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
 
   protected MoteInterfaceHandler moteInterfaces;
   private long nextWakeupTime = -1;
+
+  protected final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<>();
+  protected final ArrayList<Watchpoint> watchpoints = new ArrayList<>();
 
   protected AbstractWakeupMote(T moteType, Simulation sim) {
     this.moteType = moteType;
@@ -91,7 +98,23 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
 
   @Override
   public Collection<Element> getConfigXML() {
-    return getInterfaces().getConfigXML();
+    var breakpoints = new ArrayList<Element>();
+    for (var breakpoint : watchpoints) {
+      var element = new Element("breakpoint");
+      element.addContent(breakpoint.getConfigXML());
+      breakpoints.add(element);
+    }
+
+    var config = new ArrayList<Element>();
+    if (!breakpoints.isEmpty()) {
+      var element = new Element("breakpoints");
+      element.addContent(breakpoints);
+      config.add(element);
+    }
+
+    // Mote interfaces.
+    config.addAll(getInterfaces().getConfigXML());
+    return config;
   }
 
   @Override
@@ -106,6 +129,61 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
     }
     requestImmediateWakeup();
     return true;
+  }
+
+  public void addWatchpointListener(WatchpointListener listener) {
+    watchpointListeners.add(listener);
+  }
+
+  public void removeWatchpointListener(WatchpointListener listener) {
+    watchpointListeners.remove(listener);
+  }
+
+  public WatchpointListener[] getWatchpointListeners() {
+    return watchpointListeners.toArray(new WatchpointListener[0]);
+  }
+
+  public Watchpoint addBreakpoint(File codeFile, int lineNr, long address) {
+    return null; // FIXME: make a usable general Watchpoint class and implement this method.
+  }
+
+  public void removeBreakpoint(Watchpoint watchpoint) {
+    watchpoint.removed();
+    watchpoints.remove(watchpoint);
+    for (var listener : watchpointListeners) {
+      listener.watchpointsChanged();
+    }
+  }
+
+  public Watchpoint[] getBreakpoints() {
+    return watchpoints.toArray(new Watchpoint[0]);
+  }
+
+  public boolean breakpointExists(long address) {
+    if (address < 0) {
+      return false;
+    }
+    for (var watchpoint : watchpoints) {
+      if (watchpoint.getExecutableAddress() == address) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean breakpointExists(File file, int lineNr) {
+    for (var watchpoint : watchpoints) {
+      if (watchpoint.getCodeFile() == null || watchpoint.getCodeFile().compareTo(file) != 0 ||
+          watchpoint.getLineNumber() != lineNr) {
+        continue;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  public long getExecutableAddressOf(File file, int lineNr) {
+    return -1; // FIXME: this belongs in MoteType, not Mote.
   }
 
   /**

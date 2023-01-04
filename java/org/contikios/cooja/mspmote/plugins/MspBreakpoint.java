@@ -168,10 +168,12 @@ public class MspBreakpoint implements Watchpoint {
 
   }
 
-  public void unregisterBreakpoint() {
+  @Override
+  public void removed() {
     mspMote.getCPU().removeWatchPoint((int) address, memoryMonitor);
   }
 
+  @Override
   public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
     Element element;
@@ -210,9 +212,9 @@ public class MspBreakpoint implements Watchpoint {
     return config;
   }
 
-  public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
-    /* Already knows mote and breakpoints */
-
+  @Override
+  public boolean setConfigXML(Collection<Element> configXML) {
+    // Already knows mote and breakpoints.
     for (Element element : configXML) {
       if (element.getName().equals("codefile")) {
         var file = mspMote.getSimulation().getCooja().restorePortablePath(new File(element.getText()));

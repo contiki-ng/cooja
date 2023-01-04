@@ -32,6 +32,8 @@ package org.contikios.cooja;
 
 import java.awt.Color;
 import java.io.File;
+import java.util.Collection;
+import org.jdom2.Element;
 
 /**
  * @author Fredrik Osterlind
@@ -53,4 +55,9 @@ public interface Watchpoint {
 
   void setStopsSimulation(boolean b);
   boolean stopsSimulation();
+
+  Collection<Element> getConfigXML();
+  boolean setConfigXML(Collection<Element> configXML);
+
+  void removed();
 }

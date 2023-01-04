@@ -33,20 +33,18 @@ package org.contikios.cooja.mspmote;
 import java.awt.Component;
 import java.io.File;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Simulation.SimulationStop;
+import org.contikios.cooja.WatchpointMote;
 import org.jdom2.Element;
 import org.contikios.cooja.ContikiError;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.Watchpoint;
-import org.contikios.cooja.WatchpointMote;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.mspmote.plugins.CodeVisualizerSkin;
 import org.contikios.cooja.mspmote.plugins.MspBreakpoint;
@@ -76,7 +74,7 @@ import org.contikios.cooja.mspmote.interfaces.MspClock;
 /**
  * @author Fredrik Osterlind
  */
-public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteMemory> implements Mote, WatchpointMote {
+public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteMemory> implements WatchpointMote {
   private static final Logger logger = LogManager.getLogger(MspMote.class);
 
   private final static int EXECUTE_DURATION_US = 1; /* We always execute in 1 us steps */
@@ -328,7 +326,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
         for (Element elem : element.getChildren()) {
           if (elem.getName().equals("breakpoint")) {
             MspBreakpoint breakpoint = new MspBreakpoint(this);
-            if (!breakpoint.setConfigXML(elem.getChildren(), visAvailable)) {
+            if (!breakpoint.setConfigXML(elem.getChildren())) {
               logger.warn("Could not restore breakpoint: " + breakpoint);
             } else {
               watchpoints.add(breakpoint);
@@ -344,23 +342,6 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     /* Schedule us immediately */
     requestImmediateWakeup();
     return true;
-  }
-
-  @Override
-  public Collection<Element> getConfigXML() {
-    ArrayList<Element> config = new ArrayList<>();
-
-    /* Breakpoints */
-    Collection<Element> breakpoints = getWatchpointConfigXML();
-    if (breakpoints != null && !breakpoints.isEmpty()) {
-      var element = new Element("breakpoints");
-      element.addContent(breakpoints);
-      config.add(element);
-    }
-
-    // Mote interfaces.
-    config.addAll(super.getConfigXML());
-    return config;
   }
 
   @Override
@@ -423,22 +404,6 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
 
 
   /* WatchpointMote */
-  private final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<>();
-  private final ArrayList<MspBreakpoint> watchpoints = new ArrayList<>();
-
-  @Override
-  public void addWatchpointListener(WatchpointListener listener) {
-    watchpointListeners.add(listener);
-  }
-  @Override
-  public void removeWatchpointListener(WatchpointListener listener) {
-    watchpointListeners.remove(listener);
-  }
-  @Override
-  public WatchpointListener[] getWatchpointListeners() {
-    return watchpointListeners.toArray(new WatchpointListener[0]);
-  }
-
   @Override
   public Watchpoint addBreakpoint(File codeFile, int lineNr, long address) {
     MspBreakpoint bp = new MspBreakpoint(this, address, codeFile, lineNr);
@@ -448,48 +413,6 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
       listener.watchpointsChanged();
     }
     return bp;
-  }
-  @Override
-  public void removeBreakpoint(Watchpoint watchpoint) {
-    ((MspBreakpoint)watchpoint).unregisterBreakpoint();
-    watchpoints.remove(watchpoint);
-
-    for (WatchpointListener listener: watchpointListeners) {
-      listener.watchpointsChanged();
-    }
-  }
-  @Override
-  public Watchpoint[] getBreakpoints() {
-    return watchpoints.toArray(new Watchpoint[0]);
-  }
-
-  @Override
-  public boolean breakpointExists(long address) {
-    if (address < 0) {
-      return false;
-    }
-    for (Watchpoint watchpoint: watchpoints) {
-      if (watchpoint.getExecutableAddress() == address) {
-        return true;
-      }
-    }
-    return false;
-  }
-  @Override
-  public boolean breakpointExists(File file, int lineNr) {
-    for (Watchpoint watchpoint: watchpoints) {
-      if (watchpoint.getCodeFile() == null) {
-        continue;
-      }
-      if (watchpoint.getCodeFile().compareTo(file) != 0) {
-        continue;
-      }
-      if (watchpoint.getLineNumber() != lineNr) {
-        continue;
-      }
-      return true;
-    }
-    return false;
   }
 
   @Override
@@ -514,17 +437,5 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     for (WatchpointListener listener: listeners) {
       listener.watchpointTriggered(b);
     }
-  }
-
-  public Collection<Element> getWatchpointConfigXML() {
-    ArrayList<Element> config = new ArrayList<>();
-
-    for (MspBreakpoint breakpoint: watchpoints) {
-      Element element = new Element("breakpoint");
-      element.addContent(breakpoint.getConfigXML());
-      config.add(element);
-    }
-
-    return config;
   }
 }
