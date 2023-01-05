@@ -30,8 +30,8 @@ package org.contikios.cooja;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
@@ -124,7 +124,7 @@ class Main {
    * Option for specifying simulation files to load.
    */
   @Parameters(paramLabel = "FILE", description = "one or more simulation files")
-  String[] simulationFiles;
+  List<String> simulationFiles = new ArrayList<>();
 
   /**
    * Option for instructing Cooja to update the simulation file (.csc).
@@ -207,13 +207,9 @@ class Main {
       }
     }
 
-    ArrayList<String> simulationFiles = new ArrayList<>();
-    if (options.simulationFiles != null) {
-      Collections.addAll(simulationFiles, options.simulationFiles);
-    }
     // Parse and verify soundness of simulation files argument.
     ArrayList<Simulation.SimConfig> simConfigs = new ArrayList<>();
-    for (String arg : simulationFiles) {
+    for (var arg : options.simulationFiles) {
       // Argument on the form "file.csc[,key1=value1,key2=value2, ..]"
       var map = new HashMap<String, String>();
       String file = null;
