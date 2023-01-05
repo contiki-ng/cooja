@@ -67,6 +67,13 @@ class Main {
   Boolean gui;
 
   /**
+   * Option for specifying if the console log should be in color.
+   */
+  @Option(names = "--log-color", description = "use color in console log",
+          defaultValue = "true", fallbackValue = "true", negatable = true)
+  boolean logColor;
+
+  /**
    * Option for specifying log4j2 config file.
    */
   @Option(names = "--log4j2", paramLabel = "FILE", description = "the log4j2 config file")
@@ -296,6 +303,8 @@ class Main {
             options.logDir, options.contikiPath, options.coojaPath, options.javac);
     // Configure logger
     if (options.logConfigFile == null) {
+      var startColor = options.logColor ? "%highlight{" : "";
+      var endColor = options.logColor ? "}" : "";
       ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
       builder.setStatusLevel(Level.INFO);
       builder.setConfigurationName("DefaultConfig");
@@ -305,7 +314,7 @@ class Main {
       AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE")
               .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
       appenderBuilder.add(builder.newLayout("PatternLayout")
-              .addAttribute("pattern", "%5p [%t] (%F:%L) - %m%n"));
+              .addAttribute("pattern", startColor + "%5p [%t] (%F:%L) - %m" + endColor + "%n"));
       appenderBuilder.add(builder.newFilter("MarkerFilter", Filter.Result.DENY, Filter.Result.NEUTRAL)
               .addAttribute("marker", "FLOW"));
       builder.add(appenderBuilder);
