@@ -32,14 +32,11 @@ package org.contikios.cooja.mspmote.plugins;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.util.Observer;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -58,7 +55,6 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
   private final MspMote mspMote;
   private final MSP430 cpu;
   private final Simulation simulation;
-  private final Observer simObserver;
   private final JTextField cycleTextField = new JTextField("");
   private final JTextField resetTextField = new JTextField("");
   private long cycleReset = 0;
@@ -96,7 +92,7 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
 
     setSize(370, 100);
 
-    simulation.addObserver(simObserver = (obs, obj) -> updateLabels());
+    simulation.getSimulationStateTriggers().addTrigger(this, (obs, obj) -> updateLabels());
 
     updateLabels();
 
@@ -115,7 +111,7 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
 
   @Override
   public void closePlugin() {
-    simulation.deleteObserver(simObserver);
+    simulation.getSimulationStateTriggers().deleteTriggers(this);
   }
 
   @Override
