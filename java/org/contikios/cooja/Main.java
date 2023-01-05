@@ -155,7 +155,7 @@ class Main {
           description = "print version information and exit")
   boolean versionRequested;
 
-  @Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
+  @Option(names = "--help", usageHelp = true, description = "display a help message")
   boolean helpRequested;
 
   public static void main(String[] args) {
