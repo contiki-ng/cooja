@@ -425,7 +425,7 @@ public class Cooja {
         if (moteTypeClass != null) {
           registerMoteType(moteTypeClass);
         } else {
-          logger.warn("Could not load mote type class: " + moteTypeClassName);
+          logger.error("Could not load mote type class: " + moteTypeClassName);
         }
       }
     }
@@ -462,7 +462,7 @@ public class Cooja {
         if (pluginClass != null) {
           registerPlugin(pluginClass);
         } else {
-          logger.warn("Could not load plugin class: " + pluginClassName);
+          logger.error("Could not load plugin class: " + pluginClassName);
         }
       }
     }
@@ -482,8 +482,7 @@ public class Cooja {
         if (positionerClass != null) {
           registerPositioner(positionerClass);
         } else {
-          logger
-          .warn("Could not load positioner class: " + positionerClassName);
+          logger.error("Could not load positioner class: " + positionerClassName);
         }
       }
     }
@@ -505,8 +504,7 @@ public class Cooja {
         if (radioMediumClass != null) {
           registerRadioMedium(radioMediumClass);
         } else {
-          logger.warn("Could not load radio medium class: "
-              + radioMediumClassName);
+          logger.error("Could not load radio medium class: " + radioMediumClassName);
         }
       }
     }
@@ -643,7 +641,7 @@ public class Cooja {
     try {
       return startPlugin(pluginClass, sim, mote, null);
     } catch (PluginConstructionException ex) {
-      logger.fatal("Error when starting plugin", ex);
+      logger.error("Error when starting plugin", ex);
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog("Error when starting plugin", ex, false);
       }
@@ -820,7 +818,7 @@ public class Cooja {
   public boolean registerPlugin(final Class<? extends Plugin> pluginClass) {
     var annotation = pluginClass.getAnnotation(PluginType.class);
     if (annotation == null) {
-      logger.fatal("Could not register plugin, no plugin type found: " + pluginClass);
+      logger.error("Could not register plugin, no plugin type found: " + pluginClass);
       return false;
     }
 
@@ -837,7 +835,7 @@ public class Cooja {
         pluginClasses.add(pluginClass);
         return true;
     }
-    logger.fatal("Could not register plugin, " + pluginClass + " has unknown plugin type");
+    logger.error("Could not register plugin, " + pluginClass + " has unknown plugin type");
     return false;
   }
 
@@ -1148,12 +1146,10 @@ public class Cooja {
       differingSettings.store(out, "Cooja External Tools (User specific)");
     } catch (FileNotFoundException ex) {
       // Could not open settings file for writing, aborting
-      logger.warn("Could not save external tools user settings to "
-          + externalToolsUserSettingsFile + ", aborting");
+      logger.error("Could not save external tools user settings to " + externalToolsUserSettingsFile + ", aborting");
     } catch (IOException ex) {
       // Could not open settings file for writing, aborting
-      logger.warn("Error while saving external tools user settings to "
-          + externalToolsUserSettingsFile + ", aborting");
+      logger.error("Error while saving external tools user settings to " + externalToolsUserSettingsFile + ", aborting");
     }
   }
 
@@ -1269,7 +1265,7 @@ public class Cooja {
       try (var in = new FileInputStream(externalToolsUserSettingsFile)) {
         settings.load(in);
       } catch (IOException e1) {
-        logger.warn("Error when reading user settings from: " + externalToolsUserSettingsFile);
+        logger.fatal("Error when reading user settings from: " + externalToolsUserSettingsFile);
         System.exit(1);
       }
       var en = settings.keys();
@@ -1283,7 +1279,7 @@ public class Cooja {
     try {
       gui = makeCooja();
     } catch (Exception e) {
-      logger.error(e.getMessage());
+      logger.fatal(e.getMessage());
       System.exit(1);
     }
     // Check if simulator should be quick-started.
@@ -1301,7 +1297,7 @@ public class Cooja {
       }
       if (sim == null) {
         autoQuit = true;
-        logger.warn("TEST FAILED\n");
+        logger.error("TEST FAILED\n");
         rv = Math.max(rv, 1);
       } else if (simConfig.updateSim()) {
         autoQuit = true;
@@ -1315,7 +1311,7 @@ public class Cooja {
         if (ret == null) {
           logger.info("TEST OK\n");
         } else {
-          logger.warn("TEST FAILED\n");
+          logger.error("TEST FAILED\n");
           rv = Math.max(rv, ret);
         }
       }
@@ -1407,8 +1403,7 @@ public class Cooja {
       xmlOutput.output(new Document(extractSimulationConfig()), out);
       logger.info("Saved to file: " + file.getAbsolutePath());
     } catch (Exception e) {
-      logger.warn("Exception while saving simulation config: " + e);
-      e.printStackTrace();
+      logger.error("Exception while saving simulation config: " + e);
     }
   }
 
