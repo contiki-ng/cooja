@@ -315,11 +315,7 @@ public final class Simulation extends Observable {
         }
       }
       var mediumCfg = root.getChild("simulation").getChild("radiomedium");
-      if (mediumCfg.getText().trim().equals(currentRadioMedium.getClass().getName())) {
-        currentRadioMedium.setConfigXML(mediumCfg.getChildren(), Cooja.isVisualized());
-      } else {
-        logger.info("Radio Medium changed - ignoring radio medium specific config");
-      }
+      currentRadioMedium.setConfigXML(mediumCfg.getChildren(), Cooja.isVisualized());
 
       // Quick load mode only during loading
       this.quick = false;

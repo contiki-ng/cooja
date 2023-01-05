@@ -1411,7 +1411,11 @@ public class GUI {
           var simCfg = root.getChild("simulation");
           simCfg.getChild("title").setText(cfg.title());
           simCfg.getChild("randomseed").setText(cfg.generatedSeed() ? "generated" : String.valueOf(cfg.randomSeed()));
-          simCfg.getChild("radiomedium").setText(cfg.radioMedium());
+          var radioMedium = simCfg.getChild("radiomedium");
+          // Avoid overwriting radio medium config unless changing radio medium.
+          if (!radioMedium.getText().trim().equals(cfg.radioMedium())) {
+            radioMedium.setText(cfg.radioMedium());
+          }
           var cfgDelay = simCfg.getChild("motedelay");
           if (cfgDelay == null) {
             cfgDelay = simCfg.getChild("motedelay_us");
