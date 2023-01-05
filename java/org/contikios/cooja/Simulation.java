@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -54,7 +53,7 @@ import org.jdom2.Element;
  *
  * @author Fredrik Osterlind
  */
-public final class Simulation extends Observable {
+public final class Simulation {
 
   /** Commands sent to the simulation thread to start, stop, or shutdown the simulation */
   private enum Command {
@@ -319,9 +318,6 @@ public final class Simulation extends Observable {
 
       // Quick load mode only during loading
       this.quick = false;
-
-      setChanged();
-      notifyObservers(this);
     }
     SimulationCreationException ret = null;
     if (root == null) {
@@ -454,12 +450,7 @@ public final class Simulation extends Observable {
     }
 
     Cooja.updateProgress(!isRunning);
-
     simulationStateTriggers.trigger(isRunning ? EventTriggers.Operation.START : EventTriggers.Operation.STOP, this);
-
-    // TODO remove observable notification for state changes
-    setChanged();
-    notifyObservers(this);
   }
 
   /**
@@ -721,9 +712,6 @@ public final class Simulation extends Observable {
     motes.remove(mote);
     mote.removed();
     eventCentral.removeMote(mote);
-    setChanged();
-    notifyObservers(mote);
-
     // Delete all events associated with deleted mote.
     eventQueue.removeIf(ev -> ev instanceof MoteTimeEvent moteTimeEvent && moteTimeEvent.getMote() == mote);
     for (var p : startedPlugins.toArray(new Plugin[0])) {
@@ -744,7 +732,6 @@ public final class Simulation extends Observable {
     for (var startedPlugin : startedPlugins.toArray(new Plugin[0])) {
       Cooja.removePlugin(startedPlugins, startedPlugin);
     }
-    deleteObservers();
     if (!isShutdown) {
       commandQueue.add(Command.QUIT);
     }
@@ -761,8 +748,6 @@ public final class Simulation extends Observable {
       motes.add(mote);
       mote.added();
       eventCentral.addMote(mote);
-      setChanged();
-      notifyObservers(mote);
       Cooja.updateGUIComponentState();
     });
   }
@@ -835,10 +820,6 @@ public final class Simulation extends Observable {
     Cooja.usedMoteTypeIDs.add(newMoteType.getIdentifier());
     moteTypes.add(newMoteType);
     moteTypeTriggers.trigger(AddRemove.ADD, newMoteType);
-
-    // TODO remove observable notification for mote type changes
-    this.setChanged();
-    this.notifyObservers(this);
   }
 
   /**
@@ -856,10 +837,6 @@ public final class Simulation extends Observable {
     if (moteTypes.remove(type)) {
       moteTypeTriggers.trigger(AddRemove.REMOVE, type);
     }
-
-    // TODO remove observable notifications for mote type changes
-    this.setChanged();
-    this.notifyObservers(this);
   }
 
   /**
@@ -927,8 +904,6 @@ public final class Simulation extends Observable {
         delayEvent.remove();
       }
       scheduleEvent(delayEvent, currentSimulationTime);
-      Simulation.this.setChanged();
-      Simulation.this.notifyObservers(this);
     });
   }
 
