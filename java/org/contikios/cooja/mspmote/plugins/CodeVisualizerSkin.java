@@ -34,10 +34,7 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.util.Observer;
-
 import javax.swing.Timer;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -66,19 +63,17 @@ public class CodeVisualizerSkin implements VisualizerSkin {
     }
   });
 
-  private final Observer simulationObserver = (obs, obj) -> visualizer.repaint();
-
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
-    simulation.addObserver(simulationObserver);
+    simulation.getSimulationStateTriggers().addTrigger(this, (obs, obj) -> visualizer.repaint());
     repaintTimer.start();
   }
 
   @Override
   public void setInactive() {
-    simulation.deleteObserver(simulationObserver);
+    simulation.getSimulationStateTriggers().deleteTriggers(this);
     repaintTimer.stop();
   }
 
