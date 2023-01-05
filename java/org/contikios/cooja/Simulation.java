@@ -119,6 +119,9 @@ public final class Simulation {
   /** Mote type add and remove triggers. */
   private final EventTriggers<EventTriggers.AddRemove, MoteType> moteTypeTriggers = new EventTriggers<>();
 
+  /** Mote add and remove triggers. */
+  private final EventTriggers<EventTriggers.AddRemove, Mote> moteTriggers = new EventTriggers<>();
+
   /** List of active script engines. */
   private final ArrayList<LogScriptEngine> scriptEngines = new ArrayList<>();
 
@@ -709,9 +712,12 @@ public final class Simulation {
   }
 
   private void doRemoveMote(Mote mote) {
-    motes.remove(mote);
+    boolean removed = motes.remove(mote);
     mote.removed();
-    eventCentral.removeMote(mote);
+    if (removed) {
+      moteTriggers.trigger(AddRemove.REMOVE, mote);
+      eventCentral.removeMote(mote);
+    }
     // Delete all events associated with deleted mote.
     eventQueue.removeIf(ev -> ev instanceof MoteTimeEvent moteTimeEvent && moteTimeEvent.getMote() == mote);
     for (var p : startedPlugins.toArray(new Plugin[0])) {
@@ -747,6 +753,7 @@ public final class Simulation {
     invokeSimulationThread(() -> {
       motes.add(mote);
       mote.added();
+      moteTriggers.trigger(AddRemove.ADD, mote);
       eventCentral.addMote(mote);
       Cooja.updateGUIComponentState();
     });
@@ -997,6 +1004,13 @@ public final class Simulation {
    */
   public EventTriggers<AddRemove, MoteType> getMoteTypeTriggers() {
     return moteTypeTriggers;
+  }
+
+  /*
+   * Returns the mote add and remove triggers.
+   */
+  public EventTriggers<AddRemove, Mote> getMoteTriggers() {
+    return moteTriggers;
   }
 
   /** Returns the mote relations triggers. */
