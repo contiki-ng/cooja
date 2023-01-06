@@ -91,6 +91,7 @@ import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
 import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
+import org.contikios.cooja.util.EventTriggers;
 import org.contikios.mrm.MRMVisualizerSkin;
 import org.jdom2.Element;
 
@@ -100,7 +101,6 @@ import org.contikios.cooja.HasQuickHelp;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.PluginType;
-import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.SupportedArguments;
 import org.contikios.cooja.VisPlugin;
@@ -196,7 +196,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   private final ArrayList<VisualizerSkin> currentSkins = new ArrayList<>();
 
   /* Generic visualization */
-  private final MoteCountListener newMotesListener;
   private final Observer moteHighligtObserver;
   private final ArrayList<Mote> highlightedMotes = new ArrayList<>();
   private final static Color HIGHLIGHT_COLOR = Color.CYAN;
@@ -421,20 +420,12 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     /* Observe simulation and mote positions */
     simulation.getEventCentral().getPositionTriggers().addTrigger(this, (o, m) -> EventQueue.invokeLater(this::repaint));
 
-    simulation.getEventCentral().addMoteCountListener(newMotesListener = new MoteCountListener() {
-      @Override
-      public void moteWasAdded(Mote mote) {
-        EventQueue.invokeLater(() -> {
-          resetViewport = 1;
-          repaint();
-        });
+    simulation.getMoteTriggers().addTrigger(this, (operation, mote) -> EventQueue.invokeLater(() -> {
+      if (operation == EventTriggers.AddRemove.ADD) {
+        resetViewport = 1;
       }
-
-      @Override
-      public void moteWasRemoved(Mote mote) {
-        repaint();
-      }
-    });
+      repaint();
+    }));
 
     /* Observe mote highlights */
     Cooja.addMoteHighlightObserver(moteHighligtObserver = (obs, obj) -> {
@@ -1356,7 +1347,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     }
     simulation.getMoteRelationsTriggers().deleteTriggers(this);
     simulation.getEventCentral().getPositionTriggers().deleteTriggers(this);
-    simulation.getEventCentral().removeMoteCountListener(newMotesListener);
+    simulation.getMoteTriggers().deleteTriggers(this);
   }
 
   /**
