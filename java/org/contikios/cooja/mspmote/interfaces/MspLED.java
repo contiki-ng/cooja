@@ -30,6 +30,7 @@
 package org.contikios.cooja.mspmote.interfaces;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -38,8 +39,8 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.mspmote.MspMote;
+import org.contikios.cooja.util.EventTriggers;
 import se.sics.mspsim.chip.Leds;
-import se.sics.mspsim.core.StateChangeListener;
 
 /**
  * @author Fredrik Osterlind, Niclas Finne
@@ -57,10 +58,8 @@ public class MspLED extends LED {
         if (leds == null) {
             throw new IllegalStateException("Mote is not equipped with leds");
         }
-        leds.addStateChangeListener((source, oldState, newState) -> {
-            setChanged();
-            notifyObservers();
-        });
+        leds.addStateChangeListener((source, oldState, newState) ->
+                                            triggers.trigger(EventTriggers.Update.UPDATE, mote));
     }
 
     private void checkColors() {
@@ -116,17 +115,17 @@ public class MspLED extends LED {
     @Override
     public JPanel getInterfaceVisualizer() {
         checkColors();
-        return new LedsPanel();
+        var panel = new LedsPanel();
+        triggers.addTrigger(panel, (operation, mote) -> EventQueue.invokeLater(panel::repaint));
+        return panel;
     }
 
     @Override
     public void releaseInterfaceVisualizer(JPanel panel) {
-        if (panel instanceof LedsPanel) {
-            ((LedsPanel) panel).close();
-        }
+        triggers.deleteTriggers(panel);
     }
 
-    private class LedsPanel extends JPanel implements StateChangeListener {
+    private class LedsPanel extends JPanel {
         private static final int D = 25;
         private static final int S = D + 15;
 
@@ -136,16 +135,6 @@ public class MspLED extends LED {
             Dimension d = new Dimension(5 + S * (leds.getLedsCount() - 1) + D + 5, 5 + D + 5);
             setMinimumSize(d);
             setPreferredSize(d);
-            leds.addStateChangeListener(this);
-        }
-
-        public void close() {
-            leds.removeStateChangeListener(this);
-        }
-
-        @Override
-        public void stateChanged(Object source, int oldState, int newState) {
-            repaint();
         }
 
         @Override

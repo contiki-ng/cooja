@@ -33,16 +33,17 @@ package org.contikios.cooja.plugins.skins;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.util.Observer;
+import java.util.Optional;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
+import org.contikios.cooja.util.AnyMoteEventTriggers;
+import org.contikios.cooja.util.EventTriggers;
 
 /**
  * Visualizer skin for LEDs.
@@ -55,41 +56,25 @@ import org.contikios.cooja.plugins.VisualizerSkin;
 public class LEDVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
-
-  private final Observer ledObserver = (obs, obj) -> visualizer.repaint();
-  private final MoteCountListener newMotesListener = new MoteCountListener() {
-    @Override
-    public void moteWasAdded(Mote mote) {
-      LED led = mote.getInterfaces().getLED();
-      if (led != null) {
-        led.addObserver(ledObserver);
-      }
-    }
-    @Override
-    public void moteWasRemoved(Mote mote) {
-      LED led = mote.getInterfaces().getLED();
-      if (led != null) {
-        led.deleteObserver(ledObserver);
-      }
-    }
-  };
+  private AnyMoteEventTriggers<EventTriggers.Update> ledTriggers;
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
-
-    simulation.getEventCentral().addMoteCountListener(newMotesListener);
-    for (Mote m: simulation.getMotes()) {
-      newMotesListener.moteWasAdded(m);
+    if (ledTriggers == null) {
+      ledTriggers = new AnyMoteEventTriggers<>(simulation, mote -> {
+        var ledInterface = mote.getInterfaces().getLED();
+        return ledInterface != null ? Optional.of(ledInterface.getTriggers()) : Optional.empty();
+      });
     }
+    ledTriggers.addTrigger(this, (operation, mote) -> visualizer.repaint());
   }
 
   @Override
   public void setInactive() {
-    simulation.getEventCentral().removeMoteCountListener(newMotesListener);
-    for (Mote m: simulation.getMotes()) {
-      newMotesListener.moteWasRemoved(m);
+    if (ledTriggers != null) {
+      ledTriggers.deleteTriggers(this);
     }
   }
 

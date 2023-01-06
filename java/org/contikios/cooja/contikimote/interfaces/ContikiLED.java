@@ -34,14 +34,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.util.ArrayList;
 import javax.swing.JPanel;
-import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
+import org.contikios.cooja.util.EventTriggers;
 
 /**
  * LEDs mote interface.
@@ -72,7 +71,6 @@ public class ContikiLED extends LED implements PolledAfterActiveTicks {
   private static final Color GREEN = new Color(0, 255, 0);
   private static final Color YELLOW = new Color(255, 255, 0);
   private static final Color RED = new Color(255, 0, 0);
-  private final ArrayList<JPanel> labels = new ArrayList<>();
 
   /**
    * Creates an interface to LEDs at mote.
@@ -116,15 +114,7 @@ public class ContikiLED extends LED implements PolledAfterActiveTicks {
 
     currentLedValue = newLedsValue;
     if (ledChanged) {
-      if (Cooja.isVisualized()) {
-        EventQueue.invokeLater(() -> {
-          for (var panel : labels) {
-            panel.repaint();
-          }
-        });
-      }
-      this.setChanged();
-      this.notifyObservers(mote);
+      triggers.trigger(EventTriggers.Update.UPDATE, mote);
     }
   }
 
@@ -176,12 +166,12 @@ public class ContikiLED extends LED implements PolledAfterActiveTicks {
     };
     panel.setMinimumSize(new Dimension(140, 60));
     panel.setPreferredSize(new Dimension(140, 60));
-    labels.add(panel);
+    triggers.addTrigger(panel, (o, m) -> EventQueue.invokeLater(panel::repaint));
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    labels.remove(panel);
+    triggers.deleteTriggers(panel);
   }
 }

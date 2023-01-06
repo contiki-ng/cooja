@@ -2,8 +2,8 @@ package org.contikios.cooja.mspmote.interfaces;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.util.Observer;
 
 import javax.swing.JPanel;
 
@@ -14,6 +14,7 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.mspmote.Exp5438Mote;
+import org.contikios.cooja.util.EventTriggers;
 import se.sics.mspsim.core.IOPort;
 
 /**
@@ -41,15 +42,20 @@ public class TrxebLEDs extends LED {
 		var mspMote = (Exp5438Mote) mote;
     if (mspMote.getCPU().getIOUnit("P4") instanceof IOPort unit) {
       unit.addPortListener((source, data) -> {
+        var oldRedOn = redOn;
+        var oldYellowOn = yellowOn;
+        var oldGreenOn = greenOn;
+        var oldBlueOn = blueOn;
         redOn = (data & (1 << 0)) == 0;
         yellowOn = (data & (1 << 1)) == 0;
         greenOn = (data & (1 << 2)) == 0;
         blueOn = (data & (1 << 3)) == 0;
-        setChanged();
-        notifyObservers();
+        if (oldRedOn != redOn || oldYellowOn != yellowOn || oldGreenOn != greenOn || oldBlueOn != blueOn) {
+          triggers.trigger(EventTriggers.Update.UPDATE, mote);
+        }
       });
-		}
-	}
+    }
+        }
 
 	@Override
 	public boolean isAnyOn() {
@@ -134,11 +140,8 @@ public class TrxebLEDs extends LED {
 			}
 		};
 
-		Observer observer;
-		this.addObserver(observer = (obs, obj) -> panel.repaint());
+		triggers.addTrigger(panel, (operation, mote) -> EventQueue.invokeLater(panel::repaint));
 
-		// Saving observer reference for releaseInterfaceVisualizer
-		panel.putClientProperty("intf_obs", observer);
 		panel.setMinimumSize(new Dimension(140, 60));
 		panel.setPreferredSize(new Dimension(140, 60));
 		return panel;
@@ -146,13 +149,7 @@ public class TrxebLEDs extends LED {
 
 	@Override
 	public void releaseInterfaceVisualizer(JPanel panel) {
-		Observer observer = (Observer) panel.getClientProperty("intf_obs");
-		if (observer == null) {
-			logger.fatal("Error when releasing panel, observer is null");
-			return;
-		}
-
-		this.deleteObserver(observer);
+          triggers.deleteTriggers(panel);
 	}
 
 }

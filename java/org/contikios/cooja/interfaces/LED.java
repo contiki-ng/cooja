@@ -30,9 +30,10 @@
 
 package org.contikios.cooja.interfaces;
 
-import java.util.Observable;
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
+import org.contikios.cooja.util.EventTriggers;
 
 /**
  * A LED represents three mote LEDs (green, yellow and red). An implementation should notify all
@@ -41,8 +42,10 @@ import org.contikios.cooja.MoteInterface;
  * @author Fredrik Osterlind
  */
 @ClassDescription("LEDs")
-public abstract class LED extends Observable implements MoteInterface {
-  
+public abstract class LED implements MoteInterface {
+
+  protected final EventTriggers<EventTriggers.Update, Mote> triggers = new EventTriggers<>();
+
   /**
    * @return True if any LED is on, false otherwise
    */
@@ -62,5 +65,14 @@ public abstract class LED extends Observable implements MoteInterface {
    * @return True if red LED is on, false otherwise
    */
   public abstract boolean isRedOn();
-  
+
+  /**
+   * Returns the LED state change triggers for this mote interface.
+   *
+   * @return the LED state change triggers for this mote interface.
+   */
+  public EventTriggers<EventTriggers.Update, Mote> getTriggers() {
+    return triggers;
+  }
+
 }

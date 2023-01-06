@@ -96,6 +96,7 @@ import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.interfaces.Radio.RadioEvent;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
+import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
 /**
@@ -821,9 +822,11 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   /* XXX Keeps track of observed mote interfaces */
   static class MoteObservation {
+
+    private EventTriggers<EventTriggers.Update, Mote> triggers;
     private Observer observer;
     private Observable observable;
-    private Mote mote;
+    private final Mote mote;
 
     private WatchpointMote watchpointMote; /* XXX */
     private WatchpointListener watchpointListener; /* XXX */
@@ -832,6 +835,11 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       this.mote = mote;
       this.observable = observable;
       this.observer = observer;
+    }
+
+    public MoteObservation(Mote mote, EventTriggers<EventTriggers.Update, Mote> triggers) {
+      this.mote = mote;
+      this.triggers = triggers;
     }
 
     /* XXX Special case, should be generalized */
@@ -851,9 +859,12 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public void dispose() {
       if (observable != null) {
         observable.deleteObserver(observer);
-        mote = null;
         observable = null;
         observer = null;
+      }
+
+      if (triggers != null) {
+        triggers.deleteTriggers(this);
       }
 
       /* XXX */
@@ -876,10 +887,11 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           moteLEDs.isYellowOn()
       );
       moteEvents.addLED(startupEv);
-      Observer observer = (o, arg) -> moteEvents.addLED(new LEDEvent(simulation.getSimulationTime(),
-              moteLEDs.isRedOn(),moteLEDs.isGreenOn(), moteLEDs.isYellowOn()));
-      moteLEDs.addObserver(observer);
-      activeMoteObservers.add(new MoteObservation(mote, moteLEDs, observer));
+      var moteObserver = new MoteObservation(mote, moteLEDs.getTriggers());
+      moteLEDs.getTriggers().addTrigger(moteObserver, (o, m) ->
+              moteEvents.addLED(new LEDEvent(simulation.getSimulationTime(),
+                                             moteLEDs.isRedOn(), moteLEDs.isGreenOn(), moteLEDs.isYellowOn())));
+      activeMoteObservers.add(moteObserver);
     }
 
     /* Radio OnOff, RXTX, and channels */

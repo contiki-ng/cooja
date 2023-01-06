@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
+import org.contikios.cooja.util.EventTriggers;
 
 public class ApplicationLED extends LED {
     private final Mote mote;
@@ -22,7 +23,6 @@ public class ApplicationLED extends LED {
     private static final Color GREEN = new Color(0, 255, 0);
     private static final Color YELLOW = new Color(255, 255, 0);
     private static final Color RED = new Color(255, 0, 0);
-    private final ArrayList<JPanel> labels = new ArrayList<>();
 
      public ApplicationLED(Mote mote) {
        this.mote = mote;
@@ -54,15 +54,7 @@ public class ApplicationLED extends LED {
 
        currentLedValue = (byte) led;
        if (ledChanged) {
-         if (Cooja.isVisualized()) {
-           EventQueue.invokeLater(() -> {
-             for (var panel : labels) {
-               panel.repaint();
-             }
-           });
-         }
-         this.setChanged();
-         this.notifyObservers(mote);
+         triggers.trigger(EventTriggers.Update.UPDATE, mote);
        }
      }
 
@@ -114,12 +106,12 @@ public class ApplicationLED extends LED {
        };
        panel.setMinimumSize(new Dimension(140, 60));
        panel.setPreferredSize(new Dimension(140, 60));
-       labels.add(panel);
+       triggers.addTrigger(panel, (operation, mote) -> EventQueue.invokeLater(panel::repaint));
        return panel;
      }
 
      @Override
      public void releaseInterfaceVisualizer(JPanel panel) {
-       labels.remove(panel);
+       triggers.deleteTriggers(panel);
      }
 }

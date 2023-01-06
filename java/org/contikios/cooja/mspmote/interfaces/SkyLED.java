@@ -34,14 +34,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.util.ArrayList;
 import javax.swing.JPanel;
 import org.contikios.cooja.ClassDescription;
-import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.mspmote.SkyMote;
-
+import org.contikios.cooja.util.EventTriggers;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.platform.sky.SkyNode;
 
@@ -60,24 +58,20 @@ public class SkyLED extends LED {
   private static final Color BLUE = new Color(0, 0, 255);
   private static final Color GREEN = new Color(0, 255, 0);
   private static final Color RED = new Color(255, 0, 0);
-  private final ArrayList<JPanel> labels = new ArrayList<>();
 
   public SkyLED(Mote mote) {
     var mspMote = (SkyMote) mote;
     if (mspMote.getCPU().getIOUnit("Port 5") instanceof IOPort unt) {
       unt.addPortListener((source, data) -> {
+        var oldBlueOn = blueOn;
+        var oldGreenOn = greenOn;
+        var oldRedOn = redOn;
         blueOn = (data & SkyNode.BLUE_LED) == 0;
         greenOn = (data & SkyNode.GREEN_LED) == 0;
         redOn = (data & SkyNode.RED_LED) == 0;
-        if (Cooja.isVisualized()) {
-          EventQueue.invokeLater(() ->  {
-            for (var panel : labels) {
-              panel.repaint();
-            }
-          });
+        if (oldBlueOn != blueOn || oldGreenOn != greenOn || oldRedOn != redOn) {
+          triggers.trigger(EventTriggers.Update.UPDATE, mote);
         }
-        setChanged();
-        notifyObservers();
       });
     }
   }
@@ -150,12 +144,12 @@ public class SkyLED extends LED {
     };
     panel.setMinimumSize(new Dimension(140, 60));
     panel.setPreferredSize(new Dimension(140, 60));
-    labels.add(panel);
+    triggers.addTrigger(panel, (operation, mote) -> EventQueue.invokeLater(panel::repaint));
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    labels.remove(panel);
+    triggers.deleteTriggers(panel);
   }
 }

@@ -23,6 +23,11 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed Observable from Position, LED, and addresses mote interfaces
+
+Observable in these mote interfaces have been replaced by event triggers,
+accessible by methods such as `getPositionTriggers()` or `getTriggers()`.
+
 ### Moved getExecutableAddressOf from WatchpointMote to MoteType
 
 Call the method with `mote.getType().getExecutableAddressOf(file, line)`
