@@ -34,11 +34,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -205,23 +203,18 @@ public class LogisticLoss extends AbstractRadioMedium {
 
         /* Register as position observer.
          * If any positions change, re-analyze potential receivers. */
-        final BiConsumer<EventTriggers.Update, Mote> positionObserver = (o, arg) -> dgrm.requestEdgeAnalysis();
+        simulation.getEventCentral().getPositionTriggers().addTrigger(this, (o, m) -> dgrm.requestEdgeAnalysis());
         /* Re-analyze potential receivers if radios are added/removed. */
         simulation.getEventCentral().addMoteCountListener(new MoteCountListener() {
                 @Override
                 public void moteWasAdded(Mote mote) {
-                    mote.getInterfaces().getPosition().getPositionTriggers().addTrigger(LogisticLoss.this, positionObserver);
                     dgrm.requestEdgeAnalysis();
                 }
                 @Override
                 public void moteWasRemoved(Mote mote) {
-                    mote.getInterfaces().getPosition().getPositionTriggers().removeTrigger(LogisticLoss.this, positionObserver);
                     dgrm.requestEdgeAnalysis();
                 }
             });
-        for (Mote mote: simulation.getMotes()) {
-            mote.getInterfaces().getPosition().getPositionTriggers().addTrigger(this, positionObserver);
-        }
         dgrm.requestEdgeAnalysis();
 
         if (Cooja.isVisualized()) {
