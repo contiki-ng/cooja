@@ -78,7 +78,7 @@ public class VisPlugin extends JInternalFrame implements Plugin {
       public void internalFrameActivated(InternalFrameEvent e) {
         /* Highlight mote in COOJA */
         if (parent instanceof MotePlugin plugin) {
-          Cooja.signalMoteHighlight(plugin.getMote());
+          gui.signalMoteHighlight(plugin.getMote());
         }
         Cooja.loadQuickHelp(parent);
       }

@@ -110,7 +110,6 @@ import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
-import org.contikios.cooja.util.ScnObservable;
 import org.jdom2.Element;
 import org.jdom2.Text;
 
@@ -134,14 +133,11 @@ public class GUI {
   /** Listener for the toolbar. */
   private final ToolbarListener toolbarListener;
 
-  final ScnObservable moteHighlightObservable;
-
   private final Cooja cooja;
   boolean hasFileHistoryChanged;
 
   public GUI(Cooja cooja) {
     this.cooja = cooja;
-    moteHighlightObservable = new ScnObservable();
     myDesktopPane = new JDesktopPane() {
       @Override
       public void setBounds(int x, int y, int w, int h) {

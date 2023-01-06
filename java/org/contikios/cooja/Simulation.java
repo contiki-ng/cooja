@@ -44,6 +44,7 @@ import org.contikios.cooja.Cooja.PluginConstructionException;
 import org.contikios.cooja.Cooja.SimulationCreationException;
 import org.contikios.cooja.util.EventTriggers;
 import org.contikios.cooja.util.EventTriggers.AddRemove;
+import org.contikios.cooja.util.ScnObservable;
 import org.jdom2.Element;
 
 /**
@@ -126,6 +127,7 @@ public final class Simulation {
 
   /** Mote add and remove triggers. */
   private final EventTriggers<EventTriggers.AddRemove, Mote> moteTriggers = new EventTriggers<>();
+  final ScnObservable moteHighlightObservable = Cooja.isVisualized() ? new ScnObservable() : null;
 
   /** Property change support */
   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);

@@ -478,7 +478,7 @@ public class BufferListener extends VisPlugin {
         if (d == null) {
           return;
         }
-        Cooja.signalMoteHighlight(d.mote);
+        gui.signalMoteHighlight(d.mote);
       }
     });
 

@@ -461,7 +461,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     /* Update timeline for the duration of the plugin */
     repaintTimelineTimer.start();
 
-    Cooja.addMoteHighlightObserver(moteHighlightObserver = (obs, obj) -> {
+    gui.addMoteHighlightObserver(moteHighlightObserver = (obs, obj) -> {
       if (!(obj instanceof final Mote mote)) {
         return;
       }
@@ -1077,7 +1077,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     repaintTimelineTimer.stop();
 
     if (moteHighlightObserver != null) {
-      Cooja.deleteMoteHighlightObserver(moteHighlightObserver);
+      gui.deleteMoteHighlightObserver(moteHighlightObserver);
     }
     simulation.getEventCentral().removeMoteCountListener(moteCountListener);
     simulation.getEventCentral().removeLogOutputListener(newMotesListener);
@@ -1712,7 +1712,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           if (m == null) {
             return;
           }
-          Cooja.signalMoteHighlight(m);
+          gui.signalMoteHighlight(m);
 
           sortItem.setText("Sort by distance: " + m);
           sortItem.putClientProperty("mote", m);
