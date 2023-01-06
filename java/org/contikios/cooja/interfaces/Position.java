@@ -35,7 +35,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.Observable;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -43,6 +42,7 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
+import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
 /**
@@ -54,10 +54,11 @@ import org.jdom2.Element;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Position")
-public class Position extends Observable implements MoteInterface {
+public class Position implements MoteInterface {
   private final Mote mote;
   private final double[] coords = new double[3];
   private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
+  private final EventTriggers<EventTriggers.Update, Mote> eventTriggers = new EventTriggers<>();
 
   /**
    * Creates a position for given mote with coordinates (x=0, y=0, z=0).
@@ -96,8 +97,7 @@ public class Position extends Observable implements MoteInterface {
         }
       });
     }
-    this.setChanged();
-    this.notifyObservers(mote);
+    eventTriggers.trigger(EventTriggers.Update.UPDATE, mote);
   }
 
   /**
@@ -201,6 +201,10 @@ public class Position extends Observable implements MoteInterface {
     }
 
     setCoordinates(x, y, z);
+  }
+
+  public EventTriggers<EventTriggers.Update, Mote> getPositionTriggers() {
+     return eventTriggers;
   }
 
   private static double getAttributeAsDouble(Element element, String name, double defaultValue) {
