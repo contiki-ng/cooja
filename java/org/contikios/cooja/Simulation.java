@@ -28,6 +28,8 @@
 
 package org.contikios.cooja;
 import java.awt.Color;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -59,6 +61,9 @@ public final class Simulation {
   private enum Command {
     START, STOP, QUIT
   }
+
+  public static final String PROPERTY_TITLE = "title";
+  public static final String PROPERTY_SPEED_LIMIT = "speedLimit";
 
   public static final long MICROSECOND = 1L;
   public static final long MILLISECOND = 1000*MICROSECOND;
@@ -121,6 +126,9 @@ public final class Simulation {
 
   /** Mote add and remove triggers. */
   private final EventTriggers<EventTriggers.AddRemove, Mote> moteTriggers = new EventTriggers<>();
+
+  /** Property change support */
+  private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
   /** List of active script engines. */
   private final ArrayList<LogScriptEngine> scriptEngines = new ArrayList<>();
@@ -899,8 +907,12 @@ public final class Simulation {
    */
   public void setSpeedLimit(final Double newSpeedLimit) {
     invokeSimulationThread(() -> {
+      var oldSpeedLimit = getSpeedLimit();
       speedLimitNone = newSpeedLimit == null;
       if (speedLimitNone) {
+        if (oldSpeedLimit != null) {
+          propertyChangeSupport.firePropertyChange(PROPERTY_SPEED_LIMIT, oldSpeedLimit, null);
+        }
         return;
       }
       speedLimitLastRealtime = System.currentTimeMillis();
@@ -911,6 +923,7 @@ public final class Simulation {
         delayEvent.remove();
       }
       scheduleEvent(delayEvent, currentSimulationTime);
+      propertyChangeSupport.firePropertyChange(PROPERTY_SPEED_LIMIT, oldSpeedLimit, speedLimit);
     });
   }
 
@@ -984,7 +997,9 @@ public final class Simulation {
    *          New title
    */
   public void setTitle(String title) {
+    var oldTitle = this.title;
     this.title = title;
+    propertyChangeSupport.firePropertyChange(PROPERTY_TITLE, oldTitle, title);
   }
 
   /** Returns the simulation configuration. */
@@ -1016,6 +1031,22 @@ public final class Simulation {
   /** Returns the mote relations triggers. */
   public EventTriggers<AddRemove, MoteRelation> getMoteRelationsTriggers() {
     return moteRelationsTriggers;
+  }
+
+  public void addPropertyChangeListener(PropertyChangeListener listener) {
+    propertyChangeSupport.addPropertyChangeListener(listener);
+  }
+
+  public void removePropertyChangeListener(PropertyChangeListener listener) {
+    propertyChangeSupport.removePropertyChangeListener(listener);
+  }
+
+  public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
+    propertyChangeSupport.addPropertyChangeListener(property, listener);
+  }
+
+  public void removePropertyChangeListener(String property, PropertyChangeListener listener) {
+    propertyChangeSupport.removePropertyChangeListener(property, listener);
   }
 
   /** Exception for signaling the simulation that an emulator has stopped. */
