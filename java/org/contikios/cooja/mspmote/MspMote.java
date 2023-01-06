@@ -186,10 +186,12 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     requestImmediateWakeup();
   }
 
-  /**
-   * Abort execution immediately.
-   * May for example be called by a breakpoint handler.
-   */
+  @Override
+  public long getCPUCycles() {
+    return myCpu.cpuCycles;
+  }
+
+  @Override
   public void stopNextInstruction() {
     stopNextInstruction = true;
     getCPU().stop();
@@ -411,24 +413,5 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
       listener.watchpointsChanged();
     }
     return bp;
-  }
-
-  private long lastBreakpointCycles = -1;
-  public void signalBreakpointTrigger(MspBreakpoint b) {
-    if (lastBreakpointCycles == myCpu.cycles) {
-      return;
-    }
-
-    lastBreakpointCycles = myCpu.cycles;
-    if (b.stopsSimulation() && getSimulation().isRunning()) {
-      /* Stop simulation immediately */
-      stopNextInstruction();
-    }
-
-    /* Notify listeners */
-    WatchpointListener[] listeners = getWatchpointListeners();
-    for (WatchpointListener listener: listeners) {
-      listener.watchpointTriggered(b);
-    }
   }
 }
