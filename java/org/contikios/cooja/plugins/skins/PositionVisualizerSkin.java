@@ -33,15 +33,12 @@ package org.contikios.cooja.plugins.skins;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.util.function.BiConsumer;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
-import org.contikios.cooja.util.EventTriggers;
 
 /**
  * Visualizer skin for mote positions.
@@ -55,41 +52,14 @@ public class PositionVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private final MoteCountListener simObserver = new MoteCountListener() {
-    private final BiConsumer<EventTriggers.Update, Mote> positionObserver = (obs, obj) -> visualizer.repaint();
-    @Override
-    public void moteWasAdded(Mote mote) {
-      Position p = mote.getInterfaces().getPosition();
-      if (p != null) {
-        p.getPositionTriggers().addTrigger(this, positionObserver);
-      }
-    }
-    @Override
-    public void moteWasRemoved(Mote mote) {
-      Position p = mote.getInterfaces().getPosition();
-      if (p != null) {
-        p.getPositionTriggers().removeTrigger(this, positionObserver);
-      }
-    }
-  };
-
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
-
-    simulation.getEventCentral().addMoteCountListener(simObserver);
-    for (Mote m: simulation.getMotes()) {
-      simObserver.moteWasAdded(m);
-    }
   }
 
   @Override
   public void setInactive() {
-    simulation.getEventCentral().removeMoteCountListener(simObserver);
-    for (Mote m: simulation.getMotes()) {
-      simObserver.moteWasRemoved(m);
-    }
   }
 
   @Override
