@@ -68,6 +68,4 @@ public interface WatchpointMote extends Mote {
 
   boolean breakpointExists(long address);
   boolean breakpointExists(File file, int lineNr);
-
-  long getExecutableAddressOf(File file, int lineNr);
 }

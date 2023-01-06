@@ -182,10 +182,6 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
     return false;
   }
 
-  public long getExecutableAddressOf(File file, int lineNr) {
-    return -1; // FIXME: this belongs in MoteType, not Mote.
-  }
-
   /**
    * Execute mote software.
    * This method is only called from the simulation thread.

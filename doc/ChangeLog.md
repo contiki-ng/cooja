@@ -23,6 +23,11 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Moved getExecutableAddressOf from WatchpointMote to MoteType
+
+Call the method with `mote.getType().getExecutableAddressOf(file, line)`
+instead of `mote.getExecutableAddressOf(file, line)`.
+
 ### Add added/removed methods to Mote interface
 
 Cooja calls these methods when motes are added and removed from the simulation.
