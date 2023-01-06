@@ -138,6 +138,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return configureAndInit(Cooja.getTopParentContainer(), simulation, Cooja.isVisualized());
   }
 
+  @Override
   public long getExecutableAddressOf(File file, int lineNr) {
     if (file == null || lineNr < 0) {
       return -1;

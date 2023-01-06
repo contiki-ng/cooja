@@ -28,6 +28,7 @@
 package org.contikios.cooja;
 
 import java.awt.Container;
+import java.io.File;
 import java.util.Collection;
 
 import javax.swing.JComponent;
@@ -151,6 +152,10 @@ public interface MoteType {
   boolean setConfigXML(
       Simulation simulation, Collection<Element> configXML, boolean visAvailable)
   throws MoteTypeCreationException;
+
+  default long getExecutableAddressOf(File file, int lineNr) {
+    return -1;
+  }
 
   class MoteTypeCreationException extends Exception {
     private MessageList compilationOutput;

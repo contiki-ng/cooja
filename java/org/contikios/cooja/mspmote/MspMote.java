@@ -415,11 +415,6 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     return bp;
   }
 
-  @Override
-  public long getExecutableAddressOf(File file, int lineNr) {
-    return moteType.getExecutableAddressOf(file, lineNr);
-  }
-
   private long lastBreakpointCycles = -1;
   public void signalBreakpointTrigger(MspBreakpoint b) {
     if (lastBreakpointCycles == myCpu.cycles) {

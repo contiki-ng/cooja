@@ -256,7 +256,7 @@ public class MspBreakpoint implements Watchpoint {
     }
 
     /* Update executable address */
-    address = mspMote.getExecutableAddressOf(codeFile, lineNr);
+    address = mspMote.getType().getExecutableAddressOf(codeFile, lineNr);
     if (address < 0) {
       logger.fatal("Could not restore breakpoint, did source code change?");
       return false;
