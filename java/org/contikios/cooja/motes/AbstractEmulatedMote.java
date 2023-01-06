@@ -31,10 +31,13 @@ package org.contikios.cooja.motes;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mote.memory.MemoryInterface;
+import org.contikios.cooja.mspmote.plugins.MspBreakpoint;
 import org.contikios.cooja.plugins.BufferListener;
 import org.contikios.cooja.plugins.TimeLine;
 
 public abstract class AbstractEmulatedMote<T extends MoteType, M extends MemoryInterface> extends AbstractWakeupMote<T, M> {
+  protected long lastBreakpointCycles = -1;
+
   protected AbstractEmulatedMote(T moteType, Simulation sim) {
     super(moteType, sim);
   }
@@ -66,5 +69,28 @@ public abstract class AbstractEmulatedMote<T extends MoteType, M extends MemoryI
 
   public String getStackTrace() {
     return null;
+  }
+
+  public abstract long getCPUCycles();
+
+  /**
+   * Stop execution immediately.
+   * May for example be called by a breakpoint handler.
+   */
+  public abstract void stopNextInstruction();
+
+  // FIXME: generalize MspBreakpoint to a Breakpoint.
+  public void signalBreakpointTrigger(MspBreakpoint b) {
+    var cycles = getCPUCycles();
+    if (lastBreakpointCycles == cycles) {
+      return;
+    }
+    lastBreakpointCycles = cycles;
+    if (b.stopsSimulation() && getSimulation().isRunning()) {
+      stopNextInstruction();
+    }
+    for (var listener : getWatchpointListeners()) {
+      listener.watchpointTriggered(b);
+    }
   }
 }
