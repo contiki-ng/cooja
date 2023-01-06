@@ -49,12 +49,17 @@ public class EventTriggers<K, T> {
   public enum Update {UPDATE}
 
   private final LinkedHashMap<Object, ArrayList<BiConsumer<K, T>>> triggers = new LinkedHashMap<>();
+  private boolean isActive;
 
   /**
    * Add a trigger owned by an object.
    */
   public void addTrigger(Object owner, BiConsumer<K, T> observer) {
     triggers.computeIfAbsent(owner, k -> new ArrayList<>()).add(observer);
+    if (!isActive) {
+      isActive = true;
+      activate();
+    }
   }
 
   /**
@@ -83,5 +88,11 @@ public class EventTriggers<K, T> {
     for (var observables : triggers.values()) {
       observables.forEach(o -> o.accept(key, value));
     }
+  }
+
+  /**
+   * Called when first trigger has been added.
+   */
+  protected void activate() {
   }
 }
