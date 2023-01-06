@@ -84,7 +84,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	
 	private RadioConnection lastConnection = null;
 	
-	private final Simulation simulation;
+	protected final Simulation simulation;
 	
 	/* Bookkeeping */
 	public int COUNTER_TX = 0;

@@ -62,7 +62,6 @@ import org.contikios.cooja.interfaces.Radio;
 public class DirectedGraphMedium extends AbstractRadioMedium {
   private static final Logger logger = LogManager.getLogger(DirectedGraphMedium.class);
 
-  private final Simulation simulation;
   private final Random random;
 
   private final ArrayList<Edge> edges = new ArrayList<>();
@@ -73,7 +72,6 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
 
   public DirectedGraphMedium(Simulation simulation) {
     super(simulation);
-    this.simulation = simulation;
     random = simulation.getRandomGenerator();
 
     requestEdgeAnalysis();
