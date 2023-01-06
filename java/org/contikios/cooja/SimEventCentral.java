@@ -33,9 +33,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Optional;
 
+import org.contikios.cooja.util.AnyMoteEventTriggers;
+import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
-
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.util.ArrayUtils;
 
@@ -50,9 +52,16 @@ import org.contikios.cooja.util.ArrayUtils;
  */
 public class SimEventCentral {
   private final Simulation simulation;
+  private final AnyMoteEventTriggers<EventTriggers.Update> positionTriggers;
 
   public SimEventCentral(Simulation simulation) {
     this.simulation = simulation;
+    positionTriggers = new AnyMoteEventTriggers<>(simulation, mote ->
+            Optional.of(mote.getInterfaces().getPosition().getPositionTriggers()));
+  }
+
+  public EventTriggers<EventTriggers.Update, Mote> getPositionTriggers() {
+    return positionTriggers;
   }
 
   /* GENERIC */
