@@ -326,9 +326,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
         for (Element elem : element.getChildren()) {
           if (elem.getName().equals("breakpoint")) {
             MspBreakpoint breakpoint = new MspBreakpoint(this);
-            if (!breakpoint.setConfigXML(elem.getChildren())) {
-              logger.warn("Could not restore breakpoint: " + breakpoint);
-            } else {
+            if (breakpoint.setConfigXML(elem.getChildren())) {
               watchpoints.add(breakpoint);
             }
           }

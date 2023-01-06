@@ -225,6 +225,7 @@ public class MspBreakpoint implements Watchpoint {
         }
 
         if (codeFile == null || !codeFile.exists()) {
+          logger.error("Could not find file: {}", element.getText());
           return false;
         }
       } else if (element.getName().equals("line")) {
