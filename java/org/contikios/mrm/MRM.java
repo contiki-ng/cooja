@@ -83,7 +83,6 @@ public class MRM extends AbstractRadioMedium {
   private double CAPTURE_EFFECT_THRESHOLD;
   private double CAPTURE_EFFECT_PREAMBLE_DURATION;
   
-  private final Simulation sim;
   private final Random random;
   private final ChannelModel currentChannelModel;
 
@@ -93,9 +92,8 @@ public class MRM extends AbstractRadioMedium {
   public MRM(Simulation simulation) {
     super(simulation);
 
-    sim = simulation;
     random = simulation.getRandomGenerator();
-    currentChannelModel = new ChannelModel(sim);
+    currentChannelModel = new ChannelModel(simulation);
     
     WITH_CAPTURE_EFFECT = currentChannelModel.getParameterBooleanValue(ChannelModel.Parameter.captureEffect);
     CAPTURE_EFFECT_THRESHOLD = currentChannelModel.getParameterDoubleValue(ChannelModel.Parameter.captureEffectSignalTreshold);
@@ -110,8 +108,8 @@ public class MRM extends AbstractRadioMedium {
     });
     
     if (Cooja.isVisualized()) {
-      sim.getCooja().registerPlugin(AreaViewer.class);
-      sim.getCooja().registerPlugin(FormulaViewer.class);
+      simulation.getCooja().registerPlugin(AreaViewer.class);
+      simulation.getCooja().registerPlugin(FormulaViewer.class);
       Visualizer.registerVisualizerSkin(MRMVisualizerSkin.class);
     }
   }
@@ -121,8 +119,8 @@ public class MRM extends AbstractRadioMedium {
     super.removed();
 
     if (Cooja.isVisualized()) {
-      sim.getCooja().unregisterPlugin(AreaViewer.class);
-      sim.getCooja().unregisterPlugin(FormulaViewer.class);
+      simulation.getCooja().unregisterPlugin(AreaViewer.class);
+      simulation.getCooja().unregisterPlugin(FormulaViewer.class);
       Visualizer.unregisterVisualizerSkin(MRMVisualizerSkin.class);
     }
 
@@ -242,7 +240,7 @@ public class MRM extends AbstractRadioMedium {
               /* New signal is strong enough to either interfere with ongoing transmission,
                * or to be received/captured */
               long startTime = newConnection.getReceptionStartTime();
-              boolean interfering = (sim.getSimulationTime()-startTime) >= CAPTURE_EFFECT_PREAMBLE_DURATION; /* us */
+              boolean interfering = (simulation.getSimulationTime()-startTime) >= CAPTURE_EFFECT_PREAMBLE_DURATION; /* us */
               if (interfering) {
                 newConnection.addInterfered(recv, recvSignalStrength);
                 recv.interfereAnyReception();
