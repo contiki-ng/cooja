@@ -39,9 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Cooja;
 import org.jdom2.Element;
 import org.contikios.cooja.ClassDescription;
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
-import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
@@ -205,16 +203,8 @@ public class LogisticLoss extends AbstractRadioMedium {
          * If any positions change, re-analyze potential receivers. */
         simulation.getEventCentral().getPositionTriggers().addTrigger(this, (o, m) -> dgrm.requestEdgeAnalysis());
         /* Re-analyze potential receivers if radios are added/removed. */
-        simulation.getEventCentral().addMoteCountListener(new MoteCountListener() {
-                @Override
-                public void moteWasAdded(Mote mote) {
-                    dgrm.requestEdgeAnalysis();
-                }
-                @Override
-                public void moteWasRemoved(Mote mote) {
-                    dgrm.requestEdgeAnalysis();
-                }
-            });
+        simulation.getMoteTriggers().addTrigger(this, (o, m) -> dgrm.requestEdgeAnalysis());
+
         dgrm.requestEdgeAnalysis();
 
         if (Cooja.isVisualized()) {
