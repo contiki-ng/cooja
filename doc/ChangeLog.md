@@ -23,6 +23,11 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed MOTE_INTERFACES support in ContikiMoteType
+
+Extend ContikiMoteType and override the methods that deal with interfaces
+instead.
+
 ### Removed mote interface RimeAddress
 
 The interface is no longer useful as Contiki-NG does not support Rime.
