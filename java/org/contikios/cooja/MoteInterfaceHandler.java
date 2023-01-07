@@ -125,6 +125,7 @@ public class MoteInterfaceHandler {
           entry("org.contikios.cooja.mspmote.interfaces.SkyByteRadio", Msp802154Radio.class), // Compatibility.
           entry("org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem", SkyCoffeeFilesystem.class),
           entry("org.contikios.cooja.mspmote.interfaces.SkyFlash", SkyFlash.class),
+          entry("org.contikios.cooja.mspmote.interfaces.SkyLED", MspLED.class), // Compatibility
           entry("org.contikios.cooja.mspmote.interfaces.SkySerial", MspSerial.class), // Compatibility.
           entry("org.contikios.cooja.mspmote.interfaces.SkyTemperature", SkyTemperature.class));
 
