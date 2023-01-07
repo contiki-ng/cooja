@@ -32,17 +32,13 @@ package org.contikios.cooja.radiomediums;
 
 import java.util.Collection;
 import java.util.Random;
-import java.util.function.BiConsumer;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
-import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
-import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
@@ -123,23 +119,10 @@ public class UDGM extends AbstractRadioMedium {
 
     /* Register as position observer.
      * If any positions change, re-analyze potential receivers. */
-    final BiConsumer<EventTriggers.Update, Mote> positionObserver = (o, arg) -> dgrm.requestEdgeAnalysis();
+    simulation.getEventCentral().getPositionTriggers().addTrigger(this, (o, m) -> dgrm.requestEdgeAnalysis());
     /* Re-analyze potential receivers if radios are added/removed. */
-    simulation.getEventCentral().addMoteCountListener(new MoteCountListener() {
-      @Override
-      public void moteWasAdded(Mote mote) {
-        mote.getInterfaces().getPosition().getPositionTriggers().addTrigger(UDGM.this, positionObserver);
-        dgrm.requestEdgeAnalysis();
-      }
-      @Override
-      public void moteWasRemoved(Mote mote) {
-        mote.getInterfaces().getPosition().getPositionTriggers().removeTrigger(UDGM.this, positionObserver);
-        dgrm.requestEdgeAnalysis();
-      }
-    });
-    for (Mote mote: simulation.getMotes()) {
-      mote.getInterfaces().getPosition().getPositionTriggers().addTrigger(this, positionObserver);
-    }
+    simulation.getMoteTriggers().addTrigger(this, (o, m) -> dgrm.requestEdgeAnalysis());
+
     dgrm.requestEdgeAnalysis();
 
     if (Cooja.isVisualized()) {

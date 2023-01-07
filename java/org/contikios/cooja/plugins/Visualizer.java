@@ -69,7 +69,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observer;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
@@ -102,7 +101,6 @@ import org.contikios.cooja.HasQuickHelp;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.PluginType;
-import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.SupportedArguments;
 import org.contikios.cooja.VisPlugin;
@@ -198,7 +196,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   private final ArrayList<VisualizerSkin> currentSkins = new ArrayList<>();
 
   /* Generic visualization */
-  private final MoteCountListener newMotesListener;
   private final Observer moteHighligtObserver;
   private final ArrayList<Mote> highlightedMotes = new ArrayList<>();
   private final static Color HIGHLIGHT_COLOR = Color.CYAN;
@@ -421,35 +418,14 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     this.add(BorderLayout.CENTER, canvas);
 
     /* Observe simulation and mote positions */
-    BiConsumer<EventTriggers.Update, Mote> posObserver = (obs, obj) -> repaint();
-    simulation.getEventCentral().addMoteCountListener(newMotesListener = new MoteCountListener() {
-      @Override
-      public void moteWasAdded(Mote mote) {
-        Position pos = mote.getInterfaces().getPosition();
-        if (pos != null) {
-          pos.getPositionTriggers().addTrigger(Visualizer.this, posObserver);
-          EventQueue.invokeLater(() -> {
-            resetViewport = 1;
-            repaint();
-          });
-        }
-      }
+    simulation.getEventCentral().getPositionTriggers().addTrigger(this, (o, m) -> EventQueue.invokeLater(this::repaint));
 
-      @Override
-      public void moteWasRemoved(Mote mote) {
-        Position pos = mote.getInterfaces().getPosition();
-        if (pos != null) {
-          pos.getPositionTriggers().removeTrigger(Visualizer.this, posObserver);
-          repaint();
-        }
+    simulation.getMoteTriggers().addTrigger(this, (operation, mote) -> EventQueue.invokeLater(() -> {
+      if (operation == EventTriggers.AddRemove.ADD) {
+        resetViewport = 1;
       }
-    });
-    for (Mote mote : simulation.getMotes()) {
-      Position pos = mote.getInterfaces().getPosition();
-      if (pos != null) {
-        pos.getPositionTriggers().addTrigger(this, posObserver);
-      }
-    }
+      repaint();
+    }));
 
     /* Observe mote highlights */
     Cooja.addMoteHighlightObserver(moteHighligtObserver = (obs, obj) -> {
@@ -1370,14 +1346,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       Cooja.deleteMoteHighlightObserver(moteHighligtObserver);
     }
     simulation.getMoteRelationsTriggers().deleteTriggers(this);
-
-    simulation.getEventCentral().removeMoteCountListener(newMotesListener);
-    for (Mote mote : simulation.getMotes()) {
-      Position pos = mote.getInterfaces().getPosition();
-      if (pos != null) {
-        pos.getPositionTriggers().deleteTriggers(this);
-      }
-    }
+    simulation.getEventCentral().getPositionTriggers().deleteTriggers(this);
+    simulation.getMoteTriggers().deleteTriggers(this);
   }
 
   /**
