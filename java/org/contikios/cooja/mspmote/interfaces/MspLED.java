@@ -99,17 +99,17 @@ public class MspLED extends LED {
 
     @Override
     public boolean isGreenOn() {
-        return leds.isLedOn(0);
-    }
-
-    @Override
-    public boolean isYellowOn()  {
         return leds.isLedOn(1);
     }
 
     @Override
-    public boolean isRedOn() {
+    public boolean isYellowOn()  {
         return leds.isLedOn(2);
+    }
+
+    @Override
+    public boolean isRedOn() {
+        return leds.isLedOn(0);
     }
 
     @Override
