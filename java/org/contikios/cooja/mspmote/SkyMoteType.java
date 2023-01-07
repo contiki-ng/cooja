@@ -39,7 +39,6 @@ import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
-import org.contikios.cooja.interfaces.RimeAddress;
 import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
 import org.contikios.cooja.mspmote.interfaces.MspClock;
@@ -87,7 +86,6 @@ public class SkyMoteType extends MspMoteType {
   public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
     var classes = List.of(
         Position.class,
-        RimeAddress.class,
         IPAddress.class,
         Mote2MoteRelations.class,
         MoteAttributes.class,

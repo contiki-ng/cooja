@@ -201,6 +201,10 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
         case "command", "commands" -> compileCommands = element.getText();
         case "moteinterface" -> {
           var name = element.getText().trim();
+          // Skip interfaces that have been removed or merged into other classes.
+          if ("org.contikios.cooja.interfaces.RimeAddress".equals(name)) {
+            continue;
+          }
           var clazz = MoteInterfaceHandler.getInterfaceClass(sim.getCooja(), this, name);
           if (clazz == null) {
             logger.warn("Can't find mote interface class: " + name);
