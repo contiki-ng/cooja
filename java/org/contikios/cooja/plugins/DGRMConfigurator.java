@@ -442,11 +442,11 @@ public class DGRMConfigurator extends VisPlugin {
 
       Mote sourceMote = radioMedium.getEdges()[row].source.getMote();
       if (column == IDX_SRC) {
-        Cooja.signalMoteHighlight(sourceMote);
+        gui.signalMoteHighlight(sourceMote);
         return false;
       }
       if (column == IDX_DST) {
-        Cooja.signalMoteHighlight(radioMedium.getEdges()[row].superDest.radio.getMote());
+        gui.signalMoteHighlight(radioMedium.getEdges()[row].superDest.radio.getMote());
         return false;
       }
       if (column == IDX_RATIO) {

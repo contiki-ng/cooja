@@ -253,7 +253,7 @@ public class RadioLogger extends VisPlugin {
       public boolean isCellEditable(int row, int col) {
         if (col == COLUMN_FROM) {
           /* Highlight source */
-          Cooja.signalMoteHighlight(connections.get(row).connection.getSource().getMote());
+          gui.signalMoteHighlight(connections.get(row).connection.getSource().getMote());
           return false;
         }
 
@@ -261,7 +261,7 @@ public class RadioLogger extends VisPlugin {
           /* Highlight all destinations */
           Radio[] dests = connections.get(row).connection.getDestinations();
           for (Radio dest: dests) {
-            Cooja.signalMoteHighlight(dest.getMote());
+            gui.signalMoteHighlight(dest.getMote());
           }
           return false;
         }

@@ -266,9 +266,9 @@ public class Cooja {
    * @param newObserver
    *          New observer
    */
-  public static void addMoteHighlightObserver(Observer newObserver) {
-    if (gui != null) {
-      gui.moteHighlightObservable.addObserver(newObserver);
+  public void addMoteHighlightObserver(Observer newObserver) {
+    if (Cooja.isVisualized() && mySimulation != null) {
+      mySimulation.moteHighlightObservable.addObserver(newObserver);
     }
   }
 
@@ -279,9 +279,9 @@ public class Cooja {
    * @param observer
    *          Observer to delete
    */
-  public static void deleteMoteHighlightObserver(Observer observer) {
-    if (gui != null) {
-      gui.moteHighlightObservable.deleteObserver(observer);
+  public void deleteMoteHighlightObserver(Observer observer) {
+    if (Cooja.isVisualized() && mySimulation != null) {
+      mySimulation.moteHighlightObservable.deleteObserver(observer);
     }
   }
 
@@ -1606,9 +1606,9 @@ public class Cooja {
    * @param m
    *          Mote to highlight
    */
-  public static void signalMoteHighlight(Mote m) {
-    if (gui != null) {
-      gui.moteHighlightObservable.setChangedAndNotify(m);
+  public void signalMoteHighlight(Mote m) {
+    if (Cooja.isVisualized() && mySimulation != null) {
+      mySimulation.moteHighlightObservable.setChangedAndNotify(m);
     }
   }
 

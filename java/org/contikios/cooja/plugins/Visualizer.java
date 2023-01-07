@@ -428,7 +428,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     }));
 
     /* Observe mote highlights */
-    Cooja.addMoteHighlightObserver(moteHighligtObserver = (obs, obj) -> {
+    gui.addMoteHighlightObserver(moteHighligtObserver = (obs, obj) -> {
       if (!(obj instanceof final Mote mote)) {
         return;
       }
@@ -1343,7 +1343,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     }
     currentSkins.clear();
     if (moteHighligtObserver != null) {
-      Cooja.deleteMoteHighlightObserver(moteHighligtObserver);
+      gui.deleteMoteHighlightObserver(moteHighligtObserver);
     }
     simulation.getMoteRelationsTriggers().deleteTriggers(this);
     simulation.getEventCentral().getPositionTriggers().deleteTriggers(this);

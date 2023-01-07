@@ -137,13 +137,11 @@ public class BaseRSSIconf extends VisPlugin {
         }
 
         if (column == IDX_Mote) {
-          Cooja.signalMoteHighlight(radioMedium.getRegisteredRadios()[row]
-                  .getMote());
+          gui.signalMoteHighlight(radioMedium.getRegisteredRadios()[row].getMote());
           return false;
         }
         if (column == IDX_BaseRSSI) {
-          Cooja.signalMoteHighlight(radioMedium.getRegisteredRadios()[row]
-                  .getMote());
+          gui.signalMoteHighlight(radioMedium.getRegisteredRadios()[row].getMote());
           return true;
         }
         return false;

@@ -527,7 +527,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         if (d == null) {
         	return;
         }
-        Cooja.signalMoteHighlight(d.ev.getMote());
+        gui.signalMoteHighlight(d.ev.getMote());
     	}
 		});
 
