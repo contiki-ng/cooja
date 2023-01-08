@@ -405,7 +405,7 @@ public final class Simulation {
 
   private SimulationCreationException startPlugins(Element root, Cooja cooja) {
     // Restart plugins from config
-    boolean hasController = false;
+    boolean hasController = Cooja.isVisualized();
     for (var pluginElement : root.getChildren("plugin")) {
       String pluginClassName = pluginElement.getText().trim();
       if (pluginClassName.startsWith("se.sics")) {
@@ -435,7 +435,7 @@ public final class Simulation {
       if (!Cooja.isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
         continue;
       }
-      if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.PType.SIM_CONTROL_PLUGIN) {
+      if (!hasController && pluginClass.getAnnotation(PluginType.class).value() == PluginType.PType.SIM_CONTROL_PLUGIN) {
         hasController = true;
       }
       // Parse plugin mote argument (if any).
