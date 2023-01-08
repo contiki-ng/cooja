@@ -28,10 +28,10 @@
 
 package org.contikios.cooja.motes;
 
+import org.contikios.cooja.Breakpoint;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mote.memory.MemoryInterface;
-import org.contikios.cooja.mspmote.plugins.MspBreakpoint;
 import org.contikios.cooja.plugins.BufferListener;
 import org.contikios.cooja.plugins.TimeLine;
 
@@ -79,8 +79,7 @@ public abstract class AbstractEmulatedMote<T extends MoteType, M extends MemoryI
    */
   public abstract void stopNextInstruction();
 
-  // FIXME: generalize MspBreakpoint to a Breakpoint.
-  public void signalBreakpointTrigger(MspBreakpoint b) {
+  public void signalBreakpointTrigger(Breakpoint b) {
     var cycles = getCPUCycles();
     if (lastBreakpointCycles == cycles) {
       return;
