@@ -37,15 +37,18 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.util.Objects;
+import java.util.Optional;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
+import org.contikios.cooja.util.AnyMoteEventTriggers;
+import org.contikios.cooja.util.EventTriggers;
 
 /**
  * Visualizer skin for mote addresses.
@@ -59,45 +62,23 @@ public class AddressVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private final MoteCountListener newMotesListener = new MoteCountListener() {
-    @Override
-    public void moteWasAdded(Mote mote) {
-      IPAddress ipAddr = mote.getInterfaces().getIPAddress();
-      if (ipAddr != null) {
-        ipAddr.getTriggers().addTrigger(this, (a, b) -> visualizer.repaint());
-      }
-    }
-    @Override
-    public void moteWasRemoved(Mote mote) {
-      IPAddress ipAddr = mote.getInterfaces().getIPAddress();
-      if (ipAddr != null) {
-        ipAddr.getTriggers().deleteTriggers(this);
-      }
-    }
-  };
+  private AnyMoteEventTriggers<EventTriggers.Update> newMotesListener;
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
-
-    simulation.getEventCentral().addMoteCountListener(newMotesListener);
-    for (Mote m: simulation.getMotes()) {
-      newMotesListener.moteWasAdded(m);
-    }
-    
-    /* Register menu actions */
+    Objects.requireNonNullElseGet(newMotesListener, () ->
+            newMotesListener = new AnyMoteEventTriggers<>(simulation, mote -> {
+              var ipAddr = mote.getInterfaces().getIPAddress();
+              return ipAddr == null ? Optional.empty() : Optional.of(ipAddr.getTriggers());
+            })).addTrigger(this, (event, mote) -> visualizer.repaint());
     visualizer.registerMoteMenuAction(CopyAddressAction.class);
   }
 
   @Override
   public void setInactive() {
-    simulation.getEventCentral().removeMoteCountListener(newMotesListener);
-    for (Mote m: simulation.getMotes()) {
-      newMotesListener.moteWasRemoved(m);
-    }
-
-    /* Unregister menu actions */
+    newMotesListener.deleteTriggers(this);
     visualizer.unregisterMoteMenuAction(CopyAddressAction.class);
   }
 
