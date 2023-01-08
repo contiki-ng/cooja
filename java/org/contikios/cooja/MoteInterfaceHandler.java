@@ -63,7 +63,6 @@ import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.PIR;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
-import org.contikios.cooja.interfaces.RimeAddress;
 import org.contikios.cooja.motes.DisturberMoteType;
 import org.contikios.cooja.motes.ImportAppMoteType;
 import org.contikios.cooja.mspmote.SkyMoteType;
@@ -98,7 +97,6 @@ public class MoteInterfaceHandler {
           entry("org.contikios.cooja.contikimote.interfaces.ContikiMoteID", ContikiMoteID.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiRS232", ContikiRS232.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiBeeper", ContikiBeeper.class),
-          entry("org.contikios.cooja.interfaces.RimeAddress", RimeAddress.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiIPAddress", IPAddress.class), // Compatibility.
           entry("org.contikios.cooja.contikimote.interfaces.ContikiRadio", ContikiRadio.class),
           entry("org.contikios.cooja.contikimote.interfaces.ContikiButton", ContikiButton.class),
@@ -134,7 +132,6 @@ public class MoteInterfaceHandler {
   private Button myButton;
   private Clock myClock;
   private IPAddress myIPAddress;
-  private RimeAddress myRimeAddress;
   private LED myLED;
   private Log myLog;
   private MoteID myMoteID;
@@ -299,16 +296,6 @@ public class MoteInterfaceHandler {
       myIPAddress = getInterfaceOfType(IPAddress.class);
     }
     return myIPAddress;
-  }
-
-  /**
-   * @return Rime address interface
-   */
-  public RimeAddress getRimeAddress() {
-    if (myRimeAddress == null) {
-      myRimeAddress = getInterfaceOfType(RimeAddress.class);
-    }
-    return myRimeAddress;
   }
 
   /**

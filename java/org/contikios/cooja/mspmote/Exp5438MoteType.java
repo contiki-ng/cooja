@@ -37,7 +37,6 @@ import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
-import org.contikios.cooja.interfaces.RimeAddress;
 import org.contikios.cooja.mspmote.interfaces.CC1101Radio;
 import org.contikios.cooja.mspmote.interfaces.CC1120Radio;
 import org.contikios.cooja.mspmote.interfaces.Exp5438LED;
@@ -107,7 +106,6 @@ public class Exp5438MoteType extends MspMoteType {
   public Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses() {
     var classes = List.of(
             Position.class,
-            RimeAddress.class,
             IPAddress.class,
             Mote2MoteRelations.class,
             MoteAttributes.class,
@@ -124,7 +122,6 @@ public class Exp5438MoteType extends MspMoteType {
   public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
     var classes = List.of(
         Position.class,
-        RimeAddress.class,
         IPAddress.class,
         Mote2MoteRelations.class,
         MoteAttributes.class,

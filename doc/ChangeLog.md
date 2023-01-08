@@ -23,6 +23,10 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed mote interface RimeAddress
+
+The interface is no longer useful as Contiki-NG does not support Rime.
+
 ### Removed Observable from Position, LED, and addresses mote interfaces
 
 Observable in these mote interfaces have been replaced by event triggers,

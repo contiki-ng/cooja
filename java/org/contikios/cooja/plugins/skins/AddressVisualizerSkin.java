@@ -43,7 +43,6 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.interfaces.Position;
-import org.contikios.cooja.interfaces.RimeAddress;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
@@ -55,7 +54,7 @@ import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
  *
  * @author Fredrik Osterlind
  */
-@ClassDescription("Addresses: IP or Rime")
+@ClassDescription("Addresses: IP")
 public class AddressVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
@@ -67,20 +66,12 @@ public class AddressVisualizerSkin implements VisualizerSkin {
       if (ipAddr != null) {
         ipAddr.getTriggers().addTrigger(this, (a, b) -> visualizer.repaint());
       }
-      RimeAddress rimeAddr = mote.getInterfaces().getRimeAddress();
-      if (rimeAddr != null) {
-        rimeAddr.getTriggers().addTrigger(this, (a, b) -> visualizer.repaint());
-      }
     }
     @Override
     public void moteWasRemoved(Mote mote) {
       IPAddress ipAddr = mote.getInterfaces().getIPAddress();
       if (ipAddr != null) {
         ipAddr.getTriggers().deleteTriggers(this);
-      }
-      RimeAddress rimeAddr = mote.getInterfaces().getRimeAddress();
-      if (rimeAddr != null) {
-        rimeAddr.getTriggers().deleteTriggers(this);
       }
     }
   };
@@ -126,11 +117,6 @@ public class AddressVisualizerSkin implements VisualizerSkin {
         return "";
       }
       return ipAddr.getLocalIP().toString();
-    }
-
-    RimeAddress rimeAddr = mote.getInterfaces().getRimeAddress();
-    if (rimeAddr != null) {
-      return rimeAddr.getAddressString();
     }
     return null;
   }

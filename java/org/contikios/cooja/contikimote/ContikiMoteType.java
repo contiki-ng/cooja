@@ -81,7 +81,6 @@ import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
-import org.contikios.cooja.interfaces.RimeAddress;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.mote.memory.ArrayMemory;
 import org.contikios.cooja.mote.memory.MemoryInterface;
@@ -379,7 +378,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     classes.add(ContikiMoteID.class);
     classes.add(ContikiRS232.class);
     classes.add(ContikiBeeper.class);
-    classes.add(RimeAddress.class);
     classes.add(IPAddress.class);
     classes.add(ContikiRadio.class);
     classes.add(ContikiButton.class);
