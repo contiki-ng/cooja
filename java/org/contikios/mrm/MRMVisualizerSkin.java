@@ -34,8 +34,6 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Set;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -47,12 +45,14 @@ import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.mrm.ChannelModel.RadioPair;
 import org.contikios.mrm.ChannelModel.TxPair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ClassDescription("Radio environment (MRM)")
 @SupportedArguments(radioMediums = {MRM.class})
 public class MRMVisualizerSkin implements VisualizerSkin {
 
-  private static final Logger logger = LogManager.getLogger(MRMVisualizerSkin.class);
+  private static final Logger logger = LoggerFactory.getLogger(MRMVisualizerSkin.class);
 
   private Simulation simulation = null;
   private Visualizer visualizer = null;
@@ -60,7 +60,7 @@ public class MRMVisualizerSkin implements VisualizerSkin {
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     if (!(simulation.getRadioMedium() instanceof MRM)) {
-      logger.fatal("Cannot activate MRM skin for unknown radio medium: " + simulation.getRadioMedium());
+      logger.error("Cannot activate MRM skin for unknown radio medium: " + simulation.getRadioMedium());
       return;
     }
     this.simulation = simulation;

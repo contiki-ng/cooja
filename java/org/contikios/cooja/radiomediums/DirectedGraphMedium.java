@@ -36,8 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
@@ -46,6 +44,8 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Radio;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Directed Graph Radio Medium.
@@ -61,7 +61,7 @@ import org.contikios.cooja.interfaces.Radio;
  */
 @ClassDescription("Directed Graph Radio Medium (DGRM)")
 public class DirectedGraphMedium extends AbstractRadioMedium {
-  private static final Logger logger = LogManager.getLogger(DirectedGraphMedium.class);
+  private static final Logger logger = LoggerFactory.getLogger(DirectedGraphMedium.class);
 
   private final Random random;
 
@@ -92,7 +92,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
 
   public void removeEdge(Edge edge) {
     if (!edges.contains(edge)) {
-      logger.fatal("Cannot remove edge: " + edge);
+      logger.error("Cannot remove edge: " + edge);
       return;
     }
     edges.remove(edge);
@@ -239,7 +239,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
       analyzeEdges();
     }
     if (edgesDirty) {
-      logger.fatal("Error when analyzing edges, aborting new radio connection");
+      logger.error("Error when analyzing edges, aborting new radio connection");
       return new RadioConnection(source);
     }
 
@@ -403,7 +403,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
           }
         }
         if (source == null || dest == null) {
-          logger.fatal("Failed loading DGRM links, aborting");
+          logger.error("Failed loading DGRM links, aborting");
           return false;
         } else {
           addEdge(new Edge(source, dest));

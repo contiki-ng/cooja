@@ -33,9 +33,9 @@ package org.contikios.mrm;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.Vector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * This class represents an angle interval.
@@ -43,7 +43,7 @@ import org.apache.logging.log4j.LogManager;
  * @author Fredrik Osterlind
  */
 class AngleInterval {
-  private static final Logger logger = LogManager.getLogger(AngleInterval.class);
+  private static final Logger logger = LoggerFactory.getLogger(AngleInterval.class);
   
   // Sub intervals all between 0 and 2*PI
   final Vector<Interval> subIntervals;
@@ -146,7 +146,7 @@ class AngleInterval {
     }
     
     if (afterIntersectionIntervals.size() > 2) {
-      logger.fatal("AngleInterval.intersectWith() error!");
+      logger.error("AngleInterval.intersectWith() error!");
     } else if (afterIntersectionIntervals.size() == 2) {
       
       // The interval (y-x) is divided into:

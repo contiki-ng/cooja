@@ -31,8 +31,8 @@
 package org.contikios.mrm;
 
 import java.util.Vector;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents an interval. Some operations on these intervals exist,
@@ -42,7 +42,7 @@ import org.apache.logging.log4j.LogManager;
  * @author Fredrik Osterlind
  */
 class Interval {
-  private static final Logger logger = LogManager.getLogger(Interval.class);
+  private static final Logger logger = LoggerFactory.getLogger(Interval.class);
   
   private double lowValue;
   private double highValue;
@@ -127,7 +127,7 @@ class Interval {
         highValue <= interval.getHigh())
       return new Interval(interval.getLow(), highValue);
     
-    logger.fatal("DoubleInterval.intersectWithInterval(), error!");
+    logger.error("DoubleInterval.intersectWithInterval(), error!");
     return null;
   }
   
@@ -193,7 +193,7 @@ class Interval {
       return returnIntervals;
     }
     
-    logger.fatal("DoubleInterval.subtractInterval(), error!");
+    logger.error("DoubleInterval.subtractInterval(), error!");
     return null;
   }
   

@@ -51,8 +51,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import jdk.incubator.foreign.MemoryAddress;
 import jdk.incubator.foreign.ResourceScope;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
@@ -88,6 +86,8 @@ import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.mote.memory.MemoryLayout;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Cooja mote type holds the native library used to communicate with an
@@ -112,7 +112,7 @@ import org.jdom2.Element;
 @AbstractionLevelDescription("OS level")
 public class ContikiMoteType extends BaseContikiMoteType {
 
-  private static final Logger logger = LogManager.getLogger(ContikiMoteType.class);
+  private static final Logger logger = LoggerFactory.getLogger(ContikiMoteType.class);
   private static int fileCounter = 1;
 
   /**

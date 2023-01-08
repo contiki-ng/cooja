@@ -39,20 +39,20 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.mspmote.MspMote;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Fredrik Osterlind
  */
 @ClassDescription("M25P80 Flash")
 public class SkyFlash implements MoteInterface {
-  private static final Logger logger = LogManager.getLogger(SkyFlash.class);
+  private static final Logger logger = LoggerFactory.getLogger(SkyFlash.class);
 
   protected final CoojaM25P80 m24p80;
 
@@ -92,7 +92,7 @@ public class SkyFlash implements MoteInterface {
       byte[] fileData = readDialogFileBytes(Cooja.getTopParentContainer());
       if (fileData != null) {
         if (fileData.length > CoojaM25P80.SIZE) {
-          logger.fatal("Too large data file: " + fileData.length + " > " + CoojaM25P80.SIZE);
+          logger.error("Too large data file: " + fileData.length + " > " + CoojaM25P80.SIZE);
           return;
         }
         m24p80.seek(0);
@@ -136,7 +136,7 @@ public class SkyFlash implements MoteInterface {
     }
 
     if (saveFile.exists() && !saveFile.canWrite()) {
-      logger.fatal("No write access to file: " + saveFile);
+      logger.error("No write access to file: " + saveFile);
       return;
     }
 
@@ -145,7 +145,7 @@ public class SkyFlash implements MoteInterface {
       outStream.write(data);
       outStream.close();
     } catch (Exception ex) {
-      logger.fatal("Could not write to file: " + saveFile);
+      logger.error("Could not write to file: " + saveFile);
     }
 
   }

@@ -29,11 +29,11 @@
  */
 
 package org.contikios.cooja.emulatedmote;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ConvertedRadioPacket;
 import org.contikios.cooja.RadioPacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Converts radio packets between X-MAC/802.15.4 nodes and COOJA.
@@ -44,7 +44,7 @@ import org.contikios.cooja.RadioPacket;
  */
 
 public class Radio802154PacketConverter {
-    private static final Logger logger = LogManager.getLogger(Radio802154PacketConverter.class);
+    private static final Logger logger = LoggerFactory.getLogger(Radio802154PacketConverter.class);
 
     public static final boolean WITH_PREAMBLE = true;
     public static final boolean WITH_SYNCH = true;

@@ -45,8 +45,6 @@ import java.util.concurrent.Semaphore;
 import javax.script.CompiledScript;
 import javax.script.ScriptException;
 import javax.swing.JTextArea;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
 import org.contikios.cooja.plugins.ScriptRunner;
@@ -55,6 +53,8 @@ import org.contikios.cooja.script.ScriptMote;
 import org.contikios.cooja.script.ScriptParser;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngine;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Loads and executes a Contiki test script.
@@ -65,7 +65,7 @@ import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
  * @author Fredrik Osterlind
  */
 public class LogScriptEngine {
-  private static final Logger logger = LogManager.getLogger(LogScriptEngine.class);
+  private static final Logger logger = LoggerFactory.getLogger(LogScriptEngine.class);
   private static final long DEFAULT_TIMEOUT = 20*60*1000*Simulation.MILLISECOND; /* 1200s = 20 minutes */
 
   private final NashornScriptEngine engine = (NashornScriptEngine) new NashornScriptEngineFactory().getScriptEngine();
@@ -90,7 +90,7 @@ public class LogScriptEngine {
 
         stepScript();
       } catch (UndeclaredThrowableException e) {
-        logger.fatal("Exception: " + e.getMessage(), e);
+        logger.error("Exception: " + e.getMessage(), e);
         if (Cooja.isVisualized()) {
           Cooja.showErrorDialog(e.getMessage(), e, false);
         }
@@ -125,7 +125,7 @@ public class LogScriptEngine {
         logWriter.write("Random seed: " + simulation.getRandomSeed() + "\n");
         logWriter.flush();
       } catch (IOException e) {
-        logger.fatal("Could not create {}: {}", logFile, e.toString());
+        logger.error("Could not create {}: {}", logFile, e.toString());
         throw new RuntimeException(e);
       }
       return;
@@ -167,7 +167,7 @@ public class LogScriptEngine {
       logWriter.write(msg);
       logWriter.flush();
     } catch (IOException e) {
-      logger.fatal("Error when writing to test log file: " + msg, e);
+      logger.error("Error when writing to test log file: " + msg, e);
     }
   }
 
@@ -241,7 +241,7 @@ public class LogScriptEngine {
     try {
       semaphoreScript.acquire();
     } catch (InterruptedException e) {
-      logger.fatal("Error when creating engine: " + e.getMessage(), e);
+      logger.error("Error when creating engine: " + e.getMessage(), e);
       return false;
     }
     // Setup script variables.
@@ -261,7 +261,7 @@ public class LogScriptEngine {
       try {
         rv = (int) Objects.requireNonNullElse(script.eval(), 1);
       } catch (Exception e) {
-        logger.fatal("Script error:", e);
+        logger.error("Script error:", e);
         if (Cooja.isVisualized()) {
           Cooja.showErrorDialog("Script error", e, false);
         }

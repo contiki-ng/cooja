@@ -43,8 +43,6 @@ import java.util.Random;
 import java.util.Vector;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
 
 import org.contikios.cooja.Simulation;
@@ -53,6 +51,8 @@ import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 import org.contikios.cooja.util.EventTriggers;
 import org.contikios.mrm.statistics.GaussianWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The channel model object in MRM is responsible for calulating propagation
@@ -66,7 +66,7 @@ import org.contikios.mrm.statistics.GaussianWrapper;
  * @author Fredrik Osterlind
  */
 public class ChannelModel {
-  private static final Logger logger = LogManager.getLogger(ChannelModel.class);
+  private static final Logger logger = LoggerFactory.getLogger(ChannelModel.class);
 
   private static final double C = 299792458; /* m/s */
 
@@ -312,7 +312,7 @@ public class ChannelModel {
   public Object getParameterValue(Parameter id) {
     Object value = parameters.get(id);
     if (value == null) {
-      logger.fatal("No parameter with id:" + id + ", aborting");
+      logger.error("No parameter with id:" + id + ", aborting");
       return null;
     }
     return value;
@@ -356,7 +356,7 @@ public class ChannelModel {
    */
   public void setParameterValue(Parameter id, Object newValue) {
     if (!parameters.containsKey(id)) {
-      logger.fatal("No parameter with id:" + id + ", aborting");
+      logger.error("No parameter with id:" + id + ", aborting");
       return;
     }
     parameters.put(id, newValue);
@@ -1755,7 +1755,7 @@ public class ChannelModel {
         } else if (paramClass == Integer.class) {
           parameters.put(param, Integer.parseInt(value));
         } else {
-          logger.fatal("Unsupported class type: " + paramClass);
+          logger.error("Unsupported class type: " + paramClass);
         }
       }
     }

@@ -37,8 +37,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A project configuration may hold the configuration for one or several project
@@ -89,7 +89,7 @@ import org.apache.logging.log4j.LogManager;
  * @author Fredrik Osterlind
  */
 public class ProjectConfig {
-  private static final Logger logger = LogManager.getLogger(ProjectConfig.class);
+  private static final Logger logger = LoggerFactory.getLogger(ProjectConfig.class);
 
   /**
    * User extension configuration filename.
@@ -211,7 +211,7 @@ public class ProjectConfig {
       }
 
     } catch (Exception e) {
-      logger.fatal("Exception when searching in project directory history: " + e);
+      logger.error("Exception when searching in project directory history: " + e);
       return null;
     }
 

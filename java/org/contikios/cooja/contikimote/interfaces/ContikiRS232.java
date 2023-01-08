@@ -33,8 +33,6 @@ package org.contikios.cooja.contikimote.interfaces;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.ArrayDeque;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteTimeEvent;
@@ -43,6 +41,8 @@ import org.contikios.cooja.contikimote.ContikiMote;
 import org.contikios.cooja.dialogs.SerialUI;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contiki mote serial port and log interfaces.
@@ -63,7 +63,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 @ClassDescription("Serial port")
 public class ContikiRS232 extends SerialUI implements PolledAfterActiveTicks {
-  private static final Logger logger = LogManager.getLogger(ContikiRS232.class);
+  private static final Logger logger = LoggerFactory.getLogger(ContikiRS232.class);
 
   private final ContikiMote mote;
   private final VarMemory moteMem;
@@ -107,7 +107,7 @@ public class ContikiRS232 extends SerialUI implements PolledAfterActiveTicks {
       int oldSize = moteMem.getIntValueOf("simSerialReceivingLength");
       int newSize = oldSize + dataToAppend.length;
       if (newSize > SERIAL_BUF_SIZE) {
-        logger.fatal("ContikiRS232: dropping rs232 data #1, buffer full: " + oldSize + " -> " + newSize);
+        logger.error("ContikiRS232: dropping rs232 data #1, buffer full: " + oldSize + " -> " + newSize);
         mote.requestImmediateWakeup();
         return;
       }
@@ -163,7 +163,7 @@ public class ContikiRS232 extends SerialUI implements PolledAfterActiveTicks {
         int oldSize = moteMem.getIntValueOf("simSerialReceivingLength");
         int newSize = oldSize + dataToAppend.length;
         if (newSize > SERIAL_BUF_SIZE) {
-        	logger.fatal("ContikiRS232: dropping rs232 data #2, buffer full: " + oldSize + " -> " + newSize);
+        	logger.error("ContikiRS232: dropping rs232 data #2, buffer full: " + oldSize + " -> " + newSize);
         	mote.requestImmediateWakeup();
         	return;
         }
@@ -216,7 +216,7 @@ public class ContikiRS232 extends SerialUI implements PolledAfterActiveTicks {
         int oldSize = moteMem.getIntValueOf("simSerialReceivingLength");
         int newSize = oldSize + dataToAppend.length;
         if (newSize > SERIAL_BUF_SIZE) {
-        	logger.fatal("ContikiRS232: dropping rs232 data #3, buffer full: " + oldSize + " -> " + newSize);
+        	logger.error("ContikiRS232: dropping rs232 data #3, buffer full: " + oldSize + " -> " + newSize);
         	mote.requestImmediateWakeup();
         	return;
         }

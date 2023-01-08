@@ -34,8 +34,6 @@ import java.awt.Component;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Map;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Simulation.SimulationStop;
 import org.contikios.cooja.WatchpointMote;
 import org.contikios.cooja.ContikiError;
@@ -49,6 +47,8 @@ import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.mspmote.plugins.CodeVisualizerSkin;
 import org.contikios.cooja.mspmote.plugins.MspBreakpoint;
 import org.contikios.cooja.plugins.Visualizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.sics.mspsim.cli.CommandContext;
 import se.sics.mspsim.cli.CommandHandler;
 import se.sics.mspsim.cli.LineListener;
@@ -74,7 +74,7 @@ import org.contikios.cooja.mspmote.interfaces.MspClock;
  * @author Fredrik Osterlind
  */
 public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteMemory> implements WatchpointMote {
-  private static final Logger logger = LogManager.getLogger(MspMote.class);
+  private static final Logger logger = LoggerFactory.getLogger(MspMote.class);
 
   private final static int EXECUTE_DURATION_US = 1; /* We always execute in 1 us steps */
 
@@ -100,7 +100,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     myCpu.setMonitorExec(true);
     myCpu.setTrace(0); /* TODO Enable */
     myCpu.getLogger().addLogListener(new LogListener() {
-      private final Logger mlogger = LogManager.getLogger("MSPSim");
+      private final Logger mlogger = LoggerFactory.getLogger("MSPSim");
       @Override
       public void log(Loggable source, String message) {
         mlogger.debug(getID() + ": " + source.getID() + ": " + message);

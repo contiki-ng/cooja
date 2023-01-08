@@ -32,8 +32,6 @@ package org.contikios.cooja.radiomediums;
 
 import java.util.Collection;
 import java.util.Random;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Cooja;
 import org.jdom2.Element;
 
@@ -44,6 +42,8 @@ import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Unit Disk Graph Radio Medium abstracts radio transmission range as circles.
@@ -76,7 +76,7 @@ import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
  */
 @ClassDescription("Unit Disk Graph Medium (UDGM): Distance Loss")
 public class UDGM extends AbstractRadioMedium {
-  private static final Logger logger = LogManager.getLogger(UDGM.class);
+  private static final Logger logger = LoggerFactory.getLogger(UDGM.class);
 
   public double SUCCESS_RATIO_TX = 1.0; /* Success ratio of TX. If this fails, no radios receive the packet */
   public double SUCCESS_RATIO_RX = 1.0; /* Success ratio of RX. If this fails, the single affected receiver does not receive the packet */

@@ -45,8 +45,6 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.coffee.CoffeeFS;
 import org.contikios.coffee.CoffeeFile;
@@ -55,6 +53,8 @@ import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.dialogs.TableColumnAdjuster;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mote user interface to Coffee manager.
@@ -64,7 +64,7 @@ import org.contikios.cooja.dialogs.TableColumnAdjuster;
  */
 @ClassDescription("Coffee Filesystem")
 public class SkyCoffeeFilesystem implements MoteInterface {
-  private static final Logger logger = LogManager.getLogger(SkyCoffeeFilesystem.class);
+  private static final Logger logger = LoggerFactory.getLogger(SkyCoffeeFilesystem.class);
 
   private final Mote mote;
 
@@ -141,7 +141,7 @@ public class SkyCoffeeFilesystem implements MoteInterface {
           }
 
           if (saveFile.exists() && !saveFile.canWrite()) {
-            logger.fatal("No write access to file: " + saveFile);
+            logger.error("No write access to file: " + saveFile);
             return;
           }
 
@@ -153,7 +153,7 @@ public class SkyCoffeeFilesystem implements MoteInterface {
                 logger.warn("Error when saving to file: " + saveFile.getName());
               }
             } catch (Exception e) {
-              logger.fatal("Coffee exception: " + e.getMessage(), e);
+              logger.error("Coffee exception: " + e.getMessage(), e);
             }
             updateFS();
           }, "coffeeFS.extractFile").start();
@@ -171,7 +171,7 @@ public class SkyCoffeeFilesystem implements MoteInterface {
               logger.info("Removing file: " + files[row].getName());
               coffeeFS.removeFile(files[row].getName());
             } catch (Exception e) {
-              logger.fatal("Coffee exception: " + e.getMessage(), e);
+              logger.error("Coffee exception: " + e.getMessage(), e);
             }
             updateFS();
           }, "coffeeFS.removeFile").start();
@@ -195,7 +195,7 @@ public class SkyCoffeeFilesystem implements MoteInterface {
       SkyFlash flash = mote.getInterfaces().getInterfaceOfType(SkyFlash.class);
       coffeeFS = new CoffeeFS(flash.m24p80);
     } catch (IOException e) {
-      logger.fatal(e.getMessage(), e);
+      logger.error(e.getMessage(), e);
       return;
     }
 
@@ -250,7 +250,7 @@ public class SkyCoffeeFilesystem implements MoteInterface {
         try {
           coffeeFS.insertFile(file);
         } catch (IOException e1) {
-          logger.fatal("Coffee exception when adding file '{}': {}", file.getName(), e1.getMessage(), e1);
+          logger.error("Coffee exception when adding file '{}': {}", file.getName(), e1.getMessage(), e1);
           return;
         }
         updateFS();
@@ -272,7 +272,7 @@ public class SkyCoffeeFilesystem implements MoteInterface {
       updateFS();
       return coffeeFS.extractFile(coffeeFile, new File(diskFilename));
     } catch (RuntimeException | IOException e) {
-      logger.fatal("Error: " + e.getMessage(), e);
+      logger.error("Error: " + e.getMessage(), e);
       return false;
     }
   }
@@ -282,7 +282,7 @@ public class SkyCoffeeFilesystem implements MoteInterface {
       updateFS();
       return coffeeFS.insertFile(diskFilename) != null;
     } catch (RuntimeException | IOException e) {
-      logger.fatal("Error: " + e.getMessage(), e);
+      logger.error("Error: " + e.getMessage(), e);
       return false;
     }
   }

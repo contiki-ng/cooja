@@ -32,14 +32,14 @@ package org.contikios.cooja.mspmote.interfaces;
 
 import java.util.Random;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -53,7 +53,7 @@ import org.contikios.cooja.mspmote.MspMoteTimeEvent;
  */
 @ClassDescription("IEEE 802.15.4 Bit Error Radio")
 public class Msp802154BitErrorRadio extends Msp802154Radio {
-  private static final Logger logger = LogManager.getLogger(Msp802154Radio.class);
+  private static final Logger logger = LoggerFactory.getLogger(Msp802154Radio.class);
 
   private static final double NOISE_FLOOR = AbstractRadioMedium.SS_WEAK;
   private static final double GOOD_SIGNAL = NOISE_FLOOR + 15.0;
@@ -331,7 +331,7 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
   @Override
   public void receiveCustomData(Object data) {
     if (!(data instanceof Byte)) {
-      logger.fatal("Bad custom data: " + data);
+      logger.error("Bad custom data: " + data);
       return;
     }
     lastIncomingByte = (Byte) data;

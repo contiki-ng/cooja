@@ -33,8 +33,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * COOJA Project.
@@ -43,7 +43,7 @@ import org.apache.logging.log4j.LogManager;
  * @author Moritz Strübe
  */
 public class COOJAProject {
-	private static final Logger logger = LogManager.getLogger(COOJAProject.class);
+	private static final Logger logger = LoggerFactory.getLogger(COOJAProject.class);
 
 	public static File[] searchProjects(File folder, int depth){
 		if(depth == 0){

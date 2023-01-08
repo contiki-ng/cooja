@@ -99,8 +99,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.dialogs.AddMoteDialog;
 import org.contikios.cooja.dialogs.BufferSettings;
 import org.contikios.cooja.dialogs.CreateSimDialog;
@@ -113,10 +111,12 @@ import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.util.Annotations;
 import org.jdom2.Element;
 import org.jdom2.Text;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** The graphical user interface for Cooja. */
 public class GUI {
-  private static final Logger logger = LogManager.getLogger(GUI.class);
+  private static final Logger logger = LoggerFactory.getLogger(GUI.class);
   static final String WINDOW_TITLE = "Cooja: The Contiki Network Simulator";
 
   static JFrame frame;
@@ -589,7 +589,7 @@ public class GUI {
           file = new File(file.getParent(), file.getName() + ".csc");
         }
         if (!file.exists() || !file.canRead()) {
-          logger.fatal("No read access to file: " + file);
+          logger.error("No read access to file: " + file);
           return;
         }
         doLoadConfigAsync(quick, file);
@@ -1130,7 +1130,7 @@ public class GUI {
     try {
       cooja.parseProjectConfig(true);
     } catch (Cooja.ParseProjectsException e) {
-      logger.fatal("Error when loading extensions: " + e.getMessage(), e);
+      logger.error("Error when loading extensions: " + e.getMessage(), e);
       JOptionPane.showMessageDialog(frame,
               """
                       All Cooja extensions could not load.
@@ -1305,7 +1305,7 @@ public class GUI {
     }
     if (saveFile.exists() && !saveFile.canWrite()) {
       JOptionPane.showMessageDialog(frame, "No write access to " + saveFile, "Save failed", JOptionPane.ERROR_MESSAGE);
-      logger.fatal("No write access to file: " + saveFile.getAbsolutePath());
+      logger.error("No write access to file: " + saveFile.getAbsolutePath());
       return null;
     }
     cooja.saveSimulationConfig(saveFile);
@@ -1839,7 +1839,7 @@ public class GUI {
             }
             cooja.getSimulation().addMoteType(newMoteType);
           } catch (Exception e1) {
-            logger.fatal("Exception when creating mote type", e1);
+            logger.error("Exception when creating mote type", e1);
             showErrorDialog("Mote type creation error", e1, false);
             newMoteType = null;
           }
@@ -1885,7 +1885,7 @@ public class GUI {
           positioner = constr.newInstance(newMoteInfo.numMotes(), newMoteInfo.startX(), newMoteInfo.endX(),
                    newMoteInfo.startY(), newMoteInfo.endY(), newMoteInfo.startZ(), newMoteInfo.endZ());
         } catch (Exception e1) {
-          logger.fatal("Exception when creating " + positionerClass + ": ", e1);
+          logger.error("Exception when creating " + positionerClass + ": ", e1);
           return;
         }
         // Create new motes.

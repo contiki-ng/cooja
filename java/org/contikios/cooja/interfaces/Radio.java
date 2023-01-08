@@ -37,8 +37,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -46,6 +44,8 @@ import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.RadioPacket;
 import org.contikios.cooja.contikimote.interfaces.ContikiRadio;
 import org.contikios.cooja.util.EventTriggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A mote radio transceiver.
@@ -58,7 +58,7 @@ import org.contikios.cooja.util.EventTriggers;
  */
 @ClassDescription("Radio")
 public abstract class Radio extends Observable implements MoteInterface {
-  private static final Logger logger = LogManager.getLogger(Radio.class);
+  private static final Logger logger = LoggerFactory.getLogger(Radio.class);
 
   protected final EventTriggers<RadioEvent, Radio> radioEventTriggers = new EventTriggers<>();
 
@@ -279,7 +279,7 @@ public abstract class Radio extends Observable implements MoteInterface {
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
+      logger.error("Error when releasing panel, observer is null");
       return;
     }
 

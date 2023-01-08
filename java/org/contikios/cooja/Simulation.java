@@ -38,8 +38,6 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingDeque;
 import javax.swing.JTextArea;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Cooja.PluginConstructionException;
 import org.contikios.cooja.Cooja.SimulationCreationException;
 import org.contikios.cooja.radiomediums.DirectedGraphMedium;
@@ -51,6 +49,8 @@ import org.contikios.cooja.util.EventTriggers;
 import org.contikios.cooja.util.EventTriggers.AddRemove;
 import org.contikios.mrm.MRM;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simulation consists of a number of motes and mote types.
@@ -106,7 +106,7 @@ public final class Simulation {
 
   private final RadioMedium currentRadioMedium;
 
-  private static final Logger logger = LogManager.getLogger(Simulation.class);
+  private static final Logger logger = LoggerFactory.getLogger(Simulation.class);
 
   private volatile boolean isRunning = false;
   private volatile boolean isShutdown = false;
@@ -256,7 +256,7 @@ public final class Simulation {
         } catch (SimulationStop e) {
           logger.info("Simulation stopped: {}", e.getMessage());
         } catch (RuntimeException e) {
-          logger.fatal("Simulation stopped due to error: " + e.getMessage(), e);
+          logger.error("Simulation stopped due to error: " + e.getMessage(), e);
           if (Cooja.isVisualized()) {
             String errorTitle = "Simulation error";
             if (nextEvent != null && nextEvent.event instanceof MoteTimeEvent moteTimeEvent) {
@@ -325,7 +325,7 @@ public final class Simulation {
               throw new MoteType.MoteTypeCreationException("Could not create: " + moteTypeClassName);
             }
             if (!moteType.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
-              logger.fatal("Mote type was not created: " + element.getText().trim());
+              logger.error("Mote type was not created: " + element.getText().trim());
               throw new MoteType.MoteTypeCreationException("Mote type was not created: " + element.getText().trim());
             }
             addMoteType(moteType);
@@ -397,7 +397,7 @@ public final class Simulation {
   private void createMote(MoteType moteType, Element root) throws MoteType.MoteTypeCreationException {
     var mote = moteType.generateMote(this);
     if (!mote.setConfigXML(this, root.getChildren(), Cooja.isVisualized())) {
-      logger.fatal("Mote was not created: " + root.getText().trim());
+      logger.error("Mote was not created: " + root.getText().trim());
       throw new MoteType.MoteTypeCreationException("Could not configure mote " + moteType);
     }
     addMote(mote);
@@ -428,7 +428,7 @@ public final class Simulation {
 
       var pluginClass = ExtensionManager.getPluginClass(cooja, pluginClassName);
       if (pluginClass == null) {
-        logger.fatal("Plugin class " + pluginClassName + " not registered as a plugin");
+        logger.error("Plugin class " + pluginClassName + " not registered as a plugin");
         return new SimulationCreationException("Plugin class " + pluginClassName + " not registered as a plugin", null);
       }
       // Skip plugins that require visualization in headless mode.

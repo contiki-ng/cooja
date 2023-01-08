@@ -32,8 +32,6 @@ package org.contikios.cooja;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.interfaces.Battery;
 import org.contikios.cooja.interfaces.Beeper;
 import org.contikios.cooja.interfaces.Button;
@@ -47,6 +45,8 @@ import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.interfaces.SerialPort;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The mote interface handler holds all interfaces for a specific mote.
@@ -54,7 +54,7 @@ import org.jdom2.Element;
  * @author Fredrik Osterlind
  */
 public class MoteInterfaceHandler {
-  private static final Logger logger = LogManager.getLogger(MoteInterfaceHandler.class);
+  private static final Logger logger = LoggerFactory.getLogger(MoteInterfaceHandler.class);
 
   private final ArrayList<MoteInterface> moteInterfaces = new ArrayList<>();
 
@@ -82,7 +82,7 @@ public class MoteInterfaceHandler {
       try {
         moteInterfaces.add(interfaceClass.getConstructor(Mote.class).newInstance(mote));
       } catch (Exception e) {
-        logger.fatal("Exception when calling constructor of " + interfaceClass, e);
+        logger.error("Exception when calling constructor of " + interfaceClass, e);
         throw new MoteType.MoteTypeCreationException("Exception when calling constructor of " + interfaceClass, e);
       }
     }

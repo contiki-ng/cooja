@@ -35,16 +35,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.util.StringUtils;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generic parts of a breakpoint. Based on MspBreakpoint.
  */
 public abstract class Breakpoint implements Watchpoint {
-  private static final Logger logger = LogManager.getLogger(Breakpoint.class);
+  private static final Logger logger = LoggerFactory.getLogger(Breakpoint.class);
 
   protected final WatchpointMote mote;
 
@@ -218,7 +218,7 @@ public abstract class Breakpoint implements Watchpoint {
     // Update executable address.
     address = mote.getType().getExecutableAddressOf(codeFile, lineNr);
     if (address < 0) {
-      logger.fatal("Could not restore breakpoint, did source code change?");
+      logger.error("Could not restore breakpoint, did source code change?");
       return false;
     }
     createMonitor();

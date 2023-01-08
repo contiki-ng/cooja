@@ -40,8 +40,6 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -50,6 +48,8 @@ import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.VisPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a simple example COOJA plugin.
@@ -66,7 +66,7 @@ import org.contikios.cooja.VisPlugin;
 @ClassDescription("Example Plugin") /* Description shown in menu */
 @PluginType(PluginType.SIM_PLUGIN)
 public class MyDummyPlugin extends VisPlugin {
-  private static final Logger logger = LogManager.getLogger(MyDummyPlugin.class);
+  private static final Logger logger = LoggerFactory.getLogger(MyDummyPlugin.class);
 
   private Simulation sim;
   private Observer msObserver;

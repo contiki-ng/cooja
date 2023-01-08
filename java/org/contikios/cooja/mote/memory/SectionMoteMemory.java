@@ -32,9 +32,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * Represents a mote memory consisting of non-overlapping memory sections with
@@ -49,7 +49,7 @@ import org.apache.logging.log4j.LogManager;
  * @author Enrico Jorns
  */
 public class SectionMoteMemory implements MemoryInterface {
-  private static final Logger logger = LogManager.getLogger(SectionMoteMemory.class);
+  private static final Logger logger = LoggerFactory.getLogger(SectionMoteMemory.class);
   private static final boolean DEBUG = logger.isDebugEnabled();
 
   private final Map<String, MemoryInterface> sections = new HashMap<>();

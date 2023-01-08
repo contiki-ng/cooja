@@ -38,8 +38,6 @@ import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.RadioMedium;
@@ -51,6 +49,8 @@ import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.util.EventTriggers;
 import org.contikios.cooja.util.ScnObservable;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -69,7 +69,7 @@ import org.jdom2.Element;
  * @author Fredrik Osterlind
  */
 public abstract class AbstractRadioMedium implements RadioMedium {
-	private static final Logger logger = LogManager.getLogger(AbstractRadioMedium.class);
+	private static final Logger logger = LoggerFactory.getLogger(AbstractRadioMedium.class);
 	
 	/* Signal strengths in dBm.
 	 * Approx. values measured on TmoteSky */
@@ -218,7 +218,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 		@Override
 		public void update(Observable obs, Object obj) {
       if (!(obs instanceof Radio radio)) {
-				logger.fatal("Radio event dispatched by non-radio object");
+				logger.error("Radio event dispatched by non-radio object");
 				return;
 			}
 			final Radio.RadioEvent event = radio.getLastEvent();
@@ -238,7 +238,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 				case HW_OFF: {
           // This radio must not be a connection source.
           if (getActiveConnectionFrom(radio) != null) {
-            logger.fatal("Connection source turned off radio: " + radio);
+            logger.error("Connection source turned off radio: " + radio);
           }
 
 					/* Remove any radio connections from this radio */
@@ -336,14 +336,14 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 					/* Connection */
 					RadioConnection connection = getActiveConnectionFrom(radio);
 					if (connection == null) {
-						logger.fatal("No radio connection found");
+						logger.error("No radio connection found");
 						return;
 					}
 					
 					/* Custom data object */
 					Object data = ((CustomDataRadio) radio).getLastCustomDataTransmitted();
 					if (data == null) {
-						logger.fatal("No custom data objecTransmissiont to forward");
+						logger.error("No custom data objecTransmissiont to forward");
 						return;
 					}
 					
@@ -385,7 +385,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 					/* Radio packet */
 					RadioPacket packet = radio.getLastPacketTransmitted();
 					if (packet == null) {
-						logger.fatal("No radio packet to forward");
+						logger.error("No radio packet to forward");
 						return;
 					}
 					
@@ -421,7 +421,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 				}
 				break;
 				default:
-					logger.fatal("Unsupported radio event: " + event);
+					logger.error("Unsupported radio event: " + event);
 			}
 		}
 	};

@@ -59,8 +59,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.text.NumberFormatter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
@@ -71,6 +69,8 @@ import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.interfaces.SerialPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Socket to simulated serial port forwarder. Client version.
@@ -81,7 +81,7 @@ import org.contikios.cooja.interfaces.SerialPort;
 @ClassDescription("Serial Socket (CLIENT)")
 @PluginType(PluginType.PType.MOTE_PLUGIN)
 public class SerialSocketClient implements Plugin, MotePlugin {
-  private static final Logger logger = LogManager.getLogger(SerialSocketClient.class);
+  private static final Logger logger = LoggerFactory.getLogger(SerialSocketClient.class);
 
   private static final String SERVER_DEFAULT_HOST = "localhost";
   private static final int SERVER_DEFAULT_PORT = 1234;

@@ -29,13 +29,13 @@
  */
 package org.contikios.cooja.emulatedmote;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioPacket;
 import org.contikios.cooja.interfaces.CustomDataRadio;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 802.15.4 radio class for COOJA.
@@ -47,7 +47,7 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
     private final static boolean DEBUG = false;
     
-    private static final Logger logger = LogManager.getLogger(Radio802154.class);
+    private static final Logger logger = LoggerFactory.getLogger(Radio802154.class);
 
     protected long lastEventTime = 0;
 

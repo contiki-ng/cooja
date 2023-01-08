@@ -30,8 +30,6 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -42,6 +40,8 @@ import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.sics.mspsim.chip.CC1120;
 import se.sics.mspsim.chip.RFListener;
 import se.sics.mspsim.chip.Radio802154;
@@ -51,7 +51,7 @@ import se.sics.mspsim.chip.Radio802154;
  */
 @ClassDescription("TI CC1120")
 public class CC1120Radio extends Radio implements CustomDataRadio {
-	private static final Logger logger = LogManager.getLogger(CC1120Radio.class);
+	private static final Logger logger = LoggerFactory.getLogger(CC1120Radio.class);
 
 	/**
 	 * Cross-level:
@@ -253,7 +253,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 	@Override
 	public void receiveCustomData(Object data) {
 		if (!(data instanceof Byte)) {
-			logger.fatal("Bad custom data: " + data);
+			logger.error("Bad custom data: " + data);
 			return;
 		}
 		lastIncomingByte = (Byte) data;

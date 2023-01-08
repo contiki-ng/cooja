@@ -2,6 +2,31 @@
 
 ## Cooja User Interface Changes
 
+### Switched from Log4J 2 to SLF4J and Logback
+
+This removes the `--log4j2` and `--logname` parameters. Set the system property
+`logback.configurationFile` to use a different logback configuration.
+
+Plugins need to change calls to `logger.fatal` to instead call `logger.error`,
+and change the logger construction from
+```
+private static final Logger logger = LogManager.getLogger(MyClass.class);
+```
+to
+```
+private static final Logger logger = LoggerFactory.getLogger(MyClass.class);
+```
+Plugins also need to update their imports, change
+```
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+```
+to
+```
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+```
+
 ### Removed `-nogui` and `-quickstart` parameters
 
 Graphical/headless mode is now controlled by separate parameter (`--[no-]gui`),

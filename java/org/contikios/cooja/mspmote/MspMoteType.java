@@ -33,10 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-
 import java.util.Map;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.dialogs.AbstractCompileDialog;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
@@ -48,6 +45,8 @@ import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.MapEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * MSP430-based mote types emulated in MSPSim.
@@ -58,7 +57,7 @@ import se.sics.mspsim.util.MapEntry;
  */
 @ClassDescription("Msp Mote Type")
 public abstract class MspMoteType extends BaseContikiMoteType {
-  private static final Logger logger = LogManager.getLogger(MspMoteType.class);
+  private static final Logger logger = LoggerFactory.getLogger(MspMoteType.class);
 
   private boolean loadedDebugInfo = false;
   private HashMap<File, HashMap<Integer, Integer>> debuggingInfo = null; /* cached */
@@ -148,7 +147,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     try {
       elf = getELF();
     } catch (Exception e) {
-      logger.fatal("Error when reading firmware:", e);
+      logger.error("Error when reading firmware:", e);
       throw new MoteTypeCreationException("Error when reading firmware: " + e.getMessage());
     }
     node.loadFirmware(elf);

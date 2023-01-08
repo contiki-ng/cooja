@@ -54,8 +54,6 @@ import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -67,6 +65,8 @@ import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.Visualizer.SimulationMenuAction;
 import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.radiomediums.UDGM;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Visualizer skin for configuring the Unit Disk Graph radio medium (UDGM).
@@ -86,7 +86,7 @@ import org.contikios.cooja.radiomediums.UDGM;
 @SupportedArguments(radioMediums = {UDGM.class})
 public class UDGMVisualizerSkin implements VisualizerSkin {
 
-  private static final Logger logger = LogManager.getLogger(UDGMVisualizerSkin.class);
+  private static final Logger logger = LoggerFactory.getLogger(UDGMVisualizerSkin.class);
 
   private static final Color COLOR_TX = new Color(0, 255, 0, 100);
   private static final Color COLOR_INT = new Color(50, 50, 50, 100);
@@ -101,7 +101,7 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     if (!(simulation.getRadioMedium() instanceof UDGM)) {
-      logger.fatal("Cannot activate UDGM skin for unknown radio medium: " + simulation.getRadioMedium());
+      logger.error("Cannot activate UDGM skin for unknown radio medium: " + simulation.getRadioMedium());
       return;
     }
     this.simulation = simulation;

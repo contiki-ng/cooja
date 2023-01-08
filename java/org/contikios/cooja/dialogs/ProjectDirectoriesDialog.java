@@ -58,12 +58,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.COOJAProject;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.ProjectConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This dialog allows a user to manage Cooja extensions: extensions to COOJA that 
@@ -72,7 +72,7 @@ import org.contikios.cooja.ProjectConfig;
  * @author Fredrik Osterlind
  */
 public class ProjectDirectoriesDialog extends JDialog {
-	private static final Logger logger = LogManager.getLogger(ProjectDirectoriesDialog.class);
+	private static final Logger logger = LoggerFactory.getLogger(ProjectDirectoriesDialog.class);
 
   private final Cooja gui;
 
@@ -179,7 +179,7 @@ public class ProjectDirectoriesDialog extends JDialog {
           var myDialog = new ConfigViewer(ProjectDirectoriesDialog.this, config);
           myDialog.setVisible(true);
         } catch (Exception ex) {
-          logger.fatal("Error when merging config: " + ex.getMessage(), ex);
+          logger.error("Error when merging config: " + ex.getMessage(), ex);
         }
       });
 			buttonPane.add(button);

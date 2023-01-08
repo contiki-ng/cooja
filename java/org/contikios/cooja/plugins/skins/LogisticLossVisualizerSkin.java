@@ -38,8 +38,6 @@ import java.awt.Point;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.util.Set;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -50,6 +48,8 @@ import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.radiomediums.LogisticLoss;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Visualizer skin for configuring the LogisticLoss radio medium.
@@ -67,7 +67,7 @@ import org.contikios.cooja.radiomediums.LogisticLoss;
 @SupportedArguments(radioMediums = {LogisticLoss.class})
 public class LogisticLossVisualizerSkin implements VisualizerSkin {
 
-  private static final Logger logger = LogManager.getLogger(LogisticLossVisualizerSkin.class);
+  private static final Logger logger = LoggerFactory.getLogger(LogisticLossVisualizerSkin.class);
 
   private static final Color COLOR_TX = new Color(0, 255, 0, 100);
   private static final Color COLOR_INT = new Color(50, 50, 50, 100);
@@ -79,7 +79,7 @@ public class LogisticLossVisualizerSkin implements VisualizerSkin {
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     if (!(simulation.getRadioMedium() instanceof LogisticLoss)) {
-      logger.fatal("Cannot activate LogisticLoss skin for unknown radio medium: " + simulation.getRadioMedium());
+      logger.error("Cannot activate LogisticLoss skin for unknown radio medium: " + simulation.getRadioMedium());
       return;
     }
     this.simulation = simulation;

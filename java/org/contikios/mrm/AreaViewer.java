@@ -88,8 +88,6 @@ import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.ProgressMonitor;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -102,6 +100,8 @@ import org.contikios.cooja.interfaces.DirectionalAntennaRadio;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.mrm.ChannelModel.TxPair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The class AreaViewer belongs to the MRM package.
@@ -120,7 +120,7 @@ import org.contikios.mrm.ChannelModel.TxPair;
 @PluginType(PluginType.PType.SIM_PLUGIN)
 @SupportedArguments(radioMediums = {MRM.class})
 public class AreaViewer extends VisPlugin {
-  private static final Logger logger = LogManager.getLogger(AreaViewer.class);
+  private static final Logger logger = LoggerFactory.getLogger(AreaViewer.class);
 
   private final JPanel canvas = new JPanel() {
     @Override
@@ -537,7 +537,7 @@ public class AreaViewer extends VisPlugin {
             repaint();
             break;
           default:
-            logger.fatal("Unhandled action command: " + e.getActionCommand());
+            logger.error("Unhandled action command: " + e.getActionCommand());
             break;
         }
       }
@@ -551,7 +551,7 @@ public class AreaViewer extends VisPlugin {
         }
         File file = fileChooser.getSelectedFile();
         if (!filter.accept(file)) {
-          logger.fatal("Non-supported file type, aborting");
+          logger.error("Non-supported file type, aborting");
           return false;
         }
         Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -565,14 +565,14 @@ public class AreaViewer extends VisPlugin {
             return false;
           }
         } catch (InterruptedException ex) {
-          logger.fatal("Interrupted during image loading, aborting");
+          logger.error("Interrupted during image loading, aborting");
           return false;
         }
 
         // Set virtual size of image.
         var dialog = new ImageSettingsDialog();
         if (!dialog.terminatedOK()) {
-          logger.fatal("User canceled, aborting");
+          logger.error("User canceled, aborting");
           return false;
         }
 
@@ -593,7 +593,7 @@ public class AreaViewer extends VisPlugin {
 
         var parentContainer = Cooja.getTopParentContainer();
         if (parentContainer == null) {
-          logger.fatal("Unknown parent container");
+          logger.error("Unknown parent container");
           return false;
         }
         // Show obstacle finder dialog.
@@ -643,7 +643,7 @@ public class AreaViewer extends VisPlugin {
             if (pm.isCanceled()) {
               return;
             }
-            logger.fatal("Obstacle adding exception: " + ex.getMessage());
+            logger.error("Obstacle adding exception: " + ex.getMessage());
             ex.printStackTrace();
             pm.close();
             return;
@@ -885,7 +885,7 @@ public class AreaViewer extends VisPlugin {
     try {
       tracker.waitForAll();
     } catch (InterruptedException ex) {
-      logger.fatal("Interrupted during image loading, aborting");
+      logger.error("Interrupted during image loading, aborting");
     }
   }
 
@@ -1651,7 +1651,7 @@ public class AreaViewer extends VisPlugin {
         if (pm.isCanceled()) {
           return;
         }
-        logger.fatal("Attenuation aborted: " + ex, ex);
+        logger.error("Attenuation aborted: " + ex, ex);
       }
       pm.close();
     }, "repaintRadioEnvironment");
@@ -2005,7 +2005,7 @@ public class AreaViewer extends VisPlugin {
     if (currentRadioMedium != null && radioMediumActivityObserver != null) {
       currentRadioMedium.deleteRadioTransmissionObserver(radioMediumActivityObserver);
     } else {
-      logger.fatal("Could not remove observer: " + radioMediumActivityObserver);
+      logger.error("Could not remove observer: " + radioMediumActivityObserver);
     }
   }
 
@@ -2171,7 +2171,7 @@ public class AreaViewer extends VisPlugin {
             try {
               tracker.waitForAll();
             } catch (InterruptedException ex) {
-              logger.fatal("Interrupted during image loading, aborting");
+              logger.error("Interrupted during image loading, aborting");
               backgroundImage = null;
             }
           }
@@ -2181,7 +2181,7 @@ public class AreaViewer extends VisPlugin {
         case "back_width" -> backgroundWidth = Double.parseDouble(element.getText());
         case "back_height" -> backgroundHeight = Double.parseDouble(element.getText());
         case "resolution" -> resolutionSlider.setValue(Integer.parseInt(element.getText()));
-        default -> logger.fatal("Unknown configuration value: " + name);
+        default -> logger.error("Unknown configuration value: " + name);
       }
     }
 

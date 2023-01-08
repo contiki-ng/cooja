@@ -30,8 +30,8 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Ported from contiki-2.x/core/lib/gcr.[ch].
@@ -39,7 +39,7 @@ import org.apache.logging.log4j.LogManager;
  * @author Fredrik Osterlind
  */
 public class GCRCoder {
-  private static final Logger logger = LogManager.getLogger(GCRCoder.class);
+  private static final Logger logger = LoggerFactory.getLogger(GCRCoder.class);
 
   /*
    * GCR conversion table - used for converting ordinary byte to 10-bits (or 4
@@ -151,7 +151,7 @@ public class GCRCoder {
       // Try to decode byte
       gcr_decode(0xff & data[i]);
       if (!gcr_valid()) {
-        logger.fatal("GCR decoding failed, dropping packet");
+        logger.error("GCR decoding failed, dropping packet");
         return null;
       }
 

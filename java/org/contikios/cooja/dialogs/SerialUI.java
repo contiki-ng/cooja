@@ -50,17 +50,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.interfaces.SerialPort;
+import org.contikios.cooja.util.EventTriggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class SerialUI extends Log implements SerialPort {
-  private static final Logger logger = LogManager.getLogger(SerialUI.class);
+  private static final Logger logger = LoggerFactory.getLogger(SerialUI.class);
 
   private final static int MAX_LENGTH = 16*1024;
 
@@ -223,7 +223,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
+      logger.error("Error when releasing panel, observer is null");
       return;
     }
 

@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -52,8 +51,6 @@ import javax.swing.JTable;
 import javax.swing.Timer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -64,6 +61,8 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tracks radio events to sum up transmission, reception, and radio on times.
@@ -74,7 +73,7 @@ import org.jdom2.Element;
 @ClassDescription("Mote radio duty cycle")
 @PluginType(PluginType.PType.SIM_PLUGIN)
 public class PowerTracker implements Plugin {
-  private static final Logger logger = LogManager.getLogger(PowerTracker.class);
+  private static final Logger logger = LoggerFactory.getLogger(PowerTracker.class);
 
   private static final int POWERTRACKER_UPDATE_INTERVAL = 100; /* ms */
 
@@ -506,7 +505,7 @@ public class PowerTracker implements Plugin {
       removeMote(m);
     }
     if (!moteTrackers.isEmpty()) {
-      logger.fatal("Mote observers not cleaned up correctly");
+      logger.error("Mote observers not cleaned up correctly");
       for (MoteTracker t: moteTrackers.toArray(new MoteTracker[0])) {
         t.dispose();
       }

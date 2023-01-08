@@ -50,8 +50,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.Simulation;
@@ -88,12 +86,14 @@ import org.contikios.cooja.mspmote.interfaces.SkyFlash;
 import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
 import org.contikios.cooja.util.StringUtils;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The common parts of mote types based on compiled Contiki-NG targets.
  */
 public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
-  private static final Logger logger = LogManager.getLogger(BaseContikiMoteType.class);
+  private static final Logger logger = LoggerFactory.getLogger(BaseContikiMoteType.class);
 
   /** Static translation map from name -> class for builtin interfaces. */
   protected static final Map<String, Class<? extends MoteInterface>> builtinInterfaces = Map.ofEntries(
@@ -310,7 +310,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
           moteInterfaceClasses.add(clazz);
         }
         case "contikibasedir", "contikicoredir", "projectdir", "compilefile", "process", "sensor", "coreinterface" -> {
-          logger.fatal("Old Cooja mote type detected, aborting..");
+          logger.error("Old Cooja mote type detected, aborting..");
           return false;
         }
       }

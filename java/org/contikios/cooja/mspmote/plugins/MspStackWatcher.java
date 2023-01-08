@@ -41,8 +41,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -56,6 +54,8 @@ import org.contikios.cooja.SupportedArguments;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.Memory.AccessMode;
 import se.sics.mspsim.core.RegisterMonitor;
@@ -65,7 +65,7 @@ import se.sics.mspsim.ui.StackUI;
 @PluginType(PluginType.PType.MOTE_PLUGIN)
 @SupportedArguments(motes = { MspMote.class })
 public class MspStackWatcher extends VisPlugin implements MotePlugin {
-  private static final Logger logger = LogManager.getLogger(MspStackWatcher.class);
+  private static final Logger logger = LoggerFactory.getLogger(MspStackWatcher.class);
 
   private final Simulation simulation;
   private final MSP430 cpu;

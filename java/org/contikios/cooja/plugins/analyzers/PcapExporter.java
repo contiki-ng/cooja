@@ -4,11 +4,11 @@ import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.File;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PcapExporter {
-  private static final Logger logger = LogManager.getLogger(PcapExporter.class);
+  private static final Logger logger = LoggerFactory.getLogger(PcapExporter.class);
 
   DataOutputStream out;
 

@@ -66,8 +66,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.DocumentFilter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -81,6 +79,8 @@ import org.contikios.cooja.mote.memory.UnknownVariableException;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Variable Watcher enables a user to watch mote variables during a simulation.
@@ -94,7 +94,7 @@ import org.jdom2.Element;
 @ClassDescription("Variable Watcher")
 @PluginType(PluginType.PType.MOTE_PLUGIN)
 public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHelp {
-  private static final Logger logger = LogManager.getLogger(VariableWatcher.class.getName());
+  private static final Logger logger = LoggerFactory.getLogger(VariableWatcher.class.getName());
 
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 15;

@@ -33,8 +33,6 @@ package org.contikios.cooja.contikimote.interfaces;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
 
 import org.contikios.cooja.COOJARadioPacket;
@@ -48,6 +46,9 @@ import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.contikios.cooja.radiomediums.UDGM;
 import org.contikios.cooja.util.CCITT_CRC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Packet radio transceiver mote interface.
  * <p>
@@ -86,7 +87,7 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
 
   private final VarMemory myMoteMemory;
 
-  private static final Logger logger = LogManager.getLogger(ContikiRadio.class);
+  private static final Logger logger = LoggerFactory.getLogger(ContikiRadio.class);
 
   /**
    * Project default transmission bitrate (kbps).

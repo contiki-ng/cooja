@@ -1,8 +1,6 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -13,6 +11,8 @@ import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.sics.mspsim.chip.CC2520;
 import se.sics.mspsim.chip.RFListener;
 
@@ -23,7 +23,7 @@ import se.sics.mspsim.chip.RFListener;
  */
 @ClassDescription("IEEE CC2520 Radio")
 public class CC2520Radio extends Radio implements CustomDataRadio {
-  private static final Logger logger = LogManager.getLogger(CC2520Radio.class);
+  private static final Logger logger = LoggerFactory.getLogger(CC2520Radio.class);
 
   /**
    * Cross-level:
@@ -173,7 +173,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
 
   @Override
   public void setReceivedPacket(RadioPacket packet) {
-    logger.fatal("TODO Implement me!");
+    logger.error("TODO Implement me!");
   }
 
   /* Custom data radio support */
@@ -190,7 +190,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
   @Override
   public void receiveCustomData(Object data) {
     if (!(data instanceof Byte)) {
-      logger.fatal("Bad custom data: " + data);
+      logger.error("Bad custom data: " + data);
       return;
     }
     lastIncomingByte = (Byte) data;
