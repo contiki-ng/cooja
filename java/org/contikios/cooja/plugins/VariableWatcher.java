@@ -706,7 +706,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
         varValues[i].commitEdit();
       }
       catch (ParseException ex) {
-        logger.error(ex);
+        logger.error("Error when parsing variable value '{}'", varValues[i].getText());
       }
     }
 
