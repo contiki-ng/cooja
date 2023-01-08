@@ -44,8 +44,8 @@ import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.ui.ColorUtils;
+import org.contikios.cooja.util.EventTriggers;
 
 /**
  * Mote2Mote Relations is used to show mote relations in simulated
@@ -141,9 +141,7 @@ public class Mote2MoteRelations extends Observable implements MoteInterface {
       notifyObservers();
     }
   };
-  
-  private MoteCountListener moteCountListener;
-  
+
   public Mote2MoteRelations(Mote mote) {
     this.mote = mote;
   }
@@ -156,25 +154,12 @@ public class Mote2MoteRelations extends Observable implements MoteInterface {
         log.addObserver(logObserver);
       }
     }
-
-    /* Observe other motes: if removed, remove our relations to them too */
-    mote.getSimulation().getEventCentral().addMoteCountListener(moteCountListener = new MoteCountListener() {
-      @Override
-      public void moteWasAdded(Mote mote) {
-        /* Ignored */
-      }
-      @Override
-      public void moteWasRemoved(Mote mote) {
-        /* This mote was removed - cleanup by removed() */
-        if (Mote2MoteRelations.this.mote == mote) {
-          return;
+    // Trigger to remove relations with motes that are removed.
+    mote.getSimulation().getMoteTriggers().addTrigger(this, (event, m) -> {
+      if (event == EventTriggers.AddRemove.REMOVE && mote != m) {
+        if (relations.remove(m)) {
+          mote.getSimulation().removeMoteRelation(mote, m);
         }
-
-        /* Remove mote from our relations */
-        if (!relations.remove(mote)) {
-          return;
-        }
-        mote.getSimulation().removeMoteRelation(Mote2MoteRelations.this.mote, mote);
       }
     });
   }
@@ -195,8 +180,7 @@ public class Mote2MoteRelations extends Observable implements MoteInterface {
       mote.getSimulation().removeMoteRelation(Mote2MoteRelations.this.mote, m);
     }
     relations.clear();
-
-    mote.getSimulation().getEventCentral().removeMoteCountListener(moteCountListener);
+    mote.getSimulation().getMoteTriggers().deleteTriggers(this);
   }
 
   @Override
