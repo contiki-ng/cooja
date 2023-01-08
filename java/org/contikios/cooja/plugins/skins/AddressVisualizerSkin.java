@@ -57,7 +57,7 @@ import org.contikios.cooja.util.EventTriggers;
  *
  * @author Fredrik Osterlind
  */
-@ClassDescription("Addresses: IP")
+@ClassDescription("IP addresses")
 public class AddressVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
