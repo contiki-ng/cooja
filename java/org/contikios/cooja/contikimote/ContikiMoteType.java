@@ -58,7 +58,6 @@ import org.contikios.cooja.Cooja;
 import org.contikios.cooja.CoreComm;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.ProjectConfig;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.interfaces.ContikiBeeper;
@@ -388,15 +387,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
     classes.add(ContikiEEPROM.class);
     classes.add(Mote2MoteRelations.class);
     classes.add(MoteAttributes.class);
-    // Load mote interface classes.
-    for (var ifName : getConfig().getStringArrayValue(ContikiMoteType.class, "MOTE_INTERFACES")) {
-      var ifClass = MoteInterfaceHandler.getInterfaceClass(gui, this, ifName);
-      if (ifClass == null) {
-        logger.warn("Failed to load mote interface class: " + ifName);
-        continue;
-      }
-      classes.add(ifClass);
-    }
     return classes.toArray(new Class[0]);
   }
 
