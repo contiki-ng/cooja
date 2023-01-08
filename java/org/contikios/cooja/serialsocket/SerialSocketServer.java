@@ -242,7 +242,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
         try {
           listenPortField.commitEdit();
         } catch (ParseException ex) {
-          logger.error(ex);
+          logger.error("Listen port '{}' is not a number", listenPortField.getText());
         }
         startServer(((Long) listenPortField.getValue()).intValue());
       } else {
@@ -400,7 +400,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
           try {
             serverSocket.close();
           } catch (IOException ex) {
-            logger.error(ex);
+            logger.error("Failed closing server socket:", ex);
           }
         }
       }
@@ -410,7 +410,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
         try {
           incomingDataHandler.join(500);
         } catch (InterruptedException ex) {
-          logger.warn(ex);
+          logger.warn("Interrupted join", ex);
         }
       }
       notifyServerStopped();
@@ -447,7 +447,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
     try {
       serverSocket.close();
     } catch (IOException ex) {
-      logger.error(ex);
+      logger.error("Failed closing server socket:", ex);
     }
   }
 
@@ -463,7 +463,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
       try {
         in = new DataInputStream(clientSocket.getInputStream());
       } catch (IOException ex) {
-        logger.error(ex);
+        logger.error("Failed opening input stream from client socket:", ex);
         return;
       }
 
@@ -499,7 +499,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
       try {
         out = new DataOutputStream(clientSocket.getOutputStream());
       } catch (IOException ex) {
-        logger.error(ex);
+        logger.error("Failed opening client socket output stream:", ex);
         // FIXME: this should fail, not continue and produce invisible updates.
         out = null;
       }
@@ -515,7 +515,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
         out.flush();
         outBytes++;
       } catch (IOException ex) {
-        logger.error(ex);
+        logger.error("Failed writing:", ex);
         cleanupClient();
       }
     }
@@ -626,7 +626,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
         serverSocket.close();
       }
     } catch (IOException ex) {
-      logger.error(ex);
+      logger.error("Failed closing server socket:", ex);
     }
   }
 
