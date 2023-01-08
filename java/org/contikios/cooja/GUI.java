@@ -1859,6 +1859,7 @@ public class GUI {
         for (var positioner : cooja.getRegisteredPositioners()) {
           if (Cooja.getDescriptionOf(positioner).equals(newMoteInfo.positioner())) {
             positionerClass = positioner;
+            break;
           }
         }
         if (positionerClass == null) {
