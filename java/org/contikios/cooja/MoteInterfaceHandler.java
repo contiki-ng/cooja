@@ -75,6 +75,7 @@ import org.contikios.cooja.mspmote.interfaces.MspDefaultSerial;
 import org.contikios.cooja.mspmote.interfaces.MspLED;
 import org.contikios.cooja.mspmote.interfaces.MspMoteID;
 import org.contikios.cooja.mspmote.interfaces.MspSerial;
+import org.contikios.cooja.mspmote.interfaces.SkyButton;
 import org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem;
 import org.contikios.cooja.mspmote.interfaces.SkyFlash;
 import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
@@ -121,7 +122,9 @@ public class MoteInterfaceHandler {
           entry("org.contikios.cooja.mspmote.interfaces.MspIPAddress", IPAddress.class), // Compatibility.
           entry("org.contikios.cooja.mspmote.interfaces.MspLED", MspLED.class),
           entry("org.contikios.cooja.mspmote.interfaces.MspMoteID", MspMoteID.class),
+          entry("org.contikios.cooja.mspmote.interfaces.MspSerial", MspSerial.class),
           entry("org.contikios.cooja.mspmote.interfaces.Msp802154Radio", Msp802154Radio.class),
+          entry("org.contikios.cooja.mspmote.interfaces.SkyButton", SkyButton.class),
           entry("org.contikios.cooja.mspmote.interfaces.SkyByteRadio", Msp802154Radio.class), // Compatibility.
           entry("org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem", SkyCoffeeFilesystem.class),
           entry("org.contikios.cooja.mspmote.interfaces.SkyFlash", SkyFlash.class),
