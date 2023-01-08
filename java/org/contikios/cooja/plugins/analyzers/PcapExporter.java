@@ -57,7 +57,7 @@ public class PcapExporter {
       out.write(data);
       out.flush();
     } catch (Exception e) {
-      logger.error(e);
+      logger.error("Failed to write Pcap data:", e);
     }
   }
 

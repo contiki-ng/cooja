@@ -156,7 +156,7 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
 
       return new PrintStream(output);
     } catch (IOException e) {
-      logger.error(messages);
+      logger.error("IO exception on input stream: {}", messages);
       return null;
     }
   }

@@ -244,7 +244,7 @@ public class SerialSocketClient implements Plugin, MotePlugin {
           serverPortField.commitEdit();
           startClient(serverHostField.getText(), ((Long) serverPortField.getValue()).intValue());
         } catch (ParseException ex) {
-          logger.error(ex);
+          logger.error("Server port '{}' is not a number", serverPortField.getText());
         }
       } else { // Close socket.
         cleanup();
@@ -368,7 +368,7 @@ public class SerialSocketClient implements Plugin, MotePlugin {
         socket.close();
         notifyClientDisconnected();
       } catch (IOException ex) {
-        logger.error(ex);
+        logger.error("Failed to close client socket:", ex);
         notifyClientError(ex.getMessage());
       } finally {
         socket = null;
