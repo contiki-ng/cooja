@@ -79,12 +79,6 @@ import org.contikios.cooja.mspmote.interfaces.SkyButton;
 import org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem;
 import org.contikios.cooja.mspmote.interfaces.SkyFlash;
 import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
-import org.contikios.cooja.radiomediums.DirectedGraphMedium;
-import org.contikios.cooja.radiomediums.LogisticLoss;
-import org.contikios.cooja.radiomediums.SilentRadioMedium;
-import org.contikios.cooja.radiomediums.UDGM;
-import org.contikios.cooja.radiomediums.UDGMConstantLoss;
-import org.contikios.mrm.MRM;
 import org.jdom2.Element;
 
 /**
@@ -188,34 +182,6 @@ public class MoteInterfaceHandler {
     try {
       return moteType.getConstructor().newInstance();
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-      return null;
-    }
-  }
-
-  /** Fast translation from class name to object for radio mediums.
-   * @param sim Simulation
-   * @param name Name of radio medium to create
-   * @return Object or null
-   */
-  public static RadioMedium createRadioMedium(Simulation sim, String name) {
-    if (name.startsWith("se.sics")) {
-      name = name.replaceFirst("se\\.sics", "org.contikios");
-    }
-    switch (name) {
-      case "org.contikios.cooja.radiomediums.UDGM": return new UDGM(sim);
-      case "org.contikios.cooja.radiomediums.UDGMConstantLoss": return new UDGMConstantLoss(sim);
-      case "org.contikios.cooja.radiomediums.DirectedGraphMedium": return new DirectedGraphMedium(sim);
-      case "org.contikios.cooja.radiomediums.SilentRadioMedium": return new SilentRadioMedium(sim);
-      case "org.contikios.cooja.radiomediums.LogisticLoss": return new LogisticLoss(sim);
-      case "org.contikios.mrm.MRM": return new MRM(sim);
-    }
-    var clazz = sim.getCooja().tryLoadClass(sim, RadioMedium.class, name);
-    if (clazz == null) {
-      return null;
-    }
-    try {
-      return clazz.getConstructor(Simulation.class).newInstance(sim);
-    } catch (Exception e) {
       return null;
     }
   }
