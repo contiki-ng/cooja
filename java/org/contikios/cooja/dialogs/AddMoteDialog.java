@@ -54,7 +54,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteType;
-import org.contikios.cooja.Simulation;
 
 /**
  * A dialog for adding motes.
@@ -80,16 +79,16 @@ public class AddMoteDialog extends JDialog {
    * Shows a dialog which enables a user to create and add motes of the given
    * type.
    *
-   * @param sim Simulation
    * @param moteType Mote type
+   * @param posDescriptions Array of descriptions of each positioner.
    * @return New motes or null if aborted
    */
-  public static MoteAdditions showDialog(Simulation sim, MoteType moteType) {
-    var myDialog = new AddMoteDialog(sim, moteType);
+  public static MoteAdditions showDialog(MoteType moteType, String[] posDescriptions) {
+    var myDialog = new AddMoteDialog(moteType, posDescriptions);
     return myDialog.returnValue;
   }
 
-  private AddMoteDialog(Simulation simulation, MoteType moteType) {
+  private AddMoteDialog(MoteType moteType, String[] posDescriptions) {
     super(Cooja.getTopParentContainer(), "Add motes (" + moteType.getDescription() + ")", ModalityType.APPLICATION_MODAL);
 
     JPanel mainPane = new JPanel();
@@ -160,13 +159,7 @@ public class AddMoteDialog extends JDialog {
     label = new JLabel("Positioning");
     label.setPreferredSize(new Dimension(LABEL_WIDTH, LABEL_HEIGHT));
 
-    var positioners = simulation.getCooja().getRegisteredPositioners();
-    String[] posDistributions = new String[positioners.size()];
-    for (int i = 0; i < posDistributions.length; i++) {
-      posDistributions[i] = Cooja.getDescriptionOf(positioners.get(i));
-    }
-
-    var positionDistributionBox = new JComboBox<>(posDistributions);
+    var positionDistributionBox = new JComboBox<>(posDescriptions);
     positionDistributionBox.setSelectedIndex(0);
     positionDistributionBox.addFocusListener(focusListener);
     label.setLabelFor(positionDistributionBox);

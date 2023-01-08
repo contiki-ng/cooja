@@ -1853,7 +1853,11 @@ public class GUI {
         default -> logger.warn("Unhandled action: " + cmd);
       }
       if (newMoteType != null) {
-        var newMoteInfo = AddMoteDialog.showDialog(cooja.getSimulation(), newMoteType);
+        var posDescriptions = new ArrayList<String>();
+        for (var positioner : cooja.getRegisteredPositioners()) {
+          posDescriptions.add(Cooja.getDescriptionOf(positioner));
+        }
+        var newMoteInfo = AddMoteDialog.showDialog(newMoteType, posDescriptions.toArray(new String[0]));
         if (newMoteInfo == null) return;
         Class<? extends Positioner> positionerClass = null;
         for (var positioner : cooja.getRegisteredPositioners()) {
