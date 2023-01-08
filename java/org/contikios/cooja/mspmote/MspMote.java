@@ -327,7 +327,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
       if ("breakpoints".equals(name)) {
         for (Element elem : element.getChildren()) {
           if (elem.getName().equals("breakpoint")) {
-            MspBreakpoint breakpoint = new MspBreakpoint(this);
+            var breakpoint = createBreakpoint(this);
             if (breakpoint.setConfigXML(elem.getChildren())) {
               watchpoints.add(breakpoint);
             }
@@ -405,8 +405,18 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
 
   /* WatchpointMote */
   @Override
+  public Watchpoint createBreakpoint(WatchpointMote mote) {
+    return new MspBreakpoint((MspMote) mote);
+  }
+
+  @Override
+  public Watchpoint createBreakpoint(WatchpointMote mote, long address, File codeFile, Integer lineNr) {
+    return new MspBreakpoint((MspMote) mote, address, codeFile, lineNr);
+  }
+
+  @Override
   public Watchpoint addBreakpoint(File codeFile, int lineNr, long address) {
-    MspBreakpoint bp = new MspBreakpoint(this, address, codeFile, lineNr);
+    var bp = createBreakpoint(this, address, codeFile, lineNr);
     watchpoints.add(bp);
 
     for (WatchpointListener listener: watchpointListeners) {
