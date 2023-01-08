@@ -52,20 +52,18 @@ import javax.swing.JTable;
 import javax.swing.Timer;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
-import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.interfaces.Radio;
+import org.contikios.cooja.util.EventTriggers;
+import org.jdom2.Element;
 
 /**
  * Tracks radio events to sum up transmission, reception, and radio on times.
@@ -86,7 +84,6 @@ public class PowerTracker implements Plugin {
   private static final int COLUMN_RADIORX = 3;
 
   private final Simulation simulation;
-  private final MoteCountListener moteCountListener;
   private final ArrayList<MoteTracker> moteTrackers = new ArrayList<>();
 
   private JTable table;
@@ -98,19 +95,14 @@ public class PowerTracker implements Plugin {
     this.simulation = simulation;
 
     /* Automatically add/delete motes */
-    simulation.getEventCentral().addMoteCountListener(moteCountListener = new MoteCountListener() {
-      @Override
-      public void moteWasAdded(Mote mote) {
-        addMote(mote);
-        table.invalidate();
-        table.repaint();
+    simulation.getMoteTriggers().addTrigger(this, (event, m) -> {
+      if (event == EventTriggers.AddRemove.ADD) {
+        addMote(m);
+      } else {
+        removeMote(m);
       }
-      @Override
-      public void moteWasRemoved(Mote mote) {
-        removeMote(mote);
-        table.invalidate();
-        table.repaint();
-      }
+      table.invalidate();
+      table.repaint();
     });
     frame = Cooja.isVisualized() ? new VisPlugin("PowerTracker", gui, this) : null;
     for (Mote m: simulation.getMotes()) {
@@ -508,9 +500,7 @@ public class PowerTracker implements Plugin {
   public void closePlugin() {
     /* Remove repaint timer */
     repaintTimer.stop();
-
-    simulation.getEventCentral().removeMoteCountListener(moteCountListener);
-
+    simulation.getMoteTriggers().deleteTriggers(this);
     /* Remove mote trackers */
     for (Mote m: simulation.getMotes()) {
       removeMote(m);
