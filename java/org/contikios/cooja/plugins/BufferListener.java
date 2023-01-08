@@ -89,7 +89,6 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.PluginType;
-import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.VisPlugin;
@@ -101,6 +100,7 @@ import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.util.ArrayQueue;
+import org.contikios.cooja.util.EventTriggers;
 import org.contikios.cooja.util.IPUtils;
 import org.contikios.cooja.util.StringUtils;
 import org.jdom2.Element;
@@ -192,8 +192,6 @@ public class BufferListener extends VisPlugin {
   private final Color filterTextFieldBackground;
 
   private final AbstractTableModel model;
-
-  private final MoteCountListener logOutputListener;
 
   private boolean backgroundColors = false;
   private final JCheckBoxMenuItem colorCheckbox;
@@ -694,20 +692,15 @@ public class BufferListener extends VisPlugin {
     });
 
     logUpdateAggregator.start();
-    simulation.getEventCentral().addMoteCountListener(logOutputListener = new MoteCountListener() {
-      @Override
-      public void moteWasAdded(Mote mote) {
-        /* Update title */
+    simulation.getMoteTriggers().addTrigger(this, (event, m) -> {
+      if (event == EventTriggers.AddRemove.ADD) {
         try {
-          startMonitoring(mote);
+          startMonitoring(m);
         } catch (Exception e) {
-          logger.warn("Could not monitor buffer on: " + mote, e);
+          logger.warn("Could not monitor buffer on: " + m, e);
         }
-      }
-      @Override
-      public void moteWasRemoved(Mote mote) {
-        /* Update title */
-        stopObserving(mote);
+      } else {
+        stopObserving(m);
       }
     });
 
@@ -918,8 +911,7 @@ public class BufferListener extends VisPlugin {
 
     /* Stop observing motes */
     logUpdateAggregator.stop();
-    simulation.getEventCentral().removeMoteCountListener(logOutputListener);
-
+    simulation.getMoteTriggers().deleteTriggers(this);
     for (Mote m: simulation.getMotes()) {
       stopObserving(m);
     }
