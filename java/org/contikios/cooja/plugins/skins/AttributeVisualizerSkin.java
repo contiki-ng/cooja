@@ -35,19 +35,18 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Observer;
-
+import java.util.function.BiConsumer;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.SimEventCentral.MoteCountListener;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.ui.ColorUtils;
+import org.contikios.cooja.util.EventTriggers;
 
 /**
  * Visualizer skin for mote attributes.
@@ -63,18 +62,12 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
   private Visualizer visualizer = null;
 
   private final Observer attributesObserver = (obs, obj) -> visualizer.repaint();
-  private final MoteCountListener newMotesListener = new MoteCountListener() {
-    @Override
-    public void moteWasAdded(Mote mote) {
-      MoteAttributes intf = mote.getInterfaces().getInterfaceOfType(MoteAttributes.class);
-      if (intf != null) {
+  private final BiConsumer<EventTriggers.AddRemove, Mote> newMotesListener = (event, mote) -> {
+    var intf = mote.getInterfaces().getInterfaceOfType(MoteAttributes.class);
+    if (intf != null) {
+      if (event == EventTriggers.AddRemove.ADD) {
         intf.addObserver(attributesObserver);
-      }
-    }
-    @Override
-    public void moteWasRemoved(Mote mote) {
-      MoteAttributes intf = mote.getInterfaces().getInterfaceOfType(MoteAttributes.class);
-      if (intf != null) {
+      } else {
         intf.deleteObserver(attributesObserver);
       }
     }
@@ -85,17 +78,17 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
     this.simulation = simulation;
     this.visualizer = vis;
 
-    simulation.getEventCentral().addMoteCountListener(newMotesListener);
+    simulation.getMoteTriggers().addTrigger(this, newMotesListener);
     for (Mote m: simulation.getMotes()) {
-      newMotesListener.moteWasAdded(m);
+      newMotesListener.accept(EventTriggers.AddRemove.ADD, m);
     }
   }
 
   @Override
   public void setInactive() {
-    simulation.getEventCentral().removeMoteCountListener(newMotesListener);
+    simulation.getMoteTriggers().removeTrigger(this, newMotesListener);
     for (Mote m: simulation.getMotes()) {
-      newMotesListener.moteWasRemoved(m);
+      newMotesListener.accept(EventTriggers.AddRemove.REMOVE, m);
     }
   }
 
