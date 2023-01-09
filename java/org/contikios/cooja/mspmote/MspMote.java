@@ -321,30 +321,6 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   }
 
   @Override
-  public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException {
-    for (Element element: configXML) {
-      String name = element.getName();
-      if ("breakpoints".equals(name)) {
-        for (Element elem : element.getChildren()) {
-          if (elem.getName().equals("breakpoint")) {
-            var breakpoint = createBreakpoint();
-            if (breakpoint.setConfigXML(elem.getChildren())) {
-              watchpoints.add(breakpoint);
-            }
-          }
-        }
-      } else if (name.equals("interface_config")) {
-        if (!getInterfaces().setConfigXML(this, element, !simulation.isQuickSetup())) {
-          return false;
-        }
-      }
-    }
-    /* Schedule us immediately */
-    requestImmediateWakeup();
-    return true;
-  }
-
-  @Override
   public String getExecutionDetails() {
     return executeCLICommand("stacktrace");
   }
@@ -402,26 +378,13 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     /*return executeCLICommand("line " + myCpu.getPC());*/
   }
 
-
-  /* WatchpointMote */
   @Override
-  public Watchpoint createBreakpoint() {
+  protected Watchpoint createBreakpoint() {
     return new MspBreakpoint(this);
   }
 
   @Override
-  public Watchpoint createBreakpoint(long address, File codeFile, Integer lineNr) {
+  protected Watchpoint createBreakpoint(long address, File codeFile, int lineNr) {
     return new MspBreakpoint(this, address, codeFile, lineNr);
-  }
-
-  @Override
-  public Watchpoint addBreakpoint(File codeFile, int lineNr, long address) {
-    var bp = createBreakpoint(address, codeFile, lineNr);
-    watchpoints.add(bp);
-
-    for (WatchpointListener listener: watchpointListeners) {
-      listener.watchpointsChanged();
-    }
-    return bp;
   }
 }

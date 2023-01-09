@@ -68,6 +68,6 @@ public class JSyntaxAddBreakpoint extends DefaultSyntaxAction {
       return;
     }
 
-    watchpointMote.addBreakpoint(file, line, address);
+    watchpointMote.addBreakpoint(address, file, line);
   }
 }

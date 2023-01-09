@@ -62,10 +62,7 @@ public interface WatchpointMote extends Mote {
    */
   WatchpointListener[] getWatchpointListeners();
 
-  Watchpoint createBreakpoint();
-  Watchpoint createBreakpoint(long address, File codeFile, Integer lineNr);
-
-  Watchpoint addBreakpoint(File codeFile, int lineNr, long address);
+  Watchpoint addBreakpoint(long address, File codeFile, int lineNr);
   void removeBreakpoint(Watchpoint watchpoint);
   Watchpoint[] getBreakpoints();
 
