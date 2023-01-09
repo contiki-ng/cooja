@@ -127,7 +127,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     // Create mote address memory.
     moteMemory = new MspMoteMemory(elf.getMap().getAllEntries(), myCpu);
     myCpu.reset();
-    moteInterfaces = new MoteInterfaceHandler(this, moteType.getMoteInterfaceClasses());
+    moteInterfaces = new MoteInterfaceHandler(this);
     registry.removeComponent("windowManager");
     registry.registerComponent("windowManager", new WindowManager() {
       @Override
