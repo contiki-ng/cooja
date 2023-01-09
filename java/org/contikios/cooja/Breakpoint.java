@@ -148,9 +148,11 @@ public abstract class Breakpoint implements Watchpoint {
     element.setText(file.getPath().replaceAll("\\\\", "/"));
     config.add(element);
 
-    element = new Element("line");
-    element.setText(String.valueOf(lineNr));
-    config.add(element);
+    if (lineNr >= 0) {
+      element = new Element("line");
+      element.setText(String.valueOf(lineNr));
+      config.add(element);
+    }
 
     if (sourceCode != null) {
       element = new Element("sourcecode");
