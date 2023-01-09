@@ -315,27 +315,27 @@ public class MoteInterfaceHandler {
     if (name.startsWith("se.sics")) {
       name = name.replaceFirst("se\\.sics", "org.contikios");
     }
-    Class<? extends MoteInterface> moteInterfaceClass = null;
-    for (var clazz : mote.getType().getMoteInterfaceClasses()) {
-      if (name.equals(clazz.getName())) {
-        moteInterfaceClass = clazz;
+    MoteInterface moteInterface = null;
+    for (var candidateInterface : getInterfaces()) {
+      if (name.equals(candidateInterface.getClass().getName())) {
+        moteInterface = candidateInterface;
         break;
       }
     }
-    if (moteInterfaceClass == null) {
+    if (moteInterface == null) {
       // Check for compatible interfaces, for example, when reconfiguring mote types.
       // Start with a name match, so native-image works for the builtin mote types.
-      moteInterfaceClass = name.endsWith("MoteID")
+      var moteInterfaceClass = name.endsWith("MoteID")
               ? MoteID.class : mote.getSimulation().getCooja().tryLoadClass(mote, MoteInterface.class, name);
       if (moteInterfaceClass == null) {
         logger.warn("Cannot find mote interface class: " + name);
         return ignoreFailure;
       }
-    }
-    var moteInterface = getInterfaceOfType(moteInterfaceClass);
-    if (moteInterface == null) {
-      logger.warn("Cannot find mote interface of class: " + moteInterfaceClass);
-      return ignoreFailure;
+      moteInterface = getInterfaceOfType(moteInterfaceClass);
+      if (moteInterface == null) {
+        logger.warn("Cannot find mote interface of class: " + moteInterfaceClass);
+        return ignoreFailure;
+      }
     }
     moteInterface.setConfigXML(element.getChildren(), Cooja.isVisualized());
     return true;
