@@ -34,6 +34,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -168,25 +169,18 @@ public class EventListener extends VisPlugin {
     myPlugin = this;
 
     /* Create selectable interfaces list (only supports Contiki mote types) */
-    var allInterfaces = new ArrayList<Class<? extends MoteInterface>>();
-    var allInterfacesDups = new ArrayList<Class<? extends MoteInterface>>();
+    var allInterfaces = new LinkedHashSet<Class<? extends MoteInterface>>();
 
     // Add standard interfaces
-    allInterfacesDups.add(Button.class);
-    allInterfacesDups.add(LED.class);
-    allInterfacesDups.add(Log.class);
-    allInterfacesDups.add(PIR.class);
-    allInterfacesDups.add(Position.class);
-    allInterfacesDups.add(Radio.class);
-
+    allInterfaces.add(Button.class);
+    allInterfaces.add(LED.class);
+    allInterfaces.add(Log.class);
+    allInterfaces.add(PIR.class);
+    allInterfaces.add(Position.class);
+    allInterfaces.add(Radio.class);
     for (MoteType moteType : simulationToControl.getMoteTypes()) {
       if (moteType instanceof ContikiMoteType) {
-        allInterfacesDups.addAll(Arrays.asList(moteType.getMoteInterfaceClasses()));
-      }
-    }
-    for (Class<? extends MoteInterface> moteTypeClass : allInterfacesDups) {
-      if (!allInterfaces.contains(moteTypeClass)) {
-        allInterfaces.add(moteTypeClass);
+        allInterfaces.addAll(Arrays.asList(moteType.getMoteInterfaceClasses()));
       }
     }
 
