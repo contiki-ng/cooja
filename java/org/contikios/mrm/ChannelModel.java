@@ -1365,11 +1365,12 @@ public class ChannelModel {
     }
 
     // - Extract length and losses of each path -
-    double[] pathLengths = new double[allPaths.size()];
-    double[] pathGain = new double[allPaths.size()];
+    var numPaths = allPaths.size();
+    double[] pathLengths = new double[numPaths];
+    double[] pathGain = new double[numPaths];
     int bestSignalNr = -1;
     double bestSignalPathLoss = 0;
-    for (int i=0; i < allPaths.size(); i++) {
+    for (int i = 0; i < numPaths; i++) {
       RayPath currentPath = allPaths.get(i);
       double accumulatedStraightLength = 0;
 
@@ -1448,7 +1449,7 @@ public class ChannelModel {
     }
 
     // - Calculate total path loss (using simple Rician) -
-    double[] pathModdedLengths = new double[allPaths.size()];
+    double[] pathModdedLengths = new double[numPaths];
     double delaySpread = 0;
     double delaySpreadRMS = 0;
     double freq = getParameterDoubleValue(Parameter.frequency);
@@ -1456,7 +1457,7 @@ public class ChannelModel {
     double totalPathGain = 0;
     double delaySpreadTotalWeight = 0;
     double speedOfLight = 300; // Approximate value (m/us)
-    for (int i=0; i < pathModdedLengths.length; i++) {
+    for (int i = 0; i < numPaths; i++) {
       // Ignore insignificant interfering signals
       if (pathGain[i] > pathGain[bestSignalNr] - 30) {
         double pathLengthDiff = Math.abs(pathLengths[i] - pathLengths[bestSignalNr]);
