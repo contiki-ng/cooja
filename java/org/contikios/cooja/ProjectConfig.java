@@ -321,10 +321,6 @@ public class ProjectConfig {
    * @return Value as string
    */
   public String getStringValue(String name) {
-    if (!myConfig.containsKey(name)) {
-    	return null;
-    }
-
     return myConfig.getProperty(name);
   }
 
