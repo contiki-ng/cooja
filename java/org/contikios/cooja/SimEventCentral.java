@@ -103,13 +103,6 @@ public class SimEventCentral {
 
   
   /* ADDED/REMOVED MOTES */
-  public interface MoteCountListener {
-    void moteWasAdded(Mote mote);
-    void moteWasRemoved(Mote mote);
-  }
-  /** Mote count notifications. */
-  private MoteCountListener[] moteCountListeners = new MoteCountListener[0];
-
   void addMote(Mote mote) {
     if (logOutputListeners.length > 0) {
       // Add another log output observation (supports multiple log interfaces per mote).
@@ -118,10 +111,6 @@ public class SimEventCentral {
           moteObservations.add(new MoteObservation(mote, log, logOutputObserver));
         }
       }
-    }
-    // Notify external listeners.
-    for (var l : moteCountListeners) {
-      l.moteWasAdded(mote);
     }
   }
 
@@ -133,19 +122,7 @@ public class SimEventCentral {
         moteObservations.remove(o);
       }
     }
-    // Notify external listeners.
-    for (var l : moteCountListeners) {
-      l.moteWasRemoved(mote);
-    }
   }
-
-  public void addMoteCountListener(MoteCountListener listener) {
-    moteCountListeners = ArrayUtils.add(moteCountListeners, listener);
-  }
-  public void removeMoteCountListener(MoteCountListener listener) {
-    moteCountListeners = ArrayUtils.remove(moteCountListeners, listener);
-  }
-
 
   /* LOG OUTPUT */
   public static class LogOutputEvent extends MoteEvent {
@@ -272,8 +249,6 @@ public class SimEventCentral {
   public String toString() {
     return 
     "\nActive mote observations: " + moteObservations.size() +
-    "\n" +
-    "\nMote count listeners: " + moteCountListeners.length +
     "\n" +
     "\nLog output listeners: " + logOutputListeners.length +
     "\nLog output history: " + logOutputEvents.size()
