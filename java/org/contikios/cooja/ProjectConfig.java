@@ -306,17 +306,7 @@ public class ProjectConfig {
    * @return Value or defaultValue if id wasn't found
    */
   public String getStringValue(Class<?> callingClass, String id, String defaultValue) {
-    return getStringValue(myConfig, callingClass, id, defaultValue);
-  }
-
-  private static String getStringValue(Properties currentValues, Class<?> callingClass, String id, String defaultValue) {
-    String val = currentValues.getProperty(callingClass.getName() + "." + id);
-
-    if (val == null) {
-      return defaultValue;
-    }
-
-    return val;
+    return myConfig.getProperty(callingClass.getName() + "." + id, defaultValue);
   }
 
   /**
@@ -327,10 +317,6 @@ public class ProjectConfig {
    * @return Value as string
    */
   public String getStringValue(String name) {
-    if (!myConfig.containsKey(name)) {
-    	return null;
-    }
-
     return myConfig.getProperty(name);
   }
 
