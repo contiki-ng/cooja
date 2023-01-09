@@ -3,9 +3,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.util.ArrayList;
 import javax.swing.JPanel;
-import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.util.EventTriggers;
 
