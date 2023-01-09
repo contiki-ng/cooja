@@ -199,6 +199,7 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
 
     this.setChanged();
     this.notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.RECEPTION_STARTED, this);
   }
 
   @Override
@@ -218,6 +219,7 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     lastEvent = RadioEvent.RECEPTION_FINISHED;
     this.setChanged();
     this.notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.RECEPTION_FINISHED, this);
   }
 
   @Override
@@ -237,6 +239,7 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     lastEventTime = mote.getSimulation().getSimulationTime();
     this.setChanged();
     this.notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.RECEPTION_INTERFERED, this);
   }
 
   @Override
@@ -312,6 +315,7 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
       lastEventTime = now;
       this.setChanged();
       this.notifyObservers();
+      radioEventTriggers.trigger(radioOn ? RadioEvent.HW_ON : RadioEvent.HW_OFF, this);
     }
     if (!radioOn) {
       return;
@@ -323,6 +327,7 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
       lastEvent = RadioEvent.UNKNOWN;
       this.setChanged();
       this.notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
     }
 
     /* Check if radio channel changed */
@@ -331,6 +336,7 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
       lastEvent = RadioEvent.UNKNOWN;
       this.setChanged();
       this.notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
     }
 
     /* Ongoing transmission */
@@ -343,6 +349,7 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
       lastEvent = RadioEvent.TRANSMISSION_FINISHED;
       this.setChanged();
       this.notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, this);
     }
 
     /* New transmission */
@@ -376,11 +383,13 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
       lastEvent = RadioEvent.TRANSMISSION_STARTED;
       this.setChanged();
       this.notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.TRANSMISSION_STARTED, this);
 
       // Deliver packet right away
       lastEvent = RadioEvent.PACKET_TRANSMITTED;
       this.setChanged();
       this.notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.PACKET_TRANSMITTED, this);
     }
 
     if (isTransmitting && transmissionEndTime > now) {

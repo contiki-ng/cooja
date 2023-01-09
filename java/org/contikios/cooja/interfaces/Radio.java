@@ -45,6 +45,7 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.RadioPacket;
 import org.contikios.cooja.contikimote.interfaces.ContikiRadio;
+import org.contikios.cooja.util.EventTriggers;
 
 /**
  * A mote radio transceiver.
@@ -58,6 +59,8 @@ import org.contikios.cooja.contikimote.interfaces.ContikiRadio;
 @ClassDescription("Radio")
 public abstract class Radio extends Observable implements MoteInterface {
   private static final Logger logger = LogManager.getLogger(Radio.class);
+
+  protected final EventTriggers<RadioEvent, Radio> radioEventTriggers = new EventTriggers<>();
 
   /**
    * Events that radios should notify observers about.
@@ -293,5 +296,9 @@ public abstract class Radio extends Observable implements MoteInterface {
   public void removed() {
     var simulation = getMote().getSimulation();
     simulation.getRadioMedium().unregisterRadioInterface(this, simulation);
+  }
+
+  public EventTriggers<RadioEvent, Radio> getRadioEventTriggers() {
+    return radioEventTriggers;
   }
 }

@@ -118,6 +118,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     lastEvent = RadioEvent.RECEPTION_STARTED;
     this.setChanged();
     this.notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.RECEPTION_STARTED, this);
   }
 
   @Override
@@ -140,6 +141,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     lastEvent = RadioEvent.RECEPTION_FINISHED;
     this.setChanged();
     this.notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.RECEPTION_FINISHED, this);
   }
 
   @Override
@@ -182,6 +184,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
       lastEventTime = simulation.getSimulationTime();
       this.setChanged();
       this.notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.RECEPTION_INTERFERED, this);
     }
   }
 
@@ -236,12 +239,14 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     lastEventTime = simulation.getSimulationTime();
     ApplicationRadio.this.setChanged();
     ApplicationRadio.this.notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.TRANSMISSION_STARTED, this);
 
     // Deliver data.
     packetFromMote = packet;
     lastEvent = RadioEvent.PACKET_TRANSMITTED;
     ApplicationRadio.this.setChanged();
     ApplicationRadio.this.notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.PACKET_TRANSMITTED, this);
 
     // Finish transmission.
     simulation.scheduleEvent(new MoteTimeEvent(mote) {
@@ -252,6 +257,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
         lastEventTime = t;
         ApplicationRadio.this.setChanged();
         ApplicationRadio.this.notifyObservers();
+        radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, ApplicationRadio.this);
       }
     }, simulation.getSimulationTime() + duration);
   }
@@ -279,6 +285,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     lastEventTime = simulation.getSimulationTime();
     setChanged();
     notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
   }
 
   @Override
@@ -371,6 +378,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     lastEventTime = simulation.getSimulationTime();
     this.setChanged();
     this.notifyObservers();
+    radioEventTriggers.trigger(radioOn ? RadioEvent.HW_ON : RadioEvent.HW_OFF, this);
   }
   @Override
   public boolean isRadioOn() {
