@@ -122,12 +122,10 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
     for (var element : configXML) {
       var name = element.getName();
       if ("breakpoints".equals(name)) {
-        for (Element elem : element.getChildren()) {
-          if (elem.getName().equals("breakpoint")) {
-            var breakpoint = createBreakpoint();
-            if (breakpoint != null && breakpoint.setConfigXML(elem.getChildren())) {
-              watchpoints.add(breakpoint);
-            }
+        for (Element elem : element.getChildren("breakpoint")) {
+          var breakpoint = createBreakpoint();
+          if (breakpoint != null && breakpoint.setConfigXML(elem.getChildren())) {
+            watchpoints.add(breakpoint);
           }
         }
       } else if ("interface_config".equals(name)) {
