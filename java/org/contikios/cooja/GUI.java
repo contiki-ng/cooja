@@ -1475,6 +1475,8 @@ public class GUI {
               var moteTypeClassName = elem.getText().trim();
               var newClass = (String) JOptionPane.showInputDialog(Cooja.getTopParentContainer(),
                       "The simulation is about to load '" + moteTypeClassName + "'\n" +
+                              "with the description:\n" +
+                              elem.getChild("description").getText() + "\n" +
                               "You may try to load the simulation using a different mote type.\n",
                       "Loading mote type", JOptionPane.QUESTION_MESSAGE, null, availableMoteTypes,
                       moteTypeClassName);
