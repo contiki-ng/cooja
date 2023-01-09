@@ -334,7 +334,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
           }
         }
       } else if (name.equals("interface_config")) {
-        if (!getInterfaces().setConfigXML(simulation, element, this)) {
+        if (!getInterfaces().setConfigXML(this, element)) {
           return false;
         }
       }
