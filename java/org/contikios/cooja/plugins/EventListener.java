@@ -60,12 +60,6 @@ import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.contikimote.ContikiMoteType;
-import org.contikios.cooja.interfaces.Button;
-import org.contikios.cooja.interfaces.LED;
-import org.contikios.cooja.interfaces.Log;
-import org.contikios.cooja.interfaces.PIR;
-import org.contikios.cooja.interfaces.Position;
-import org.contikios.cooja.interfaces.Radio;
 
 /**
  * Allows a user to observe several parts of the simulator, stopping a
@@ -171,13 +165,6 @@ public class EventListener extends VisPlugin {
     /* Create selectable interfaces list (only supports Contiki mote types) */
     var allInterfaces = new LinkedHashSet<Class<? extends MoteInterface>>();
 
-    // Add standard interfaces
-    allInterfaces.add(Button.class);
-    allInterfaces.add(LED.class);
-    allInterfaces.add(Log.class);
-    allInterfaces.add(PIR.class);
-    allInterfaces.add(Position.class);
-    allInterfaces.add(Radio.class);
     for (MoteType moteType : simulationToControl.getMoteTypes()) {
       if (moteType instanceof ContikiMoteType) {
         allInterfaces.addAll(Arrays.asList(moteType.getMoteInterfaceClasses()));
