@@ -80,10 +80,9 @@ public class MoteInterfaceHandler {
    * Creates new mote interface handler. All given interfaces are created.
    *
    * @param mote Mote
-   * @param interfaceClasses Mote interface classes
    */
-  public MoteInterfaceHandler(Mote mote, Class<? extends MoteInterface>[] interfaceClasses) throws MoteType.MoteTypeCreationException {
-    for (Class<? extends MoteInterface> interfaceClass : interfaceClasses) {
+  public MoteInterfaceHandler(Mote mote) throws MoteType.MoteTypeCreationException {
+    for (var interfaceClass : mote.getType().getMoteInterfaceClasses()) {
       try {
         moteInterfaces.add(interfaceClass.getConstructor(Mote.class).newInstance(mote));
       } catch (Exception e) {
