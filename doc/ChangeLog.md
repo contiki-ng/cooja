@@ -23,6 +23,10 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed MoteCountListener from SimEventCentral
+
+Use `simulation.getMoteTriggers().addTrigger()` instead.
+
 ### Removed MOTE_INTERFACES support in ContikiMoteType
 
 Extend ContikiMoteType and override the methods that deal with interfaces
