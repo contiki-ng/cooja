@@ -179,41 +179,39 @@ public abstract class Breakpoint implements Watchpoint {
   public boolean setConfigXML(Collection<Element> configXML) {
     // Already knows mote and breakpoints.
     for (var element : configXML) {
-      var name = element.getName();
-      if (name.equals("codefile")) {
-        codeFile = mote.getSimulation().getCooja().restorePortablePath(new File(element.getText()));
-        try {
-          codeFile = codeFile.getCanonicalFile();
-        } catch (IOException e) {
-          codeFile = null;
-        }
-        if (codeFile == null || !codeFile.exists()) {
-          logger.error("Could not find file: {}", element.getText());
-          return false;
-        }
-      } else if (name.equals("line")) {
-        lineNr = Integer.parseInt(element.getText());
-      } else if (name.equals("sourcecode") || name.equals("contikicode")) {
-        // Verify that code did not change.
-        final String code = StringUtils.loadFromFile(codeFile);
-        if (code != null && lineNr > 0) {
-          String[] lines = code.split("\n");
-          if (lineNr-1 < lines.length) {
-            sourceCode = lines[lineNr-1].trim();
+      switch (element.getName()) {
+        case "codefile" -> {
+          codeFile = mote.getSimulation().getCooja().restorePortablePath(new File(element.getText()));
+          try {
+            codeFile = codeFile.getCanonicalFile();
+          } catch (IOException e) {
+            codeFile = null;
+          }
+          if (codeFile == null || !codeFile.exists()) {
+            logger.error("Could not find file: {}", element.getText());
+            return false;
           }
         }
-        var lastSourceCode = element.getText().trim();
-        if (!lastSourceCode.equals(sourceCode)) {
-          logger.warn("Detected modified code at breakpoint: " + codeFile.getPath() + ":" + lineNr + ".");
-          logger.warn("From: '" + lastSourceCode + "'");
-          logger.warn("  To: '" + sourceCode + "'");
+        case "line" -> lineNr = Integer.parseInt(element.getText());
+        case "sourcecode", "contikicode" -> {
+          // Verify that code did not change.
+          final String code = StringUtils.loadFromFile(codeFile);
+          if (code != null && lineNr > 0) {
+            String[] lines = code.split("\n");
+            if (lineNr - 1 < lines.length) {
+              sourceCode = lines[lineNr - 1].trim();
+            }
+          }
+          var lastSourceCode = element.getText().trim();
+          if (!lastSourceCode.equals(sourceCode)) {
+            logger.warn("Detected modified code at breakpoint: " + codeFile.getPath() + ":" + lineNr + ".");
+            logger.warn("From: '" + lastSourceCode + "'");
+            logger.warn("  To: '" + sourceCode + "'");
+          }
         }
-      } else if (name.equals("msg")) {
-        msg = element.getText();
-      } else if (name.equals("color")) {
-        color = new Color(Integer.parseInt(element.getText()));
-      } else if (name.equals("stops")) {
-        stopsSimulation = Boolean.parseBoolean(element.getText());
+        case "msg" -> msg = element.getText();
+        case "color" -> color = new Color(Integer.parseInt(element.getText()));
+        case "stops" -> stopsSimulation = Boolean.parseBoolean(element.getText());
       }
     }
 
