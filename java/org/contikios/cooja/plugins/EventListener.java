@@ -32,12 +32,10 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -48,18 +46,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-
-import org.jdom2.Element;
-
+import org.contikios.cooja.contikimote.ContikiMote;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.MoteType;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
-import org.contikios.cooja.contikimote.ContikiMoteType;
+import org.jdom2.Element;
 
 /**
  * Allows a user to observe several parts of the simulator, stopping a
@@ -162,25 +157,23 @@ public class EventListener extends VisPlugin {
     mySimulation = simulationToControl;
     myPlugin = this;
 
-    /* Create selectable interfaces list (only supports Contiki mote types) */
-    var allInterfaces = new LinkedHashSet<Class<? extends MoteInterface>>();
-
-    for (MoteType moteType : simulationToControl.getMoteTypes()) {
-      if (moteType instanceof ContikiMoteType) {
-        allInterfaces.addAll(Arrays.asList(moteType.getMoteInterfaceClasses()));
+    // Create selectable interfaces list (only supports Contiki mote types).
+    var allInterfaces = new LinkedHashSet<MoteInterface>();
+    for (var mote : simulationToControl.getMotes()) {
+      if (mote instanceof ContikiMote) {
+        allInterfaces.addAll(mote.getInterfaces().getInterfaces());
       }
     }
 
     interfacePanel = new JPanel();
     interfacePanel.setLayout(new BoxLayout(interfacePanel, BoxLayout.Y_AXIS));
     interfacePanel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
-    for (Class<? extends MoteInterface> interfaceClass : allInterfaces) {
-      JCheckBox checkBox = new JCheckBox(Cooja.getDescriptionOf(interfaceClass),
-          false);
-      checkBox.setToolTipText(interfaceClass.getName());
-      checkBox.putClientProperty("interface_class", interfaceClass);
+    for (var interfaceClass : allInterfaces) {
+      var checkBox = new JCheckBox(Cooja.getDescriptionOf(interfaceClass.getClass()), false);
+      checkBox.setToolTipText(interfaceClass.getClass().getName());
+      // FIXME: Stop storing the class as client property.
+      checkBox.putClientProperty("interface_class", interfaceClass.getClass());
       checkBox.addActionListener(interfaceCheckBoxListener);
-
       interfacePanel.add(checkBox);
     }
     if (allInterfaces.isEmpty()) {
