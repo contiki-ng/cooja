@@ -196,7 +196,7 @@ public abstract class Breakpoint implements Watchpoint {
       } else if (name.equals("sourcecode") || name.equals("contikicode")) {
         // Verify that code did not change.
         final String code = StringUtils.loadFromFile(codeFile);
-        if (code != null) {
+        if (code != null && lineNr > 0) {
           String[] lines = code.split("\n");
           if (lineNr-1 < lines.length) {
             sourceCode = lines[lineNr-1].trim();
