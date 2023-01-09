@@ -143,7 +143,7 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
     return watchpointListeners.toArray(new WatchpointListener[0]);
   }
 
-  public Watchpoint addBreakpoint(File codeFile, int lineNr, long address) {
+  public Watchpoint addBreakpoint(long address, File codeFile, int lineNr) {
     return null; // FIXME: make a usable general Watchpoint class and implement this method.
   }
 
