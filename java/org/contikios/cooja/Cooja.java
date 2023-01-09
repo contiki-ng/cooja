@@ -593,25 +593,6 @@ public class Cooja {
   }
 
   // // PLUGIN METHODS ////
-
-  /**
-   * Close all mote plugins for given mote.
-   *
-   * @param mote Mote
-   */
-  public void closeMotePlugins(Mote mote) {
-    for (Plugin p: mySimulation.startedPlugins.toArray(new Plugin[0])) {
-      if (!(p instanceof MotePlugin)) {
-        continue;
-      }
-
-      Mote pluginMote = ((MotePlugin)p).getMote();
-      if (pluginMote == mote) {
-        removePlugin(mySimulation.startedPlugins, p);
-      }
-    }
-  }
-
   /**
    * Remove a plugin from working area.
    *
