@@ -1449,7 +1449,6 @@ public class ChannelModel {
     }
 
     // - Calculate total path loss (using simple Rician) -
-    double[] pathModdedLengths = new double[numPaths];
     double delaySpread = 0;
     double delaySpreadRMS = 0;
     double freq = getParameterDoubleValue(Parameter.frequency);
@@ -1475,17 +1474,17 @@ public class ChannelModel {
         delaySpreadRMS += rmsDelaySpreadComponent;
 
         // OK since cosinus is even function
-        pathModdedLengths[i] = pathLengthDiff % wavelength;
+        var pathModdedLengths = pathLengthDiff % wavelength;
 
         // Using Rician fading approach, TODO Only one best signal considered - combine these? (need two limits)
-        totalPathGain += Math.pow(10, pathGain[i]/10.0)*Math.cos(2*Math.PI * pathModdedLengths[i]/wavelength);
+        totalPathGain += Math.pow(10, pathGain[i]/10.0)*Math.cos(2*Math.PI * pathModdedLengths/wavelength);
         if (logMode) {
-          logInfo.append("Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths[i] / wavelength))).append(" pi\n");
+          logInfo.append("Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths / wavelength))).append(" pi\n");
         }
       } else if (logMode) {
         /* TODO Log mode affects result? */
-        pathModdedLengths[i] = (pathLengths[i] - pathLengths[bestSignalNr]) % wavelength;
-        logInfo.append("(IGNORED) Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths[i] / wavelength))).append(" pi\n");
+        var pathModdedLengths = (pathLengths[i] - pathLengths[bestSignalNr]) % wavelength;
+        logInfo.append("(IGNORED) Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths / wavelength))).append(" pi\n");
       }
 
     }
