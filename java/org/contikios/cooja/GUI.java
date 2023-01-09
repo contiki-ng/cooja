@@ -1480,7 +1480,9 @@ public class GUI {
                       moteTypeClassName);
               if (newClass == null) {
                 rv = false;
-              } else if (!newClass.equals(moteTypeClassName)) {
+                break;
+              }
+              if (!newClass.equals(moteTypeClassName)) {
                 logger.warn("Changing mote type class: " + moteTypeClassName + " -> " + newClass);
                 // Remove the previous mote-interfaces to load the default interfaces.
                 elem.removeChildren("moteinterface");
