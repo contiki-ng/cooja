@@ -69,7 +69,6 @@ public abstract class Breakpoint implements Watchpoint {
     this.address = address;
     this.codeFile = codeFile;
     this.lineNr = lineNr;
-    createMonitor();
   }
 
   @Override

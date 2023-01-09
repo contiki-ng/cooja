@@ -54,6 +54,7 @@ public class MspBreakpoint extends Breakpoint {
   public MspBreakpoint(MspMote mote, long address, File codeFile, Integer lineNr) {
     super(mote, address, codeFile, lineNr);
     mspMote = mote;
+    createMonitor();
   }
 
   @Override
