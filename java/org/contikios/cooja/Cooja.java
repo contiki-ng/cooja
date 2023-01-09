@@ -170,13 +170,13 @@ public class Cooja {
 
   private ClassLoader projectDirClassLoader;
 
-  private final ArrayList<Class<? extends MoteType>> moteTypeClasses = new ArrayList<>();
+  private ArrayList<Class<? extends MoteType>> moteTypeClasses;
 
-  private final ArrayList<Class<? extends Plugin>> pluginClasses = new ArrayList<>();
+  private ArrayList<Class<? extends Plugin>> pluginClasses;
 
-  private final ArrayList<Class<? extends RadioMedium>> radioMediumClasses = new ArrayList<>();
+  private ArrayList<Class<? extends RadioMedium>> radioMediumClasses;
 
-  private final ArrayList<Class<? extends Positioner>> positionerClasses = new ArrayList<>();
+  private ArrayList<Class<? extends Positioner>> positionerClasses;
 
   /**
    * Creates a new Cooja Simulator GUI and ensures Swing initialization is done in the right thread.
@@ -248,7 +248,7 @@ public class Cooja {
         }
       }
     } else {
-      parseProjectConfig();
+      parseProjectConfig(false);
     }
     // Shutdown hook to stop running simulations.
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -331,6 +331,9 @@ public class Cooja {
    *          Class to register
    */
   public void registerMoteType(Class<? extends MoteType> moteTypeClass) {
+    if (moteTypeClasses == null) {
+      registerClasses();
+    }
     moteTypeClasses.add(moteTypeClass);
   }
 
@@ -338,6 +341,9 @@ public class Cooja {
    * @return All registered mote type classes
    */
   public List<Class<? extends MoteType>> getRegisteredMoteTypes() {
+    if (moteTypeClasses == null) {
+      registerClasses();
+    }
     return moteTypeClasses;
   }
 
@@ -345,6 +351,9 @@ public class Cooja {
    * Returns all registered plugins.
    */
   public List<Class<? extends Plugin>> getRegisteredPlugins() {
+    if (pluginClasses == null) {
+      registerClasses();
+    }
     return pluginClasses;
   }
 
@@ -354,6 +363,9 @@ public class Cooja {
    * @param positionerClass Class to register
    */
   public void registerPositioner(Class<? extends Positioner> positionerClass) {
+    if (positionerClasses == null) {
+      registerClasses();
+    }
     positionerClasses.add(positionerClass);
   }
 
@@ -361,6 +373,9 @@ public class Cooja {
    * @return All registered positioner classes
    */
   public List<Class<? extends Positioner>> getRegisteredPositioners() {
+    if (positionerClasses == null) {
+      registerClasses();
+    }
     return positionerClasses;
   }
 
@@ -370,6 +385,9 @@ public class Cooja {
    * @param radioMediumClass Class to register
    */
   public void registerRadioMedium(Class<? extends RadioMedium> radioMediumClass) {
+    if (radioMediumClasses == null) {
+      registerClasses();
+    }
     radioMediumClasses.add(radioMediumClass);
   }
 
@@ -377,15 +395,18 @@ public class Cooja {
    * @return All registered radio medium classes
    */
   public List<Class<? extends RadioMedium>> getRegisteredRadioMediums() {
+    if (radioMediumClasses == null) {
+      registerClasses();
+    }
     return radioMediumClasses;
   }
 
   void clearProjectConfig() {
     /* Remove current dependencies */
-    moteTypeClasses.clear();
-    pluginClasses.clear();
-    positionerClasses.clear();
-    radioMediumClasses.clear();
+    moteTypeClasses = null;
+    pluginClasses = null;
+    positionerClasses = null;
+    radioMediumClasses = null;
     projectDirClassLoader = null;
   }
 
@@ -393,7 +414,7 @@ public class Cooja {
    * Builds extension configuration using extension directories settings.
    * Registers mote types, plugins, positioners and radio mediums.
    */
-  void parseProjectConfig() throws ParseProjectsException {
+  void parseProjectConfig(boolean eagerInit) throws ParseProjectsException {
     /* Build cooja configuration */
     projectConfig = new ProjectConfig(true);
     for (COOJAProject project: currentProjects) {
@@ -406,22 +427,26 @@ public class Cooja {
       }
     }
 
-    // Register mote types
+    if (eagerInit) {
+      registerClasses();
+    }
+  }
+
+  private void registerClasses() {
+    // Register mote types.
+    moteTypeClasses = new ArrayList<>();
     registerMoteType(ImportAppMoteType.class);
     registerMoteType(DisturberMoteType.class);
     registerMoteType(ContikiMoteType.class);
     registerMoteType(SkyMoteType.class);
     registerMoteType(Z1MoteType.class);
-    String[] moteTypeClassNames = projectConfig.getStringArrayValue(Cooja.class,
-    "MOTETYPES");
+    var moteTypeClassNames = projectConfig.getStringArrayValue(Cooja.class,"MOTETYPES");
     if (moteTypeClassNames != null) {
-      for (String moteTypeClassName : moteTypeClassNames) {
+      for (var moteTypeClassName : moteTypeClassNames) {
         if (moteTypeClassName.trim().isEmpty()) {
           continue;
         }
-        Class<? extends MoteType> moteTypeClass = tryLoadClass(this,
-            MoteType.class, moteTypeClassName);
-
+        var moteTypeClass = tryLoadClass(this, MoteType.class, moteTypeClassName);
         if (moteTypeClass != null) {
           registerMoteType(moteTypeClass);
         } else {
@@ -430,7 +455,8 @@ public class Cooja {
       }
     }
 
-    // Register plugins
+    // Register plugins.
+    pluginClasses = new ArrayList<>();
     registerPlugin(Visualizer.class);
     registerPlugin(LogListener.class);
     registerPlugin(TimeLine.class);
@@ -452,13 +478,10 @@ public class Cooja {
     registerPlugin(MspCodeWatcher.class);
     registerPlugin(MspStackWatcher.class);
     registerPlugin(MspCycleWatcher.class);
-    String[] pluginClassNames = projectConfig.getStringArrayValue(Cooja.class,
-    "PLUGINS");
+    var pluginClassNames = projectConfig.getStringArrayValue(Cooja.class, "PLUGINS");
     if (pluginClassNames != null) {
-      for (String pluginClassName : pluginClassNames) {
-        Class<? extends Plugin> pluginClass = tryLoadClass(this, Plugin.class,
-            pluginClassName);
-
+      for (var pluginClassName : pluginClassNames) {
+        var pluginClass = tryLoadClass(this, Plugin.class, pluginClassName);
         if (pluginClass != null) {
           registerPlugin(pluginClass);
         } else {
@@ -467,18 +490,16 @@ public class Cooja {
       }
     }
 
-    // Register positioners
+    // Register positioner classes.
+    positionerClasses = new ArrayList<>();
     registerPositioner(RandomPositioner.class);
     registerPositioner(LinearPositioner.class);
     registerPositioner(EllipsePositioner.class);
     registerPositioner(ManualPositioner.class);
-    String[] positionerClassNames = projectConfig.getStringArrayValue(
-        Cooja.class, "POSITIONERS");
+    var positionerClassNames = projectConfig.getStringArrayValue(Cooja.class, "POSITIONERS");
     if (positionerClassNames != null) {
-      for (String positionerClassName : positionerClassNames) {
-        Class<? extends Positioner> positionerClass = tryLoadClass(this,
-            Positioner.class, positionerClassName);
-
+      for (var positionerClassName : positionerClassNames) {
+        var positionerClass = tryLoadClass(this, Positioner.class, positionerClassName);
         if (positionerClass != null) {
           registerPositioner(positionerClass);
         } else {
@@ -488,19 +509,17 @@ public class Cooja {
     }
 
     // Register radio mediums.
+    radioMediumClasses = new ArrayList<>();
     registerRadioMedium(UDGM.class);
     registerRadioMedium(UDGMConstantLoss.class);
     registerRadioMedium(DirectedGraphMedium.class);
     registerRadioMedium(SilentRadioMedium.class);
     registerRadioMedium(LogisticLoss.class);
     registerRadioMedium(MRM.class);
-    String[] radioMediumsClassNames = projectConfig.getStringArrayValue(
-        Cooja.class, "RADIOMEDIUMS");
+    var radioMediumsClassNames = projectConfig.getStringArrayValue(Cooja.class, "RADIOMEDIUMS");
     if (radioMediumsClassNames != null) {
-      for (String radioMediumClassName : radioMediumsClassNames) {
-        Class<? extends RadioMedium> radioMediumClass = tryLoadClass(this,
-            RadioMedium.class, radioMediumClassName);
-
+      for (var radioMediumClassName : radioMediumsClassNames) {
+        var radioMediumClass = tryLoadClass(this, RadioMedium.class, radioMediumClassName);
         if (radioMediumClass != null) {
           registerRadioMedium(radioMediumClass);
         } else {
@@ -638,7 +657,13 @@ public class Cooja {
    * @return Started plugin
    */
   public Plugin tryStartPlugin(Class<? extends Plugin> pluginClass, Simulation sim, Mote mote) {
+    if (pluginClasses == null) {
+      registerClasses();
+    }
     try {
+      if (!pluginClasses.contains(pluginClass)) {
+        throw new PluginConstructionException("Tool class not registered: " + pluginClass.getName());
+      }
       return startPlugin(pluginClass, sim, mote, null);
     } catch (PluginConstructionException ex) {
       logger.error("Error when starting plugin", ex);
@@ -663,11 +688,6 @@ public class Cooja {
   Plugin startPlugin(final Class<? extends Plugin> pluginClass, Simulation sim, Mote argMote, Element root)
   throws PluginConstructionException
   {
-    // Check that plugin class is registered
-    if (!pluginClasses.contains(pluginClass)) {
-      throw new PluginConstructionException("Tool class not registered: " + pluginClass.getName());
-    }
-
     var pluginType = pluginClass.getAnnotation(PluginType.class).value();
     if (pluginType != PluginType.PType.COOJA_PLUGIN && pluginType != PluginType.PType.COOJA_STANDARD_PLUGIN && sim == null) {
       throw new PluginConstructionException("No simulation argument for plugin: " + pluginClass.getName());
@@ -803,6 +823,9 @@ public class Cooja {
    * @param pluginClass Plugin class
    */
   public void unregisterPlugin(Class<? extends Plugin> pluginClass) {
+    if (pluginClasses == null) {
+      registerClasses();
+    }
     pluginClasses.remove(pluginClass);
     if (gui != null) {
       gui.menuMotePluginClasses.remove(pluginClass);
@@ -832,6 +855,9 @@ public class Cooja {
       case SIM_PLUGIN:
       case SIM_STANDARD_PLUGIN:
       case SIM_CONTROL_PLUGIN:
+        if (pluginClasses == null) {
+          registerClasses();
+        }
         pluginClasses.add(pluginClass);
         return true;
     }

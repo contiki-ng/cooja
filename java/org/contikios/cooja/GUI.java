@@ -1123,7 +1123,7 @@ public class GUI {
 
   void parseProjectConfig() {
     try {
-      cooja.parseProjectConfig();
+      cooja.parseProjectConfig(true);
     } catch (Cooja.ParseProjectsException e) {
       logger.fatal("Error when loading extensions: " + e.getMessage(), e);
       JOptionPane.showMessageDialog(frame,
