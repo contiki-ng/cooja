@@ -95,13 +95,6 @@ public class MspCycleWatcher extends VisPlugin implements MotePlugin {
     simulation.getSimulationStateTriggers().addTrigger(this, (obs, obj) -> updateLabels());
 
     updateLabels();
-
-    // Tries to select this plugin
-    try {
-      setSelected(true);
-    } catch (java.beans.PropertyVetoException e) {
-      // Could not select
-    }
   }
 
   private void updateLabels() {

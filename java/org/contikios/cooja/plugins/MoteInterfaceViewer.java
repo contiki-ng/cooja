@@ -146,13 +146,6 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
     pack();
     setPreferredSize(new Dimension(350,300));
     setSize(new Dimension(350,300));
-
-    try {
-      setSelected(true);
-    } catch (java.beans.PropertyVetoException e) {
-      // Could not select
-    }
-
   }
 
   /**

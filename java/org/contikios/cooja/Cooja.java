@@ -784,6 +784,7 @@ public class Cooja {
               gui.myDesktopPane.moveToFront(pluginFrame);
             }
           } catch (Exception e) {
+            // Could not minimize/select.
           }
           return true;
         }

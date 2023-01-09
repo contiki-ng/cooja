@@ -233,15 +233,7 @@ public class EventListener extends VisPlugin {
     mainPanel.add(new JLabel("Last message:"));
     mainPanel.add(messageLabel);
     mainPanel.add(actionButton);
-
     pack();
-
-    try {
-      setSelected(true);
-    } catch (java.beans.PropertyVetoException e) {
-      // Could not select
-    }
-
   }
 
   private void actOnChange(final String message, final Action action) {

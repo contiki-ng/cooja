@@ -880,15 +880,6 @@ public class AreaViewer extends VisPlugin {
       tracker.waitForAll();
     } catch (InterruptedException ex) {
       logger.fatal("Interrupted during image loading, aborting");
-      return;
-    }
-
-
-    // Try to select current plugin
-    try {
-      setSelected(true);
-    } catch (java.beans.PropertyVetoException e) {
-      // Could not select
     }
   }
 
