@@ -402,26 +402,13 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     /*return executeCLICommand("line " + myCpu.getPC());*/
   }
 
-
-  /* WatchpointMote */
   @Override
-  public Watchpoint createBreakpoint() {
+  protected Watchpoint createBreakpoint() {
     return new MspBreakpoint(this);
   }
 
   @Override
-  public Watchpoint createBreakpoint(long address, File codeFile, int lineNr) {
+  protected Watchpoint createBreakpoint(long address, File codeFile, int lineNr) {
     return new MspBreakpoint(this, address, codeFile, lineNr);
-  }
-
-  @Override
-  public Watchpoint addBreakpoint(long address, File codeFile, int lineNr) {
-    var bp = createBreakpoint(address, codeFile, lineNr);
-    watchpoints.add(bp);
-
-    for (WatchpointListener listener: watchpointListeners) {
-      listener.watchpointsChanged();
-    }
-    return bp;
   }
 }

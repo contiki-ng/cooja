@@ -143,8 +143,27 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
     return watchpointListeners.toArray(new WatchpointListener[0]);
   }
 
+  protected Watchpoint createBreakpoint() {
+    // Implemented by subclasses supporting breakpoints
+    return null;
+  }
+
+  protected Watchpoint createBreakpoint(long address, File codeFile, int lineNr) {
+    return null;
+  }
+
   public Watchpoint addBreakpoint(long address, File codeFile, int lineNr) {
-    return null; // FIXME: make a usable general Watchpoint class and implement this method.
+    var bp = createBreakpoint(address, codeFile, lineNr);
+    if (bp == null) {
+      // Breakpoints not supported by this mote type
+      return null;
+    }
+    watchpoints.add(bp);
+
+    for (WatchpointListener listener: watchpointListeners) {
+      listener.watchpointsChanged();
+    }
+    return bp;
   }
 
   public void removeBreakpoint(Watchpoint watchpoint) {
