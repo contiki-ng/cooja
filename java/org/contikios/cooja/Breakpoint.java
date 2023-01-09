@@ -64,7 +64,7 @@ public abstract class Breakpoint implements Watchpoint {
     // expects setConfigXML(..).
   }
 
-  public Breakpoint(WatchpointMote mote, long address, File codeFile, Integer lineNr) {
+  public Breakpoint(WatchpointMote mote, long address, File codeFile, int lineNr) {
     this(mote);
     this.address = address;
     this.codeFile = codeFile;

@@ -51,7 +51,7 @@ public class MspBreakpoint extends Breakpoint {
     /* expects setConfigXML(..) */
   }
 
-  public MspBreakpoint(MspMote mote, long address, File codeFile, Integer lineNr) {
+  public MspBreakpoint(MspMote mote, long address, File codeFile, int lineNr) {
     super(mote, address, codeFile, lineNr);
     mspMote = mote;
     createMonitor();

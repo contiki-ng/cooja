@@ -410,7 +410,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   }
 
   @Override
-  public Watchpoint createBreakpoint(long address, File codeFile, Integer lineNr) {
+  public Watchpoint createBreakpoint(long address, File codeFile, int lineNr) {
     return new MspBreakpoint(this, address, codeFile, lineNr);
   }
 
