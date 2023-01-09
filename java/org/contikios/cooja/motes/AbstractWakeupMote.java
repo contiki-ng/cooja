@@ -121,12 +121,22 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
   public boolean setConfigXML(Simulation sim, Collection<Element> configXML, boolean vis) throws MoteType.MoteTypeCreationException {
     for (var element : configXML) {
       var name = element.getName();
-      if (name.equals("interface_config")) {
+      if ("breakpoints".equals(name)) {
+        for (Element elem : element.getChildren()) {
+          if (elem.getName().equals("breakpoint")) {
+            var breakpoint = createBreakpoint();
+            if (breakpoint != null && breakpoint.setConfigXML(elem.getChildren())) {
+              watchpoints.add(breakpoint);
+            }
+          }
+        }
+      } else if ("interface_config".equals(name)) {
         if (!getInterfaces().setConfigXML(this, element, !simulation.isQuickSetup())) {
           return false;
         }
       }
     }
+    /* Schedule us immediately */
     requestImmediateWakeup();
     return true;
   }

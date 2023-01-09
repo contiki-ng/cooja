@@ -321,30 +321,6 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   }
 
   @Override
-  public boolean setConfigXML(Simulation simulation, Collection<Element> configXML, boolean visAvailable) throws MoteType.MoteTypeCreationException {
-    for (Element element: configXML) {
-      String name = element.getName();
-      if ("breakpoints".equals(name)) {
-        for (Element elem : element.getChildren()) {
-          if (elem.getName().equals("breakpoint")) {
-            var breakpoint = createBreakpoint();
-            if (breakpoint.setConfigXML(elem.getChildren())) {
-              watchpoints.add(breakpoint);
-            }
-          }
-        }
-      } else if (name.equals("interface_config")) {
-        if (!getInterfaces().setConfigXML(this, element, !simulation.isQuickSetup())) {
-          return false;
-        }
-      }
-    }
-    /* Schedule us immediately */
-    requestImmediateWakeup();
-    return true;
-  }
-
-  @Override
   public String getExecutionDetails() {
     return executeCLICommand("stacktrace");
   }
