@@ -306,11 +306,7 @@ public class ProjectConfig {
    * @return Value or defaultValue if id wasn't found
    */
   public String getStringValue(Class<?> callingClass, String id, String defaultValue) {
-    String val = myConfig.getProperty(callingClass.getName() + "." + id);
-    if (val == null) {
-      return defaultValue;
-    }
-    return val;
+    return myConfig.getProperty(callingClass.getName() + "." + id, defaultValue);
   }
 
   /**
