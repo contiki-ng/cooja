@@ -196,6 +196,7 @@ public final class Simulation {
     this.cfg = cfg;
     this.cooja = cooja;
     this.title = title;
+    this.quick = quick;
     randomSeed = seed;
     randomSeedGenerated = generateSeed;
     randomGenerator = new SafeRandom(this);
@@ -223,7 +224,6 @@ public final class Simulation {
       }
     };
     maxMoteStartupDelay = Math.max(0, moteStartDelay);
-    this.quick = quick;
     simulationThread = new Thread(() -> {
       boolean isAlive = true;
       do {
