@@ -1365,11 +1365,12 @@ public class ChannelModel {
     }
 
     // - Extract length and losses of each path -
-    double[] pathLengths = new double[allPaths.size()];
-    double[] pathGain = new double[allPaths.size()];
+    var numPaths = allPaths.size();
+    double[] pathLengths = new double[numPaths];
+    double[] pathGain = new double[numPaths];
     int bestSignalNr = -1;
     double bestSignalPathLoss = 0;
-    for (int i=0; i < allPaths.size(); i++) {
+    for (int i = 0; i < numPaths; i++) {
       RayPath currentPath = allPaths.get(i);
       double accumulatedStraightLength = 0;
 
@@ -1448,7 +1449,6 @@ public class ChannelModel {
     }
 
     // - Calculate total path loss (using simple Rician) -
-    double[] pathModdedLengths = new double[allPaths.size()];
     double delaySpread = 0;
     double delaySpreadRMS = 0;
     double freq = getParameterDoubleValue(Parameter.frequency);
@@ -1456,7 +1456,7 @@ public class ChannelModel {
     double totalPathGain = 0;
     double delaySpreadTotalWeight = 0;
     double speedOfLight = 300; // Approximate value (m/us)
-    for (int i=0; i < pathModdedLengths.length; i++) {
+    for (int i = 0; i < numPaths; i++) {
       // Ignore insignificant interfering signals
       if (pathGain[i] > pathGain[bestSignalNr] - 30) {
         double pathLengthDiff = Math.abs(pathLengths[i] - pathLengths[bestSignalNr]);
@@ -1474,17 +1474,17 @@ public class ChannelModel {
         delaySpreadRMS += rmsDelaySpreadComponent;
 
         // OK since cosinus is even function
-        pathModdedLengths[i] = pathLengthDiff % wavelength;
+        var pathModdedLengths = pathLengthDiff % wavelength;
 
         // Using Rician fading approach, TODO Only one best signal considered - combine these? (need two limits)
-        totalPathGain += Math.pow(10, pathGain[i]/10.0)*Math.cos(2*Math.PI * pathModdedLengths[i]/wavelength);
+        totalPathGain += Math.pow(10, pathGain[i]/10.0)*Math.cos(2*Math.PI * pathModdedLengths/wavelength);
         if (logMode) {
-          logInfo.append("Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths[i] / wavelength))).append(" pi\n");
+          logInfo.append("Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths / wavelength))).append(" pi\n");
         }
       } else if (logMode) {
         /* TODO Log mode affects result? */
-        pathModdedLengths[i] = (pathLengths[i] - pathLengths[bestSignalNr]) % wavelength;
-        logInfo.append("(IGNORED) Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths[i] / wavelength))).append(" pi\n");
+        var pathModdedLengths = (pathLengths[i] - pathLengths[bestSignalNr]) % wavelength;
+        logInfo.append("(IGNORED) Signal component: ").append(String.format("%2.3f", pathGain[i])).append(" dB, phase ").append(String.format("%2.3f", (2 */*Math.PI* */ pathModdedLengths / wavelength))).append(" pi\n");
       }
 
     }
