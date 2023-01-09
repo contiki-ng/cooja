@@ -122,7 +122,7 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
     for (var element : configXML) {
       var name = element.getName();
       if (name.equals("interface_config")) {
-        if (!getInterfaces().setConfigXML(this, element)) {
+        if (!getInterfaces().setConfigXML(this, element, !simulation.isQuickSetup())) {
           return false;
         }
       }

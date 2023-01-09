@@ -391,7 +391,7 @@ public class MoteInterfaceHandler {
     return config;
   }
 
-  public boolean setConfigXML(Mote mote, Element element) {
+  public boolean setConfigXML(Mote mote, Element element, boolean ignoreFailure) {
     var name = element.getText().trim();
     if (name.startsWith("se.sics")) {
       name = name.replaceFirst("se\\.sics", "org.contikios");
@@ -410,13 +410,13 @@ public class MoteInterfaceHandler {
               ? MoteID.class : mote.getSimulation().getCooja().tryLoadClass(mote, MoteInterface.class, name);
       if (moteInterfaceClass == null) {
         logger.warn("Cannot find mote interface class: " + name);
-        return false;
+        return ignoreFailure;
       }
     }
     var moteInterface = getInterfaceOfType(moteInterfaceClass);
     if (moteInterface == null) {
-      logger.fatal("Cannot find mote interface of class: " + moteInterfaceClass);
-      return false;
+      logger.warn("Cannot find mote interface of class: " + moteInterfaceClass);
+      return ignoreFailure;
     }
     moteInterface.setConfigXML(element.getChildren(), Cooja.isVisualized());
     return true;
