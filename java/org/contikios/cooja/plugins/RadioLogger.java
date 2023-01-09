@@ -661,11 +661,6 @@ public class RadioLogger extends VisPlugin {
     });
 
     setSize(500, 300);
-    try {
-      setSelected(true);
-    } catch (java.beans.PropertyVetoException e) {
-      // Could not select
-    }
   }
 
   @Override

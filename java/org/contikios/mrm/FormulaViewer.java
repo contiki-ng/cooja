@@ -324,14 +324,6 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     // Set initial size etc.
     pack();
     setVisible(true);
-
-    // Tries to select this plugin
-    try {
-      setSelected(true);
-    } catch (java.beans.PropertyVetoException e) {
-      // Could not select
-    }
-
   }
 
   /**
