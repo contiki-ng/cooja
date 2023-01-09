@@ -71,10 +71,11 @@ class SafeRandom extends Random {
     
   }
 
-  public SafeRandom(Simulation sim) {
+  public SafeRandom(long seed, Simulation sim) {
     // assertSimThread is called by the super-constructor.
     super();
     this.sim = sim;
+    setSeed(seed);
   }
 
   @Override

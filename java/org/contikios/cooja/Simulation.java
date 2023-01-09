@@ -199,8 +199,7 @@ public final class Simulation {
     this.quick = quick;
     randomSeed = seed;
     randomSeedGenerated = generateSeed;
-    randomGenerator = new SafeRandom(this);
-    randomGenerator.setSeed(seed);
+    randomGenerator = new SafeRandom(seed, this);
     if (radioMediumClass.startsWith("se.sics")) {
       radioMediumClass = radioMediumClass.replaceFirst("se\\.sics", "org.contikios");
     }
