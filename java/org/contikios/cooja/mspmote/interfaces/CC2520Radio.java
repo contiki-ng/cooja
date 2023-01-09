@@ -66,6 +66,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
           len = 0;
           setChanged();
           notifyObservers();
+          radioEventTriggers.trigger(RadioEvent.TRANSMISSION_STARTED, CC2520Radio.this);
         }
 
         if (len >= buffer.length) {
@@ -79,6 +80,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
         lastEvent = RadioEvent.CUSTOM_DATA_TRANSMITTED;
         setChanged();
         notifyObservers();
+        radioEventTriggers.trigger(RadioEvent.CUSTOM_DATA_TRANSMITTED, CC2520Radio.this);
 
         buffer[len++] = data;
 
@@ -97,11 +99,14 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
 
           setChanged();
           notifyObservers();
+          // TODO: no lastEvent set by observers code, verify that this is correct.
+          radioEventTriggers.trigger(RadioEvent.CUSTOM_DATA_TRANSMITTED, CC2520Radio.this);
 
           isTransmitting = false;
           lastEvent = RadioEvent.TRANSMISSION_FINISHED;
           setChanged();
           notifyObservers();
+          radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, CC2520Radio.this);
           len = 0;
         }
       }
@@ -112,6 +117,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
         lastEvent = RadioEvent.HW_ON;
         setChanged();
         notifyObservers();
+        radioEventTriggers.trigger(RadioEvent.HW_ON, this);
       } else {
         radioOff();
       }
@@ -122,6 +128,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
       lastEvent = RadioEvent.UNKNOWN;
       setChanged();
       notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
     });
   }
 
@@ -137,17 +144,20 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
       lastEvent = RadioEvent.PACKET_TRANSMITTED;
       setChanged();
       notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.PACKET_TRANSMITTED, this);
 
       /* Register that transmission ended in radio medium */
       isTransmitting = false;
       lastEvent = RadioEvent.TRANSMISSION_FINISHED;
       setChanged();
       notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, this);
     }
 
     lastEvent = RadioEvent.HW_OFF;
     setChanged();
     notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.HW_OFF, this);
   }
 
   /* Packet radio support */
@@ -234,6 +244,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
     lastEvent = RadioEvent.RECEPTION_STARTED;
     setChanged();
     notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.RECEPTION_STARTED, this);
   }
 
   @Override
@@ -245,6 +256,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
     lastEvent = RadioEvent.RECEPTION_FINISHED;
     setChanged();
     notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.RECEPTION_FINISHED, this);
   }
 
   @Override
@@ -261,6 +273,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
     lastEvent = RadioEvent.RECEPTION_INTERFERED;
     setChanged();
     notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.RECEPTION_INTERFERED, this);
   }
 
   @Override

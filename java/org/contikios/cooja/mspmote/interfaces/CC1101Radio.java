@@ -98,6 +98,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 					gotSynchbyte = false;
 					setChanged();
 					notifyObservers();
+          radioEventTriggers.trigger(RadioEvent.TRANSMISSION_STARTED, CC1101Radio.this);
 				}
 				if (len >= buffer.length) {
 					/* Bad size packet, too large */
@@ -110,6 +111,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 				lastEvent = RadioEvent.CUSTOM_DATA_TRANSMITTED;
 				setChanged();
 				notifyObservers();
+        radioEventTriggers.trigger(RadioEvent.CUSTOM_DATA_TRANSMITTED, CC1101Radio.this);
 
 				/* Await synch byte */
 				if (!gotSynchbyte) {
@@ -133,11 +135,13 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 					lastEvent = RadioEvent.PACKET_TRANSMITTED;
 					setChanged();
 					notifyObservers();
+          radioEventTriggers.trigger(RadioEvent.PACKET_TRANSMITTED, CC1101Radio.this);
 
 					isTransmitting = false;
 					lastEvent = RadioEvent.TRANSMISSION_FINISHED;
 					setChanged();
 					notifyObservers();
+          radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, CC1101Radio.this);
 					len = 0;
 				}
 			}
@@ -148,6 +152,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
         lastEvent = RadioEvent.HW_ON;
         setChanged();
         notifyObservers();
+        radioEventTriggers.trigger(RadioEvent.HW_ON, this);
       } else {
         radioOff();
       }
@@ -158,6 +163,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
       lastEvent = RadioEvent.UNKNOWN;
       setChanged();
       notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
     });
 	}
 
@@ -173,17 +179,20 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 			lastEvent = RadioEvent.PACKET_TRANSMITTED;
 			setChanged();
 			notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.PACKET_TRANSMITTED, this);
 
 			/* Register that transmission ended in radio medium */
 			isTransmitting = false;
 			lastEvent = RadioEvent.TRANSMISSION_FINISHED;
 			setChanged();
 			notifyObservers();
+      radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, this);
 		}
 
 		lastEvent = RadioEvent.HW_OFF;
 		setChanged();
 		notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.HW_OFF, this);
 	}
 
 	/* Packet radio support */
@@ -296,6 +305,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 		lastEvent = RadioEvent.RECEPTION_STARTED;
 		setChanged();
 		notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.RECEPTION_STARTED, this);
 	}
 
 	@Override
@@ -307,6 +317,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 		lastEvent = RadioEvent.RECEPTION_FINISHED;
 		setChanged();
 		notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.RECEPTION_FINISHED, this);
 	}
 
 	@Override
@@ -323,6 +334,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 		lastEvent = RadioEvent.RECEPTION_INTERFERED;
 		setChanged();
 		notifyObservers();
+    radioEventTriggers.trigger(RadioEvent.RECEPTION_INTERFERED, this);
 	}
 
 	@Override
