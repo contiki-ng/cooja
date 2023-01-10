@@ -115,8 +115,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
   private static final Logger logger = LogManager.getLogger(ContikiMoteType.class);
   private static int fileCounter = 1;
 
-  private final Cooja gui;
-
   /**
    * Communication stacks in Contiki.
    */
@@ -175,7 +173,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * a library file and parse a map file before it can be used.
    */
   public ContikiMoteType(Cooja gui) {
-    this.gui = gui;
     myConfig = new ProjectConfig(gui.getProjectConfig());
   }
 
