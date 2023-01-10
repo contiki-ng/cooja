@@ -102,9 +102,14 @@ public class ContikiMote extends AbstractWakeupMote<ContikiMoteType, SectionMote
    */
   @Override
   public void execute(long simTime) {
-    /* Poll mote interfaces */
-    polledBeforeActive.forEach(PolledBeforeActiveTicks::doActionsBeforeTick);
-    polledBeforePassive.forEach(PolledBeforeAllTicks::doActionsBeforeTick);
+    // (Jan 2023, Java 17/IntelliJ): Keep the interface actions in explicit for-loops,
+    // so costs are clearly attributed in performance profiles.
+    for (var moteInterface : polledBeforeActive) {
+      moteInterface.doActionsBeforeTick();
+    }
+    for (var moteInterface : polledBeforePassive) {
+      moteInterface.doActionsBeforeTick();
+    }
 
     /* Check if pre-boot time */
     var moteTime = moteInterfaces.getClock().getTime();
@@ -122,10 +127,13 @@ public class ContikiMote extends AbstractWakeupMote<ContikiMoteType, SectionMote
     /* Copy mote memory from Contiki */
     ContikiMoteType.getCoreMemory(moteMemory);
 
-    /* Poll mote interfaces */
     moteMemory.pollForMemoryChanges();
-    polledAfterActive.forEach(PolledAfterActiveTicks::doActionsAfterTick);
-    polledAfterPassive.forEach(PolledAfterAllTicks::doActionsAfterTick);
+    for (var moteInterface : polledAfterActive) {
+      moteInterface.doActionsAfterTick();
+    }
+    for (var moteInterface : polledAfterPassive) {
+      moteInterface.doActionsAfterTick();
+    }
   }
 
   @Override
