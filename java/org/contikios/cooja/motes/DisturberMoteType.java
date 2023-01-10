@@ -58,7 +58,7 @@ import org.contikios.cooja.interfaces.ApplicationRadio;
 @AbstractionLevelDescription("Application level")
 public class DisturberMoteType extends AbstractApplicationMoteType {
   public DisturberMoteType() {
-    super();
+    super(true);
   }
 
   @Override

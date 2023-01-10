@@ -75,13 +75,13 @@ public class Z1MoteType extends MspMoteType {
     }
 
     @Override
-    public Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses() {
+    public List<Class<? extends MoteInterface>> getDefaultMoteInterfaceClasses() {
   	  return getAllMoteInterfaceClasses();
     }
 
     @Override
-    public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
-        var classes = List.of(
+    public List<Class<? extends MoteInterface>> getAllMoteInterfaceClasses() {
+        return List.of(
                 Position.class,
                 IPAddress.class,
                 Mote2MoteRelations.class,
@@ -94,7 +94,5 @@ public class Z1MoteType extends MspMoteType {
                 MspDefaultSerial.class,
                 MspLED.class,
                 MspDebugOutput.class);
-        return classes.toArray(new Class[0]);
     }
-
 }

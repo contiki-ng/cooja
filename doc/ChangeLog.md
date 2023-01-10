@@ -23,6 +23,11 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Changed return type of getMoteInterfaceClasses in MoteType interface
+
+The method now returns a list instead of an array. The method implementation
+in AbstractApplicationMoteType should be usable for all motes.
+
 ### Removed MoteCountListener from SimEventCentral
 
 Use `simulation.getMoteTriggers().addTrigger()` instead.

@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
@@ -369,29 +370,27 @@ public class ContikiMoteType extends BaseContikiMoteType {
   }
 
   @Override
-  public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
-    ArrayList<Class<? extends MoteInterface>> classes = new ArrayList<>();
-    classes.add(Position.class);
-    classes.add(Battery.class);
-    classes.add(ContikiVib.class);
-    classes.add(ContikiMoteID.class);
-    classes.add(ContikiRS232.class);
-    classes.add(ContikiBeeper.class);
-    classes.add(IPAddress.class);
-    classes.add(ContikiRadio.class);
-    classes.add(ContikiButton.class);
-    classes.add(ContikiPIR.class);
-    classes.add(ContikiClock.class);
-    classes.add(ContikiLED.class);
-    classes.add(ContikiCFS.class);
-    classes.add(ContikiEEPROM.class);
-    classes.add(Mote2MoteRelations.class);
-    classes.add(MoteAttributes.class);
-    return classes.toArray(new Class[0]);
+  public List<Class<? extends MoteInterface>> getAllMoteInterfaceClasses() {
+    return List.of(Position.class,
+            Battery.class,
+            ContikiVib.class,
+            ContikiMoteID.class,
+            ContikiRS232.class,
+            ContikiBeeper.class,
+            IPAddress.class,
+            ContikiRadio.class,
+            ContikiButton.class,
+            ContikiPIR.class,
+            ContikiClock.class,
+            ContikiLED.class,
+            ContikiCFS.class,
+            ContikiEEPROM.class,
+            Mote2MoteRelations.class,
+            MoteAttributes.class);
   }
 
   @Override
-  public Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses() {
+  public List<Class<? extends MoteInterface>> getDefaultMoteInterfaceClasses() {
     return getAllMoteInterfaceClasses();
   }
 

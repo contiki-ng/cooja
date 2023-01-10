@@ -428,9 +428,8 @@ public abstract class AbstractCompileDialog extends JDialog {
         }
       }
     }
-    Class<? extends MoteInterface>[] arr = new Class[selected.size()];
     return new BaseContikiMoteType.MoteTypeConfig(descriptionField.getText(), null, contikiField.getText(),
-            commandsArea.getText(), selected.toArray(arr));
+            commandsArea.getText(), selected);
   }
 
   public abstract boolean canLoadFirmware(String name);

@@ -39,9 +39,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -139,11 +139,8 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
   /** Firmware of the mote type. */
   protected File fileFirmware = null;
 
-  /** MoteInterface classes used by the mote type. */
-  protected final ArrayList<Class<? extends MoteInterface>> moteInterfaceClasses = new ArrayList<>();
-
   protected BaseContikiMoteType() {
-    super();
+    super(false);
   }
 
   /** Returns file name extension for firmware. */
@@ -181,18 +178,8 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
             "/build/" + getMoteType() + "/" + sourceNoExtension + '.' + getMoteType());
   }
 
-  @Override
-  public Class<? extends MoteInterface>[] getMoteInterfaceClasses() {
-    if (moteInterfaceClasses.isEmpty()) {
-      return null;
-    }
-    Class<? extends MoteInterface>[] arr = new Class[moteInterfaceClasses.size()];
-    moteInterfaceClasses.toArray(arr);
-    return arr;
-  }
-
-  public abstract Class<? extends MoteInterface>[] getAllMoteInterfaceClasses();
-  public abstract Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses();
+  public abstract List<Class<? extends MoteInterface>> getAllMoteInterfaceClasses();
+  public abstract List<Class<? extends MoteInterface>> getDefaultMoteInterfaceClasses();
 
   /** Target hook for adding additional information to view. */
   protected abstract void appendVisualizerInfo(StringBuilder sb);
@@ -289,7 +276,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
       }
     }
     if (moteInterfaceClasses.isEmpty()) { // Old MspMote simulation, or reconfigured simulation.
-      moteInterfaceClasses.addAll(Arrays.asList(getDefaultMoteInterfaceClasses()));
+      moteInterfaceClasses.addAll(getDefaultMoteInterfaceClasses());
     }
     return true;
   }
@@ -303,7 +290,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
       final var firmware = getContikiFirmwareFile();
       String file = source != null ? source.getAbsolutePath() : firmware != null ? firmware.getAbsolutePath() : null;
       var moteClasses = getMoteInterfaceClasses();
-      var interfaces = moteClasses == null ? getDefaultMoteInterfaceClasses() : moteClasses;
+      var interfaces = moteClasses.isEmpty() ? getDefaultMoteInterfaceClasses() : moteClasses;
       var cfg = showCompilationDialog(sim.getCooja(), new MoteTypeConfig(desc, getMoteType(), file,
               getCompileCommands(), interfaces));
       if (cfg == null) {
@@ -318,7 +305,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
       }
       compileCommands = cfg.commands;
       moteInterfaceClasses.clear();
-      moteInterfaceClasses.addAll(Arrays.asList(cfg.interfaces));
+      moteInterfaceClasses.addAll(cfg.interfaces);
     } else {
       // Handle multiple compilation commands one by one.
       final var output = MessageContainer.createMessageList(vis);
@@ -341,7 +328,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
 
   /** Compilation-relevant parts of mote type configuration. */
   public record MoteTypeConfig(String desc, String targetName, String file, String commands,
-                               Class<? extends MoteInterface>[] interfaces) {}
+                               List<Class<? extends MoteInterface>> interfaces) {}
 
   /** Create a compilation dialog for this mote type. */
   protected abstract AbstractCompileDialog createCompilationDialog(Cooja gui, MoteTypeConfig cfg);

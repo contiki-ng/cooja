@@ -103,8 +103,8 @@ public class Exp5438MoteType extends MspMoteType {
   }
 
   @Override
-  public Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses() {
-    var classes = List.of(
+  public List<Class<? extends MoteInterface>> getDefaultMoteInterfaceClasses() {
+    return List.of(
             Position.class,
             IPAddress.class,
             Mote2MoteRelations.class,
@@ -115,12 +115,11 @@ public class Exp5438MoteType extends MspMoteType {
             UsciA1Serial.class,
             Exp5438LED.class,
             MspDebugOutput.class);
-    return classes.toArray(new Class[0]);
   }
 
   @Override
-  public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
-    var classes = List.of(
+  public List<Class<? extends MoteInterface>> getAllMoteInterfaceClasses() {
+    return List.of(
         Position.class,
         IPAddress.class,
         Mote2MoteRelations.class,
@@ -133,6 +132,5 @@ public class Exp5438MoteType extends MspMoteType {
         UsciA1Serial.class,
         Exp5438LED.class,
         MspDebugOutput.class);
-    return classes.toArray(new Class[0]);
   }
 }
