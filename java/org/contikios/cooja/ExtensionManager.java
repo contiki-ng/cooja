@@ -84,4 +84,19 @@ public class ExtensionManager {
   private static void registerBuiltinPlugin(final Class<? extends Plugin> pluginClass) {
     builtinPlugins.put(pluginClass.getName(), pluginClass);
   }
+
+  /** Get the class for a named plugin, returns null if not found. */
+  public static Class<? extends Plugin> getPluginClass(Cooja cooja, String name) {
+    var clazz = builtinPlugins.get(name);
+    if (clazz != null) {
+      return clazz;
+    }
+    for (var candidate : cooja.getRegisteredPlugins()) {
+      if (name.equals(candidate.getName())) {
+        clazz = candidate;
+        break;
+      }
+    }
+    return clazz;
+  }
 }
