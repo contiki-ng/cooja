@@ -764,32 +764,12 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
   @Override
   public Collection<Element> getConfigXML(Simulation simulation) {
-    ArrayList<Element> config = new ArrayList<>();
-
-    var element = new Element("description");
-    element.setText(getDescription());
-    config.add(element);
-
-    element = new Element("source");
-    element.setText(gui.createPortablePath(getContikiSourceFile()).getPath().replaceAll("\\\\", "/"));
-    config.add(element);
-
-    element = new Element("commands");
-    element.setText(compileCommands);
-    config.add(element);
-
-    for (var moteInterface : moteInterfaceClasses) {
-      element = new Element("moteinterface");
-      element.setText(moteInterface.getName());
-      config.add(element);
-    }
-
+    var config = getBaseConfigXML(simulation, false);
     if (getNetworkStack() != NetworkStack.DEFAULT) {
-      element = new Element("netstack");
+      var element = new Element("netstack");
       element.setText(getNetworkStack().getConfig());
       config.add(element);
     }
-
     return config;
   }
 
