@@ -31,7 +31,7 @@ dependencies {
   // https://mvnrepository.com/artifact/org.jdom/jdom2
   implementation 'org.jdom:jdom2:2.0.6.1'
   // https://mvnrepository.com/artifact/org.jfree/jfreechart
-  implementation 'org.jfree:jfreechart:1.5.3'
+  implementation 'org.jfree:jfreechart:1.5.4'
   // https://mvnrepository.com/artifact/org.openjdk.nashorn/nashorn-core
   implementation 'org.openjdk.nashorn:nashorn-core:15.4'
   // https://mvnrepository.com/artifact/org.swinglabs.swingx/swingx-autocomplete
