@@ -40,9 +40,7 @@ import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Observable;
 import java.util.Observer;
-
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.swing.JButton;
@@ -85,27 +83,6 @@ public abstract class SerialUI extends Log implements SerialPort {
   }
 
   /* SerialPort */
-  private abstract static class SerialDataObservable extends Observable {
-    public abstract void notifyNewData();
-  }
-  private final SerialDataObservable serialDataObservable = new SerialDataObservable() {
-    @Override
-    public void notifyNewData() {
-      if (this.countObservers() == 0) {
-        return;
-      }
-      setChanged();
-      notifyObservers(SerialUI.this);
-    }
-  };
-  @Override
-  public void addSerialDataObserver(Observer o) {
-    serialDataObservable.addObserver(o);
-  }
-  @Override
-  public void deleteSerialDataObserver(Observer o) {
-    serialDataObservable.deleteObserver(o);
-  }
   @Override
   public byte getLastSerialData() {
     return lastSerialData;
@@ -130,7 +107,6 @@ public abstract class SerialUI extends Log implements SerialPort {
 
     /* Notify observers of new serial character */
     lastSerialData = (byte) data;
-    serialDataObservable.notifyNewData();
     serialDataTriggers.trigger(EventTriggers.Update.UPDATE, (byte) data);
   }
 

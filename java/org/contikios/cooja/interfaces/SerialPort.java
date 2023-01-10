@@ -30,8 +30,6 @@
 
 package org.contikios.cooja.interfaces;
 
-import java.util.Observer;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.util.EventTriggers;
 
@@ -42,8 +40,6 @@ public interface SerialPort {
   void writeArray(byte[] s);
   void writeString(String s);
 
-  void addSerialDataObserver(Observer o);
-  void deleteSerialDataObserver(Observer o);
   EventTriggers<EventTriggers.Update, Byte> getSerialDataTriggers();
 
   byte getLastSerialData();
