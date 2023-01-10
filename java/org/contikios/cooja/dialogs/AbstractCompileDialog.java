@@ -486,7 +486,7 @@ public abstract class AbstractCompileDialog extends JDialog {
         }
         contikiSource = null;
         contikiFirmware = new File(input);
-        cleanButton.setEnabled(true);
+        cleanButton.setEnabled(false);
         compileButton.setEnabled(false);
         createButton.setEnabled(true);
         commandsArea.setEnabled(false);
