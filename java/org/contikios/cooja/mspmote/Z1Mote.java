@@ -32,14 +32,15 @@ package org.contikios.cooja.mspmote;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.platform.z1.Z1Node;
+import se.sics.mspsim.util.MapEntry;
 
 /**
  * @author Fredrik Osterlind, Niclas Finne
  */
 public class Z1Mote extends MspMote {
 
-    public Z1Mote(MspMoteType moteType, Simulation sim, Z1Node node) throws MoteType.MoteTypeCreationException {
-        super(moteType, sim, node);
+    public Z1Mote(MspMoteType moteType, Simulation sim, Z1Node node, MapEntry[] allEntries) throws MoteType.MoteTypeCreationException {
+        super(moteType, sim, node, allEntries);
     }
 
     @Override

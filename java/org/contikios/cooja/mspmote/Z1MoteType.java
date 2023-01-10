@@ -71,7 +71,7 @@ public class Z1MoteType extends MspMoteType {
     public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
         var node = new Z1Node();
         node.setFlash(new CoojaM25P80(node.getCPU()));
-        return new Z1Mote(this, simulation, node);
+        return new Z1Mote(this, simulation, node, getEntries(node));
     }
 
     @Override
