@@ -293,7 +293,8 @@ public class Cooja {
   }
 
   public static JFrame getTopParentContainer() {
-    return GUI.frame;
+    // Touching GUI when headless pollutes performance profile with ClassLoader.loadClass()-chain.
+    return gui == null ? null : GUI.frame;
   }
 
   /**
