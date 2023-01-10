@@ -676,9 +676,6 @@ public class Cooja {
     if (pluginType == PluginType.PType.MOTE_PLUGIN && argMote == null) {
       throw new PluginConstructionException("No mote argument for mote plugin: " + pluginClass.getName());
     }
-    if (!isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
-      throw new PluginConstructionException("Plugin " + pluginClass.getName() + " requires visualization");
-    }
 
     // Construct plugin depending on plugin type
     Plugin plugin;
