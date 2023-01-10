@@ -67,7 +67,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
   private Constructor<? extends AbstractApplicationMote> moteConstructor = null;
 
   public ImportAppMoteType() {
-    super();
+    super(true);
   }
 
   @Override

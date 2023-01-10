@@ -79,12 +79,12 @@ public class SkyMoteType extends MspMoteType {
   }
 
   @Override
-  public Class<? extends MoteInterface>[] getDefaultMoteInterfaceClasses() {
+  public List<Class<? extends MoteInterface>> getDefaultMoteInterfaceClasses() {
 	  return getAllMoteInterfaceClasses();
   }
   @Override
-  public Class<? extends MoteInterface>[] getAllMoteInterfaceClasses() {
-    var classes = List.of(
+  public List<Class<? extends MoteInterface>> getAllMoteInterfaceClasses() {
+    return List.of(
         Position.class,
         IPAddress.class,
         Mote2MoteRelations.class,
@@ -99,6 +99,5 @@ public class SkyMoteType extends MspMoteType {
         MspLED.class,
         MspDebugOutput.class,
         SkyTemperature.class);
-    return classes.toArray(new Class[0]);
   }
 }

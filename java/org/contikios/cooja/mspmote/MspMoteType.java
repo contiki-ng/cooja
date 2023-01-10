@@ -32,7 +32,6 @@ package org.contikios.cooja.mspmote;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -114,11 +113,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
       throws MoteTypeCreationException {
     if (!setBaseConfigXML(simulation, configXML)) {
       return false;
-    }
-    if (moteInterfaceClasses.isEmpty()) {
-      /* Backwards compatibility: No interfaces specified */
-      logger.warn("Old simulation config detected: no mote interfaces specified, assuming all.");
-      moteInterfaceClasses.addAll(Arrays.asList(getAllMoteInterfaceClasses()));
     }
 
     if (fileFirmware == null && fileSource == null) {

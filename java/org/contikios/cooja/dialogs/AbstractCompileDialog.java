@@ -312,7 +312,7 @@ public abstract class AbstractCompileDialog extends JDialog {
           }
         }
         // Select default.
-        for (var moteIntf : AbstractCompileDialog.this.moteType.getDefaultMoteInterfaceClasses()) {
+        for (var moteIntf : cfg.defaultInterfaces()) {
           addMoteInterface(moteIntf, true);
         }
       }
@@ -321,7 +321,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     panel.add(BorderLayout.NORTH, b);
     panel.add(BorderLayout.CENTER, new JScrollPane(moteIntfBox));
     tabbedPane.addTab("Mote interfaces", null, panel, "Mote interfaces");
-    for (var moteInterfaces : this.moteType.getAllMoteInterfaceClasses()) {
+    for (var moteInterfaces : cfg.allInterfaces()) {
       addMoteInterface(moteInterfaces, false);
     }
 
@@ -428,9 +428,8 @@ public abstract class AbstractCompileDialog extends JDialog {
         }
       }
     }
-    Class<? extends MoteInterface>[] arr = new Class[selected.size()];
     return new BaseContikiMoteType.MoteTypeConfig(descriptionField.getText(), null, contikiField.getText(),
-            commandsArea.getText(), selected.toArray(arr));
+            commandsArea.getText(), selected, null, null);
   }
 
   public abstract boolean canLoadFirmware(String name);

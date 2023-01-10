@@ -30,7 +30,7 @@ package org.contikios.cooja;
 import java.awt.Container;
 import java.io.File;
 import java.util.Collection;
-
+import java.util.List;
 import javax.swing.JComponent;
 
 import org.jdom2.Element;
@@ -77,7 +77,7 @@ public interface MoteType {
   /**
    * @return Mote interface classes of mote type.
    */
-  Class<? extends MoteInterface>[] getMoteInterfaceClasses();
+  List<Class<? extends MoteInterface>> getMoteInterfaceClasses();
 
   /**
    * Returns a panel with mote type specific data.

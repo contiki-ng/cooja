@@ -30,6 +30,7 @@ package org.contikios.cooja.motes;
 import java.awt.Container;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -62,21 +63,13 @@ public abstract class AbstractApplicationMoteType implements MoteType {
   /** Project configuration of the mote type. */
   protected ProjectConfig myConfig = null;
 
-  @SuppressWarnings("unchecked")
-  private final Class<? extends MoteInterface>[] moteInterfaceClasses = new Class[] {
-      SimpleMoteID.class,
-      Position.class,
-      ApplicationSerialPort.class,
-      ApplicationRadio.class,
-      ApplicationLED.class,
-      Mote2MoteRelations.class,
-      MoteAttributes.class
-  };
+  /** MoteInterface classes used by the mote type. */
+  protected final ArrayList<Class<? extends MoteInterface>> moteInterfaceClasses = new ArrayList<>();
 
   /** Random generator for generating a unique mote ID. */
   private static final Random rnd = new Random();
 
-  public AbstractApplicationMoteType() {
+  public AbstractApplicationMoteType(boolean useDefaultMoteInterfaceClasses) {
     super();
     String testID = "";
     boolean available = false;
@@ -86,6 +79,10 @@ public abstract class AbstractApplicationMoteType implements MoteType {
       // FIXME: add check that the library name is not already used.
     }
     identifier = testID;
+    if (useDefaultMoteInterfaceClasses) {
+      moteInterfaceClasses.addAll(List.of(SimpleMoteID.class, Position.class, ApplicationSerialPort.class,
+              ApplicationRadio.class, ApplicationLED.class, Mote2MoteRelations.class, MoteAttributes.class));
+    }
   }
 
   /** Returns the mote type identifier prefix. */
@@ -118,7 +115,7 @@ public abstract class AbstractApplicationMoteType implements MoteType {
   }
 
   @Override
-  public Class<? extends MoteInterface>[] getMoteInterfaceClasses() {
+  public List<Class<? extends MoteInterface>> getMoteInterfaceClasses() {
     return moteInterfaceClasses;
   }
 
