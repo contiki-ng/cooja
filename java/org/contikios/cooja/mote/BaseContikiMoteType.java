@@ -240,6 +240,46 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
     return null;
   }
 
+  protected ArrayList<Element> getBaseConfigXML(Simulation sim, boolean saveFirmware) {
+    var config = new ArrayList<Element>();
+    // Description.
+    var element = new Element("description");
+    element.setText(getDescription());
+    config.add(element);
+
+    // Source file.
+    if (fileSource != null) {
+      element = new Element("source");
+      File file = sim.getCooja().createPortablePath(fileSource);
+      element.setText(file.getPath().replaceAll("\\\\", "/"));
+      config.add(element);
+      element = new Element("commands");
+      element.setText(compileCommands);
+      config.add(element);
+    }
+
+    // Firmware file.
+    if (saveFirmware) {
+      element = new Element("firmware");
+      File file = sim.getCooja().createPortablePath(fileFirmware);
+      element.setText(file.getPath().replaceAll("\\\\", "/"));
+      config.add(element);
+    }
+
+    // Mote interfaces.
+    for (var moteInterface : moteInterfaceClasses) {
+      element = new Element("moteinterface");
+      element.setText(moteInterface.getName());
+      config.add(element);
+    }
+    return config;
+  }
+
+  @Override
+  public Collection<Element> getConfigXML(Simulation sim) {
+    return getBaseConfigXML(sim, true);
+  }
+
   protected boolean setBaseConfigXML(Simulation sim, Collection<Element> configXML) {
     for (Element element : configXML) {
       switch (element.getName()) {
