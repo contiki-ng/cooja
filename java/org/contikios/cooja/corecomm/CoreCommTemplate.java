@@ -45,7 +45,7 @@ import org.contikios.cooja.CoreComm;
  * @see CoreComm
  * @author Fredrik Osterlind
  */
-public class CoreCommTemplate extends CoreComm {
+public class CoreCommTemplate implements CoreComm {
   private final SymbolLookup symbols;
   private final MethodHandle coojaTick;
   /**

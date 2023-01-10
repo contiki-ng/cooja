@@ -894,19 +894,15 @@ public class ContikiMoteType extends BaseContikiMoteType {
     final var className = "Lib" + fileCounter++;
     generateLibSourceFile(tempDir, className);
     compileSourceFile(tempDir, className);
-
-    Class<?> newCoreCommClass;
+    Class<? extends CoreComm> newCoreCommClass;
     try (var loader = URLClassLoader.newInstance(new URL[]{tempDir.toUri().toURL()})) {
-      newCoreCommClass = loader.loadClass("org.contikios.cooja.corecomm." + className);
-    } catch (IOException | ClassNotFoundException e1) {
+      newCoreCommClass = loader.loadClass("org.contikios.cooja.corecomm." + className).asSubclass(CoreComm.class);
+    } catch (IOException | NullPointerException | ClassNotFoundException e1) {
       throw new MoteTypeCreationException("Could not load corecomm class file: " + className + ".class", e1);
-    }
-    if (newCoreCommClass == null) {
-      throw new MoteTypeCreationException("Could not load corecomm class file: " + className + ".class");
     }
 
     try {
-      return (CoreComm) newCoreCommClass.getConstructor(File.class).newInstance(libFile);
+      return newCoreCommClass.getConstructor(File.class).newInstance(libFile);
     } catch (Exception e) {
       throw new MoteTypeCreationException("Error when creating corecomm instance: " + className, e);
     }
