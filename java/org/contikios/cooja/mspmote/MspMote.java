@@ -92,8 +92,8 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   /* Stack monitoring variables */
   private boolean stopNextInstruction = false;
 
-  public MspMote(MspMoteType moteType, Simulation sim, GenericNode node) throws MoteType.MoteTypeCreationException {
-    super(moteType, sim);
+  public MspMote(MspMoteType moteType, Simulation sim, GenericNode node, MapEntry[] allEntries) throws MoteType.MoteTypeCreationException {
+    super(moteType, new MspMoteMemory(allEntries, node.getCPU()), sim);
     registry = node.getRegistry();
     node.setCommandHandler(commandHandler);
     node.setup(new ConfigManager());
@@ -112,20 +112,8 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
         mlogger.warn(getID() + ": " + "# " + source.getID() + "[" + type + "]: " + message);
       }
     });
-    Cooja.setProgressMessage("Loading " + moteType.getContikiFirmwareFile().getName());
-    ELF elf;
-    try {
-      elf = moteType.getELF();
-    } catch (Exception e) {
-      logger.fatal("Error when reading firmware: ", e);
-      throw new MoteType.MoteTypeCreationException("Error when reading firmware: " + e.getMessage());
-    }
-    node.loadFirmware(elf);
     // Throw exceptions at bad memory access.
     //myCpu.setThrowIfWarning(true);
-
-    // Create mote address memory.
-    moteMemory = new MspMoteMemory(elf.getMap().getAllEntries(), myCpu);
     myCpu.reset();
     moteInterfaces = new MoteInterfaceHandler(this);
     registry.removeComponent("windowManager");

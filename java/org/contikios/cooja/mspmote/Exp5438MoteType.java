@@ -84,7 +84,7 @@ public class Exp5438MoteType extends MspMoteType {
     } else {
       throw new IllegalStateException("Unknown file extension, cannot figure out what MSPSim node type to use: " + filename);
     }
-    return new Exp5438Mote(this, simulation, exp5438Node, desc);
+    return new Exp5438Mote(this, simulation, exp5438Node, desc, getEntries(exp5438Node));
   }
 
   @Override

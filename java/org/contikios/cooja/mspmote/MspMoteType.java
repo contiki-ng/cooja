@@ -44,8 +44,10 @@ import org.jdom2.Element;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Simulation;
+import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
+import se.sics.mspsim.util.MapEntry;
 
 /**
  * MSP430-based mote types emulated in MSPSim.
@@ -174,6 +176,19 @@ public abstract class MspMoteType extends BaseContikiMoteType {
       }
     }
     return -1;
+  }
+
+  protected MapEntry[] getEntries(GenericNode node) throws MoteTypeCreationException {
+    Cooja.setProgressMessage("Loading " + getContikiFirmwareFile().getName());
+    ELF elf;
+    try {
+      elf = getELF();
+    } catch (Exception e) {
+      logger.fatal("Error when reading firmware:", e);
+      throw new MoteTypeCreationException("Error when reading firmware: " + e.getMessage());
+    }
+    node.loadFirmware(elf);
+    return elf.getMap().getAllEntries();
   }
 
   public ELF getELF() throws IOException {

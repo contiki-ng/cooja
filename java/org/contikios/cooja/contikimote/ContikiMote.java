@@ -71,8 +71,7 @@ public class ContikiMote extends AbstractWakeupMote<ContikiMoteType, SectionMote
    * @param sim Mote's simulation
    */
   protected ContikiMote(ContikiMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
-    super(moteType, sim);
-    moteMemory = moteType.createInitialMemory();
+    super(moteType, moteType.createInitialMemory(), sim);
     moteInterfaces = new MoteInterfaceHandler(this);
     for (var intf : moteInterfaces.getInterfaces()) {
       if (intf instanceof PolledBeforeActiveTicks intf2) {

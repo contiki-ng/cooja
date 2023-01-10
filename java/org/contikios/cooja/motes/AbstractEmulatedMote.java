@@ -38,8 +38,8 @@ import org.contikios.cooja.plugins.TimeLine;
 public abstract class AbstractEmulatedMote<T extends MoteType, M extends MemoryInterface> extends AbstractWakeupMote<T, M> {
   protected long lastBreakpointCycles = -1;
 
-  protected AbstractEmulatedMote(T moteType, Simulation sim) {
-    super(moteType, sim);
+  protected AbstractEmulatedMote(T moteType, M moteMemory, Simulation sim) {
+    super(moteType, moteMemory, sim);
   }
 
   /**

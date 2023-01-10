@@ -50,8 +50,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote<MoteTyp
   public abstract void sentPacket(RadioPacket p);
   
   public AbstractApplicationMote(MoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
-    super(moteType, sim);
-    moteMemory = new SectionMoteMemory(new HashMap<>());
+    super(moteType, new SectionMoteMemory(new HashMap<>()), sim);
     this.moteInterfaces = new MoteInterfaceHandler(this);
     // Observe our own radio for incoming radio packets.
     moteInterfaces.getRadio().addObserver((obs, obj) -> {
