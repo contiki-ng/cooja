@@ -50,9 +50,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
+import java.util.function.BiConsumer;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -68,6 +66,7 @@ import javax.swing.text.NumberFormatter;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -99,7 +98,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
   private static final Color COLOR_NEGATIVE = Color.RED;
 
   private final SerialPort serialPort;
-  private Observer serialDataObserver;
+  private BiConsumer<EventTriggers.Update, Byte> serialDataObserver;
 
   private JLabel socketToMoteLabel;
   private JLabel moteToSocketLabel;
@@ -388,8 +387,29 @@ public class SerialSocketServer implements Plugin, MotePlugin {
           incomingDataHandler.start();
 
           /* Observe serial port for outgoing data */
-          serialDataObserver = new SerialDataObserver();
-          serialPort.addSerialDataObserver(serialDataObserver);
+          DataOutputStream outStream;
+          try {
+            outStream = new DataOutputStream(clientSocket.getOutputStream());
+          } catch (IOException ex) {
+            logger.error("Failed opening client socket output stream:", ex);
+            // FIXME: this should fail, not continue and produce invisible updates.
+            outStream = null;
+          }
+          final var out = outStream;
+          // FIXME: update code to use data directly.
+          serialPort.getSerialDataTriggers().addTrigger(this, serialDataObserver = (event, data) -> {
+            if (out == null) {
+              return;
+            }
+            try {
+              out.write(serialPort.getLastSerialData());
+              out.flush();
+              outBytes++;
+            } catch (IOException ex) {
+              logger.error("Failed writing:", ex);
+              cleanupClient();
+            }
+          });
 
           inBytes = outBytes = 0;
 
@@ -491,37 +511,6 @@ public class SerialSocketServer implements Plugin, MotePlugin {
     }
   }
 
-  private class SerialDataObserver implements Observer {
-    
-    DataOutputStream out;
-
-    public SerialDataObserver() {
-      try {
-        out = new DataOutputStream(clientSocket.getOutputStream());
-      } catch (IOException ex) {
-        logger.error("Failed opening client socket output stream:", ex);
-        // FIXME: this should fail, not continue and produce invisible updates.
-        out = null;
-      }
-    }
-
-    @Override
-    public void update(Observable obs, Object obj) {
-      if (out == null) {
-        return;
-      }
-      try {
-        out.write(serialPort.getLastSerialData());
-        out.flush();
-        outBytes++;
-      } catch (IOException ex) {
-        logger.error("Failed writing:", ex);
-        cleanupClient();
-      }
-    }
-
-  }
-
   @Override
   public Collection<Element> getConfigXML() {
     List<Element> config = new ArrayList<>();
@@ -600,9 +589,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
     } catch (IOException e1) {
       logger.error(e1.getMessage());
     }
-
-    serialPort.deleteSerialDataObserver(serialDataObserver);
-
+    serialPort.getSerialDataTriggers().removeTrigger(this, serialDataObserver);
     notifyClientDisconnected();
   }
 
