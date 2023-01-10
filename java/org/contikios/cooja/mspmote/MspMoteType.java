@@ -31,7 +31,6 @@ package org.contikios.cooja.mspmote;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -71,42 +70,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
 
   @Override
   protected void appendVisualizerInfo(StringBuilder sb) {
-  }
-
-  @Override
-  public Collection<Element> getConfigXML(Simulation simulation) {
-    ArrayList<Element> config = new ArrayList<>();
-
-    // Description
-    var element = new Element("description");
-    element.setText(getDescription());
-    config.add(element);
-
-    // Source file
-    if (fileSource != null) {
-      element = new Element("source");
-      File file = simulation.getCooja().createPortablePath(fileSource);
-      element.setText(file.getPath().replaceAll("\\\\", "/"));
-      config.add(element);
-      element = new Element("commands");
-      element.setText(compileCommands);
-      config.add(element);
-    }
-
-    // Firmware file
-    element = new Element("firmware");
-    File file = simulation.getCooja().createPortablePath(fileFirmware);
-    element.setText(file.getPath().replaceAll("\\\\", "/"));
-    config.add(element);
-
-    // Mote interfaces
-    for (var moteInterface : moteInterfaceClasses) {
-      element = new Element("moteinterface");
-      element.setText(moteInterface.getName());
-      config.add(element);
-    }
-
-    return config;
   }
 
   @Override
