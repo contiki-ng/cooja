@@ -54,6 +54,7 @@ import javax.swing.JTextField;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
 import org.contikios.cooja.Mote;
@@ -65,6 +66,7 @@ public abstract class SerialUI extends Log implements SerialPort {
 
   private final static int MAX_LENGTH = 16*1024;
 
+  protected EventTriggers<EventTriggers.Update, Byte> serialDataTriggers = new EventTriggers<>();
   private byte lastSerialData = 0; /* SerialPort */
   private String lastLogMessage = ""; /* Log */
   private int charactersReceived = 0;
@@ -108,6 +110,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   public byte getLastSerialData() {
     return lastSerialData;
   }
+  // FIXME: make data a byte instead.
   public void dataReceived(int data) {
     charactersReceived++;
     if (data == '\n' || charactersReceived > MAX_LENGTH) {
@@ -128,6 +131,7 @@ public abstract class SerialUI extends Log implements SerialPort {
     /* Notify observers of new serial character */
     lastSerialData = (byte) data;
     serialDataObservable.notifyNewData();
+    serialDataTriggers.trigger(EventTriggers.Update.UPDATE, (byte) data);
   }
 
 
@@ -312,5 +316,10 @@ public abstract class SerialUI extends Log implements SerialPort {
 
   private static String trim(String text) {
     return (text != null) && ((text = text.trim()).length() > 0) ? text : null;
+  }
+
+  @Override
+  public EventTriggers<EventTriggers.Update, Byte> getSerialDataTriggers() {
+    return serialDataTriggers;
   }
 }
