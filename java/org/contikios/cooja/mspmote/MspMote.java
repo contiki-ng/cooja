@@ -93,7 +93,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   private boolean stopNextInstruction = false;
 
   public MspMote(MspMoteType moteType, Simulation sim, GenericNode node, MapEntry[] allEntries) throws MoteType.MoteTypeCreationException {
-    super(moteType, sim);
+    super(moteType, new MspMoteMemory(allEntries, node.getCPU()), sim);
     registry = node.getRegistry();
     node.setCommandHandler(commandHandler);
     node.setup(new ConfigManager());
@@ -114,9 +114,6 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     });
     // Throw exceptions at bad memory access.
     //myCpu.setThrowIfWarning(true);
-
-    // Create mote address memory.
-    moteMemory = new MspMoteMemory(allEntries, myCpu);
     myCpu.reset();
     moteInterfaces = new MoteInterfaceHandler(this);
     registry.removeComponent("windowManager");

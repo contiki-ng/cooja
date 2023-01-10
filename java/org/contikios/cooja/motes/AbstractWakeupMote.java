@@ -47,7 +47,7 @@ import org.jdom2.Element;
 public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInterface> implements Mote {
   protected final Simulation simulation;
   protected final T moteType;
-  protected M moteMemory;
+  protected final M moteMemory;
 
   protected MoteInterfaceHandler moteInterfaces;
   private long nextWakeupTime = -1;
@@ -55,8 +55,9 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
   protected final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<>();
   protected final ArrayList<Watchpoint> watchpoints = new ArrayList<>();
 
-  protected AbstractWakeupMote(T moteType, Simulation sim) {
+  protected AbstractWakeupMote(T moteType, M moteMemory, Simulation sim) {
     this.moteType = moteType;
+    this.moteMemory = moteMemory;
     this.simulation = sim;
   }
 
