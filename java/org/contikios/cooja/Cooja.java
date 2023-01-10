@@ -674,16 +674,17 @@ public class Cooja {
   throws PluginConstructionException
   {
     var pluginType = pluginClass.getAnnotation(PluginType.class).value();
-    if (pluginType == PluginType.PType.MOTE_PLUGIN && argMote == null) {
-      throw new PluginConstructionException("No mote argument for mote plugin: " + pluginClass.getName());
-    }
-
     // Construct plugin depending on plugin type
     Plugin plugin;
     try {
       plugin = switch (pluginType) {
-        case MOTE_PLUGIN -> pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class)
-                .newInstance(argMote, sim, this);
+        case MOTE_PLUGIN -> {
+          if (argMote == null) {
+            throw new PluginConstructionException("No mote argument for mote plugin: " + pluginClass.getName());
+          }
+          yield pluginClass.getConstructor(Mote.class, Simulation.class, Cooja.class)
+                  .newInstance(argMote, sim, this);
+        }
         case SIM_PLUGIN, SIM_STANDARD_PLUGIN, SIM_CONTROL_PLUGIN ->
                 pluginClass.getConstructor(Simulation.class, Cooja.class).newInstance(sim, this);
         case COOJA_PLUGIN, COOJA_STANDARD_PLUGIN ->
