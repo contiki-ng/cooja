@@ -290,9 +290,10 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
       final var firmware = getContikiFirmwareFile();
       String file = source != null ? source.getAbsolutePath() : firmware != null ? firmware.getAbsolutePath() : null;
       var moteClasses = getMoteInterfaceClasses();
-      var interfaces = moteClasses.isEmpty() ? getDefaultMoteInterfaceClasses() : moteClasses;
+      var defaultClasses = getDefaultMoteInterfaceClasses();
       var cfg = showCompilationDialog(sim.getCooja(), new MoteTypeConfig(desc, getMoteType(), file,
-              getCompileCommands(), interfaces));
+              getCompileCommands(), moteClasses.isEmpty() ? defaultClasses : moteClasses, defaultClasses,
+              getAllMoteInterfaceClasses()));
       if (cfg == null) {
         return false;
       }
@@ -328,7 +329,9 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
 
   /** Compilation-relevant parts of mote type configuration. */
   public record MoteTypeConfig(String desc, String targetName, String file, String commands,
-                               List<Class<? extends MoteInterface>> interfaces) {}
+                               List<Class<? extends MoteInterface>> interfaces,
+                               List<Class<? extends MoteInterface>> defaultInterfaces,
+                               List<Class<? extends MoteInterface>> allInterfaces) {}
 
   /** Create a compilation dialog for this mote type. */
   protected abstract AbstractCompileDialog createCompilationDialog(Cooja gui, MoteTypeConfig cfg);
