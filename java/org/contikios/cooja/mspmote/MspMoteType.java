@@ -114,11 +114,6 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     if (!setBaseConfigXML(simulation, configXML)) {
       return false;
     }
-    if (moteInterfaceClasses.isEmpty()) {
-      /* Backwards compatibility: No interfaces specified */
-      logger.warn("Old simulation config detected: no mote interfaces specified, assuming all.");
-      moteInterfaceClasses.addAll(getAllMoteInterfaceClasses());
-    }
 
     if (fileFirmware == null && fileSource == null) {
       throw new MoteTypeCreationException("Neither source or firmware specified");
