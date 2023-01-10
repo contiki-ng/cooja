@@ -425,7 +425,10 @@ public final class Simulation {
         pluginClassName = "org.contikios.cooja.plugins.Visualizer";
       }
 
-      var pluginClass = cooja.tryLoadClass(this, Plugin.class, pluginClassName);
+      var pluginClass = ExtensionManager.builtinPlugins.get(pluginClassName);
+      if (pluginClass == null) {
+        pluginClass = cooja.tryLoadClass(this, Plugin.class, pluginClassName);
+      }
       if (pluginClass == null) {
         logger.fatal("Could not load plugin class: " + pluginClassName);
         return new SimulationCreationException("Could not load plugin class " + pluginClassName, null);
