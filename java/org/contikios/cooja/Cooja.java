@@ -642,6 +642,10 @@ public class Cooja {
       registerClasses();
     }
     try {
+      var pluginType = pluginClass.getAnnotation(PluginType.class).value();
+      if (pluginType != PluginType.PType.COOJA_PLUGIN && pluginType != PluginType.PType.COOJA_STANDARD_PLUGIN && sim == null) {
+        throw new PluginConstructionException("No simulation argument for plugin: " + pluginClass.getName());
+      }
       if (!pluginClasses.contains(pluginClass)) {
         throw new PluginConstructionException("Tool class not registered: " + pluginClass.getName());
       }
@@ -670,9 +674,6 @@ public class Cooja {
   throws PluginConstructionException
   {
     var pluginType = pluginClass.getAnnotation(PluginType.class).value();
-    if (pluginType != PluginType.PType.COOJA_PLUGIN && pluginType != PluginType.PType.COOJA_STANDARD_PLUGIN && sim == null) {
-      throw new PluginConstructionException("No simulation argument for plugin: " + pluginClass.getName());
-    }
     if (pluginType == PluginType.PType.MOTE_PLUGIN && argMote == null) {
       throw new PluginConstructionException("No mote argument for mote plugin: " + pluginClass.getName());
     }
