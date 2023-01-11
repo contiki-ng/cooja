@@ -64,7 +64,6 @@ import java.util.Enumeration;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
-
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -123,7 +122,13 @@ import org.contikios.mrm.ChannelModel.TxPair;
 public class AreaViewer extends VisPlugin {
   private static final Logger logger = LogManager.getLogger(AreaViewer.class);
 
-  private final JPanel canvas;
+  private final JPanel canvas = new JPanel() {
+    @Override
+    public void paintComponent(Graphics g) {
+      super.paintComponent(g);
+      repaintCanvas((Graphics2D) g);
+    }
+  };
 
   ChannelModel.TransmissionData dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH;
   final ButtonGroup visTypeSelectionGroup;
@@ -222,7 +227,10 @@ public class AreaViewer extends VisPlugin {
     currentChannelModel = currentRadioMedium.getChannelModel();
 
     // We want to listen to changes both in the channel model and the radio medium
-    currentChannelModel.addSettingsObserver(channelModelSettingsObserver);
+    currentChannelModel.getSettingsTriggers().addTrigger(this, (event, param) -> {
+      needToRepaintObstacleImage = true;
+      canvas.repaint();
+    });
     currentRadioMedium.addRadioMediumObserver(radioMediumSettingsObserver);
     currentRadioMedium.addRadioTransmissionObserver(radioMediumActivityObserver);
 
@@ -269,14 +277,7 @@ public class AreaViewer extends VisPlugin {
     group.add(zoomModeButton);
     group.add(trackModeButton);
 
-    // Create canvas
-    canvas = new JPanel() {
-      @Override
-      public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        repaintCanvas((Graphics2D) g);
-      }
-    };
+    // Configure canvas.
     canvas.setBorder(BorderFactory.createLineBorder(Color.BLACK));
     canvas.setBackground(Color.WHITE);
     canvas.setLayout(new BorderLayout());
@@ -1397,17 +1398,6 @@ public class AreaViewer extends VisPlugin {
   };
 
   /**
-   * Listens to settings changes in the channel model.
-   */
-  private final Observer channelModelSettingsObserver = new Observer() {
-    @Override
-    public void update(Observable obs, Object obj) {
-      needToRepaintObstacleImage = true;
-      canvas.repaint();
-    }
-  };
-
-  /**
    * Returns a color corresponding to given value where higher values are more green, and lower values are more red.
    *
    * @param value Signal strength of received signal (dB)
@@ -2014,11 +2004,8 @@ public class AreaViewer extends VisPlugin {
   @Override
   public void closePlugin() {
     // Remove all our observers
-
-    if (currentChannelModel != null && channelModelSettingsObserver != null) {
-      currentChannelModel.deleteSettingsObserver(channelModelSettingsObserver);
-    } else {
-      logger.fatal("Could not remove observer: " + channelModelSettingsObserver);
+    if (currentChannelModel != null) {
+      currentChannelModel.getSettingsTriggers().deleteTriggers(this);
     }
 
     if (currentRadioMedium != null && radioMediumSettingsObserver != null) {
