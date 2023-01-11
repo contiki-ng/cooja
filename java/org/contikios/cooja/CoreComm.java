@@ -61,15 +61,15 @@ package org.contikios.cooja;
  *
  * @author Fredrik Osterlind
  */
-public abstract class CoreComm {
+public interface CoreComm {
 
   /**
    * Ticks a mote once.
    */
-  public abstract void tick();
+  void tick();
 
   /**
    * Returns the absolute memory address of the reference variable.
    */
-  public abstract long getReferenceAddress();
+  long getReferenceAddress();
 }
