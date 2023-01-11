@@ -289,7 +289,7 @@ public class Cooja {
    * @return True if simulator is visualized
    */
   public static boolean isVisualized() {
-    return gui != null;
+    return configuration.vis;
   }
 
   public static JFrame getTopParentContainer() {
