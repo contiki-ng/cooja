@@ -1828,7 +1828,7 @@ public class GUI {
           // Create mote type
           var clazz = (Class<? extends MoteType>) ((JMenuItem) e.getSource()).getClientProperty("class");
           try {
-            newMoteType = MoteInterfaceHandler.createMoteType(cooja, clazz.getName());
+            newMoteType = ExtensionManager.createMoteType(cooja, clazz.getName());
             if (newMoteType == null || !newMoteType.configureAndInit(frame, cooja.getSimulation(), true)) {
               return;
             }

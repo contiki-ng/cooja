@@ -319,7 +319,7 @@ public final class Simulation {
             if (moteTypeClassName.startsWith("se.sics")) {
               moteTypeClassName = moteTypeClassName.replaceFirst("se\\.sics", "org.contikios");
             }
-            var moteType = MoteInterfaceHandler.createMoteType(cooja, moteTypeClassName);
+            var moteType = ExtensionManager.createMoteType(cooja, moteTypeClassName);
             if (moteType == null) {
               throw new MoteType.MoteTypeCreationException("Could not create: " + moteTypeClassName);
             }

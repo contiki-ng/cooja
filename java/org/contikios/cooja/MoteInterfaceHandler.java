@@ -30,12 +30,10 @@
 
 package org.contikios.cooja;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.interfaces.Battery;
 import org.contikios.cooja.interfaces.Beeper;
 import org.contikios.cooja.interfaces.Button;
@@ -47,10 +45,6 @@ import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.PIR;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
-import org.contikios.cooja.motes.DisturberMoteType;
-import org.contikios.cooja.motes.ImportAppMoteType;
-import org.contikios.cooja.mspmote.SkyMoteType;
-import org.contikios.cooja.mspmote.Z1MoteType;
 import org.jdom2.Element;
 
 /**
@@ -89,34 +83,6 @@ public class MoteInterfaceHandler {
         logger.fatal("Exception when calling constructor of " + interfaceClass, e);
         throw new MoteType.MoteTypeCreationException("Exception when calling constructor of " + interfaceClass, e);
       }
-    }
-  }
-
-  /** Fast translation from class name to object for builtin mote types.
-   * @param cooja Cooja
-   * @param name Name of mote type to create
-   * @return Object or null
-   */
-  public static MoteType createMoteType(Cooja cooja, String name) {
-    switch (name) {
-      case "org.contikios.cooja.motes.ImportAppMoteType": return new ImportAppMoteType();
-      case "org.contikios.cooja.motes.DisturberMoteType": return new DisturberMoteType();
-      case "org.contikios.cooja.contikimote.ContikiMoteType": return new ContikiMoteType(cooja);
-      case "org.contikios.cooja.mspmote.SkyMoteType": return new SkyMoteType();
-      case "org.contikios.cooja.mspmote.Z1MoteType": return new Z1MoteType();
-    }
-    Class<? extends MoteType> moteType = null;
-    for (var clazz : cooja.getRegisteredMoteTypes()) {
-      if (name.equals(clazz.getName())) {
-        moteType = clazz;
-        break;
-      }
-    }
-    if (moteType == null) return null;
-    try {
-      return moteType.getConstructor().newInstance();
-    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-      return null;
     }
   }
 
