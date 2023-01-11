@@ -425,10 +425,10 @@ public final class Simulation {
         pluginClassName = "org.contikios.cooja.plugins.Visualizer";
       }
 
-      var pluginClass = cooja.tryLoadClass(this, Plugin.class, pluginClassName);
+      var pluginClass = ExtensionManager.getPluginClass(cooja, pluginClassName);
       if (pluginClass == null) {
-        logger.fatal("Could not load plugin class: " + pluginClassName);
-        return new SimulationCreationException("Could not load plugin class " + pluginClassName, null);
+        logger.fatal("Plugin class " + pluginClassName + " not registered as a plugin");
+        return new SimulationCreationException("Plugin class " + pluginClassName + " not registered as a plugin", null);
       }
       // Skip plugins that require visualization in headless mode.
       if (!Cooja.isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {

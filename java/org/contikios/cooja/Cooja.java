@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Observer;
 import java.util.Properties;
 import java.util.Random;
@@ -66,25 +67,6 @@ import org.contikios.cooja.motes.DisturberMoteType;
 import org.contikios.cooja.motes.ImportAppMoteType;
 import org.contikios.cooja.mspmote.SkyMoteType;
 import org.contikios.cooja.mspmote.Z1MoteType;
-import org.contikios.cooja.mspmote.plugins.MspCLI;
-import org.contikios.cooja.mspmote.plugins.MspCodeWatcher;
-import org.contikios.cooja.mspmote.plugins.MspCycleWatcher;
-import org.contikios.cooja.mspmote.plugins.MspStackWatcher;
-import org.contikios.cooja.plugins.BaseRSSIconf;
-import org.contikios.cooja.plugins.BufferListener;
-import org.contikios.cooja.plugins.DGRMConfigurator;
-import org.contikios.cooja.plugins.EventListener;
-import org.contikios.cooja.plugins.LogListener;
-import org.contikios.cooja.plugins.Mobility;
-import org.contikios.cooja.plugins.MoteInformation;
-import org.contikios.cooja.plugins.MoteInterfaceViewer;
-import org.contikios.cooja.plugins.Notes;
-import org.contikios.cooja.plugins.PowerTracker;
-import org.contikios.cooja.plugins.RadioLogger;
-import org.contikios.cooja.plugins.ScriptRunner;
-import org.contikios.cooja.plugins.TimeLine;
-import org.contikios.cooja.plugins.VariableWatcher;
-import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.positioners.EllipsePositioner;
 import org.contikios.cooja.positioners.LinearPositioner;
 import org.contikios.cooja.positioners.ManualPositioner;
@@ -94,8 +76,6 @@ import org.contikios.cooja.radiomediums.LogisticLoss;
 import org.contikios.cooja.radiomediums.SilentRadioMedium;
 import org.contikios.cooja.radiomediums.UDGM;
 import org.contikios.cooja.radiomediums.UDGMConstantLoss;
-import org.contikios.cooja.serialsocket.SerialSocketClient;
-import org.contikios.cooja.serialsocket.SerialSocketServer;
 import org.contikios.mrm.MRM;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -351,10 +331,7 @@ public class Cooja {
    * Returns all registered plugins.
    */
   public List<Class<? extends Plugin>> getRegisteredPlugins() {
-    if (pluginClasses == null) {
-      registerClasses();
-    }
-    return pluginClasses;
+    return Objects.requireNonNullElseGet(pluginClasses, () -> List.copyOf(ExtensionManager.builtinPlugins.values()));
   }
 
   /**
@@ -427,6 +404,20 @@ public class Cooja {
       }
     }
 
+    // Register plugins.
+    var pluginClassNames = projectConfig.getStringArrayValue(Cooja.class, "PLUGINS");
+    if (pluginClassNames != null) {
+      pluginClasses = new ArrayList<>(ExtensionManager.builtinPlugins.values());
+      for (var pluginClassName : pluginClassNames) {
+        var pluginClass = tryLoadClass(this, Plugin.class, pluginClassName);
+        if (pluginClass != null) {
+          registerPlugin(pluginClass);
+        } else {
+          logger.error("Could not load plugin class: " + pluginClassName);
+        }
+      }
+    }
+
     if (eagerInit) {
       registerClasses();
     }
@@ -451,41 +442,6 @@ public class Cooja {
           registerMoteType(moteTypeClass);
         } else {
           logger.error("Could not load mote type class: " + moteTypeClassName);
-        }
-      }
-    }
-
-    // Register plugins.
-    pluginClasses = new ArrayList<>();
-    registerPlugin(Visualizer.class);
-    registerPlugin(LogListener.class);
-    registerPlugin(TimeLine.class);
-    registerPlugin(Mobility.class);
-    registerPlugin(MoteInformation.class);
-    registerPlugin(MoteInterfaceViewer.class);
-    registerPlugin(VariableWatcher.class);
-    registerPlugin(EventListener.class);
-    registerPlugin(RadioLogger.class);
-    registerPlugin(ScriptRunner.class);
-    registerPlugin(Notes.class);
-    registerPlugin(BufferListener.class);
-    registerPlugin(DGRMConfigurator.class);
-    registerPlugin(BaseRSSIconf.class);
-    registerPlugin(PowerTracker.class);
-    registerPlugin(SerialSocketClient.class);
-    registerPlugin(SerialSocketServer.class);
-    registerPlugin(MspCLI.class);
-    registerPlugin(MspCodeWatcher.class);
-    registerPlugin(MspStackWatcher.class);
-    registerPlugin(MspCycleWatcher.class);
-    var pluginClassNames = projectConfig.getStringArrayValue(Cooja.class, "PLUGINS");
-    if (pluginClassNames != null) {
-      for (var pluginClassName : pluginClassNames) {
-        var pluginClass = tryLoadClass(this, Plugin.class, pluginClassName);
-        if (pluginClass != null) {
-          registerPlugin(pluginClass);
-        } else {
-          logger.error("Could not load plugin class: " + pluginClassName);
         }
       }
     }
@@ -638,15 +594,13 @@ public class Cooja {
    * @return Started plugin
    */
   public Plugin tryStartPlugin(Class<? extends Plugin> pluginClass, Simulation sim, Mote mote) {
-    if (pluginClasses == null) {
-      registerClasses();
-    }
     try {
       var pluginType = pluginClass.getAnnotation(PluginType.class).value();
       if (pluginType != PluginType.PType.COOJA_PLUGIN && pluginType != PluginType.PType.COOJA_STANDARD_PLUGIN && sim == null) {
         throw new PluginConstructionException("No simulation argument for plugin: " + pluginClass.getName());
       }
-      if (!pluginClasses.contains(pluginClass)) {
+      if (!Objects.requireNonNullElseGet(pluginClasses, () ->
+              List.copyOf(ExtensionManager.builtinPlugins.values())).contains(pluginClass)) {
         throw new PluginConstructionException("Tool class not registered: " + pluginClass.getName());
       }
       return startPlugin(pluginClass, sim, mote, null);
@@ -802,10 +756,12 @@ public class Cooja {
    * @param pluginClass Plugin class
    */
   public void unregisterPlugin(Class<? extends Plugin> pluginClass) {
-    if (pluginClasses == null) {
-      registerClasses();
+    if (pluginClasses != null) {
+      pluginClasses.remove(pluginClass);
+      if (pluginClasses.isEmpty()) {
+        pluginClasses = null;
+      }
     }
-    pluginClasses.remove(pluginClass);
     if (gui != null) {
       gui.menuMotePluginClasses.remove(pluginClass);
     }
@@ -834,10 +790,8 @@ public class Cooja {
       case SIM_PLUGIN:
       case SIM_STANDARD_PLUGIN:
       case SIM_CONTROL_PLUGIN:
-        if (pluginClasses == null) {
-          registerClasses();
-        }
-        pluginClasses.add(pluginClass);
+        Objects.requireNonNullElseGet(pluginClasses,
+                () -> pluginClasses = new ArrayList<>(ExtensionManager.builtinPlugins.values())).add(pluginClass);
         return true;
     }
     logger.error("Could not register plugin, " + pluginClass + " has unknown plugin type");
