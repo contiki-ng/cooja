@@ -30,10 +30,11 @@
 
 package org.contikios.cooja.mspmote;
 
+import java.util.Map;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
+import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import se.sics.mspsim.platform.sky.SkyNode;
-import se.sics.mspsim.util.MapEntry;
 
 /**
  * @author Fredrik Osterlind
@@ -41,8 +42,8 @@ import se.sics.mspsim.util.MapEntry;
 public class SkyMote extends MspMote {
   public final SkyNode skyNode;
 
-  public SkyMote(MspMoteType moteType, Simulation sim, SkyNode node, MapEntry[] allEntries) throws MoteType.MoteTypeCreationException {
-    super(moteType, sim, node, allEntries);
+  public SkyMote(MspMoteType moteType, Simulation sim, SkyNode node, Map<String, Symbol> symbols) throws MoteType.MoteTypeCreationException {
+    super(moteType, sim, node, symbols);
     skyNode = node;
   }
 

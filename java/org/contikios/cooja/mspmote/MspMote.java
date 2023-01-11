@@ -33,6 +33,7 @@ package org.contikios.cooja.mspmote;
 import java.awt.Component;
 import java.io.File;
 import java.io.PrintStream;
+import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Simulation.SimulationStop;
@@ -43,11 +44,11 @@ import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.Watchpoint;
+import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.mspmote.plugins.CodeVisualizerSkin;
 import org.contikios.cooja.mspmote.plugins.MspBreakpoint;
 import org.contikios.cooja.plugins.Visualizer;
-
 import se.sics.mspsim.cli.CommandContext;
 import se.sics.mspsim.cli.CommandHandler;
 import se.sics.mspsim.cli.LineListener;
@@ -90,8 +91,8 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   /* Stack monitoring variables */
   private boolean stopNextInstruction = false;
 
-  public MspMote(MspMoteType moteType, Simulation sim, GenericNode node, MapEntry[] allEntries) throws MoteType.MoteTypeCreationException {
-    super(moteType, new MspMoteMemory(allEntries, node.getCPU()), sim);
+  public MspMote(MspMoteType moteType, Simulation sim, GenericNode node, Map<String, Symbol> symbols) throws MoteType.MoteTypeCreationException {
+    super(moteType, new MspMoteMemory(symbols, node.getCPU()), sim);
     registry = node.getRegistry();
     node.setCommandHandler(commandHandler);
     node.setup(new ConfigManager());

@@ -29,18 +29,19 @@
  */
 
 package org.contikios.cooja.mspmote;
+import java.util.Map;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
+import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import se.sics.mspsim.platform.z1.Z1Node;
-import se.sics.mspsim.util.MapEntry;
 
 /**
  * @author Fredrik Osterlind, Niclas Finne
  */
 public class Z1Mote extends MspMote {
 
-    public Z1Mote(MspMoteType moteType, Simulation sim, Z1Node node, MapEntry[] allEntries) throws MoteType.MoteTypeCreationException {
-        super(moteType, sim, node, allEntries);
+    public Z1Mote(MspMoteType moteType, Simulation sim, Z1Node node, Map<String, Symbol> symbols) throws MoteType.MoteTypeCreationException {
+        super(moteType, sim, node, symbols);
     }
 
     @Override

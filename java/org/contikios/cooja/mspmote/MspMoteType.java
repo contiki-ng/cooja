@@ -34,15 +34,16 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 
+import java.util.Map;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.dialogs.AbstractCompileDialog;
 import org.contikios.cooja.mote.BaseContikiMoteType;
-import org.jdom2.Element;
-
+import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Simulation;
+import org.jdom2.Element;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
@@ -141,7 +142,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return -1;
   }
 
-  protected MapEntry[] getEntries(GenericNode node) throws MoteTypeCreationException {
+  protected Map<String, Symbol> getEntries(GenericNode node) throws MoteTypeCreationException {
     Cooja.setProgressMessage("Loading " + getContikiFirmwareFile().getName());
     ELF elf;
     try {
@@ -151,7 +152,14 @@ public abstract class MspMoteType extends BaseContikiMoteType {
       throw new MoteTypeCreationException("Error when reading firmware: " + e.getMessage());
     }
     node.loadFirmware(elf);
-    return elf.getMap().getAllEntries();
+    var vars = new HashMap<String, Symbol>();
+    for (var entry : elf.getMap().getAllEntries()) {
+      if (entry.getType() != MapEntry.TYPE.variable) {
+        continue;
+      }
+      vars.put(entry.getName(),new Symbol(Symbol.Type.VARIABLE, entry.getName(), entry.getAddress(), entry.getSize()));
+    }
+    return vars;
   }
 
   public ELF getELF() throws IOException {
