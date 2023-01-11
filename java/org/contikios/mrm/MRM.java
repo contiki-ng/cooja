@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
 import org.contikios.cooja.Cooja;
+import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -100,7 +101,7 @@ public class MRM extends AbstractRadioMedium {
       CAPTURE_EFFECT_THRESHOLD = currentChannelModel.getParameterDoubleValue(Parameter.captureEffectSignalTreshold);
       CAPTURE_EFFECT_PREAMBLE_DURATION = currentChannelModel.getParameterDoubleValue(Parameter.captureEffectPreambleDuration);
       // Radio Medium changed here, so notify.
-      radioMediumObservable.setChangedAndNotify();
+      radioMediumTriggers.trigger(EventTriggers.AddRemove.ADD, null);
     });
     
     if (Cooja.isVisualized()) {
@@ -128,7 +129,7 @@ public class MRM extends AbstractRadioMedium {
         super.registerRadioInterface(radio, sim);
         
         /* Radio Medium changed here so notify Observers */
-        radioMediumObservable.setChangedAndNotify();
+    radioMediumTriggers.trigger(EventTriggers.AddRemove.ADD, radio);
         
         if (WITH_NOISE && radio instanceof NoiseSourceRadio) {
                 ((NoiseSourceRadio)radio).addNoiseLevelListener(noiseListener);
@@ -139,7 +140,7 @@ public class MRM extends AbstractRadioMedium {
         super.unregisterRadioInterface(radio, sim);
 
         /* Radio Medium changed here so notify Observers */
-        radioMediumObservable.setChangedAndNotify();
+    radioMediumTriggers.trigger(EventTriggers.AddRemove.REMOVE, radio);
         
         if (WITH_NOISE && radio instanceof NoiseSourceRadio) {
                 ((NoiseSourceRadio)radio).removeNoiseLevelListener(noiseListener);

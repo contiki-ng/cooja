@@ -48,6 +48,7 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.interfaces.CustomDataRadio;
 import org.contikios.cooja.interfaces.Radio;
+import org.contikios.cooja.util.EventTriggers;
 import org.contikios.cooja.util.ScnObservable;
 import org.jdom2.Element;
 
@@ -90,13 +91,13 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	public int COUNTER_TX = 0;
 	public int COUNTER_RX = 0;
 	public int COUNTER_INTERFERED = 0;
-	
-	/**
-	 * Two Observables to observe the radioMedium and radioTransmissions
-	 * @see #addRadioTransmissionObserver
-	 * @see #addRadioMediumObserver
-	 */
-	protected final ScnObservable radioMediumObservable = new ScnObservable();
+
+  protected final EventTriggers<EventTriggers.AddRemove, Radio> radioMediumTriggers = new EventTriggers<>();
+
+  /**
+   * Observable to observe radioTransmissions
+   * @see #addRadioTransmissionObserver
+   */
 	protected final ScnObservable radioTransmissionObservable = new ScnObservable();
 	
 	/**
@@ -434,7 +435,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 		
 		registeredRadios.add(radio);
 		radio.addObserver(radioEventsObserver);
-		radioMediumObservable.setChangedAndNotify();
+    radioMediumTriggers.trigger(EventTriggers.AddRemove.ADD, radio);
 		
 		/* Update signal strengths */
 		updateSignalStrengths();
@@ -451,8 +452,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 		registeredRadios.remove(radio);
 		
 		removeFromActiveConnections(radio);
-		
-		radioMediumObservable.setChangedAndNotify();
+    radioMediumTriggers.trigger(EventTriggers.AddRemove.REMOVE, radio);
 		
 		/* Update signal strengths */
 		updateSignalStrengths();
@@ -519,7 +519,6 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	 * Register an observer that gets notified when the radiotransmissions changed.
 	 * E.g. creating new connections.
 	 * This does not include changes in the settings and (de-)registration of radios.
-	 * @see #addRadioMediumObserver
 	 * @param observer the Observer to register
 	 */
 	@Override
@@ -536,23 +535,19 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	public void deleteRadioTransmissionObserver(Observer observer) {
 		radioTransmissionObservable.deleteObserver(observer);
 	}
-	
-	/**
-	 * Register an observer that gets notified when the radio medium changed.
-	 * This includes changes in the settings and (de-)registration of radios. 
-	 * This does not include transmissions, etc. as these are part of the radio
-	 * and not the radio medium itself.
-	 * @see #addRadioTransmissionObserver
-	 * @param observer the Observer to register
-	 */
-	public void addRadioMediumObserver(Observer observer) {
-		radioMediumObservable.addObserver(observer);
-	}
 
-	public void deleteRadioMediumObserver(Observer observer) {
-		radioMediumObservable.deleteObserver(observer);
-	}
-	
+  /** Get the radio medium triggers for when the radio medium is changed.
+   * <p>
+   * This includes changes in the settings and (de-)registration of radios.
+   * This does not include transmissions, etc. as these are part of the radio
+   * and not the radio medium itself.
+   * <p>
+   * Sends ADD+null when change is unknown, otherwise sends ADD/REMOVE+radio.
+   */
+  public EventTriggers<EventTriggers.AddRemove, Radio> getRadioMediumTriggers() {
+    return radioMediumTriggers;
+  }
+
 	@Override
 	public RadioConnection getLastConnection() {
 		return lastConnection;
