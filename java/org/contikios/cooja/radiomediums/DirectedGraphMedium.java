@@ -86,8 +86,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
   public void addEdge(Edge e) {
     edges.add(e);
     requestEdgeAnalysis();
-
-    radioTransmissionObservable.setChangedAndNotify();
+    radioTransmissionTriggers.trigger(Radio.RadioEvent.UNKNOWN, e);
   }
 
   public void removeEdge(Edge edge) {
@@ -97,16 +96,13 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     }
     edges.remove(edge);
     requestEdgeAnalysis();
-
-
-    radioTransmissionObservable.setChangedAndNotify();
+    radioTransmissionTriggers.trigger(Radio.RadioEvent.UNKNOWN, edge);
   }
 
   public void clearEdges() {
     edges.clear();
     requestEdgeAnalysis();
-
-    radioTransmissionObservable.setChangedAndNotify();
+    radioTransmissionTriggers.trigger(Radio.RadioEvent.UNKNOWN, null);
   }
 
   public Edge[] getEdges() {

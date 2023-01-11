@@ -35,13 +35,14 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observer;
+import java.util.function.BiConsumer;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.SupportedArguments;
 import org.contikios.cooja.TimeEvent;
+import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
@@ -66,7 +67,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
 
   private final List<RadioConnectionArrow> historyList = new ArrayList<>();
 
-  private final Observer radioMediumObserver = (obs, obj) -> {
+  private final BiConsumer<Radio.RadioEvent, Object> radioMediumObserver = (event, obj) -> {
     RadioConnection last = radioMedium.getLastConnection();
     if (last != null && historyList.size() < MAX_HISTORY_SIZE) {
       synchronized(historyList) {
@@ -108,7 +109,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
     simulation.invokeSimulationThread(() -> {
       historyList.clear();
       /* Start observing radio medium for transmissions */
-      radioMedium.addRadioTransmissionObserver(radioMediumObserver);
+      radioMedium.getRadioTransmissionTriggers().addTrigger(this, radioMediumObserver);
       /* Fade away arrows */
       simulation.scheduleEvent(ageArrowsTimeEvent, simulation.getSimulationTime() + 100*Simulation.MILLISECOND);
     });
@@ -123,7 +124,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
     }
 
     /* Stop observing radio medium */
-    radioMedium.deleteRadioTransmissionObserver(radioMediumObserver);
+    radioMedium.getRadioTransmissionTriggers().removeTrigger(this, radioMediumObserver);
   }
 
   @Override

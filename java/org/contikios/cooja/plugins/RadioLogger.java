@@ -53,7 +53,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Observer;
 import java.util.Properties;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.AbstractAction;
@@ -137,7 +136,6 @@ public class RadioLogger extends VisPlugin {
   private final TableRowSorter<TableModel> logFilter;
   private final ArrayList<RadioConnectionLog> connections = new ArrayList<>();
   private final RadioMedium radioMedium;
-  private final Observer radioMediumObserver;
   private final AbstractTableModel model;
 
   private final HashMap<String, Action> analyzerMap = new HashMap<>();
@@ -627,7 +625,7 @@ public class RadioLogger extends VisPlugin {
     adjuster.setDynamicAdjustment(true);
     adjuster.packColumns();
 
-    radioMedium.addRadioTransmissionObserver(radioMediumObserver = (obs, obj) -> {
+    radioMedium.getRadioTransmissionTriggers().addTrigger(this, (obs, obj) -> {
       RadioConnection conn = radioMedium.getLastConnection();
       if (conn == null) {
         return;
@@ -883,9 +881,7 @@ public class RadioLogger extends VisPlugin {
 
   @Override
   public void closePlugin() {
-    if (radioMediumObserver != null) {
-      radioMedium.deleteRadioTransmissionObserver(radioMediumObserver);
-    }
+    radioMedium.getRadioTransmissionTriggers().deleteTriggers(this);
   }
 
   @Override

@@ -47,7 +47,6 @@ import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.interfaces.CustomDataRadio;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.util.EventTriggers;
-import org.contikios.cooja.util.ScnObservable;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,11 +93,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 
   protected final EventTriggers<EventTriggers.AddRemove, Radio> radioMediumTriggers = new EventTriggers<>();
 
-  /**
-   * Observable to observe radioTransmissions
-   * @see #addRadioTransmissionObserver
-   */
-	protected final ScnObservable radioTransmissionObservable = new ScnObservable();
+  protected final EventTriggers<Radio.RadioEvent, Object> radioTransmissionTriggers = new EventTriggers<>();
 	
 	/**
 	 * This constructor should always be called from implemented radio mediums.
@@ -283,7 +278,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 					
 					/* Notify observers */
 					lastConnection = null;
-					radioTransmissionObservable.setChangedAndNotify();
+          radioTransmissionTriggers.trigger(Radio.RadioEvent.TRANSMISSION_STARTED, null);
 				}
 				break;
 				case TRANSMISSION_FINISHED: {
@@ -328,7 +323,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 					updateSignalStrengths();
 					
 					/* Notify observers */
-					radioTransmissionObservable.setChangedAndNotify();
+          radioTransmissionTriggers.trigger(Radio.RadioEvent.TRANSMISSION_FINISHED, null);
 				}
 				break;
 				case CUSTOM_DATA_TRANSMITTED: {
@@ -515,26 +510,16 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 		sendRssi.put(radio, rssi);
 	}
 	
-	/**
-	 * Register an observer that gets notified when the radiotransmissions changed.
-	 * E.g. creating new connections.
-	 * This does not include changes in the settings and (de-)registration of radios.
-	 * @param observer the Observer to register
-	 */
-	@Override
-	public void addRadioTransmissionObserver(Observer observer) {
-		radioTransmissionObservable.addObserver(observer);
-	}
-	
-	@Override
-	public Observable getRadioTransmissionObservable() {
-		return radioTransmissionObservable;
-	}
-	
-	@Override
-	public void deleteRadioTransmissionObserver(Observer observer) {
-		radioTransmissionObservable.deleteObserver(observer);
-	}
+  /**
+   * Register an observer that gets notified when the radio transmissions changed,
+   * e.g. creating new connections. Radio registration is covered by the medium triggers.
+   * @see #getRadioMediumTriggers()
+   */
+  @Override
+  public EventTriggers<Radio.RadioEvent, Object> getRadioTransmissionTriggers() {
+    return radioTransmissionTriggers;
+  }
+
 
   /** Get the radio medium triggers for when the radio medium is changed.
    * <p>

@@ -36,8 +36,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Observer;
-
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -94,7 +92,6 @@ public class DGRMConfigurator extends VisPlugin {
 
   private final Cooja gui;
   private final DirectedGraphMedium radioMedium;
-  private final Observer radioMediumObserver;
   private final JTable graphTable;
   private final JComboBox<Number> combo = new JComboBox<>();
 	private final JButton removeButton;
@@ -105,7 +102,7 @@ public class DGRMConfigurator extends VisPlugin {
     radioMedium = (DirectedGraphMedium) sim.getRadioMedium();
 
     /* Listen for graph updates */
-    radioMedium.addRadioTransmissionObserver(radioMediumObserver = (obs, obj) -> model.fireTableDataChanged());
+    radioMedium.getRadioTransmissionTriggers().addTrigger(this, (event, obj) -> model.fireTableDataChanged());
 
     /* Represent directed graph by table */
     graphTable = new JTable(model) {
@@ -469,7 +466,7 @@ public class DGRMConfigurator extends VisPlugin {
 
   @Override
   public void closePlugin() {
-    radioMedium.deleteRadioTransmissionObserver(radioMediumObserver);
+    radioMedium.getRadioTransmissionTriggers().deleteTriggers(this);
   }
 
 }
