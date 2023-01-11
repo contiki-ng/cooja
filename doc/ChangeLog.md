@@ -23,6 +23,10 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed observable from SerialPort interface
+
+Use `getSerialDataTriggers()` instead.
+
 ### Changed return type of getMoteInterfaceClasses in MoteType interface
 
 The method now returns a list instead of an array. The method implementation

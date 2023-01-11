@@ -40,9 +40,7 @@ import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Observable;
 import java.util.Observer;
-
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import javax.swing.JButton;
@@ -54,6 +52,7 @@ import javax.swing.JTextField;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
 import org.contikios.cooja.Mote;
@@ -65,6 +64,7 @@ public abstract class SerialUI extends Log implements SerialPort {
 
   private final static int MAX_LENGTH = 16*1024;
 
+  protected EventTriggers<EventTriggers.Update, Byte> serialDataTriggers = new EventTriggers<>();
   private byte lastSerialData = 0; /* SerialPort */
   private String lastLogMessage = ""; /* Log */
   private int charactersReceived = 0;
@@ -83,31 +83,11 @@ public abstract class SerialUI extends Log implements SerialPort {
   }
 
   /* SerialPort */
-  private abstract static class SerialDataObservable extends Observable {
-    public abstract void notifyNewData();
-  }
-  private final SerialDataObservable serialDataObservable = new SerialDataObservable() {
-    @Override
-    public void notifyNewData() {
-      if (this.countObservers() == 0) {
-        return;
-      }
-      setChanged();
-      notifyObservers(SerialUI.this);
-    }
-  };
-  @Override
-  public void addSerialDataObserver(Observer o) {
-    serialDataObservable.addObserver(o);
-  }
-  @Override
-  public void deleteSerialDataObserver(Observer o) {
-    serialDataObservable.deleteObserver(o);
-  }
   @Override
   public byte getLastSerialData() {
     return lastSerialData;
   }
+  // FIXME: make data a byte instead.
   public void dataReceived(int data) {
     charactersReceived++;
     if (data == '\n' || charactersReceived > MAX_LENGTH) {
@@ -127,7 +107,7 @@ public abstract class SerialUI extends Log implements SerialPort {
 
     /* Notify observers of new serial character */
     lastSerialData = (byte) data;
-    serialDataObservable.notifyNewData();
+    serialDataTriggers.trigger(EventTriggers.Update.UPDATE, (byte) data);
   }
 
 
@@ -312,5 +292,10 @@ public abstract class SerialUI extends Log implements SerialPort {
 
   private static String trim(String text) {
     return (text != null) && ((text = text.trim()).length() > 0) ? text : null;
+  }
+
+  @Override
+  public EventTriggers<EventTriggers.Update, Byte> getSerialDataTriggers() {
+    return serialDataTriggers;
   }
 }

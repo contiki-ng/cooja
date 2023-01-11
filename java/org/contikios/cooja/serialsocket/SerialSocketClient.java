@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Observer;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -94,8 +93,6 @@ public class SerialSocketClient implements Plugin, MotePlugin {
   private static final Color ST_COLOR_FAILED = Color.RED;
   
   private final SerialPort serialPort;
-  private Observer serialDataObserver;
-
   private JLabel socketToMoteLabel;
   private JLabel moteToSocketLabel;
   private JLabel socketStatusLabel;
@@ -252,8 +249,9 @@ public class SerialSocketClient implements Plugin, MotePlugin {
     });
 
 
-    /* Observe serial port for outgoing data and write to socket */
-    serialPort.addSerialDataObserver(serialDataObserver = (obs, obj) -> {
+    // Observe serial port for outgoing data and write to socket.
+    // FIXME: update code to use data directly.
+    serialPort.getSerialDataTriggers().addTrigger(this, (event, data) -> {
       if (out == null) {
         return;
       }
@@ -493,8 +491,7 @@ public class SerialSocketClient implements Plugin, MotePlugin {
 
 
   private void cleanup() {
-    serialPort.deleteSerialDataObserver(serialDataObserver);
-
+    serialPort.getSerialDataTriggers().deleteTriggers(this);
     try {
       if (socket != null) {
         socket.close();
