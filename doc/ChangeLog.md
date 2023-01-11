@@ -23,6 +23,11 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed addMoteHighlightObserver/removeMoteHighlightObserver in Cooja
+
+Call addTrigger/removeTrigger/deleteTriggers on
+`simulation.getMoteHighlightTriggers()` instead.
+
 ### Removed observable from SerialPort interface
 
 Use `getSerialDataTriggers()` instead.

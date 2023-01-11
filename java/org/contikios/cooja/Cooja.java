@@ -47,7 +47,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Observer;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
@@ -76,6 +75,7 @@ import org.contikios.cooja.radiomediums.LogisticLoss;
 import org.contikios.cooja.radiomediums.SilentRadioMedium;
 import org.contikios.cooja.radiomediums.UDGM;
 import org.contikios.cooja.radiomediums.UDGMConstantLoss;
+import org.contikios.cooja.util.EventTriggers;
 import org.contikios.mrm.MRM;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -236,33 +236,6 @@ public class Cooja {
         mySimulation.stopSimulation();
       }
     }));
-  }
-
-
-  /**
-   * Add mote highlight observer.
-   *
-   * @see #deleteMoteHighlightObserver(Observer)
-   * @param newObserver
-   *          New observer
-   */
-  public void addMoteHighlightObserver(Observer newObserver) {
-    if (Cooja.isVisualized() && mySimulation != null) {
-      mySimulation.moteHighlightObservable.addObserver(newObserver);
-    }
-  }
-
-  /**
-   * Delete mote highlight observer.
-   *
-   * @see #addMoteHighlightObserver(Observer)
-   * @param observer
-   *          Observer to delete
-   */
-  public void deleteMoteHighlightObserver(Observer observer) {
-    if (Cooja.isVisualized() && mySimulation != null) {
-      mySimulation.moteHighlightObservable.deleteObserver(observer);
-    }
   }
 
   /**
@@ -1562,13 +1535,12 @@ public class Cooja {
    * listeners will be notified. An example application of mote highlighting is
    * a simulator visualizer that highlights the mote.
    *
-   * @see #addMoteHighlightObserver(Observer)
    * @param m
    *          Mote to highlight
    */
   public void signalMoteHighlight(Mote m) {
     if (Cooja.isVisualized() && mySimulation != null) {
-      mySimulation.moteHighlightObservable.setChangedAndNotify(m);
+      mySimulation.moteHighlightTriggers.trigger(EventTriggers.Update.UPDATE, m);
     }
   }
 
