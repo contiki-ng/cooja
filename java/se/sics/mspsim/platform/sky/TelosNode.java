@@ -44,6 +44,7 @@ import java.io.IOException;
 import se.sics.mspsim.chip.AT45DB;
 import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.core.IOPort;
+import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.util.ArgumentManager;
 
@@ -64,8 +65,8 @@ public class TelosNode extends MoteIVNode {
    * Creates a new <code>TelosNode</code> instance.
    *
    */
-  public TelosNode() {
-    super("Telos");
+  public TelosNode(MSP430 cpu) {
+    super("Telos", cpu);
   }
 
   public AT45DB getFlash() {
@@ -101,7 +102,7 @@ public class TelosNode extends MoteIVNode {
   }
 
   public static void main(String[] args) throws IOException {
-    TelosNode node = new TelosNode();
+    TelosNode node = new TelosNode(makeCPU(makeChipConfig()));
     ArgumentManager config = new ArgumentManager();
     config.handleArguments(args);
     node.setupArgs(config);

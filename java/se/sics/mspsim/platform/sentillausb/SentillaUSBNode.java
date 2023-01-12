@@ -45,6 +45,7 @@ import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.core.IOPort;
+import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.platform.sky.CC2420Node;
 import se.sics.mspsim.util.ArgumentManager;
@@ -70,8 +71,8 @@ public class SentillaUSBNode extends CC2420Node {
     boolean redLed;
     boolean greenLed;
 
-    public SentillaUSBNode() {
-        super("Sentilla USB");
+    public SentillaUSBNode(MSP430 cpu) {
+        super("Sentilla USB", cpu);
         setMode(MODE_LEDS_OFF);
     }
 
@@ -143,7 +144,7 @@ public class SentillaUSBNode extends CC2420Node {
     }
 
     public static void main(String[] args) throws IOException {
-        SentillaUSBNode node = new SentillaUSBNode();
+        SentillaUSBNode node = new SentillaUSBNode(makeCPU(makeChipConfig()));
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);

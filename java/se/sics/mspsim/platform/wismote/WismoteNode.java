@@ -44,6 +44,8 @@ import se.sics.mspsim.config.MSP430f5437Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
+import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
@@ -95,8 +97,12 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
     private WismoteGui gui;
     private DS2411 ds2411;
 
-    public WismoteNode() {
-        super("Wismote", new MSP430f5437Config());
+    public static MSP430Config makeChipConfig() {
+        return new MSP430f5437Config();
+    }
+
+    public WismoteNode(MSP430 cpu) {
+        super("Wismote", cpu);
     }
 
     public Leds getLeds() {
@@ -231,7 +237,7 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
     }
 
     public static void main(String[] args) throws IOException {
-        WismoteNode node = new WismoteNode();
+        WismoteNode node = new WismoteNode(WismoteNode.makeCPU(WismoteNode.makeChipConfig()));
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);

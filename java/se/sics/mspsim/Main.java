@@ -64,21 +64,60 @@ public class Main {
 
   public static GenericNode createNode(String className) {
     return switch (className) { // Sorted alphabetically.
-      case "se.sics.mspsim.platform.esb.ESBNode" -> new ESBNode();
-      case "se.sics.mspsim.platform.jcreate.JCreateNode" -> new JCreateNode();
-      case "se.sics.mspsim.platform.sentillausb.SentillaUSBNode" -> new SentillaUSBNode();
+      case "se.sics.mspsim.platform.esb.ESBNode" -> {
+        var cpu = ESBNode.makeCPU(ESBNode.makeChipConfig());
+        yield new ESBNode(cpu);
+      }
+      case "se.sics.mspsim.platform.jcreate.JCreateNode" -> {
+        var cpu = JCreateNode.makeCPU(JCreateNode.makeChipConfig());
+        yield new JCreateNode(cpu);
+      }
+      case "se.sics.mspsim.platform.sentillausb.SentillaUSBNode" -> {
+        var cpu = SentillaUSBNode.makeCPU(SentillaUSBNode.makeChipConfig());
+        yield new SentillaUSBNode(cpu);
+      }
       case "se.sics.mspsim.platform.ti.CC430Node" -> new CC430Node();
-      case "se.sics.mspsim.platform.ti.Exp1101Node" -> new Exp1101Node();
-      case "se.sics.mspsim.platform.ti.Exp1120Node" -> new Exp1120Node();
-      case "se.sics.mspsim.platform.ti.Exp5438Node" -> new Exp5438Node();
+      case "se.sics.mspsim.platform.ti.Exp1101Node" -> {
+        var cpu = Exp1101Node.makeCPU(Exp1101Node.makeChipConfig());
+        yield new Exp1101Node(cpu);
+      }
+      case "se.sics.mspsim.platform.ti.Exp1120Node" -> {
+        var cpu = Exp1120Node.makeCPU(Exp1120Node.makeChipConfig());
+        yield new Exp1120Node(cpu);
+      }
+      case "se.sics.mspsim.platform.ti.Exp5438Node" -> {
+        var cpu = Exp5438Node.makeCPU(Exp5438Node.makeChipConfig());
+        yield new Exp5438Node(cpu);
+      }
       // Default to the Trxeb1120 node without ethernet.
-      case "java.se.sics.mspsim.platform.ti.Trxeb1120Node.java" -> new Trxeb1120Node(false);
-      case "java.se.sics.mspsim.platform.ti.Trxeb2520Node.java" -> new Trxeb2520Node();
-      case "java.se.sics.mspsim.platform.sky.SkyNode.java" -> new SkyNode();
-      case "java.se.sics.mspsim.platform.sky.TelosNode.java" -> new TelosNode();
-      case "java.se.sics.mspsim.platform.tyndall.TyndallNode.java" -> new TyndallNode();
-      case "java.se.sics.mspsim.platform.wismote.WismoteNode.java" -> new WismoteNode();
-      case "java.se.sics.mspsim.platform.z1.Z1Node.java" -> new Z1Node();
+      case "java.se.sics.mspsim.platform.ti.Trxeb1120Node.java" -> {
+        var cpu = Trxeb1120Node.makeCPU(Trxeb1120Node.makeChipConfig());
+        yield new Trxeb1120Node(false, cpu);
+      }
+      case "java.se.sics.mspsim.platform.ti.Trxeb2520Node.java" -> {
+        var cpu = Trxeb2520Node.makeCPU(Trxeb2520Node.makeChipConfig());
+        yield new Trxeb2520Node(cpu);
+      }
+      case "java.se.sics.mspsim.platform.sky.SkyNode.java" -> {
+        var cpu = SkyNode.makeCPU(SkyNode.makeChipConfig());
+        yield new SkyNode(cpu);
+      }
+      case "java.se.sics.mspsim.platform.sky.TelosNode.java" -> {
+        var cpu = TelosNode.makeCPU(TelosNode.makeChipConfig());
+        yield new TelosNode(cpu);
+      }
+      case "java.se.sics.mspsim.platform.tyndall.TyndallNode.java" -> {
+        var cpu = TyndallNode.makeCPU(TyndallNode.makeChipConfig());
+        yield new TyndallNode(cpu);
+      }
+      case "java.se.sics.mspsim.platform.wismote.WismoteNode.java" -> {
+        var cpu = WismoteNode.makeCPU(WismoteNode.makeChipConfig());
+        yield new WismoteNode(cpu);
+      }
+      case "java.se.sics.mspsim.platform.z1.Z1Node.java" -> {
+        var cpu = Z1Node.makeCPU(Z1Node.makeChipConfig());
+        yield new Z1Node(cpu);
+      }
       default -> {
         try {
           yield Class.forName(className).asSubclass(GenericNode.class).getDeclaredConstructor().newInstance();

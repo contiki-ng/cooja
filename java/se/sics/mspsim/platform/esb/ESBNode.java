@@ -46,6 +46,7 @@ import se.sics.mspsim.config.MSP430f149Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USART;
 import se.sics.mspsim.extutil.jfreechart.DataChart;
@@ -83,12 +84,16 @@ public class ESBNode extends GenericNode implements PortListener {
   private Beeper beeper;
   private ESBGui gui;
 
+  public static MSP430Config makeChipConfig() {
+    return new MSP430f149Config();
+  }
+
   /**
    * Creates a new <code>ESBNode</code> instance.
    *
    */
-  public ESBNode() {
-      super("ESB", new MSP430f149Config());
+  public ESBNode(MSP430 cpu) {
+      super("ESB", cpu);
   }
 
   public Leds getLeds() {
@@ -217,7 +222,7 @@ public class ESBNode extends GenericNode implements PortListener {
   }
 
   public static void main(String[] args) throws IOException {
-    ESBNode node = new ESBNode();
+    ESBNode node = new ESBNode(ESBNode.makeCPU(ESBNode.makeChipConfig()));
     ArgumentManager config = new ArgumentManager();
     config.handleArguments(args);
     node.setupArgs(config);

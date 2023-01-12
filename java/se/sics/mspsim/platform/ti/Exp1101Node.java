@@ -7,6 +7,8 @@ import se.sics.mspsim.config.MSP430f5437Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
+import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
@@ -33,8 +35,12 @@ public class Exp1101Node extends GenericNode implements PortListener, USARTListe
 
     public CC1101 radio;
 
-    public Exp1101Node() {
-        super("Exp1101", new MSP430f5437Config());
+    public static MSP430Config makeChipConfig() {
+        return new MSP430f5437Config();
+    }
+
+    public Exp1101Node(MSP430 cpu) {
+        super("Exp1101", cpu);
     }
 
     @Override
@@ -105,7 +111,7 @@ public class Exp1101Node extends GenericNode implements PortListener, USARTListe
     }
 
     public static void main(String[] args) throws IOException {
-        Exp1101Node node = new Exp1101Node();
+        Exp1101Node node = new Exp1101Node(makeCPU(makeChipConfig()));
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);

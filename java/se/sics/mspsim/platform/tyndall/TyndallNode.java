@@ -6,6 +6,8 @@ import se.sics.mspsim.config.MSP430f5437Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
+import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
@@ -45,9 +47,12 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
     //private String flashFile;
     public CC2420 radio;
 
+    public static MSP430Config makeChipConfig() {
+        return new MSP430f5437Config();
+    }
 
-    public TyndallNode() {
-        super("Tyndall", new MSP430f5437Config());
+    public TyndallNode(MSP430 cpu) {
+        super("Tyndall", cpu);
     }
 
 //    public M25P80 getFlash() {
@@ -169,7 +174,7 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
     }
 
     public static void main(String[] args) throws IOException {
-        TyndallNode node = new TyndallNode();
+        TyndallNode node = new TyndallNode(TyndallNode.makeCPU(TyndallNode.makeChipConfig()));
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);

@@ -44,6 +44,7 @@ import java.io.IOException;
 import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.core.IOPort;
+import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.util.ArgumentManager;
 
@@ -58,8 +59,8 @@ public class SkyNode extends MoteIVNode {
    * Creates a new <code>SkyNode</code> instance.
    *
    */
-  public SkyNode() {
-    super("Tmote Sky");
+  public SkyNode(MSP430 cpu) {
+    super("Tmote Sky", cpu);
   }
 
   public M25P80 getFlash() {
@@ -99,10 +100,9 @@ public class SkyNode extends MoteIVNode {
   }
 
   public static void main(String[] args) throws IOException {
-    SkyNode node = new SkyNode();
+    SkyNode node = new SkyNode(makeCPU(makeChipConfig()));
     ArgumentManager config = new ArgumentManager();
     config.handleArguments(args);
     node.setupArgs(config);
   }
-
 }

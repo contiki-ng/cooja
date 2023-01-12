@@ -3,6 +3,7 @@ import se.sics.mspsim.chip.Button;
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.SHT11;
 import se.sics.mspsim.core.IOPort;
+import se.sics.mspsim.core.MSP430;
 
 public abstract class MoteIVNode extends CC2420Node {
 
@@ -35,8 +36,8 @@ public abstract class MoteIVNode extends CC2420Node {
 
   public SkyGui gui;
 
-  public MoteIVNode(String id) {
-    super(id);
+  public MoteIVNode(String id, MSP430 cpu) {
+    super(id, cpu);
     setMode(MODE_LEDS_OFF);
   }
 
