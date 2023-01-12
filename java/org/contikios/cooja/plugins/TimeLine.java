@@ -46,10 +46,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
@@ -298,7 +296,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           return;
         }
 
-        try (var outStream = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(saveFile), UTF_8))) {
+        try (var outStream = Files.newBufferedWriter(saveFile.toPath(), UTF_8)) {
           // Output all events (sorted per mote).
           for (MoteEvents events : allMoteEvents) {
             for (MoteEvent ev : events.ledEvents) {
