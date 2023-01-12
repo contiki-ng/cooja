@@ -47,7 +47,7 @@ public class Annotations {
    * Return true if a mote is compatible with an annotation.
    */
   public static boolean isCompatible(SupportedArguments annotation, Mote mote) {
-    if (annotation == null) {
+    if (annotation == null || mote == null) {
       return true;
     }
     // Check mote interfaces.
@@ -71,7 +71,7 @@ public class Annotations {
    * Return true if a radio medium is compatible with an annotation.
    */
   public static boolean isCompatible(SupportedArguments annotation, RadioMedium radioMedium) {
-    if (annotation == null) {
+    if (annotation == null || radioMedium == null) {
       return true;
     }
     for (var o : annotation.radioMediums()) {
