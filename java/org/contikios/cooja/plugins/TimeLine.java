@@ -1392,17 +1392,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       drawTimeRule(g, intervalStart, intervalEnd);
 
       // invalidate filter stamp
-      if (logEventFilterPlugin != null) {
-          if (logEventFilterPlugin.getFilter() != logEventFilterLast) {
-              logEventFilterLast = logEventFilterPlugin.getFilter();
-              logEventFilterChanged = true;
-          }
-          else
-              logEventFilterChanged = false;
+      if (logEventFilterPlugin != null &&
+          logEventFilterPlugin.getFilter() != logEventFilterLast) {
+        logEventFilterLast = logEventFilterPlugin.getFilter();
+        logEventFilterChanged = true;
+      } else {
+        logEventFilterChanged = false;
       }
-      else
-          logEventFilterChanged = false;
-      
+
       /* Paint mote events */
       int lineHeightOffset = FIRST_MOTE_PIXEL_OFFSET;
       boolean dark = true;
