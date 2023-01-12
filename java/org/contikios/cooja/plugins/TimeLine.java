@@ -621,37 +621,28 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       stats.mote = moteEvents.mote;
 
       if (leds) {
-        for (MoteEvent ev: moteEvents.ledEvents) {
-          if (!(ev instanceof LEDEvent ledEvent)) continue;
+        for (int i = 0, n = moteEvents.ledEvents.size(); i < n; i++) {
+          if (!(moteEvents.ledEvents.get(i) instanceof LEDEvent ledEvent)) continue;
+
+          MoteEvent nextEvent = i + 1 < n ? moteEvents.ledEvents.get(i + 1) : null;
+          long endTime = nextEvent != null ? nextEvent.time : simulation.getSimulationTime();
 
           /* Red */
           if (ledEvent.red) {
             /* LED is on, add time interval */
-            if (ledEvent.next == null) {
-              stats.onTimeRedLED += (simulation.getSimulationTime() - ledEvent.time);
-            } else {
-              stats.onTimeRedLED += (ledEvent.next.time - ledEvent.time);
-            }
+            stats.onTimeRedLED += endTime - ledEvent.time;
           }
 
           /* Green */
           if (ledEvent.green) {
             /* LED is on, add time interval */
-            if (ledEvent.next == null) {
-              stats.onTimeGreenLED += (simulation.getSimulationTime() - ledEvent.time);
-            } else {
-              stats.onTimeGreenLED += (ledEvent.next.time - ledEvent.time);
-            }
+            stats.onTimeGreenLED += endTime - ledEvent.time;
           }
 
           /* Blue */
           if (ledEvent.blue) {
             /* LED is on, add time interval */
-            if (ledEvent.next == null) {
-              stats.onTimeBlueLED += (simulation.getSimulationTime() - ledEvent.time);
-            } else {
-              stats.onTimeBlueLED += (ledEvent.next.time - ledEvent.time);
-            }
+            stats.onTimeBlueLED += endTime - ledEvent.time;
           }
         }
       }
@@ -664,32 +655,29 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
 
       if (radioHW) {
-        for (MoteEvent ev: moteEvents.radioHWEvents) {
-          if (!(ev instanceof RadioHWEvent hwEvent)) continue;
+        for (int i = 0, n = moteEvents.radioHWEvents.size(); i < n; i++) {
+          if (!(moteEvents.radioHWEvents.get(i) instanceof RadioHWEvent hwEvent)) continue;
+
           if (hwEvent.on) {
+            MoteEvent nextEvent = i + 1 < n ? moteEvents.radioHWEvents.get(i + 1) : null;
+            long endTime = nextEvent != null ? nextEvent.time : simulation.getSimulationTime();
+
             /* HW is on */
-            if (hwEvent.next == null) {
-              stats.radioOn += (simulation.getSimulationTime() - hwEvent.time);
-            } else {
-              stats.radioOn += (hwEvent.next.time - hwEvent.time);
-            }
+            stats.radioOn += endTime - hwEvent.time;
           }
         }
       }
 
       if (radioRXTX) {
-        for (MoteEvent ev: moteEvents.radioRXTXEvents) {
-          if (!(ev instanceof RadioRXTXEvent rxtxEvent)) continue;
+        for (int i = 0, n = moteEvents.radioRXTXEvents.size(); i < n; i++) {
+          if (!(moteEvents.radioRXTXEvents.get(i) instanceof RadioRXTXEvent rxtxEvent)) continue;
           if (rxtxEvent.state == RXTXRadioEvent.IDLE) {
             continue;
           }
 
-          long diff;
-          if (rxtxEvent.next == null) {
-            diff = (simulation.getSimulationTime() - rxtxEvent.time);
-          } else {
-            diff = (rxtxEvent.next.time - rxtxEvent.time);
-          }
+          MoteEvent nextEvent = i + 1 < n ? moteEvents.radioRXTXEvents.get(i + 1) : null;
+          long endTime = nextEvent != null ? nextEvent.time : simulation.getSimulationTime();
+          long diff = endTime - rxtxEvent.time;
 
           if (rxtxEvent.state == RXTXRadioEvent.TRANSMITTING) {
             stats.onTimeTX += diff;
