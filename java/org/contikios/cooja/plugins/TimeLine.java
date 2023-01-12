@@ -1420,42 +1420,42 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         if (showRadioRXTX) {
           MoteEvent firstEvent = getFirstIntervalEvent(events.radioRXTXEvents, intervalStart);
           if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
+            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
           }
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showRadioChannels) {
           MoteEvent firstEvent = getFirstIntervalEvent(events.radioChannelEvents, intervalStart);
           if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
+            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
           }
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showRadioOnoff) {
           MoteEvent firstEvent = getFirstIntervalEvent(events.radioHWEvents, intervalStart);
           if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
+            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
           }
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showLeds) {
           MoteEvent firstEvent = getFirstIntervalEvent(events.ledEvents, intervalStart);
           if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
+            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
           }
           lineHeightOffset += 3*LED_PIXEL_HEIGHT;
         }
         if (showLogOutputs) {
           MoteEvent firstEvent = getFirstIntervalEvent(events.logEvents, intervalStart);
           if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
+            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
           }
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showWatchpoints) {
           MoteEvent firstEvent = getFirstIntervalEvent(events.watchpointEvents, intervalStart);
           if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
+            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
           }
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
@@ -1763,7 +1763,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
 
   /* Event classes */
-  abstract class MoteEvent {
+  static abstract class MoteEvent {
     MoteEvent prev = null;
     MoteEvent next = null;
     String details = null;
@@ -1776,22 +1776,22 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
      * Used by the default paint method to color events.
      * The event is not painted if the returned color is null.
      *
-     * @see #paintInterval(Graphics, int, long)
+     * @see #paintInterval(TimeLine, Graphics, int, long)
      * @return Event color or null
      */
     public abstract Color getEventColor();
 
     /* Default paint method */
-    public void paintInterval(Graphics g, int lineHeightOffset, long end) {
+    public void paintInterval(TimeLine timeLine, Graphics g, int lineHeightOffset, long end) {
       MoteEvent ev = this;
       while (ev != null && ev.time < end) {
         int w; /* Pixel width */
 
         /* Calculate event width */
         if (ev.next != null) {
-          w = (int) ((ev.next.time - ev.time)/currentPixelDivisor);
+          w = (int) ((ev.next.time - ev.time) / timeLine.currentPixelDivisor);
         } else {
-          w = (int) ((end - ev.time)/currentPixelDivisor); /* No more events */
+          w = (int) ((end - ev.time) / timeLine.currentPixelDivisor); /* No more events */
         }
 
         /* Handle zero pixel width events */
@@ -1804,8 +1804,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           }
         }
 
-        if( w < paintEventMinWidth)
-            w = paintEventMinWidth;
+        if( w < timeLine.paintEventMinWidth)
+            w = timeLine.paintEventMinWidth;
 
         Color color = ev.getEventColor();
         if (color == null) {
@@ -1816,7 +1816,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         g.setColor(color);
 
         g.fillRect(
-            (int)(ev.time/currentPixelDivisor), lineHeightOffset,
+            (int)(ev.time / timeLine.currentPixelDivisor), lineHeightOffset,
             w, EVENT_PIXEL_HEIGHT
         );
 
@@ -1824,7 +1824,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
     }
   }
-  class NoHistoryEvent extends MoteEvent {
+  static class NoHistoryEvent extends MoteEvent {
     public NoHistoryEvent(long time) {
       super(time);
     }
@@ -1840,7 +1840,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   public enum RXTXRadioEvent {
     IDLE, RECEIVING, TRANSMITTING, INTERFERED
   }
-  class RadioRXTXEvent extends MoteEvent {
+  static class RadioRXTXEvent extends MoteEvent {
     final RXTXRadioEvent state;
     public RadioRXTXEvent(long time, RXTXRadioEvent ev) {
       super(time);
@@ -1890,7 +1890,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     Color.decode("0x00FF00"), Color.decode("0x0000FF"), Color.decode("0xFFFF00"),
     Color.decode("0xFF00FF"), Color.decode("0x808000"), Color.decode("0x800080"),
   };
-  class RadioChannelEvent extends MoteEvent {
+  static class RadioChannelEvent extends MoteEvent {
     final int channel;
     final boolean radioOn;
     public RadioChannelEvent(long time, int channel, boolean radioOn) {
@@ -1914,7 +1914,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   }
 
-  class RadioHWEvent extends MoteEvent {
+  static class RadioHWEvent extends MoteEvent {
     final boolean on;
     public RadioHWEvent(long time, boolean on) {
       super(time);
@@ -1932,7 +1932,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       return "Radio HW was turned " + (on?"on":"off") + "<br>";
     }
   }
-  class LEDEvent extends MoteEvent {
+  static class LEDEvent extends MoteEvent {
     final boolean red;
     final boolean green;
     final boolean blue;
@@ -1956,16 +1956,16 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
     /* LEDs are painted in three lines */
     @Override
-    public void paintInterval(Graphics g, int lineHeightOffset, long end) {
+    public void paintInterval(TimeLine timeLine, Graphics g, int lineHeightOffset, long end) {
       MoteEvent ev = this;
       while (ev != null && ev.time < end) {
         int w; /* Pixel width */
 
         /* Calculate event width */
         if (ev.next != null) {
-          w = (int) ((ev.next.time - ev.time)/currentPixelDivisor);
+          w = (int) ((ev.next.time - ev.time) / timeLine.currentPixelDivisor);
         } else {
-          w = (int) ((end - ev.time)/currentPixelDivisor); /* No more events */
+          w = (int) ((end - ev.time) / timeLine.currentPixelDivisor); /* No more events */
         }
 
         /* Handle zero pixel width events */
@@ -1978,8 +1978,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           }
         }
 
-        if( w < paintEventMinWidth)
-            w = paintEventMinWidth;
+        if( w < timeLine.paintEventMinWidth)
+            w = timeLine.paintEventMinWidth;
 
         Color color = ev.getEventColor();
         if (color == null) {
@@ -1990,21 +1990,21 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         if (color.getRed() > 0) {
           g.setColor(new Color(color.getRed(), 0, 0));
           g.fillRect(
-              (int)(ev.time/currentPixelDivisor), lineHeightOffset,
+              (int)(ev.time / timeLine.currentPixelDivisor), lineHeightOffset,
               w, LED_PIXEL_HEIGHT
           );
         }
         if (color.getGreen() > 0) {
           g.setColor(new Color(0, color.getGreen(), 0));
           g.fillRect(
-              (int)(ev.time/currentPixelDivisor), lineHeightOffset+LED_PIXEL_HEIGHT,
+              (int)(ev.time / timeLine.currentPixelDivisor), lineHeightOffset+LED_PIXEL_HEIGHT,
               w, LED_PIXEL_HEIGHT
           );
         }
         if (color.getBlue() > 0) {
           g.setColor(new Color(0, 0, color.getBlue()));
           g.fillRect(
-              (int)(ev.time/currentPixelDivisor), lineHeightOffset+2*LED_PIXEL_HEIGHT,
+              (int)(ev.time / timeLine.currentPixelDivisor), lineHeightOffset+2*LED_PIXEL_HEIGHT,
               w, LED_PIXEL_HEIGHT
           );
         }
@@ -2023,7 +2023,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   private enum FilterState { NONE, PASS, REJECTED }
 
-  class LogEvent extends MoteEvent {
+  static class LogEvent extends MoteEvent {
     final LogOutputEvent logEvent;
     // filter result cache
     private  FilterState     filtered;
@@ -2036,21 +2036,17 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     @Override
     public Color getEventColor() {
-      if (logEventColorOfMote && logEventFilterPlugin != null) {
-        /* Ask log listener for event color to use */
-        return logEventFilterPlugin.getColorOfEntry(logEvent);
-      }
       return Color.GREEN;
     }
     /* Default paint method */
     @Override
-    public void paintInterval(Graphics g, int lineHeightOffset, long end) {
+    public void paintInterval(TimeLine timeLine, Graphics g, int lineHeightOffset, long end) {
       LogEvent ev = this;
       long time_start = -1;
-      int eventWidth = Math.max(paintEventMinWidth, 4);
+      int eventWidth = Math.max(timeLine.paintEventMinWidth, 4);
 
       while (ev != null && ev.time < end) {
-          int position = (int)(ev.time/currentPixelDivisor);
+          int position = (int)(ev.time / timeLine.currentPixelDivisor);
           if (ev.time < time_start ){
               /* Skip painting event over already painted one*/
               ev = (LogEvent) ev.next;
@@ -2059,9 +2055,9 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           
           /* Ask active log listener whether this should be filtered  */
         
-        if (logEventFilterPlugin != null) {
-          if (logEventFilterChanged || (filtered == FilterState.NONE) ) {
-              boolean show = logEventFilterPlugin.filterWouldAccept(ev.logEvent);
+        if (timeLine.logEventFilterPlugin != null) {
+          if (timeLine.logEventFilterChanged || (filtered == FilterState.NONE) ) {
+              boolean show = timeLine.logEventFilterPlugin.filterWouldAccept(ev.logEvent);
               if (show)
                   filtered = FilterState.PASS;
               else
@@ -2075,7 +2071,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           }
         }
 
-        Color color = ev.getEventColor();
+        /* Ask log listener for event color to use */
+        Color color = timeLine.logEventColorOfMote && timeLine.logEventFilterPlugin != null
+                ? timeLine.logEventFilterPlugin.getColorOfEntry(ev.logEvent)
+                : ev.getEventColor();
         if (color == null) {
           /* Skip painting event */
           ev = (LogEvent) ev.next;
@@ -2083,7 +2082,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         }
 
         // upper bound of start position
-        time_start = (long)((position+1)*currentPixelDivisor);
+        time_start = (long)((position+1) * timeLine.currentPixelDivisor);
 
         g.setColor(color);
         g.fillRect( position, lineHeightOffset, eventWidth, EVENT_PIXEL_HEIGHT );
@@ -2099,7 +2098,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       return "Mote " + logEvent.getMote() + " says:<br>" + logEvent.getMessage() + "<br>";
     }
   }
-  class WatchpointEvent extends MoteEvent {
+  static class WatchpointEvent extends MoteEvent {
     final Watchpoint watchpoint;
     public WatchpointEvent(long time, Watchpoint watchpoint) {
       super(time);
@@ -2124,7 +2123,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     /* Default paint method */
     @Override
-    public void paintInterval(Graphics g, int lineHeightOffset, long end) {
+    public void paintInterval(TimeLine timeLine, Graphics g, int lineHeightOffset, long end) {
       MoteEvent ev = this;
       while (ev != null && ev.time < end) {
         int w = 2; /* Watchpoints are always two pixels wide */
@@ -2138,7 +2137,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         g.setColor(color);
 
         g.fillRect(
-            (int)(ev.time/currentPixelDivisor), lineHeightOffset,
+            (int)(ev.time / timeLine.currentPixelDivisor), lineHeightOffset,
             w, EVENT_PIXEL_HEIGHT
         );
 
@@ -2146,7 +2145,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
     }
   }
-  class MoteEvents {
+  static class MoteEvents {
     final Mote mote;
     final ArrayList<MoteEvent> radioRXTXEvents = new ArrayList<>();
     final ArrayList<MoteEvent> radioChannelEvents = new ArrayList<>();
