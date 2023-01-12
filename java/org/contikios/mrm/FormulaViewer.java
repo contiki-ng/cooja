@@ -39,9 +39,6 @@ import java.awt.event.ActionEvent;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Observable;
-import java.util.Observer;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -50,7 +47,6 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -318,8 +314,23 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
         channelModel.getParameterDoubleValue(Parameter.obstacle_attenuation)
     );
 
-    // Add channel model observer responsible to keep all GUI components synched
-    channelModel.addSettingsObserver(channelModelSettingsObserver);
+    // Add trigger to keep all GUI components synchronized.
+    // TODO: param is non-null when a single setting has changed.
+    channelModel.getSettingsTriggers().addTrigger(this, (event, param) -> {
+      for (var textField : allIntegerParameters) {
+        Parameter id = (Parameter) textField.getClientProperty("id");
+        textField.setValue(channelModel.getParameterValue(id));
+      }
+      for (var textField : allDoubleParameters) {
+        Parameter id = (Parameter) textField.getClientProperty("id");
+        textField.setValue(channelModel.getParameterValue(id));
+      }
+      for (var checkBox : allBooleanParameters) {
+        Parameter id = (Parameter) checkBox.getClientProperty("id");
+        checkBox.setSelected(channelModel.getParameterBooleanValue(id));
+      }
+      repaint();
+    });
 
     // Set initial size etc.
     pack();
@@ -531,38 +542,9 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     return checkBox;
   }
 
-  /**
-   * Listens to settings changes in the channel model.
-   * If it changes, all GUI parameters are updated accordingly.
-   */
-  private final Observer channelModelSettingsObserver = new Observer() {
-    @Override
-    public void update(Observable obs, Object obj) {
-      // Update all integers
-      for (var textField : allIntegerParameters) {
-        Parameter id = (Parameter) textField.getClientProperty("id");
-        textField.setValue(channelModel.getParameterValue(id));
-      }
-
-      // Update all doubles
-      for (var textField : allDoubleParameters) {
-        Parameter id = (Parameter) textField.getClientProperty("id");
-        textField.setValue(channelModel.getParameterValue(id));
-      }
-
-      // Update all booleans
-      for (var checkBox : allBooleanParameters) {
-        Parameter id = (Parameter) checkBox.getClientProperty("id");
-        checkBox.setSelected(channelModel.getParameterBooleanValue(id));
-      }
-
-      repaint();
-    }
-  };
-
   @Override
   public void closePlugin() {
-    channelModel.deleteSettingsObserver(channelModelSettingsObserver);
+    channelModel.getSettingsTriggers().deleteTriggers(this);
   }
 
   /**

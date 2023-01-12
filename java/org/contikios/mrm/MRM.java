@@ -32,9 +32,7 @@ package org.contikios.mrm;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Observer;
 import java.util.Random;
-
 import org.contikios.cooja.Cooja;
 import org.jdom2.Element;
 
@@ -77,8 +75,6 @@ public class MRM extends AbstractRadioMedium {
   public final static boolean WITH_NOISE = true; /* NoiseSourceRadio */
   public final static boolean WITH_DIRECTIONAL = true; /* DirectionalAntennaRadio */
 
-  private final Observer channelModelObserver;
-
   private boolean WITH_CAPTURE_EFFECT;
   private double CAPTURE_EFFECT_THRESHOLD;
   private double CAPTURE_EFFECT_PREAMBLE_DURATION;
@@ -99,7 +95,7 @@ public class MRM extends AbstractRadioMedium {
     CAPTURE_EFFECT_THRESHOLD = currentChannelModel.getParameterDoubleValue(ChannelModel.Parameter.captureEffectSignalTreshold);
     CAPTURE_EFFECT_PREAMBLE_DURATION = currentChannelModel.getParameterDoubleValue(ChannelModel.Parameter.captureEffectPreambleDuration);
    
-    currentChannelModel.addSettingsObserver(channelModelObserver = (o, arg) -> {
+    currentChannelModel.getSettingsTriggers().addTrigger(this, (event, arg) -> {
       WITH_CAPTURE_EFFECT = currentChannelModel.getParameterBooleanValue(Parameter.captureEffect);
       CAPTURE_EFFECT_THRESHOLD = currentChannelModel.getParameterDoubleValue(Parameter.captureEffectSignalTreshold);
       CAPTURE_EFFECT_PREAMBLE_DURATION = currentChannelModel.getParameterDoubleValue(Parameter.captureEffectPreambleDuration);
@@ -123,8 +119,7 @@ public class MRM extends AbstractRadioMedium {
       simulation.getCooja().unregisterPlugin(FormulaViewer.class);
       Visualizer.unregisterVisualizerSkin(MRMVisualizerSkin.class);
     }
-
-    currentChannelModel.deleteSettingsObserver(channelModelObserver);
+    currentChannelModel.getSettingsTriggers().deleteTriggers(this);
   }
   
   private final NoiseLevelListener noiseListener = (radio, signal) -> updateSignalStrengths();

@@ -39,10 +39,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Observer;
 import java.util.Random;
 import java.util.Vector;
-
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.logging.log4j.Logger;
@@ -53,8 +51,7 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.DirectionalAntennaRadio;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
-import org.contikios.cooja.util.ScnObservable;
-
+import org.contikios.cooja.util.EventTriggers;
 import org.contikios.mrm.statistics.GaussianWrapper;
 
 /**
@@ -97,9 +94,11 @@ public class ChannelModel {
   private static final int maxSavedVisibleSides = 30; // Max size of lists above
 
   /**
-   * Notifies observers when this channel model has changed settings.
+   * Notifies observers when settings are changed. The parameter is null unless
+   * a single setting is changed.
    */
-  private final ScnObservable settingsObservable = new ScnObservable();
+  // TODO: Change Parameter to a type that can also signal adding/removing obstacles, etc.
+  private final EventTriggers<EventTriggers.Update, Parameter> settingsTriggers = new EventTriggers<>();
   public enum Parameter {
     apply_random,
     snr_threshold,
@@ -242,23 +241,11 @@ public class ChannelModel {
   }
 
   /**
-   * Adds a settings observer to this channel model.
-   * Every time the settings are changed all observers
-   * will be notified.
-   *
-   * @param obs New observer
+   * Get event triggers for changes to this channel model.
+   * Every time the settings are changed all triggers will be notified.
    */
-  public void addSettingsObserver(Observer obs) {
-    settingsObservable.addObserver(obs);
-  }
-
-  /**
-   * Deletes an earlier registered setting observer.
-   *
-   * @param obs Earlier registered observer
-   */
-  public void deleteSettingsObserver(Observer obs) {
-    settingsObservable.deleteObserver(obs);
+  public EventTriggers<EventTriggers.Update, Parameter> getSettingsTriggers() {
+    return settingsTriggers;
   }
 
   /**
@@ -266,7 +253,7 @@ public class ChannelModel {
    */
   public void removeAllObstacles() {
     myObstacleWorld.removeAll();
-    settingsObservable.setChangedAndNotify();
+    settingsTriggers.trigger(EventTriggers.Update.UPDATE, null);
   }
 
   /**
@@ -296,7 +283,7 @@ public class ChannelModel {
     myObstacleWorld.addObstacle(startX, startY, width, height);
 
     if (notify) {
-      settingsObservable.setChangedAndNotify();
+      settingsTriggers.trigger(EventTriggers.Update.UPDATE, null);
     }
   }
 
@@ -376,8 +363,7 @@ public class ChannelModel {
 
     // Guessing we need to recalculate input to FSPL+Output power
     needToPrecalculateFSPL = true;
-
-    settingsObservable.setChangedAndNotify();
+    settingsTriggers.trigger(EventTriggers.Update.UPDATE, id);
   }
 
   /**
@@ -385,7 +371,7 @@ public class ChannelModel {
    * will be notified.
    */
   public void notifySettingsChanged() {
-    settingsObservable.setChangedAndNotify();
+    settingsTriggers.trigger(EventTriggers.Update.UPDATE, null);
   }
   
   /**
@@ -1774,7 +1760,7 @@ public class ChannelModel {
       }
     }
     needToPrecalculateFSPL = true;
-    settingsObservable.setChangedAndNotify();
+    settingsTriggers.trigger(EventTriggers.Update.UPDATE, null);
     return true;
   }
 
