@@ -2124,9 +2124,9 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     @Override
     public void paintInterval(TimeLine timeLine, Graphics g, int lineHeightOffset, long end) {
       MoteEvent ev = this;
-      while (ev != null && ev.time < end) {
-        int w = 2; /* Watchpoints are always two pixels wide */
+      int w = Math.max(timeLine.paintEventMinWidth, 2);
 
+      while (ev != null && ev.time < end) {
         Color color = ev.getEventColor();
         if (color == null) {
           /* Skip painting event */
