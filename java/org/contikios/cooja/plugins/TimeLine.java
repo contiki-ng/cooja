@@ -2047,7 +2047,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public void paintInterval(Graphics g, int lineHeightOffset, long end) {
       LogEvent ev = this;
       long time_start = -1;
-      
+      int eventWidth = Math.max(paintEventMinWidth, 4);
+
       while (ev != null && ev.time < end) {
           int position = (int)(ev.time/currentPixelDivisor);
           if (ev.time < time_start ){
@@ -2085,7 +2086,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         time_start = (long)((position+1)*currentPixelDivisor);
 
         g.setColor(color);
-        g.fillRect( position, lineHeightOffset, 4, EVENT_PIXEL_HEIGHT );
+        g.fillRect( position, lineHeightOffset, eventWidth, EVENT_PIXEL_HEIGHT );
 
         g.setColor(Color.BLUE);
         g.fillRect( position, lineHeightOffset, 1, EVENT_PIXEL_HEIGHT );
