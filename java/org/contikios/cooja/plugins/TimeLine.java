@@ -1977,6 +1977,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     final LogOutputEvent logEvent;
     // filter result cache
     private FilterState filtered;
+    private Color logEventColor;
 
     public LogEvent(LogOutputEvent ev) {
       super(ev.getTime());
@@ -1990,18 +1991,20 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       /* Ask active log listener whether this should be filtered  */
       if (timeline.logEventFilterPlugin != null) {
         if (timeline.logEventFilterChanged || (filtered == FilterState.NONE)) {
-          boolean show = timeline.logEventFilterPlugin.filterWouldAccept(logEvent);
-          if (show)
-            filtered = FilterState.PASS;
-          else
-            filtered = FilterState.REJECTED;
+          filtered = timeline.logEventFilterPlugin.filterWouldAccept(logEvent)
+                  ? FilterState.PASS
+                  : FilterState.REJECTED;
+          logEventColor = null;
         }
         if (filtered == FilterState.REJECTED) {
           return null;
         }
         if (timeline.logEventColorOfMote) {
+          if (logEventColor != null) {
+            return logEventColor;
+          }
           /* Ask log listener for event color to use */
-          return timeline.logEventFilterPlugin.getColorOfEntry(logEvent);
+          return logEventColor = timeline.logEventFilterPlugin.getColorOfEntry(logEvent);
         }
       }
       return Color.green;
