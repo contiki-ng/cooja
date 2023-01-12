@@ -36,6 +36,7 @@
 
 package se.sics.mspsim.platform.wismote;
 import java.io.IOException;
+import se.sics.mspsim.Main;
 import se.sics.mspsim.chip.Button;
 import se.sics.mspsim.chip.CC2520;
 import se.sics.mspsim.chip.DS2411;
@@ -89,7 +90,7 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 
     private static final int[] LEDS = { 0xff2020, 0x20ff20, 0xff2020 };
 
-    //private M25P80 flash;
+    //private final M25P80 flash;
     //private String flashFile;
     private CC2520 radio;
     private Leds leds;
@@ -103,6 +104,8 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 
     public WismoteNode(MSP430 cpu) {
         super("Wismote", cpu);
+//        this.flash = flash;
+//        registry.registerComponent("xmem", flash);
     }
 
     public Leds getLeds() {
@@ -115,11 +118,6 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 
 //    public M25P80 getFlash() {
 //        return flash;
-//    }
-
-//    public void setFlash(M25P80 flash) {
-//        this.flash = flash;
-//        registry.registerComponent("xmem", flash);
 //    }
 
     @Override
@@ -154,7 +152,7 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 
     private void setupNodePorts() {
 //        if (flashFile != null) {
-//            setFlash(new FileM25P80(cpu, flashFile));
+//            getFlash().setStorage(new FileStorage(flashFile));
 //        }
         ds2411 = new DS2411(cpu);
 
@@ -237,7 +235,7 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
     }
 
     public static void main(String[] args) throws IOException {
-        WismoteNode node = new WismoteNode(WismoteNode.makeCPU(WismoteNode.makeChipConfig()));
+        var node = Main.createNode(WismoteNode.class.getName());
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);

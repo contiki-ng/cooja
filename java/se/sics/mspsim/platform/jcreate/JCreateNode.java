@@ -41,6 +41,7 @@
 
 package se.sics.mspsim.platform.jcreate;
 import java.io.IOException;
+import se.sics.mspsim.Main;
 import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.M25P80;
@@ -67,12 +68,14 @@ public class JCreateNode extends CC2420Node {
 
     private Leds leds;
     private MMA7260QT accelerometer;
-    private M25P80 flash;
+    private final M25P80 flash;
 
     private JCreateGui gui;
 
-    public JCreateNode(MSP430 cpu) {
+    public JCreateNode(MSP430 cpu, M25P80 flash) {
         super("Sentilla JCreate", cpu);
+        this.flash = flash;
+        registry.registerComponent("xmem", flash);
         setMode(MODE_LEDS_OFF);
     }
 
@@ -86,11 +89,6 @@ public class JCreateNode extends CC2420Node {
 
     public M25P80 getFlash() {
         return flash;
-    }
-
-    public void setFlash(M25P80 flash) {
-        this.flash = flash;
-        registry.registerComponent("xmem", flash);
     }
 
     // USART Listener
@@ -118,10 +116,6 @@ public class JCreateNode extends CC2420Node {
         adc.setADCInput(4, () -> accelerometer.getADCX());
         adc.setADCInput(5, () -> accelerometer.getADCY());
         adc.setADCInput(6, () -> accelerometer.getADCZ());
-
-        if (getFlash() == null) {
-            setFlash(new M25P80(cpu));
-        }
         if (flashFile != null) {
             getFlash().setStorage(new FileStorage(flashFile));
         }
@@ -168,10 +162,9 @@ public class JCreateNode extends CC2420Node {
     }
 
     public static void main(String[] args) throws IOException {
-        JCreateNode node = new JCreateNode(makeCPU(makeChipConfig()));
+        var node = Main.createNode(JCreateNode.class.getName());
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);
     }
-
 }

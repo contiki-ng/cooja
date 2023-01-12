@@ -1,6 +1,7 @@
 package se.sics.mspsim.platform.tyndall;
 import java.io.IOException;
 
+import se.sics.mspsim.Main;
 import se.sics.mspsim.chip.CC2420;
 import se.sics.mspsim.config.MSP430f5437Config;
 import se.sics.mspsim.core.EmulationException;
@@ -43,7 +44,7 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
     public static final int LEDS_CONF_GREEN  = 0x01;
     public static final int LEDS_CONF_YELLOW = 0x01;
 
-    //private M25P80 flash;
+    //private final M25P80 flash;
     //private String flashFile;
     public CC2420 radio;
 
@@ -53,15 +54,12 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
 
     public TyndallNode(MSP430 cpu) {
         super("Tyndall", cpu);
+//        this.flash = flash;
+//        registry.registerComponent("xmem", flash);
     }
 
 //    public M25P80 getFlash() {
 //        return flash;
-//    }
-
-//    public void setFlash(M25P80 flash) {
-//        this.flash = flash;
-//        registry.registerComponent("xmem", flash);
 //    }
 
     @Override
@@ -96,7 +94,7 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
 
     private void setupNodePorts() {
 //        if (flashFile != null) {
-//            setFlash(new FileM25P80(cpu, flashFile));
+//            getFlash().setStorage(new FileStorage(flashFile));
 //        }
 
         port1 = cpu.getIOUnit(IOPort.class, "P1");
@@ -174,7 +172,7 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
     }
 
     public static void main(String[] args) throws IOException {
-        TyndallNode node = new TyndallNode(TyndallNode.makeCPU(TyndallNode.makeChipConfig()));
+        var node = Main.createNode(TyndallNode.class.getName());
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);

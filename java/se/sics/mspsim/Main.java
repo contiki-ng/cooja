@@ -40,6 +40,8 @@ package se.sics.mspsim;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import se.sics.mspsim.chip.AT45DB;
+import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.platform.esb.ESBNode;
 import se.sics.mspsim.platform.jcreate.JCreateNode;
@@ -70,11 +72,11 @@ public class Main {
       }
       case "se.sics.mspsim.platform.jcreate.JCreateNode" -> {
         var cpu = JCreateNode.makeCPU(JCreateNode.makeChipConfig());
-        yield new JCreateNode(cpu);
+        yield new JCreateNode(cpu, new M25P80(cpu));
       }
       case "se.sics.mspsim.platform.sentillausb.SentillaUSBNode" -> {
         var cpu = SentillaUSBNode.makeCPU(SentillaUSBNode.makeChipConfig());
-        yield new SentillaUSBNode(cpu);
+        yield new SentillaUSBNode(cpu, new M25P80(cpu));
       }
       case "se.sics.mspsim.platform.ti.CC430Node" -> new CC430Node();
       case "se.sics.mspsim.platform.ti.Exp1101Node" -> {
@@ -100,11 +102,11 @@ public class Main {
       }
       case "java.se.sics.mspsim.platform.sky.SkyNode.java" -> {
         var cpu = SkyNode.makeCPU(SkyNode.makeChipConfig());
-        yield new SkyNode(cpu);
+        yield new SkyNode(cpu, new M25P80(cpu));
       }
       case "java.se.sics.mspsim.platform.sky.TelosNode.java" -> {
         var cpu = TelosNode.makeCPU(TelosNode.makeChipConfig());
-        yield new TelosNode(cpu);
+        yield new TelosNode(cpu, new AT45DB(cpu));
       }
       case "java.se.sics.mspsim.platform.tyndall.TyndallNode.java" -> {
         var cpu = TyndallNode.makeCPU(TyndallNode.makeChipConfig());
@@ -116,7 +118,7 @@ public class Main {
       }
       case "java.se.sics.mspsim.platform.z1.Z1Node.java" -> {
         var cpu = Z1Node.makeCPU(Z1Node.makeChipConfig());
-        yield new Z1Node(cpu);
+        yield new Z1Node(cpu, new M25P80(cpu));
       }
       default -> {
         try {
