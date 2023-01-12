@@ -2063,21 +2063,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     public MoteEvents(Mote mote) {
       this.mote = mote;
-      if (mote.getSimulation().getSimulationTime() > 0) {
-        /* Create no history events */
-        lastRadioRXTXEvent = new NoHistoryEvent(0);
-        lastRadioChannelEvent = new NoHistoryEvent(0);
-        lastRadioHWEvent = new NoHistoryEvent(0);
-        lastLEDEvent = new NoHistoryEvent(0);
-        lastLogEvent = new NoHistoryEvent(0);
-        lastWatchpointEvent = new NoHistoryEvent(0);
-        radioRXTXEvents.add(lastRadioRXTXEvent);
-        radioChannelEvents.add(lastRadioChannelEvent);
-        radioHWEvents.add(lastRadioHWEvent);
-        ledEvents.add(lastLEDEvent);
-        logEvents.add(lastLogEvent);
-        watchpointEvents.add(lastWatchpointEvent);
-      }
+      clear();
     }
 
     protected void clear() {
