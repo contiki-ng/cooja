@@ -1418,45 +1418,27 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         dark = !dark;
 
         if (showRadioRXTX) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.radioRXTXEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.radioRXTXEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showRadioChannels) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.radioChannelEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.radioChannelEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showRadioOnoff) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.radioHWEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.radioHWEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showLeds) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.ledEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.ledEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += 3*LED_PIXEL_HEIGHT;
         }
         if (showLogOutputs) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.logEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.logEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showWatchpoints) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.watchpointEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.watchpointEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
 
@@ -1465,6 +1447,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
       /* Draw vertical time marker (if mouse is dragged) */
       drawMouseTime(g, intervalStart, intervalEnd);
+    }
+
+    private void paintEvents(Graphics g, ArrayList<MoteEvent> events, long intervalStart, long intervalEnd,
+                             int lineHeightOffset) {
+      MoteEvent firstEvent = getFirstIntervalEvent(events, intervalStart);
+      if (firstEvent != null) {
+        firstEvent.paintInterval(TimeLine.this, g, lineHeightOffset, intervalEnd);
+      }
     }
 
     private <T extends MoteEvent> T getFirstIntervalEvent(ArrayList<T> events, long time) {
