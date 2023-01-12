@@ -67,7 +67,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Observer;
 import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -196,7 +195,6 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   private final ArrayList<VisualizerSkin> currentSkins = new ArrayList<>();
 
   /* Generic visualization */
-  private final Observer moteHighligtObserver;
   private final ArrayList<Mote> highlightedMotes = new ArrayList<>();
   private final static Color HIGHLIGHT_COLOR = Color.CYAN;
 
@@ -428,11 +426,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     }));
 
     /* Observe mote highlights */
-    gui.addMoteHighlightObserver(moteHighligtObserver = (obs, obj) -> {
-      if (!(obj instanceof final Mote mote)) {
-        return;
-      }
-
+    simulation.getMoteHighlightTriggers().addTrigger(this, (event, mote) -> {
       final Timer timer = new Timer(100, null);
       timer.addActionListener(e -> {
         // Count down.
@@ -1342,9 +1336,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       skin.setInactive();
     }
     currentSkins.clear();
-    if (moteHighligtObserver != null) {
-      gui.deleteMoteHighlightObserver(moteHighligtObserver);
-    }
+    simulation.getMoteHighlightTriggers().deleteTriggers(this);
     simulation.getMoteRelationsTriggers().deleteTriggers(this);
     simulation.getEventCentral().getPositionTriggers().deleteTriggers(this);
     simulation.getMoteTriggers().deleteTriggers(this);

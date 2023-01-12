@@ -49,7 +49,6 @@ import org.contikios.cooja.radiomediums.UDGM;
 import org.contikios.cooja.radiomediums.UDGMConstantLoss;
 import org.contikios.cooja.util.EventTriggers;
 import org.contikios.cooja.util.EventTriggers.AddRemove;
-import org.contikios.cooja.util.ScnObservable;
 import org.contikios.mrm.MRM;
 import org.jdom2.Element;
 
@@ -133,7 +132,9 @@ public final class Simulation {
 
   /** Mote add and remove triggers. */
   private final EventTriggers<EventTriggers.AddRemove, Mote> moteTriggers = new EventTriggers<>();
-  final ScnObservable moteHighlightObservable = Cooja.isVisualized() ? new ScnObservable() : null;
+
+  /** Mote highlight triggers. */
+  final EventTriggers<EventTriggers.Update, Mote> moteHighlightTriggers = new EventTriggers<>();
 
   /** Property change support */
   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -1056,6 +1057,11 @@ public final class Simulation {
   /** Returns the mote relations triggers. */
   public EventTriggers<AddRemove, MoteRelation> getMoteRelationsTriggers() {
     return moteRelationsTriggers;
+  }
+
+  /** Returns the mote highlight triggers. */
+  public EventTriggers<EventTriggers.Update, Mote> getMoteHighlightTriggers() {
+    return moteHighlightTriggers;
   }
 
   public void addPropertyChangeListener(PropertyChangeListener listener) {

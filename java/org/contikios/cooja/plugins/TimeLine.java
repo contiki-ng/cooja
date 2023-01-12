@@ -142,7 +142,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private final MoteRuler timelineMoteRuler = new MoteRuler();
   private final JComponent timeline = new Timeline();
 
-  private final Observer moteHighlightObserver;
   private final ArrayList<Mote> highlightedMotes = new ArrayList<>();
   private final static Color HIGHLIGHT_COLOR = Color.CYAN;
 
@@ -457,11 +456,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     /* Update timeline for the duration of the plugin */
     repaintTimelineTimer.start();
 
-    gui.addMoteHighlightObserver(moteHighlightObserver = (obs, obj) -> {
-      if (!(obj instanceof final Mote mote)) {
-        return;
-      }
-
+    simulation.getMoteHighlightTriggers().addTrigger(this, (event, mote) -> {
       final Timer timer = new Timer(100, null);
       timer.addActionListener(e -> {
         // Count down.
@@ -1082,10 +1077,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   public void closePlugin() {
     /* Remove repaint timer */
     repaintTimelineTimer.stop();
-
-    if (moteHighlightObserver != null) {
-      gui.deleteMoteHighlightObserver(moteHighlightObserver);
-    }
+    simulation.getMoteHighlightTriggers().deleteTriggers(this);
     simulation.getMoteTriggers().deleteTriggers(this);
     simulation.getEventCentral().removeLogOutputListener(newMotesListener);
 
