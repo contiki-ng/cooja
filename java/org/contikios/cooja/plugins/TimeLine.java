@@ -76,7 +76,6 @@ import javax.swing.PopupFactory;
 import javax.swing.Timer;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -253,14 +252,23 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             return logEventColorOfMote;
         }
     });
-    viewMenu.add(new JSeparator());
+
+    JMenu widthMenu = new JMenu("Minimal event width");
     ButtonGroup minEvWidthButtonGroup = new ButtonGroup();
-    for ( int s : new int[]{1,5,10} ) {
-        JRadioButtonMenuItem evwidthMenuItemN = new JRadioButtonMenuItem(
-                new ChangeMinEventWidthAction("min event width "+s, s));
-        minEvWidthButtonGroup.add(evwidthMenuItemN);
-        viewMenu.add(evwidthMenuItemN);
+    for (final int s : new int[] { 1, 5, 10 }) {
+      JRadioButtonMenuItem widthMenuItem = new JRadioButtonMenuItem(s + " px");
+      widthMenuItem.setSelected(paintEventMinWidth == s);
+      widthMenuItem.addActionListener(e -> {
+        if (paintEventMinWidth != s) {
+          paintEventMinWidth = s;
+          TimeLine.this.timeline.repaint();
+        }
+      });
+      minEvWidthButtonGroup.add(widthMenuItem);
+      widthMenu.add(widthMenuItem);
     }
+    viewMenu.addSeparator();
+    viewMenu.add(widthMenu);
 
     fileMenu.add(new JMenuItem(new AbstractAction("Save to file...") {
       @Override
@@ -549,19 +557,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         pixelX = mousePixelPositionX;
       }
       return (long) (pixelX*currentPixelDivisor);
-  }
-
-  private class ChangeMinEventWidthAction extends AbstractAction {
-      private final int minWidth;
-      public ChangeMinEventWidthAction(String name, int minWidth) {
-        super(name);
-        this.minWidth = minWidth;
-      }
-      @Override
-      public void actionPerformed(ActionEvent e) {
-          paintEventMinWidth = minWidth;
-          timeline.repaint();
-      }
   }
 
   public void clear() {
