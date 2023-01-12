@@ -151,9 +151,9 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 				conn.getSource().setCurrentSignalStrength(SS_STRONG);
 			}
 			for (Radio dstRadio : conn.getDestinations()) {
-				if (conn.getSource().getChannel() >= 0 &&
-						dstRadio.getChannel() >= 0 &&
-						conn.getSource().getChannel() != dstRadio.getChannel()) {
+        var sourceChannel = conn.getSource().getChannel();
+        var dstChannel = dstRadio.getChannel();
+        if (sourceChannel >= 0 && dstChannel >= 0 && sourceChannel != dstChannel) {
 					continue;
 				}
 				if (dstRadio.getCurrentSignalStrength() < SS_STRONG) {
@@ -168,9 +168,9 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 				if (intfRadio.getCurrentSignalStrength() < SS_STRONG) {
 					intfRadio.setCurrentSignalStrength(SS_STRONG);
 				}
-				if (conn.getSource().getChannel() >= 0 &&
-						intfRadio.getChannel() >= 0 &&
-						conn.getSource().getChannel() != intfRadio.getChannel()) {
+        var srcChannel = conn.getSource().getChannel();
+        var intfChannel = intfRadio.getChannel();
+        if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
 					continue;
 				}
 				if (!intfRadio.isInterfered()) {

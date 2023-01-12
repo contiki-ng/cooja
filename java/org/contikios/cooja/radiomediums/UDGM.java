@@ -175,11 +175,10 @@ public class UDGM extends AbstractRadioMedium {
     for (DestinationRadio dest: potentialDestinations) {
       Radio recv = dest.radio;
 
-      /* Fail if radios are on different (but configured) channels */ 
-      if (sender.getChannel() >= 0 &&
-          recv.getChannel() >= 0 &&
-          sender.getChannel() != recv.getChannel()) {
-
+      /* Fail if radios are on different (but configured) channels */
+      var srcChannel = sender.getChannel();
+      var dstChannel = recv.getChannel();
+      if (srcChannel >= 0 && dstChannel >= 0 && srcChannel != dstChannel) {
         /* Add the connection in a dormant state;
            it will be activated later when the radio will be
            turned on and switched to the right channel. This behavior
@@ -281,9 +280,9 @@ public class UDGM extends AbstractRadioMedium {
         conn.getSource().setCurrentSignalStrength(SS_STRONG);
       }
       for (Radio dstRadio : conn.getDestinations()) {
-        if (conn.getSource().getChannel() >= 0 &&
-            dstRadio.getChannel() >= 0 &&
-            conn.getSource().getChannel() != dstRadio.getChannel()) {
+        var srcChannel = conn.getSource().getChannel();
+        var dstChannel = dstRadio.getChannel();
+        if (srcChannel >= 0 && dstChannel >= 0 && srcChannel != dstChannel) {
           continue;
         }
 
@@ -303,9 +302,9 @@ public class UDGM extends AbstractRadioMedium {
     /* Set signal strength to below weak on interfered */
     for (RadioConnection conn : conns) {
       for (Radio intfRadio : conn.getInterfered()) {
-        if (conn.getSource().getChannel() >= 0 &&
-            intfRadio.getChannel() >= 0 &&
-            conn.getSource().getChannel() != intfRadio.getChannel()) {
+        var srcChannel = conn.getSource().getChannel();
+        var intfChannel = intfRadio.getChannel();
+        if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
           continue;
         }
 
