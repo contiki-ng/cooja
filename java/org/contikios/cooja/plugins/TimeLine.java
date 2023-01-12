@@ -1764,7 +1764,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   /* Event classes */
   static abstract class MoteEvent {
-    MoteEvent prev = null;
     MoteEvent next = null;
     String details = null;
     final long time;
@@ -2208,7 +2207,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public void addRadioRXTX(RadioRXTXEvent ev) {
       /* Link with previous events */
       if (lastRadioRXTXEvent != null) {
-        ev.prev = lastRadioRXTXEvent;
         lastRadioRXTXEvent.next = ev;
       }
       lastRadioRXTXEvent = ev;
@@ -2218,7 +2216,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public void addRadioChannel(RadioChannelEvent ev) {
       /* Link with previous events */
       if (lastRadioChannelEvent != null) {
-        ev.prev = lastRadioChannelEvent;
         lastRadioChannelEvent.next = ev;
       }
       lastRadioChannelEvent = ev;
@@ -2228,7 +2225,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public void addRadioHW(RadioHWEvent ev) {
       /* Link with previous events */
       if (lastRadioHWEvent != null) {
-        ev.prev = lastRadioHWEvent;
         lastRadioHWEvent.next = ev;
       }
       lastRadioHWEvent = ev;
@@ -2238,7 +2234,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public void addLED(LEDEvent ev) {
       /* Link with previous events */
       if (lastLEDEvent != null) {
-        ev.prev = lastLEDEvent;
         lastLEDEvent.next = ev;
       }
       lastLEDEvent = ev;
@@ -2248,7 +2243,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public void addLog(LogEvent ev) {
       /* Link with previous events */
       if (lastLogEvent != null) {
-        ev.prev = lastLogEvent;
         lastLogEvent.next = ev;
       }
       lastLogEvent = ev;
@@ -2258,7 +2252,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public void addWatchpoint(WatchpointEvent ev) {
       /* Link with previous events */
       if (lastWatchpointEvent != null) {
-        ev.prev = lastWatchpointEvent;
         lastWatchpointEvent.next = ev;
       }
       lastWatchpointEvent = ev;
