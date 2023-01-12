@@ -1779,7 +1779,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   /* Event classes */
   static abstract class MoteEvent {
-    MoteEvent next = null;
     String details = null;
     int fixedWidth = 0;
     boolean collapseOverlapping = false;
@@ -2044,13 +2043,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     final ArrayList<MoteEvent> logEvents = new ArrayList<>();
     final ArrayList<MoteEvent> watchpointEvents = new ArrayList<>();
 
-    private MoteEvent lastRadioRXTXEvent = null;
-    private MoteEvent lastRadioChannelEvent = null;
-    private MoteEvent lastRadioHWEvent = null;
-    private MoteEvent lastLEDEvent = null;
-    private MoteEvent lastLogEvent = null;
-    private MoteEvent lastWatchpointEvent = null;
-
     public MoteEvents(Mote mote) {
       this.mote = mote;
       clear();
@@ -2066,73 +2058,31 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
       if (mote.getSimulation().getSimulationTime() > 0) {
         /* Create no history events */
-        lastRadioRXTXEvent = new NoHistoryEvent(0);
-        lastRadioChannelEvent = new NoHistoryEvent(0);
-        lastRadioHWEvent = new NoHistoryEvent(0);
-        lastLEDEvent = new NoHistoryEvent(0);
-        lastLogEvent = new NoHistoryEvent(0);
-        lastWatchpointEvent = new NoHistoryEvent(0);
-        radioRXTXEvents.add(lastRadioRXTXEvent);
-        radioChannelEvents.add(lastRadioChannelEvent);
-        radioHWEvents.add(lastRadioHWEvent);
-        ledEvents.add(lastLEDEvent);
-        logEvents.add(lastLogEvent);
-        watchpointEvents.add(lastWatchpointEvent);
+        radioRXTXEvents.add(new NoHistoryEvent(0));
+        radioChannelEvents.add(new NoHistoryEvent(0));
+        radioHWEvents.add(new NoHistoryEvent(0));
+        ledEvents.add(new NoHistoryEvent(0));
+        logEvents.add(new NoHistoryEvent(0));
+        watchpointEvents.add(new NoHistoryEvent(0));
       }
     }
 
     public void addRadioRXTX(RadioRXTXEvent ev) {
-      /* Link with previous events */
-      if (lastRadioRXTXEvent != null) {
-        lastRadioRXTXEvent.next = ev;
-      }
-      lastRadioRXTXEvent = ev;
-
       radioRXTXEvents.add(ev);
     }
     public void addRadioChannel(RadioChannelEvent ev) {
-      /* Link with previous events */
-      if (lastRadioChannelEvent != null) {
-        lastRadioChannelEvent.next = ev;
-      }
-      lastRadioChannelEvent = ev;
-
       radioChannelEvents.add(ev);
     }
     public void addRadioHW(RadioHWEvent ev) {
-      /* Link with previous events */
-      if (lastRadioHWEvent != null) {
-        lastRadioHWEvent.next = ev;
-      }
-      lastRadioHWEvent = ev;
-
       radioHWEvents.add(ev);
     }
     public void addLED(LEDEvent ev) {
-      /* Link with previous events */
-      if (lastLEDEvent != null) {
-        lastLEDEvent.next = ev;
-      }
-      lastLEDEvent = ev;
-
       ledEvents.add(ev);
     }
     public void addLog(LogEvent ev) {
-      /* Link with previous events */
-      if (lastLogEvent != null) {
-        lastLogEvent.next = ev;
-      }
-      lastLogEvent = ev;
-
       logEvents.add(ev);
     }
     public void addWatchpoint(WatchpointEvent ev) {
-      /* Link with previous events */
-      if (lastWatchpointEvent != null) {
-        lastWatchpointEvent.next = ev;
-      }
-      lastWatchpointEvent = ev;
-
       watchpointEvents.add(ev);
     }
   }
