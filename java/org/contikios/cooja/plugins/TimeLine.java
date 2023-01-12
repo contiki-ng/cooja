@@ -1439,10 +1439,17 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
     private void paintEvents(Graphics g, ArrayList<MoteEvent> events, long intervalStart, long intervalEnd,
                              int lineHeightOffset) {
+      if (events.isEmpty()) {
+        return;
+      }
+
       int lastPosition = -1;
-      for (MoteEvent event = getFirstIntervalEvent(events, intervalStart);
-           event != null && event.time < intervalEnd;
-           event = event.next) {
+      for (int i = getIndexOfFirstIntervalEvent(events, intervalStart), n = events.size(); i < n; i++) {
+        MoteEvent event = events.get(i);
+        if (event.time >= intervalEnd) {
+          break;
+        }
+
         int x = (int) (event.time / currentPixelDivisor);
         if (event.collapseOverlapping && x < lastPosition + 1) {
           continue;
@@ -1451,7 +1458,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         /* Calculate event width */
         int width;
         if (event.fixedWidth == 0) {
-          long endTime = (event.next != null ? event.next.time : intervalEnd) - event.time;
+          MoteEvent nextEvent = i + 1 < n ? events.get(i + 1) : null;
+          long endTime = (nextEvent != null ? nextEvent.time : intervalEnd) - event.time;
           width = (int) (endTime / currentPixelDivisor);
           /* Handle zero pixel width events */
           if (width == 0) {
@@ -1482,29 +1490,18 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
     }
 
-    private <T extends MoteEvent> T getFirstIntervalEvent(ArrayList<T> events, long time) {
+    private <T extends MoteEvent> int getIndexOfFirstIntervalEvent(ArrayList<T> events, long time) {
       /* TODO IMPLEMENT ME: Binary search */
       int nrEvents = events.size();
       if (nrEvents == 0) {
-        return null;
-      }
-      if (nrEvents == 1) {
-        events.get(0);
+        return -1;
       }
 
       int ev = 0;
       while (ev < nrEvents && events.get(ev).time < time) {
         ev++;
       }
-      ev--;
-      if (ev < 0) {
-        ev = 0;
-      }
-
-      if (ev >= events.size()) {
-        return events.get(events.size()-1);
-      }
-      return events.get(ev);
+      return Math.max(ev - 1, 0);
     }
 
     private void drawTimeRule(Graphics g, long start, long end) {
@@ -1623,13 +1620,16 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         evMatched++;
       }
       if (events != null) {
-        MoteEvent ev = getFirstIntervalEvent(events, time);
-        if (ev != null && time >= ev.time) {
-          tooltip += ev + "<br>";
+        int index = getIndexOfFirstIntervalEvent(events, time);
+        if (index >= 0) {
+          MoteEvent ev = events.get(index);
+          if (time >= ev.time) {
+            tooltip += ev + "<br>";
 
-        	if (ev.details != null) {
-        		tooltip += "Details:<br>" + ev.details;
-        	}
+            if (ev.details != null) {
+              tooltip += "Details:<br>" + ev.details;
+            }
+          }
         }
       }
 
@@ -1782,7 +1782,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     MoteEvent next = null;
     String details = null;
     int fixedWidth = 0;
-    boolean collapseOverlapping = true;
+    boolean collapseOverlapping = false;
     final long time;
     public MoteEvent(long time) {
       this.time = time;
@@ -1972,6 +1972,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       this.logEvent = ev;
       this.filtered = FilterState.NONE;
       this.fixedWidth = 4;
+      this.collapseOverlapping = true;
     }
 
     @Override
@@ -2014,6 +2015,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       super(time);
       this.watchpoint = watchpoint;
       this.fixedWidth = 2;
+      this.collapseOverlapping = true;
     }
     @Override
     public Color getEventColor(TimeLine timeLine) {
