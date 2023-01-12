@@ -69,8 +69,9 @@ import org.slf4j.LoggerFactory;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Mote2Mote Relations")
-public class Mote2MoteRelations extends Observable implements MoteInterface {
+public class Mote2MoteRelations implements MoteInterface {
   private static final Logger logger = LoggerFactory.getLogger(Mote2MoteRelations.class);
+  private final EventTriggers<EventTriggers.AddRemove, Integer> relationTriggers = new EventTriggers<>();
   private final Mote mote;
 
   private final ArrayList<Mote> relations = new ArrayList<>();
@@ -123,7 +124,8 @@ public class Mote2MoteRelations extends Observable implements MoteInterface {
       }
 
       /* Change line state */
-      if (state.equals("1")) {
+      var isAdd = state.equals("1");
+      if (isAdd) {
         if (relations.contains(destinationMote)) {
           return;
         }
@@ -133,9 +135,7 @@ public class Mote2MoteRelations extends Observable implements MoteInterface {
         relations.remove(destinationMote);
         mote.getSimulation().removeMoteRelation(mote, destinationMote);
       }
-
-      setChanged();
-      notifyObservers();
+      relationTriggers.trigger(isAdd ? EventTriggers.AddRemove.ADD : EventTriggers.AddRemove.REMOVE, relations.size());
     }
   };
 
@@ -188,24 +188,12 @@ public class Mote2MoteRelations extends Observable implements MoteInterface {
     final JLabel countLabel = new JLabel();
     countLabel.setText("Mote has " + relations.size() + " mote relations");
     panel.add(countLabel);
-
-    Observer observer;
-    this.addObserver(observer = (obs, obj) -> countLabel.setText("Mote has " + relations.size() + " mote relations"));
-
-    // Saving observer reference for releaseInterfaceVisualizer
-    panel.putClientProperty("intf_obs", observer);
-
+    relationTriggers.addTrigger(this, (obs, sz) -> countLabel.setText("Mote has " + sz + " mote relations"));
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.error("Error when releasing panel, observer is null");
-      return;
-    }
-    this.deleteObserver(observer);
+    relationTriggers.deleteTriggers(this);
   }
-
 }
