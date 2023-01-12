@@ -45,6 +45,7 @@ import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.PIR;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
+import org.contikios.cooja.interfaces.SerialPort;
 import org.jdom2.Element;
 
 /**
@@ -69,6 +70,7 @@ public class MoteInterfaceHandler {
   private PIR myPIR;
   private Position myPosition;
   private Radio myRadio;
+  private SerialPort mySerialPort;
 
   /**
    * Creates new mote interface handler. All given interfaces are created.
@@ -252,6 +254,23 @@ public class MoteInterfaceHandler {
       myRadio = getInterfaceOfType(Radio.class);
     }
     return myRadio;
+  }
+
+  /**
+   * Returns the first serial port interface (if any).
+   *
+   * @return Serial port interface
+   */
+  public SerialPort getSerialPort() {
+    if (mySerialPort == null) {
+      for (var moteInterface : moteInterfaces) {
+        if (moteInterface instanceof SerialPort port) {
+          mySerialPort = port;
+          break;
+        }
+      }
+    }
+    return mySerialPort;
   }
 
   /**
