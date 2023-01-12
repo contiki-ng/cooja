@@ -110,6 +110,7 @@ import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
+import org.contikios.cooja.util.Annotations;
 import org.jdom2.Element;
 import org.jdom2.Text;
 
@@ -933,11 +934,15 @@ public class GUI {
         }
 
         // Simulation plugins.
+        var radioMedium = cooja.getSimulation() == null ? null : cooja.getSimulation().getRadioMedium();
         boolean hasSimPlugins = false;
         for (Class<? extends Plugin> pluginClass : cooja.getRegisteredPlugins()) {
           var pluginType = pluginClass.getAnnotation(PluginType.class).value();
           if (pluginType != PluginType.PType.SIM_PLUGIN && pluginType != PluginType.PType.SIM_STANDARD_PLUGIN
                   && pluginType != PluginType.PType.SIM_CONTROL_PLUGIN) {
+            continue;
+          }
+          if (!Annotations.isCompatible(pluginClass.getAnnotation(SupportedArguments.class), radioMedium)) {
             continue;
           }
 
@@ -1190,7 +1195,7 @@ public class GUI {
 
     int added = 0;
     for (var mote : cooja.getSimulation().getMotes()) {
-      if (!Cooja.isMotePluginCompatible(pluginClass, mote)) {
+      if (!Annotations.isCompatible(pluginClass.getAnnotation(SupportedArguments.class), mote)) {
         continue;
       }
       JMenuItem menuItem = new JMenuItem(mote.toString() + "...");
@@ -1215,7 +1220,7 @@ public class GUI {
   public JMenu createMotePluginsSubmenu(Mote mote) {
     JMenu menuMotePlugins = new JMenu("Mote tools for " + mote);
     for (var motePluginClass: menuMotePluginClasses) {
-      if (!Cooja.isMotePluginCompatible(motePluginClass, mote)) {
+      if (!Annotations.isCompatible(motePluginClass.getAnnotation(SupportedArguments.class), mote)) {
         continue;
       }
       var menuItem = new JMenuItem(new StartPluginGUIAction(Cooja.getDescriptionOf(motePluginClass) + "..."));
