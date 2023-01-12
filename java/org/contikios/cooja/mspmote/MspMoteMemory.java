@@ -32,29 +32,22 @@ package org.contikios.cooja.mspmote;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
-
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.MemoryInterface.SegmentMonitor.EventType;
 import org.contikios.cooja.mote.memory.MemoryLayout;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.Memory.AccessMode;
 import se.sics.mspsim.core.Memory.AccessType;
-import se.sics.mspsim.util.MapEntry;
 
 public class MspMoteMemory implements MemoryInterface {
-  private final ArrayList<MapEntry> mapEntries = new ArrayList<>();
+  private final Map<String, Symbol> symbols;
   private final MemoryLayout memLayout = new MemoryLayout(ByteOrder.LITTLE_ENDIAN, MemoryLayout.ARCH_16BIT, 2);
 
   private final MSP430 cpu;
 
-  public MspMoteMemory(MapEntry[] allEntries, MSP430 cpu) {
-    for (MapEntry entry: allEntries) {
-      if (entry.getType() == MapEntry.TYPE.variable) {
-        mapEntries.add(entry);
-      }
-    }
+  public MspMoteMemory(Map<String, Symbol> symbols, MSP430 cpu) {
+    this.symbols = symbols;
     this.cpu = cpu;
   }
 
@@ -106,18 +99,7 @@ public class MspMoteMemory implements MemoryInterface {
 
   @Override
   public Map<String, Symbol> getSymbolMap() {
-    Map<String, Symbol> vars = new HashMap<>();
-    for (MapEntry entry : mapEntries) {
-      if (entry.getType() != MapEntry.TYPE.variable) {
-        continue;
-      }
-      vars.put(entry.getName(), new Symbol(
-              Symbol.Type.VARIABLE,
-              entry.getName(), 
-              entry.getAddress(), 
-              entry.getSize()));
-    }
-    return vars;
+    return symbols;
   }
 
   @Override
