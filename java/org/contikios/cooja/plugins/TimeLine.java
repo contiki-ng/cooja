@@ -1377,12 +1377,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         return;
       }
 
+      long simulationTime = simulation.getSimulationTime();
       long intervalStart = (long)(bounds.x*currentPixelDivisor);
-      long intervalEnd = (long) (intervalStart + bounds.width*currentPixelDivisor);
+      long intervalEnd = Math.min(simulationTime, (long) (intervalStart + bounds.width*currentPixelDivisor));
 
-      if (intervalEnd > simulation.getSimulationTime()) {
-        intervalEnd = simulation.getSimulationTime();
-      }
       if (bounds.x > Integer.MAX_VALUE - 1000) {
         /* Strange bounds */
         return;
