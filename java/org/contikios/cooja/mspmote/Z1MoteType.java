@@ -40,6 +40,7 @@ import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
+import org.contikios.cooja.mspmote.interfaces.Msp802154BitErrorRadio;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
 import org.contikios.cooja.mspmote.interfaces.MspButton;
 import org.contikios.cooja.mspmote.interfaces.MspClock;
@@ -82,7 +83,19 @@ public class Z1MoteType extends MspMoteType {
 
     @Override
     public List<Class<? extends MoteInterface>> getDefaultMoteInterfaceClasses() {
-  	  return getAllMoteInterfaceClasses();
+        return List.of(
+                Position.class,
+                IPAddress.class,
+                Mote2MoteRelations.class,
+                MoteAttributes.class,
+                MspClock.class,
+                MspMoteID.class,
+                MspButton.class,
+//                SkyFlash.class,
+                Msp802154Radio.class,
+                MspDefaultSerial.class,
+                MspLED.class,
+                MspDebugOutput.class);
     }
 
     @Override
@@ -97,6 +110,7 @@ public class Z1MoteType extends MspMoteType {
                 MspButton.class,
 //                SkyFlash.class,
                 Msp802154Radio.class,
+                Msp802154BitErrorRadio.class,
                 MspDefaultSerial.class,
                 MspLED.class,
                 MspDebugOutput.class);
