@@ -68,13 +68,7 @@ import org.contikios.cooja.positioners.EllipsePositioner;
 import org.contikios.cooja.positioners.LinearPositioner;
 import org.contikios.cooja.positioners.ManualPositioner;
 import org.contikios.cooja.positioners.RandomPositioner;
-import org.contikios.cooja.radiomediums.DirectedGraphMedium;
-import org.contikios.cooja.radiomediums.LogisticLoss;
-import org.contikios.cooja.radiomediums.SilentRadioMedium;
-import org.contikios.cooja.radiomediums.UDGM;
-import org.contikios.cooja.radiomediums.UDGMConstantLoss;
 import org.contikios.cooja.util.EventTriggers;
-import org.contikios.mrm.MRM;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -336,20 +330,15 @@ public class Cooja {
    * @param radioMediumClass Class to register
    */
   public void registerRadioMedium(Class<? extends RadioMedium> radioMediumClass) {
-    if (radioMediumClasses == null) {
-      registerClasses();
-    }
-    radioMediumClasses.add(radioMediumClass);
+    Objects.requireNonNullElseGet(radioMediumClasses, () ->
+            radioMediumClasses = new ArrayList<>(ExtensionManager.builtinRadioMediums.values())).add(radioMediumClass);
   }
 
   /**
    * @return All registered radio medium classes
    */
   public List<Class<? extends RadioMedium>> getRegisteredRadioMediums() {
-    if (radioMediumClasses == null) {
-      registerClasses();
-    }
-    return radioMediumClasses;
+    return Objects.requireNonNullElseGet(radioMediumClasses, () -> List.copyOf(ExtensionManager.builtinRadioMediums.values()));
   }
 
   void clearProjectConfig() {
@@ -388,6 +377,20 @@ public class Cooja {
           registerPlugin(pluginClass);
         } else {
           logger.error("Could not load plugin class: " + pluginClassName);
+        }
+      }
+    }
+
+    // Register radio mediums.
+    var radioMediumsClassNames = projectConfig.getStringArrayValue(Cooja.class, "RADIOMEDIUMS");
+    if (radioMediumsClassNames != null) {
+      radioMediumClasses = new ArrayList<>(ExtensionManager.builtinRadioMediums.values());
+      for (var radioMediumClassName : radioMediumsClassNames) {
+        var radioMediumClass = tryLoadClass(this, RadioMedium.class, radioMediumClassName);
+        if (radioMediumClass != null) {
+          registerRadioMedium(radioMediumClass);
+        } else {
+          logger.error("Could not load radio medium class: " + radioMediumClassName);
         }
       }
     }
@@ -434,26 +437,6 @@ public class Cooja {
           registerPositioner(positionerClass);
         } else {
           logger.error("Could not load positioner class: " + positionerClassName);
-        }
-      }
-    }
-
-    // Register radio mediums.
-    radioMediumClasses = new ArrayList<>();
-    registerRadioMedium(UDGM.class);
-    registerRadioMedium(UDGMConstantLoss.class);
-    registerRadioMedium(DirectedGraphMedium.class);
-    registerRadioMedium(SilentRadioMedium.class);
-    registerRadioMedium(LogisticLoss.class);
-    registerRadioMedium(MRM.class);
-    var radioMediumsClassNames = projectConfig.getStringArrayValue(Cooja.class, "RADIOMEDIUMS");
-    if (radioMediumsClassNames != null) {
-      for (var radioMediumClassName : radioMediumsClassNames) {
-        var radioMediumClass = tryLoadClass(this, RadioMedium.class, radioMediumClassName);
-        if (radioMediumClass != null) {
-          registerRadioMedium(radioMediumClass);
-        } else {
-          logger.error("Could not load radio medium class: " + radioMediumClassName);
         }
       }
     }

@@ -56,14 +56,21 @@ import org.contikios.cooja.plugins.ScriptRunner;
 import org.contikios.cooja.plugins.TimeLine;
 import org.contikios.cooja.plugins.VariableWatcher;
 import org.contikios.cooja.plugins.Visualizer;
+import org.contikios.cooja.radiomediums.DirectedGraphMedium;
+import org.contikios.cooja.radiomediums.LogisticLoss;
+import org.contikios.cooja.radiomediums.SilentRadioMedium;
+import org.contikios.cooja.radiomediums.UDGM;
+import org.contikios.cooja.radiomediums.UDGMConstantLoss;
 import org.contikios.cooja.serialsocket.SerialSocketClient;
 import org.contikios.cooja.serialsocket.SerialSocketServer;
+import org.contikios.mrm.MRM;
 
 /**
  * Class for loading and querying dynamic extensions.
  */
 public class ExtensionManager {
   static final LinkedHashMap<String, Class<? extends Plugin>> builtinPlugins = new LinkedHashMap<>();
+  static final LinkedHashMap<String, Class<? extends RadioMedium>> builtinRadioMediums = new LinkedHashMap<>();
   static {
     registerBuiltinPlugin(Visualizer.class);
     registerBuiltinPlugin(LogListener.class);
@@ -86,9 +93,21 @@ public class ExtensionManager {
     registerBuiltinPlugin(MspCodeWatcher.class);
     registerBuiltinPlugin(MspStackWatcher.class);
     registerBuiltinPlugin(MspCycleWatcher.class);
+
+    registerBuiltinRadioMedium(UDGM.class);
+    registerBuiltinRadioMedium(UDGMConstantLoss.class);
+    registerBuiltinRadioMedium(DirectedGraphMedium.class);
+    registerBuiltinRadioMedium(SilentRadioMedium.class);
+    registerBuiltinRadioMedium(LogisticLoss.class);
+    registerBuiltinRadioMedium(MRM.class);
+
   }
   private static void registerBuiltinPlugin(final Class<? extends Plugin> pluginClass) {
     builtinPlugins.put(pluginClass.getName(), pluginClass);
+  }
+
+  private static void registerBuiltinRadioMedium(Class<? extends RadioMedium> radioMediumClass) {
+    builtinRadioMediums.put(radioMediumClass.getName(), radioMediumClass);
   }
 
   /** Get the class for a named plugin, returns null if not found. */
@@ -104,6 +123,48 @@ public class ExtensionManager {
       }
     }
     return clazz;
+  }
+
+  /** Get the class for a named radio medium, returns null if not found. */
+  public static Class<? extends RadioMedium> getRadioMediumClass(Cooja cooja, String name) {
+    var clazz = builtinRadioMediums.get(name);
+    if (clazz != null) {
+      return clazz;
+    }
+    for (var candidate : cooja.getRegisteredRadioMediums()) {
+      if (name.equals(candidate.getName())) {
+        clazz = candidate;
+        break;
+      }
+    }
+    return clazz;
+  }
+
+  /** Create a radio medium of a certain class, returns null on failure. */
+  public static RadioMedium createRadioMedium(Cooja cooja, Simulation sim, String name)
+          throws Cooja.SimulationCreationException {
+    if (name.startsWith("se.sics")) {
+      name = name.replaceFirst("se\\.sics", "org.contikios");
+    }
+    return switch (name) {
+      case "org.contikios.cooja.radiomediums.UDGM" -> new UDGM(sim);
+      case "org.contikios.cooja.radiomediums.UDGMConstantLoss" -> new UDGMConstantLoss(sim);
+      case "org.contikios.cooja.radiomediums.DirectedGraphMedium" -> new DirectedGraphMedium(sim);
+      case "org.contikios.cooja.radiomediums.SilentRadioMedium" -> new SilentRadioMedium(sim);
+      case "org.contikios.cooja.radiomediums.LogisticLoss" -> new LogisticLoss(sim);
+      case "org.contikios.mrm.MRM" -> new MRM(sim);
+      default -> {
+        var clazz = getRadioMediumClass(cooja, name);
+        if (clazz == null) {
+          throw new Cooja.SimulationCreationException("Could not load " + name, null);
+        }
+        try {
+          yield clazz.getConstructor(Simulation.class).newInstance(sim);
+        } catch (Exception e) {
+          throw new Cooja.SimulationCreationException("Could not construct " + name, e);
+        }
+      }
+    };
   }
 
   /** Create a mote of a certain class, returns null on failure. */
