@@ -1436,7 +1436,8 @@ public class GUI {
             if (newSim != null && autoStart) {
               newSim.startSimulation();
             }
-          } catch (Cooja.SimulationCreationException e) {
+          } catch (Exception e) {
+            if (isCancelled()) return null;
             publish(e);
             try {
               var rv = channel.take();
@@ -1496,7 +1497,7 @@ public class GUI {
                 elem.setContent(0, new Text(newClass));
               }
             }
-          } else if (ex instanceof Cooja.SimulationCreationException e) { // Display failure + reload button.
+          } else if (ex instanceof Exception e) { // Display failure + reload button.
             var retry = showErrorDialog("Simulation load error", e, true);
             rv = retry ? 1 : 0;
           }
