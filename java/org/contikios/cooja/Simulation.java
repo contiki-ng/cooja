@@ -316,10 +316,6 @@ public final class Simulation {
           case "events" -> eventCentral.setConfigXML(element.getChildren());
           case "motetype" -> {
             String moteTypeClassName = element.getText().trim();
-            // Backwards compatibility: se.sics -> org.contikios.
-            if (moteTypeClassName.startsWith("se.sics")) {
-              moteTypeClassName = moteTypeClassName.replaceFirst("se\\.sics", "org.contikios");
-            }
             var moteType = ExtensionManager.createMoteType(cooja, moteTypeClassName);
             if (moteType == null) {
               throw new MoteType.MoteTypeCreationException("Could not create: " + moteTypeClassName);

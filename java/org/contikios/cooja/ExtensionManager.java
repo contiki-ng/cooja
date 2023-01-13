@@ -108,6 +108,9 @@ public class ExtensionManager {
 
   /** Create a mote of a certain class, returns null on failure. */
   public static MoteType createMoteType(Cooja cooja, String name) {
+    if (name.startsWith("se.sics")) {
+      name = name.replaceFirst("se\\.sics", "org.contikios");
+    }
     return switch (name) {
       case "org.contikios.cooja.motes.ImportAppMoteType" -> new ImportAppMoteType();
       case "org.contikios.cooja.motes.DisturberMoteType" -> new DisturberMoteType();
