@@ -32,10 +32,10 @@ package org.contikios.cooja;
 
 import java.util.ArrayList;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.interfaces.Radio;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A radio connection represents a connection between a single source radio and 
@@ -55,7 +55,7 @@ import org.contikios.cooja.interfaces.Radio;
  * @author Fredrik Osterlind
  */
 public class RadioConnection {
-  private static final Logger logger = LogManager.getLogger(RadioConnection.class);
+  private static final Logger logger = LoggerFactory.getLogger(RadioConnection.class);
 
   private static int ID = 0; /* Unique radio connection ID. For internal use */
   private final int id;
@@ -116,7 +116,7 @@ public class RadioConnection {
   public void removeDestination(Radio radio) {
     int idx = allDestinations.indexOf(radio);
     if (idx < 0) {
-      logger.fatal("Radio is not a connection destination: " + radio);
+      logger.error("Radio is not a connection destination: " + radio);
       return;
     }
     
@@ -134,7 +134,7 @@ public class RadioConnection {
    */
   public void addDestination(Radio radio, Long delay) {
     if (isDestination(radio)) {
-      logger.fatal("Radio is already a destination: " + radio);
+      logger.error("Radio is already a destination: " + radio);
       return;
     }
     allDestinations.add(radio);
@@ -150,7 +150,7 @@ public class RadioConnection {
   public long getDestinationDelay(Radio radio) {
     int idx = allDestinations.indexOf(radio);
     if (idx < 0) {
-      logger.fatal("Radio is not a connection destination: " + radio);
+      logger.error("Radio is not a connection destination: " + radio);
       return 0;
     }
     return allDestinationDelays.get(idx);
@@ -167,7 +167,7 @@ public class RadioConnection {
    */
   public void addInterfered(Radio radio) {
     if (isInterfered(radio)) {
-      logger.fatal("Radio is already interfered: " + radio);
+      logger.error("Radio is already interfered: " + radio);
       return;
     }
 

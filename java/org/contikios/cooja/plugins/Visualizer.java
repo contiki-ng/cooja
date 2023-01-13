@@ -85,8 +85,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
 import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
@@ -117,6 +115,8 @@ import org.contikios.cooja.plugins.skins.MoteTypeVisualizerSkin;
 import org.contikios.cooja.plugins.skins.PositionVisualizerSkin;
 import org.contikios.cooja.plugins.skins.TrafficVisualizerSkin;
 import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simulation visualizer supporting different visualizers
@@ -136,7 +136,7 @@ import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
 @ClassDescription("Network")
 @PluginType(PluginType.PType.SIM_STANDARD_PLUGIN)
 public class Visualizer extends VisPlugin implements HasQuickHelp {
-  private static final Logger logger = LogManager.getLogger(Visualizer.class);
+  private static final Logger logger = LoggerFactory.getLogger(Visualizer.class);
 
   public static final int MOTE_RADIUS = 8;
   private static final Color[] DEFAULT_MOTE_COLORS = {Color.WHITE};
@@ -273,13 +273,13 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           item.addItemListener(e1 -> {
             var menuItem = ((JCheckBoxMenuItem) e1.getItem());
             if (menuItem == null) {
-              logger.fatal("No menu item");
+              logger.error("No menu item");
               return;
             }
 
             var skinClass1 = (Class<VisualizerSkin>) menuItem.getClientProperty("skinclass");
             if (skinClass1 == null) {
-              logger.fatal("Unknown visualizer skin class");
+              logger.error("Unknown visualizer skin class");
               return;
             }
 
@@ -296,7 +296,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
                 }
               }
               if (skinToDeactivate == null) {
-                logger.fatal("Unknown visualizer to deactivate: " + skinClass1);
+                logger.error("Unknown visualizer to deactivate: " + skinClass1);
                 return;
               }
               skinToDeactivate.setInactive();
@@ -574,7 +574,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
                   menu.add(menuItem);
                 }
               } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e1) {
-                logger.fatal("Error: " + e1.getMessage(), e1);
+                logger.error("Error: " + e1.getMessage(), e1);
               }
             }
           }
@@ -608,7 +608,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
               menu.add(menuItem);
             }
           } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e1) {
-            logger.fatal("Error: " + e1.getMessage(), e1);
+            logger.error("Error: " + e1.getMessage(), e1);
           }
         }
 
@@ -763,7 +763,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           return;
         }
         // TODO: implement drag and drop.
-        logger.fatal("Drag and drop not implemented: " + file);
+        logger.error("Drag and drop not implemented: " + file);
       }
 
       private boolean acceptOrRejectDrag(DropTargetDragEvent dtde) {

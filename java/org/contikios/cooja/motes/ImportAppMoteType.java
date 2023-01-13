@@ -42,8 +42,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.Cooja;
 import org.jdom2.Element;
 
@@ -53,6 +51,8 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.ImportAppMoteDialog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Fredrik Osterlind
@@ -60,7 +60,7 @@ import org.contikios.cooja.dialogs.ImportAppMoteDialog;
 @ClassDescription("Import Java mote")
 @AbstractionLevelDescription("Application level")
 public class ImportAppMoteType extends AbstractApplicationMoteType {
-  private static final Logger logger = LogManager.getLogger(ImportAppMoteType.class);
+  private static final Logger logger = LoggerFactory.getLogger(ImportAppMoteType.class);
 
   private File moteClassPath = null;
   private String moteClassName = null;

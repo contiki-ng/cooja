@@ -30,19 +30,19 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.Clock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Fredrik Osterlind
  */
 @ClassDescription("Cycle clock")
 public class MspClock extends Clock {
-  private static final Logger logger = LogManager.getLogger(MspClock.class);
+  private static final Logger logger = LoggerFactory.getLogger(MspClock.class);
 
   private long timeDrift; /* Microseconds */
   private double deviation;
@@ -54,7 +54,7 @@ public class MspClock extends Clock {
 
   @Override
   public void setTime(long newTime) {
-    logger.fatal("Can't change emulated CPU time");
+    logger.error("Can't change emulated CPU time");
   }
 
   @Override

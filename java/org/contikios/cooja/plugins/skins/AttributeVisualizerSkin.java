@@ -36,8 +36,6 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Observer;
 import java.util.function.BiConsumer;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -47,6 +45,8 @@ import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.ui.ColorUtils;
 import org.contikios.cooja.util.EventTriggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Visualizer skin for mote attributes.
@@ -56,7 +56,7 @@ import org.contikios.cooja.util.EventTriggers;
  */
 @ClassDescription("Mote attributes")
 public class AttributeVisualizerSkin implements VisualizerSkin {
-  private static final Logger logger = LogManager.getLogger(AttributeVisualizerSkin.class);
+  private static final Logger logger = LoggerFactory.getLogger(AttributeVisualizerSkin.class);
 
   private Simulation simulation = null;
   private Visualizer visualizer = null;

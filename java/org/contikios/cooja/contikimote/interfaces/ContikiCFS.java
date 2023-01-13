@@ -42,8 +42,6 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -51,6 +49,8 @@ import org.contikios.cooja.MoteInterface;
 
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contiki FileSystem (CFS) interface (such as external flash).
@@ -69,7 +69,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 @ClassDescription("Filesystem (CFS)")
 public class ContikiCFS implements MoteInterface, PolledAfterActiveTicks {
-  private static final Logger logger = LogManager.getLogger(ContikiCFS.class);
+  private static final Logger logger = LoggerFactory.getLogger(ContikiCFS.class);
 
   public static final int FILESYSTEM_SIZE = 4000; /* Configure CFS size here and in cfs-cooja.c */
   private final Mote mote;
@@ -121,7 +121,7 @@ public class ContikiCFS implements MoteInterface, PolledAfterActiveTicks {
    */
   public boolean setFilesystemData(byte[] data) {
     if (data.length > FILESYSTEM_SIZE) {
-      logger.fatal("Error. Filesystem data too large, skipping");
+      logger.error("Error. Filesystem data too large, skipping");
       return false;
     }
 

@@ -58,8 +58,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.HasQuickHelp;
 import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
@@ -79,6 +77,8 @@ import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.ui.DebugUI;
 import se.sics.mspsim.util.DebugInfo;
@@ -91,7 +91,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   private static final int SOURCECODE = 0;
   private static final int BREAKPOINTS = 2;
 
-  private static final Logger logger = LogManager.getLogger(MspCodeWatcher.class);
+  private static final Logger logger = LoggerFactory.getLogger(MspCodeWatcher.class);
   private final Simulation simulation;
   private File currentCodeFile = null;
   private int currentLineNumber = -1;
@@ -343,7 +343,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
       currentCodeFile = f;
       currentLineNumber = debugInfo.getLine();
     } catch (Exception e) {
-      logger.fatal("Exception: " + e.getMessage(), e);
+      logger.error("Exception: " + e.getMessage(), e);
       currentCodeFile = null;
       currentLineNumber = -1;
     }
@@ -740,7 +740,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
       try {
         mspMote.getCPU().stepInstructions(1);
       } catch (EmulationException ex) {
-        logger.fatal("Error: ", ex);
+        logger.error("Error: ", ex);
       }
       showCurrentPC();
     }

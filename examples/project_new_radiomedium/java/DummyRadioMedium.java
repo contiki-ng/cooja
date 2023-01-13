@@ -29,22 +29,22 @@
  */
 
 import java.util.Collection;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
 
 import org.contikios.cooja.*;
 import org.contikios.cooja.interfaces.*;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Dummy radio medium.
  *
- * @author Fredrik Österlind
+ * @author Fredrik Osterlind
  */
 @ClassDescription("Dummy Radio Medium")
 public class DummyRadioMedium extends AbstractRadioMedium {
-  private static final Logger logger = LogManager.getLogger(Cooja.class);
+  private static final Logger logger = LoggerFactory.getLogger(Cooja.class);
 
   public DummyRadioMedium(Simulation simulation) {
     super(simulation);

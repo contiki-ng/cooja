@@ -78,8 +78,6 @@ import javax.swing.RowFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.ConvertedRadioPacket;
 import org.contikios.cooja.Cooja;
@@ -100,6 +98,8 @@ import org.contikios.cooja.plugins.analyzers.PacketAnalyzer;
 import org.contikios.cooja.plugins.analyzers.RadioLoggerAnalyzerSuite;
 import org.contikios.cooja.util.StringUtils;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Radio logger listens to the simulation radio medium and lists all transmitted
@@ -111,7 +111,7 @@ import org.jdom2.Element;
 @PluginType(PluginType.PType.SIM_PLUGIN)
 public class RadioLogger extends VisPlugin {
 
-  private static final Logger logger = LogManager.getLogger(RadioLogger.class);
+  private static final Logger logger = LoggerFactory.getLogger(RadioLogger.class);
 
   private final static int COLUMN_NO = 0;
   private final static int COLUMN_TIME = 1;
@@ -525,7 +525,7 @@ public class RadioLogger extends VisPlugin {
         }
 
         if (saveFile.exists() && !saveFile.canWrite()) {
-          logger.fatal("No write access to file: " + saveFile);
+          logger.error("No write access to file: " + saveFile);
           return;
         }
 
@@ -536,7 +536,7 @@ public class RadioLogger extends VisPlugin {
           }
           outStream.close();
         } catch (Exception ex) {
-          logger.fatal("Could not write to file: " + saveFile);
+          logger.error("Could not write to file: " + saveFile);
         }
       }
     };

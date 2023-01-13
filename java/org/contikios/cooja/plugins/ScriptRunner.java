@@ -62,8 +62,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -74,11 +72,13 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.util.StringUtils;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ClassDescription("Simulation script editor")
 @PluginType(PluginType.PType.SIM_CONTROL_PLUGIN)
 public class ScriptRunner implements Plugin, HasQuickHelp {
-  private static final Logger logger = LogManager.getLogger(ScriptRunner.class);
+  private static final Logger logger = LoggerFactory.getLogger(ScriptRunner.class);
 
   private final Cooja gui;
 
@@ -316,7 +316,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
     try {
       script = engine.compileScript(getCombinedScripts());
     } catch (ScriptException e) {
-      logger.fatal("Test script error: ", e);
+      logger.error("Test script error: ", e);
       if (Cooja.isVisualized()) {
         Cooja.showErrorDialog("Script error", e, false);
       }

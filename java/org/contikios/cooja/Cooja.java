@@ -56,8 +56,6 @@ import java.util.zip.GZIPOutputStream;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.MoteType.MoteTypeCreationException;
 import org.contikios.cooja.VisPlugin.PluginRequiresVisualizationException;
 import org.contikios.cooja.contikimote.ContikiMoteType;
@@ -83,6 +81,8 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main file of COOJA Simulator. Typically, contains a visualizer for the
@@ -113,7 +113,7 @@ public class Cooja {
    */
   public static final String CONTIKI_NG_BUILD_VERSION = "2022071901";
 
-  private static final Logger logger = LogManager.getLogger(Cooja.class);
+  private static final Logger logger = LoggerFactory.getLogger(Cooja.class);
 
   private static final String PATH_CONFIG_IDENTIFIER = "[CONFIG_DIR]";
 
@@ -491,7 +491,7 @@ public class Cooja {
                 }
               }
             } catch (Exception e) {
-              logger.fatal("Error when trying to read JAR-file in " + projectDir + ": " + e);
+              logger.error("Error when trying to read JAR-file in " + projectDir + ": " + e);
               throw new ClassLoaderCreationException("Error when trying to read JAR-file in " + projectDir, e);
             }
           }
@@ -1173,7 +1173,7 @@ public class Cooja {
       try (var in = new FileInputStream(externalToolsUserSettingsFile)) {
         settings.load(in);
       } catch (IOException e1) {
-        logger.fatal("Error when reading user settings from: " + externalToolsUserSettingsFile);
+        logger.error("Error when reading user settings from: " + externalToolsUserSettingsFile);
         System.exit(1);
       }
       var en = settings.keys();
@@ -1187,7 +1187,7 @@ public class Cooja {
     try {
       gui = makeCooja();
     } catch (Exception e) {
-      logger.fatal(e.getMessage());
+      logger.error(e.getMessage());
       System.exit(1);
     }
     // Check if simulator should be quick-started.
@@ -1201,7 +1201,7 @@ public class Cooja {
                 ? Cooja.gui.doLoadConfig(simConfig)
                 : gui.createSimulation(simConfig, gui.readSimulationConfig(simConfig), true, simConfig.randomSeed());
       } catch (Exception e) {
-        logger.fatal("Exception when loading simulation: ", e);
+        logger.error("Exception when loading simulation: ", e);
       }
       if (sim == null) {
         autoQuit = true;

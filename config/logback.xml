@@ -1,0 +1,12 @@
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%level [%thread] [%file:%line] - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="cooja" level="INFO"/>
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>

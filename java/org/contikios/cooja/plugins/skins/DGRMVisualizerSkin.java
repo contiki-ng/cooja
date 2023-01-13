@@ -35,8 +35,6 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Set;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -49,12 +47,14 @@ import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.radiomediums.DGRMDestinationRadio;
 import org.contikios.cooja.radiomediums.DestinationRadio;
 import org.contikios.cooja.radiomediums.DirectedGraphMedium;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ClassDescription("Radio environment (DGRM)")
 @SupportedArguments(radioMediums = {DirectedGraphMedium.class})
 public class DGRMVisualizerSkin implements VisualizerSkin {
 
-  private static final Logger logger = LogManager.getLogger(DGRMVisualizerSkin.class);
+  private static final Logger logger = LoggerFactory.getLogger(DGRMVisualizerSkin.class);
 
   private Simulation simulation = null;
   private Visualizer visualizer = null;
@@ -62,7 +62,7 @@ public class DGRMVisualizerSkin implements VisualizerSkin {
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     if (!(simulation.getRadioMedium() instanceof DirectedGraphMedium)) {
-      logger.fatal("Cannot activate DGRM skin for unknown radio medium: " + simulation.getRadioMedium());
+      logger.error("Cannot activate DGRM skin for unknown radio medium: " + simulation.getRadioMedium());
       return;
     }
     this.simulation = simulation;

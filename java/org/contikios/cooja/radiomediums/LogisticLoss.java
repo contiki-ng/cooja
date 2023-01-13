@@ -34,8 +34,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Map;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Cooja;
 import org.jdom2.Element;
 import org.contikios.cooja.ClassDescription;
@@ -45,6 +43,8 @@ import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The LogisticLoss radio medium aims to be more realistic as the UDGM radio medium
@@ -99,7 +99,7 @@ import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
  */
 @ClassDescription("LogisticLoss Medium")
 public class LogisticLoss extends AbstractRadioMedium {
-    private static final Logger logger = LogManager.getLogger(LogisticLoss.class);
+    private static final Logger logger = LoggerFactory.getLogger(LogisticLoss.class);
 
     /* Success ratio of TX. If this fails, no radios receive the packet */
     public double SUCCESS_RATIO_TX = 1.0;

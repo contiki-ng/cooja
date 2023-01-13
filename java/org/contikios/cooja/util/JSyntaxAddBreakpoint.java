@@ -38,13 +38,13 @@ import javax.swing.JMenuItem;
 
 import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.WatchpointMote;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JSyntaxAddBreakpoint extends DefaultSyntaxAction {
-  private static final Logger logger = LogManager.getLogger(JSyntaxAddBreakpoint.class);
+  private static final Logger logger = LoggerFactory.getLogger(JSyntaxAddBreakpoint.class);
 
   public JSyntaxAddBreakpoint() {
     super("addbreakpoint");

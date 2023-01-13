@@ -31,8 +31,6 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import javax.swing.JPanel;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -41,6 +39,8 @@ import org.contikios.cooja.interfaces.Clock;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Clock mote interface. Controls Contiki time.
@@ -61,7 +61,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * @author Fredrik Osterlind
  */
 public class ContikiClock extends Clock implements PolledBeforeActiveTicks, PolledAfterAllTicks {
-  private static final Logger logger = LogManager.getLogger(ContikiClock.class);
+  private static final Logger logger = LoggerFactory.getLogger(ContikiClock.class);
 
   private final ContikiMote mote;
   private final VarMemory moteMem;
@@ -109,7 +109,7 @@ public class ContikiClock extends Clock implements PolledBeforeActiveTicks, Poll
   
   @Override
   public void setDeviation(double deviation) {
-    logger.fatal("Can't change deviation");
+    logger.error("Can't change deviation");
   }
 
   @Override

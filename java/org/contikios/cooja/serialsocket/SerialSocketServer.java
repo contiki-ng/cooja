@@ -63,12 +63,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.EtchedBorder;
 import javax.swing.text.NumberFormatter;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.contikios.cooja.util.EventTriggers;
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -79,6 +73,10 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.interfaces.SerialPort;
 import org.contikios.cooja.util.CmdUtils;
+import org.contikios.cooja.util.EventTriggers;
+import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Socket to simulated serial port forwarder. Server version.
@@ -89,7 +87,7 @@ import org.contikios.cooja.util.CmdUtils;
 @ClassDescription("Serial Socket (SERVER)")
 @PluginType(PluginType.PType.MOTE_PLUGIN)
 public class SerialSocketServer implements Plugin, MotePlugin {
-  private static final Logger logger = LogManager.getLogger(SerialSocketServer.class);
+  private static final Logger logger = LoggerFactory.getLogger(SerialSocketServer.class);
 
   private final static int STATUSBAR_WIDTH = 350;
 

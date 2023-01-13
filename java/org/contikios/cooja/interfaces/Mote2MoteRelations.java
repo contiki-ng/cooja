@@ -33,19 +33,16 @@ package org.contikios.cooja.interfaces;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.ui.ColorUtils;
 import org.contikios.cooja.util.EventTriggers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mote2Mote Relations is used to show mote relations in simulated
@@ -73,7 +70,7 @@ import org.contikios.cooja.util.EventTriggers;
  */
 @ClassDescription("Mote2Mote Relations")
 public class Mote2MoteRelations extends Observable implements MoteInterface {
-  private static final Logger logger = LogManager.getLogger(Mote2MoteRelations.class);
+  private static final Logger logger = LoggerFactory.getLogger(Mote2MoteRelations.class);
   private final Mote mote;
 
   private final ArrayList<Mote> relations = new ArrayList<>();
@@ -205,7 +202,7 @@ public class Mote2MoteRelations extends Observable implements MoteInterface {
   public void releaseInterfaceVisualizer(JPanel panel) {
     Observer observer = (Observer) panel.getClientProperty("intf_obs");
     if (observer == null) {
-      logger.fatal("Error when releasing panel, observer is null");
+      logger.error("Error when releasing panel, observer is null");
       return;
     }
     this.deleteObserver(observer);

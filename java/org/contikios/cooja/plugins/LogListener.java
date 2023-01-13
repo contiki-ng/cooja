@@ -79,8 +79,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -93,6 +91,8 @@ import org.contikios.cooja.dialogs.TableColumnAdjuster;
 import org.contikios.cooja.dialogs.UpdateAggregator;
 import org.contikios.cooja.util.ArrayQueue;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple mote log listener.
@@ -103,7 +103,7 @@ import org.jdom2.Element;
 @ClassDescription("Mote output")
 @PluginType(PluginType.PType.SIM_STANDARD_PLUGIN)
 public class LogListener extends VisPlugin implements HasQuickHelp {
-  private static final Logger logger = LogManager.getLogger(LogListener.class);
+  private static final Logger logger = LoggerFactory.getLogger(LogListener.class);
 
   private final Color[] BG_COLORS = new Color[] {
       new Color(200, 200, 200),
@@ -310,7 +310,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
         Cooja.setExternalToolsSetting("LOG_LISTENER_SAVEFILE", saveFile.getPath());
         if (saveFile.exists() && !saveFile.canWrite()) {
-          logger.fatal("No write access to file: " + saveFile);
+          logger.error("No write access to file: " + saveFile);
           return;
         }
 
@@ -322,7 +322,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
                             data.ev.getMessage());
           }
         } catch (Exception ex) {
-          logger.fatal("Could not write to file: " + saveFile);
+          logger.error("Could not write to file: " + saveFile);
         }
       }
     };
@@ -351,7 +351,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         File saveFile = fc.getSelectedFile();
         Cooja.setExternalToolsSetting("LOG_LISTENER_APPENDFILE", saveFile.getPath());
         if (saveFile.exists() && !saveFile.canWrite()) {
-          logger.fatal("No write access to file: " + saveFile);
+          logger.error("No write access to file: " + saveFile);
           appendToFile = false;
           cb.setSelected(false);
           return;
@@ -835,7 +835,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
         appendStreamFile = file;
         appendToFileWroteHeader = false;
       } catch (Exception ex) {
-        logger.fatal("Append file failed: " + ex.getMessage(), ex);
+        logger.error("Append file failed: " + ex.getMessage(), ex);
         return false;
       }
     }

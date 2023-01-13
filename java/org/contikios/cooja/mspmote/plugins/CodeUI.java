@@ -52,14 +52,14 @@ import javax.swing.text.Highlighter.HighlightPainter;
 
 import de.sciss.syntaxpane.DefaultSyntaxKit;
 import de.sciss.syntaxpane.components.Markers;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Watchpoint;
 import org.contikios.cooja.WatchpointMote;
 import org.contikios.cooja.util.JSyntaxAddBreakpoint;
 import org.contikios.cooja.util.JSyntaxRemoveBreakpoint;
 import org.contikios.cooja.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Displays source code and allows a user to add and remove breakpoints.
@@ -67,7 +67,7 @@ import org.contikios.cooja.util.StringUtils;
  * @author Fredrik Osterlind
  */
 public class CodeUI extends JPanel {
-  private static final Logger logger = LogManager.getLogger(CodeUI.class);
+  private static final Logger logger = LoggerFactory.getLogger(CodeUI.class);
 
   static {
     DefaultSyntaxKit.initKit();

@@ -32,14 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
-import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.contikios.cooja.Cooja.Config;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -67,29 +59,10 @@ class Main {
   Boolean gui;
 
   /**
-   * Option for specifying if the console log should be in color.
-   */
-  @Option(names = "--log-color", description = "use color in console log",
-          defaultValue = "true", fallbackValue = "true", negatable = true)
-  boolean logColor;
-
-  /**
-   * Option for specifying log4j2 config file.
-   */
-  @Option(names = "--log4j2", paramLabel = "FILE", description = "the log4j2 config file")
-  String logConfigFile;
-
-  /**
    * Option for specifying log directory.
    */
   @Option(names = "--logdir", paramLabel = "DIR", description = "the log directory use")
   String logDir = ".";
-
-  /**
-   * Option for also logging stdout output to a file.
-   */
-  @Option(names = "--logname", paramLabel = "NAME", description = "the filename for the log")
-  String logName;
 
   /**
    * Option for specifying Contiki-NG path.
@@ -252,11 +225,6 @@ class Main {
               Boolean.parseBoolean(autoStart), Boolean.parseBoolean(updateSim), logDir, map));
     }
 
-    if (options.logConfigFile != null && !Files.exists(Path.of(options.logConfigFile))) {
-      System.err.println("Configuration file '" + options.logConfigFile + "' does not exist");
-      System.exit(1);
-    }
-
     if (options.contikiPath != null && !Files.exists(Path.of(options.contikiPath))) {
       System.err.println("Contiki-NG path '" + options.contikiPath + "' does not exist");
       System.exit(1);
@@ -295,57 +263,8 @@ class Main {
       System.exit(1);
     }
 
-    if (options.logName != null && !options.logName.endsWith(".log")) {
-      options.logName += ".log";
-    }
-
     var cfg = new Config(options.gui, options.externalUserConfig,
             options.logDir, options.contikiPath, options.coojaPath, options.javac);
-    // Configure logger
-    if (options.logConfigFile == null) {
-      var startColor = options.logColor ? "%highlight{" : "";
-      var endColor = options.logColor ? "}" : "";
-      ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
-      builder.setStatusLevel(Level.INFO);
-      builder.setConfigurationName("DefaultConfig");
-      builder.add(builder.newFilter("ThresholdFilter", Filter.Result.ACCEPT, Filter.Result.NEUTRAL)
-              .addAttribute("level", Level.INFO));
-      // Configure console appender.
-      AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE")
-              .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
-      appenderBuilder.add(builder.newLayout("PatternLayout")
-              .addAttribute("pattern", startColor + "%5p [%t] (%F:%L) - %m" + endColor + "%n"));
-      appenderBuilder.add(builder.newFilter("MarkerFilter", Filter.Result.DENY, Filter.Result.NEUTRAL)
-              .addAttribute("marker", "FLOW"));
-      builder.add(appenderBuilder);
-      builder.add(builder.newLogger("org.apache.logging.log4j", Level.DEBUG)
-              .add(builder.newAppenderRef("Stdout")).addAttribute("additivity", false));
-      if (options.logName != null) {
-        // Configure logfile file appender.
-        appenderBuilder = builder.newAppender("File", "FILE")
-                .addAttribute("fileName", options.logDir + "/" + options.logName)
-                .addAttribute("Append", "false");
-        appenderBuilder.add(builder.newLayout("PatternLayout")
-                .addAttribute("pattern", "[%d{HH:mm:ss} - %t] [%F:%L] [%p] - %m%n"));
-        appenderBuilder.add(builder.newFilter("MarkerFilter", Filter.Result.DENY, Filter.Result.NEUTRAL)
-                .addAttribute("marker", "FLOW"));
-        builder.add(appenderBuilder);
-        builder.add(builder.newLogger("org.apache.logging.log4j", Level.DEBUG)
-                .add(builder.newAppenderRef("File")).addAttribute("additivity", false));
-        // Construct the root logger and initialize the configurator
-        builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("Stdout"))
-                .add(builder.newAppenderRef("File")));
-      } else {
-        builder.add(builder.newRootLogger(Level.INFO).add(builder.newAppenderRef("Stdout")));
-      }
-      // FIXME: This should be try (LoggerContext cxt = Configurator.initialize(..)),
-      //        but go immediately returns which causes the log file to be closed
-      //        while the simulation is still running.
-      Configurator.initialize(builder.build());
-      Cooja.go(cfg, simConfigs);
-    } else {
-      Configurator.initialize("ConfigFile", options.logConfigFile);
-      Cooja.go(cfg, simConfigs);
-    }
+    Cooja.go(cfg, simConfigs);
   }
 }

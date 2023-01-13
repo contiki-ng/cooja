@@ -38,14 +38,14 @@ import java.util.Observer;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.plugins.skins.AttributeVisualizerSkin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * MoteAttributes used to store mote attributes for debugging and statistics
@@ -78,7 +78,7 @@ import org.contikios.cooja.plugins.skins.AttributeVisualizerSkin;
  */
 @ClassDescription("Mote Attributes")
 public class MoteAttributes extends Observable implements MoteInterface {
-  private static final Logger logger = LogManager.getLogger(MoteAttributes.class);
+  private static final Logger logger = LoggerFactory.getLogger(MoteAttributes.class);
   private final Mote mote;
 
   private final HashMap<String, Object> attributes = new HashMap<>();

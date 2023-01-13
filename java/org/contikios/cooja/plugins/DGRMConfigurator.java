@@ -52,8 +52,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
@@ -67,6 +65,8 @@ import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 import org.contikios.cooja.radiomediums.DGRMDestinationRadio;
 import org.contikios.cooja.radiomediums.DirectedGraphMedium;
 import org.contikios.cooja.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple user interface for configuring edges for the Directed Graph
@@ -79,7 +79,7 @@ import org.contikios.cooja.util.StringUtils;
 @PluginType(PluginType.PType.SIM_PLUGIN)
 @SupportedArguments(radioMediums = {DirectedGraphMedium.class})
 public class DGRMConfigurator extends VisPlugin {
-	private static final Logger logger = LogManager.getLogger(DGRMConfigurator.class);
+	private static final Logger logger = LoggerFactory.getLogger(DGRMConfigurator.class);
 
   private final static int IDX_SRC = 0;
   private final static int IDX_DST = 1;
@@ -290,7 +290,7 @@ public class DGRMConfigurator extends VisPlugin {
     }
     File file = fc.getSelectedFile();
     if (file == null || !file.exists() || !file.canRead()) {
-      logger.fatal("No read access to file: " + file);
+      logger.error("No read access to file: " + file);
       return;
     }
     Cooja.setExternalToolsSetting("DGRM_IMPORT_LINKS_FILE", file.getPath());

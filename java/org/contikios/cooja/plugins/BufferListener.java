@@ -83,8 +83,6 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -104,6 +102,8 @@ import org.contikios.cooja.util.EventTriggers;
 import org.contikios.cooja.util.IPUtils;
 import org.contikios.cooja.util.StringUtils;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Fredrik Osterlind, Niclas Finne
@@ -111,7 +111,7 @@ import org.jdom2.Element;
 @ClassDescription("Buffer view")
 @PluginType(PluginType.PType.SIM_PLUGIN)
 public class BufferListener extends VisPlugin {
-  private static final Logger logger = LogManager.getLogger(BufferListener.class);
+  private static final Logger logger = LoggerFactory.getLogger(BufferListener.class);
 
   private final static int COLUMN_TIME = 0;
   private final static int COLUMN_FROM = 1;
@@ -604,7 +604,7 @@ public class BufferListener extends VisPlugin {
         }
         Cooja.setExternalToolsSetting("BUFFER_LISTENER_SAVEFILE", saveFile.getPath());
         if (saveFile.exists() && !saveFile.canWrite()) {
-          logger.fatal("No write access to file: " + saveFile);
+          logger.error("No write access to file: " + saveFile);
           return;
         }
         try (var outStream = new PrintWriter(Files.newBufferedWriter(saveFile.toPath(), UTF_8))) {
@@ -624,7 +624,7 @@ public class BufferListener extends VisPlugin {
           }
           outStream.print(sb);
         } catch (Exception ex) {
-          logger.fatal("Could not write to file: " + saveFile);
+          logger.error("Could not write to file: " + saveFile);
         }
       }
     }));
@@ -1763,17 +1763,17 @@ public class BufferListener extends VisPlugin {
         size = Integer.parseInt(infoComponent.getSize());
         if (size < 1 || size > MAX_BUFFER_SIZE) {
           /* Abort */
-          logger.fatal("Bad buffer size " + infoComponent.getSize() + ": min 1, max " + MAX_BUFFER_SIZE);
+          logger.error("Bad buffer size " + infoComponent.getSize() + ": min 1, max " + MAX_BUFFER_SIZE);
           return false;
         }
       } catch (RuntimeException e) {
-        logger.fatal("Failed parsing buffer size " + infoComponent.getSize() + ": " + e.getMessage(), e);
+        logger.error("Failed parsing buffer size " + infoComponent.getSize() + ": " + e.getMessage(), e);
         return false;
       }
       try {
         offset = Long.parseLong(infoComponent.getOffset());
       } catch (RuntimeException e) {
-        logger.fatal("Failed parsing buffer offset " + infoComponent.getOffset() + ": " + e.getMessage(), e);
+        logger.error("Failed parsing buffer offset " + infoComponent.getOffset() + ": " + e.getMessage(), e);
         /* Abort */
         return false;
       }
@@ -1850,17 +1850,17 @@ public class BufferListener extends VisPlugin {
         size = Integer.parseInt(infoComponent.getSize());
         if (size < 1 || size > MAX_BUFFER_SIZE) {
           /* Abort */
-          logger.fatal("Bad buffer size " + infoComponent.getSize() + ": min 1, max " + MAX_BUFFER_SIZE);
+          logger.error("Bad buffer size " + infoComponent.getSize() + ": min 1, max " + MAX_BUFFER_SIZE);
           return false;
         }
       } catch (RuntimeException e) {
-        logger.fatal("Failed parsing buffer size " + infoComponent.getSize() + ": " + e.getMessage(), e);
+        logger.error("Failed parsing buffer size " + infoComponent.getSize() + ": " + e.getMessage(), e);
         return false;
       }
       try {
         offset = Long.parseLong(infoComponent.getOffset());
       } catch (RuntimeException e) {
-        logger.fatal("Failed parsing buffer offset " + infoComponent.getOffset() + ": " + e.getMessage(), e);
+        logger.error("Failed parsing buffer offset " + infoComponent.getOffset() + ": " + e.getMessage(), e);
         /* Abort */
         return false;
       }

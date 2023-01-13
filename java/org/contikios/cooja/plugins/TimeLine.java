@@ -77,8 +77,6 @@ import javax.swing.Timer;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -97,6 +95,8 @@ import org.contikios.cooja.interfaces.Radio.RadioEvent;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Shows events such as mote logs, LEDs, and radio transmissions, in a timeline.
@@ -125,7 +125,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   private boolean needZoomOut = false;
 
-  private static final Logger logger = LogManager.getLogger(TimeLine.class);
+  private static final Logger logger = LoggerFactory.getLogger(TimeLine.class);
 
   private int paintedMoteHeight = EVENT_PIXEL_HEIGHT;
   private int paintEventMinWidth = PAINT_MIN_WIDTH_EVENTS;
@@ -286,7 +286,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         }
 
         if (saveFile.exists() && !saveFile.canWrite()) {
-          logger.fatal("No write access to file");
+          logger.error("No write access to file");
           return;
         }
 
@@ -313,7 +313,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             }
           }
         } catch (Exception ex) {
-          logger.fatal("Could not write to file: " + saveFile);
+          logger.error("Could not write to file: " + saveFile);
         }
       }
     }));
@@ -1865,7 +1865,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       } else if (state == RXTXRadioEvent.INTERFERED) {
         return Color.RED;
       } else {
-        logger.fatal("Unknown RXTX event");
+        logger.error("Unknown RXTX event");
         return null;
       }
     }

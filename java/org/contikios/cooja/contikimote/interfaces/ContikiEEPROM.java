@@ -51,8 +51,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -61,6 +59,8 @@ import org.jdom2.Element;
 
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contiki EEPROM interface
@@ -80,7 +80,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  */
 @ClassDescription("EEPROM")
 public class ContikiEEPROM implements MoteInterface, PolledAfterActiveTicks {
-  private static final Logger logger = LogManager.getLogger(ContikiEEPROM.class);
+  private static final Logger logger = LoggerFactory.getLogger(ContikiEEPROM.class);
 
   public static final int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */
   private final Mote mote;
@@ -131,7 +131,7 @@ public class ContikiEEPROM implements MoteInterface, PolledAfterActiveTicks {
    */
   public boolean setEEPROMData(byte[] data) {
     if (data.length > EEPROM_SIZE) {
-      logger.fatal("Error. EEPROM data too large, skipping");
+      logger.error("Error. EEPROM data too large, skipping");
       return false;
     }
 

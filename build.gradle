@@ -18,6 +18,8 @@ repositories {
 
 dependencies {
   implementation files('lib/jipv6.jar')
+  // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+  implementation 'ch.qos.logback:logback-classic:1.4.5'
   // https://mvnrepository.com/artifact/com.github.cliftonlabs/json-simple
   implementation 'com.github.cliftonlabs:json-simple:4.0.1'
   // https://mvnrepository.com/artifact/de.sciss/syntaxpane
@@ -26,14 +28,14 @@ dependencies {
   implementation 'info.picocli:picocli:4.7.0'
   // https://mvnrepository.com/artifact/info.picocli/picocli-codegen
   annotationProcessor 'info.picocli:picocli-codegen:4.7.0'
-  // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
-  implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
   // https://mvnrepository.com/artifact/org.jdom/jdom2
   implementation 'org.jdom:jdom2:2.0.6.1'
   // https://mvnrepository.com/artifact/org.jfree/jfreechart
   implementation 'org.jfree:jfreechart:1.5.4'
   // https://mvnrepository.com/artifact/org.openjdk.nashorn/nashorn-core
   implementation 'org.openjdk.nashorn:nashorn-core:15.4'
+  // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+  implementation 'org.slf4j:slf4j-api:2.0.6'
   // https://mvnrepository.com/artifact/org.swinglabs.swingx/swingx-autocomplete
   implementation 'org.swinglabs.swingx:swingx-autocomplete:1.6.5-1'
 }
@@ -133,6 +135,7 @@ run {
     }
   }
   systemProperty 'picocli.disable.closures', "true"
+  systemProperty 'logback.configurationFile', 'logback.xml'
   // Enable assertions with "-Passertions".
   enableAssertions = project.hasProperty('assertions')
 }

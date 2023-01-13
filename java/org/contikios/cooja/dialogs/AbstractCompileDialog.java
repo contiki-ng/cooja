@@ -65,8 +65,6 @@ import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
@@ -74,6 +72,8 @@ import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract configure mote type dialog used by Contiki-based mote type implementations.
@@ -89,7 +89,7 @@ import org.contikios.cooja.util.StringUtils;
  * @author Fredrik Osterlind
  */
 public abstract class AbstractCompileDialog extends JDialog {
-  private static final Logger logger = LogManager.getLogger(AbstractCompileDialog.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractCompileDialog.class);
 
   protected final static Dimension LABEL_DIMENSION = new Dimension(170, 25);
 
@@ -238,7 +238,7 @@ public abstract class AbstractCompileDialog extends JDialog {
                   false
               );
             } catch (Exception ex) {
-              logger.fatal("Exception when compiling: " + ex.getMessage());
+              logger.error("Exception when compiling: " + ex.getMessage());
               taskOutput.addMessage(ex.getMessage(), MessageList.ERROR);
               ex.printStackTrace();
               compilationFailureAction.actionPerformed(null);
@@ -256,7 +256,7 @@ public abstract class AbstractCompileDialog extends JDialog {
             moteType.getCompilationEnvironment(), new File(contikiField.getText()).getParentFile(),
             null, null, new MessageListUI(), true);
       } catch (Exception e1) {
-        logger.fatal("Clean failed: " + e1.getMessage(), e1);
+        logger.error("Clean failed: " + e1.getMessage(), e1);
       }
     });
 

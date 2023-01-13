@@ -38,9 +38,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Vector;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class represents an area with obstacles.
@@ -49,7 +49,7 @@ import org.jdom2.Element;
  * @author Fredrik Osterlind
  */
 class ObstacleWorld {
-  private static final Logger logger = LogManager.getLogger(ObstacleWorld.class);
+  private static final Logger logger = LoggerFactory.getLogger(ObstacleWorld.class);
   
   // All registered obstacles
   private final Vector<Rectangle2D> allObstacles;

@@ -2,14 +2,14 @@ package org.contikios.cooja.plugins.analyzers;
 
 import java.io.IOException;
 import java.io.File;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.contikios.cooja.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IEEE802154Analyzer extends PacketAnalyzer {
 
-  private static final Logger logger = LogManager.getLogger(IEEE802154Analyzer.class);
+  private static final Logger logger = LoggerFactory.getLogger(IEEE802154Analyzer.class);
 
   // Addressing modes
   public static final int NO_ADDRESS = 0;
