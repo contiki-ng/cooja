@@ -84,10 +84,7 @@ public class MoteAttributes extends Observable implements MoteInterface {
   private final HashMap<String, Object> attributes = new HashMap<>();
   private final HashMap<JPanel, JTextArea> labels = new HashMap<>();
 
-  private Observer logObserver = (o, arg) -> {
-    String msg = ((Log) o).getLastLogMessage();
-    handleNewLog(msg);
-  };
+  private Observer logObserver;
 
   public MoteAttributes(Mote mote) {
     this.mote = mote;
@@ -95,6 +92,33 @@ public class MoteAttributes extends Observable implements MoteInterface {
 
   @Override
   public void added() {
+    logObserver = (o, arg) -> {
+      String msg = ((Log) o).getLastLogMessage();
+      if (msg == null) {
+        return;
+      }
+
+      if (msg.startsWith("DEBUG: ")) {
+        msg = msg.substring("DEBUG: ".length());
+      }
+
+      if (!msg.startsWith("#A ")) {
+        return;
+      }
+      // Remove "#A ".
+      msg = msg.substring(3);
+
+      setAttributes(msg);
+      if (Cooja.isVisualized()) {
+        EventQueue.invokeLater(() -> {
+          for (var text : labels.values()) {
+            text.setText(getText());
+          }
+        });
+      }
+      setChanged();
+      notifyObservers();
+    };
     /* Observe log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
       if (mi instanceof Log log) {
@@ -112,33 +136,6 @@ public class MoteAttributes extends Observable implements MoteInterface {
       }
     }
     logObserver = null;
-  }
-
-  private void handleNewLog(String msg) {
-    if (msg == null) {
-      return;
-    }
-
-    if (msg.startsWith("DEBUG: ")) {
-      msg = msg.substring("DEBUG: ".length());
-    }
-
-    if (!msg.startsWith("#A ")) {
-      return;
-    }
-    /* remove "#A " */
-    msg = msg.substring(3);
-
-    setAttributes(msg);
-    if (Cooja.isVisualized()) {
-      EventQueue.invokeLater(() -> {
-        for (var text : labels.values()) {
-          text.setText(getText());
-        }
-      });
-    }
-    setChanged();
-    notifyObservers();
   }
 
   private void setAttributes(String att) {
