@@ -191,8 +191,7 @@ public class EventListener extends VisPlugin {
     generalPanel.add(simCheckBox);
 
     JCheckBox radioMediumCheckBox = new JCheckBox("Radio medium event", false);
-    radioMediumCheckBox.putClientProperty("observable", mySimulation
-        .getRadioMedium().getRadioTransmissionObservable());
+    radioMediumCheckBox.putClientProperty("observable", mySimulation.getRadioMedium().getRadioTransmissionTriggers());
     radioMediumCheckBox.addActionListener(generalCheckBoxListener);
     generalPanel.add(radioMediumCheckBox);
 

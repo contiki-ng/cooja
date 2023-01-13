@@ -244,7 +244,9 @@ public class AreaViewer extends VisPlugin {
       paintEnvironmentAction.setEnabled(false);
       canvas.repaint();
     });
-    currentRadioMedium.addRadioTransmissionObserver(radioMediumActivityObserver);
+    currentRadioMedium.getRadioTransmissionTriggers().addTrigger(this, (event, obj) -> {
+      canvas.repaint(); // Remove any selected radio (it may have been removed).
+    });
 
     // Set initial size etc.
     setSize(500, 500);
@@ -1377,17 +1379,6 @@ public class AreaViewer extends VisPlugin {
     }
 
   /**
-   * Listens to settings changes in the radio medium.
-   */
-  private final Observer radioMediumActivityObserver = new Observer() {
-    @Override
-    public void update(Observable obs, Object obj) {
-      // Just remove any selected radio (it may have been removed)
-      canvas.repaint();
-    }
-  };
-
-  /**
    * Returns a color corresponding to given value where higher values are more green, and lower values are more red.
    *
    * @param value Signal strength of received signal (dB)
@@ -2002,10 +1993,8 @@ public class AreaViewer extends VisPlugin {
       currentRadioMedium.getRadioMediumTriggers().deleteTriggers(this);
     }
 
-    if (currentRadioMedium != null && radioMediumActivityObserver != null) {
-      currentRadioMedium.deleteRadioTransmissionObserver(radioMediumActivityObserver);
-    } else {
-      logger.error("Could not remove observer: " + radioMediumActivityObserver);
+    if (currentRadioMedium != null) {
+      currentRadioMedium.getRadioTransmissionTriggers().deleteTriggers(this);
     }
   }
 
