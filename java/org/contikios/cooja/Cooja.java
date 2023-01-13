@@ -608,8 +608,11 @@ public class Cooja {
     }
 
     if (root != null) {
-      if (!plugin.setConfigXML(root.getChild("plugin_config").getChildren(), isVisualized())) {
-        throw new PluginConstructionException("Failed to set config for " + pluginClass.getName());
+      var pluginConfig = root.getChild("plugin_config");
+      if (pluginConfig != null) {
+        if (!plugin.setConfigXML(pluginConfig.getChildren(), isVisualized())) {
+          throw new PluginConstructionException("Failed to set config for " + pluginClass.getName());
+        }
       }
     }
 
