@@ -70,6 +70,7 @@ import org.contikios.mrm.MRM;
  */
 public class ExtensionManager {
   static final LinkedHashMap<String, Class<? extends Plugin>> builtinPlugins = new LinkedHashMap<>();
+  static final LinkedHashMap<String, Class<? extends RadioMedium>> builtinRadioMediums = new LinkedHashMap<>();
   static {
     registerBuiltinPlugin(Visualizer.class);
     registerBuiltinPlugin(LogListener.class);
@@ -92,9 +93,21 @@ public class ExtensionManager {
     registerBuiltinPlugin(MspCodeWatcher.class);
     registerBuiltinPlugin(MspStackWatcher.class);
     registerBuiltinPlugin(MspCycleWatcher.class);
+
+    registerBuiltinRadioMedium(UDGM.class);
+    registerBuiltinRadioMedium(UDGMConstantLoss.class);
+    registerBuiltinRadioMedium(DirectedGraphMedium.class);
+    registerBuiltinRadioMedium(SilentRadioMedium.class);
+    registerBuiltinRadioMedium(LogisticLoss.class);
+    registerBuiltinRadioMedium(MRM.class);
+
   }
   private static void registerBuiltinPlugin(final Class<? extends Plugin> pluginClass) {
     builtinPlugins.put(pluginClass.getName(), pluginClass);
+  }
+
+  private static void registerBuiltinRadioMedium(Class<? extends RadioMedium> radioMediumClass) {
+    builtinRadioMediums.put(radioMediumClass.getName(), radioMediumClass);
   }
 
   /** Get the class for a named plugin, returns null if not found. */
