@@ -378,9 +378,14 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
 
   /** Show a compilation dialog for this mote type. */
   protected MoteTypeConfig showCompilationDialog(Cooja gui, MoteTypeConfig cfg) {
-    final var dialog = createCompilationDialog(gui, cfg);
-    dialog.setVisible(true); // Blocks.
-    return dialog.results();
+    return new Cooja.RunnableInEDT<MoteTypeConfig>() {
+      @Override
+      public MoteTypeConfig work() {
+        final var dialog = createCompilationDialog(gui, cfg);
+        dialog.setVisible(true); // Blocks.
+        return dialog.results();
+      }
+    }.invokeAndWait();
   }
 
   /** Return a compilation environment. */
