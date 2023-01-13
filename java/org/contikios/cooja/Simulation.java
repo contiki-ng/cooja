@@ -280,6 +280,9 @@ public final class Simulation {
     }, "sim");
     simulationThread.start();
     if (root != null) {
+      var numMoteTypes = root.getChild("simulation").getChildren("motetype").size();
+      var numPlugins = root.getChildren("plugin").size();
+      Cooja.setMaxProgress(numMoteTypes + numPlugins);
       // Track identifier of mote types to deal with the legacy-XML format that used <motetype_identifier>.
       var moteTypesMap = new HashMap<String, MoteType>();
       // Parse elements
@@ -295,6 +298,7 @@ public final class Simulation {
               throw new MoteType.MoteTypeCreationException("Mote type could not be configured: " + element.getText().trim());
             }
             addMoteType(moteType);
+            Cooja.tickProgress();
             for (var mote : element.getChildren("mote")) {
               createMote(moteType, mote);
             }
@@ -426,6 +430,7 @@ public final class Simulation {
     } catch (PluginConstructionException ex) {
       return new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
     }
+    Cooja.tickProgress();
     return null;
   }
 
