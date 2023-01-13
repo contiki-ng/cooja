@@ -42,14 +42,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.contikios.cooja.Cooja.PluginConstructionException;
 import org.contikios.cooja.Cooja.SimulationCreationException;
-import org.contikios.cooja.radiomediums.DirectedGraphMedium;
-import org.contikios.cooja.radiomediums.LogisticLoss;
-import org.contikios.cooja.radiomediums.SilentRadioMedium;
-import org.contikios.cooja.radiomediums.UDGM;
-import org.contikios.cooja.radiomediums.UDGMConstantLoss;
 import org.contikios.cooja.util.EventTriggers;
 import org.contikios.cooja.util.EventTriggers.AddRemove;
-import org.contikios.mrm.MRM;
 import org.jdom2.Element;
 
 /**
@@ -201,28 +195,7 @@ public final class Simulation {
     randomSeed = seed;
     randomSeedGenerated = generateSeed;
     randomGenerator = new SafeRandom(seed, this);
-    if (radioMediumClass.startsWith("se.sics")) {
-      radioMediumClass = radioMediumClass.replaceFirst("se\\.sics", "org.contikios");
-    }
-    currentRadioMedium = switch (radioMediumClass) {
-      case "org.contikios.cooja.radiomediums.UDGM" -> new UDGM(this);
-      case "org.contikios.cooja.radiomediums.UDGMConstantLoss" -> new UDGMConstantLoss(this);
-      case "org.contikios.cooja.radiomediums.DirectedGraphMedium" -> new DirectedGraphMedium(this);
-      case "org.contikios.cooja.radiomediums.SilentRadioMedium" -> new SilentRadioMedium(this);
-      case "org.contikios.cooja.radiomediums.LogisticLoss" -> new LogisticLoss(this);
-      case "org.contikios.mrm.MRM" -> new MRM(this);
-      default -> {
-        var clazz = cooja.tryLoadClass(this, RadioMedium.class, radioMediumClass);
-        if (clazz == null) {
-          throw new SimulationCreationException("Could not load " + radioMediumClass, null);
-        }
-        try {
-          yield clazz.getConstructor(Simulation.class).newInstance(this);
-        } catch (Exception e) {
-          throw new SimulationCreationException("Could not construct " + radioMediumClass, e);
-        }
-      }
-    };
+    currentRadioMedium = ExtensionManager.createRadioMedium(cooja, this, radioMediumClass);
     maxMoteStartupDelay = Math.max(0, moteStartDelay);
     simulationThread = new Thread(() -> {
       boolean isAlive = true;
