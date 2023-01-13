@@ -315,11 +315,8 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
         setChannel(Integer.parseInt(s));
       }
     });
-    if (getChannel() == -1) {
-      channelMenu.setSelectedIndex(0);
-    } else {
-      channelMenu.setSelectedIndex(getChannel());
-    }
+    var currentChannel = getChannel();
+    channelMenu.setSelectedIndex(currentChannel == -1 ? 0 : currentChannel);
     final JFormattedTextField outputPower = new JFormattedTextField(getCurrentOutputPower());
     outputPower.addPropertyChangeListener("value", evt -> setOutputPower(((Number)outputPower.getValue()).doubleValue()));
 
@@ -347,11 +344,8 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
       lastEventLabel.setText("Last event (time=" + lastEventTime + "): " + lastEvent);
       ssLabel.setText("Signal strength (not auto-updated): "
           + String.format("%1.1f", getCurrentSignalStrength()) + " dBm");
-      if (getChannel() == -1) {
-        channelLabel.setText("Current channel: ALL");
-      } else {
-        channelLabel.setText("Current channel: " + getChannel());
-      }
+      var infoChannel = getChannel();
+      channelLabel.setText("Current channel: " + (infoChannel == -1 ? "ALL" : String.valueOf(infoChannel)));
     };
     this.addObserver(observer);
 

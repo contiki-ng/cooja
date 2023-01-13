@@ -331,8 +331,9 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     }
 
     /* Check if radio channel changed */
-    if (getChannel() != oldRadioChannel) {
-      oldRadioChannel = getChannel();
+    var currentChannel = getChannel();
+    if (currentChannel != oldRadioChannel) {
+      oldRadioChannel = currentChannel;
       lastEvent = RadioEvent.UNKNOWN;
       this.setChanged();
       this.notifyObservers();
