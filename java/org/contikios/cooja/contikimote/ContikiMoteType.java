@@ -399,7 +399,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
   /**
    * Abstract base class for concrete section parser class.
    */
-  static abstract class SectionParser {
+  private static abstract class SectionParser {
     protected long startAddr;
     protected int size;
 
@@ -447,7 +447,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
   /**
    * Parses Map file for section data.
    */
-  static class MapSectionParser extends SectionParser {
+  private static class MapSectionParser extends SectionParser {
     private final String readelfData;
     private final String startName;
     private final String sizeName;
@@ -508,7 +508,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
   /**
    * Parses command output for section data.
    */
-  static class CommandSectionParser extends SectionParser {
+  private static class CommandSectionParser extends SectionParser {
     private final String[] mapFileData;
 
     private final String startRegExp;
