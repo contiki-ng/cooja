@@ -38,6 +38,7 @@ import java.util.Random;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
 import org.contikios.cooja.ClassDescription;
@@ -215,7 +216,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     edgesDirty = false;
     
     /* Radio Medium changed here so notify Observers */
-    radioMediumObservable.setChangedAndNotify();
+    radioMediumTriggers.trigger(EventTriggers.AddRemove.ADD, null);
   }
 
   /**

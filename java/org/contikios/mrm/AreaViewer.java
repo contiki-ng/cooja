@@ -210,9 +210,14 @@ public class AreaViewer extends VisPlugin {
   private final JRadioButton selectModeButton;
   private final JRadioButton panModeButton;
   private final JRadioButton zoomModeButton;
-  private final JRadioButton trackModeButton;
+  private final JRadioButton trackModeButton = new JRadioButton("track rays");
 
-  private final Action paintEnvironmentAction;
+  private final Action paintEnvironmentAction = new AbstractAction("Paint radio channel") {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      repaintRadioEnvironment();
+    }
+  };
 
   /**
    * Initializes an AreaViewer.
@@ -231,7 +236,14 @@ public class AreaViewer extends VisPlugin {
       needToRepaintObstacleImage = true;
       canvas.repaint();
     });
-    currentRadioMedium.addRadioMediumObserver(radioMediumSettingsObserver);
+    currentRadioMedium.getRadioMediumTriggers().addTrigger(this, (event, radio) -> {
+      // Clear selected radio (if any selected) and radio medium coverage.
+      selectedRadio = null;
+      channelImage = null;
+      trackModeButton.setEnabled(false);
+      paintEnvironmentAction.setEnabled(false);
+      canvas.repaint();
+    });
     currentRadioMedium.addRadioTransmissionObserver(radioMediumActivityObserver);
 
     // Set initial size etc.
@@ -264,7 +276,6 @@ public class AreaViewer extends VisPlugin {
     zoomModeButton.setActionCommand("set zoom mode");
     zoomModeButton.addActionListener(canvasModeHandler);
 
-    trackModeButton = new JRadioButton ("track rays");
     trackModeButton.setAlignmentY(Component.BOTTOM_ALIGNMENT);
     trackModeButton.setContentAreaFilled(false);
     trackModeButton.setActionCommand("set track rays mode");
@@ -843,12 +854,6 @@ public class AreaViewer extends VisPlugin {
     visualizeChannelPanel.add(Box.createRigidArea(new Dimension(0,20)));
 
     JButton recalculateVisibleButton = new JButton("Paint radio channel");
-    paintEnvironmentAction = new AbstractAction("Paint radio channel") {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        repaintRadioEnvironment();
-      }
-    };
     paintEnvironmentAction.setEnabled(false);
     recalculateVisibleButton.setAction(paintEnvironmentAction);
     visualizeChannelPanel.add(recalculateVisibleButton);
@@ -1370,21 +1375,6 @@ public class AreaViewer extends VisPlugin {
       }
 
     }
-
-  /**
-   * Listens to settings changes in the radio medium.
-   */
-  private final Observer radioMediumSettingsObserver = new Observer() {
-    @Override
-    public void update(Observable obs, Object obj) {
-      // Clear selected radio (if any selected) and radio medium coverage
-      selectedRadio = null;
-      channelImage = null;
-      trackModeButton.setEnabled(false);
-      paintEnvironmentAction.setEnabled(false);
-      canvas.repaint();
-    }
-  };
 
   /**
    * Listens to settings changes in the radio medium.
@@ -2008,10 +1998,8 @@ public class AreaViewer extends VisPlugin {
       currentChannelModel.getSettingsTriggers().deleteTriggers(this);
     }
 
-    if (currentRadioMedium != null && radioMediumSettingsObserver != null) {
-      currentRadioMedium.deleteRadioMediumObserver(radioMediumSettingsObserver);
-    } else {
-      logger.fatal("Could not remove observer: " + radioMediumSettingsObserver);
+    if (currentRadioMedium != null) {
+      currentRadioMedium.getRadioMediumTriggers().deleteTriggers(this);
     }
 
     if (currentRadioMedium != null && radioMediumActivityObserver != null) {

@@ -23,6 +23,11 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed addRadioMediumObserver/removeRadioMediumObserver in AbstractRadioMedium
+
+Call addTrigger/removeTrigger/deleteTriggers on `getRadioMediumTriggers()`
+instead.
+
 ### Removed addMoteHighlightObserver/removeMoteHighlightObserver in Cooja
 
 Call addTrigger/removeTrigger/deleteTriggers on

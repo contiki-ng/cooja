@@ -31,8 +31,6 @@
 package org.contikios.cooja.plugins;
 
 import java.awt.BorderLayout;
-import java.util.Observer;
-
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
@@ -71,7 +69,6 @@ public class BaseRSSIconf extends VisPlugin {
 			"BaseRSSI (-45!)" }; // TODO maybe include offset of -45 directly
 
 	private final AbstractRadioMedium radioMedium;
-	private final Observer changeObserver;
 	private final Simulation sim;
 	
 	
@@ -149,8 +146,7 @@ public class BaseRSSIconf extends VisPlugin {
         return getValueAt(0, c).getClass();
       }
     };
-    changeObserver = (obs, obj) -> model.fireTableDataChanged();
-		radioMedium.addRadioMediumObserver(changeObserver);
+    radioMedium.getRadioMediumTriggers().addTrigger(this, (obs, obj) -> model.fireTableDataChanged());
     sim.getMoteTriggers().addTrigger(this, (o, m) -> model.fireTableDataChanged());
 		/* Represent motes and RSSI by table */
     final var combo = new JComboBox<Number>();
@@ -214,7 +210,7 @@ public class BaseRSSIconf extends VisPlugin {
 
 	@Override
 	public void closePlugin() {
-		radioMedium.deleteRadioMediumObserver(changeObserver);
+    radioMedium.getRadioMediumTriggers().deleteTriggers(this);
     sim.getMoteTriggers().deleteTriggers(this);
   }
 }
