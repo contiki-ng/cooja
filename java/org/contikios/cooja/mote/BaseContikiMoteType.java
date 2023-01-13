@@ -352,11 +352,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
       final var output = MessageContainer.createMessageList(vis);
       final var env = getCompilationEnvironment();
       for (String cmd : StringUtils.splitOnNewline(getCompileCommands())) {
-        try {
-          compile(cmd, env, fileSource.getParentFile(), null, null, output, true);
-        } catch (MoteTypeCreationException e) {
-          return false;
-        }
+        compile(cmd, env, fileSource.getParentFile(), null, null, output, true);
       }
     }
     return loadMoteFirmware(vis);
@@ -482,9 +478,8 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
     };
     if (synchronous) {
       compile.run();
-      // Errors are already printed to messageDialog, so just throw a non-descriptive exception on error.
       if (compileProcess.exitValue() != 0) {
-        throw new MoteTypeCreationException("Compilation failed");
+        throw new MoteTypeCreationException("Compilation failed", messageDialog);
       }
     } else {
       new Thread(compile, "handle compilation results").start();
