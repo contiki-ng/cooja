@@ -29,6 +29,7 @@
 
 package org.contikios.cooja.mspmote;
 
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -142,7 +143,9 @@ public abstract class MspMoteType extends BaseContikiMoteType {
   }
 
   protected Map<String, Symbol> getEntries(GenericNode node) throws MoteTypeCreationException {
-    Cooja.setProgressMessage("Loading " + getContikiFirmwareFile().getName());
+    if (Cooja.isVisualized()) {
+      EventQueue.invokeLater(() -> Cooja.setProgressMessage("Loading " + getContikiFirmwareFile().getName()));
+    }
     ELF elf;
     try {
       elf = getELF();
