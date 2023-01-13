@@ -125,6 +125,21 @@ public class ExtensionManager {
     return clazz;
   }
 
+  /** Get the class for a named radio medium, returns null if not found. */
+  public static Class<? extends RadioMedium> getRadioMediumClass(Cooja cooja, String name) {
+    var clazz = builtinRadioMediums.get(name);
+    if (clazz != null) {
+      return clazz;
+    }
+    for (var candidate : cooja.getRegisteredRadioMediums()) {
+      if (name.equals(candidate.getName())) {
+        clazz = candidate;
+        break;
+      }
+    }
+    return clazz;
+  }
+
   /** Create a radio medium of a certain class, returns null on failure. */
   public static RadioMedium createRadioMedium(Cooja cooja, Simulation sim, String name)
           throws Cooja.SimulationCreationException {
@@ -139,7 +154,7 @@ public class ExtensionManager {
       case "org.contikios.cooja.radiomediums.LogisticLoss" -> new LogisticLoss(sim);
       case "org.contikios.mrm.MRM" -> new MRM(sim);
       default -> {
-        var clazz = cooja.tryLoadClass(sim, RadioMedium.class, name);
+        var clazz = getRadioMediumClass(cooja, name);
         if (clazz == null) {
           throw new Cooja.SimulationCreationException("Could not load " + name, null);
         }
