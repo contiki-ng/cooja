@@ -108,25 +108,28 @@ public class ExtensionManager {
 
   /** Create a mote of a certain class, returns null on failure. */
   public static MoteType createMoteType(Cooja cooja, String name) {
-    switch (name) {
-      case "org.contikios.cooja.motes.ImportAppMoteType": return new ImportAppMoteType();
-      case "org.contikios.cooja.motes.DisturberMoteType": return new DisturberMoteType();
-      case "org.contikios.cooja.contikimote.ContikiMoteType": return new ContikiMoteType(cooja);
-      case "org.contikios.cooja.mspmote.SkyMoteType": return new SkyMoteType();
-      case "org.contikios.cooja.mspmote.Z1MoteType": return new Z1MoteType();
-    }
-    Class<? extends MoteType> moteType = null;
-    for (var clazz : cooja.getRegisteredMoteTypes()) {
-      if (name.equals(clazz.getName())) {
-        moteType = clazz;
-        break;
+    return switch (name) {
+      case "org.contikios.cooja.motes.ImportAppMoteType" -> new ImportAppMoteType();
+      case "org.contikios.cooja.motes.DisturberMoteType" -> new DisturberMoteType();
+      case "org.contikios.cooja.contikimote.ContikiMoteType" -> new ContikiMoteType(cooja);
+      case "org.contikios.cooja.mspmote.SkyMoteType" -> new SkyMoteType();
+      case "org.contikios.cooja.mspmote.Z1MoteType" -> new Z1MoteType();
+      default -> {
+        Class<? extends MoteType> moteType = null;
+        for (var clazz : cooja.getRegisteredMoteTypes()) {
+          if (name.equals(clazz.getName())) {
+            moteType = clazz;
+            break;
+          }
+        }
+        if (moteType == null) yield null;
+        try {
+          yield moteType.getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+          yield null;
+        }
       }
-    }
-    if (moteType == null) return null;
-    try {
-      return moteType.getConstructor().newInstance();
-    } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-      return null;
-    }
+    };
   }
 }
