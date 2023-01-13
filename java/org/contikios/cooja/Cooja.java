@@ -1479,8 +1479,10 @@ public class Cooja {
 
       try {
         java.awt.EventQueue.invokeAndWait(() -> val = RunnableInEDT.this.work());
-      } catch (InterruptedException | InvocationTargetException e) {
-        e.printStackTrace();
+      } catch (InterruptedException e) {
+        logger.warn("Thread interrupted" + (e.getMessage() != null ? " " + e.getMessage() : ""));
+      } catch (InvocationTargetException e) {
+        logger.info("EDT thread call failed", e);
       }
 
       return val;
