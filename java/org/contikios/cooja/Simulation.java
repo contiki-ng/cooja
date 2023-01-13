@@ -377,15 +377,64 @@ public final class Simulation {
       } catch (InterruptedException e) {
         throw new SimulationCreationException("Simulation creation interrupted", e);
       }
-      if (Cooja.isVisualized()) {
-        ret = new Cooja.RunnableInEDT<SimulationCreationException>() {
-          @Override
-          public SimulationCreationException work() {
-            return startPlugins(root, cooja);
+      boolean hasController = Cooja.isVisualized();
+      for (var pluginElement : root.getChildren("plugin")) {
+        var pluginClassName = pluginElement.getText().trim();
+        if (pluginClassName.startsWith("se.sics")) {
+          pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
+        }
+        // Skip plugins that have been removed or merged into other classes.
+        if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName) ||
+                "org.contikios.cooja.plugins.SimInformation".equals(pluginClassName) ||
+                "org.contikios.cooja.plugins.MoteTypeInformation".equals(pluginClassName)) {
+          continue;
+        }
+        // Backwards compatibility: old visualizers were replaced.
+        if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
+                pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
+          logger.warn("Old simulation config detected: visualizers have been remade");
+          pluginClassName = "org.contikios.cooja.plugins.Visualizer";
+        }
+
+        var pluginClass = ExtensionManager.getPluginClass(cooja, pluginClassName);
+        if (pluginClass == null) {
+          logger.error("Plugin class " + pluginClassName + " not registered as a plugin");
+          ret = new SimulationCreationException("Plugin class " + pluginClassName + " not registered as a plugin", null);
+          break;
+        }
+        // Skip plugins that require visualization in headless mode.
+        if (!Cooja.isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
+          continue;
+        }
+        if (!hasController && pluginClass.getAnnotation(PluginType.class).value() == PluginType.PType.SIM_CONTROL_PLUGIN) {
+          hasController = true;
+        }
+        // Parse plugin mote argument (if any).
+        Mote mote = null;
+        for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
+          int moteNr = Integer.parseInt(pluginSubElement.getText());
+          if (moteNr >= 0 && moteNr < getMotesCount()) {
+            mote = getMote(moteNr);
           }
-        }.invokeAndWait();
-      } else {
-        ret = startPlugins(root, cooja);
+        }
+        final var finalMote = mote;
+        if (Cooja.isVisualized()) {
+          ret = new Cooja.RunnableInEDT<SimulationCreationException>() {
+            @Override
+            public SimulationCreationException work() {
+              return startPlugin(pluginClass, pluginElement, cooja, finalMote);
+            }
+          }.invokeAndWait();
+        } else {
+          ret = startPlugin(pluginClass, pluginElement, cooja, finalMote);
+        }
+        if (ret != null) break;
+      }
+      // Non-GUI Cooja requires a simulation controller, ensure one is started.
+      if (ret == null && !Cooja.isVisualized() && !hasController) {
+        ret = new SimulationCreationException("No plugin controlling simulation, aborting", null);
       }
     }
     if (ret != null) {
@@ -403,58 +452,13 @@ public final class Simulation {
     addMote(mote);
   }
 
-  private SimulationCreationException startPlugins(Element root, Cooja cooja) {
-    // Restart plugins from config
-    boolean hasController = Cooja.isVisualized();
-    for (var pluginElement : root.getChildren("plugin")) {
-      String pluginClassName = pluginElement.getText().trim();
-      if (pluginClassName.startsWith("se.sics")) {
-        pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
-      }
-      // Skip plugins that have been removed or merged into other classes.
-      if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName) ||
-          "org.contikios.cooja.plugins.SimInformation".equals(pluginClassName) ||
-          "org.contikios.cooja.plugins.MoteTypeInformation".equals(pluginClassName)) {
-        continue;
-      }
-      // Backwards compatibility: old visualizers were replaced.
-      if (pluginClassName.equals("org.contikios.cooja.plugins.VisUDGM") ||
-              pluginClassName.equals("org.contikios.cooja.plugins.VisBattery") ||
-              pluginClassName.equals("org.contikios.cooja.plugins.VisTraffic") ||
-              pluginClassName.equals("org.contikios.cooja.plugins.VisState")) {
-        logger.warn("Old simulation config detected: visualizers have been remade");
-        pluginClassName = "org.contikios.cooja.plugins.Visualizer";
-      }
-
-      var pluginClass = ExtensionManager.getPluginClass(cooja, pluginClassName);
-      if (pluginClass == null) {
-        logger.error("Plugin class " + pluginClassName + " not registered as a plugin");
-        return new SimulationCreationException("Plugin class " + pluginClassName + " not registered as a plugin", null);
-      }
-      // Skip plugins that require visualization in headless mode.
-      if (!Cooja.isVisualized() && VisPlugin.class.isAssignableFrom(pluginClass)) {
-        continue;
-      }
-      if (!hasController && pluginClass.getAnnotation(PluginType.class).value() == PluginType.PType.SIM_CONTROL_PLUGIN) {
-        hasController = true;
-      }
-      // Parse plugin mote argument (if any).
-      Mote mote = null;
-      for (var pluginSubElement : pluginElement.getChildren("mote_arg")) {
-        int moteNr = Integer.parseInt(pluginSubElement.getText());
-        if (moteNr >= 0 && moteNr < getMotesCount()) {
-          mote = getMote(moteNr);
-        }
-      }
-      try {
-        cooja.startPlugin(pluginClass, this, mote, pluginElement);
-      } catch (PluginConstructionException ex) {
-        return new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
-      }
-    }
-    // Non-GUI Cooja requires a simulation controller, ensure one is started.
-    if (!Cooja.isVisualized() && !hasController) {
-      return new SimulationCreationException("No plugin controlling simulation, aborting", null);
+  private SimulationCreationException startPlugin(Class<? extends Plugin> pluginClass, Element pluginElement,
+                                                  Cooja cooja, Mote mote) {
+    Cooja.setProgressMessage("Starting " + pluginClass.getName());
+    try {
+      cooja.startPlugin(pluginClass, this, mote, pluginElement);
+    } catch (PluginConstructionException ex) {
+      return new SimulationCreationException("Failed to start plugin: " + ex.getMessage(), ex);
     }
     return null;
   }
