@@ -107,7 +107,7 @@ public class ExtensionManager {
   }
 
   /** Create a mote of a certain class, returns null on failure. */
-  public static MoteType createMoteType(Cooja cooja, String name) {
+  public static MoteType createMoteType(Cooja cooja, String name) throws MoteType.MoteTypeCreationException {
     if (name.startsWith("se.sics")) {
       name = name.replaceFirst("se\\.sics", "org.contikios");
     }
@@ -125,12 +125,14 @@ public class ExtensionManager {
             break;
           }
         }
-        if (moteType == null) yield null;
+        if (moteType == null) {
+          throw new MoteType.MoteTypeCreationException("MoteType " + name + " not registered");
+        }
         try {
           yield moteType.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
-          yield null;
+          throw new MoteType.MoteTypeCreationException("Could not create " + name, e);
         }
       }
     };
