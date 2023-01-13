@@ -505,20 +505,11 @@ public abstract class AbstractCompileDialog extends JDialog {
   protected void addMoteInterface(Class<? extends MoteInterface> intfClass, boolean selected) {
     /* If mote interface was already added  */
     for (Component c : moteIntfBox.getComponents()) {
-      if (!(c instanceof JCheckBox)) {
+      if (!(c instanceof JCheckBox checkBox)) {
         continue;
       }
-
-      Class<? extends MoteInterface> existingClass =
-        (Class<? extends MoteInterface>)
-        ((JCheckBox) c).getClientProperty("class");
-
-      if (existingClass == null) {
-        continue;
-      }
-
-      if (existingClass == intfClass) {
-        ((JCheckBox) c).setSelected(selected);
+      if (checkBox.getClientProperty("class") == intfClass) {
+        checkBox.setSelected(selected);
         return;
       }
     }
