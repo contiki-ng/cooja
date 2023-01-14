@@ -86,7 +86,9 @@ public class EventTriggers<K, T> {
    */
   public void trigger(K key, T value) {
     for (var observables : triggers.values()) {
-      observables.forEach(o -> o.accept(key, value));
+      for (var o : observables) {
+        o.accept(key, value);
+      }
     }
   }
 
