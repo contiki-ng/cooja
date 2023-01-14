@@ -309,7 +309,14 @@ public class LogScriptEngine {
       long realDuration = System.currentTimeMillis()-startRealTime;
       double estimatedLeft = 1.0*realDuration/progress - realDuration;
       if (estimatedLeft == 0) estimatedLeft = 1;
-      logger.info(String.format("%2.0f%% completed, %2.1f sec remaining", 100*progress, estimatedLeft/1000));
+      // String.format is still slow(ish) in Java 17 and will show up in performance profiles,
+      // so compute+format the percentage completed and time remaining by hand.
+      int percentage = (int) (100 * progress);
+      double secondsRemaining = estimatedLeft / 1000;
+      long seconds = (long) secondsRemaining;
+      int tenthOfSeconds = (int) Math.round((10 * (secondsRemaining - (double)seconds)));
+      logger.info("{}{}% completed, {}{}.{} sec remaining", (percentage < 10 ? " " : ""), percentage,
+              (seconds < 10 ? " " : ""), seconds, tenthOfSeconds);
     }
   };
 
