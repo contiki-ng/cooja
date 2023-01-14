@@ -1767,7 +1767,7 @@ public class GUI {
     dialog.getRootPane().setDefaultButton(closeButton);
     dialog.getContentPane().add(BorderLayout.CENTER, tabbedPane);
     dialog.getContentPane().add(BorderLayout.SOUTH, buttonBox);
-    dialog.setSize(700, 500);
+    dialog.setSize(800, 500);
     dialog.setLocationRelativeTo(frame);
     dialog.setVisible(true); // BLOCKS.
     return dialog.getTitle().equals("-RETRY-");
