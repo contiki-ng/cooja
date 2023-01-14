@@ -41,8 +41,6 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observer;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -61,7 +59,6 @@ import org.slf4j.LoggerFactory;
 
 public abstract class SerialUI extends Log implements SerialPort {
   private static final Logger logger = LoggerFactory.getLogger(SerialUI.class);
-  private static final Predicate<String> punctuation = Pattern.compile("\\p{Punct}").asMatchPredicate();
   private final static int MAX_LENGTH = 16*1024;
 
   protected EventTriggers<EventTriggers.Update, Byte> serialDataTriggers = new EventTriggers<>();
@@ -86,6 +83,17 @@ public abstract class SerialUI extends Log implements SerialPort {
   public byte getLastSerialData() {
     return lastSerialData;
   }
+
+  /** Returns true for characters in <code>\p{Punct}</code>.
+   * Characters of the punctuation class are listed in java.util.regex.Pattern Javadoc. */
+  private static boolean isPunctuation(char c) {
+    return switch (c) {
+      case '!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', ',', '-', '.', '/', ':',
+              ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~' -> true;
+      default -> false;
+    };
+  }
+
   // FIXME: make data a byte instead.
   public void dataReceived(int data) {
     charactersReceived++;
@@ -99,7 +107,7 @@ public abstract class SerialUI extends Log implements SerialPort {
       this.notifyObservers(getMote());
     } else {
       char ch = (char) data;
-      if (Character.isLetterOrDigit(ch) || Character.isWhitespace(ch) || punctuation.test(String.valueOf(ch))) {
+      if (Character.isLetterOrDigit(ch) || Character.isWhitespace(ch) || isPunctuation(ch)) {
         newMessage.append(ch);
       }
     }
