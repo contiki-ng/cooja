@@ -301,10 +301,15 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
           }
           var clazz = builtinInterfaces.get(name);
           if (clazz == null) {
-            clazz = sim.getCooja().tryLoadClass(this, MoteInterface.class, name);
+            for (var moteInterfaceClass : getAllMoteInterfaceClasses()) {
+              if (name.equals(moteInterfaceClass.getName())) {
+                clazz = moteInterfaceClass;
+                break;
+              }
+            }
           }
           if (clazz == null) {
-            logger.warn("Can't find mote interface class: " + name);
+            logger.error("Mote interface {} not available for {} mote", name, getMoteName());
             return false;
           }
           moteInterfaceClasses.add(clazz);
