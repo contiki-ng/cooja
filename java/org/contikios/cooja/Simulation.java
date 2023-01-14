@@ -291,8 +291,8 @@ public final class Simulation {
             String moteTypeClassName = element.getText().trim();
             var moteType = ExtensionManager.createMoteType(cooja, moteTypeClassName);
             if (!moteType.setConfigXML(this, element.getChildren(), Cooja.isVisualized())) {
-              logger.error("Mote type was not created: " + element.getText().trim());
-              throw new MoteType.MoteTypeCreationException("Mote type was not created: " + element.getText().trim());
+              logger.error("Mote type could not be configured: " + element.getText().trim());
+              throw new MoteType.MoteTypeCreationException("Mote type could not be configured: " + element.getText().trim());
             }
             addMoteType(moteType);
             for (var mote : element.getChildren("mote")) {
