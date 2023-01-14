@@ -1708,15 +1708,15 @@ public class GUI {
       tabbedPane.addTab("Contiki error", new JScrollPane(list));
     }
     // Compilation output.
-    MessageListUI compilationOutput = null;
+    MessageList compilationOutput = null;
     if (e instanceof MoteType.MoteTypeCreationException ex) {
-      compilationOutput = (MessageListUI) ex.getCompilationOutput();
+      compilationOutput = ex.getCompilationOutput();
     } else if (e != null && e.getCause() instanceof MoteType.MoteTypeCreationException ex) {
-      compilationOutput = (MessageListUI) ex.getCompilationOutput();
+      compilationOutput = ex.getCompilationOutput();
     }
-    if (compilationOutput != null) {
-      compilationOutput.addPopupMenuItem(null, true);
-      tabbedPane.addTab("Compilation output", new JScrollPane(compilationOutput));
+    if (compilationOutput instanceof MessageListUI output) {
+      output.addPopupMenuItem(null, true);
+      tabbedPane.addTab("Compilation output", new JScrollPane(output));
     }
     if (e != null) {
       // Stack trace.
