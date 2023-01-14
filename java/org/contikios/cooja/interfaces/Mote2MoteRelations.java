@@ -31,8 +31,7 @@
 package org.contikios.cooja.interfaces;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.function.BiConsumer;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -75,10 +74,16 @@ public class Mote2MoteRelations implements MoteInterface {
   private final Mote mote;
 
   private final ArrayList<Mote> relations = new ArrayList<>();
-  private Observer logObserver = new Observer() {
-    @Override
-    public void update(Observable o, Object arg) {
-      String msg = ((Log) o).getLastLogMessage();
+  private BiConsumer<EventTriggers.Update, Log.LogDataInfo> logOutputTrigger;
+
+  public Mote2MoteRelations(Mote mote) {
+    this.mote = mote;
+  }
+
+  @Override
+  public void added() {
+    logOutputTrigger = (event, data) -> {
+      var msg = data.msg();
       if (msg == null) {
         return;
       }
@@ -94,10 +99,10 @@ public class Mote2MoteRelations implements MoteInterface {
       String colorName = null;
       int colorIndex = msg.indexOf(';');
       if (colorIndex > 0) {
-         colorName = msg.substring(colorIndex + 1).trim();
-         msg = msg.substring(0, colorIndex).trim();
+        colorName = msg.substring(colorIndex + 1).trim();
+        msg = msg.substring(0, colorIndex).trim();
       }
-      String[] args = msg.split(" ");
+      var args = msg.split(" ");
       if (args.length != 3) {
         return;
       }
@@ -106,24 +111,22 @@ public class Mote2MoteRelations implements MoteInterface {
       try {
         destID = Integer.parseInt(args[1]);
       } catch (Exception e) {
-        // Not a mote id
-        return;
+        return; // Not a mote id.
       }
       String state = args[2];
 
-      /* Locate destination mote */
-      /* TODO Use Rime address interface instead of mote ID? */
-      Mote destinationMote = mote.getSimulation().getMoteWithID(destID);
+      // Locate destination mote.
+      // TODO: Use Rime address interface instead of mote ID?
+      var destinationMote = mote.getSimulation().getMoteWithID(destID);
       if (destinationMote == null) {
         logger.warn("No destination mote with ID: " + destID);
         return;
       }
       if (destinationMote == mote) {
-        /*logger.warn("Cannot create relation with ourselves");*/
         return;
       }
 
-      /* Change line state */
+      // Change line state.
       var isAdd = state.equals("1");
       if (isAdd) {
         if (relations.contains(destinationMote)) {
@@ -136,19 +139,11 @@ public class Mote2MoteRelations implements MoteInterface {
         mote.getSimulation().removeMoteRelation(mote, destinationMote);
       }
       relationTriggers.trigger(isAdd ? EventTriggers.AddRemove.ADD : EventTriggers.AddRemove.REMOVE, relations.size());
-    }
-  };
-
-  public Mote2MoteRelations(Mote mote) {
-    this.mote = mote;
-  }
-
-  @Override
-  public void added() {
+    };
     /* Observe log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
       if (mi instanceof Log log) {
-        log.addObserver(logObserver);
+        log.getLogDataTriggers().addTrigger(this, logOutputTrigger);
       }
     }
     // Trigger to remove relations with motes that are removed.
@@ -166,10 +161,10 @@ public class Mote2MoteRelations implements MoteInterface {
     /* Stop observing log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
       if (mi instanceof Log log) {
-        log.deleteObserver(logObserver);
+        log.getLogDataTriggers().removeTrigger(this, logOutputTrigger);
       }
     }
-    logObserver = null;
+    logOutputTrigger = null;
 
     /* Remove all relations to other motes */
     Mote[] relationsArr = relations.toArray(new Mote[0]);

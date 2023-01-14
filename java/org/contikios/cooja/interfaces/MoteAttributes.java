@@ -34,16 +34,15 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.util.HashMap;
 import java.util.Observable;
-import java.util.Observer;
+import java.util.function.BiConsumer;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.plugins.skins.AttributeVisualizerSkin;
+import org.contikios.cooja.util.EventTriggers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +83,7 @@ public class MoteAttributes extends Observable implements MoteInterface {
   private final HashMap<String, Object> attributes = new HashMap<>();
   private final HashMap<JPanel, JTextArea> labels = new HashMap<>();
 
-  private Observer logObserver;
+  private BiConsumer<EventTriggers.Update, Log.LogDataInfo> logOutputTrigger;
 
   public MoteAttributes(Mote mote) {
     this.mote = mote;
@@ -92,8 +91,8 @@ public class MoteAttributes extends Observable implements MoteInterface {
 
   @Override
   public void added() {
-    logObserver = (o, arg) -> {
-      String msg = ((Log) o).getLastLogMessage();
+    logOutputTrigger = (event, data) -> {
+      String msg = data.msg();
       if (msg == null) {
         return;
       }
@@ -122,7 +121,7 @@ public class MoteAttributes extends Observable implements MoteInterface {
     /* Observe log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
       if (mi instanceof Log log) {
-        log.addObserver(logObserver);
+        log.getLogDataTriggers().addTrigger(this, logOutputTrigger);
       }
     }
   }
@@ -132,10 +131,10 @@ public class MoteAttributes extends Observable implements MoteInterface {
     /* Stop observing log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
       if (mi instanceof Log log) {
-        log.deleteObserver(logObserver);
+        log.getLogDataTriggers().removeTrigger(this, logOutputTrigger);
       }
     }
-    logObserver = null;
+    logOutputTrigger = null;
   }
 
   private void setAttributes(String att) {

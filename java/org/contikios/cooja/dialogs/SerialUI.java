@@ -40,7 +40,6 @@ import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Observer;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -103,8 +102,7 @@ public abstract class SerialUI extends Log implements SerialPort {
               : "# [1024 bytes, no line ending]: " + newMessage.substring(0, Math.min(20, newMessage.length())) + "...";
       newMessage.setLength(0);
       charactersReceived = 0;
-      this.setChanged();
-      this.notifyObservers(getMote());
+      logDataTriggers.trigger(EventTriggers.Update.UPDATE, new LogDataInfo(getMote(), lastLogMessage));
     } else {
       char ch = (char) data;
       if (Character.isLetterOrDigit(ch) || Character.isWhitespace(ch) || isPunctuation(ch)) {
@@ -211,14 +209,10 @@ public abstract class SerialUI extends Log implements SerialPort {
       }
     });
 
-    /* Mote interface observer */
-    Observer observer;
-    this.addObserver(observer = (obs, obj) -> {
+    getLogDataTriggers().addTrigger(panel, (obs, obj) -> {
       final String logMessage = getLastLogMessage();
       EventQueue.invokeLater(() -> appendToTextArea(logTextPane, logMessage));
     });
-    panel.putClientProperty("intf_obs", observer);
-
     JScrollPane scrollPane = new JScrollPane(logTextPane);
     scrollPane.setPreferredSize(new Dimension(100, 100));
     panel.add(BorderLayout.CENTER, scrollPane);
@@ -228,13 +222,7 @@ public abstract class SerialUI extends Log implements SerialPort {
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.error("Error when releasing panel, observer is null");
-      return;
-    }
-
-    this.deleteObserver(observer);
+    getLogDataTriggers().deleteTriggers(panel);
   }
 
   private static final String HISTORY_SEPARATOR = "~;";

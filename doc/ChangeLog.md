@@ -48,6 +48,10 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed Observable from Log interface
+
+Call addTrigger/removeTrigger/deleteTriggers on `getLogDataTriggers()` instead.
+
 ### Removed addRadioTransmissionObserver/removeRadioTransmissionObserver in RadioMedium
 
 Call addTrigger/removeTrigger/deleteTriggers on `getRadioTransmissionTriggers()`

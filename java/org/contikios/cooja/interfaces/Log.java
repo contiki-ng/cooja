@@ -30,9 +30,10 @@
 
 package org.contikios.cooja.interfaces;
 
-import java.util.Observable;
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
+import org.contikios.cooja.util.EventTriggers;
 
 /**
  * A Log represents a mote logging output. An implementation should notify all
@@ -41,11 +42,18 @@ import org.contikios.cooja.MoteInterface;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Log Output")
-public abstract class Log extends Observable implements MoteInterface {
+public abstract class Log implements MoteInterface {
+  protected EventTriggers<EventTriggers.Update, LogDataInfo> logDataTriggers = new EventTriggers<>();
 
   /**
    * @return Last log message. Note that several messages may appear during one tick.
    */
   public abstract String getLastLogMessage();
 
+  /** Returns the log data triggers. */
+  public EventTriggers<EventTriggers.Update, LogDataInfo> getLogDataTriggers() {
+    return logDataTriggers;
+  }
+
+  public record LogDataInfo(Mote mote, String msg) {}
 }
