@@ -434,14 +434,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
                   entry.getValue().size));
         }
       }
-
-      return new ArrayMemory(
-              getStartAddr() + offset,
-              getSize(),
-              MemoryLayout.getNative(),
-              variables);
+      return new ArrayMemory(getStartAddr() + offset, MemoryLayout.getNative(), new byte[getSize()], variables);
     }
-
   }
 
   /**
