@@ -392,9 +392,6 @@ public class ProjectDirectoriesDialog extends JDialog {
       projectInfo.append(sb.append("\n").toString());
       sb.setLength(0);
     }
-		if (project.getConfigCSources() != null) {
-			projectInfo.append("Cooja mote C sources: " + Arrays.toString(project.getConfigCSources()) + "\n");
-		}
 	}
 
 	public COOJAProject[] getProjects() {

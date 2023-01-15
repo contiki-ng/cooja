@@ -135,9 +135,6 @@ public class COOJAProject {
 	public String[] getConfigJARs() {
 		return getStringArray("org.contikios.cooja.Cooja.JARFILES");
 	}
-	public String[] getConfigCSources() {
-		return getStringArray("org.contikios.cooja.contikimote.ContikiMoteType.C_SOURCES");
-	}
 
 	@Override
 	public String toString() {
