@@ -33,7 +33,6 @@ package org.contikios.cooja.mspmote;
 import java.awt.Component;
 import java.io.File;
 import java.io.PrintStream;
-import java.util.Map;
 import org.contikios.cooja.Simulation.SimulationStop;
 import org.contikios.cooja.WatchpointMote;
 import org.contikios.cooja.ContikiError;
@@ -42,7 +41,6 @@ import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.Watchpoint;
-import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.mspmote.plugins.CodeVisualizerSkin;
 import org.contikios.cooja.mspmote.plugins.MspBreakpoint;
@@ -91,8 +89,8 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   /* Stack monitoring variables */
   private boolean stopNextInstruction = false;
 
-  public MspMote(MspMoteType moteType, Simulation sim, GenericNode node, Map<String, Symbol> symbols) throws MoteType.MoteTypeCreationException {
-    super(moteType, new MspMoteMemory(symbols, node.getCPU()), sim);
+  public MspMote(MspMoteType moteType, Simulation sim, GenericNode node) throws MoteType.MoteTypeCreationException {
+    super(moteType, new MspMoteMemory(moteType.getEntries(node), node.getCPU()), sim);
     registry = node.getRegistry();
     node.setCommandHandler(commandHandler);
     node.setup(new ConfigManager());
