@@ -307,7 +307,7 @@ public class DisAsm implements MSP430Constants {
                 opstr = "RRA" + (word ? ".W" : ".B");
                 break;
             case SXT:
-                opstr = "RRA" + (word ? ".W" : ".B");
+                opstr = "SXT" + (word ? ".W" : ".B");
                 break;
             case PUSH:
                 opstr = "PUSH" + (word ? ".W" : ".B");
@@ -570,7 +570,7 @@ public class DisAsm implements MSP430Constants {
       case RRC -> "RRC" + (word ? ".W" : ".B");
       case SWPB -> "SWPB" + (word ? ".W" : ".B");
       case RRA -> "RRA" + (word ? ".W" : ".B");
-      case SXT -> "RRA" + (word ? ".W" : ".B");
+      case SXT -> "SXT" + (word ? ".W" : ".B");
       case PUSH -> "PUSH" + (word ? ".W" : ".B");
       case CALL -> "CALL";
       case RETI -> "RETI";

@@ -66,8 +66,6 @@ import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.MapEntry;
 import se.sics.mspsim.profiler.SimpleProfiler;
 
-import org.contikios.cooja.mspmote.interfaces.MspClock;
-
 /**
  * @author Fredrik Osterlind
  */
@@ -209,7 +207,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   }
 
   public void execute(long t, int duration) {
-    MspClock clock = ((MspClock) (moteInterfaces.getClock()));
+    var clock = moteInterfaces.getClock();
     // Wait until mote boots.
     if (!booted && clock.getTime() < 0) {
       scheduleNextWakeup(t - clock.getTime());
