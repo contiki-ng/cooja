@@ -46,10 +46,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
@@ -76,7 +74,6 @@ import javax.swing.PopupFactory;
 import javax.swing.Timer;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -253,14 +250,23 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             return logEventColorOfMote;
         }
     });
-    viewMenu.add(new JSeparator());
+
+    JMenu widthMenu = new JMenu("Minimal event width");
     ButtonGroup minEvWidthButtonGroup = new ButtonGroup();
-    for ( int s : new int[]{1,5,10} ) {
-        JRadioButtonMenuItem evwidthMenuItemN = new JRadioButtonMenuItem(
-                new ChangeMinEventWidthAction("min event width "+s, s));
-        minEvWidthButtonGroup.add(evwidthMenuItemN);
-        viewMenu.add(evwidthMenuItemN);
+    for (final int s : new int[] { 1, 5, 10 }) {
+      JRadioButtonMenuItem widthMenuItem = new JRadioButtonMenuItem(s + " px");
+      widthMenuItem.setSelected(paintEventMinWidth == s);
+      widthMenuItem.addActionListener(e -> {
+        if (paintEventMinWidth != s) {
+          paintEventMinWidth = s;
+          TimeLine.this.timeline.repaint();
+        }
+      });
+      minEvWidthButtonGroup.add(widthMenuItem);
+      widthMenu.add(widthMenuItem);
     }
+    viewMenu.addSeparator();
+    viewMenu.add(widthMenu);
 
     fileMenu.add(new JMenuItem(new AbstractAction("Save to file...") {
       @Override
@@ -290,7 +296,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           return;
         }
 
-        try (var outStream = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(saveFile), UTF_8))) {
+        try (var outStream = Files.newBufferedWriter(saveFile.toPath(), UTF_8)) {
           // Output all events (sorted per mote).
           for (MoteEvents events : allMoteEvents) {
             for (MoteEvent ev : events.ledEvents) {
@@ -551,19 +557,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       return (long) (pixelX*currentPixelDivisor);
   }
 
-  private class ChangeMinEventWidthAction extends AbstractAction {
-      private final int minWidth;
-      public ChangeMinEventWidthAction(String name, int minWidth) {
-        super(name);
-        this.minWidth = minWidth;
-      }
-      @Override
-      public void actionPerformed(ActionEvent e) {
-          paintEventMinWidth = minWidth;
-          timeline.repaint();
-      }
-  }
-
   public void clear() {
     for (MoteEvents me : allMoteEvents) {
       me.clear();
@@ -626,37 +619,28 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       stats.mote = moteEvents.mote;
 
       if (leds) {
-        for (MoteEvent ev: moteEvents.ledEvents) {
-          if (!(ev instanceof LEDEvent ledEvent)) continue;
+        for (int i = 0, n = moteEvents.ledEvents.size(); i < n; i++) {
+          if (!(moteEvents.ledEvents.get(i) instanceof LEDEvent ledEvent)) continue;
+
+          MoteEvent nextEvent = i + 1 < n ? moteEvents.ledEvents.get(i + 1) : null;
+          long endTime = nextEvent != null ? nextEvent.time : simulation.getSimulationTime();
 
           /* Red */
           if (ledEvent.red) {
             /* LED is on, add time interval */
-            if (ledEvent.next == null) {
-              stats.onTimeRedLED += (simulation.getSimulationTime() - ledEvent.time);
-            } else {
-              stats.onTimeRedLED += (ledEvent.next.time - ledEvent.time);
-            }
+            stats.onTimeRedLED += endTime - ledEvent.time;
           }
 
           /* Green */
           if (ledEvent.green) {
             /* LED is on, add time interval */
-            if (ledEvent.next == null) {
-              stats.onTimeGreenLED += (simulation.getSimulationTime() - ledEvent.time);
-            } else {
-              stats.onTimeGreenLED += (ledEvent.next.time - ledEvent.time);
-            }
+            stats.onTimeGreenLED += endTime - ledEvent.time;
           }
 
           /* Blue */
           if (ledEvent.blue) {
             /* LED is on, add time interval */
-            if (ledEvent.next == null) {
-              stats.onTimeBlueLED += (simulation.getSimulationTime() - ledEvent.time);
-            } else {
-              stats.onTimeBlueLED += (ledEvent.next.time - ledEvent.time);
-            }
+            stats.onTimeBlueLED += endTime - ledEvent.time;
           }
         }
       }
@@ -669,32 +653,29 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
 
       if (radioHW) {
-        for (MoteEvent ev: moteEvents.radioHWEvents) {
-          if (!(ev instanceof RadioHWEvent hwEvent)) continue;
+        for (int i = 0, n = moteEvents.radioHWEvents.size(); i < n; i++) {
+          if (!(moteEvents.radioHWEvents.get(i) instanceof RadioHWEvent hwEvent)) continue;
+
           if (hwEvent.on) {
+            MoteEvent nextEvent = i + 1 < n ? moteEvents.radioHWEvents.get(i + 1) : null;
+            long endTime = nextEvent != null ? nextEvent.time : simulation.getSimulationTime();
+
             /* HW is on */
-            if (hwEvent.next == null) {
-              stats.radioOn += (simulation.getSimulationTime() - hwEvent.time);
-            } else {
-              stats.radioOn += (hwEvent.next.time - hwEvent.time);
-            }
+            stats.radioOn += endTime - hwEvent.time;
           }
         }
       }
 
       if (radioRXTX) {
-        for (MoteEvent ev: moteEvents.radioRXTXEvents) {
-          if (!(ev instanceof RadioRXTXEvent rxtxEvent)) continue;
+        for (int i = 0, n = moteEvents.radioRXTXEvents.size(); i < n; i++) {
+          if (!(moteEvents.radioRXTXEvents.get(i) instanceof RadioRXTXEvent rxtxEvent)) continue;
           if (rxtxEvent.state == RXTXRadioEvent.IDLE) {
             continue;
           }
 
-          long diff;
-          if (rxtxEvent.next == null) {
-            diff = (simulation.getSimulationTime() - rxtxEvent.time);
-          } else {
-            diff = (rxtxEvent.next.time - rxtxEvent.time);
-          }
+          MoteEvent nextEvent = i + 1 < n ? moteEvents.radioRXTXEvents.get(i + 1) : null;
+          long endTime = nextEvent != null ? nextEvent.time : simulation.getSimulationTime();
+          long diff = endTime - rxtxEvent.time;
 
           if (rxtxEvent.state == RXTXRadioEvent.TRANSMITTING) {
             stats.onTimeTX += diff;
@@ -1382,12 +1363,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         return;
       }
 
+      long simulationTime = simulation.getSimulationTime();
       long intervalStart = (long)(bounds.x*currentPixelDivisor);
-      long intervalEnd = (long) (intervalStart + bounds.width*currentPixelDivisor);
+      long intervalEnd = Math.min(simulationTime, (long) (intervalStart + bounds.width*currentPixelDivisor));
 
-      if (intervalEnd > simulation.getSimulationTime()) {
-        intervalEnd = simulation.getSimulationTime();
-      }
       if (bounds.x > Integer.MAX_VALUE - 1000) {
         /* Strange bounds */
         return;
@@ -1398,18 +1377,17 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
       drawTimeRule(g, intervalStart, intervalEnd);
 
-      // invalidate filter stamp
-      if (logEventFilterPlugin != null) {
-          if (logEventFilterPlugin.getFilter() != logEventFilterLast) {
-              logEventFilterLast = logEventFilterPlugin.getFilter();
-              logEventFilterChanged = true;
-          }
-          else
-              logEventFilterChanged = false;
-      }
-      else
+      if (showLogOutputs) {
+        // invalidate filter stamp
+        if (logEventFilterPlugin != null &&
+                logEventFilterPlugin.getFilter() != logEventFilterLast) {
+          logEventFilterLast = logEventFilterPlugin.getFilter();
+          logEventFilterChanged = true;
+        } else {
           logEventFilterChanged = false;
-      
+        }
+      }
+
       /* Paint mote events */
       int lineHeightOffset = FIRST_MOTE_PIXEL_OFFSET;
       boolean dark = true;
@@ -1426,45 +1404,27 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         dark = !dark;
 
         if (showRadioRXTX) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.radioRXTXEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.radioRXTXEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showRadioChannels) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.radioChannelEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.radioChannelEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showRadioOnoff) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.radioHWEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.radioHWEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showLeds) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.ledEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.ledEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += 3*LED_PIXEL_HEIGHT;
         }
         if (showLogOutputs) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.logEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.logEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
         if (showWatchpoints) {
-          MoteEvent firstEvent = getFirstIntervalEvent(events.watchpointEvents, intervalStart);
-          if (firstEvent != null) {
-            firstEvent.paintInterval(g, lineHeightOffset, intervalEnd);
-          }
+          paintEvents(g, events.watchpointEvents, intervalStart, intervalEnd, lineHeightOffset);
           lineHeightOffset += EVENT_PIXEL_HEIGHT;
         }
 
@@ -1475,29 +1435,71 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       drawMouseTime(g, intervalStart, intervalEnd);
     }
 
-    private <T extends MoteEvent> T getFirstIntervalEvent(ArrayList<T> events, long time) {
+    private void paintEvents(Graphics g, ArrayList<MoteEvent> events, long intervalStart, long intervalEnd,
+                             int lineHeightOffset) {
+      if (events.isEmpty()) {
+        return;
+      }
+
+      int lastPosition = -1;
+      for (int i = getIndexOfFirstIntervalEvent(events, intervalStart), n = events.size(); i < n; i++) {
+        MoteEvent event = events.get(i);
+        if (event.time >= intervalEnd) {
+          break;
+        }
+
+        int x = (int) (event.time / currentPixelDivisor);
+        if (event.collapseOverlapping && x < lastPosition + 1) {
+          continue;
+        }
+
+        /* Calculate event width */
+        int width;
+        if (event.fixedWidth == 0) {
+          MoteEvent nextEvent = i + 1 < n ? events.get(i + 1) : null;
+          long endTime = (nextEvent != null ? nextEvent.time : intervalEnd) - event.time;
+          width = (int) (endTime / currentPixelDivisor);
+          /* Handle zero pixel width events */
+          if (width == 0) {
+            if (PAINT_ZERO_WIDTH_EVENTS) {
+              width = 1;
+            } else {
+              continue;
+            }
+          }
+        } else {
+          width = event.fixedWidth;
+        }
+
+        /* Always respect the minimum width configuration */
+        if (width < paintEventMinWidth) {
+          width = paintEventMinWidth;
+        }
+
+        Color color = event.getEventColor(TimeLine.this);
+        if (color == null) {
+          /* Skip painting event */
+          continue;
+        }
+        g.setColor(color);
+
+        lastPosition = x;
+        event.paintInterval(TimeLine.this, g, x, lineHeightOffset, width);
+      }
+    }
+
+    private <T extends MoteEvent> int getIndexOfFirstIntervalEvent(ArrayList<T> events, long time) {
       /* TODO IMPLEMENT ME: Binary search */
       int nrEvents = events.size();
       if (nrEvents == 0) {
-        return null;
-      }
-      if (nrEvents == 1) {
-        events.get(0);
+        return -1;
       }
 
       int ev = 0;
       while (ev < nrEvents && events.get(ev).time < time) {
         ev++;
       }
-      ev--;
-      if (ev < 0) {
-        ev = 0;
-      }
-
-      if (ev >= events.size()) {
-        return events.get(events.size()-1);
-      }
-      return events.get(ev);
+      return Math.max(ev - 1, 0);
     }
 
     private void drawTimeRule(Graphics g, long start, long end) {
@@ -1616,13 +1618,16 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         evMatched++;
       }
       if (events != null) {
-        MoteEvent ev = getFirstIntervalEvent(events, time);
-        if (ev != null && time >= ev.time) {
-          tooltip += ev + "<br>";
+        int index = getIndexOfFirstIntervalEvent(events, time);
+        if (index >= 0) {
+          MoteEvent ev = events.get(index);
+          if (time >= ev.time) {
+            tooltip += ev + "<br>";
 
-        	if (ev.details != null) {
-        		tooltip += "Details:<br>" + ev.details;
-        	}
+            if (ev.details != null) {
+              tooltip += "Details:<br>" + ev.details;
+            }
+          }
         }
       }
 
@@ -1771,10 +1776,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
 
   /* Event classes */
-  abstract class MoteEvent {
-    MoteEvent prev = null;
-    MoteEvent next = null;
+  static abstract class MoteEvent {
     String details = null;
+    int fixedWidth = 0;
+    boolean collapseOverlapping = false;
     final long time;
     public MoteEvent(long time) {
       this.time = time;
@@ -1784,60 +1789,22 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
      * Used by the default paint method to color events.
      * The event is not painted if the returned color is null.
      *
-     * @see #paintInterval(Graphics, int, long)
+     * @see #paintInterval(TimeLine, Graphics, int, int, int)
      * @return Event color or null
      */
-    public abstract Color getEventColor();
+    public abstract Color getEventColor(TimeLine timeLine);
 
     /* Default paint method */
-    public void paintInterval(Graphics g, int lineHeightOffset, long end) {
-      MoteEvent ev = this;
-      while (ev != null && ev.time < end) {
-        int w; /* Pixel width */
-
-        /* Calculate event width */
-        if (ev.next != null) {
-          w = (int) ((ev.next.time - ev.time)/currentPixelDivisor);
-        } else {
-          w = (int) ((end - ev.time)/currentPixelDivisor); /* No more events */
-        }
-
-        /* Handle zero pixel width events */
-        if (w == 0) {
-          if (PAINT_ZERO_WIDTH_EVENTS) {
-            w = 1;
-          } else {
-            ev = ev.next;
-            continue;
-          }
-        }
-
-        if( w < paintEventMinWidth)
-            w = paintEventMinWidth;
-
-        Color color = ev.getEventColor();
-        if (color == null) {
-          /* Skip painting event */
-          ev = ev.next;
-          continue;
-        }
-        g.setColor(color);
-
-        g.fillRect(
-            (int)(ev.time/currentPixelDivisor), lineHeightOffset,
-            w, EVENT_PIXEL_HEIGHT
-        );
-
-        ev = ev.next;
-      }
+    public void paintInterval(TimeLine timeLine, Graphics g, int x, int lineHeightOffset, int width) {
+      g.fillRect(x, lineHeightOffset, width, EVENT_PIXEL_HEIGHT);
     }
   }
-  class NoHistoryEvent extends MoteEvent {
+  static class NoHistoryEvent extends MoteEvent {
     public NoHistoryEvent(long time) {
       super(time);
     }
     @Override
-    public Color getEventColor() {
+    public Color getEventColor(TimeLine timeLine) {
       return Color.CYAN;
     }
     @Override
@@ -1848,14 +1815,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   public enum RXTXRadioEvent {
     IDLE, RECEIVING, TRANSMITTING, INTERFERED
   }
-  class RadioRXTXEvent extends MoteEvent {
+  static class RadioRXTXEvent extends MoteEvent {
     final RXTXRadioEvent state;
     public RadioRXTXEvent(long time, RXTXRadioEvent ev) {
       super(time);
       this.state = ev;
     }
     @Override
-    public Color getEventColor() {
+    public Color getEventColor(TimeLine timeLine) {
       if (state == RXTXRadioEvent.IDLE) {
         return null;
       } else if (state == RXTXRadioEvent.TRANSMITTING) {
@@ -1898,7 +1865,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     Color.decode("0x00FF00"), Color.decode("0x0000FF"), Color.decode("0xFFFF00"),
     Color.decode("0xFF00FF"), Color.decode("0x808000"), Color.decode("0x800080"),
   };
-  class RadioChannelEvent extends MoteEvent {
+  static class RadioChannelEvent extends MoteEvent {
     final int channel;
     final boolean radioOn;
     public RadioChannelEvent(long time, int channel, boolean radioOn) {
@@ -1907,7 +1874,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       this.radioOn = radioOn;
     }
     @Override
-    public Color getEventColor() {
+    public Color getEventColor(TimeLine timeLine) {
       if (channel >= 0) {
         if (!radioOn) {
           return null;
@@ -1922,14 +1889,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   }
 
-  class RadioHWEvent extends MoteEvent {
+  static class RadioHWEvent extends MoteEvent {
     final boolean on;
     public RadioHWEvent(long time, boolean on) {
       super(time);
       this.on = on;
     }
     @Override
-    public Color getEventColor() {
+    public Color getEventColor(TimeLine timeLine) {
     	if (on) {
     	    return Color.GRAY;
     	}
@@ -1940,7 +1907,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       return "Radio HW was turned " + (on?"on":"off") + "<br>";
     }
   }
-  class LEDEvent extends MoteEvent {
+  static class LEDEvent extends MoteEvent {
     final boolean red;
     final boolean green;
     final boolean blue;
@@ -1953,7 +1920,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       this.color = new Color(red?255:0, green?255:0, blue?255:0);
     }
     @Override
-    public Color getEventColor() {
+    public Color getEventColor(TimeLine timeLine) {
       if (!red && !green && !blue) {
         return null;
       } else if (red && green && blue) {
@@ -1964,59 +1931,18 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
     /* LEDs are painted in three lines */
     @Override
-    public void paintInterval(Graphics g, int lineHeightOffset, long end) {
-      MoteEvent ev = this;
-      while (ev != null && ev.time < end) {
-        int w; /* Pixel width */
-
-        /* Calculate event width */
-        if (ev.next != null) {
-          w = (int) ((ev.next.time - ev.time)/currentPixelDivisor);
-        } else {
-          w = (int) ((end - ev.time)/currentPixelDivisor); /* No more events */
-        }
-
-        /* Handle zero pixel width events */
-        if (w == 0) {
-          if (PAINT_ZERO_WIDTH_EVENTS) {
-            w = 1;
-          } else {
-            ev = ev.next;
-            continue;
-          }
-        }
-
-        if( w < paintEventMinWidth)
-            w = paintEventMinWidth;
-
-        Color color = ev.getEventColor();
-        if (color == null) {
-          /* Skip painting event */
-          ev = ev.next;
-          continue;
-        }
-        if (color.getRed() > 0) {
-          g.setColor(new Color(color.getRed(), 0, 0));
-          g.fillRect(
-              (int)(ev.time/currentPixelDivisor), lineHeightOffset,
-              w, LED_PIXEL_HEIGHT
-          );
-        }
-        if (color.getGreen() > 0) {
-          g.setColor(new Color(0, color.getGreen(), 0));
-          g.fillRect(
-              (int)(ev.time/currentPixelDivisor), lineHeightOffset+LED_PIXEL_HEIGHT,
-              w, LED_PIXEL_HEIGHT
-          );
-        }
-        if (color.getBlue() > 0) {
-          g.setColor(new Color(0, 0, color.getBlue()));
-          g.fillRect(
-              (int)(ev.time/currentPixelDivisor), lineHeightOffset+2*LED_PIXEL_HEIGHT,
-              w, LED_PIXEL_HEIGHT
-          );
-        }
-        ev = ev.next;
+    public void paintInterval(TimeLine timeLine, Graphics g, int x, int lineHeightOffset, int width) {
+      if (color.getRed() > 0) {
+        g.setColor(new Color(color.getRed(), 0, 0));
+        g.fillRect(x, lineHeightOffset, width, LED_PIXEL_HEIGHT);
+      }
+      if (color.getGreen() > 0) {
+        g.setColor(new Color(0, color.getGreen(), 0));
+        g.fillRect(x, lineHeightOffset + LED_PIXEL_HEIGHT, width, LED_PIXEL_HEIGHT);
+      }
+      if (color.getBlue() > 0) {
+        g.setColor(new Color(0, 0, color.getBlue()));
+        g.fillRect(x, lineHeightOffset + 2 * LED_PIXEL_HEIGHT, width, LED_PIXEL_HEIGHT);
       }
     }
     @Override
@@ -2031,89 +1957,65 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   private enum FilterState { NONE, PASS, REJECTED }
 
-  class LogEvent extends MoteEvent {
+  static class LogEvent extends MoteEvent {
+
     final LogOutputEvent logEvent;
     // filter result cache
-    private  FilterState     filtered;
+    private FilterState filtered;
+    private Color logEventColor;
 
     public LogEvent(LogOutputEvent ev) {
       super(ev.getTime());
       this.logEvent = ev;
       this.filtered = FilterState.NONE;
+      this.fixedWidth = 4;
+      this.collapseOverlapping = true;
     }
 
     @Override
-    public Color getEventColor() {
-      if (logEventColorOfMote && logEventFilterPlugin != null) {
-        /* Ask log listener for event color to use */
-        return logEventFilterPlugin.getColorOfEntry(logEvent);
+    public Color getEventColor(TimeLine timeline) {
+      /* Ask active log listener whether this should be filtered  */
+      if (timeline.logEventFilterPlugin != null) {
+        if (timeline.logEventFilterChanged || (filtered == FilterState.NONE)) {
+          filtered = timeline.logEventFilterPlugin.filterWouldAccept(logEvent)
+                  ? FilterState.PASS
+                  : FilterState.REJECTED;
+          logEventColor = null;
+        }
+        if (filtered == FilterState.REJECTED) {
+          return null;
+        }
+        if (timeline.logEventColorOfMote) {
+          if (logEventColor != null) {
+            return logEventColor;
+          }
+          /* Ask log listener for event color to use */
+          return logEventColor = timeline.logEventFilterPlugin.getColorOfEntry(logEvent);
+        }
       }
-      return Color.GREEN;
+      return Color.green;
     }
     /* Default paint method */
-    @Override
-    public void paintInterval(Graphics g, int lineHeightOffset, long end) {
-      LogEvent ev = this;
-      long time_start = -1;
-      
-      while (ev != null && ev.time < end) {
-          int position = (int)(ev.time/currentPixelDivisor);
-          if (ev.time < time_start ){
-              /* Skip painting event over already painted one*/
-              ev = (LogEvent) ev.next;
-              continue;
-          }
-          
-          /* Ask active log listener whether this should be filtered  */
-        
-        if (logEventFilterPlugin != null) {
-          if (logEventFilterChanged || (filtered == FilterState.NONE) ) {
-              boolean show = logEventFilterPlugin.filterWouldAccept(ev.logEvent);
-              if (show)
-                  filtered = FilterState.PASS;
-              else
-                  filtered = FilterState.REJECTED;
-          }
-          
-          if (filtered == FilterState.REJECTED) {
-            /* Skip painting event */
-            ev = (LogEvent) ev.next;
-            continue;
-          }
-        }
-
-        Color color = ev.getEventColor();
-        if (color == null) {
-          /* Skip painting event */
-          ev = (LogEvent) ev.next;
-          continue;
-        }
-
-        // upper bound of start position
-        time_start = (long)((position+1)*currentPixelDivisor);
-
-        g.setColor(color);
-        g.fillRect( position, lineHeightOffset, 4, EVENT_PIXEL_HEIGHT );
-
-        g.setColor(Color.BLUE);
-        g.fillRect( position, lineHeightOffset, 1, EVENT_PIXEL_HEIGHT );
-
-        ev = (LogEvent) ev.next;
-      }
+    public void paintInterval(TimeLine timeLine, Graphics g, int x, int lineHeightOffset, int width) {
+      g.fillRect(x, lineHeightOffset, width, EVENT_PIXEL_HEIGHT);
+      g.setColor(Color.BLUE);
+      g.fillRect(x, lineHeightOffset, 1, EVENT_PIXEL_HEIGHT);
     }
     @Override
     public String toString() {
       return "Mote " + logEvent.getMote() + " says:<br>" + logEvent.getMessage() + "<br>";
     }
   }
-  class WatchpointEvent extends MoteEvent {
+  static class WatchpointEvent extends MoteEvent {
     final Watchpoint watchpoint;
     public WatchpointEvent(long time, Watchpoint watchpoint) {
       super(time);
       this.watchpoint = watchpoint;
+      this.fixedWidth = 2;
+      this.collapseOverlapping = true;
     }
     @Override
-    public Color getEventColor() {
+    public Color getEventColor(TimeLine timeLine) {
       Color c = watchpoint.getColor();
       if (c == null) {
         return Color.BLACK;
@@ -2128,32 +2030,9 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       "Watchpoint triggered at time (ms): " +  time/Simulation.MILLISECOND + ".<br>"
       + desc + "<br>";
     }
-
-    /* Default paint method */
-    @Override
-    public void paintInterval(Graphics g, int lineHeightOffset, long end) {
-      MoteEvent ev = this;
-      while (ev != null && ev.time < end) {
-        int w = 2; /* Watchpoints are always two pixels wide */
-
-        Color color = ev.getEventColor();
-        if (color == null) {
-          /* Skip painting event */
-          ev = ev.next;
-          continue;
-        }
-        g.setColor(color);
-
-        g.fillRect(
-            (int)(ev.time/currentPixelDivisor), lineHeightOffset,
-            w, EVENT_PIXEL_HEIGHT
-        );
-
-        ev = ev.next;
-      }
-    }
   }
-  class MoteEvents {
+
+  static class MoteEvents {
     final Mote mote;
     final ArrayList<MoteEvent> radioRXTXEvents = new ArrayList<>();
     final ArrayList<MoteEvent> radioChannelEvents = new ArrayList<>();
@@ -2162,30 +2041,9 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     final ArrayList<MoteEvent> logEvents = new ArrayList<>();
     final ArrayList<MoteEvent> watchpointEvents = new ArrayList<>();
 
-    private MoteEvent lastRadioRXTXEvent = null;
-    private MoteEvent lastRadioChannelEvent = null;
-    private MoteEvent lastRadioHWEvent = null;
-    private MoteEvent lastLEDEvent = null;
-    private MoteEvent lastLogEvent = null;
-    private MoteEvent lastWatchpointEvent = null;
-
     public MoteEvents(Mote mote) {
       this.mote = mote;
-      if (mote.getSimulation().getSimulationTime() > 0) {
-        /* Create no history events */
-        lastRadioRXTXEvent = new NoHistoryEvent(0);
-        lastRadioChannelEvent = new NoHistoryEvent(0);
-        lastRadioHWEvent = new NoHistoryEvent(0);
-        lastLEDEvent = new NoHistoryEvent(0);
-        lastLogEvent = new NoHistoryEvent(0);
-        lastWatchpointEvent = new NoHistoryEvent(0);
-        radioRXTXEvents.add(lastRadioRXTXEvent);
-        radioChannelEvents.add(lastRadioChannelEvent);
-        radioHWEvents.add(lastRadioHWEvent);
-        ledEvents.add(lastLEDEvent);
-        logEvents.add(lastLogEvent);
-        watchpointEvents.add(lastWatchpointEvent);
-      }
+      clear();
     }
 
     protected void clear() {
@@ -2198,79 +2056,31 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
       if (mote.getSimulation().getSimulationTime() > 0) {
         /* Create no history events */
-        lastRadioRXTXEvent = new NoHistoryEvent(0);
-        lastRadioChannelEvent = new NoHistoryEvent(0);
-        lastRadioHWEvent = new NoHistoryEvent(0);
-        lastLEDEvent = new NoHistoryEvent(0);
-        lastLogEvent = new NoHistoryEvent(0);
-        lastWatchpointEvent = new NoHistoryEvent(0);
-        radioRXTXEvents.add(lastRadioRXTXEvent);
-        radioChannelEvents.add(lastRadioChannelEvent);
-        radioHWEvents.add(lastRadioHWEvent);
-        ledEvents.add(lastLEDEvent);
-        logEvents.add(lastLogEvent);
-        watchpointEvents.add(lastWatchpointEvent);
+        radioRXTXEvents.add(new NoHistoryEvent(0));
+        radioChannelEvents.add(new NoHistoryEvent(0));
+        radioHWEvents.add(new NoHistoryEvent(0));
+        ledEvents.add(new NoHistoryEvent(0));
+        logEvents.add(new NoHistoryEvent(0));
+        watchpointEvents.add(new NoHistoryEvent(0));
       }
     }
 
     public void addRadioRXTX(RadioRXTXEvent ev) {
-      /* Link with previous events */
-      if (lastRadioRXTXEvent != null) {
-        ev.prev = lastRadioRXTXEvent;
-        lastRadioRXTXEvent.next = ev;
-      }
-      lastRadioRXTXEvent = ev;
-
       radioRXTXEvents.add(ev);
     }
     public void addRadioChannel(RadioChannelEvent ev) {
-      /* Link with previous events */
-      if (lastRadioChannelEvent != null) {
-        ev.prev = lastRadioChannelEvent;
-        lastRadioChannelEvent.next = ev;
-      }
-      lastRadioChannelEvent = ev;
-
       radioChannelEvents.add(ev);
     }
     public void addRadioHW(RadioHWEvent ev) {
-      /* Link with previous events */
-      if (lastRadioHWEvent != null) {
-        ev.prev = lastRadioHWEvent;
-        lastRadioHWEvent.next = ev;
-      }
-      lastRadioHWEvent = ev;
-
       radioHWEvents.add(ev);
     }
     public void addLED(LEDEvent ev) {
-      /* Link with previous events */
-      if (lastLEDEvent != null) {
-        ev.prev = lastLEDEvent;
-        lastLEDEvent.next = ev;
-      }
-      lastLEDEvent = ev;
-
       ledEvents.add(ev);
     }
     public void addLog(LogEvent ev) {
-      /* Link with previous events */
-      if (lastLogEvent != null) {
-        ev.prev = lastLogEvent;
-        lastLogEvent.next = ev;
-      }
-      lastLogEvent = ev;
-
       logEvents.add(ev);
     }
     public void addWatchpoint(WatchpointEvent ev) {
-      /* Link with previous events */
-      if (lastWatchpointEvent != null) {
-        ev.prev = lastWatchpointEvent;
-        lastWatchpointEvent.next = ev;
-      }
-      lastWatchpointEvent = ev;
-
       watchpointEvents.add(ev);
     }
   }
