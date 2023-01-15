@@ -43,6 +43,8 @@ import java.util.function.BiConsumer;
 public class EventTriggers<K, T> {
   /** Utility enum that indicates something was added or removed. */
   public enum AddRemove {ADD, REMOVE}
+  /** Utility enum that indicates something was added, removed, or updated. */
+  public enum AddRemoveUpdate {ADD, REMOVE, UPDATE}
   /** Utility enum that indicates something was started, stopped or removed. */
   public enum Operation {START, STOP, REMOVE}
   /** Utility enum that indicates something was updated. Improves readability, could be represented by Void. */

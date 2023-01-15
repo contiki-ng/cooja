@@ -33,7 +33,6 @@ package org.contikios.cooja.interfaces;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.util.HashMap;
-import java.util.Observable;
 import java.util.function.BiConsumer;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -76,13 +75,14 @@ import org.slf4j.LoggerFactory;
  * @author Joakim Eriksson
  */
 @ClassDescription("Mote Attributes")
-public class MoteAttributes extends Observable implements MoteInterface {
+public class MoteAttributes implements MoteInterface {
   private static final Logger logger = LoggerFactory.getLogger(MoteAttributes.class);
   private final Mote mote;
 
   private final HashMap<String, Object> attributes = new HashMap<>();
   private final HashMap<JPanel, JTextArea> labels = new HashMap<>();
 
+  private final EventTriggers<EventTriggers.AddRemoveUpdate, MoteAttributeUpdateData> attributesTriggers = new EventTriggers<>();
   private BiConsumer<EventTriggers.Update, Log.LogDataInfo> logOutputTrigger;
 
   public MoteAttributes(Mote mote) {
@@ -115,8 +115,7 @@ public class MoteAttributes extends Observable implements MoteInterface {
           }
         });
       }
-      setChanged();
-      notifyObservers();
+      attributesTriggers.trigger(EventTriggers.AddRemoveUpdate.UPDATE, new MoteAttributeUpdateData(msg));
     };
     /* Observe log interfaces */
     for (MoteInterface mi: mote.getInterfaces().getInterfaces()) {
@@ -182,4 +181,12 @@ public class MoteAttributes extends Observable implements MoteInterface {
   public void releaseInterfaceVisualizer(JPanel panel) {
     labels.remove(panel);
   }
+
+  public EventTriggers<EventTriggers.AddRemoveUpdate, MoteAttributeUpdateData> getAttributesTriggers() {
+    return attributesTriggers;
+  }
+
+  /** The attributes updated. */
+  // TODO: split the attributes and pass a list of updates.
+  public record MoteAttributeUpdateData(String attributes) {}
 }

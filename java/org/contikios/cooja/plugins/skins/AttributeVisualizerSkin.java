@@ -34,7 +34,6 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.util.Observer;
 import java.util.function.BiConsumer;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -61,14 +60,14 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private final Observer attributesObserver = (obs, obj) -> visualizer.repaint();
+  private final BiConsumer<EventTriggers.AddRemoveUpdate, MoteAttributes.MoteAttributeUpdateData> attributesTrigger = (obs, obj) -> visualizer.repaint();
   private final BiConsumer<EventTriggers.AddRemove, Mote> newMotesListener = (event, mote) -> {
     var intf = mote.getInterfaces().getInterfaceOfType(MoteAttributes.class);
     if (intf != null) {
       if (event == EventTriggers.AddRemove.ADD) {
-        intf.addObserver(attributesObserver);
+        intf.getAttributesTriggers().addTrigger(this, attributesTrigger);
       } else {
-        intf.deleteObserver(attributesObserver);
+        intf.getAttributesTriggers().removeTrigger(this, attributesTrigger);
       }
     }
   };
