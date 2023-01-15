@@ -457,8 +457,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
         @Override
         public void execute(long t) {
             switch (stateMachine) {
-                case RX_CALIBRATE -> setState(RadioState.RX_SFD_SEARCH);
-
+                case RX_CALIBRATE, RX_WAIT -> setState(RadioState.RX_SFD_SEARCH);
                 /* this will be called 8 symbols after first SFD_SEARCH */
                 case RX_SFD_SEARCH -> {
                     status |= STATUS_RSSI_VALID;
@@ -466,7 +465,6 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
                     updateCCA();
                 }
                 case TX_CALIBRATE -> setState(RadioState.TX_PREAMBLE);
-                case RX_WAIT -> setState(RadioState.RX_SFD_SEARCH);
                 case TX_ACK_CALIBRATE -> setState(RadioState.TX_ACK_PREAMBLE);
                 default -> {
                 }
