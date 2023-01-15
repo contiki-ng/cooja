@@ -29,23 +29,17 @@
 package org.contikios.cooja.interfaces;
 
 import java.awt.BorderLayout;
-import java.util.Observable;
-import java.util.Observer;
-
+import java.util.function.BiConsumer;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.RadioPacket;
 import org.contikios.cooja.contikimote.interfaces.ContikiRadio;
 import org.contikios.cooja.util.EventTriggers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A mote radio transceiver.
@@ -57,9 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Radio")
-public abstract class Radio extends Observable implements MoteInterface {
-  private static final Logger logger = LoggerFactory.getLogger(Radio.class);
-
+public abstract class Radio implements MoteInterface {
   protected final EventTriggers<RadioEvent, Radio> radioEventTriggers = new EventTriggers<>();
 
   /**
@@ -248,7 +240,7 @@ public abstract class Radio extends Observable implements MoteInterface {
     updateButton.addActionListener(e -> ssLabel.setText("Signal strength (not auto-updated): "
         + String.format("%1.1f", getCurrentSignalStrength()) + " dBm"));
 
-    final Observer observer = (obs, obj) -> {
+    final BiConsumer<RadioEvent, Radio> observer = (event, radio) -> {
       if (isTransmitting()) {
         statusLabel.setText("Transmitting");
       } else if (isReceiving()) {
@@ -266,24 +258,15 @@ public abstract class Radio extends Observable implements MoteInterface {
         channelLabel.setText("Current channel: " + getChannel());
       }
     };
-    this.addObserver(observer);
-
-    observer.update(null, null);
-
+    radioEventTriggers.addTrigger(panel, observer);
+    observer.accept(null, null);
     panel.add(BorderLayout.NORTH, box);
-    panel.putClientProperty("intf_obs", observer);
     return panel;
   }
 
   @Override
   public void releaseInterfaceVisualizer(JPanel panel) {
-    Observer observer = (Observer) panel.getClientProperty("intf_obs");
-    if (observer == null) {
-      logger.error("Error when releasing panel, observer is null");
-      return;
-    }
-
-    this.deleteObserver(observer);
+    radioEventTriggers.deleteTriggers(panel);
   }
 
   @Override

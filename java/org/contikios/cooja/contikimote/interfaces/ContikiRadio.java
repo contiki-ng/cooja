@@ -197,9 +197,6 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     lastEvent = RadioEvent.RECEPTION_STARTED;
 
     myMoteMemory.setInt64ValueOf("simLastPacketTimestamp", lastEventTime);
-
-    this.setChanged();
-    this.notifyObservers();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_STARTED, this);
   }
 
@@ -218,8 +215,6 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     mote.requestImmediateWakeup();
     lastEventTime = mote.getSimulation().getSimulationTime();
     lastEvent = RadioEvent.RECEPTION_FINISHED;
-    this.setChanged();
-    this.notifyObservers();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_FINISHED, this);
   }
 
@@ -238,8 +233,6 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
 
     lastEvent = RadioEvent.RECEPTION_INTERFERED;
     lastEventTime = mote.getSimulation().getSimulationTime();
-    this.setChanged();
-    this.notifyObservers();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_INTERFERED, this);
   }
 
@@ -314,8 +307,6 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
       }
 
       lastEventTime = now;
-      this.setChanged();
-      this.notifyObservers();
       radioEventTriggers.trigger(radioOn ? RadioEvent.HW_ON : RadioEvent.HW_OFF, this);
     }
     if (!radioOn) {
@@ -326,8 +317,6 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     if (myMoteMemory.getByteValueOf("simPower") != oldOutputPowerIndicator) {
       oldOutputPowerIndicator = myMoteMemory.getByteValueOf("simPower");
       lastEvent = RadioEvent.UNKNOWN;
-      this.setChanged();
-      this.notifyObservers();
       radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
     }
 
@@ -336,8 +325,6 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     if (currentChannel != oldRadioChannel) {
       oldRadioChannel = currentChannel;
       lastEvent = RadioEvent.UNKNOWN;
-      this.setChanged();
-      this.notifyObservers();
       radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
     }
 
@@ -349,8 +336,6 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
 
       lastEventTime = now;
       lastEvent = RadioEvent.TRANSMISSION_FINISHED;
-      this.setChanged();
-      this.notifyObservers();
       radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, this);
     }
 
@@ -383,14 +368,10 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
 
       lastEventTime = now;
       lastEvent = RadioEvent.TRANSMISSION_STARTED;
-      this.setChanged();
-      this.notifyObservers();
       radioEventTriggers.trigger(RadioEvent.TRANSMISSION_STARTED, this);
 
       // Deliver packet right away
       lastEvent = RadioEvent.PACKET_TRANSMITTED;
-      this.setChanged();
-      this.notifyObservers();
       radioEventTriggers.trigger(RadioEvent.PACKET_TRANSMITTED, this);
     }
 

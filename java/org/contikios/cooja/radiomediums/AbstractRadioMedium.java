@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Observer;
+import java.util.function.BiConsumer;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.RadioMedium;
 import org.contikios.cooja.Simulation;
@@ -95,7 +96,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
    * This observer is responsible for detecting radio interface events, for example
    * new transmissions.
    */
-  private final Observer radioEventsObserver;
+  private final BiConsumer<Radio.RadioEvent, Radio> radioEventsObserver;
 
 	/**
 	 * This constructor should always be called from implemented radio mediums.
@@ -104,12 +105,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	 */
 	public AbstractRadioMedium(Simulation simulation) {
 		this.simulation = simulation;
-    radioEventsObserver = (obs, obj) -> {
-      if (!(obs instanceof Radio radio)) {
-        logger.error("Radio event dispatched by non-radio object");
-        return;
-      }
-      final var event = radio.getLastEvent();
+    radioEventsObserver = (event, radio) -> {
       switch (event) {
         case RECEPTION_STARTED:
         case RECEPTION_INTERFERED:
@@ -389,7 +385,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 		}
 		
 		registeredRadios.add(radio);
-		radio.addObserver(radioEventsObserver);
+    radio.getRadioEventTriggers().addTrigger(this, radioEventsObserver);
     radioMediumTriggers.trigger(EventTriggers.AddRemove.ADD, radio);
 		
 		/* Update signal strengths */
@@ -402,8 +398,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 			logger.warn("No radio to unregister: " + radio);
 			return;
 		}
-		
-		radio.deleteObserver(radioEventsObserver);
+    radio.getRadioEventTriggers().removeTrigger(this, radioEventsObserver);
 		registeredRadios.remove(radio);
 		
 		removeFromActiveConnections(radio);

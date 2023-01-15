@@ -99,16 +99,12 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
           isTransmitting = true;
           len = 0;
           expMpduLen = 0;
-          setChanged();
-          notifyObservers();
           radioEventTriggers.trigger(RadioEvent.TRANSMISSION_STARTED, Msp802154Radio.this);
         }
 
         /* send this byte to all nodes */
         lastOutgoingByte = data;
         lastEvent = RadioEvent.CUSTOM_DATA_TRANSMITTED;
-        setChanged();
-        notifyObservers();
         radioEventTriggers.trigger(RadioEvent.CUSTOM_DATA_TRANSMITTED, Msp802154Radio.this);
 
         if (len < buffer.length)
@@ -138,8 +134,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
           lastOutgoingPacket = CC2420RadioPacketConverter.fromCC2420ToCooja(buffer);
           if (lastOutgoingPacket != null) {
             lastEvent = RadioEvent.PACKET_TRANSMITTED;
-            setChanged();
-            notifyObservers();
             radioEventTriggers.trigger(RadioEvent.PACKET_TRANSMITTED, Msp802154Radio.this);
           }
           finishTransmission();
@@ -150,8 +144,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
     radio.addOperatingModeListener((source, mode) -> {
       if (radio.isReadyToReceive()) {
         lastEvent = RadioEvent.HW_ON;
-        setChanged();
-        notifyObservers();
         radioEventTriggers.trigger(RadioEvent.HW_ON, this);
       } else {
         radioOff(); // actually it is a state change, not necessarily to OFF
@@ -161,8 +153,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
     radio.addChannelListener(channel -> {
       /* XXX Currently assumes zero channel switch time */
       lastEvent = RadioEvent.UNKNOWN;
-      setChanged();
-      notifyObservers();
       radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
     });
   }
@@ -174,8 +164,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
       isTransmitting = false;
       isSynchronized = false;
       lastEvent = RadioEvent.TRANSMISSION_FINISHED;
-      setChanged();
-      notifyObservers();
       radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, this);
     }
   }
@@ -185,8 +173,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
       logger.warn("Turning off radio while transmitting a packet");
     finishTransmission();
     lastEvent = RadioEvent.HW_OFF;
-    setChanged();
-    notifyObservers();
     radioEventTriggers.trigger(RadioEvent.HW_OFF, this);
   }
 
@@ -301,8 +287,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
     isReceiving = true;
 
     lastEvent = RadioEvent.RECEPTION_STARTED;
-    setChanged();
-    notifyObservers();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_STARTED, this);
   }
 
@@ -313,8 +297,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
     isInterfered = false;
 
     lastEvent = RadioEvent.RECEPTION_FINISHED;
-    setChanged();
-    notifyObservers();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_FINISHED, this);
   }
 
@@ -330,8 +312,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
     lastIncomingPacket = null;
 
     lastEvent = RadioEvent.RECEPTION_INTERFERED;
-    setChanged();
-    notifyObservers();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_INTERFERED, this);
   }
 

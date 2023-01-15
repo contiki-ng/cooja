@@ -50,8 +50,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.function.BiConsumer;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JCheckBox;
@@ -793,24 +792,21 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   /* XXX Keeps track of observed mote interfaces */
   static class MoteObservation {
-
-    private EventTriggers<EventTriggers.Update, Mote> triggers;
-    private Observer observer;
-    private Observable observable;
+    private EventTriggers<EventTriggers.Update, Mote> moteEventTriggers;
+    private EventTriggers<RadioEvent, Radio> radioEventTriggers;
     private final Mote mote;
 
     private WatchpointMote watchpointMote; /* XXX */
     private WatchpointListener watchpointListener; /* XXX */
 
-    public MoteObservation(Mote mote, Observable observable, Observer observer) {
+    public MoteObservation(Mote mote, Radio radio, EventTriggers<RadioEvent, Radio> triggers) {
       this.mote = mote;
-      this.observable = observable;
-      this.observer = observer;
+      radioEventTriggers = triggers;
     }
 
     public MoteObservation(Mote mote, EventTriggers<EventTriggers.Update, Mote> triggers) {
       this.mote = mote;
-      this.triggers = triggers;
+      moteEventTriggers = triggers;
     }
 
     /* XXX Special case, should be generalized */
@@ -828,16 +824,12 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
      * Disconnect observer from observable (stop observing) and clean up resources (remove pointers).
      */
     public void dispose() {
-      if (observable != null) {
-        observable.deleteObserver(observer);
-        observable = null;
-        observer = null;
+      if (moteEventTriggers != null) {
+        moteEventTriggers.deleteTriggers(this);
       }
-
-      if (triggers != null) {
-        triggers.deleteTriggers(this);
+      if (radioEventTriggers != null) {
+        radioEventTriggers.deleteTriggers(this);
       }
-
       /* XXX */
       if (watchpointMote != null) {
         watchpointMote.removeWatchpointListener(watchpointListener);
@@ -877,10 +869,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       RadioRXTXEvent startupRXTX = new RadioRXTXEvent(
           simulation.getSimulationTime(), RXTXRadioEvent.IDLE);
       moteEvents.addRadioRXTX(startupRXTX);
-      Observer observer = new Observer() {
+      var observer = new BiConsumer<RadioEvent, Radio>() {
         int lastChannel = -1;
         @Override
-        public void update(Observable o, Object arg) {
+        public void accept(RadioEvent event, Radio radio) {
           RadioEvent radioEv = moteRadio.getLastEvent();
 
           String details = null;
@@ -951,9 +943,9 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
         }
       };
-
-      moteRadio.addObserver(observer);
-      activeMoteObservers.add(new MoteObservation(mote, moteRadio, observer));
+      var obs = new MoteObservation(mote, moteRadio, moteRadio.getRadioEventTriggers());
+      moteRadio.getRadioEventTriggers().addTrigger(obs, observer);
+      activeMoteObservers.add(obs);
     }
 
     /* Watchpoints */

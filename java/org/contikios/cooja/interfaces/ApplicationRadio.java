@@ -32,8 +32,7 @@ package org.contikios.cooja.interfaces;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
-import java.util.Observer;
-
+import java.util.function.BiConsumer;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -116,8 +115,6 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     isReceiving = true;
     lastEventTime = simulation.getSimulationTime();
     lastEvent = RadioEvent.RECEPTION_STARTED;
-    this.setChanged();
-    this.notifyObservers();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_STARTED, this);
   }
 
@@ -139,8 +136,6 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     isReceiving = false;
     lastEventTime = simulation.getSimulationTime();
     lastEvent = RadioEvent.RECEPTION_FINISHED;
-    this.setChanged();
-    this.notifyObservers();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_FINISHED, this);
   }
 
@@ -182,8 +177,6 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
 
       lastEvent = RadioEvent.RECEPTION_INTERFERED;
       lastEventTime = simulation.getSimulationTime();
-      this.setChanged();
-      this.notifyObservers();
       radioEventTriggers.trigger(RadioEvent.RECEPTION_INTERFERED, this);
     }
   }
@@ -237,15 +230,11 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     isTransmitting = true;
     lastEvent = RadioEvent.TRANSMISSION_STARTED;
     lastEventTime = simulation.getSimulationTime();
-    ApplicationRadio.this.setChanged();
-    ApplicationRadio.this.notifyObservers();
     radioEventTriggers.trigger(RadioEvent.TRANSMISSION_STARTED, this);
 
     // Deliver data.
     packetFromMote = packet;
     lastEvent = RadioEvent.PACKET_TRANSMITTED;
-    ApplicationRadio.this.setChanged();
-    ApplicationRadio.this.notifyObservers();
     radioEventTriggers.trigger(RadioEvent.PACKET_TRANSMITTED, this);
 
     // Finish transmission.
@@ -255,8 +244,6 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
         isTransmitting = false;
         lastEvent = RadioEvent.TRANSMISSION_FINISHED;
         lastEventTime = t;
-        ApplicationRadio.this.setChanged();
-        ApplicationRadio.this.notifyObservers();
         radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, ApplicationRadio.this);
       }
     }, simulation.getSimulationTime() + duration);
@@ -283,8 +270,6 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     radioChannel = channel;
     lastEvent = RadioEvent.UNKNOWN;
     lastEventTime = simulation.getSimulationTime();
-    setChanged();
-    notifyObservers();
     radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
   }
 
@@ -332,7 +317,7 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     updateButton.addActionListener(e -> ssLabel.setText("Signal strength (not auto-updated): "
         + String.format("%1.1f", getCurrentSignalStrength()) + " dBm"));
 
-    final Observer observer = (obs, obj) -> {
+    final BiConsumer<RadioEvent, Radio> observer = (event, radio) -> {
       if (isTransmitting()) {
         statusLabel.setText("Transmitting");
       } else if (isReceiving()) {
@@ -347,12 +332,9 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
       var infoChannel = getChannel();
       channelLabel.setText("Current channel: " + (infoChannel == -1 ? "ALL" : String.valueOf(infoChannel)));
     };
-    this.addObserver(observer);
-
-    observer.update(null, null);
-
+    radioEventTriggers.addTrigger(this, observer);
+    observer.accept(null, null);
     panel.add(BorderLayout.NORTH, box);
-    panel.putClientProperty("intf_obs", observer);
     return panel;
   }
 
@@ -370,8 +352,6 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     this.radioOn = radioOn;
     lastEvent = radioOn?RadioEvent.HW_ON:RadioEvent.HW_OFF;
     lastEventTime = simulation.getSimulationTime();
-    this.setChanged();
-    this.notifyObservers();
     radioEventTriggers.trigger(radioOn ? RadioEvent.HW_ON : RadioEvent.HW_OFF, this);
   }
   @Override
