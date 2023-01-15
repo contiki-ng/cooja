@@ -370,6 +370,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
     public void execute(long t) {
       switch(stateMachine) {
       case RX_CALIBRATE:
+      case RX_WAIT:
         setState(RadioState.RX_SFD_SEARCH);
         break;
         /* this will be called 8 symbols after first SFD_SEARCH */
@@ -380,10 +381,6 @@ public class CC2420 extends Radio802154 implements USARTListener {
 
       case TX_CALIBRATE:
         setState(RadioState.TX_PREAMBLE);
-        break;
-
-      case RX_WAIT:
-        setState(RadioState.RX_SFD_SEARCH);
         break;
 
       case TX_ACK_CALIBRATE:
