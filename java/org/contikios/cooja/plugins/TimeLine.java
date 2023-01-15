@@ -1488,7 +1488,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
     }
 
-    private <T extends MoteEvent> int getIndexOfFirstIntervalEvent(ArrayList<T> events, long time) {
+    private static <T extends MoteEvent> int getIndexOfFirstIntervalEvent(ArrayList<T> events, long time) {
       /* TODO IMPLEMENT ME: Binary search */
       int nrEvents = events.size();
       if (nrEvents == 0) {
