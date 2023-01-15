@@ -94,7 +94,13 @@ public abstract class AbstractRadioMedium implements RadioMedium {
   protected final EventTriggers<EventTriggers.AddRemove, Radio> radioMediumTriggers = new EventTriggers<>();
 
   protected final EventTriggers<Radio.RadioEvent, Object> radioTransmissionTriggers = new EventTriggers<>();
-	
+
+  /**
+   * This observer is responsible for detecting radio interface events, for example
+   * new transmissions.
+   */
+  private final Observer radioEventsObserver;
+
 	/**
 	 * This constructor should always be called from implemented radio mediums.
 	 *
@@ -102,6 +108,183 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	 */
 	public AbstractRadioMedium(Simulation simulation) {
 		this.simulation = simulation;
+    radioEventsObserver = new Observer() {
+      @Override
+      public void update(Observable obs, Object obj) {
+        if (!(obs instanceof Radio radio)) {
+          logger.error("Radio event dispatched by non-radio object");
+          return;
+        }
+        final var event = radio.getLastEvent();
+        switch (event) {
+          case RECEPTION_STARTED:
+          case RECEPTION_INTERFERED:
+          case RECEPTION_FINISHED:
+            break;
+
+          case UNKNOWN:
+          case HW_ON: {
+            updateSignalStrengths();
+          }
+          break;
+          case HW_OFF: {
+            // This radio must not be a connection source.
+            if (getActiveConnectionFrom(radio) != null) {
+              logger.error("Connection source turned off radio: " + radio);
+            }
+            removeFromActiveConnections(radio);
+            updateSignalStrengths();
+          }
+          break;
+          case TRANSMISSION_STARTED: {
+            if (radio.isReceiving()) {
+              // Radio starts transmitting when it should be receiving! Ok, but it won't receive the packet.
+              radio.interfereAnyReception();
+              for (var conn : activeConnections) {
+                if (conn.isDestination(radio)) {
+                  conn.addInterfered(radio);
+                }
+              }
+            }
+
+            var newConnection = createConnections(radio);
+            if (newConnection != null) {
+              activeConnections.add(newConnection);
+              for (var r : newConnection.getAllDestinations()) {
+                if (newConnection.getDestinationDelay(r) == 0) {
+                  r.signalReceptionStart();
+                } else {
+                  /* EXPERIMENTAL: Simulating propagation delay */
+                  simulation.scheduleEvent(new TimeEvent() {
+                    @Override
+                    public void execute(long t) {
+                      r.signalReceptionStart();
+                    }
+                  }, simulation.getSimulationTime() + newConnection.getDestinationDelay(r));
+                }
+              }
+            }
+            updateSignalStrengths();
+            lastConnection = null;
+            radioTransmissionTriggers.trigger(Radio.RadioEvent.TRANSMISSION_STARTED, null);
+          }
+          break;
+          case TRANSMISSION_FINISHED: { // Remove radio connection.
+            var connection = getActiveConnectionFrom(radio);
+            if (connection == null) {
+              return; // SilentRadioMedium will return here.
+            }
+
+            activeConnections.remove(connection);
+            lastConnection = connection;
+            COUNTER_TX++;
+            for (var dstRadio : connection.getAllDestinations()) {
+              if (connection.getDestinationDelay(dstRadio) == 0) {
+                dstRadio.signalReceptionEnd();
+              } else {
+                /* EXPERIMENTAL: Simulating propagation delay */
+                final var delayedRadio = dstRadio;
+                var delayedEvent = new TimeEvent() {
+                  @Override
+                  public void execute(long t) {
+                    delayedRadio.signalReceptionEnd();
+                  }
+                };
+                simulation.scheduleEvent(delayedEvent,
+                        simulation.getSimulationTime() + connection.getDestinationDelay(dstRadio));
+              }
+            }
+            COUNTER_RX += connection.getDestinations().length;
+            COUNTER_INTERFERED += connection.getInterfered().length;
+            for (var intRadio : connection.getInterferedNonDestinations()) {
+              if (intRadio.isInterfered()) {
+                intRadio.signalReceptionEnd();
+              }
+            }
+            updateSignalStrengths();
+            radioTransmissionTriggers.trigger(Radio.RadioEvent.TRANSMISSION_FINISHED, null);
+          }
+          break;
+          case CUSTOM_DATA_TRANSMITTED: {
+            var connection = getActiveConnectionFrom(radio);
+            if (connection == null) {
+              logger.error("No radio connection found");
+              return;
+            }
+
+            var data = ((CustomDataRadio) radio).getLastCustomDataTransmitted();
+            if (data == null) {
+              logger.error("No custom data objectTransmission to forward");
+              return;
+            }
+
+            for (var dstRadio : connection.getAllDestinations()) {
+              if (!(dstRadio instanceof CustomDataRadio) ||
+                      !((CustomDataRadio) dstRadio).canReceiveFrom((CustomDataRadio) radio)) {
+                continue; // Radios communicate via radio packets.
+              }
+
+              if (connection.getDestinationDelay(dstRadio) == 0) {
+                ((CustomDataRadio) dstRadio).receiveCustomData(data);
+              } else {
+                /* EXPERIMENTAL: Simulating propagation delay */
+                final var delayedRadio = (CustomDataRadio) dstRadio;
+                final var delayedData = data;
+                var delayedEvent = new TimeEvent() {
+                  @Override
+                  public void execute(long t) {
+                    delayedRadio.receiveCustomData(delayedData);
+                  }
+                };
+                simulation.scheduleEvent(delayedEvent,
+                        simulation.getSimulationTime() + connection.getDestinationDelay(dstRadio));
+
+              }
+            }
+
+          }
+          break;
+          case PACKET_TRANSMITTED: {
+            var connection = getActiveConnectionFrom(radio);
+            if (connection == null) {
+              return; // SilentRadioMedium will return here.
+            }
+            var packet = radio.getLastPacketTransmitted();
+            if (packet == null) {
+              logger.error("No radio packet to forward");
+              return;
+            }
+
+            for (var dstRadio : connection.getAllDestinations()) {
+              if (radio instanceof CustomDataRadio && dstRadio instanceof CustomDataRadio &&
+                      ((CustomDataRadio) dstRadio).canReceiveFrom((CustomDataRadio) radio)) {
+                continue; // Radios instead communicate via custom data objects.
+              }
+              // Forward radio packet.
+              if (connection.getDestinationDelay(dstRadio) == 0) {
+                dstRadio.setReceivedPacket(packet);
+              } else {
+                /* EXPERIMENTAL: Simulating propagation delay */
+                final var delayedRadio = dstRadio;
+                final var delayedPacket = packet;
+                var delayedEvent = new TimeEvent() {
+                  @Override
+                  public void execute(long t) {
+                    delayedRadio.setReceivedPacket(delayedPacket);
+                  }
+                };
+                simulation.scheduleEvent(delayedEvent,
+                        simulation.getSimulationTime() + connection.getDestinationDelay(dstRadio));
+              }
+            }
+          }
+          break;
+          default:
+            logger.error("Unsupported radio event: " + event);
+            break;
+        }
+      }
+    };
 	}
 	
 	/**
@@ -205,222 +388,6 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 		return null;
 	}
 	
-	/**
-	 * This observer is responsible for detecting radio interface events, for example
-	 * new transmissions.
-	 */
-	private final Observer radioEventsObserver = new Observer() {
-		@Override
-		public void update(Observable obs, Object obj) {
-      if (!(obs instanceof Radio radio)) {
-				logger.error("Radio event dispatched by non-radio object");
-				return;
-			}
-			final Radio.RadioEvent event = radio.getLastEvent();
-			
-			switch (event) {
-				case RECEPTION_STARTED:
-				case RECEPTION_INTERFERED:
-				case RECEPTION_FINISHED:
-					break;
-
-				case UNKNOWN:
-				case HW_ON: {
-					/* Update signal strengths */
-					updateSignalStrengths();
-				}
-				break;
-				case HW_OFF: {
-          // This radio must not be a connection source.
-          if (getActiveConnectionFrom(radio) != null) {
-            logger.error("Connection source turned off radio: " + radio);
-          }
-
-					/* Remove any radio connections from this radio */
-					removeFromActiveConnections(radio);
-					/* Update signal strengths */
-					updateSignalStrengths();
-				}
-				break;
-				case TRANSMISSION_STARTED: {
-					/* Create new radio connection */
-					if (radio.isReceiving()) {
-						/*
-						 * Radio starts transmitting when it should be
-						 * receiving! Ok, but it won't receive the packet
-						 */
-						radio.interfereAnyReception();
-						for (RadioConnection conn : activeConnections) {
-							if (conn.isDestination(radio)) {
-								conn.addInterfered(radio);
-							}
-						}
-					}
-					
-					RadioConnection newConnection = createConnections(radio);
-          if (newConnection != null) {
-            activeConnections.add(newConnection);
-            for (var r : newConnection.getAllDestinations()) {
-              if (newConnection.getDestinationDelay(r) == 0) {
-                r.signalReceptionStart();
-              } else {
-                /* EXPERIMENTAL: Simulating propagation delay */
-                simulation.scheduleEvent(new TimeEvent() {
-                  @Override
-                  public void execute(long t) {
-                    r.signalReceptionStart();
-                  }
-                }, simulation.getSimulationTime() + newConnection.getDestinationDelay(r));
-              }
-            }
-          }
-					updateSignalStrengths();
-					
-					/* Notify observers */
-					lastConnection = null;
-          radioTransmissionTriggers.trigger(Radio.RadioEvent.TRANSMISSION_STARTED, null);
-				}
-				break;
-				case TRANSMISSION_FINISHED: {
-					/* Remove radio connection */
-
-					/* Connection */
-					RadioConnection connection = getActiveConnectionFrom(radio);
-					if (connection == null) {
-						return; // SilentRadioMedium will return here.
-					}
-					
-					activeConnections.remove(connection);
-					lastConnection = connection;
-					COUNTER_TX++;
-					for (Radio dstRadio : connection.getAllDestinations()) {
-						if (connection.getDestinationDelay(dstRadio) == 0) {
-							dstRadio.signalReceptionEnd();
-						} else {
-							
-							/* EXPERIMENTAL: Simulating propagation delay */
-							final Radio delayedRadio = dstRadio;
-							TimeEvent delayedEvent = new TimeEvent() {
-								@Override
-								public void execute(long t) {
-									delayedRadio.signalReceptionEnd();
-								}
-							};
-							simulation.scheduleEvent(delayedEvent,
-									simulation.getSimulationTime() + connection.getDestinationDelay(dstRadio));
-						}
-					}
-					COUNTER_RX += connection.getDestinations().length;
-					COUNTER_INTERFERED += connection.getInterfered().length;
-					for (Radio intRadio : connection.getInterferedNonDestinations()) {
-
-					  if (intRadio.isInterfered()) {
-					    intRadio.signalReceptionEnd();
-					  }
-					}
-					
-					/* Update signal strengths */
-					updateSignalStrengths();
-					
-					/* Notify observers */
-          radioTransmissionTriggers.trigger(Radio.RadioEvent.TRANSMISSION_FINISHED, null);
-				}
-				break;
-				case CUSTOM_DATA_TRANSMITTED: {
-					
-					/* Connection */
-					RadioConnection connection = getActiveConnectionFrom(radio);
-					if (connection == null) {
-						logger.error("No radio connection found");
-						return;
-					}
-					
-					/* Custom data object */
-					Object data = ((CustomDataRadio) radio).getLastCustomDataTransmitted();
-					if (data == null) {
-						logger.error("No custom data objecTransmissiont to forward");
-						return;
-					}
-					
-					for (Radio dstRadio : connection.getAllDestinations()) {
-						if (!(dstRadio instanceof CustomDataRadio) || 
-						    !((CustomDataRadio) dstRadio).canReceiveFrom((CustomDataRadio)radio)) {
-							/* Radios communicate via radio packets */
-							continue;
-						}
-						
-						if (connection.getDestinationDelay(dstRadio) == 0) {
-							((CustomDataRadio) dstRadio).receiveCustomData(data);
-						} else {
-							
-							/* EXPERIMENTAL: Simulating propagation delay */
-							final CustomDataRadio delayedRadio = (CustomDataRadio) dstRadio;
-							final Object delayedData = data;
-							TimeEvent delayedEvent = new TimeEvent() {
-								@Override
-								public void execute(long t) {
-									delayedRadio.receiveCustomData(delayedData);
-								}
-							};
-							simulation.scheduleEvent(delayedEvent,
-									simulation.getSimulationTime() + connection.getDestinationDelay(dstRadio));
-							
-						}
-					}
-					
-				}
-				break;
-				case PACKET_TRANSMITTED: {
-					/* Connection */
-					RadioConnection connection = getActiveConnectionFrom(radio);
-					if (connection == null) {
-						return; // SilentRadioMedium will return here.
-					}
-					
-					/* Radio packet */
-					RadioPacket packet = radio.getLastPacketTransmitted();
-					if (packet == null) {
-						logger.error("No radio packet to forward");
-						return;
-					}
-					
-					for (Radio dstRadio : connection.getAllDestinations()) {
-
-					  if ((radio instanceof CustomDataRadio) &&
-					      (dstRadio instanceof CustomDataRadio) && 
-					      ((CustomDataRadio) dstRadio).canReceiveFrom((CustomDataRadio)radio)) {
-					    /* Radios instead communicate via custom data objects */
-					    continue;
-					  }
-
-						
-						/* Forward radio packet */
-						if (connection.getDestinationDelay(dstRadio) == 0) {
-							dstRadio.setReceivedPacket(packet);
-						} else {
-							
-							/* EXPERIMENTAL: Simulating propagation delay */
-							final Radio delayedRadio = dstRadio;
-							final RadioPacket delayedPacket = packet;
-							TimeEvent delayedEvent = new TimeEvent() {
-								@Override
-								public void execute(long t) {
-									delayedRadio.setReceivedPacket(delayedPacket);
-								}
-							};
-							simulation.scheduleEvent(delayedEvent,
-									simulation.getSimulationTime() + connection.getDestinationDelay(dstRadio));
-						}
-						
-					}
-				}
-				break;
-				default:
-					logger.error("Unsupported radio event: " + event);
-			}
-		}
-	};
-
 	@Override
 	public void registerRadioInterface(Radio radio, Simulation sim) {
 		if (radio == null) {
