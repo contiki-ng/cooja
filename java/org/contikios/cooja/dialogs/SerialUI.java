@@ -64,7 +64,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   private static final Predicate<String> punctuation = Pattern.compile("\\p{Punct}").asMatchPredicate();
   private final static int MAX_LENGTH = 16*1024;
 
-  protected EventTriggers<EventTriggers.Update, Byte> serialDataTriggers = new EventTriggers<>();
+  protected final EventTriggers<EventTriggers.Update, Byte> serialDataTriggers = new EventTriggers<>();
   private byte lastSerialData = 0; /* SerialPort */
   private String lastLogMessage = ""; /* Log */
   private int charactersReceived = 0;

@@ -61,8 +61,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Random;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
