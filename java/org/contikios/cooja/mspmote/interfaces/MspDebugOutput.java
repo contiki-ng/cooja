@@ -31,13 +31,13 @@
 package org.contikios.cooja.mspmote.interfaces;
 
 import javax.swing.JPanel;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.contikios.cooja.mspmote.MspMote;
+import org.contikios.cooja.util.EventTriggers;
 import se.sics.mspsim.core.Memory;
 import se.sics.mspsim.core.MemoryMonitor;
 
@@ -78,8 +78,7 @@ public class MspDebugOutput extends Log {
           String msg = extractString(MspDebugOutput.this.mote.getMemory(), data);
           if (msg.length() > 0) {
             lastLog = "DEBUG: " + msg;
-            setChanged();
-            notifyObservers(MspDebugOutput.this.mote);
+            getLogDataTriggers().trigger(EventTriggers.Update.UPDATE, new LogDataInfo(mote, lastLog));
           }
       }
     });
