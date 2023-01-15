@@ -97,8 +97,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 					isTransmitting = true;
 					len = 0;
 					gotSynchbyte = false;
-					setChanged();
-					notifyObservers();
           radioEventTriggers.trigger(RadioEvent.TRANSMISSION_STARTED, CC1120Radio.this);
 				}
 				if (len >= buffer.length) {
@@ -110,8 +108,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 				/* send this byte to all nodes */
 				lastOutgoingByte = data;
 				lastEvent = RadioEvent.CUSTOM_DATA_TRANSMITTED;
-				setChanged();
-				notifyObservers();
         radioEventTriggers.trigger(RadioEvent.CUSTOM_DATA_TRANSMITTED, CC1120Radio.this);
 
 				/* Await synch byte */
@@ -135,14 +131,10 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
           lastOutgoingPacket = () -> buf;
 
 					lastEvent = RadioEvent.PACKET_TRANSMITTED;
-					setChanged();
-					notifyObservers();
           radioEventTriggers.trigger(RadioEvent.PACKET_TRANSMITTED, CC1120Radio.this);
 
 					isTransmitting = false;
 					lastEvent = RadioEvent.TRANSMISSION_FINISHED;
-					setChanged();
-					notifyObservers();
           radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, CC1120Radio.this);
 					len = 0;
 				}
@@ -152,8 +144,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
     cc1120.setReceiverListener(on -> {
       if (cc1120.isReadyToReceive()) {
         lastEvent = RadioEvent.HW_ON;
-        setChanged();
-        notifyObservers();
         radioEventTriggers.trigger(RadioEvent.HW_ON, this);
       } else {
         radioOff();
@@ -163,8 +153,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
     cc1120.addChannelListener(channel -> {
       /* XXX Currently assumes zero channel switch time */
       lastEvent = RadioEvent.UNKNOWN;
-      setChanged();
-      notifyObservers();
       radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
     });
 	}
@@ -179,21 +167,15 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
       lastOutgoingPacket = () -> new byte[0];
 
 			lastEvent = RadioEvent.PACKET_TRANSMITTED;
-			setChanged();
-			notifyObservers();
       radioEventTriggers.trigger(RadioEvent.PACKET_TRANSMITTED, this);
 
 			/* Register that transmission ended in radio medium */
 			isTransmitting = false;
 			lastEvent = RadioEvent.TRANSMISSION_FINISHED;
-			setChanged();
-			notifyObservers();
       radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, this);
 		}
 
 		lastEvent = RadioEvent.HW_OFF;
-		setChanged();
-		notifyObservers();
     radioEventTriggers.trigger(RadioEvent.HW_OFF, this);
 	}
 
@@ -305,8 +287,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		isReceiving = true;
 
 		lastEvent = RadioEvent.RECEPTION_STARTED;
-		setChanged();
-		notifyObservers();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_STARTED, this);
 	}
 
@@ -317,8 +297,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		isInterfered = false;
 
 		lastEvent = RadioEvent.RECEPTION_FINISHED;
-		setChanged();
-		notifyObservers();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_FINISHED, this);
 	}
 
@@ -334,8 +312,6 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 		lastIncomingPacket = null;
 
 		lastEvent = RadioEvent.RECEPTION_INTERFERED;
-		setChanged();
-		notifyObservers();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_INTERFERED, this);
 	}
 

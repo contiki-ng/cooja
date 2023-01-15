@@ -40,8 +40,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.function.BiConsumer;
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -294,7 +293,7 @@ public class PowerTracker implements Plugin {
     return sb.toString();
   }
 
-  public static class MoteTracker implements Observer {
+  public static class MoteTracker {
     /* last radio state */
     private boolean radioWasOn;
     private RadioState lastRadioState;
@@ -311,6 +310,7 @@ public class PowerTracker implements Plugin {
     private Mote mote;
     private Radio radio;
 
+    private final BiConsumer<Radio.RadioEvent, Radio> trigger = (event, radio) -> update();
     public MoteTracker(Mote mote) {
       this.simulation = mote.getSimulation();
       this.mote = mote;
@@ -327,14 +327,9 @@ public class PowerTracker implements Plugin {
         lastRadioState = RadioState.IDLE;
       }
       lastUpdateTime = simulation.getSimulationTime();
-
-      radio.addObserver(this);
+      radio.getRadioEventTriggers().addTrigger(this, trigger);
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-      update();
-    }
     public void update() {
       long now = simulation.getSimulationTime();
 
@@ -407,7 +402,7 @@ public class PowerTracker implements Plugin {
     }
 
     public void dispose() {
-      radio.deleteObserver(this);
+      radio.getRadioEventTriggers().removeTrigger(this, trigger);
       radio = null;
       mote = null;
     }
@@ -441,7 +436,7 @@ public class PowerTracker implements Plugin {
 
     /* Radio observer */
     MoteTracker tracker = new MoteTracker(mote);
-    tracker.update(null, null);
+    tracker.update();
     return tracker;
   }
 
