@@ -315,6 +315,10 @@ public class LogScriptEngine {
       double secondsRemaining = estimatedLeft / 1000;
       long seconds = (long) secondsRemaining;
       int tenthOfSeconds = (int) Math.round((10 * (secondsRemaining - (double)seconds)));
+      if (tenthOfSeconds == 10) {
+        seconds++;
+        tenthOfSeconds = 0;
+      }
       logger.info("{}{}% completed, {}{}.{} sec remaining", (percentage < 10 ? " " : ""), percentage,
               (seconds < 10 ? " " : ""), seconds, tenthOfSeconds);
     }
