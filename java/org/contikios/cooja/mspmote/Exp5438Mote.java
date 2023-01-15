@@ -29,10 +29,8 @@
 
 package org.contikios.cooja.mspmote;
 
-import java.util.Map;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import se.sics.mspsim.platform.GenericNode;
 
 /**
@@ -41,9 +39,9 @@ import se.sics.mspsim.platform.GenericNode;
 public class Exp5438Mote extends MspMote {
   private final String description;
   
-  public Exp5438Mote(MspMoteType moteType, Simulation sim, GenericNode node, String desc, Map<String, Symbol> symbols)
+  public Exp5438Mote(MspMoteType moteType, Simulation sim, GenericNode node, String desc)
           throws MoteType.MoteTypeCreationException {
-    super(moteType, sim, node, symbols);
+    super(moteType, sim, node);
     description = desc;
   }
 
