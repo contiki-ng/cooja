@@ -80,6 +80,7 @@ public class IPAddress implements MoteInterface {
 
   private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
   private final EventTriggers<Update, Mote> triggers = new EventTriggers<>();
+  private final ArrayList<MonitorPost> monitors = new ArrayList<>();
 
   public IPAddress(final Mote mote) {
     this.mote = mote;
@@ -117,6 +118,7 @@ public class IPAddress implements MoteInterface {
                       addr_of_ip,
                       16, /* Size of ip address in byte */
                       memMonitor);
+              monitors.add(new MonitorPost(addr_of_ip, 16));
             }
             /* Initial scan for IP address */
             updateIPAddresses();
@@ -251,7 +253,9 @@ public class IPAddress implements MoteInterface {
     if (memMonitor != null && ipVersion == IPv.IPv6) {
       moteMem.removeVarMonitor("uip_ds6_netif_addr_list_offset", memMonitor);
       moteMem.removeVarMonitor("uip_ds6_addr_size", memMonitor);
-      moteMem.removeVarMonitor("uip_ds6_if", memMonitor);
+      for (var entry : monitors) {
+        moteMem.removeMemoryMonitor(entry.address, entry.size, memMonitor);
+      }
     }
   }
 
@@ -332,4 +336,6 @@ public class IPAddress implements MoteInterface {
       return cprString;
     }
   }
+
+  private record MonitorPost(long address, int size) {}
 }
