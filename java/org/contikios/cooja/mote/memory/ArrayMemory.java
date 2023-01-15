@@ -44,10 +44,6 @@ public class ArrayMemory implements MemoryInterface {
   private final MemoryLayout layout;
   private final Map<String, Symbol> symbols;// XXX Allow to set symbols
 
-  public ArrayMemory(long address, int size, MemoryLayout layout, Map<String, Symbol> symbols) {
-    this(address, layout, new byte[size], symbols);
-  }
-
   public ArrayMemory(long address, MemoryLayout layout, byte[] memory, Map<String, Symbol> symbols) {
     this.startAddress = address;
     this.layout = layout;
