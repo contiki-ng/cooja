@@ -111,10 +111,10 @@ public class Cooja {
 
   private static final String PATH_CONFIG_IDENTIFIER = "[CONFIG_DIR]";
 
-  private static final String[][] PATH_IDENTIFIER = {
-          {"[CONTIKI_DIR]","PATH_CONTIKI"},
-          {"[COOJA_DIR]","PATH_COOJA"},
-          {"[APPS_DIR]","PATH_APPS"}
+  private static final PathIdentifier[] PATH_IDENTIFIER = {
+          new PathIdentifier("[CONTIKI_DIR]","PATH_CONTIKI"),
+          new PathIdentifier("[COOJA_DIR]","PATH_COOJA"),
+          new PathIdentifier("[APPS_DIR]","PATH_APPS")
   };
 
   public static File externalToolsUserSettingsFile = null;
@@ -883,17 +883,17 @@ public class Cooja {
   }
 
     public static String resolvePathIdentifiers(String path) {
-      for (String[] pair : PATH_IDENTIFIER) {
-        if (path.contains(pair[0])) {
-          String p = Cooja.getExternalToolsSetting(pair[1]);
+      for (var pathIdentifier : PATH_IDENTIFIER) {
+        if (path.contains(pathIdentifier.id)) {
+          String p = Cooja.getExternalToolsSetting(pathIdentifier.path);
           if (p != null) {
-            path = path.replace(pair[0], p);
+            path = path.replace(pathIdentifier.id, p);
           } else {
-            logger.warn("could not resolve path identifier " + pair[0]);
+            logger.warn("could not resolve path identifier " + pathIdentifier.id);
           }
         }
       }
-        return path;
+      return path;
     }
 
   // // EXTERNAL TOOLS SETTINGS METHODS ////
@@ -1563,15 +1563,15 @@ public class Cooja {
     String replacement = null;
     try {
       fileCanonical = file.getCanonicalPath();
-      for (var strings : PATH_IDENTIFIER) {
-        var path = Cooja.getExternalToolsSetting(strings[1]);
+      for (var pathIdentifier : PATH_IDENTIFIER) {
+        var path = Cooja.getExternalToolsSetting(pathIdentifier.path);
         if (path == null) {
           continue;
         }
         var candidate = new File(path).getCanonicalPath();
         if (fileCanonical.startsWith(candidate) && (best == null || best.length() < candidate.length())) {
           best = candidate;
-          replacement = strings[0];
+          replacement = pathIdentifier.id;
         }
       }
     } catch (IOException e1) {
@@ -1594,17 +1594,17 @@ public class Cooja {
   private static File restoreContikiRelativePath(File portable) {
     try {
     	String portablePath = portable.getPath();
-      String[] found = null;
-      for (var strings : PATH_IDENTIFIER) {
-        if (portablePath.startsWith(strings[0])) {
-          found = strings;
+      PathIdentifier found = null;
+      for (var pathIdentifier : PATH_IDENTIFIER) {
+        if (portablePath.startsWith(pathIdentifier.id)) {
+          found = pathIdentifier;
           break;
         }
     	}
       if (found == null) return null;
-      var value = Cooja.getExternalToolsSetting(found[1]);
+      var value = Cooja.getExternalToolsSetting(found.path);
       if (value == null) return null;
-      var absolute = new File(portablePath.replace(found[0], new File(value).getCanonicalPath()));
+      var absolute = new File(portablePath.replace(found.id, new File(value).getCanonicalPath()));
 		if(!absolute.exists()){
       logger.warn("Replaced " + portable + " with " + absolute + ", but could not find it. This does not have to be an error, as the file might be created later.");
 		}
@@ -1737,4 +1737,6 @@ public class Cooja {
    */
   public record Config(boolean vis, String externalToolsConfig,
                        String logDir, String contikiPath, String coojaPath, String javac) {}
+
+  private record PathIdentifier(String id, String path) {}
 }
