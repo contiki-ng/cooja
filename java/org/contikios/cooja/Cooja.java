@@ -1186,6 +1186,8 @@ public class Cooja {
         sim = config.vis
                 ? Cooja.gui.doLoadConfig(simConfig)
                 : gui.createSimulation(simConfig, gui.readSimulationConfig(simConfig), true, simConfig.randomSeed());
+      } catch (MoteTypeCreationException | SimulationCreationException e) {
+        logger.error("Failed to load simulation: {}", e.getMessage());
       } catch (Exception e) {
         logger.error("Exception when loading simulation: ", e);
       }
@@ -1255,7 +1257,7 @@ public class Cooja {
    * @return Simulation object.
    */
   Simulation createSimulation(Simulation.SimConfig cfg, Element root, boolean quick, Long manualRandomSeed)
-  throws SimulationCreationException {
+          throws MoteTypeCreationException, SimulationCreationException {
     var simCfg = root.getChild("simulation");
     var title = simCfg.getChild("title").getText();
     var cfgSeed = simCfg.getChild("randomseed").getText();
@@ -1268,12 +1270,7 @@ public class Cooja {
             ? Integer.parseInt(simCfg.getChild("motedelay_us").getText())
             : Integer.parseInt(cfgDelay.getText()) * Simulation.MILLISECOND;
     doRemoveSimulation();
-    Simulation sim;
-    try {
-      sim = new Simulation(cfg, this, title, generatedSeed, seed, medium, delay, quick, root);
-    } catch (MoteTypeCreationException e) {
-      throw new SimulationCreationException("Unknown error: " + e.getMessage(), e);
-    }
+    var sim = new Simulation(cfg, this, title, generatedSeed, seed, medium, delay, quick, root);
     setSimulation(sim);
     return sim;
   }
