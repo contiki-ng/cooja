@@ -48,6 +48,11 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed C_SOURCES support in ContikiMoteType
+
+No immediate replacement, report a bug on Cooja in the Contiki-NG repository
+if you need this feature.
+
 ### Removed Observable from Log interface
 
 Call addTrigger/removeTrigger/deleteTriggers on `getLogDataTriggers()` instead.

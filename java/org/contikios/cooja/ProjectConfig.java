@@ -110,7 +110,6 @@ public class ProjectConfig {
     if (useDefault) {
       var settings = new Properties();
       settings.put("org.contikios.cooja.contikimote.interfaces.ContikiRadio.RADIO_TRANSMISSION_RATE_kbps", "250");
-      settings.put("org.contikios.cooja.contikimote.ContikiMoteType.C_SOURCES", "");
       appendConfig(myConfig, settings);
     }
   }

@@ -204,32 +204,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
   @Override
   public LinkedHashMap<String, String> getCompilationEnvironment() {
-    var sources = new StringBuilder();
-    var dirs = new StringBuilder();
-    // Check whether Cooja projects include additional sources.
-    String[] coojaSources = getConfig().getStringArrayValue(ContikiMoteType.class, "C_SOURCES");
-    if (coojaSources != null) {
-      for (String s : coojaSources) {
-        if (s.trim().isEmpty()) {
-          continue;
-        }
-        File p = getConfig().getUserProjectDefining(ContikiMoteType.class, "C_SOURCES", s);
-        if (p == null) {
-          logger.warn("Project defining C_SOURCES$" + s + " not found");
-          continue;
-        }
-        sources.append(s).append(" ");
-        dirs.append(p.getPath()).append(" ");
-      }
-    }
-
     // Create the compilation environment.
     String ccFlags = Cooja.getExternalToolsSetting("COMPILER_ARGS", "");
     var env = new LinkedHashMap<String, String>();
     env.put("LIBNAME", "$(BUILD_DIR_BOARD)/" + getIdentifier() + ".cooja");
     env.put("COOJA_VERSION",  Cooja.CONTIKI_NG_BUILD_VERSION);
-    env.put("COOJA_SOURCEDIRS", dirs.toString().replace("\\", "/"));
-    env.put("COOJA_SOURCEFILES", sources.toString());
     env.put("CC", Cooja.getExternalToolsSetting("PATH_C_COMPILER"));
     env.put("EXTRA_CC_ARGS", ccFlags);
     env.put("PATH", System.getenv("PATH"));
