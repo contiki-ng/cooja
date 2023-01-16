@@ -432,8 +432,10 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	*          The RSSI value to set during silence
 	*/
 	public void setBaseRssi(Radio radio, double rssi) {
-		baseRssi.put(radio, rssi);
-		simulation.invokeSimulationThread(this::updateSignalStrengths);
+    simulation.invokeSimulationThread(() -> {
+      baseRssi.put(radio, rssi);
+      updateSignalStrengths();
+    });
 	}
 
 	
@@ -462,7 +464,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	*          The minimum RSSI value to set when sending
 	*/
 	public void setSendRssi(Radio radio, double rssi) {
-		sendRssi.put(radio, rssi);
+    simulation.invokeSimulationThread(() -> sendRssi.put(radio, rssi));
 	}
 	
   /**
