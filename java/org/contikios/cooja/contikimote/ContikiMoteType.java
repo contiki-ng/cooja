@@ -441,36 +441,37 @@ public class ContikiMoteType extends BaseContikiMoteType {
     @Override
     public Map<String, Symbol> parseSymbols(long offset) {
       Map<String, Symbol> varNames = new HashMap<>();
-      var s = new Scanner(readelfData);
-      s.nextLine(); // Skip first blank line.
-      while (s.hasNext()) {
-        var symbolNum = s.next();
-        if (!symbolNum.endsWith(":") || "Num:".equals(symbolNum)) {
-          s.nextLine(); // Skip until line starts with "1:" token.
-          continue;
-        }
-        var addr = s.nextLong(16);
-        // Size is output in decimal if below 100000, hex otherwise. The command line option --sym-base=10 gives
-        // a decimal output, but readelf 2.34 does not have the option.
-        var sizeString = s.next();
-        var hex = sizeString.startsWith("0x");
-        var size = Integer.parseInt(hex ? sizeString.substring(2) : sizeString, hex ? 16 : 10);
-        var type = s.next();
-        if (!"OBJECT".equals(type) && !"NOTYPE".equals(type)) {
-          s.nextLine(); // Skip lines that do not define variables.
-          continue;
-        }
-        // Skip 3 tokens that are not required.
-        s.next();
-        s.next();
-        s.next();
-        var name = s.next();
-        if ("OBJECT".equals(type)) {
-          varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr + offset, size));
-        } else if (startName.equals(name)) {
-          startAddr = addr;
-        } else if (sizeName.equals(name)) {
-          this.size = (int) addr;
+      try (var s = new Scanner(readelfData)) {
+        s.nextLine(); // Skip first blank line.
+        while (s.hasNext()) {
+          var symbolNum = s.next();
+          if (!symbolNum.endsWith(":") || "Num:".equals(symbolNum)) {
+            s.nextLine(); // Skip until line starts with "1:" token.
+            continue;
+          }
+          var addr = s.nextLong(16);
+          // Size is output in decimal if below 100000, hex otherwise. The command line option --sym-base=10 gives
+          // a decimal output, but readelf 2.34 does not have the option.
+          var sizeString = s.next();
+          var hex = sizeString.startsWith("0x");
+          var size = Integer.parseInt(hex ? sizeString.substring(2) : sizeString, hex ? 16 : 10);
+          var type = s.next();
+          if (!"OBJECT".equals(type) && !"NOTYPE".equals(type)) {
+            s.nextLine(); // Skip lines that do not define variables.
+            continue;
+          }
+          // Skip 3 tokens that are not required.
+          s.next();
+          s.next();
+          s.next();
+          var name = s.next();
+          if ("OBJECT".equals(type)) {
+            varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr + offset, size));
+          } else if (startName.equals(name)) {
+            startAddr = addr;
+          } else if (sizeName.equals(name)) {
+            this.size = (int) addr;
+          }
         }
       }
       return varNames;
