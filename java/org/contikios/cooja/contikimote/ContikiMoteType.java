@@ -449,7 +449,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
             s.nextLine(); // Skip until line starts with "1:" token.
             continue;
           }
-          var addr = s.nextLong(16);
+          // Scanner.nextLong() is really slow, get the next token and parse it.
+          var addr = Long.parseLong(s.next(), 16);
           // Size is output in decimal if below 100000, hex otherwise. The command line option --sym-base=10 gives
           // a decimal output, but readelf 2.34 does not have the option.
           var sizeString = s.next();
