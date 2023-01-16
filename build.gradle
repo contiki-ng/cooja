@@ -138,4 +138,6 @@ run {
   systemProperty 'logback.configurationFile', 'logback.xml'
   // Enable assertions with "-Passertions".
   enableAssertions = project.hasProperty('assertions')
+  // Prevent Gradle from changing directory to tools/cooja.
+  workingDir = System.getProperty("user.dir")
 }
