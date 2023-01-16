@@ -2,6 +2,13 @@
 
 ## Cooja User Interface Changes
 
+### MSPSim and Cooja started from same Main
+
+MSPSim is started when `org.contikios.cooja.Main` is passed the command line parameter
+`--platform=<platform>`, otherwise Cooja is started. There is nothing that prevents
+Cooja-parameters from being passed when starting MSPSim, but they will be ignored
+by MSPSim.
+
 ### Switched from Log4J 2 to SLF4J and Logback
 
 This removes the `--log4j2` and `--logname` parameters. Set the system property
