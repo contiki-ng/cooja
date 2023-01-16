@@ -49,8 +49,12 @@ public class EventTriggers<K, T> {
   public enum Operation {START, STOP, REMOVE}
   /** Utility enum that indicates something was updated. Improves readability, could be represented by Void. */
   public enum Update {UPDATE}
+  @SuppressWarnings("unchecked")
+  private final BiConsumer<K, T>[] EMPTY_CONSUMER = new BiConsumer[0];
 
   private final LinkedHashMap<Object, ArrayList<BiConsumer<K, T>>> triggers = new LinkedHashMap<>();
+  private BiConsumer<K, T>[] listeners = EMPTY_CONSUMER;
+  private boolean hasChanged;
   private boolean isActive;
 
   /**
@@ -58,6 +62,7 @@ public class EventTriggers<K, T> {
    */
   public void addTrigger(Object owner, BiConsumer<K, T> observer) {
     triggers.computeIfAbsent(owner, k -> new ArrayList<>()).add(observer);
+    hasChanged = true;
     if (!isActive) {
       isActive = true;
       activate();
@@ -70,9 +75,11 @@ public class EventTriggers<K, T> {
   public void removeTrigger(Object owner, BiConsumer<K, T> observer) {
     var l = triggers.get(owner);
     if (l == null) return;
-    l.remove(observer);
-    if (l.isEmpty()) {
-      triggers.remove(owner);
+    if (l.remove(observer)) {
+      if (l.isEmpty()) {
+        triggers.remove(owner);
+      }
+      hasChanged = true;
     }
   }
 
@@ -80,17 +87,28 @@ public class EventTriggers<K, T> {
    * Delete all triggers belonging to an object.
    */
   public void deleteTriggers(Object owner) {
-    triggers.remove(owner);
+    if (triggers.remove(owner) != null) {
+      hasChanged = true;
+    }
   }
 
   /**
    * Invoke all triggers with the key and value as parameters.
    */
   public void trigger(K key, T value) {
-    for (var observables : triggers.values()) {
-      for (var o : observables) {
-        o.accept(key, value);
+    if (hasChanged) {
+      hasChanged = false;
+      var observers = new ArrayList<BiConsumer<K,T>>();
+      for (var observables : triggers.values()) {
+        observers.addAll(observables);
       }
+      listeners = observers.toArray(EMPTY_CONSUMER);
+    }
+
+    // Remember original list in case it is changed
+    var observers = listeners;
+    for (var o : observers) {
+      o.accept(key, value);
     }
   }
 
