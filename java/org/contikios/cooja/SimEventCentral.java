@@ -68,14 +68,9 @@ public class SimEventCentral {
 
       // Evict the oldest event if the buffer will get full by the current message.
       if (logOutputEvents.size() > logOutputBufferSize - 1) {
-        LogOutputEvent removed;
         synchronized (logOutputEvents) {
-          removed = logOutputEvents.pollFirst();
-        }
-        if (removed != null) {
-          for (var l : logOutputListeners) {
-            l.removedLogOutput(removed);
-          }
+          // Use pollFirst since it does not throw exceptions like removeFirst when the queue is empty.
+          logOutputEvents.pollFirst();
         }
       }
 
@@ -169,7 +164,6 @@ public class SimEventCentral {
   private int logOutputBufferSize = Integer.parseInt(Cooja.getExternalToolsSetting("BUFFERSIZE_LOGOUTPUT", "" + 40000));
   private final ArrayDeque<LogOutputEvent> logOutputEvents = new ArrayDeque<>();
   public interface LogOutputListener {
-    void removedLogOutput(LogOutputEvent ev);
     void newLogOutput(LogOutputEvent ev);
   }
   /** Log output: notifications and history */
@@ -223,9 +217,6 @@ public class SimEventCentral {
       LogOutputEvent removed = logOutputEvents.pollFirst();
       if (removed == null) {
         break;
-      }
-      for (LogOutputListener l: logOutputListeners) {
-        l.removedLogOutput(removed);
       }
     }
   }
