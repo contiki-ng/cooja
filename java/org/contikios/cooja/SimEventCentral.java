@@ -66,17 +66,16 @@ public class SimEventCentral {
         msg = msg.substring(0, msg.length() - 1);
       }
 
-      // Keep the output events of reasonable size.
-      while (logOutputEvents.size() > logOutputBufferSize - 1) {
+      // Evict the oldest event if the buffer will get full by the current message.
+      if (logOutputEvents.size() > logOutputBufferSize - 1) {
         LogOutputEvent removed;
         synchronized (logOutputEvents) {
           removed = logOutputEvents.pollFirst();
         }
-        if (removed == null) {
-          break;
-        }
-        for (var l : logOutputListeners) {
-          l.removedLogOutput(removed);
+        if (removed != null) {
+          for (var l : logOutputListeners) {
+            l.removedLogOutput(removed);
+          }
         }
       }
 
