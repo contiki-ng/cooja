@@ -225,16 +225,11 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
       // Always execute one microsecond the first time.
       lastExecute = t;
     }
-    if (t < lastExecute) {
-      throw new RuntimeException("Bad event ordering: " + lastExecute + " < " + t);
-    }
+    assert t >= lastExecute : "Bad event ordering: " + lastExecute + " < " + t;
     long nextExecute = driftExecute(clock.getDeviation(), t, duration);
     lastExecute = t;
     // Schedule wakeup.
-    if (nextExecute < t) {
-      throw new RuntimeException(t + ": MSPSim requested early wakeup: " + nextExecute);
-    }
-
+    assert nextExecute >= t : t + ": MSPSim requested early wakeup: " + nextExecute;
     scheduleNextWakeup(nextExecute);
 
     if (stopNextInstruction) {
