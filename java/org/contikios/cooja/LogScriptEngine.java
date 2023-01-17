@@ -98,9 +98,6 @@ public class LogScriptEngine {
         simulation.stopSimulation(1);
       }
     }
-    @Override
-    public void removedLogOutput(LogOutputEvent ev) {
-    }
   };
 
   private Semaphore semaphoreScript = null; /* Semaphores blocking script/simulation */

@@ -55,6 +55,11 @@ use a double dash for consistency.
 
 ## Cooja API changes for plugins outside the main tree
 
+### Removed removedLogOutput in LogOutputListener
+
+Plugins that need information on when pruning happens can implement the functionality
+internally, either by maintaining a counter, or keeping a full copy of the events.
+
 ### Removed C_SOURCES support in ContikiMoteType
 
 No immediate replacement, report a bug on Cooja in the Contiki-NG repository

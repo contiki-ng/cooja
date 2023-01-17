@@ -430,9 +430,6 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     // Automatically add/delete motes. This listener also observes mote log outputs.
     simulation.getEventCentral().addLogOutputListener(newMotesListener = new LogOutputListener() {
       @Override
-      public void removedLogOutput(LogOutputEvent ev) {
-      }
-      @Override
       public void newLogOutput(LogOutputEvent ev) {
         /* Log output */
         Mote mote = ev.getMote();

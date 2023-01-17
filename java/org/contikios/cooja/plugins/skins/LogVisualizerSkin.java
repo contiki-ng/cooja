@@ -63,9 +63,6 @@ public class LogVisualizerSkin implements VisualizerSkin {
     public void newLogOutput(LogOutputEvent ev) {
       visualizer.repaint();
     }
-    @Override
-    public void removedLogOutput(LogOutputEvent ev) {
-    }
   };
 
   @Override

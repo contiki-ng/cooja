@@ -582,9 +582,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
           appendToFile(appendStreamFile, data.getTime() + "\t" + data.getID() + "\t" + data.ev.getMessage() + "\n");
         }
       }
-      @Override
-      public void removedLogOutput(LogOutputEvent ev) {
-      }
     });
 
     /* UI components */
