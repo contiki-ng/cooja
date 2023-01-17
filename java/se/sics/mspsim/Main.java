@@ -61,31 +61,19 @@ public class Main {
   }
 
   public static String getNodeTypeByPlatform(String platform) {
-      if ("jcreate".equals(platform)) {
-          return "se.sics.mspsim.platform.jcreate.JCreateNode";
-      }
-      if ("sentilla-usb".equals(platform)) {
-          return "se.sics.mspsim.platform.sentillausb.SentillaUSBNode";
-      }
-      if ("esb".equals(platform)) {
-          return "se.sics.mspsim.platform.esb.ESBNode";
-      }
-      if ("exp5438".equals(platform)) {
-          return "se.sics.mspsim.platform.ti.Exp5438Node";
-      }
-      if ("exp1101".equals(platform)) {
-          return "se.sics.mspsim.platform.ti.Exp1101Node";
-      }
-      if ("exp1120".equals(platform)) {
-          return "se.sics.mspsim.platform.ti.Exp1120Node";
-      }
-      if ("cc430".equals(platform)) {
-          return "se.sics.mspsim.platform.ti.CC430Node";
-      }
+    return switch (platform) { // Sorted alphabetically, on return value.
+      case "esb" -> "se.sics.mspsim.platform.esb.ESBNode";
+      case "jcreate" -> "se.sics.mspsim.platform.jcreate.JCreateNode";
+      case "sentilla-usb" -> "se.sics.mspsim.platform.sentillausb.SentillaUSBNode";
+      case "cc430" -> "se.sics.mspsim.platform.ti.CC430Node";
+      case "exp1101" -> "se.sics.mspsim.platform.ti.Exp1101Node";
+      case "exp1120" -> "se.sics.mspsim.platform.ti.Exp1120Node";
+      case "exp5438" -> "se.sics.mspsim.platform.ti.Exp5438Node";
       // Try to guess the node type.
-      return "se.sics.mspsim.platform." + platform + '.'
-          + Character.toUpperCase(platform.charAt(0))
-          + platform.substring(1).toLowerCase() + "Node";
+      default -> "se.sics.mspsim.platform." + platform + '.'
+              + Character.toUpperCase(platform.charAt(0))
+              + platform.substring(1).toLowerCase() + "Node";
+    };
   }
 
   public static void main(String[] args) throws IOException {
