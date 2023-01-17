@@ -28,7 +28,15 @@
 
 package org.contikios.cooja;
 
+import static se.sics.mspsim.Main.createNode;
+import static se.sics.mspsim.Main.getNodeTypeByPlatform;
+
+import java.awt.GraphicsEnvironment;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,12 +45,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
-
-import java.awt.GraphicsEnvironment;
-import java.io.File;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import se.sics.mspsim.util.ArgumentManager;
 
 /**
  * Contains the command line parameters and is the main entry point for Cooja.
@@ -79,7 +82,7 @@ class Main {
   /**
    * Option for specifying javac path.
    */
-  @Option(names = "--javac", paramLabel = "FILE", description = "the javac binary", required = true)
+  @Option(names = "--javac", paramLabel = "FILE", description = "the javac binary")
   String javac;
 
   /**
@@ -123,6 +126,12 @@ class Main {
    */
   @Option(names = "--print-simulation-config-version", description = "print simulation config version")
   boolean simulationConfigVersion;
+
+  /**
+   * Option for starting MSPSim with a platform.
+   */
+  @Option(names = "--platform", paramLabel = "ARCH", description = "MSPSim platform")
+  String mspSimPlatform;
 
   @Option(names = "--version", versionHelp = true,
           description = "print version information and exit")
@@ -190,6 +199,8 @@ class Main {
     // Parse and verify soundness of simulation files argument.
     ArrayList<Simulation.SimConfig> simConfigs = new ArrayList<>();
     for (var arg : options.simulationFiles) {
+      // Pass simulationFiles to MSPSim if given --platform.
+      if (options.mspSimPlatform != null) continue;
       // Argument on the form "file.csc[,key1=value1,key2=value2, ..]"
       var map = new HashMap<String, String>();
       String file = null;
@@ -258,13 +269,38 @@ class Main {
       System.exit(1);
     }
 
-    if (!Files.exists(Path.of(options.javac))) {
+    if (options.mspSimPlatform == null && options.javac == null) {
+      System.err.println("Missing required option: '--javac=FILE'");
+      System.exit(1);
+    }
+
+    if (options.mspSimPlatform == null && !Files.exists(Path.of(options.javac))) {
       System.err.println("Java compiler '" + options.javac + "' does not exist");
       System.exit(1);
     }
 
-    var cfg = new Config(options.gui, options.externalUserConfig,
-            options.logDir, options.contikiPath, options.coojaPath, options.javac);
-    Cooja.go(cfg, simConfigs);
+    if (options.mspSimPlatform == null) { // Start Cooja.
+        var cfg = new Config(options.gui, options.externalUserConfig,
+                options.logDir, options.contikiPath, options.coojaPath, options.javac);
+        Cooja.go(cfg, simConfigs);
+    } else { // Start MSPSim.
+      var config = new ArgumentManager();
+      config.handleArguments(options.simulationFiles.toArray(new String[0]));
+      var nodeType = config.getProperty("nodeType");
+      if (nodeType == null) {
+        nodeType = getNodeTypeByPlatform(options.mspSimPlatform);
+      }
+      var node = createNode(nodeType);
+      if (node == null) {
+        System.err.println("MSPSim does not currently support the platform '" + options.mspSimPlatform + "'.");
+        System.exit(1);
+      }
+      try {
+        node.setupArgs(config);
+      } catch (IOException e) {
+        System.err.println("IOException from setupArgs: " + e.getMessage());
+        System.exit(1);
+      }
+    }
   }
 }
