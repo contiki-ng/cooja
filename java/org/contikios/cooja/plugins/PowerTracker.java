@@ -253,10 +253,6 @@ public class PowerTracker implements Plugin {
 	  return null;
   }
 
-  public String radioStatistics() {
-    return radioStatistics(true, true, false);
-  }
-
   public String radioStatistics(boolean radioHW, boolean radioRXTX, boolean onlyAverage) {
     StringBuilder sb = new StringBuilder();
 
