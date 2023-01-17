@@ -69,6 +69,13 @@ public class Main {
       case "exp1101" -> "se.sics.mspsim.platform.ti.Exp1101Node";
       case "exp1120" -> "se.sics.mspsim.platform.ti.Exp1120Node";
       case "exp5438" -> "se.sics.mspsim.platform.ti.Exp5438Node";
+      case "trxeb1120" -> "java.se.sics.mspsim.platform.ti.Trxeb1120Node.java";
+      case "trxeb2520" -> "java.se.sics.mspsim.platform.ti.Trxeb2520Node.java";
+      case "sky" -> "java.se.sics.mspsim.platform.sky.SkyNode.java";
+      case "telos" -> "java.se.sics.mspsim.platform.sky.TelosNode.java";
+      case "tyndall" -> "java.se.sics.mspsim.platform.tyndall.TyndallNode.java";
+      case "wismote" -> "java.se.sics.mspsim.platform.wismote.WismoteNode.java";
+      case "z1" -> "java.se.sics.mspsim.platform.z1.Z1Node.java";
       // Try to guess the node type.
       default -> "se.sics.mspsim.platform." + platform + '.'
               + Character.toUpperCase(platform.charAt(0))
