@@ -428,18 +428,6 @@ public class PowerTracker implements Plugin {
     }
   }
 
-  private static MoteTracker createMoteTracker(Mote mote) {
-    final Radio moteRadio = mote.getInterfaces().getRadio();
-    if (moteRadio == null) {
-      return null;
-    }
-
-    /* Radio observer */
-    MoteTracker tracker = new MoteTracker(mote);
-    tracker.update();
-    return tracker;
-  }
-
   public void reset() {
     while (moteTrackers.size() > 0) {
       removeMote(moteTrackers.get(0).mote);
@@ -454,9 +442,11 @@ public class PowerTracker implements Plugin {
       return;
     }
 
-    MoteTracker t = createMoteTracker(mote);
-    if (t != null) {
-      moteTrackers.add(t);
+    var moteRadio = mote.getInterfaces().getRadio();
+    if (moteRadio != null) {
+      var tracker = new MoteTracker(mote);
+      tracker.update();
+      moteTrackers.add(tracker);
     }
 
     if (!Cooja.isVisualized()) {
