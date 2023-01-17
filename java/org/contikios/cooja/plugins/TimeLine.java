@@ -869,9 +869,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       var observer = new BiConsumer<RadioEvent, Radio>() {
         int lastChannel = -1;
         @Override
-        public void accept(RadioEvent event, Radio radio) {
-          RadioEvent radioEv = moteRadio.getLastEvent();
-
+        public void accept(RadioEvent radioEv, Radio radio) {
           String details = null;
           if (executionDetails && mote instanceof AbstractEmulatedMote<?, ?> emulatedMote) {
             details = emulatedMote.getExecutionDetails();
