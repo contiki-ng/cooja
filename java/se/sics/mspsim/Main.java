@@ -41,6 +41,20 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import se.sics.mspsim.platform.GenericNode;
+import se.sics.mspsim.platform.esb.ESBNode;
+import se.sics.mspsim.platform.jcreate.JCreateNode;
+import se.sics.mspsim.platform.sentillausb.SentillaUSBNode;
+import se.sics.mspsim.platform.sky.SkyNode;
+import se.sics.mspsim.platform.sky.TelosNode;
+import se.sics.mspsim.platform.ti.CC430Node;
+import se.sics.mspsim.platform.ti.Exp1101Node;
+import se.sics.mspsim.platform.ti.Exp1120Node;
+import se.sics.mspsim.platform.ti.Exp5438Node;
+import se.sics.mspsim.platform.ti.Trxeb1120Node;
+import se.sics.mspsim.platform.ti.Trxeb2520Node;
+import se.sics.mspsim.platform.tyndall.TyndallNode;
+import se.sics.mspsim.platform.wismote.WismoteNode;
+import se.sics.mspsim.platform.z1.Z1Node;
 import se.sics.mspsim.util.ArgumentManager;
 
 /**
@@ -49,43 +63,56 @@ import se.sics.mspsim.util.ArgumentManager;
 public class Main {
 
   public static GenericNode createNode(String className) {
-    try {
-      Class<? extends GenericNode> nodeClass = Class.forName(className).asSubclass(GenericNode.class);
-      return nodeClass.getDeclaredConstructor().newInstance();
-    } catch (ClassNotFoundException | ClassCastException | InstantiationException | IllegalAccessException e) {
-      // Can not find specified class, or wrong class type, or failed to instantiate
-    } catch (InvocationTargetException | NoSuchMethodException e) {
-        e.printStackTrace();
-    }
-      return null;
+    return switch (className) { // Sorted alphabetically.
+      case "se.sics.mspsim.platform.esb.ESBNode" -> new ESBNode();
+      case "se.sics.mspsim.platform.jcreate.JCreateNode" -> new JCreateNode();
+      case "se.sics.mspsim.platform.sentillausb.SentillaUSBNode" -> new SentillaUSBNode();
+      case "se.sics.mspsim.platform.ti.CC430Node" -> new CC430Node();
+      case "se.sics.mspsim.platform.ti.Exp1101Node" -> new Exp1101Node();
+      case "se.sics.mspsim.platform.ti.Exp1120Node" -> new Exp1120Node();
+      case "se.sics.mspsim.platform.ti.Exp5438Node" -> new Exp5438Node();
+      // Default to the Trxeb1120 node without ethernet.
+      case "java.se.sics.mspsim.platform.ti.Trxeb1120Node.java" -> new Trxeb1120Node(false);
+      case "java.se.sics.mspsim.platform.ti.Trxeb2520Node.java" -> new Trxeb2520Node();
+      case "java.se.sics.mspsim.platform.sky.SkyNode.java" -> new SkyNode();
+      case "java.se.sics.mspsim.platform.sky.TelosNode.java" -> new TelosNode();
+      case "java.se.sics.mspsim.platform.tyndall.TyndallNode.java" -> new TyndallNode();
+      case "java.se.sics.mspsim.platform.wismote.WismoteNode.java" -> new WismoteNode();
+      case "java.se.sics.mspsim.platform.z1.Z1Node.java" -> new Z1Node();
+      default -> {
+        try {
+          yield Class.forName(className).asSubclass(GenericNode.class).getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | ClassCastException | InstantiationException | IllegalAccessException e) {
+          // Can not find specified class, or wrong class type, or failed to instantiate
+        } catch (InvocationTargetException | NoSuchMethodException e) {
+          e.printStackTrace();
+        }
+        yield null;
+      }
+    };
   }
 
   public static String getNodeTypeByPlatform(String platform) {
-      if ("jcreate".equals(platform)) {
-          return "se.sics.mspsim.platform.jcreate.JCreateNode";
-      }
-      if ("sentilla-usb".equals(platform)) {
-          return "se.sics.mspsim.platform.sentillausb.SentillaUSBNode";
-      }
-      if ("esb".equals(platform)) {
-          return "se.sics.mspsim.platform.esb.ESBNode";
-      }
-      if ("exp5438".equals(platform)) {
-          return "se.sics.mspsim.platform.ti.Exp5438Node";
-      }
-      if ("exp1101".equals(platform)) {
-          return "se.sics.mspsim.platform.ti.Exp1101Node";
-      }
-      if ("exp1120".equals(platform)) {
-          return "se.sics.mspsim.platform.ti.Exp1120Node";
-      }
-      if ("cc430".equals(platform)) {
-          return "se.sics.mspsim.platform.ti.CC430Node";
-      }
+    return switch (platform) { // Sorted alphabetically, on return value.
+      case "esb" -> "se.sics.mspsim.platform.esb.ESBNode";
+      case "jcreate" -> "se.sics.mspsim.platform.jcreate.JCreateNode";
+      case "sentilla-usb" -> "se.sics.mspsim.platform.sentillausb.SentillaUSBNode";
+      case "cc430" -> "se.sics.mspsim.platform.ti.CC430Node";
+      case "exp1101" -> "se.sics.mspsim.platform.ti.Exp1101Node";
+      case "exp1120" -> "se.sics.mspsim.platform.ti.Exp1120Node";
+      case "exp5438" -> "se.sics.mspsim.platform.ti.Exp5438Node";
+      case "trxeb1120" -> "java.se.sics.mspsim.platform.ti.Trxeb1120Node.java";
+      case "trxeb2520" -> "java.se.sics.mspsim.platform.ti.Trxeb2520Node.java";
+      case "sky" -> "java.se.sics.mspsim.platform.sky.SkyNode.java";
+      case "telos" -> "java.se.sics.mspsim.platform.sky.TelosNode.java";
+      case "tyndall" -> "java.se.sics.mspsim.platform.tyndall.TyndallNode.java";
+      case "wismote" -> "java.se.sics.mspsim.platform.wismote.WismoteNode.java";
+      case "z1" -> "java.se.sics.mspsim.platform.z1.Z1Node.java";
       // Try to guess the node type.
-      return "se.sics.mspsim.platform." + platform + '.'
-          + Character.toUpperCase(platform.charAt(0))
-          + platform.substring(1).toLowerCase() + "Node";
+      default -> "se.sics.mspsim.platform." + platform + '.'
+              + Character.toUpperCase(platform.charAt(0))
+              + platform.substring(1).toLowerCase() + "Node";
+    };
   }
 
   public static void main(String[] args) throws IOException {
