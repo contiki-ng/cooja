@@ -317,35 +317,26 @@ public class ContikiMoteType extends BaseContikiMoteType {
     long offset;
     Map<String, Symbol> variables = null;
     {
-      SectionMoteMemory tmp = null;
       if (dataSecParser.parseStartAddrAndSize()) {
         variables = dataSecParser.parseSymbols();
-        tmp = new SectionMoteMemory(variables);
-        tmp.addMemorySection("tmp.data", getMemory(dataSecParser, 0, variables));
       }
       if (bssSecParser.parseStartAddrAndSize()) {
         var bssVars = bssSecParser.parseSymbols();
         if (variables == null) {
           variables = bssVars;
         }
-        if (tmp == null) {
-          tmp = new SectionMoteMemory(variables);
-        }
-        tmp.addMemorySection("tmp.bss", getMemory(bssSecParser, 0, variables));
       }
       if (commonSecParser != null && commonSecParser.parseStartAddrAndSize()) {
         var commonVars = commonSecParser.parseSymbols();
         if (variables == null) {
           variables = commonVars;
         }
-        if (tmp == null) {
-          tmp = new SectionMoteMemory(variables);
-        }
-        tmp.addMemorySection("tmp.common", getMemory(commonSecParser, 0, variables));
+      }
+      if (variables == null) {
+        throw new MoteTypeCreationException("Could not parse symbols in library");
       }
       try {
-        if (tmp == null) throw new NullPointerException("Did not manage to parse symbols");
-        long referenceVar = tmp.getSymbolMap().get("referenceVar").addr;
+        long referenceVar = variables.get("referenceVar").addr;
         offset = myCoreComm.getReferenceAddress() - referenceVar;
       } catch (Exception e) {
         throw new MoteTypeCreationException("Error setting reference variable: " + e.getMessage(), e);
