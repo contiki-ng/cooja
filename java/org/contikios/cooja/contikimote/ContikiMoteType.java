@@ -265,20 +265,20 @@ public class ContikiMoteType extends BaseContikiMoteType {
      */
     boolean useCommand = Boolean.parseBoolean(Cooja.getExternalToolsSetting("PARSE_WITH_COMMAND", "false"));
 
+    var command = Cooja.getExternalToolsSetting(useCommand ? "PARSE_COMMAND" : "READELF_COMMAND");
+    if (command != null) {
+      command = Cooja.resolvePathIdentifiers(command);
+    }
+    if (command == null) {
+      throw new MoteTypeCreationException("No " + (useCommand ? "parse" : "readelf") + " command configured!");
+    }
+    command = command.replace("$(LIBFILE)", firmwareFile.getName().replace(File.separatorChar, '/'));
+
     SectionParser dataSecParser;
     SectionParser bssSecParser;
     SectionParser commonSecParser = null;
 
     if (useCommand) {
-      String command = Cooja.getExternalToolsSetting("PARSE_COMMAND");
-      if (command != null) {
-        command = Cooja.resolvePathIdentifiers(command);
-      }
-      if (command == null) {
-        throw new MoteTypeCreationException("No parse command configured!");
-      }
-      command = command.replace("$(LIBFILE)", firmwareFile.getName().replace(File.separatorChar, '/'));
-      /* Parse command output */
       String[] output = loadCommandData(command, firmwareFile, vis);
 
       dataSecParser = new CommandSectionParser(
@@ -297,14 +297,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
               Cooja.getExternalToolsSetting("COMMAND_COMMON_END"),
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
     } else {
-      String command = Cooja.getExternalToolsSetting("READELF_COMMAND");
-      if (command != null) {
-        command = Cooja.resolvePathIdentifiers(command);
-      }
-      if (command == null) {
-        throw new MoteTypeCreationException("No readelf command configured!");
-      }
-      command = command.replace("$(LIBFILE)", firmwareFile.getName().replace(File.separatorChar, '/'));
       var symbols = String.join("\n", loadCommandData(command, firmwareFile, vis));
       dataSecParser = new MapSectionParser(symbols, "cooja_dataStart", "cooja_dataSize");
       bssSecParser = new MapSectionParser(symbols, "cooja_bssStart", "cooja_bssSize");
@@ -316,34 +308,26 @@ public class ContikiMoteType extends BaseContikiMoteType {
      *
      * This offset will be used in Cooja in the memory abstraction to match
      * Contiki's and Cooja's address spaces */
-    long offset;
     Map<String, Symbol> variables = null;
     if (dataSecParser.parseStartAddrAndSize()) {
-      variables = dataSecParser.parseSymbols();
+      variables = dataSecParser.parseSymbols(null);
     }
     if (bssSecParser.parseStartAddrAndSize()) {
-      var bssVars = bssSecParser.parseSymbols();
-      if (variables == null) {
-        variables = bssVars;
-      }
+      variables = bssSecParser.parseSymbols(variables);
     }
     if (commonSecParser != null && commonSecParser.parseStartAddrAndSize()) {
-      var commonVars = commonSecParser.parseSymbols();
-      if (variables == null) {
-        variables = commonVars;
-      }
+      variables = commonSecParser.parseSymbols(variables);
     }
     if (variables == null) {
       throw new MoteTypeCreationException("Could not parse symbols in library");
     }
+    long offset;
     try {
-      long referenceVar = variables.get("referenceVar").addr;
-      offset = myCoreComm.getReferenceAddress() - referenceVar;
+      offset = myCoreComm.getReferenceAddress() - variables.get("referenceVar").addr;
     } catch (Exception e) {
       throw new MoteTypeCreationException("Error setting reference variable: " + e.getMessage(), e);
     }
-    logger.debug(firmwareFile.getName()
-            + ": offsetting Cooja mote address space: 0x" + Long.toHexString(offset));
+    logger.debug(firmwareFile.getName() + ": offsetting Cooja mote address space: 0x" + Long.toHexString(offset));
 
     // Create initial memory: data+bss+optional common.
     var offsetVariables = new HashMap<String, Symbol>();
@@ -408,7 +392,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     abstract boolean parseStartAddrAndSize();
 
-    abstract Map<String, Symbol> parseSymbols();
+    abstract Map<String, Symbol> parseSymbols(Map<String, Symbol> inVars);
   }
 
   /**
@@ -433,8 +417,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
 
     @Override
-    Map<String, Symbol> parseSymbols() {
-      Map<String, Symbol> varNames = new HashMap<>();
+    Map<String, Symbol> parseSymbols(Map<String, Symbol> inVars) {
+      Map<String, Symbol> varNames = inVars == null ? new HashMap<>() : inVars;
       try (var s = new Scanner(readelfData)) {
         s.nextLine(); // Skip first blank line.
         while (s.hasNext()) {
@@ -460,7 +444,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
           s.next();
           s.next();
           var name = s.next();
-          if ("OBJECT".equals(type)) {
+          if (inVars == null && "OBJECT".equals(type)) {
             varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr, size));
           } else if (startName.equals(name)) {
             startAddr = addr;
@@ -561,7 +545,10 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
 
     @Override
-    Map<String, Symbol> parseSymbols() {
+    Map<String, Symbol> parseSymbols(Map<String, Symbol> inVars) {
+      if (inVars != null) {
+        return inVars;
+      }
       HashMap<String, Symbol> addresses = new HashMap<>();
       /* Replace "<SECTION>" in regex by section specific regex */
       Pattern pattern = Pattern.compile(
