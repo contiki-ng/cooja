@@ -825,7 +825,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       currentSkins.add(0, newSkin);
     }
     catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e1) {
-      e1.printStackTrace();
+      logger.error("Could not create skin: {}", skinClass.getName());
     }
     repaint();
   }
