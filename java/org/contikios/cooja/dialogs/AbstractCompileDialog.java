@@ -240,7 +240,6 @@ public abstract class AbstractCompileDialog extends JDialog {
             } catch (Exception ex) {
               logger.error("Exception when compiling: " + ex.getMessage());
               taskOutput.addMessage(ex.getMessage(), MessageList.ERROR);
-              ex.printStackTrace();
               compilationFailureAction.actionPerformed(null);
             }
           }
