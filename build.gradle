@@ -139,7 +139,6 @@ run {
     }
   }
   systemProperty 'picocli.disable.closures', "true"
-  systemProperty 'logback.configurationFile', 'logback.xml'
   // Enable assertions with "-Passertions".
   enableAssertions = project.hasProperty('assertions')
   // Prevent Gradle from changing directory to tools/cooja.

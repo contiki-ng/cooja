@@ -14,6 +14,11 @@ by MSPSim.
 This removes the `--log4j2` and `--logname` parameters. Set the system property
 `logback.configurationFile` to use a different logback configuration.
 
+To start Cooja with a custom Logback configuration:
+```
+./gradlew -Dcooja.logback.configurationFile=my-logback-configuration.xml run
+```
+
 Plugins need to change calls to `logger.fatal` to instead call `logger.error`,
 and change the logger construction from
 ```
