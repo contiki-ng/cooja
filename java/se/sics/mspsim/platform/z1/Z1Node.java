@@ -10,6 +10,8 @@ import se.sics.mspsim.config.MSP430f2617Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
+import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
@@ -69,8 +71,12 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
     private M25P80 flash;
     private String flashFile;
 
-    public Z1Node() {
-        super("Z1", new MSP430f2617Config());
+    public static MSP430Config makeChipConfig() {
+        return new MSP430f2617Config();
+    }
+
+    public Z1Node(MSP430 cpu) {
+        super("Z1", cpu);
         setMode(MODE_LEDS_OFF);
     }
 
@@ -227,7 +233,7 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
     }
 
     public static void main(String[] args) throws IOException {
-        Z1Node node = new Z1Node();
+        Z1Node node = new Z1Node(makeCPU(makeChipConfig()));
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);

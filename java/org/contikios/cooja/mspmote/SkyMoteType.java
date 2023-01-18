@@ -58,8 +58,9 @@ public class SkyMoteType extends MspMoteType {
 
   @Override
   public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
-    var node = new SkyNode();
-    node.setFlash(new CoojaM25P80(node.getCPU()));
+    var cpu = SkyNode.makeCPU(SkyNode.makeChipConfig());
+    var node = new SkyNode(cpu);
+    node.setFlash(new CoojaM25P80(cpu));
     return new SkyMote(this, simulation, node);
   }
 

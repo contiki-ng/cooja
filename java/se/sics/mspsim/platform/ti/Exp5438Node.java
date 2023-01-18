@@ -6,6 +6,8 @@ import se.sics.mspsim.config.MSP430f5437Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
+import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
@@ -38,9 +40,13 @@ public class Exp5438Node extends GenericNode implements PortListener, USARTListe
 
     public CC2420 radio;
 
-    public Exp5438Node() {
-        /* TODO XXX MSP430F5438 */
-        super("Exp5438", new MSP430f5437Config());
+    public static MSP430Config makeChipConfig() {
+        // TODO: MSP430F5438
+        return new MSP430f5437Config();
+    }
+
+    public Exp5438Node(MSP430 cpu) {
+        super("Exp5438", cpu);
     }
 
     @Override
@@ -119,7 +125,7 @@ public class Exp5438Node extends GenericNode implements PortListener, USARTListe
     }
 
     public static void main(String[] args) throws IOException {
-        Exp5438Node node = new Exp5438Node();
+        Exp5438Node node = new Exp5438Node(makeCPU(makeChipConfig()));
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);

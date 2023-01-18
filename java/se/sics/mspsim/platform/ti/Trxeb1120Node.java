@@ -6,6 +6,8 @@ import se.sics.mspsim.config.MSP430f5437Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
+import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
@@ -35,9 +37,12 @@ public class Trxeb1120Node extends GenericNode implements PortListener, USARTLis
 
         private final boolean withEnc;
 
-        public Trxeb1120Node(boolean withEnc) {
-                super("Trxeb1120", new MSP430f5437Config());
+        public static MSP430Config makeChipConfig() {
+                return new MSP430f5437Config();
+        }
 
+        public Trxeb1120Node(boolean withEnc, MSP430 cpu) {
+                super("Trxeb1120", cpu);
                 this.withEnc = withEnc;
         }
 

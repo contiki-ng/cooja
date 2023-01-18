@@ -47,6 +47,7 @@ import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.chip.MMA7260QT;
 import se.sics.mspsim.core.ADC12;
 import se.sics.mspsim.core.IOPort;
+import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.platform.sky.CC2420Node;
 import se.sics.mspsim.util.ArgumentManager;
@@ -70,8 +71,8 @@ public class JCreateNode extends CC2420Node {
 
     private JCreateGui gui;
 
-    public JCreateNode() {
-        super("Sentilla JCreate");
+    public JCreateNode(MSP430 cpu) {
+        super("Sentilla JCreate", cpu);
         setMode(MODE_LEDS_OFF);
     }
 
@@ -167,7 +168,7 @@ public class JCreateNode extends CC2420Node {
     }
 
     public static void main(String[] args) throws IOException {
-        JCreateNode node = new JCreateNode();
+        JCreateNode node = new JCreateNode(makeCPU(makeChipConfig()));
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);

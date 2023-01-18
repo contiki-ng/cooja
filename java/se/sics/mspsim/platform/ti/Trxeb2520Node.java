@@ -7,6 +7,8 @@ import se.sics.mspsim.config.MSP430f5437Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
+import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
@@ -37,8 +39,12 @@ public class Trxeb2520Node extends GenericNode implements PortListener, USARTLis
 
         public CC2520 radio;
 
-        public Trxeb2520Node() {
-                super("Trxeb2520", new MSP430f5437Config());
+    public static MSP430Config makeChipConfig() {
+        return new MSP430f5437Config();
+    }
+
+        public Trxeb2520Node(MSP430 cpu) {
+                super("Trxeb2520", cpu);
         }
 
         @Override
@@ -107,7 +113,7 @@ public class Trxeb2520Node extends GenericNode implements PortListener, USARTLis
         }
 
         public static void main(String[] args) throws IOException {
-                Trxeb2520Node node = new Trxeb2520Node();
+                Trxeb2520Node node = new Trxeb2520Node(makeCPU(makeChipConfig()));
                 ArgumentManager config = new ArgumentManager();
                 config.handleArguments(args);
                 node.setupArgs(config);
