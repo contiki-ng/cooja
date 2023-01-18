@@ -31,6 +31,7 @@ package org.contikios.cooja;
 import static se.sics.mspsim.Main.createNode;
 import static se.sics.mspsim.Main.getNodeTypeByPlatform;
 
+import ch.qos.logback.core.pattern.color.ANSIConstants;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.contikios.cooja.Cooja.Config;
+import org.contikios.cooja.Cooja.LogbackColors;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -280,9 +282,12 @@ class Main {
     }
 
     if (options.mspSimPlatform == null) { // Start Cooja.
-        var cfg = new Config(options.gui, options.externalUserConfig,
+      // Use colors that are good on a dark background and readable on a white background.
+      var colors = new LogbackColors(ANSIConstants.BOLD + "91", "96",
+              ANSIConstants.GREEN_FG, ANSIConstants.DEFAULT_FG);
+      var cfg = new Config(colors, options.gui, options.externalUserConfig,
                 options.logDir, options.contikiPath, options.coojaPath, options.javac);
-        Cooja.go(cfg, simConfigs);
+      Cooja.go(cfg, simConfigs);
     } else { // Start MSPSim.
       var config = new ArgumentManager();
       config.handleArguments(options.simulationFiles.toArray(new String[0]));

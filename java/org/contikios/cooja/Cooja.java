@@ -1732,8 +1732,9 @@ public class Cooja {
    * When SimConfig contains an identical field, these values are the default
    * values when creating a new simulation in the File menu.
    */
-  public record Config(boolean vis, String externalToolsConfig,
+  public record Config(LogbackColors logColors, boolean vis, String externalToolsConfig,
                        String logDir, String contikiPath, String coojaPath, String javac) {}
 
+  public record LogbackColors(String error, String warn, String info, String fallback) {}
   private record PathIdentifier(String id, String path) {}
 }
