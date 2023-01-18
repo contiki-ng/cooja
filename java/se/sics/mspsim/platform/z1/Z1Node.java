@@ -1,6 +1,7 @@
 package se.sics.mspsim.platform.z1;
 
 import java.io.IOException;
+import se.sics.mspsim.Main;
 import se.sics.mspsim.chip.Button;
 import se.sics.mspsim.chip.CC2420;
 import se.sics.mspsim.chip.FileStorage;
@@ -68,15 +69,17 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
 
     private CC2420 radio;
 //    private TMP102 tmp102;
-    private M25P80 flash;
+    private final M25P80 flash;
     private String flashFile;
 
     public static MSP430Config makeChipConfig() {
         return new MSP430f2617Config();
     }
 
-    public Z1Node(MSP430 cpu) {
+    public Z1Node(MSP430 cpu, M25P80 flash) {
         super("Z1", cpu);
+        this.flash = flash;
+        registry.registerComponent("xmem", flash);
         setMode(MODE_LEDS_OFF);
     }
 
@@ -93,11 +96,6 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
         // The Z1 platform has a M25P16 chip with 2MB compared to the M25P80
         // with 1MB but the chips are compatible.
         return flash;
-    }
-
-    public void setFlash(M25P80 flash) {
-        this.flash = flash;
-        registry.registerComponent("xmem", flash);
     }
 
     @Override
@@ -176,10 +174,6 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
         if (usart instanceof USARTSource) {
             registry.registerComponent("serialio", usart);
         }
-
-        if (getFlash() == null) {
-            setFlash(new M25P80(cpu));
-        }
         if (flashFile != null) {
             getFlash().setStorage(new FileStorage(flashFile));
         }
@@ -233,10 +227,9 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
     }
 
     public static void main(String[] args) throws IOException {
-        Z1Node node = new Z1Node(makeCPU(makeChipConfig()));
+        var node = Main.createNode(Z1Node.class.getName());
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);
     }
-
 }

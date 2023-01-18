@@ -41,6 +41,7 @@
 
 package se.sics.mspsim.platform.sentillausb;
 import java.io.IOException;
+import se.sics.mspsim.Main;
 import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.M25P80;
@@ -64,15 +65,17 @@ public class SentillaUSBNode extends CC2420Node {
     public static final int GREEN_LED = 0x20;
     public static final int RED_LED = 0x10;
 
-    private M25P80 flash;
+    private final M25P80 flash;
     private SentillaUSBGui gui;
 
     private Leds leds;
     boolean redLed;
     boolean greenLed;
 
-    public SentillaUSBNode(MSP430 cpu) {
+    public SentillaUSBNode(MSP430 cpu, M25P80 flash) {
         super("Sentilla USB", cpu);
+        this.flash = flash;
+        registry.registerComponent("xmem", flash);
         setMode(MODE_LEDS_OFF);
     }
 
@@ -82,11 +85,6 @@ public class SentillaUSBNode extends CC2420Node {
 
     public M25P80 getFlash() {
         return flash;
-    }
-
-    public void setFlash(M25P80 flash) {
-        this.flash = flash;
-        registry.registerComponent("xmem", flash);
     }
 
     // USART Listener
@@ -109,9 +107,6 @@ public class SentillaUSBNode extends CC2420Node {
     public void setupNodePorts() {
         super.setupNodePorts();
         leds = new Leds(cpu, LEDS);
-        if (getFlash() == null) {
-            setFlash(new M25P80(cpu));
-        }
         if (flashFile != null) {
             getFlash().setStorage(new FileStorage(flashFile));
         }
@@ -144,7 +139,7 @@ public class SentillaUSBNode extends CC2420Node {
     }
 
     public static void main(String[] args) throws IOException {
-        SentillaUSBNode node = new SentillaUSBNode(makeCPU(makeChipConfig()));
+        var node = Main.createNode(SentillaUSBNode.class.getName());
         ArgumentManager config = new ArgumentManager();
         config.handleArguments(args);
         node.setupArgs(config);

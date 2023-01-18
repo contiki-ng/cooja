@@ -41,6 +41,7 @@
 
 package se.sics.mspsim.platform.sky;
 import java.io.IOException;
+import se.sics.mspsim.Main;
 import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.core.IOPort;
@@ -52,24 +53,20 @@ import se.sics.mspsim.util.ArgumentManager;
  * Emulation of Sky Mote
  */
 public class SkyNode extends MoteIVNode {
-
-  private M25P80 flash;
+  private final M25P80 flash;
 
   /**
    * Creates a new <code>SkyNode</code> instance.
    *
    */
-  public SkyNode(MSP430 cpu) {
+  public SkyNode(MSP430 cpu, M25P80 flash) {
     super("Tmote Sky", cpu);
+    this.flash = flash;
+    registry.registerComponent("xmem", flash);
   }
 
   public M25P80 getFlash() {
     return flash;
-  }
-
-  public void setFlash(M25P80 flash) {
-    this.flash = flash;
-    registry.registerComponent("xmem", flash);
   }
 
   // USART Listener
@@ -91,16 +88,13 @@ public class SkyNode extends MoteIVNode {
   @Override
   public void setupNodePorts() {
     super.setupNodePorts();
-    if (getFlash() == null) {
-        setFlash(new M25P80(cpu));
-    }
     if (flashFile != null) {
         getFlash().setStorage(new FileStorage(flashFile));
     }
   }
 
   public static void main(String[] args) throws IOException {
-    SkyNode node = new SkyNode(makeCPU(makeChipConfig()));
+    var node = Main.createNode(SkyNode.class.getName());
     ArgumentManager config = new ArgumentManager();
     config.handleArguments(args);
     node.setupArgs(config);
