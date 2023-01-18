@@ -265,20 +265,20 @@ public class ContikiMoteType extends BaseContikiMoteType {
      */
     boolean useCommand = Boolean.parseBoolean(Cooja.getExternalToolsSetting("PARSE_WITH_COMMAND", "false"));
 
+    var command = Cooja.getExternalToolsSetting(useCommand ? "PARSE_COMMAND" : "READELF_COMMAND");
+    if (command != null) {
+      command = Cooja.resolvePathIdentifiers(command);
+    }
+    if (command == null) {
+      throw new MoteTypeCreationException("No " + (useCommand ? "parse" : "readelf") + " command configured!");
+    }
+    command = command.replace("$(LIBFILE)", firmwareFile.getName().replace(File.separatorChar, '/'));
+
     SectionParser dataSecParser;
     SectionParser bssSecParser;
     SectionParser commonSecParser = null;
 
     if (useCommand) {
-      String command = Cooja.getExternalToolsSetting("PARSE_COMMAND");
-      if (command != null) {
-        command = Cooja.resolvePathIdentifiers(command);
-      }
-      if (command == null) {
-        throw new MoteTypeCreationException("No parse command configured!");
-      }
-      command = command.replace("$(LIBFILE)", firmwareFile.getName().replace(File.separatorChar, '/'));
-      /* Parse command output */
       String[] output = loadCommandData(command, firmwareFile, vis);
 
       dataSecParser = new CommandSectionParser(
@@ -297,14 +297,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
               Cooja.getExternalToolsSetting("COMMAND_COMMON_END"),
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
     } else {
-      String command = Cooja.getExternalToolsSetting("READELF_COMMAND");
-      if (command != null) {
-        command = Cooja.resolvePathIdentifiers(command);
-      }
-      if (command == null) {
-        throw new MoteTypeCreationException("No readelf command configured!");
-      }
-      command = command.replace("$(LIBFILE)", firmwareFile.getName().replace(File.separatorChar, '/'));
       var symbols = String.join("\n", loadCommandData(command, firmwareFile, vis));
       dataSecParser = new MapSectionParser(symbols, "cooja_dataStart", "cooja_dataSize");
       bssSecParser = new MapSectionParser(symbols, "cooja_bssStart", "cooja_bssSize");
