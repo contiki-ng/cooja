@@ -233,6 +233,10 @@ public class ContikiMoteType extends BaseContikiMoteType {
     return new ContikiMoteCompileDialog(gui, this, cfg);
   }
 
+  private static MemoryInterface getMemory(SectionParser parser, long offset, Map<String, Symbol> variables) {
+    return new ArrayMemory(parser.getStartAddr() + offset, MemoryLayout.getNative(), new byte[parser.getSize()], variables);
+  }
+
   /** Load LibN.java and the corresponding .cooja file into memory. */
   @Override
   public boolean loadMoteFirmware(boolean vis) throws MoteTypeCreationException {
@@ -311,16 +315,36 @@ public class ContikiMoteType extends BaseContikiMoteType {
      * This offset will be used in Cooja in the memory abstraction to match
      * Contiki's and Cooja's address spaces */
     long offset;
-    HashMap<String, Symbol> variables = new HashMap<>();
+    Map<String, Symbol> variables = null;
     {
-      SectionMoteMemory tmp = new SectionMoteMemory(variables);
-      tmp.addMemorySection("tmp.data", dataSecParser.parse(0));
-      tmp.addMemorySection("tmp.bss", bssSecParser.parse(0));
-      if (commonSecParser != null) {
-        tmp.addMemorySection("tmp.common", commonSecParser.parse(0));
+      SectionMoteMemory tmp = null;
+      if (dataSecParser.parseStartAddrAndSize()) {
+        variables = dataSecParser.parseSymbols();
+        tmp = new SectionMoteMemory(variables);
+        tmp.addMemorySection("tmp.data", getMemory(dataSecParser, 0, variables));
       }
-
+      if (bssSecParser.parseStartAddrAndSize()) {
+        var bssVars = bssSecParser.parseSymbols();
+        if (variables == null) {
+          variables = bssVars;
+        }
+        if (tmp == null) {
+          tmp = new SectionMoteMemory(variables);
+        }
+        tmp.addMemorySection("tmp.bss", getMemory(bssSecParser, 0, variables));
+      }
+      if (commonSecParser != null && commonSecParser.parseStartAddrAndSize()) {
+        var commonVars = commonSecParser.parseSymbols();
+        if (variables == null) {
+          variables = commonVars;
+        }
+        if (tmp == null) {
+          tmp = new SectionMoteMemory(variables);
+        }
+        tmp.addMemorySection("tmp.common", getMemory(commonSecParser, 0, variables));
+      }
       try {
+        if (tmp == null) throw new NullPointerException("Did not manage to parse symbols");
         long referenceVar = tmp.getSymbolMap().get("referenceVar").addr;
         offset = myCoreComm.getReferenceAddress() - referenceVar;
       } catch (Exception e) {
@@ -330,17 +354,18 @@ public class ContikiMoteType extends BaseContikiMoteType {
               + ": offsetting Cooja mote address space: 0x" + Long.toHexString(offset));
     }
 
-    /* Create initial memory: data+bss+optional common */
-    initialMemory = new SectionMoteMemory(variables);
-
-    initialMemory.addMemorySection("data", dataSecParser.parse(offset));
-
-    initialMemory.addMemorySection("bss", bssSecParser.parse(offset));
-
-    if (commonSecParser != null) {
-      initialMemory.addMemorySection("common", commonSecParser.parse(offset));
+    // Create initial memory: data+bss+optional common.
+    var offsetVariables = new HashMap<String, Symbol>();
+    for (var entry : variables.entrySet()) {
+      var old = entry.getValue();
+      offsetVariables.put(entry.getKey(), new Symbol(old.type, old.name, old.addr + offset, old.size));
     }
-
+    initialMemory = new SectionMoteMemory(offsetVariables);
+    initialMemory.addMemorySection("data", getMemory(dataSecParser, offset, offsetVariables));
+    initialMemory.addMemorySection("bss", getMemory(bssSecParser, offset, offsetVariables));
+    if (commonSecParser != null) {
+      initialMemory.addMemorySection("common", getMemory(commonSecParser, offset, offsetVariables));
+    }
     getCoreMemory(initialMemory);
     return true;
   }
@@ -382,39 +407,17 @@ public class ContikiMoteType extends BaseContikiMoteType {
     protected long startAddr;
     protected int size;
 
-    public long getStartAddr() {
+    long getStartAddr() {
       return startAddr;
     }
 
-    public int getSize() {
+    int getSize() {
       return size;
     }
 
-    protected abstract boolean parseStartAddrAndSize();
+    abstract boolean parseStartAddrAndSize();
 
-    abstract Map<String, Symbol> parseSymbols(long offset);
-
-    public MemoryInterface parse(long offset) {
-      if (!parseStartAddrAndSize()) {
-        return null;
-      }
-
-      var variables = parseSymbols(offset);
-
-      if (logger.isDebugEnabled()) {
-        logger.debug(String.format("Parsed section at 0x%x ( %d == 0x%x bytes)",
-                                 getStartAddr() + offset,
-                                 getSize(),
-                                 getSize()));
-        for (Map.Entry<String, Symbol> entry : variables.entrySet()) {
-          logger.debug(String.format("Found Symbol: %s, 0x%x, %d",
-                  entry.getKey(),
-                  entry.getValue().addr,
-                  entry.getValue().size));
-        }
-      }
-      return new ArrayMemory(getStartAddr() + offset, MemoryLayout.getNative(), new byte[getSize()], variables);
-    }
+    abstract Map<String, Symbol> parseSymbols();
   }
 
   /**
@@ -434,12 +437,12 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
 
     @Override
-    protected boolean parseStartAddrAndSize() {
+    boolean parseStartAddrAndSize() {
       return true; // Both startAddr and size are updated in parseSymbols() instead.
     }
 
     @Override
-    public Map<String, Symbol> parseSymbols(long offset) {
+    Map<String, Symbol> parseSymbols() {
       Map<String, Symbol> varNames = new HashMap<>();
       try (var s = new Scanner(readelfData)) {
         s.nextLine(); // Skip first blank line.
@@ -467,7 +470,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
           s.next();
           var name = s.next();
           if ("OBJECT".equals(type)) {
-            varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr + offset, size));
+            varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr, size));
           } else if (startName.equals(name)) {
             startAddr = addr;
           } else if (sizeName.equals(name)) {
@@ -511,7 +514,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
 
     @Override
-    protected boolean parseStartAddrAndSize() {
+    boolean parseStartAddrAndSize() {
       // FIXME: Adjust this code to mirror the optimized method in MapSectionParser.
       if (startRegExp == null || startRegExp.equals("")) {
         startAddr = -1;
@@ -567,7 +570,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
 
     @Override
-    public Map<String, Symbol> parseSymbols(long offset) {
+    Map<String, Symbol> parseSymbols() {
       HashMap<String, Symbol> addresses = new HashMap<>();
       /* Replace "<SECTION>" in regex by section specific regex */
       Pattern pattern = Pattern.compile(
@@ -579,7 +582,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
         if (matcher.find()) {
           /* Line matched variable address */
           String symbol = matcher.group("symbol");
-          long varAddr = Long.parseUnsignedLong(matcher.group("address"), 16) + offset;
+          long varAddr = Long.parseUnsignedLong(matcher.group("address"), 16);
           int varSize;
 
           if (matcher.group(2) != null) {
