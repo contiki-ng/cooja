@@ -316,34 +316,32 @@ public class ContikiMoteType extends BaseContikiMoteType {
      * Contiki's and Cooja's address spaces */
     long offset;
     Map<String, Symbol> variables = null;
-    {
-      if (dataSecParser.parseStartAddrAndSize()) {
-        variables = dataSecParser.parseSymbols();
-      }
-      if (bssSecParser.parseStartAddrAndSize()) {
-        var bssVars = bssSecParser.parseSymbols();
-        if (variables == null) {
-          variables = bssVars;
-        }
-      }
-      if (commonSecParser != null && commonSecParser.parseStartAddrAndSize()) {
-        var commonVars = commonSecParser.parseSymbols();
-        if (variables == null) {
-          variables = commonVars;
-        }
-      }
-      if (variables == null) {
-        throw new MoteTypeCreationException("Could not parse symbols in library");
-      }
-      try {
-        long referenceVar = variables.get("referenceVar").addr;
-        offset = myCoreComm.getReferenceAddress() - referenceVar;
-      } catch (Exception e) {
-        throw new MoteTypeCreationException("Error setting reference variable: " + e.getMessage(), e);
-      }
-      logger.debug(firmwareFile.getName()
-              + ": offsetting Cooja mote address space: 0x" + Long.toHexString(offset));
+    if (dataSecParser.parseStartAddrAndSize()) {
+      variables = dataSecParser.parseSymbols();
     }
+    if (bssSecParser.parseStartAddrAndSize()) {
+      var bssVars = bssSecParser.parseSymbols();
+      if (variables == null) {
+        variables = bssVars;
+      }
+    }
+    if (commonSecParser != null && commonSecParser.parseStartAddrAndSize()) {
+      var commonVars = commonSecParser.parseSymbols();
+      if (variables == null) {
+        variables = commonVars;
+      }
+    }
+    if (variables == null) {
+      throw new MoteTypeCreationException("Could not parse symbols in library");
+    }
+    try {
+      long referenceVar = variables.get("referenceVar").addr;
+      offset = myCoreComm.getReferenceAddress() - referenceVar;
+    } catch (Exception e) {
+      throw new MoteTypeCreationException("Error setting reference variable: " + e.getMessage(), e);
+    }
+    logger.debug(firmwareFile.getName()
+            + ": offsetting Cooja mote address space: 0x" + Long.toHexString(offset));
 
     // Create initial memory: data+bss+optional common.
     var offsetVariables = new HashMap<String, Symbol>();
