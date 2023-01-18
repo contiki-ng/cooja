@@ -51,6 +51,7 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.swing.JDesktopPane;
@@ -1178,6 +1179,7 @@ public class Cooja {
     // Check if simulator should be quick-started.
     int rv = 0;
     boolean autoQuit = !simConfigs.isEmpty() && !config.vis;
+    var failedTests = new ArrayList<Simulation.SimConfig>();
     for (var simConfig : simConfigs) {
       logger.info("Loading " + simConfig.file() + " random seed: " + simConfig.randomSeed());
       Simulation sim = null;
@@ -1192,7 +1194,8 @@ public class Cooja {
       }
       if (sim == null) {
         autoQuit = true;
-        logger.error("TEST FAILED\n");
+        logger.error("TEST {} FAILED\n", simConfig.file());
+        failedTests.add(simConfig);
         rv = Math.max(rv, 1);
       } else if (simConfig.updateSim()) {
         autoQuit = true;
@@ -1206,12 +1209,17 @@ public class Cooja {
         if (ret == null) {
           logger.info("TEST OK\n");
         } else {
-          logger.error("TEST FAILED\n");
+          logger.error("TEST {} FAILED\n", simConfig.file());
+          failedTests.add(simConfig);
           rv = Math.max(rv, ret);
         }
       }
     }
     if (autoQuit) {
+      if (!failedTests.isEmpty()) {
+        logger.error("Failed tests:\n{}", failedTests.stream().map(cfg ->
+                cfg.file() + " seed: " + cfg.randomSeed()).collect(Collectors.joining("\n")));
+      }
       gui.doQuit(rv);
     }
   }
