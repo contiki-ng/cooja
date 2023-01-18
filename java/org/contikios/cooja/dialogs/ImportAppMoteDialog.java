@@ -215,7 +215,6 @@ public class ImportAppMoteDialog extends JDialog {
           "Could not find class '" + classFile + "'", "Failed to load class",
           JOptionPane.ERROR_MESSAGE);
     } catch (Exception | LinkageError e1) {
-      e1.printStackTrace();
       JOptionPane.showMessageDialog(ImportAppMoteDialog.this,
           "Could not load class '" + classFile + "':\n" + e1, "Failed to load class",
           JOptionPane.ERROR_MESSAGE);
