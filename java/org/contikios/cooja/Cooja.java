@@ -957,7 +957,6 @@ public class Cooja {
     settings.put("PATH_CONTIKI", "../../");
     settings.put("PATH_MAKE", "make");
     settings.put("PATH_C_COMPILER", "gcc");
-    settings.put("COMPILER_ARGS", "");
     settings.put("DEFAULT_PROJECTDIRS", "");
 
     settings.put("PARSE_WITH_COMMAND", "false");

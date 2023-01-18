@@ -205,12 +205,14 @@ public class ContikiMoteType extends BaseContikiMoteType {
   @Override
   public LinkedHashMap<String, String> getCompilationEnvironment() {
     // Create the compilation environment.
-    String ccFlags = Cooja.getExternalToolsSetting("COMPILER_ARGS", "");
     var env = new LinkedHashMap<String, String>();
     env.put("LIBNAME", "$(BUILD_DIR_BOARD)/" + getIdentifier() + ".cooja");
     env.put("COOJA_VERSION",  Cooja.CONTIKI_NG_BUILD_VERSION);
     env.put("CC", Cooja.getExternalToolsSetting("PATH_C_COMPILER"));
-    env.put("EXTRA_CC_ARGS", ccFlags);
+    var ccFlags = Cooja.getExternalToolsSetting("COMPILER_ARGS");
+    if (ccFlags != null) {
+      env.put("EXTRA_CC_ARGS", ccFlags);
+    }
     env.put("PATH", System.getenv("PATH"));
     // Pass through environment variables for the Contiki-NG CI.
     String ci = System.getenv("CI");
