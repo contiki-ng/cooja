@@ -92,31 +92,31 @@ public class Main {
         yield new Exp5438Node(cpu);
       }
       // Default to the Trxeb1120 node without ethernet.
-      case "java.se.sics.mspsim.platform.ti.Trxeb1120Node.java" -> {
+      case "se.sics.mspsim.platform.ti.Trxeb1120Node" -> {
         var cpu = Trxeb1120Node.makeCPU(Trxeb1120Node.makeChipConfig());
         yield new Trxeb1120Node(false, cpu);
       }
-      case "java.se.sics.mspsim.platform.ti.Trxeb2520Node.java" -> {
+      case "se.sics.mspsim.platform.ti.Trxeb2520Node" -> {
         var cpu = Trxeb2520Node.makeCPU(Trxeb2520Node.makeChipConfig());
         yield new Trxeb2520Node(cpu);
       }
-      case "java.se.sics.mspsim.platform.sky.SkyNode.java" -> {
+      case "se.sics.mspsim.platform.sky.SkyNode" -> {
         var cpu = SkyNode.makeCPU(SkyNode.makeChipConfig());
         yield new SkyNode(cpu, new M25P80(cpu));
       }
-      case "java.se.sics.mspsim.platform.sky.TelosNode.java" -> {
+      case "se.sics.mspsim.platform.sky.TelosNode" -> {
         var cpu = TelosNode.makeCPU(TelosNode.makeChipConfig());
         yield new TelosNode(cpu, new AT45DB(cpu));
       }
-      case "java.se.sics.mspsim.platform.tyndall.TyndallNode.java" -> {
+      case "se.sics.mspsim.platform.tyndall.TyndallNode" -> {
         var cpu = TyndallNode.makeCPU(TyndallNode.makeChipConfig());
         yield new TyndallNode(cpu);
       }
-      case "java.se.sics.mspsim.platform.wismote.WismoteNode.java" -> {
+      case "se.sics.mspsim.platform.wismote.WismoteNode" -> {
         var cpu = WismoteNode.makeCPU(WismoteNode.makeChipConfig());
         yield new WismoteNode(cpu);
       }
-      case "java.se.sics.mspsim.platform.z1.Z1Node.java" -> {
+      case "se.sics.mspsim.platform.z1.Z1Node" -> {
         var cpu = Z1Node.makeCPU(Z1Node.makeChipConfig());
         yield new Z1Node(cpu, new M25P80(cpu));
       }
@@ -142,13 +142,13 @@ public class Main {
       case "exp1101" -> "se.sics.mspsim.platform.ti.Exp1101Node";
       case "exp1120" -> "se.sics.mspsim.platform.ti.Exp1120Node";
       case "exp5438" -> "se.sics.mspsim.platform.ti.Exp5438Node";
-      case "trxeb1120" -> "java.se.sics.mspsim.platform.ti.Trxeb1120Node.java";
-      case "trxeb2520" -> "java.se.sics.mspsim.platform.ti.Trxeb2520Node.java";
-      case "sky" -> "java.se.sics.mspsim.platform.sky.SkyNode.java";
-      case "telos" -> "java.se.sics.mspsim.platform.sky.TelosNode.java";
-      case "tyndall" -> "java.se.sics.mspsim.platform.tyndall.TyndallNode.java";
-      case "wismote" -> "java.se.sics.mspsim.platform.wismote.WismoteNode.java";
-      case "z1" -> "java.se.sics.mspsim.platform.z1.Z1Node.java";
+      case "trxeb1120" -> "se.sics.mspsim.platform.ti.Trxeb1120Node";
+      case "trxeb2520" -> "se.sics.mspsim.platform.ti.Trxeb2520Node";
+      case "sky" -> "se.sics.mspsim.platform.sky.SkyNode";
+      case "telos" -> "se.sics.mspsim.platform.sky.TelosNode";
+      case "tyndall" -> "se.sics.mspsim.platform.tyndall.TyndallNode";
+      case "wismote" -> "se.sics.mspsim.platform.wismote.WismoteNode";
+      case "z1" -> "se.sics.mspsim.platform.z1.Z1Node";
       // Try to guess the node type.
       default -> "se.sics.mspsim.platform." + platform + '.'
               + Character.toUpperCase(platform.charAt(0))
