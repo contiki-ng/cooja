@@ -39,7 +39,7 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Radio;
 
 public class DestinationRadio {
-	public Radio radio; /* destination radio */
+	public final Radio radio; /* destination radio */
 	public DestinationRadio(Radio dest) {
 		this.radio = dest;
 	}
@@ -51,23 +51,13 @@ public class DestinationRadio {
 
 	public Collection<Element> getConfigXML() {
 		ArrayList<Element> config = new ArrayList<>();
-		Element element;
-
-		element = new Element("radio");
+		var element = new Element("radio");
 		element.setText(String.valueOf(radio.getMote().getID()));
 		config.add(element);
 		return config;
 	}
 
 	public boolean setConfigXML(Collection<Element> configXML, Simulation simulation) {
-		for (Element element : configXML) {
-			if (element.getName().equals("radio")) {
-				radio = simulation.getMoteWithID(Integer.parseInt(element.getText())).getInterfaces().getRadio();
-				if (radio == null) {
-					throw new RuntimeException("No mote with ID " + element.getText());
-				}
-			}
-		}
 		return true;
 	}
 }

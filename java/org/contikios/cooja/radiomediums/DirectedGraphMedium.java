@@ -33,9 +33,7 @@ package org.contikios.cooja.radiomediums;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
-
 import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
 
@@ -383,18 +381,27 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
               /* Backwards compatibility: se.sics -> org.contikios */
               destClassName = destClassName.replaceFirst("^se\\.sics", "org.contikios");
 
-              Class<? extends DGRMDestinationRadio> destClass =
-                      simulation.getCooja().tryLoadClass(this, DGRMDestinationRadio.class, destClassName);
-              if (destClass == null) {
-                throw new RuntimeException("Could not load class: " + destClassName);
+              var destinationRadioID = edgeElement.getChild("radio");
+              var destRadioMote = simulation.getMoteWithID(Integer.parseInt(destinationRadioID.getText().trim()));
+              if (destRadioMote == null) {
+                throw new IllegalStateException("Can not find mote with id " + destinationRadioID);
               }
-              try {
-                dest = destClass.getDeclaredConstructor().newInstance();
-                List<Element> children = edgeElement.getChildren();
-                dest.setConfigXML(children, simulation);
-              } catch (Exception e) {
-                throw new RuntimeException("Unknown class: " + destClassName, e);
+
+              if (DGRMDestinationRadio.class.getName().equals(destClassName)) {
+                dest = new DGRMDestinationRadio(destRadioMote.getInterfaces().getRadio());
+              } else {
+                Class<? extends DGRMDestinationRadio> destClass =
+                        simulation.getCooja().tryLoadClass(this, DGRMDestinationRadio.class, destClassName);
+                if (destClass == null) {
+                  throw new RuntimeException("Could not load class: " + destClassName);
+                }
+                try {
+                  dest = destClass.getDeclaredConstructor(Radio.class).newInstance(destRadioMote.getInterfaces().getRadio());
+                } catch (Exception e) {
+                  throw new RuntimeException("Could not configure radio destination of type: " + destClassName, e);
+                }
               }
+              dest.setConfigXML(edgeElement.getChildren(), simulation);
             }
           }
         }
