@@ -235,8 +235,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
     return new ContikiMoteCompileDialog(gui, this, cfg);
   }
 
-  private static MemoryInterface getMemory(SectionParser parser, long offset, Map<String, Symbol> variables) {
-    return new ArrayMemory(parser.getStartAddr() + offset, MemoryLayout.getNative(), new byte[parser.getSize()], variables);
+  private static MemoryInterface getMemory(long addr, int size, Map<String, Symbol> variables) {
+    return new ArrayMemory(addr, MemoryLayout.getNative(), new byte[size], variables);
   }
 
   /** Load LibN.java and the corresponding .cooja file into memory. */
@@ -275,7 +275,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     command = command.replace("$(LIBFILE)", firmwareFile.getName().replace(File.separatorChar, '/'));
 
     SectionParser dataSecParser;
-    SectionParser bssSecParser;
+    SectionParser bssSecParser = null;
     SectionParser commonSecParser = null;
 
     if (useCommand) {
@@ -298,8 +298,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
     } else {
       var symbols = String.join("\n", loadCommandData(command, firmwareFile, vis));
-      dataSecParser = new MapSectionParser(symbols, "cooja_dataStart", "cooja_dataSize");
-      bssSecParser = new MapSectionParser(symbols, "cooja_bssStart", "cooja_bssSize");
+      dataSecParser = new MapSectionParser(symbols, "cooja_dataStart", "cooja_dataSize",
+              "cooja_bssStart", "cooja_bssSize");
     }
 
     /* We first need the value of Contiki's referenceVar, which tells us the
@@ -312,7 +312,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     if (dataSecParser.parseStartAddrAndSize()) {
       variables = dataSecParser.parseSymbols(null);
     }
-    if (bssSecParser.parseStartAddrAndSize()) {
+    if (bssSecParser != null && bssSecParser.parseStartAddrAndSize()) {
       variables = bssSecParser.parseSymbols(variables);
     }
     if (commonSecParser != null && commonSecParser.parseStartAddrAndSize()) {
@@ -336,10 +336,14 @@ public class ContikiMoteType extends BaseContikiMoteType {
       offsetVariables.put(entry.getKey(), new Symbol(old.type, old.name, old.addr + offset, old.size));
     }
     initialMemory = new SectionMoteMemory(offsetVariables);
-    initialMemory.addMemorySection("data", getMemory(dataSecParser, offset, offsetVariables));
-    initialMemory.addMemorySection("bss", getMemory(bssSecParser, offset, offsetVariables));
+    initialMemory.addMemorySection("data",
+            getMemory(dataSecParser.getDataStartAddr() + offset, dataSecParser.getDataSize(), offsetVariables));
+    var parser = bssSecParser == null ? dataSecParser : bssSecParser;
+    initialMemory.addMemorySection("bss",
+            getMemory(parser.getBssStartAddr() + offset, parser.getBssSize(), offsetVariables));
     if (commonSecParser != null) {
-      initialMemory.addMemorySection("common", getMemory(commonSecParser, offset, offsetVariables));
+      initialMemory.addMemorySection("common",
+              getMemory(commonSecParser.getCommonStartAddr() + offset, commonSecParser.getCommonSize(), offsetVariables));
     }
     getCoreMemory(initialMemory);
     return true;
@@ -379,15 +383,37 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * Abstract base class for concrete section parser class.
    */
   private static abstract class SectionParser {
-    protected long startAddr;
-    protected int size;
+    // CommandSectionParser (OS X) takes three passes over the data. All the addresses and sizes are identical.
+    // MapSectionParser takes one pass over the data, and sets the data/bss variables to different values.
+    protected long dataStartAddr;
+    protected int dataSize;
+    protected long bssStartAddr;
+    protected int bssSize;
+    protected long commonStartAddr;
+    protected int commonSize;
 
-    long getStartAddr() {
-      return startAddr;
+    long getDataStartAddr() {
+      return dataStartAddr;
     }
 
-    int getSize() {
-      return size;
+    int getDataSize() {
+      return dataSize;
+    }
+
+    long getBssStartAddr() {
+      return bssStartAddr;
+    }
+
+    int getBssSize() {
+      return bssSize;
+    }
+
+    long getCommonStartAddr() {
+      return commonStartAddr;
+    }
+
+    int getCommonSize() {
+      return commonSize;
     }
 
     abstract boolean parseStartAddrAndSize();
@@ -400,15 +426,17 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   private static class MapSectionParser extends SectionParser {
     private final String readelfData;
-    private final String startName;
-    private final String sizeName;
+    private final String startData;
+    private final String sizeData;
+    private final String startBss;
+    private final String sizeBss;
 
-    public MapSectionParser(String readelfData, String startName, String sizeName) {
+    public MapSectionParser(String readelfData, String startData, String sizeData, String startBss, String sizeBss) {
       this.readelfData = readelfData;
-      this.startName = startName;
-      this.sizeName = sizeName;
-      this.startAddr = 0;
-      this.size = 0;
+      this.startData = startData;
+      this.sizeData = sizeData;
+      this.startBss = startBss;
+      this.sizeBss = sizeBss;
     }
 
     @Override
@@ -418,7 +446,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     @Override
     Map<String, Symbol> parseSymbols(Map<String, Symbol> inVars) {
-      Map<String, Symbol> varNames = inVars == null ? new HashMap<>() : inVars;
+      Map<String, Symbol> varNames = new HashMap<>();
       try (var s = new Scanner(readelfData)) {
         s.nextLine(); // Skip first blank line.
         while (s.hasNext()) {
@@ -444,12 +472,16 @@ public class ContikiMoteType extends BaseContikiMoteType {
           s.next();
           s.next();
           var name = s.next();
-          if (inVars == null && "OBJECT".equals(type)) {
+          if ("OBJECT".equals(type)) {
             varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr, size));
-          } else if (startName.equals(name)) {
-            startAddr = addr;
-          } else if (sizeName.equals(name)) {
-            this.size = (int) addr;
+          } else if (startData.equals(name)) {
+            dataStartAddr = addr;
+          } else if (sizeData.equals(name)) {
+            dataSize = (int) addr;
+          } else if (startBss.equals(name)) {
+            bssStartAddr = addr;
+          } else if (sizeBss.equals(name)) {
+            bssSize = (int) addr;
           }
         }
       }
@@ -492,7 +524,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     boolean parseStartAddrAndSize() {
       // FIXME: Adjust this code to mirror the optimized method in MapSectionParser.
       if (startRegExp == null || startRegExp.equals("")) {
-        startAddr = -1;
+        dataStartAddr = bssStartAddr = commonStartAddr = -1;
       } else {
         long result;
         String retString = null;
@@ -511,11 +543,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
           result = Long.parseUnsignedLong(retString.trim(), 16);
         }
 
-        startAddr = result;
+        dataStartAddr = bssStartAddr = commonStartAddr = result;
       }
 
-      if (startAddr < 0 || endRegExp == null || endRegExp.equals("")) {
-        size = -1;
+      if (dataStartAddr < 0 || endRegExp == null || endRegExp.equals("")) {
+        dataSize = bssSize = commonSize = -1;
         return false;
       }
 
@@ -537,11 +569,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
       }
 
       if (end < 0) {
-        size = -1;
+        dataSize = bssSize = commonSize = -1;
         return false;
       }
-      size = (int) (end - getStartAddr());
-      return startAddr >= 0 && size > 0;
+      dataSize = bssSize = commonSize = (int) (end - getDataStartAddr());
+      return dataStartAddr >= 0 && dataSize > 0;
     }
 
     @Override
