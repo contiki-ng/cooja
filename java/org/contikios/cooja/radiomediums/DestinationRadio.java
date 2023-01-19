@@ -60,14 +60,6 @@ public class DestinationRadio {
 	}
 
 	public boolean setConfigXML(Collection<Element> configXML, Simulation simulation) {
-		for (Element element : configXML) {
-			if (element.getName().equals("radio")) {
-				radio = simulation.getMoteWithID(Integer.parseInt(element.getText())).getInterfaces().getRadio();
-				if (radio == null) {
-					throw new RuntimeException("No mote with ID " + element.getText());
-				}
-			}
-		}
 		return true;
 	}
 }
