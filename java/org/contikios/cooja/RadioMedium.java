@@ -29,12 +29,12 @@
  */
 
 package org.contikios.cooja;
-
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
-
-import org.contikios.cooja.interfaces.Radio;
 
 /**
  * The RadioMedium interface should be implemented by all COOJA radio
@@ -68,6 +68,16 @@ public interface RadioMedium {
    *          Simulation holding radio
    */
   void unregisterRadioInterface(Radio radio, Simulation sim);
+
+  /**
+   * Get the list of radios within transmission range of specified radio interface.
+   *
+   * @param radio A radio interface whose neighbors are requested.
+   * @return A list of radios within transmission range.
+   */
+  default List<Radio> getNeighbors(Radio radio) {
+    return Collections.emptyList();
+  }
 
   /**
    * Triggers that are notified of radio events.

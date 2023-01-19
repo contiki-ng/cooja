@@ -31,7 +31,9 @@
 package org.contikios.cooja.radiomediums;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
 import org.contikios.cooja.util.EventTriggers;
@@ -74,6 +76,15 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     random = simulation.getRandomGenerator();
 
     requestEdgeAnalysis();
+  }
+
+  @Override
+  public List<Radio> getNeighbors(Radio radio) {
+    var destinations = getPotentialDestinations(radio);
+    if (destinations != null) {
+      return Arrays.stream(destinations).map(d -> d.radio).toList();
+    }
+    return Collections.emptyList();
   }
 
   @Override

@@ -32,6 +32,7 @@ package org.contikios.cooja.radiomediums;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.Map;
 import org.contikios.cooja.Cooja;
@@ -207,6 +208,11 @@ public class LogisticLoss extends AbstractRadioMedium {
         if (Cooja.isVisualized()) {
             Visualizer.registerVisualizerSkin(LogisticLossVisualizerSkin.class);
         }
+    }
+
+    @Override
+    public List<Radio> getNeighbors(Radio radio) {
+        return dgrm.getNeighbors(radio);
     }
 
     @Override

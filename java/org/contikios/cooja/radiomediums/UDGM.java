@@ -30,7 +30,9 @@
 
 package org.contikios.cooja.radiomediums;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import org.contikios.cooja.Cooja;
 import org.jdom2.Element;
@@ -128,6 +130,24 @@ public class UDGM extends AbstractRadioMedium {
     if (Cooja.isVisualized()) {
       Visualizer.registerVisualizerSkin(UDGMVisualizerSkin.class);
     }
+  }
+
+  @Override
+  public List<Radio> getNeighbors(Radio sourceRadio) {
+    var list = new ArrayList<Radio>();
+    var sourceRadioPosition = sourceRadio.getPosition();
+    double moteTransmissionRange = TRANSMITTING_RANGE
+            * ((double) sourceRadio.getCurrentOutputPowerIndicator() / (double) sourceRadio.getOutputPowerIndicatorMax());
+    for (var radio : dgrm.getPotentialDestinations(sourceRadio)) {
+      if (radio.radio == sourceRadio) {
+        continue;
+      }
+      double distance = sourceRadioPosition.getDistanceTo(radio.radio.getPosition());
+      if (distance <= moteTransmissionRange) {
+        list.add(radio.radio);
+      }
+    }
+    return list;
   }
 
   @Override
