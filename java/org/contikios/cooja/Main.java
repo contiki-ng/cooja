@@ -64,6 +64,13 @@ class Main {
   Boolean gui;
 
   /**
+   * Option for specifying if the console log should be in color.
+   */
+  @Option(names = "--log-color", description = "use color in console log",
+          defaultValue = "true", fallbackValue = "true", negatable = true)
+  boolean logColor;
+
+  /**
    * Option for specifying log directory.
    */
   @Option(names = "--logdir", paramLabel = "DIR", description = "the log directory use")
@@ -182,6 +189,15 @@ class Main {
     if (options.updateSimulation && !options.gui) {
       System.err.println("Can only update simulation with --gui");
       System.exit(1);
+    }
+
+    if (!options.logColor) {
+      if (System.getProperty("logback.layoutPattern") != null
+              || !"logback.xml".equals(System.getProperty("logback.configurationFile", "logback.xml"))) {
+        System.err.println("Option for no log color can not be used together with custom logback configuration");
+        System.exit(1);
+      }
+      System.setProperty("logback.layoutPattern", "%-5level [%thread] [%file:%line] - %msg%n");
     }
 
     if (!options.gui) {
