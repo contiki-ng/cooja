@@ -39,7 +39,7 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Radio;
 
 public class DestinationRadio {
-	public Radio radio; /* destination radio */
+	public final Radio radio; /* destination radio */
 	public DestinationRadio(Radio dest) {
 		this.radio = dest;
 	}
@@ -51,9 +51,7 @@ public class DestinationRadio {
 
 	public Collection<Element> getConfigXML() {
 		ArrayList<Element> config = new ArrayList<>();
-		Element element;
-
-		element = new Element("radio");
+		var element = new Element("radio");
 		element.setText(String.valueOf(radio.getMote().getID()));
 		config.add(element);
 		return config;
