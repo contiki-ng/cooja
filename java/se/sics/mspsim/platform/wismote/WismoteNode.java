@@ -35,8 +35,6 @@
  */
 
 package se.sics.mspsim.platform.wismote;
-import java.io.IOException;
-import se.sics.mspsim.Main;
 import se.sics.mspsim.chip.Button;
 import se.sics.mspsim.chip.CC2520;
 import se.sics.mspsim.chip.DS2411;
@@ -52,7 +50,6 @@ import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.ui.SerialMon;
-import se.sics.mspsim.util.ArgumentManager;
 
 public class WismoteNode extends GenericNode implements PortListener, USARTListener {
 
@@ -232,12 +229,5 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
     @Override
     public int getModeMax() {
         return 0;
-    }
-
-    public static void main(String[] args) throws IOException {
-        var node = Main.createNode(WismoteNode.class.getName());
-        ArgumentManager config = new ArgumentManager();
-        config.handleArguments(args);
-        node.setupArgs(config);
     }
 }

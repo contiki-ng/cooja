@@ -260,27 +260,4 @@ public class CC2520SPI {
         }
         return null;
     }
-
-//   public static void main(String[] args) {
-//       CC2520SPI spi = new CC2520SPI(null);
-//       SPICommand cmd = spi.getCommand(0xff);
-//       /* commands that take infinite number of bytes have the bitfield ... */
-//       System.out.println("Has ... => " + cmd.getBitField("..."));
-//
-//       if (args.length > 0 && "all".equals(args[0])) {
-//           for (int i = 0, n = spi.commands.length; i < n; i++) {
-//               SPICommand c = spi.commands[i];
-//               System.out.print(se.sics.mspsim.util.Utils.binary8(i));
-//               if (c != null) {
-//                   System.out.printf(": %14s %s/%s (%d)\n", c.name,
-//                           se.sics.mspsim.util.Utils.binary8(c.value),
-//                           se.sics.mspsim.util.Utils.binary8(c.mask),
-//                           c.bitCount);
-//               } else {
-//                   System.out.println(":");
-//               }
-//           }
-//       }
-//   }
-
 }

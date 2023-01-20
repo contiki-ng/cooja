@@ -40,14 +40,11 @@
  */
 
 package se.sics.mspsim.platform.sky;
-import java.io.IOException;
-import se.sics.mspsim.Main;
 import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.USARTSource;
-import se.sics.mspsim.util.ArgumentManager;
 
 /**
  * Emulation of Sky Mote
@@ -91,12 +88,5 @@ public class SkyNode extends MoteIVNode {
     if (flashFile != null) {
         getFlash().setStorage(new FileStorage(flashFile));
     }
-  }
-
-  public static void main(String[] args) throws IOException {
-    var node = Main.createNode(SkyNode.class.getName());
-    ArgumentManager config = new ArgumentManager();
-    config.handleArguments(args);
-    node.setupArgs(config);
   }
 }
