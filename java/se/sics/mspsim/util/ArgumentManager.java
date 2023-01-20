@@ -48,18 +48,6 @@ public class ArgumentManager extends ConfigManager {
   public ArgumentManager() {
   }
 
-  public boolean isConfigLoaded() {
-    return isConfigLoaded;
-  }
-
-  public String getConfigArgumentName() {
-    return configName;
-  }
-
-  public void setConfigArgumentName(String configName) {
-    this.configName = configName;
-  }
-
   public String[] getArguments() {
     return arguments;
   }
