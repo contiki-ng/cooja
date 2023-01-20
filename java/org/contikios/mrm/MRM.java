@@ -323,31 +323,29 @@ public class MRM extends AbstractRadioMedium {
 
     /* Check for noise sources */
     if (!WITH_NOISE) return;
-    for (Radio noiseRadio: getRegisteredRadios()) {
+    for (final var noiseRadio: getRegisteredRadios()) {
       if (!(noiseRadio instanceof NoiseSourceRadio radio)) {
         continue;
       }
-      final Radio fromRadio = noiseRadio;
       if (radio.getNoiseLevel() == Integer.MIN_VALUE) {
         continue;
       }
 
       /* Calculate how noise source affects surrounding radios */
-      for (Radio affectedRadio : getRegisteredRadios()) {
+      for (final var affectedRadio : getRegisteredRadios()) {
         if (noiseRadio == affectedRadio) {
           continue;
         }
 
         /* Update noise levels */
-        final Radio toRadio = affectedRadio;
         TxPair txPair = new RadioPair() {
           @Override
           public Radio getFromRadio() {
-            return fromRadio;
+            return noiseRadio;
           }
           @Override
           public Radio getToRadio() {
-            return toRadio;
+            return affectedRadio;
           }
         };
         double[] signalMeanVar = currentChannelModel.getReceivedSignalStrength(txPair);
