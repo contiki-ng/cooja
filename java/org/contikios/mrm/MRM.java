@@ -152,7 +152,7 @@ public class MRM extends AbstractRadioMedium {
 
     /* TODO Cache potential destination in DGRM */
     /* Loop through all potential destinations */
-    for (Radio recv: getRegisteredRadios()) {
+    for (final var recv: getRegisteredRadios()) {
       if (sender == recv) {
         continue;
       }
@@ -164,8 +164,6 @@ public class MRM extends AbstractRadioMedium {
         newConnection.addInterfered(recv);
         continue;
       }
-      final Radio recvFinal = recv;
-
       /* Calculate receive probability */
       TxPair txPair = new RadioPair() {
         @Override
@@ -174,7 +172,7 @@ public class MRM extends AbstractRadioMedium {
         }
         @Override
         public Radio getToRadio() {
-          return recvFinal;
+          return recv;
         }
       };
       double[] probData = currentChannelModel.getProbability(
