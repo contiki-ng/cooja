@@ -3,6 +3,7 @@ package se.sics.mspsim.platform.ti;
 import se.sics.mspsim.config.CC430f5137Config;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
+import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
@@ -18,9 +19,13 @@ public class CC430Node extends GenericNode implements PortListener, USARTListene
     IOPort port7;
     IOPort port8;
 
+    public static MSP430Config makeChipConfig() {
+        // TODO: this should be a config for MSP430F5438.
+        return new CC430f5137Config();
+    }
+
     public CC430Node() {
-        /* TODO XXX MSP430F5438 */
-        super("CC430", new CC430f5137Config());
+        super("CC430", makeCPU(makeChipConfig()));
     }
 
     @Override
