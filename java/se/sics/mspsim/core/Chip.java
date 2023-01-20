@@ -37,6 +37,7 @@
 package se.sics.mspsim.core;
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.util.ArrayUtils;
+import se.sics.mspsim.util.DefaultEmulationLogger;
 
 /**
  * @author Joakim Eriksson, SICS
@@ -60,7 +61,7 @@ public abstract class Chip implements Loggable, EventSource {
   private String[] modeNames = null;
   private int mode;
   private int chipState;
-  protected EmulationLogger logger;
+  protected final EmulationLogger logger;
   protected boolean DEBUG = false;
   protected int logLevel;
 
@@ -75,6 +76,11 @@ public abstract class Chip implements Loggable, EventSource {
     if (cpu != null) {
       logger = cpu.getLogger();
       cpu.addChip(this);
+    } else {
+      if (!(this instanceof MSP430Core thisCPU)) {
+        throw new IllegalArgumentException("Initializing Chip without an MSP430Core available");
+      }
+      logger = new DefaultEmulationLogger(thisCPU, System.out);
     }
   }
 
