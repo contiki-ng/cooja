@@ -230,9 +230,7 @@ public class MRM extends AbstractRadioMedium {
             /* Capture effect: recv-radio is already receiving.
              * Are we strong enough to interfere? */
 
-            if (recvSignalStrength < currSignal - CAPTURE_EFFECT_THRESHOLD /* config */) {
-              /* No, we are too weak */
-            } else {
+            if (recvSignalStrength >= currSignal - CAPTURE_EFFECT_THRESHOLD /* config */) {
               /* New signal is strong enough to either interfere with ongoing transmission,
                * or to be received/captured */
               long startTime = newConnection.getReceptionStartTime();
