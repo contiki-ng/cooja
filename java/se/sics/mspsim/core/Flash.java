@@ -243,10 +243,6 @@ public class Flash extends IOUnit {
     }
   }
 
-  public boolean needsTick() {
-    return false;
-  }
-
   public void flashWrite(int address, int data, AccessMode dataMode) {
     int wait_time;
 
