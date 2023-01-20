@@ -40,7 +40,6 @@ import java.io.PrintStream;
 
 import se.sics.mspsim.profiler.SimpleProfiler;
 import se.sics.mspsim.util.ArrayUtils;
-import se.sics.mspsim.util.ComponentRegistry;
 import se.sics.mspsim.util.MapTable;
 
 public class MSP430 extends MSP430Core {
@@ -71,8 +70,8 @@ public class MSP430 extends MSP430Core {
    * Creates a new <code>MSP430</code> instance.
    *
    */
-  public MSP430(ComponentRegistry registry, MSP430Config config) {
-    super(registry, config);
+  public MSP430(MSP430Config config) {
+    super(config);
     disAsm = new DisAsm();
   }
 
