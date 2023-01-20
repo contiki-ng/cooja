@@ -316,7 +316,6 @@ public class MRM extends AbstractRadioMedium {
         }
 
         if (!intfRadio.isInterfered()) {
-          /*logger.warn("Radio was not interfered: " + intfRadio);*/
                 intfRadio.interfereAnyReception();
         }
       }
