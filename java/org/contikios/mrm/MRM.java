@@ -265,10 +265,9 @@ public class MRM extends AbstractRadioMedium {
         if (!WITH_CAPTURE_EFFECT) {
                 newConnection.addInterfered(recv, recvSignalStrength);
                 recv.interfereAnyReception();
-        } else {
-                /* TODO Implement new type: newConnection.addNoise()?
-         * Currently, this connection will never disturb this radio... */
         }
+        // TODO: add else-branch and implement new type: newConnection.addNoise()?
+        // Currently, this connection will never disturb this radio.
       }
 
     }
