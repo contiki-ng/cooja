@@ -87,7 +87,6 @@ public abstract class GenericNode extends Chip implements Runnable {
     super(id, cpu);
     this.cpu = cpu;
     this.registry = cpu.getRegistry();
-    registry.registerComponent("cpu", cpu);
     registry.registerComponent("node", this);
   }
 

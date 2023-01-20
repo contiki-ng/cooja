@@ -41,6 +41,12 @@ public class ComponentRegistry {
     private final ArrayList<ComponentEntry> components = new ArrayList<>();
     private boolean running = false;
 
+    public ComponentRegistry(ComponentEntry... entries) {
+        for (var e : entries) {
+            registerComponent(e.name, e.component);
+        }
+    }
+
     private synchronized ComponentEntry[] getAllEntries() {
         return components.toArray(new ComponentEntry[0]);
     }
@@ -159,5 +165,5 @@ public class ComponentRegistry {
         }
     }
 
-    private record ComponentEntry(String name, Object component) {}
+    public record ComponentEntry(String name, Object component) {}
 }

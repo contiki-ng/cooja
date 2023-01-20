@@ -36,6 +36,8 @@
  */
 
 package se.sics.mspsim.core;
+import static se.sics.mspsim.util.ComponentRegistry.ComponentEntry;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -132,7 +134,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   public MSP430Core(MSP430Config config) {
     super("MSP430", "MSP430 Core", null);
-    var registry = new ComponentRegistry();
+    var registry = new ComponentRegistry(new ComponentEntry("cpu", this));
     logger = registry.getComponent(EmulationLogger.class);
     if (logger == null) {
         logger = new DefaultEmulationLogger(this, System.out);
