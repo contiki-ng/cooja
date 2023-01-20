@@ -1,7 +1,5 @@
 package se.sics.mspsim.platform.ti;
 
-import java.io.IOException;
-
 import se.sics.mspsim.config.CC430f5137Config;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
@@ -10,7 +8,6 @@ import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.ui.SerialMon;
-import se.sics.mspsim.util.ArgumentManager;
 
 public class CC430Node extends GenericNode implements PortListener, USARTListener {
 
@@ -77,12 +74,5 @@ public class CC430Node extends GenericNode implements PortListener, USARTListene
     @Override
     public int getModeMax() {
         return 0;
-    }
-
-    public static void main(String[] args) throws IOException {
-        CC430Node node = new CC430Node();
-        ArgumentManager config = new ArgumentManager();
-        config.handleArguments(args);
-        node.setupArgs(config);
     }
 }

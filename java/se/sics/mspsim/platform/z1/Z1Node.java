@@ -1,7 +1,5 @@
 package se.sics.mspsim.platform.z1;
 
-import java.io.IOException;
-import se.sics.mspsim.Main;
 import se.sics.mspsim.chip.Button;
 import se.sics.mspsim.chip.CC2420;
 import se.sics.mspsim.chip.FileStorage;
@@ -19,7 +17,6 @@ import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.core.USCI;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.ui.SerialMon;
-import se.sics.mspsim.util.ArgumentManager;
 
 public class Z1Node extends GenericNode implements PortListener, USARTListener {
 
@@ -224,12 +221,5 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
     @Override
     public int getModeMax() {
         return MODE_MAX;
-    }
-
-    public static void main(String[] args) throws IOException {
-        var node = Main.createNode(Z1Node.class.getName());
-        ArgumentManager config = new ArgumentManager();
-        config.handleArguments(args);
-        node.setupArgs(config);
     }
 }

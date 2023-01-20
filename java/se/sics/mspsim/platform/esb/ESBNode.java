@@ -36,7 +36,6 @@
  */
 
 package se.sics.mspsim.platform.esb;
-import java.io.IOException;
 
 import se.sics.mspsim.chip.Beeper;
 import se.sics.mspsim.chip.Button;
@@ -53,7 +52,6 @@ import se.sics.mspsim.extutil.jfreechart.DataChart;
 import se.sics.mspsim.extutil.jfreechart.DataSourceSampler;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.ui.SerialMon;
-import se.sics.mspsim.util.ArgumentManager;
 import se.sics.mspsim.util.OperatingModeStatistics;
 
 public class ESBNode extends GenericNode implements PortListener {
@@ -220,12 +218,4 @@ public class ESBNode extends GenericNode implements PortListener {
   public int getModeMax() {
     return 0;
   }
-
-  public static void main(String[] args) throws IOException {
-    ESBNode node = new ESBNode(ESBNode.makeCPU(ESBNode.makeChipConfig()));
-    ArgumentManager config = new ArgumentManager();
-    config.handleArguments(args);
-    node.setupArgs(config);
-  }
-
 }

@@ -1,7 +1,5 @@
 package se.sics.mspsim.platform.ti;
 
-import java.io.IOException;
-
 import se.sics.mspsim.chip.CC2520;
 import se.sics.mspsim.config.MSP430f5437Config;
 import se.sics.mspsim.core.EmulationException;
@@ -13,7 +11,6 @@ import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.platform.GenericNode;
-import se.sics.mspsim.util.ArgumentManager;
 
 public class Trxeb2520Node extends GenericNode implements PortListener, USARTListener {
 
@@ -110,12 +107,5 @@ public class Trxeb2520Node extends GenericNode implements PortListener, USARTLis
         @Override
         public int getModeMax() {
                 return 0;
-        }
-
-        public static void main(String[] args) throws IOException {
-                Trxeb2520Node node = new Trxeb2520Node(makeCPU(makeChipConfig()));
-                ArgumentManager config = new ArgumentManager();
-                config.handleArguments(args);
-                node.setupArgs(config);
         }
 }

@@ -1,7 +1,5 @@
 package se.sics.mspsim.platform.ti;
 
-import java.io.IOException;
-
 import se.sics.mspsim.chip.CC1120;
 import se.sics.mspsim.config.MSP430f5437Config;
 import se.sics.mspsim.core.EmulationException;
@@ -14,7 +12,6 @@ import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.ui.SerialMon;
-import se.sics.mspsim.util.ArgumentManager;
 
 public class Exp1120Node extends GenericNode implements PortListener, USARTListener {
 
@@ -108,12 +105,5 @@ public class Exp1120Node extends GenericNode implements PortListener, USARTListe
         @Override
         public int getModeMax() {
                 return 0;
-        }
-
-        public static void main(String[] args) throws IOException {
-                Exp1120Node node = new Exp1120Node(makeCPU(makeChipConfig()));
-                ArgumentManager config = new ArgumentManager();
-                config.handleArguments(args);
-                node.setupArgs(config);
         }
 }

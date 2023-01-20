@@ -40,8 +40,6 @@
  */
 
 package se.sics.mspsim.platform.jcreate;
-import java.io.IOException;
-import se.sics.mspsim.Main;
 import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.M25P80;
@@ -51,7 +49,6 @@ import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.platform.sky.CC2420Node;
-import se.sics.mspsim.util.ArgumentManager;
 
 /**
  * Emulation of Sentilla JCreate Mote
@@ -159,12 +156,5 @@ public class JCreateNode extends CC2420Node {
     @Override
     public int getModeMax() {
         return MODE_MAX;
-    }
-
-    public static void main(String[] args) throws IOException {
-        var node = Main.createNode(JCreateNode.class.getName());
-        ArgumentManager config = new ArgumentManager();
-        config.handleArguments(args);
-        node.setupArgs(config);
     }
 }
