@@ -328,8 +328,7 @@ public class MRM extends AbstractRadioMedium {
         continue;
       }
       final Radio fromRadio = noiseRadio;
-      int signalStrength = radio.getNoiseLevel();
-      if (signalStrength == Integer.MIN_VALUE) {
+      if (radio.getNoiseLevel() == Integer.MIN_VALUE) {
         continue;
       }
 
