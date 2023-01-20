@@ -59,20 +59,16 @@ public class ConfigManager {
   // -------------------------------------------------------------------
 
   public boolean loadConfiguration(String configFile) {
-    return loadConfiguration(new File(configFile));
-  }
-
-  public boolean loadConfiguration(File configFile) {
+    File configFile1 = new File(configFile);
     try {
-      try (var input = new BufferedInputStream(new FileInputStream(configFile))) {
+      try (var input = new BufferedInputStream(new FileInputStream(configFile1))) {
         loadConfiguration(input);
       }
       return true;
     } catch (FileNotFoundException e) {
       return false;
     } catch (IOException e) {
-      throw new IllegalArgumentException("could not read config file '"
-          + configFile + "': " + e);
+      throw new IllegalArgumentException("could not read config file '" + configFile1 + "': " + e);
     }
   }
 
