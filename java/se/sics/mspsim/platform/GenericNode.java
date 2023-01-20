@@ -91,6 +91,8 @@ public abstract class GenericNode extends Chip implements Runnable {
     super(id, cpu);
     this.cpu = cpu;
     this.registry = cpu.getRegistry();
+    registry.registerComponent("cpu", cpu);
+    registry.registerComponent("node", this);
   }
 
   public ComponentRegistry getRegistry() {
@@ -218,9 +220,6 @@ public abstract class GenericNode extends Chip implements Runnable {
 
   public void setup(ConfigManager config) {
     this.config = config;
-
-    registry.registerComponent("cpu", cpu);
-    registry.registerComponent("node", this);
     registry.registerComponent("config", config);
 
     CommandHandler ch = registry.getComponent(CommandHandler.class, "commandHandler");
