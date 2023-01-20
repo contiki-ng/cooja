@@ -43,10 +43,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.util.Properties;
@@ -98,30 +96,6 @@ public class ConfigManager {
     p.load(input);
     this.properties = p;
   }
-
-  public boolean saveConfiguration(File filename, String comments) {
-    if (properties != null) {
-      OutputStream output = null;
-      try {
-        output = new FileOutputStream(filename);
-        properties.store(output, comments);
-        return true;
-      } catch (IOException e) {
-        e.printStackTrace();
-      } finally {
-        if (output != null) {
-          try {
-            output.close();
-          } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          }
-        }
-      }
-    }
-    return false;
-  }
-
 
   // -------------------------------------------------------------------
   // Properties handling
