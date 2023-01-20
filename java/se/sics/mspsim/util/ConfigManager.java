@@ -44,7 +44,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -60,22 +59,16 @@ public class ConfigManager {
 
   public boolean loadConfiguration(String configFile) {
     File configFile1 = new File(configFile);
-    try {
-      try (var input = new BufferedInputStream(new FileInputStream(configFile1))) {
-        loadConfiguration(input);
-      }
+    try (var input = new BufferedInputStream(new FileInputStream(configFile1))) {
+      var p = new Properties();
+      p.load(input);
+      this.properties = p;
       return true;
     } catch (FileNotFoundException e) {
       return false;
     } catch (IOException e) {
       throw new IllegalArgumentException("could not read config file '" + configFile1 + "': " + e);
     }
-  }
-
-  public void loadConfiguration(InputStream input) throws IOException {
-    Properties p = new Properties();
-    p.load(input);
-    this.properties = p;
   }
 
   // -------------------------------------------------------------------
