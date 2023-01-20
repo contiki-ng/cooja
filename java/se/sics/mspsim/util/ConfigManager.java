@@ -39,12 +39,13 @@
  *           $Revision$
  */
 package se.sics.mspsim.util;
-import java.io.BufferedInputStream;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -58,8 +59,7 @@ public class ConfigManager {
   // -------------------------------------------------------------------
 
   public boolean loadConfiguration(String configFile) {
-    File configFile1 = new File(configFile);
-    try (var input = new BufferedInputStream(new FileInputStream(configFile1))) {
+    try (var input = Files.newBufferedReader(new File(configFile).toPath(), StandardCharsets.UTF_8)) {
       var p = new Properties();
       p.load(input);
       this.properties = p;
@@ -67,7 +67,7 @@ public class ConfigManager {
     } catch (FileNotFoundException e) {
       return false;
     } catch (IOException e) {
-      throw new IllegalArgumentException("could not read config file '" + configFile1 + "': " + e);
+      throw new IllegalArgumentException("could not read config file '" + configFile + "': " + e);
     }
   }
 
