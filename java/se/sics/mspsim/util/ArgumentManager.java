@@ -43,7 +43,6 @@ public class ArgumentManager extends ConfigManager {
 
   private String configName = "config";
   private String[] arguments;
-  private boolean isConfigLoaded;
 
   public ArgumentManager() {
   }
@@ -81,7 +80,6 @@ public class ArgumentManager extends ConfigManager {
           if (!loadConfiguration(value)) {
             throw new IllegalArgumentException("failed to load configuration " + value);
           }
-          isConfigLoaded = true;
         }
         config.add(param);
         config.add(value.length() > 0 ? value : "true");
