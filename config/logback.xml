@@ -2,7 +2,7 @@
   <conversionRule conversionWord="highlightdark" converterClass="org.contikios.cooja.util.LogbackColor" />
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>${logback.layoutPattern:-%highlightdark(%-5level [%thread] [%file:%line] - %msg%n)}</pattern>
+      <pattern>${logback.layoutPattern:-%highlightdark(%-5level [%thread] [%file:%line] - %msg){}%n}</pattern>
     </encoder>
   </appender>
 
