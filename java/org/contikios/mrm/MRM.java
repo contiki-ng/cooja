@@ -130,10 +130,9 @@ public class MRM extends AbstractRadioMedium {
         
         /* Radio Medium changed here so notify Observers */
     radioMediumTriggers.trigger(EventTriggers.AddRemove.ADD, radio);
-        
-        if (WITH_NOISE && radio instanceof NoiseSourceRadio) {
-                ((NoiseSourceRadio)radio).addNoiseLevelListener(noiseListener);
-        }
+    if (WITH_NOISE && radio instanceof NoiseSourceRadio noiseRadio) {
+      noiseRadio.addNoiseLevelListener(noiseListener);
+    }
   }
   @Override
   public void unregisterRadioInterface(Radio radio, Simulation sim) {
@@ -141,10 +140,9 @@ public class MRM extends AbstractRadioMedium {
 
         /* Radio Medium changed here so notify Observers */
     radioMediumTriggers.trigger(EventTriggers.AddRemove.REMOVE, radio);
-        
-        if (WITH_NOISE && radio instanceof NoiseSourceRadio) {
-                ((NoiseSourceRadio)radio).removeNoiseLevelListener(noiseListener);
-        }
+    if (WITH_NOISE && radio instanceof NoiseSourceRadio noiseRadio) {
+      noiseRadio.removeNoiseLevelListener(noiseListener);
+    }
   }
   
   @Override
