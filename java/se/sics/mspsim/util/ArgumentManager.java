@@ -41,7 +41,6 @@ import java.util.ArrayList;
  */
 public class ArgumentManager extends ConfigManager {
 
-  private String configName = "config";
   private String[] arguments;
 
   public ArgumentManager() {
@@ -73,7 +72,7 @@ public class ArgumentManager extends ConfigManager {
         if (param.length() == 0) {
           throw new IllegalArgumentException("illegal argument: " + args[i]);
         }
-        if (configName != null && configName.equals(param)) {
+        if ("config".equals(param)) {
           if (value.length() == 0) {
             throw new IllegalArgumentException("no config file name specified");
           }
