@@ -78,6 +78,38 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
         this.flash = flash;
         registry.registerComponent("xmem", flash);
         setMode(MODE_LEDS_OFF);
+        var port1 = cpu.getIOUnit(IOPort.class, "P1");
+//        port1.addPortListener(this);
+        var port2 = cpu.getIOUnit(IOPort.class, "P2");
+//        port2.addPortListener(this);
+        var port3 = cpu.getIOUnit(IOPort.class, "P3");
+        port3.addPortListener(this);
+        var port4 = cpu.getIOUnit(IOPort.class, "P4");
+        port4.addPortListener(this);
+        var port5 = cpu.getIOUnit(IOPort.class, "P5");
+        port5.addPortListener(this);
+
+//        tmp102 = new TMP102(cpu);
+
+        USCI usart0 = cpu.getIOUnit(USCI.class, "USCI B0");
+        if (usart0 != null) {
+            radio = new CC2420(cpu);
+            radio.setCCAPort(port1, CC2420_CCA);
+            radio.setFIFOPPort(port1, CC2420_FIFOP);
+            radio.setFIFOPort(port1, CC2420_FIFO);
+            usart0.addUSARTListener(this);
+            radio.setSFDPort(port4, CC2420_SFD);
+        } else {
+            throw new EmulationException("Could not setup mote - missing USCI B0");
+        }
+
+        leds = new Leds(cpu, LEDS);
+        button = new Button("Button", cpu, port2, BUTTON_PIN, true);
+
+        var usart = cpu.getIOUnit("USCI A0");
+        if (usart instanceof USARTSource) {
+            registry.registerComponent("serialio", usart);
+        }
     }
 
     public Leds getLeds() {
@@ -138,39 +170,6 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
     }
 
     private void setupNodePorts() {
-        var port1 = cpu.getIOUnit(IOPort.class, "P1");
-//        port1.addPortListener(this);
-        var port2 = cpu.getIOUnit(IOPort.class, "P2");
-//        port2.addPortListener(this);
-        var port3 = cpu.getIOUnit(IOPort.class, "P3");
-        port3.addPortListener(this);
-        var port4 = cpu.getIOUnit(IOPort.class, "P4");
-        port4.addPortListener(this);
-        var port5 = cpu.getIOUnit(IOPort.class, "P5");
-        port5.addPortListener(this);
-
-//        tmp102 = new TMP102(cpu);
-
-        USCI usart0 = cpu.getIOUnit(USCI.class, "USCI B0");
-        if (usart0 != null) {
-            radio = new CC2420(cpu);
-            radio.setCCAPort(port1, CC2420_CCA);
-            radio.setFIFOPPort(port1, CC2420_FIFOP);
-            radio.setFIFOPort(port1, CC2420_FIFO);
-
-            usart0.addUSARTListener(this);
-            radio.setSFDPort(port4, CC2420_SFD);
-        } else {
-            throw new EmulationException("Could not setup mote - missing USCI B0");
-        }
-
-        leds = new Leds(cpu, LEDS);
-        button = new Button("Button", cpu, port2, BUTTON_PIN, true);
-
-        IOUnit usart = cpu.getIOUnit("USCI A0");
-        if (usart instanceof USARTSource) {
-            registry.registerComponent("serialio", usart);
-        }
         if (flashFile != null) {
             getFlash().setStorage(new FileStorage(flashFile));
         }
