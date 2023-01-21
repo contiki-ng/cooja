@@ -59,7 +59,7 @@ public class WismoteGui extends AbstractNodeGUI {
     private static final Color BUTTON_C = new Color(0x60ffffff);
 
     private static final Rectangle LEDS_BOUNDS = new Rectangle(RED1_X - 2,
-            LED_Y - 1, RED2_X - RED1_X + LED_HEIGHT, LED_WIDTH);
+            LED_Y - 1, RED2_X - RED1_X + LED_WIDTH, LED_HEIGHT);
 
     private final WismoteNode node;
     private final StateChangeListener ledsListener = (source, oldState, newState) -> repaint(LEDS_BOUNDS);
