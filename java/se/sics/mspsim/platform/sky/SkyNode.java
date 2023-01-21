@@ -60,7 +60,6 @@ public class SkyNode extends MoteIVNode {
     super("Tmote Sky", cpu);
     this.flash = flash;
     registry.registerComponent("xmem", flash);
-    super.setupNodePorts();
   }
 
   public M25P80 getFlash() {

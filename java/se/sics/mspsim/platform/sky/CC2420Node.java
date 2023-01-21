@@ -54,21 +54,6 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
 
     public CC2420Node(String id, MSP430 cpu) {
         super(id, cpu);
-    }
-
-    public void setDebug(boolean debug) {
-        cpu.setDebug(debug);
-    }
-
-    public boolean getDebug() {
-        return cpu.getDebug();
-    }
-
-    public void setNodeID(int id) {
-        ds2411.setMACID(id & 0xff, id & 0xff, id & 0xff, (id >> 8) & 0xff, id & 0xff, id & 0xff);
-    }
-
-    public void setupNodePorts() {
         ds2411 = new DS2411(cpu);
 
         port1 = cpu.getIOUnit(IOPort.class, "P1");
@@ -84,20 +69,34 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
         port5 = cpu.getIOUnit(IOPort.class, "P5");
         port5.addPortListener(this);
 
-        USART usart0 = cpu.getIOUnit(USART.class, "USART0");
+        var usart0 = cpu.getIOUnit(USART.class, "USART0");
         radio = new CC2420(cpu);
         radio.setCCAPort(port1, CC2420_CCA);
         radio.setFIFOPPort(port1, CC2420_FIFOP);
         radio.setFIFOPort(port1, CC2420_FIFO);
-
+        // FIXME: move closer to allocation.
         usart0.addUSARTListener(this);
         radio.setSFDPort(port4, CC2420_SFD);
 
-        USART usart = cpu.getIOUnit(USART.class, "USART1");
+        var usart = cpu.getIOUnit(USART.class, "USART1");
         if (usart != null) {
             registry.registerComponent("serialio", usart);
         }
     }
+
+    public void setDebug(boolean debug) {
+        cpu.setDebug(debug);
+    }
+
+    public boolean getDebug() {
+        return cpu.getDebug();
+    }
+
+    public void setNodeID(int id) {
+        ds2411.setMACID(id & 0xff, id & 0xff, id & 0xff, (id >> 8) & 0xff, id & 0xff, id & 0xff);
+    }
+
+    public void setupNodePorts() {}
 
     @Override
     public void setupNode() {

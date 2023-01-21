@@ -67,7 +67,6 @@ public class TelosNode extends MoteIVNode {
     super("Telos", cpu);
     this.flash = flash;
     // FIXME: should the flash be registered in the registry?
-    super.setupNodePorts();
   }
 
   public AT45DB getFlash() {

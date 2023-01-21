@@ -74,7 +74,6 @@ public class SentillaUSBNode extends CC2420Node {
         this.flash = flash;
         registry.registerComponent("xmem", flash);
         setMode(MODE_LEDS_OFF);
-        super.setupNodePorts();
         leds = new Leds(cpu, LEDS);
     }
 
