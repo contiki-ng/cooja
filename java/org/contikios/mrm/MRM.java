@@ -43,7 +43,6 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.DirectionalAntennaRadio;
 import org.contikios.cooja.interfaces.NoiseSourceRadio;
 import org.contikios.cooja.interfaces.NoiseSourceRadio.NoiseLevelListener;
-import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
@@ -150,7 +149,6 @@ public class MRM extends AbstractRadioMedium {
   @Override
   public MRMRadioConnection createConnections(final Radio sender) {
     MRMRadioConnection newConnection = new MRMRadioConnection(sender);
-    final Position senderPos = sender.getPosition();
 
     /* TODO Cache potential destination in DGRM */
     /* Loop through all potential destinations */
