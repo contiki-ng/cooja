@@ -126,7 +126,7 @@ public class Main {
         } catch (ClassNotFoundException | ClassCastException | InstantiationException | IllegalAccessException e) {
           // Can not find specified class, or wrong class type, or failed to instantiate
         } catch (InvocationTargetException | NoSuchMethodException e) {
-          e.printStackTrace();
+          System.err.println("Could not construct node type: " + e.getMessage());
         }
         yield null;
       }
