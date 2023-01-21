@@ -207,7 +207,6 @@ public class SkyCoffeeFilesystem implements MoteInterface {
 
     files = coffeeFS.getFiles().values().toArray(new CoffeeFile[0]);
     for (CoffeeFile file : files) {
-      file.getName();
       try {
         file.getLength();
       } catch (IOException e) {
