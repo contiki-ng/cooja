@@ -103,6 +103,36 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
         super("Wismote", cpu);
 //        this.flash = flash;
 //        registry.registerComponent("xmem", flash);
+        ds2411 = new DS2411(cpu);
+
+        var port1 = cpu.getIOUnit(IOPort.class, "P1");
+        port1.addPortListener(this);
+        ds2411.setDataPort(port1, DS2411_DATA_PIN);
+
+        var port2 = cpu.getIOUnit(IOPort.class, "P2");
+        port2.addPortListener(this);
+        cpu.getIOUnit(IOPort.class, "P3").addPortListener(this);
+        cpu.getIOUnit(IOPort.class, "P4").addPortListener(this);
+        cpu.getIOUnit(IOPort.class, "P5").addPortListener(this);
+        cpu.getIOUnit(IOPort.class, "P8").addPortListener(this);
+
+        if (cpu.getIOUnit("USCI B0") instanceof USARTSource usart0) {
+            radio = new CC2520(cpu);
+            radio.setGPIO(1, port1, CC2520_FIFO);
+            radio.setGPIO(3, port1, CC2520_CCA);
+            radio.setGPIO(2, port1, CC2520_FIFOP);
+            radio.setGPIO(4, port2, CC2520_SFD);
+            usart0.addUSARTListener(this);
+        } else {
+            throw new EmulationException("Could not setup wismote mote - missing USCI B0");
+        }
+        leds = new Leds(cpu, LEDS);
+        button = new Button("Button", cpu, port1, BUTTON_PIN, true);
+
+        var usart = cpu.getIOUnit("USCI A1");
+        if (usart instanceof USARTSource) {
+            registry.registerComponent("serialio", usart);
+        }
     }
 
     public Leds getLeds() {
@@ -151,39 +181,6 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 //        if (flashFile != null) {
 //            getFlash().setStorage(new FileStorage(flashFile));
 //        }
-        ds2411 = new DS2411(cpu);
-
-        IOPort port1 = cpu.getIOUnit(IOPort.class, "P1");
-        port1.addPortListener(this);
-        ds2411.setDataPort(port1, DS2411_DATA_PIN);
-
-        IOPort port2 = cpu.getIOUnit(IOPort.class, "P2");
-        port2.addPortListener(this);
-        cpu.getIOUnit(IOPort.class, "P3").addPortListener(this);
-        cpu.getIOUnit(IOPort.class, "P4").addPortListener(this);
-        cpu.getIOUnit(IOPort.class, "P5").addPortListener(this);
-        cpu.getIOUnit(IOPort.class, "P8").addPortListener(this);
-
-        IOUnit usart0 = cpu.getIOUnit("USCI B0");
-        if (usart0 instanceof USARTSource) {
-
-            radio = new CC2520(cpu);
-            radio.setGPIO(1, port1, CC2520_FIFO);
-            radio.setGPIO(3, port1, CC2520_CCA);
-            radio.setGPIO(2, port1, CC2520_FIFOP);
-            radio.setGPIO(4, port2, CC2520_SFD);
-
-            ((USARTSource) usart0).addUSARTListener(this);
-        } else {
-            throw new EmulationException("Could not setup wismote mote - missing USCI B0");
-        }
-        leds = new Leds(cpu, LEDS);
-        button = new Button("Button", cpu, port1, BUTTON_PIN, true);
-
-        IOUnit usart = cpu.getIOUnit("USCI A1");
-        if (usart instanceof USARTSource) {
-            registry.registerComponent("serialio", usart);
-        }
     }
 
     @Override
