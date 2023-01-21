@@ -63,8 +63,8 @@ public class JCreateNode extends CC2420Node {
         0xff2020, 0xff2020, 0xff2020, 0xff2020
     };
 
-    private Leds leds;
-    private MMA7260QT accelerometer;
+    private final Leds leds;
+    private final MMA7260QT accelerometer;
     private final M25P80 flash;
 
     private JCreateGui gui;
@@ -74,6 +74,13 @@ public class JCreateNode extends CC2420Node {
         this.flash = flash;
         registry.registerComponent("xmem", flash);
         setMode(MODE_LEDS_OFF);
+        super.setupNodePorts();
+        leds = new Leds(cpu, LEDS);
+        accelerometer = new MMA7260QT(cpu);
+        ADC12 adc = cpu.getIOUnit(ADC12.class, "ADC12");
+        adc.setADCInput(4, accelerometer::getADCX);
+        adc.setADCInput(5, accelerometer::getADCY);
+        adc.setADCInput(6, accelerometer::getADCZ);
     }
 
     public Leds getLeds() {
@@ -106,13 +113,6 @@ public class JCreateNode extends CC2420Node {
 
     @Override
     public void setupNodePorts() {
-        super.setupNodePorts();
-        leds = new Leds(cpu, LEDS);
-        accelerometer = new MMA7260QT(cpu);
-        ADC12 adc = cpu.getIOUnit(ADC12.class, "ADC12");
-        adc.setADCInput(4, () -> accelerometer.getADCX());
-        adc.setADCInput(5, () -> accelerometer.getADCY());
-        adc.setADCInput(6, () -> accelerometer.getADCZ());
         if (flashFile != null) {
             getFlash().setStorage(new FileStorage(flashFile));
         }

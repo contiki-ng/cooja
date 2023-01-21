@@ -65,7 +65,7 @@ public class SentillaUSBNode extends CC2420Node {
     private final M25P80 flash;
     private SentillaUSBGui gui;
 
-    private Leds leds;
+    private final Leds leds;
     boolean redLed;
     boolean greenLed;
 
@@ -74,6 +74,8 @@ public class SentillaUSBNode extends CC2420Node {
         this.flash = flash;
         registry.registerComponent("xmem", flash);
         setMode(MODE_LEDS_OFF);
+        super.setupNodePorts();
+        leds = new Leds(cpu, LEDS);
     }
 
     public Leds getLeds() {
@@ -102,8 +104,6 @@ public class SentillaUSBNode extends CC2420Node {
 
     @Override
     public void setupNodePorts() {
-        super.setupNodePorts();
-        leds = new Leds(cpu, LEDS);
         if (flashFile != null) {
             getFlash().setStorage(new FileStorage(flashFile));
         }

@@ -60,6 +60,7 @@ public class SkyNode extends MoteIVNode {
     super("Tmote Sky", cpu);
     this.flash = flash;
     registry.registerComponent("xmem", flash);
+    super.setupNodePorts();
   }
 
   public M25P80 getFlash() {
@@ -84,9 +85,8 @@ public class SkyNode extends MoteIVNode {
 
   @Override
   public void setupNodePorts() {
-    super.setupNodePorts();
     if (flashFile != null) {
-        getFlash().setStorage(new FileStorage(flashFile));
+      getFlash().setStorage(new FileStorage(flashFile));
     }
   }
 }
