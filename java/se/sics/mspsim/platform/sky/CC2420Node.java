@@ -105,12 +105,6 @@ public abstract class CC2420Node<FlashType extends ExternalFlash> extends Generi
         ds2411.setMACID(id & 0xff, id & 0xff, id & 0xff, (id >> 8) & 0xff, id & 0xff, id & 0xff);
     }
 
-    public void setupNodePorts() {
-        if (flashFile != null) {
-            getFlash().setStorage(new FileStorage(flashFile));
-        }
-    }
-
     @Override
     public void setupNode() {
         // create a filename for the flash file
@@ -130,7 +124,9 @@ public abstract class CC2420Node<FlashType extends ExternalFlash> extends Generi
 
         this.flashFile = fileName;
 
-        setupNodePorts();
+        if (flashFile != null) {
+            getFlash().setStorage(new FileStorage(flashFile));
+        }
 
         if (stats != null) {
             stats.addMonitor(this);
