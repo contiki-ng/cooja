@@ -41,23 +41,9 @@ import java.util.ArrayList;
  */
 public class ArgumentManager extends ConfigManager {
 
-  private String configName = "config";
   private String[] arguments;
-  private boolean isConfigLoaded;
 
   public ArgumentManager() {
-  }
-
-  public boolean isConfigLoaded() {
-    return isConfigLoaded;
-  }
-
-  public String getConfigArgumentName() {
-    return configName;
-  }
-
-  public void setConfigArgumentName(String configName) {
-    this.configName = configName;
   }
 
   public String[] getArguments() {
@@ -86,14 +72,13 @@ public class ArgumentManager extends ConfigManager {
         if (param.length() == 0) {
           throw new IllegalArgumentException("illegal argument: " + args[i]);
         }
-        if (configName != null && configName.equals(param)) {
+        if ("config".equals(param)) {
           if (value.length() == 0) {
             throw new IllegalArgumentException("no config file name specified");
           }
           if (!loadConfiguration(value)) {
             throw new IllegalArgumentException("failed to load configuration " + value);
           }
-          isConfigLoaded = true;
         }
         config.add(param);
         config.add(value.length() > 0 ? value : "true");
