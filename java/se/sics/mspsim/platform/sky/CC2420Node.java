@@ -1,6 +1,7 @@
 package se.sics.mspsim.platform.sky;
 import se.sics.mspsim.chip.CC2420;
 import se.sics.mspsim.chip.DS2411;
+import se.sics.mspsim.chip.ExternalFlash;
 import se.sics.mspsim.chip.PacketListener;
 import se.sics.mspsim.config.MSP430f1611Config;
 import se.sics.mspsim.core.IOPort;
@@ -17,7 +18,7 @@ import se.sics.mspsim.ui.SerialMon;
 import se.sics.mspsim.util.NetworkConnection;
 import se.sics.mspsim.util.OperatingModeStatistics;
 
-public abstract class CC2420Node extends GenericNode implements PortListener, USARTListener {
+public abstract class CC2420Node<FlashType extends ExternalFlash> extends GenericNode implements PortListener, USARTListener {
 
     // Port 2.
     public static final int DS2411_DATA_PIN = 4;
@@ -45,6 +46,7 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
     public CC2420 radio;
     public DS2411 ds2411;
 
+    protected final FlashType flash;
     protected String flashFile;
 
     public static MSP430Config makeChipConfig() {
@@ -52,8 +54,10 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
         return new MSP430f1611Config();
     }
 
-    public CC2420Node(String id, MSP430 cpu) {
+    public CC2420Node(String id, MSP430 cpu, FlashType flash) {
         super(id, cpu);
+        this.flash = flash;
+        registry.registerComponent("xmem", flash);
         ds2411 = new DS2411(cpu);
 
         port1 = cpu.getIOUnit(IOPort.class, "P1");
@@ -82,6 +86,10 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
         if (usart != null) {
             registry.registerComponent("serialio", usart);
         }
+    }
+
+    public FlashType getFlash() {
+        return flash;
     }
 
     public void setDebug(boolean debug) {

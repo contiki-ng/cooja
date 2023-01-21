@@ -53,7 +53,7 @@ import se.sics.mspsim.platform.sky.CC2420Node;
 /**
  * Emulation of Sentilla JCreate Mote
  */
-public class JCreateNode extends CC2420Node {
+public class JCreateNode extends CC2420Node<M25P80> {
 
     public static final int MODE_LEDS_OFF = 0;
     public static final int MODE_MAX = 9;
@@ -65,14 +65,11 @@ public class JCreateNode extends CC2420Node {
 
     private final Leds leds;
     private final MMA7260QT accelerometer;
-    private final M25P80 flash;
 
     private JCreateGui gui;
 
     public JCreateNode(MSP430 cpu, M25P80 flash) {
-        super("Sentilla JCreate", cpu);
-        this.flash = flash;
-        registry.registerComponent("xmem", flash);
+        super("Sentilla JCreate", cpu, flash);
         setMode(MODE_LEDS_OFF);
         leds = new Leds(cpu, LEDS);
         accelerometer = new MMA7260QT(cpu);
@@ -88,10 +85,6 @@ public class JCreateNode extends CC2420Node {
 
     public MMA7260QT getAccelerometer() {
         return accelerometer;
-    }
-
-    public M25P80 getFlash() {
-        return flash;
     }
 
     // USART Listener
