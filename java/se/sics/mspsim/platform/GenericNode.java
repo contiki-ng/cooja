@@ -77,20 +77,18 @@ public abstract class GenericNode extends Chip implements Runnable {
   protected ConfigManager config;
 
   protected String firmwareFile = null;
-  protected OperatingModeStatistics stats;
+  protected final OperatingModeStatistics stats;
 
   public static MSP430 makeCPU(MSP430Config config) {
-    return new MSP430(new ComponentRegistry(), config);
-  }
-
-  public GenericNode(String id, MSP430Config config) {
-    this(id, makeCPU(config));
+    return new MSP430(config);
   }
 
   public GenericNode(String id, MSP430 cpu) {
     super(id, cpu);
     this.cpu = cpu;
+    stats = new OperatingModeStatistics(cpu);
     this.registry = cpu.getRegistry();
+    registry.registerComponent("node", this);
   }
 
   public ComponentRegistry getRegistry() {
@@ -218,9 +216,6 @@ public abstract class GenericNode extends Chip implements Runnable {
 
   public void setup(ConfigManager config) {
     this.config = config;
-
-    registry.registerComponent("cpu", cpu);
-    registry.registerComponent("node", this);
     registry.registerComponent("config", config);
 
     CommandHandler ch = registry.getComponent(CommandHandler.class, "commandHandler");
@@ -244,8 +239,6 @@ public abstract class GenericNode extends Chip implements Runnable {
         }
         registry.registerComponent("commandHandler", ch);
     }
-
-    stats = new OperatingModeStatistics(cpu);
 
     registry.registerComponent("pluginRepository", new PluginRepository());
     registry.registerComponent("debugcmd", new DebugCommands());

@@ -36,6 +36,7 @@
  */
 
 package se.sics.mspsim.core;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +45,7 @@ import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.Memory.AccessMode;
 import se.sics.mspsim.core.Memory.AccessType;
 import se.sics.mspsim.util.ComponentRegistry;
-import se.sics.mspsim.util.DefaultEmulationLogger;
+import se.sics.mspsim.util.ComponentRegistry.ComponentEntry;
 import se.sics.mspsim.util.MapEntry;
 import se.sics.mspsim.util.MapTable;
 import se.sics.mspsim.util.Utils;
@@ -130,15 +131,11 @@ public class MSP430Core extends Chip implements MSP430Constants {
   final ComponentRegistry registry;
   Profiler profiler;
 
-  public MSP430Core(ComponentRegistry registry, MSP430Config config) {
+  public MSP430Core(MSP430Config config) {
     super("MSP430", "MSP430 Core", null);
-
-    logger = registry.getComponent(EmulationLogger.class);
-    if (logger == null) {
-        logger = new DefaultEmulationLogger(this, System.out);
-        registry.registerComponent("logger", logger);
-    }
-
+    var registry = new ComponentRegistry(
+            new ComponentEntry("cpu", this),
+            new ComponentEntry("logger", logger));
     MAX_INTERRUPT = config.maxInterruptVector;
     MAX_MEM_IO = config.maxMemIO;
     MAX_MEM = config.maxMem;
