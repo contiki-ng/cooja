@@ -201,12 +201,12 @@ public class ELF {
       b = (elfData[pos++] & 0xff) << 24 |
         ((elfData[pos++] & 0xff) << 16) |
         ((elfData[pos++] & 0xff) << 8) |
-        (elfData[pos++] & 0xff);
+        (elfData[pos] & 0xff);
     } else {
       b = (elfData[pos++] & 0xff) |
         ((elfData[pos++] & 0xff) << 8) |
         ((elfData[pos++] & 0xff) << 16) |
-        ((elfData[pos++] & 0xff) << 24);
+        ((elfData[pos] & 0xff) << 24);
     }
     return b;
   }
@@ -214,17 +214,15 @@ public class ELF {
   int readElf16(int pos) {
     int b;
     if (encMSB) {
-      b = ((elfData[pos++] & 0xff) << 8) |
-        (elfData[pos++] & 0xff);
+      b = ((elfData[pos++] & 0xff) << 8) | (elfData[pos] & 0xff);
     } else {
-      b = (elfData[pos++] & 0xff) |
-        ((elfData[pos++] & 0xff) << 8);
+      b = (elfData[pos++] & 0xff) | ((elfData[pos] & 0xff) << 8);
     }
     return b;
   }
 
   int readElf8(int pos) {
-    return elfData[pos++] & 0xff;
+    return elfData[pos] & 0xff;
   }
 
   private void readSections() {
