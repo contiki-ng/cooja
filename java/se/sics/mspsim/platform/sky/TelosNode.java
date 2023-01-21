@@ -66,6 +66,8 @@ public class TelosNode extends MoteIVNode {
   public TelosNode(MSP430 cpu, AT45DB flash) {
     super("Telos", cpu);
     this.flash = flash;
+    // FIXME: should the flash be registered in the registry?
+    super.setupNodePorts();
   }
 
   public AT45DB getFlash() {
@@ -87,7 +89,6 @@ public class TelosNode extends MoteIVNode {
 
   @Override
   public void setupNodePorts() {
-    super.setupNodePorts();
     if (flashFile != null) {
       getFlash().setStorage(new FileStorage(flashFile));
     }
