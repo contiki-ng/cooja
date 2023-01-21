@@ -4,7 +4,6 @@ import se.sics.mspsim.chip.CC2520;
 import se.sics.mspsim.config.MSP430f5437Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
-import se.sics.mspsim.core.IOUnit;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
@@ -40,9 +39,38 @@ public class Trxeb2520Node extends GenericNode implements PortListener, USARTLis
         return new MSP430f5437Config();
     }
 
-        public Trxeb2520Node(MSP430 cpu) {
-                super("Trxeb2520", cpu);
-        }
+  public Trxeb2520Node(MSP430 cpu) {
+    super("Trxeb2520", cpu);
+    port1 = cpu.getIOUnit(IOPort.class, "P1");
+    port1.addPortListener(this);
+    port3 = cpu.getIOUnit(IOPort.class, "P3");
+    port3.addPortListener(this);
+    port4 = cpu.getIOUnit(IOPort.class, "P4");
+    port4.addPortListener(this);
+    port5 = cpu.getIOUnit(IOPort.class, "P5");
+    port5.addPortListener(this);
+    port7 = cpu.getIOUnit(IOPort.class, "P7");
+    port7.addPortListener(this);
+    port8 = cpu.getIOUnit(IOPort.class, "P8");
+    port8.addPortListener(this);
+
+    if (cpu.getIOUnit("USCI B0") instanceof USARTSource usart0) {
+      radio = new CC2520(cpu);
+      radio.setGPIO(0, port1, CC2520_FIFOP);
+      radio.setGPIO(1, port3, CC2520_FIFO);
+      radio.setGPIO(3, port1, CC2520_CCA);
+      radio.setGPIO(4, port1, CC2520_SFD);
+      usart0.addUSARTListener(this);
+    } else {
+      throw new EmulationException("Error creating Trxeb2520Node: no USCI B0");
+    }
+
+    var usart = cpu.getIOUnit("USCI A1");
+    if (usart instanceof USARTSource) {
+      registry.registerComponent("serialio", usart);
+    }
+
+  }
 
         @Override
         public void dataReceived(USARTSource source, int data) {
@@ -67,42 +95,8 @@ public class Trxeb2520Node extends GenericNode implements PortListener, USARTLis
                 }
         }
 
-        private void setupNodePorts() {
-                port1 = cpu.getIOUnit(IOPort.class, "P1");
-                port1.addPortListener(this);
-                port3 = cpu.getIOUnit(IOPort.class, "P3");
-                port3.addPortListener(this);
-                port4 = cpu.getIOUnit(IOPort.class, "P4");
-                port4.addPortListener(this);
-                port5 = cpu.getIOUnit(IOPort.class, "P5");
-                port5.addPortListener(this);
-                port7 = cpu.getIOUnit(IOPort.class, "P7");
-                port7.addPortListener(this);
-                port8 = cpu.getIOUnit(IOPort.class, "P8");
-                port8.addPortListener(this);
-
-                IOUnit usart0 = cpu.getIOUnit("USCI B0");
-                if (usart0 instanceof USARTSource) {
-                        radio = new CC2520(cpu);
-                        radio.setGPIO(0, port1, CC2520_FIFOP);
-                        radio.setGPIO(1, port3, CC2520_FIFO);
-                        radio.setGPIO(3, port1, CC2520_CCA);
-                        radio.setGPIO(4, port1, CC2520_SFD);
-                        ((USARTSource) usart0).addUSARTListener(this);
-                } else {
-                        throw new EmulationException("Error creating Trxeb2520Node: no USCI B0");
-                }
-
-                IOUnit usart = cpu.getIOUnit("USCI A1");
-                if (usart instanceof USARTSource) {
-                        registry.registerComponent("serialio", usart);
-                }
-        }
-
         @Override
-        public void setupNode() {
-                setupNodePorts();
-        }
+        public void setupNode() {}
 
         @Override
         public int getModeMax() {
