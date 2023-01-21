@@ -61,9 +61,9 @@ public class ESBNode extends GenericNode implements PortListener {
   // Port 2.
   public static final int BUTTON_PIN = 7;
 
-  private IOPort port1;
-  private IOPort port2;
-  private IOPort port5;
+  private final IOPort port1;
+  private final IOPort port2;
+  private final IOPort port5;
 
   private static final int[] LEDS = { 0xff2020, 0xffff00, 0x40ff40 };
   public static final int RED_LED = 0x01;
@@ -71,15 +71,15 @@ public class ESBNode extends GenericNode implements PortListener {
   public static final int YELLOW_LED = 0x04;
   public static final int BEEPER = 0x08;
 
-  private Leds leds;
+  private final Leds leds;
   public boolean redLed;
   public boolean greenLed;
   public boolean yellowLed;
 
-  private Button button;
+  private final Button button;
 
-  private TR1001 radio;
-  private Beeper beeper;
+  private final TR1001 radio;
+  private final Beeper beeper;
   private ESBGui gui;
 
   public static MSP430Config makeChipConfig() {
@@ -91,7 +91,28 @@ public class ESBNode extends GenericNode implements PortListener {
    *
    */
   public ESBNode(MSP430 cpu) {
-      super("ESB", cpu);
+    super("ESB", cpu);
+    port1 = cpu.getIOUnit(IOPort.class, "P1");
+
+    port2 = cpu.getIOUnit(IOPort.class, "P2");
+    port2.addPortListener(this);
+    port5 = cpu.getIOUnit(IOPort.class, "P5");
+    port5.addPortListener(this);
+
+    var usart0 = cpu.getIOUnit(USART.class, "USART0");
+    if (usart0 == null) {
+      throw new EmulationException("Could not setup mote - missing USART0");
+    }
+    radio = new TR1001(cpu, usart0);
+
+    leds = new Leds(cpu, LEDS);
+    button = new Button("Button", cpu, port2, BUTTON_PIN, true);
+    beeper = new Beeper(cpu);
+
+    var usart = cpu.getIOUnit(USART.class, "USART1");
+    if (usart != null) {
+      registry.registerComponent("serialio", usart);
+    }
   }
 
   public Leds getLeds() {
@@ -148,34 +169,8 @@ public class ESBNode extends GenericNode implements PortListener {
     }
   }
 
-  public void setupNodePorts() {
-    port1 = cpu.getIOUnit(IOPort.class, "P1");
-
-    port2 = cpu.getIOUnit(IOPort.class, "P2");
-    port2.addPortListener(this);
-    port5 = cpu.getIOUnit(IOPort.class, "P5");
-    port5.addPortListener(this);
-
-    USART usart0 = cpu.getIOUnit(USART.class, "USART0");
-    if (usart0 == null) {
-        throw new EmulationException("Could not setup mote - missing USART0");
-    }
-    radio = new TR1001(cpu, usart0);
-
-    leds = new Leds(cpu, LEDS);
-    button = new Button("Button", cpu, port2, BUTTON_PIN, true);
-    beeper = new Beeper(cpu);
-
-    USART usart = cpu.getIOUnit(USART.class, "USART1");
-    if (usart != null) {
-        registry.registerComponent("serialio", usart);
-    }
-  }
-
   @Override
   public void setupNode() {
-    setupNodePorts();
-
     if (stats != null) {
       stats.addMonitor(this);
       stats.addMonitor(radio);
