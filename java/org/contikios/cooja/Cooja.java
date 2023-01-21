@@ -863,13 +863,6 @@ public class Cooja {
     return true;
   }
 
-  /**
-   * Save current simulation configuration to disk
-   */
-  public static File doSaveConfig() {
-    return gui.doSaveConfig();
-  }
-
   public void doQuit(int exitCode) {
     // Clean up resources. Catch all exceptions to ensure that System.exit will be called.
     try {
