@@ -1,11 +1,12 @@
 package se.sics.mspsim.platform.sky;
 import se.sics.mspsim.chip.Button;
+import se.sics.mspsim.chip.ExternalFlash;
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.SHT11;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.MSP430;
 
-public abstract class MoteIVNode extends CC2420Node {
+public abstract class MoteIVNode<FlashType extends ExternalFlash> extends CC2420Node {
 
   public static final int MODE_LEDS_OFF = 0;
   public static final int MODE_LEDS_1 = 1;
@@ -26,6 +27,8 @@ public abstract class MoteIVNode extends CC2420Node {
   public static final int GREEN_LED = 0x20;
   public static final int RED_LED = 0x10;
 
+  protected final FlashType flash;
+
   public boolean redLed;
   public boolean blueLed;
   public boolean greenLed;
@@ -36,13 +39,19 @@ public abstract class MoteIVNode extends CC2420Node {
 
   public SkyGui gui;
 
-  public MoteIVNode(String id, MSP430 cpu) {
+  public MoteIVNode(String id, MSP430 cpu, FlashType flash) {
     super(id, cpu);
+    this.flash = flash;
+    registry.registerComponent("xmem", flash);
     setMode(MODE_LEDS_OFF);
     leds = new Leds(cpu, LEDS);
     button = new Button("Button", cpu, port2, BUTTON_PIN, true);
     sht11 = new SHT11(cpu);
     sht11.setDataPort(port1, SHT11_DATA_PIN);
+  }
+
+  public FlashType getFlash() {
+    return flash;
   }
 
   public Leds getLeds() {

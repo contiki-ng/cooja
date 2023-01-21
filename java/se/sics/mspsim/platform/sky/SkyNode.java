@@ -49,21 +49,13 @@ import se.sics.mspsim.core.USARTSource;
 /**
  * Emulation of Sky Mote
  */
-public class SkyNode extends MoteIVNode {
-  private final M25P80 flash;
-
+public class SkyNode extends MoteIVNode<M25P80> {
   /**
    * Creates a new <code>SkyNode</code> instance.
    *
    */
   public SkyNode(MSP430 cpu, M25P80 flash) {
-    super("Tmote Sky", cpu);
-    this.flash = flash;
-    registry.registerComponent("xmem", flash);
-  }
-
-  public M25P80 getFlash() {
-    return flash;
+    super("Tmote Sky", cpu, flash);
   }
 
   // USART Listener
