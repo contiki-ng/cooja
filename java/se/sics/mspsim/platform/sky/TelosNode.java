@@ -76,11 +76,4 @@ public class TelosNode extends MoteIVNode<AT45DB> {
     radio.dataReceived(source, data);
     flash.dataReceived(source, data);
   }
-
-  @Override
-  public void setupNodePorts() {
-    if (flashFile != null) {
-      getFlash().setStorage(new FileStorage(flashFile));
-    }
-  }
 }

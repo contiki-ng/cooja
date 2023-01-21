@@ -40,7 +40,7 @@
  */
 
 package se.sics.mspsim.platform.sky;
-import se.sics.mspsim.chip.FileStorage;
+
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.MSP430;
@@ -72,12 +72,5 @@ public class SkyNode extends MoteIVNode<M25P80> {
   @Override
   protected void flashWrite(IOPort source, int data) {
     flash.portWrite(source, data);
-  }
-
-  @Override
-  public void setupNodePorts() {
-    if (flashFile != null) {
-      getFlash().setStorage(new FileStorage(flashFile));
-    }
   }
 }

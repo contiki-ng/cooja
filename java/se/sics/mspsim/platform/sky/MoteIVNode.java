@@ -1,6 +1,7 @@
 package se.sics.mspsim.platform.sky;
 import se.sics.mspsim.chip.Button;
 import se.sics.mspsim.chip.ExternalFlash;
+import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.SHT11;
 import se.sics.mspsim.core.IOPort;
@@ -65,6 +66,13 @@ public abstract class MoteIVNode<FlashType extends ExternalFlash> extends CC2420
   @Deprecated
   public void setButton(boolean buttonPressed) {
       button.setPressed(buttonPressed);
+  }
+
+  @Override
+  public void setupNodePorts() {
+    if (flashFile != null) {
+      getFlash().setStorage(new FileStorage(flashFile));
+    }
   }
 
   @Override
