@@ -39,7 +39,6 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
 import org.contikios.cooja.Simulation;
-import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.interfaces.Position;
@@ -58,12 +57,7 @@ public class LogVisualizerSkin implements VisualizerSkin {
   private Simulation simulation = null;
   private Visualizer visualizer = null;
 
-  private final LogOutputListener logOutputListener = new LogOutputListener() {
-    @Override
-    public void newLogOutput(LogOutputEvent ev) {
-      visualizer.repaint();
-    }
-  };
+  private final LogOutputListener logOutputListener = ev -> visualizer.repaint();
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
