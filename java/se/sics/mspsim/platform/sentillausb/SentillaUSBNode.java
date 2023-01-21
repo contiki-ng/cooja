@@ -40,7 +40,7 @@
  */
 
 package se.sics.mspsim.platform.sentillausb;
-import se.sics.mspsim.chip.FileStorage;
+
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.core.IOPort;
@@ -92,13 +92,6 @@ public class SentillaUSBNode extends CC2420Node<M25P80> {
     @Override
     protected void flashWrite(IOPort source, int data) {
         flash.portWrite(source, data);
-    }
-
-    @Override
-    public void setupNodePorts() {
-        if (flashFile != null) {
-            getFlash().setStorage(new FileStorage(flashFile));
-        }
     }
 
     @Override

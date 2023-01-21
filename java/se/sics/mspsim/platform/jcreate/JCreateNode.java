@@ -40,7 +40,7 @@
  */
 
 package se.sics.mspsim.platform.jcreate;
-import se.sics.mspsim.chip.FileStorage;
+
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.chip.MMA7260QT;
@@ -101,13 +101,6 @@ public class JCreateNode extends CC2420Node<M25P80> {
     @Override
     protected void flashWrite(IOPort source, int data) {
         flash.portWrite(source, data);
-    }
-
-    @Override
-    public void setupNodePorts() {
-        if (flashFile != null) {
-            getFlash().setStorage(new FileStorage(flashFile));
-        }
     }
 
     @Override

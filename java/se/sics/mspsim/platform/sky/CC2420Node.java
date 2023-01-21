@@ -2,6 +2,7 @@ package se.sics.mspsim.platform.sky;
 import se.sics.mspsim.chip.CC2420;
 import se.sics.mspsim.chip.DS2411;
 import se.sics.mspsim.chip.ExternalFlash;
+import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.PacketListener;
 import se.sics.mspsim.config.MSP430f1611Config;
 import se.sics.mspsim.core.IOPort;
@@ -104,7 +105,11 @@ public abstract class CC2420Node<FlashType extends ExternalFlash> extends Generi
         ds2411.setMACID(id & 0xff, id & 0xff, id & 0xff, (id >> 8) & 0xff, id & 0xff, id & 0xff);
     }
 
-    public void setupNodePorts() {}
+    public void setupNodePorts() {
+        if (flashFile != null) {
+            getFlash().setStorage(new FileStorage(flashFile));
+        }
+    }
 
     @Override
     public void setupNode() {
