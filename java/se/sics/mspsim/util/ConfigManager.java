@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.URL;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -76,20 +75,6 @@ public class ConfigManager {
     } catch (IOException e) {
       throw new IllegalArgumentException("could not read config file '"
           + configFile + "': " + e);
-    }
-  }
-
-  public boolean loadConfiguration(URL configURL) {
-    try {
-      try (var input = new BufferedInputStream(configURL.openStream())) {
-        loadConfiguration(input);
-      }
-      return true;
-    } catch (FileNotFoundException e) {
-      return false;
-    } catch (IOException e) {
-      throw new IllegalArgumentException("could not read config file '"
-          + configURL + "': " + e);
     }
   }
 
