@@ -45,7 +45,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
 import java.io.PrintStream;
 
 /**
@@ -54,7 +53,6 @@ import java.io.PrintStream;
 public class StreamCommandHandler extends CommandHandler implements Runnable {
 
   private final BufferedReader inReader;
-  private boolean workaround = false;
   private boolean exit;
   private final String prompt;
 
@@ -63,53 +61,12 @@ public class StreamCommandHandler extends CommandHandler implements Runnable {
     this.prompt = prompt;
     this.exit = false;
     this.inReader = new BufferedReader(new InputStreamReader(in, UTF_8));
-    registerCommand("workaround", new BasicCommand("activate workaround for Java console input bug", "") {
-      @Override
-      public int executeCommand(CommandContext context) {
-        workaround = true;
-        return 0;
-      }
-    });
-  }
-
-  public void setWorkaround(boolean w) {
-    workaround = w;
   }
 
   @Override
   public void start() {
     super.start();
     new Thread(this, "cmd").start();
-  }
-
-  private String readLine(BufferedReader inReader2) throws IOException {
-    if (workaround) {
-      StringBuilder str = new StringBuilder();
-      while(!exit) {
-        if (inReader2.ready()) {
-          int c = inReader2.read();
-          if (c < 0) {
-              // Input stream closed
-              return null;
-          }
-          if (c == '\n') {
-            return str.toString();
-          }
-          if (c != '\r') {
-            str.append((char)c);
-          }
-        } else {
-          try {
-            Thread.sleep(500);
-          } catch (InterruptedException e) {
-            throw new InterruptedIOException();
-          }
-        }
-      }
-      return null;
-    } else {
-      return inReader2.readLine();
-    }
   }
 
   @Override
@@ -119,7 +76,7 @@ public class StreamCommandHandler extends CommandHandler implements Runnable {
       try {
         out.print(prompt);
         out.flush();
-        String line = readLine(inReader);
+        String line = inReader.readLine();
         if (line == null) {
             // Input stream closed
             exit = true;
