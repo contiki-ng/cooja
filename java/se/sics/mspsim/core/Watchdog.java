@@ -83,7 +83,18 @@ public class Watchdog extends IOUnit implements SFRModule {
     @Override
     public void execute(long t) {
 //      System.out.println(getName() + " **** executing update timers at " + t + " cycles=" + core.cycles);
-      triggerWDT(t);
+      // Here the WDT triggered!!!
+      if (timerMode) {
+          SFR sfr = cpu.getSFR();
+          sfr.setBitIFG(0, WATCHDOG_INTERRUPT_VALUE);
+          scheduleTimer();
+          System.out.println("WDT trigger - will set interrupt flag (no reset)");
+          cpu.generateTrace(System.out);
+      } else {
+          System.out.println("WDT trigger - will reset node!");
+          cpu.generateTrace(System.out);
+          cpu.flagInterrupt(resetVector, Watchdog.this, true);
+      }
     }
   };
 
@@ -104,21 +115,6 @@ public class Watchdog extends IOUnit implements SFRModule {
   public void reset(int type) {
       super.reset(type);
       wdtctl = 0x4;
-  }
-
-  private void triggerWDT(long time) {
-      // Here the WDT triggered!!!
-      if (timerMode) {
-          SFR sfr = cpu.getSFR();
-          sfr.setBitIFG(0, WATCHDOG_INTERRUPT_VALUE);
-          scheduleTimer();
-          System.out.println("WDT trigger - will set interrupt flag (no reset)");
-          cpu.generateTrace(System.out);
-      } else {
-          System.out.println("WDT trigger - will reset node!");
-          cpu.generateTrace(System.out);
-          cpu.flagInterrupt(resetVector, this, true);
-      }
   }
 
   @Override
