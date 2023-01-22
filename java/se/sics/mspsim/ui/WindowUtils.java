@@ -39,8 +39,7 @@ package se.sics.mspsim.ui;
 import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.prefs.Preferences;
 
 public class WindowUtils {
@@ -48,8 +47,8 @@ public class WindowUtils {
   private static final Preferences prefs =
     Preferences.userNodeForPackage(WindowUtils.class);
 
-  private static Hashtable<Window,CloseListener> closeTable;
-  private static Hashtable<Window,String> exitTable;
+  private static HashMap<Window,CloseListener> closeTable;
+  private static HashMap<Window,String> exitTable;
 
   private WindowUtils() {
   }
@@ -105,7 +104,7 @@ public class WindowUtils {
 
   public synchronized static void addSaveOnClose(String key, Window window) {
     if (closeTable == null) {
-      closeTable = new Hashtable<>();
+      closeTable = new HashMap<>();
     }
     if (closeTable.get(window) == null) {
       CloseListener c = new CloseListener(key);
@@ -125,15 +124,13 @@ public class WindowUtils {
 
   public synchronized static void addSaveOnShutdown(String key, Window window) {
     if (exitTable == null) {
-      exitTable = new Hashtable<>();
+      exitTable = new HashMap<>();
       Runtime.getRuntime().addShutdownHook(new Thread(() -> {
         var table = exitTable;
         if (table != null && table.size() > 0) {
           exitTable = null;
-          Enumeration<Window> e = table.keys();
-          while(e.hasMoreElements()) {
-            Window w = e.nextElement();
-            putWindowBounds(table.get(w), w);
+          for (var entry : table.entrySet()) {
+            putWindowBounds(entry.getValue(), entry.getKey());
           }
           try {
             prefs.flush();

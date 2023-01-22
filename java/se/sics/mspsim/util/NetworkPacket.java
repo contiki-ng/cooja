@@ -40,8 +40,8 @@
  */
 
 package se.sics.mspsim.util;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NetworkPacket {
   byte[] data;
@@ -51,7 +51,7 @@ public class NetworkPacket {
     "|payloadLength:16|nextHeader:8|hopLimit:8" +
     "|sourceAddress:128|destinationAddress:128";
 
-  Hashtable<String,Field> fields = new Hashtable<>();
+  Map<String,Field> fields = new HashMap<>();
 
   private static class Field {
     final String name;
@@ -105,14 +105,13 @@ public class NetworkPacket {
   }
 
 
-  NetworkPacket(String pattern, Hashtable<String, Field> fields) {
+  NetworkPacket(String pattern, Map<String, Field> fields) {
     this.description = pattern;
     this.fields = fields;
   }
 
   public boolean matches(byte[] data) {
-    for (Enumeration<Field> iterator = fields.elements(); iterator.hasMoreElements();) {
-      Field f = iterator.nextElement();
+    for (var f : fields.values()) {
       if (f.mask != 0) {
         int val = getIntBits(data, f.pos, f.pos + f.size - 1);
         if ((val & f.mask) != f.value) {

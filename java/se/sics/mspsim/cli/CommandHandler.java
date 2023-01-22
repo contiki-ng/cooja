@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
+import java.util.HashMap;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.util.ActiveComponent;
 import se.sics.mspsim.util.ComponentRegistry;
@@ -13,7 +13,7 @@ public class CommandHandler implements ActiveComponent, LineListener {
 
   private static final String scriptDirectory = "scripts";
 
-  private final Hashtable<String, Command> commands = new Hashtable<>();
+  private final HashMap<String, Command> commands = new HashMap<>();
 
   protected final PrintStream out;
   protected final PrintStream err;

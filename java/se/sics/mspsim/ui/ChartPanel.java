@@ -45,8 +45,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.util.Hashtable;
-
+import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -69,7 +68,7 @@ public class ChartPanel extends JComponent {
 
   private static final Color LIGHT_GRAY = new Color(0xff909090);
 
-  private final Hashtable<String,Object> config = new Hashtable<>();
+  private final HashMap<String,Object> config = new HashMap<>();
   private Chart[] charts = null;
 
   private Chart axisChart;

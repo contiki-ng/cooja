@@ -42,7 +42,7 @@
 package se.sics.mspsim.ui;
 
 import java.awt.Graphics2D;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 /**
  *
@@ -53,7 +53,7 @@ public abstract class AbstractChart implements Chart {
   protected double minx, maxx;
   protected double miny, maxy;
   protected boolean autoscale = true;
-  private final Hashtable<String,Object> config = new Hashtable<>();
+  private final HashMap<String,Object> config = new HashMap<>();
 
   @Override
   public String getName() {

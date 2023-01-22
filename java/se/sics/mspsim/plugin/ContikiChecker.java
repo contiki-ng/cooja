@@ -39,8 +39,8 @@
  */
 
 package se.sics.mspsim.plugin;
-import java.util.Hashtable;
 
+import java.util.HashMap;
 import se.sics.mspsim.cli.BasicAsyncCommand;
 import se.sics.mspsim.cli.CommandContext;
 import se.sics.mspsim.cli.CommandHandler;
@@ -66,7 +66,7 @@ public class ContikiChecker implements CallListener, ActiveComponent {
     private MSP430 cpu;
     private Profiler profiler;
 
-    private final Hashtable<String,Integer> callTable = new Hashtable<>();
+    private final HashMap<String,Integer> callTable = new HashMap<>();
     private int callCount = 0;
 
     @Override
