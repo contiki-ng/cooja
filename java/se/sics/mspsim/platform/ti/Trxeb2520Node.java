@@ -26,12 +26,12 @@ public class Trxeb2520Node extends GenericNode implements PortListener, USARTLis
     public static final int CC2520_CHIP_SELECT = (1 << 0); /* 3.0 */
     public static final int CC2520_RESET = (1 << 0); /* 8.0 */
 
-        IOPort port1;
-        IOPort port3;
-        IOPort port4;
-        IOPort port5;
-        IOPort port7;
-        IOPort port8;
+        final IOPort port1;
+        final IOPort port3;
+        final IOPort port4;
+        final IOPort port5;
+        final IOPort port7;
+        final IOPort port8;
 
         public CC2520 radio;
 

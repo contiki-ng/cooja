@@ -39,13 +39,13 @@ public abstract class CC2420Node<FlashType extends ExternalFlash> extends Generi
     public static final int CC2420_VREG = (1 << 5);
     public static final int CC2420_CHIP_SELECT = 0x04;
 
-    protected IOPort port1;
-    protected IOPort port2;
-    protected IOPort port4;
-    protected IOPort port5;
+    protected final IOPort port1;
+    protected final IOPort port2;
+    protected final IOPort port4;
+    protected final IOPort port5;
 
-    public CC2420 radio;
-    public DS2411 ds2411;
+    public final CC2420 radio;
+    public final DS2411 ds2411;
 
     protected final FlashType flash;
     protected String flashFile;

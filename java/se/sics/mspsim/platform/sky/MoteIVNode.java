@@ -33,7 +33,7 @@ public abstract class MoteIVNode<FlashType extends ExternalFlash> extends CC2420
 
   private final Leds leds;
   private final Button button;
-  public SHT11 sht11;
+  public final SHT11 sht11;
 
   public SkyGui gui;
 
