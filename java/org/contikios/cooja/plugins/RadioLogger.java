@@ -468,7 +468,7 @@ public class RadioLogger extends VisPlugin {
         }
 
         // Remove current alias
-        if (alias.equals("")) {
+        if (alias.isEmpty()) {
           aliases.remove(connections.get(selectedRow).data);
 
           // Should be null if empty

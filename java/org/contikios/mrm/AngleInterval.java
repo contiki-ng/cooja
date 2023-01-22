@@ -294,7 +294,7 @@ class AngleInterval {
   public String toString() {
     String retString = "";
     for (var subInterval : subIntervals) {
-      if (!retString.equals(""))
+      if (!retString.isEmpty())
         retString = retString + " && ";
 
       retString += "(" + Math.toDegrees(subInterval.getLow()) + " -> " + Math.toDegrees(subInterval.getHigh()) + ")";

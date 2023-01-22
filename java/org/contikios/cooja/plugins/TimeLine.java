@@ -1210,7 +1210,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           } else { // Trigger tooltip.
             JToolTip t = timeline.createToolTip();
             t.setTipText(Timeline.this.getMouseToolTipText(e));
-            if (t.getTipText() == null || t.getTipText().equals("")) {
+            if (t.getTipText() == null || t.getTipText().isEmpty()) {
               return;
             }
             t.validate();

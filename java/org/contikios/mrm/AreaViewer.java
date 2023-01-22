@@ -434,7 +434,7 @@ public class AreaViewer extends VisPlugin {
           t.setTipText("<html>" +
                   trackedComponents.log.replace("\n", "<br>").replace(" pi", " &pi;") +
                   "</html>");
-          if (t.getTipText() == null || t.getTipText().equals("")) {
+          if (t.getTipText() == null || t.getTipText().isEmpty()) {
             return;
           }
           popUpToolTip = PopupFactory.getSharedInstance().getPopup(
