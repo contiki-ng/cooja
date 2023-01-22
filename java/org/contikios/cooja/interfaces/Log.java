@@ -43,7 +43,7 @@ import org.contikios.cooja.util.EventTriggers;
  */
 @ClassDescription("Log Output")
 public abstract class Log implements MoteInterface {
-  protected EventTriggers<EventTriggers.Update, LogDataInfo> logDataTriggers = new EventTriggers<>();
+  protected final EventTriggers<EventTriggers.Update, LogDataInfo> logDataTriggers = new EventTriggers<>();
 
   /**
    * @return Last log message. Note that several messages may appear during one tick.

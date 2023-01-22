@@ -211,10 +211,4 @@ public class HighlightSourceViewer implements SourceViewer {
     }
     return null;
   }
-
-  public static void main(String[] args) {
-    HighlightSourceViewer sv = new HighlightSourceViewer();
-    sv.setVisible(true);
-    sv.viewFile(".", args[0]);
-  }
 }
