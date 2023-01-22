@@ -46,6 +46,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import se.sics.mspsim.chip.ExternalFlash;
 import se.sics.mspsim.core.StateChangeListener;
 import se.sics.mspsim.platform.AbstractNodeGUI;
 
@@ -65,10 +66,10 @@ public class SkyGui extends AbstractNodeGUI {
 
   private static final Rectangle LEDS_BOUNDS = new Rectangle(LED_X, RED_Y, 9, BLUE_Y - RED_Y + 5);
 
-  private final MoteIVNode node;
+  private final MoteIVNode<? extends ExternalFlash> node;
   private final StateChangeListener ledsListener = (source, oldState, newState) -> repaint(LEDS_BOUNDS);
 
-  public SkyGui(MoteIVNode node) {
+  public SkyGui(MoteIVNode<? extends ExternalFlash> node) {
     super("SkyGui", "images/sky.jpg");
     this.node = node;
   }
