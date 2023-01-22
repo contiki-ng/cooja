@@ -62,14 +62,12 @@ public class StackUI extends JPanel implements ServiceComponent {
   private LineChart maxStackChart;
   private LineChart maxUsageStackChart;
 
-//  private DotDiagram diagram;
   private final int[] minData = new int[STACK_FRAME];
   private final int[] maxData = new int[STACK_FRAME];
   private final int[] maxUsageData = new int[STACK_FRAME];
   private final int[] minCache = new int[STACK_FRAME];
   private final int[] maxCache = new int[STACK_FRAME];
   private final int[] maxUsageCache = new int[STACK_FRAME];
-//  private String[] notes = new String[STACK_FRAME];
 
   private long lastCycles = 0;
   private int pos = 0;
@@ -95,14 +93,6 @@ public class StackUI extends JPanel implements ServiceComponent {
     super(new BorderLayout());
     this.updateCyclePeriod = updateCyclePeriod;
     this.cpu = cpu;
-
-//    diagram = new DotDiagram(2);
-//    diagram.setDotColor(0, Color.green);
-//    diagram.setDotColor(1, Color.green);
-//    diagram.addConstant(Color.red,
-//        this.stackStartAddress - this.heapStartAddress);
-//    diagram.setShowGrid(true);
-//    add(diagram, BorderLayout.CENTER);
   }
 
   public void requestIncreasePos() {
@@ -176,17 +166,12 @@ public class StackUI extends JPanel implements ServiceComponent {
                   || increasePos) {
                 increasePos = false;
                   lastCycles = cpu.cpuCycles;
-//                    System.out.println("STACK UPDATE: " + type + "," + adr + "," + data + "," + pos);
-
                   pos = (pos + 1) % minData.length;
                   minData[pos] = Integer.MAX_VALUE;
                   maxUsageData[pos] = m;
                   maxData[pos] = 0;
                   update = true;
                   repaint();
-//                    this.notes[pos] = null;
-//                    diagram.setData(0, this.minData, pos, this.minData.length);
-//                    diagram.setDataWithNotes(1, this.maxData, notes, pos, this.maxData.length);
               }
           }
       };
