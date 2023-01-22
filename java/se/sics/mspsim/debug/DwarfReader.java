@@ -392,7 +392,7 @@ public class DwarfReader implements ELFDebug {
         do {
             Arange arange = new Arange();
             /* here we should read the address data */
-            arange.length = sec.readElf32(pos + 0); /* length not including the length field */
+            arange.length = sec.readElf32(pos); /* length not including the length field */
             arange.version = sec.readElf16(pos + 4); /* version */
             arange.offset = sec.readElf32(pos + 6); /* 4 byte offset into debug_info section (?)*/
             arange.addressSize = sec.readElf8(pos + 10); /* size of address */
