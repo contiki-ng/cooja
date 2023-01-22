@@ -67,7 +67,7 @@ public class RayPath {
     if (points.size() != types.size())
       return "Malformed ray path (differing sizes)";
 
-    if (points.size() == 0)
+    if (points.isEmpty())
       return "Empty ray path";
     
     if (types.firstElement() != RayData.RayType.ORIGIN && types.lastElement() != RayData.RayType.ORIGIN)

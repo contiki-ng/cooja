@@ -1017,7 +1017,7 @@ public class BufferListener extends VisPlugin {
 
     try {
       final RowFilter<Object,Object> regexp;
-      if (str != null && str.length() > 0) {
+      if (str != null && !str.isEmpty()) {
         /* TODO Handle graphical components */
         regexp = RowFilter.regexFilter(str, COLUMN_FROM, COLUMN_TYPE, COLUMN_SOURCE, COLUMN_DATA);
       } else {

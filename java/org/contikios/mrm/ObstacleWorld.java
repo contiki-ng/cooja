@@ -359,7 +359,7 @@ class ObstacleWorld {
     
     allObstaclesToCheck = allObstaclesSpatial[centerInArray.x][centerInArray.y];
 
-    if (allObstaclesToCheck.size() == 0) {
+    if (allObstaclesToCheck.isEmpty()) {
       return false;
     } 
     

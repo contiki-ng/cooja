@@ -84,7 +84,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
         return;
       }
 
-      if (historyList.size() > 0) {
+      if (!historyList.isEmpty()) {
 
         synchronized (historyList) {
           /* Try to increase age and remove if max age was reached */

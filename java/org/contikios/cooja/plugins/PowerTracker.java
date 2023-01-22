@@ -425,7 +425,7 @@ public class PowerTracker implements Plugin {
   }
 
   public void reset() {
-    while (moteTrackers.size() > 0) {
+    while (!moteTrackers.isEmpty()) {
       removeMote(moteTrackers.get(0).mote);
     }
     for (Mote m: simulation.getMotes()) {

@@ -235,7 +235,7 @@ public class CodeUI extends JPanel {
     if (!codeFile.equals(displayedFile)) {
       /* Read from disk */
       final String data = StringUtils.loadFromFile(codeFile);
-      if (data == null || data.length() == 0) {
+      if (data == null || data.isEmpty()) {
         displayNoCode(markCurrent);
         return;
       }

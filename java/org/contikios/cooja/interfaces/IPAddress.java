@@ -122,7 +122,7 @@ public class IPAddress implements MoteInterface {
             }
             /* Initial scan for IP address */
             updateIPAddresses();
-            if (ipList.size() > 0) {
+            if (!ipList.isEmpty()) {
               updateUI();
             }
             // TODO: Remove other listeners?

@@ -707,7 +707,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     try {
     	final RowFilter<Object,Integer> regexp;
-      if (str != null && str.length() > 0) {
+      if (str != null && !str.isEmpty()) {
       	regexp = RowFilter.regexFilter(str, COLUMN_FROM, COLUMN_DATA, COLUMN_CONCAT);
       } else {
       	regexp = null;

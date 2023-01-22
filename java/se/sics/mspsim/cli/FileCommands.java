@@ -40,7 +40,7 @@ public class FileCommands implements CommandBundle {
           public int executeCommand(CommandContext context) {
             Target[] files = null;
             synchronized (fileTargets) {
-                if (fileTargets.size() > 0) {
+                if (!fileTargets.isEmpty()) {
                     files = fileTargets.values().toArray(new Target[0]);
                 }
             }

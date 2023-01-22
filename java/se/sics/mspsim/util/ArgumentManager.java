@@ -69,11 +69,11 @@ public class ArgumentManager extends ConfigManager {
           value = param.substring(index + 1);
           param = param.substring(0, index);
         }
-        if (param.length() == 0) {
+        if (param.isEmpty()) {
           throw new IllegalArgumentException("illegal argument: " + args[i]);
         }
         if ("config".equals(param)) {
-          if (value.length() == 0) {
+          if (value.isEmpty()) {
             throw new IllegalArgumentException("no config file name specified");
           }
           if (!loadConfiguration(value)) {
@@ -81,7 +81,7 @@ public class ArgumentManager extends ConfigManager {
           }
         }
         config.add(param);
-        config.add(value.length() > 0 ? value : "true");
+        config.add(!value.isEmpty() ? value : "true");
       } else {
         // Normal argument
         list.add(args[i]);

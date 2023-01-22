@@ -76,7 +76,7 @@ public class MspDebugOutput extends Log {
         @Override
         public void notifyWriteAfter(int adr, int data, Memory.AccessMode mode) {
           String msg = extractString(MspDebugOutput.this.mote.getMemory(), data);
-          if (msg.length() > 0) {
+          if (!msg.isEmpty()) {
             lastLog = "DEBUG: " + msg;
             getLogDataTriggers().trigger(EventTriggers.Update.UPDATE, new LogDataInfo(mote, lastLog));
           }

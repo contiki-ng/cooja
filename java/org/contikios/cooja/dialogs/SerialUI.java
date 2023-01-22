@@ -235,7 +235,7 @@ public abstract class SerialUI extends Log implements SerialPort {
       }
       sb.append(s).append(HISTORY_SEPARATOR);
     }
-    if (sb.length() == 0) {
+    if (sb.isEmpty()) {
       return null;
     }
 
@@ -286,7 +286,7 @@ public abstract class SerialUI extends Log implements SerialPort {
   }
 
   private static String trim(String text) {
-    return (text != null) && ((text = text.trim()).length() > 0) ? text : null;
+    return (text != null) && (!(text = text.trim()).isEmpty()) ? text : null;
   }
 
   @Override

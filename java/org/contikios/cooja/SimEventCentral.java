@@ -62,7 +62,7 @@ public class SimEventCentral {
       if (msg == null) {
         return;
       }
-      if (msg.length() > 0 && msg.charAt(msg.length() - 1) == '\n') {
+      if (!msg.isEmpty() && msg.charAt(msg.length() - 1) == '\n') {
         msg = msg.substring(0, msg.length() - 1);
       }
 

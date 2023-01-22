@@ -102,7 +102,7 @@ public class CommandContext {
 
   public int getArgumentAsAddress(int index) {
     String adr = getArgument(index);
-    if (adr == null || adr.length() == 0) return 0;
+    if (adr == null || adr.isEmpty()) return 0;
     char c = adr.charAt(0);
     if (!Character.isLetter(c) && c != '_' && c != '.') {
       try {

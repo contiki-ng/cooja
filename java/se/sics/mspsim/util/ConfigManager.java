@@ -98,7 +98,7 @@ public class ConfigManager {
     ? properties.getProperty(name)
         : null;
 
-    if (value == null || value.length() == 0) {
+    if (value == null || value.isEmpty()) {
       return defaultValue;
     }
     return value;

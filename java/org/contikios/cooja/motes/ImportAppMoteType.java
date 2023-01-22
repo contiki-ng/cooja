@@ -148,7 +148,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
               + (moteClassPath != null ? moteClassPath.getAbsolutePath() : "") + " " + moteClassName, e);
     }
 
-    if (getDescription() == null || getDescription().length() == 0) {
+    if (getDescription() == null || getDescription().isEmpty()) {
       setDescription("Imported Mote Type #" + moteClassName);
     }
     return true;

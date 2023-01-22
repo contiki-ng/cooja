@@ -667,11 +667,11 @@ public class CC1120 extends Radio802154 implements USARTListener {
 
                 switch (address) {
                         case CC1120_RXFIFO -> {
-                                if (rxfifo.size() > 0) {
+                                if (!rxfifo.isEmpty()) {
                                         int ret = (int) rxfifo.remove(0);
                                         /* printRXFIFO(); */
 
-                                        if (triggerGDO0onFifoThreshold && rxfifo.size() == 0) {
+                                        if (triggerGDO0onFifoThreshold && rxfifo.isEmpty()) {
                                                 setGDO0(false);
                                         }
                                         return ret;

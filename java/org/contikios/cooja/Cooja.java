@@ -181,7 +181,7 @@ public class Cooja {
   private Cooja() throws ParseProjectsException {
     // Register default extension directories.
     String defaultProjectDirs = getExternalToolsSetting("DEFAULT_PROJECTDIRS", null);
-    if (defaultProjectDirs != null && defaultProjectDirs.length() > 0) {
+    if (defaultProjectDirs != null && !defaultProjectDirs.isEmpty()) {
       String[] arr = defaultProjectDirs.split(";");
       for (String p : arr) {
         try {
@@ -194,7 +194,7 @@ public class Cooja {
 
     // Scan for projects.
     String searchProjectDirs = getExternalToolsSetting("PATH_APPSEARCH", null);
-    if (searchProjectDirs != null && searchProjectDirs.length() > 0) {
+    if (searchProjectDirs != null && !searchProjectDirs.isEmpty()) {
       String[] arr = searchProjectDirs.split(";");
       for (String d : arr) {
         File searchDir = restorePortablePath(new File(d));

@@ -207,7 +207,7 @@ public class ProjectDirectoriesDialog extends JDialog {
       button.addActionListener(e -> {
         var newDefaultProjectDirs = new StringBuilder();
         for (COOJAProject p : currentProjects) {
-          if (newDefaultProjectDirs.length() > 0) {
+          if (!newDefaultProjectDirs.isEmpty()) {
             newDefaultProjectDirs.append(";");
           }
           var portablePath = Cooja.createContikiRelativePath(p.dir);

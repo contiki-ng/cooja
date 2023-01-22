@@ -304,7 +304,7 @@ public class ConsoleUI extends JComponent {
     switch (c) {
       case '\n' -> {
         String line = new String(chars, 0, len);
-        if (line.trim().length() > 0)
+        if (!line.trim().isEmpty())
           history[pos++] = line;
         addLine(currentOutput + line);
         if (pos >= history.length)
@@ -544,7 +544,7 @@ public class ConsoleUI extends JComponent {
     /* editor is reset too */
     editPos = minCursorX = cursorX = len = 0;
 
-    if (editing && buffer.length() > 0) {
+    if (editing && !buffer.isEmpty()) {
       /*
        * set edit to false, so we do not get here again before end of "printout".
        */

@@ -242,7 +242,7 @@ public class StabDebug implements ELFDebug {
         } else {
           currentFile = stab.data;
 
-          if (currentFile != null && currentFile.length() > 0) {
+          if (currentFile != null && !currentFile.isEmpty()) {
             if (currentPath == null) {
               sourceFiles.add(currentFile);
             } else {

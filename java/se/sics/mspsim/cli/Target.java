@@ -123,7 +123,7 @@ public abstract class Target {
                             + name + " (" + contexts.size() + ')');
                     }
                 }
-                if (contexts.size() == 0) {
+                if (contexts.isEmpty()) {
                     close = true;
                 }
             }
@@ -144,7 +144,7 @@ public abstract class Target {
                 // Already closed
                 return;
             }
-            if (contexts.size() > 0 && !forceClose) {
+            if (!contexts.isEmpty() && !forceClose) {
                 // Target still has connected writers.
                 return;
             }

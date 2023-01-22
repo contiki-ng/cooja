@@ -685,7 +685,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       output.append(stats.toString(logs, leds, radioHW, radioRXTX));
     }
 
-    if (allStats.size() == 0) {
+    if (allStats.isEmpty()) {
       return output.toString();
     }
 

@@ -139,7 +139,7 @@ public class Enc28J60 extends Chip {
                         val = 0x00;
                         return val;
                 } else if (readingFromRBM) {
-                        if (rbmPackets.size() > 0) {
+                        if (!rbmPackets.isEmpty()) {
                                 if (rbmPackets.get(0).data.isEmpty()) {
                                         log("Enc28j60: warning, packet data is already consumed, returning 0");
                                 } else {
@@ -188,7 +188,7 @@ public class Enc28J60 extends Chip {
                 } else if (writing && data == WBM_COMMAND) {
                         writingToWBM = true;
                 } else if (data == RBM_COMMAND) {
-                        if (rbmPackets.size() > 0) {
+                        if (!rbmPackets.isEmpty()) {
                                 if (rbmPackets.get(0).data.isEmpty()) {
                                         log("Enc28j60: warning, packet data is already consumed, returning 0");
                                 } else {
