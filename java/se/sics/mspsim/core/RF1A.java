@@ -83,7 +83,7 @@ public class RF1A extends IOUnit implements InterruptHandler {
     @Override
     public void reset(int type) {
         /* Initial values */
-        memory[ADDRESS + 0x00] = 0x0000; /* RF1AIFCTL0 */
+        memory[ADDRESS] = 0x0000; /* RF1AIFCTL0 */
         memory[ADDRESS + 0x02] = 0x0000; /* RF1AIFCTL1 */
         memory[ADDRESS + 0x04] = 0x0000; /* RF1AIFCTL2 */
         memory[ADDRESS + 0x06] = 0x0000; /* RF1AIFERR */

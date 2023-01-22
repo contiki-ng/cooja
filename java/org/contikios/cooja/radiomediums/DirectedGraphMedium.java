@@ -88,11 +88,6 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
     return Collections.emptyList();
   }
 
-  @Override
-  public void removed() {
-    super.removed();
-  }
-
   public void addEdge(Edge e) {
     edges.add(e);
     requestEdgeAnalysis();

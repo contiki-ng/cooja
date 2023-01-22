@@ -20,12 +20,12 @@ public class Exp1101Node extends GenericNode implements PortListener, USARTListe
 
         public static final int CC1101_CHIP_SELECT = (1 << 0); // 3.0
 
-    IOPort port1;
-    IOPort port3;
-    IOPort port4;
-    IOPort port5;
-    IOPort port7;
-    IOPort port8;
+    final IOPort port1;
+    final IOPort port3;
+    final IOPort port4;
+    final IOPort port5;
+    final IOPort port7;
+    final IOPort port8;
 
     public static final int LEDS_CONF_RED    = (1 << 0); // 1.0
     public static final int LEDS_CONF_YELLOW = (1 << 1); // 1.1

@@ -89,11 +89,11 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 
     //private final M25P80 flash;
     //private String flashFile;
-    private CC2520 radio;
-    private Leds leds;
-    private Button button;
+    private final CC2520 radio;
+    private final Leds leds;
+    private final Button button;
     private WismoteGui gui;
-    private DS2411 ds2411;
+    private final DS2411 ds2411;
 
     public static MSP430Config makeChipConfig() {
         return new MSP430f5437Config();

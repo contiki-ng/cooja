@@ -46,12 +46,7 @@ public class Exp5438Mote extends MspMote {
   }
 
   @Override
-  public void idUpdated(int newID) {
-  }
-
-  @Override
   public String toString() {
     return description + " " + getID();
   }
-
 }
