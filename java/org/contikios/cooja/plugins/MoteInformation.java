@@ -152,12 +152,7 @@ public class MoteInformation extends VisPlugin implements MotePlugin {
   }
 
   @Override
-  public void closePlugin() {
-  }
-
-  @Override
   public Mote getMote() {
     return mote;
   }
-
 }
