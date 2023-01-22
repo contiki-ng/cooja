@@ -116,7 +116,7 @@ class Main {
    * Option for specifying simulation files to load.
    */
   @Parameters(paramLabel = "FILE", description = "one or more simulation files")
-  List<String> simulationFiles = new ArrayList<>();
+  final List<String> simulationFiles = new ArrayList<>();
 
   /**
    * Option for instructing Cooja to update the simulation file (.csc).
