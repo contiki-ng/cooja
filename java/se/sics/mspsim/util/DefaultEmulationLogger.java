@@ -11,8 +11,7 @@ import se.sics.mspsim.core.MSP430Core;
 public class DefaultEmulationLogger implements EmulationLogger {
 
   private final MSP430Core cpu;
-  private final WarningMode[] warningModes = new WarningMode[WarningType.values().length];
-  private WarningMode defaultMode = WarningMode.PRINT;
+  private final WarningMode defaultMode = WarningMode.PRINT;
   private final PrintStream out;
   private LogListener[] logListeners;
 
@@ -22,11 +21,7 @@ public class DefaultEmulationLogger implements EmulationLogger {
   }
 
   protected WarningMode getMode(WarningType type) {
-      WarningMode mode = warningModes[type.ordinal()];
-      if (mode == null) {
-          mode = defaultMode;
-      }
-      return mode;
+      return defaultMode;
   }
 
   @Override
@@ -62,26 +57,6 @@ public class DefaultEmulationLogger implements EmulationLogger {
               l.logw(source, type, message);
           }
       }
-  }
-
-  @Override
-  public WarningMode getDefaultWarningMode() {
-      return defaultMode;
-  }
-
-  @Override
-  public void setDefaultWarningMode(WarningMode mode) {
-      this.defaultMode = mode;
-  }
-
-  @Override
-  public WarningMode getWarningMode(WarningType type) {
-      return warningModes[type.ordinal()];
-  }
-
-  @Override
-  public void setWarningMode(WarningType type, WarningMode mode) {
-      warningModes[type.ordinal()] = mode;
   }
 
   @Override

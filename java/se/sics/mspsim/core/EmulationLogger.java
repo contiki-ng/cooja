@@ -16,12 +16,6 @@ public interface EmulationLogger {
   void log(Loggable source, String message);
   void logw(Loggable source, WarningType type, String message) throws EmulationException;
 
-  WarningMode getDefaultWarningMode();
-  void setDefaultWarningMode(WarningMode mode);
-  WarningMode getWarningMode(WarningType type);
-  void setWarningMode(WarningType type, WarningMode mode);
-
   void addLogListener(LogListener listener);
   void removeLogListener(LogListener listener);
-
 }
