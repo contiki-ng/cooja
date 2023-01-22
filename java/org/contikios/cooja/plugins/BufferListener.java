@@ -751,7 +751,7 @@ public class BufferListener extends VisPlugin {
     updateTitle();
   }
 
-  public enum MemoryMonitorType { SEGMENT, POINTER, CONSTPOINTER }
+  public enum MemoryMonitorType { SEGMENT, POINTER }
 
   static class PointerMemoryMonitor extends SegmentMemoryMonitor {
     private SegmentMemoryMonitor segmentMonitor = null;
