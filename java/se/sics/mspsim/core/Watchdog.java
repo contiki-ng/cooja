@@ -69,7 +69,7 @@ public class Watchdog extends IOUnit implements SFRModule {
 
   public boolean wdtOn = true;
 
-  // The current "delay" when started/clered (or hold)
+  // The current "delay" when started/cleared (or hold).
   private int delay;
   // The target time for this timer
   private long targetTime;
