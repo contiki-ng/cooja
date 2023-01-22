@@ -82,7 +82,6 @@ public class Watchdog extends IOUnit implements SFRModule {
   private final TimeEvent wdtTrigger = new TimeEvent(0, "Watchdog") {
     @Override
     public void execute(long t) {
-//      System.out.println(getName() + " **** executing update timers at " + t + " cycles=" + core.cycles);
       // Here the WDT triggered!!!
       if (timerMode) {
           SFR sfr = cpu.getSFR();
@@ -131,7 +130,6 @@ public class Watchdog extends IOUnit implements SFRModule {
 
         // Is it on?
         wdtOn = (value & 0x80) == 0;
-//        boolean lastACLK = sourceACLK;
         sourceACLK = (value & WDTSSEL) != 0;
         if ((value & WDTCNTCL) != 0) {
           // Clear timer => reset the delay
