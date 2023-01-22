@@ -570,7 +570,6 @@ public class DebugCommands implements CommandBundle {
             int start = context.getArgumentAsAddress(0);
             int count = context.getArgumentAsInt(1);
             int size = 1; // unsigned byte
-            boolean signed = false;
             if (context.getArgumentCount() > 2) {
               String tS = context.getArgument(2);
               if ("byte".equals(tS)) {
@@ -580,7 +579,7 @@ public class DebugCommands implements CommandBundle {
                 size = 2;
               }
             }
-            // Does not yet handle signed data...
+            // FIXME: add support to handle signed data.
             for (int i = 0; i < count; i++) {
               int data;
               data = xmem.readByte(start++);
