@@ -26,7 +26,6 @@ public class DefaultEmulationLogger implements EmulationLogger {
 
   @Override
   public void log(Loggable source, String message) {
-//      out.println(source.getID() + ": " + message);
       LogListener[] listeners = this.logListeners;
       if (listeners != null) {
           for (LogListener l : listeners) {
