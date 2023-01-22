@@ -219,7 +219,6 @@ public class DwarfReader implements ELFDebug {
                 int lineColumn = 0;
                 boolean endSequence = false;
                 boolean isStatement = defaultIsStmt != 0;
-                boolean isBasicBlock = false;
 
                 lineData.clear();
 
@@ -243,7 +242,6 @@ public class DwarfReader implements ELFDebug {
                             lineLine = 1;
                             lineColumn = 0;
                             isStatement = defaultIsStmt != 0;
-                            isBasicBlock = false;
 
                             if (DEBUG) System.out.println("Line: End sequence executed!!!");
                             break;
@@ -287,7 +285,6 @@ public class DwarfReader implements ELFDebug {
                         if (DEBUG) System.out.println("Line: copy data (" + lineLine + "," +
                                 Utils.hex16(lineAddress) + ") to matrix...");
                         lineData.add(new LineEntry(lineLine, lineAddress, lineFile));
-                        isBasicBlock = false;
                         break;
                     case DW_LNS_advance_pc:
                         long add = sec.readLEB128();
@@ -313,7 +310,6 @@ public class DwarfReader implements ELFDebug {
                         if (DEBUG) System.out.println("Line: Negated is statement");
                         break;
                     case DW_LNS_set_basic_block:
-                        isBasicBlock = true;
                         if (DEBUG) System.out.println("Line: Set basic block to true");
                         break;
                     case DW_LNS_const_add_pc:
@@ -353,7 +349,6 @@ public class DwarfReader implements ELFDebug {
 
                         lineAddress += minOpLen * operationAdvance;
                         lineData.add(new LineEntry(lineLine, lineAddress, lineFile));
-                        isBasicBlock = false;
 
                         if (DEBUG) System.out.println("Line: *** Special operation => addr: " +
                                 Utils.hex16(lineAddress) + " Line: " + lineLine + " lineInc: " + lineInc);
