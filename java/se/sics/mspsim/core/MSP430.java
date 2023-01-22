@@ -292,9 +292,6 @@ public class MSP430 extends MSP430Core {
       lastReturnedMicros = 0;
     }
 
-    if(cycles < maxCycles) {
-      throw new RuntimeException("cycles < maxCycles : " + cycles + " < " + maxCycles);
-    }
     if(lastReturnedMicros < 0) {
       throw new RuntimeException("lastReturnedMicros < 0 : " + lastReturnedMicros);
     }
