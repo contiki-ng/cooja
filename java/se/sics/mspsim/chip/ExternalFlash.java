@@ -37,8 +37,8 @@ public abstract class ExternalFlash extends Chip {
 
     private Storage storage;
 
-    protected ExternalFlash(String id, String name, MSP430Core cpu) {
-        super(id, name, cpu);
+    protected ExternalFlash(String id, MSP430Core cpu) {
+        super(id, "External Flash", cpu);
     }
 
     public Storage getStorage() {

@@ -135,7 +135,7 @@ public class AT45DB extends ExternalFlash implements USARTListener {
     }};
 
     public AT45DB(MSP430Core cpu) {
-      super("AT45DB", "External Flash", cpu);
+      super("AT45DB", cpu);
     }
 
     private void setReady(boolean ready) {
