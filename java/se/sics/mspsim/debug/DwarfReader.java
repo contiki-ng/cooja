@@ -104,8 +104,6 @@ public class DwarfReader implements ELFDebug {
 
     final ArrayList<LineData> lineInfo = new ArrayList<>();
 
-    private final ArrayList<Arange> aranges = new ArrayList<>();
-
     public DwarfReader(ELF elfFile) {
         this.elfFile = elfFile;
     }
