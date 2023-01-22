@@ -237,7 +237,7 @@ public class RadioLogger extends VisPlugin {
           }
           if (aliases != null) {
             /* Check if alias exists */
-            String alias = (String) aliases.get(conn.data);
+            String alias = aliases.getProperty(conn.data);
             if (alias != null) {
               return alias;
             }
@@ -443,8 +443,8 @@ public class RadioLogger extends VisPlugin {
         if (selectedRow < 0) return;
 
         String current = "";
-        if (aliases != null && aliases.get(connections.get(selectedRow).data) != null) {
-          current = (String) aliases.get(connections.get(selectedRow).data);
+        if (aliases != null && aliases.getProperty(connections.get(selectedRow).data) != null) {
+          current = aliases.getProperty(connections.get(selectedRow).data);
         }
 
         String alias = (String) JOptionPane.showInputDialog(
