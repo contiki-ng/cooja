@@ -69,7 +69,7 @@ public class Watchdog extends IOUnit implements SFRModule {
 
   public boolean wdtOn = true;
 
-  // The current "delay" when started/clered (or hold)
+  // The current "delay" when started/cleared (or hold).
   private int delay;
   // The target time for this timer
   private long targetTime;
@@ -82,8 +82,18 @@ public class Watchdog extends IOUnit implements SFRModule {
   private final TimeEvent wdtTrigger = new TimeEvent(0, "Watchdog") {
     @Override
     public void execute(long t) {
-//      System.out.println(getName() + " **** executing update timers at " + t + " cycles=" + core.cycles);
-      triggerWDT(t);
+      // Here the WDT triggered!!!
+      if (timerMode) {
+          SFR sfr = cpu.getSFR();
+          sfr.setBitIFG(0, WATCHDOG_INTERRUPT_VALUE);
+          scheduleTimer();
+          System.out.println("WDT trigger - will set interrupt flag (no reset)");
+          cpu.generateTrace(System.out);
+      } else {
+          System.out.println("WDT trigger - will reset node!");
+          cpu.generateTrace(System.out);
+          cpu.flagInterrupt(resetVector, Watchdog.this, true);
+      }
     }
   };
 
@@ -106,21 +116,6 @@ public class Watchdog extends IOUnit implements SFRModule {
       wdtctl = 0x4;
   }
 
-  private void triggerWDT(long time) {
-      // Here the WDT triggered!!!
-      if (timerMode) {
-          SFR sfr = cpu.getSFR();
-          sfr.setBitIFG(0, WATCHDOG_INTERRUPT_VALUE);
-          scheduleTimer();
-          System.out.println("WDT trigger - will set interrupt flag (no reset)");
-          cpu.generateTrace(System.out);
-      } else {
-          System.out.println("WDT trigger - will reset node!");
-          cpu.generateTrace(System.out);
-          cpu.flagInterrupt(resetVector, this, true);
-      }
-  }
-
   @Override
   public int read(int address, boolean word, long cycles) {
           return wdtctl | 0x6900;
@@ -135,7 +130,6 @@ public class Watchdog extends IOUnit implements SFRModule {
 
         // Is it on?
         wdtOn = (value & 0x80) == 0;
-//        boolean lastACLK = sourceACLK;
         sourceACLK = (value & WDTSSEL) != 0;
         if ((value & WDTCNTCL) != 0) {
           // Clear timer => reset the delay
