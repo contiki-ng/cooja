@@ -101,10 +101,6 @@ public class MspDebugOutput extends Log {
       }
     }
   }
-  
-  public Mote getMote() {
-    return mote;
-  }
 
   @Override
   public String getLastLogMessage() {
