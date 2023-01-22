@@ -242,23 +242,23 @@ public class SHT11 extends Chip {
     char c = high ? 'D' : 'd';
     if (DEBUG) log("data pin  " + c);
     switch (state) {
-    case IDLE:
-      if (checkInit(c)) {
-        state = COMMAND;
-      }
-      break;
-    case ACK_WRITE:
-      if (c == 'D') { // if D goes back high - then we are done here!!!
-        if (DEBUG) log("ACK for byte complete...");
-        if (writePos < writeLen) {
-          state = WRITE_BYTE;
-          writeData = output[writePos];
-          bitCnt = 0;
-        } else {
-          reset(0);
+      case IDLE -> {
+        if (checkInit(c)) {
+          state = COMMAND;
         }
       }
-      break;
+      case ACK_WRITE -> {
+        if (c == 'D') { // if D goes back high - then we are done here!!!
+          if (DEBUG) log("ACK for byte complete...");
+          if (writePos < writeLen) {
+            state = WRITE_BYTE;
+            writeData = output[writePos];
+            bitCnt = 0;
+          } else {
+            reset(0);
+          }
+        }
+      }
     }
     dataHi = high;
   }

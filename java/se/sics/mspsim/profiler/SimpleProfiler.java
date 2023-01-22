@@ -406,20 +406,13 @@ public class SimpleProfiler implements Profiler, EventListener {
     public int compare(CallEntry o1, CallEntry o2) {
       long diff;
       switch (mode) {
-      case 1:
-        diff = o2.exclusiveCycles - o1.exclusiveCycles;
-        break;
-      case 2:
-        diff = (long)o2.calls - o1.calls;
-        break;
-      case 3:
-        diff = (o2.calls > 0 ? (o2.cycles / o2.calls) : 0) -
-        (o1.calls > 0 ? (o1.cycles / o1.calls) : 0);
-        break;
-      case 4:
-        return o1.function.getName().compareTo(o2.function.getName());
-      default:
-        diff = o2.cycles - o1.cycles;
+        case 1 -> diff = o2.exclusiveCycles - o1.exclusiveCycles;
+        case 2 -> diff = (long) o2.calls - o1.calls;
+        case 3 -> diff = (o2.calls > 0 ? (o2.cycles / o2.calls) : 0) - (o1.calls > 0 ? (o1.cycles / o1.calls) : 0);
+        case 4 -> {
+          return o1.function.getName().compareTo(o2.function.getName());
+        }
+        default -> diff = o2.cycles - o1.cycles;
       }
       if (diff > 0) return 1;
       if (diff < 0) return -1;

@@ -209,65 +209,56 @@ public class AT45DB extends ExternalFlash implements USARTListener {
         case STATE_RESET:
         case STATE_IDLE:
           // data is a command byte
-          switch(data) {
-
-          case BUFFER1_TO_PAGE_ERASE:
-          case BUFFER2_TO_PAGE_ERASE:
-            if(DEBUG)
-              log("Buffer" + (data == BUFFER1_TO_PAGE_ERASE ? "1" : "2") + " to Page with Erase Command");
-            pos = 0;
-            setState(READ_ADDRESS);
-            next_state = data;
-            dummy = 0;
-            setReady(false);
-            source.byteReceived(0);
-            break;
-
-          case BUFFER1_READ:
-          case BUFFER2_READ:
-            if(DEBUG)
-              log("Read Buffer Command " + (data == BUFFER1_READ ? "Buffer1" : "Buffer2"));
-            pos = 0;
-            setState(READ_ADDRESS);
-            next_state = data;
-            dummy = 1;
-            setReady(false);
-            source.byteReceived(0);
-            break;
-
-          case BUFFER1_WRITE:
-          case BUFFER2_WRITE:
-            if(DEBUG)
-              log("Write Buffer Command " + (data == BUFFER1_WRITE ? "Buffer1" : "Buffer2"));
-            pos = 0;
-            setState(READ_ADDRESS);
-            next_state = data;
-            dummy = 0;
-            setReady(false);
-            source.byteReceived(0);
-            break;
-
-          case PAGE_TO_BUFFER1:
-          case PAGE_TO_BUFFER2:
-            if(DEBUG)
-              log("Page To Buffer " + (data == PAGE_TO_BUFFER1 ? "1" : "2") + " Command");
-            pos = 0;
-            setState(READ_ADDRESS);
-            next_state = data;
-            dummy = 0;
-            setReady(false);
-            source.byteReceived(0);
-            break;
-
-          case STATUS_REGISTER_READ:
-            if(DEBUG) log("Read status register command.  status: " + status);
-            setState(STATUS_REGISTER_READ);
-            source.byteReceived(0);
-            break;
-          default:
+          switch (data) {
+            case BUFFER1_TO_PAGE_ERASE, BUFFER2_TO_PAGE_ERASE -> {
+              if (DEBUG)
+                log("Buffer" + (data == BUFFER1_TO_PAGE_ERASE ? "1" : "2") + " to Page with Erase Command");
+              pos = 0;
+              setState(READ_ADDRESS);
+              next_state = data;
+              dummy = 0;
+              setReady(false);
+              source.byteReceived(0);
+            }
+            case BUFFER1_READ, BUFFER2_READ -> {
+              if (DEBUG)
+                log("Read Buffer Command " + (data == BUFFER1_READ ? "Buffer1" : "Buffer2"));
+              pos = 0;
+              setState(READ_ADDRESS);
+              next_state = data;
+              dummy = 1;
+              setReady(false);
+              source.byteReceived(0);
+            }
+            case BUFFER1_WRITE, BUFFER2_WRITE -> {
+              if (DEBUG)
+                log("Write Buffer Command " + (data == BUFFER1_WRITE ? "Buffer1" : "Buffer2"));
+              pos = 0;
+              setState(READ_ADDRESS);
+              next_state = data;
+              dummy = 0;
+              setReady(false);
+              source.byteReceived(0);
+            }
+            case PAGE_TO_BUFFER1, PAGE_TO_BUFFER2 -> {
+              if (DEBUG)
+                log("Page To Buffer " + (data == PAGE_TO_BUFFER1 ? "1" : "2") + " Command");
+              pos = 0;
+              setState(READ_ADDRESS);
+              next_state = data;
+              dummy = 0;
+              setReady(false);
+              source.byteReceived(0);
+            }
+            case STATUS_REGISTER_READ -> {
+              if (DEBUG) log("Read status register command.  status: " + status);
+              setState(STATUS_REGISTER_READ);
+              source.byteReceived(0);
+            }
+            default -> {
               logw(WarningType.EMULATION_ERROR, "WARNING: Command not implemented: " + data);
               source.byteReceived(0);
-          break;
+            }
           }
           break;
         default:
