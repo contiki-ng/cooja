@@ -292,9 +292,6 @@ public class MSP430 extends MSP430Core {
       lastReturnedMicros = 0;
     }
 
-    if(cycles < maxCycles) {
-      throw new RuntimeException("cycles < maxCycles : " + cycles + " < " + maxCycles);
-    }
     if(lastReturnedMicros < 0) {
       throw new RuntimeException("lastReturnedMicros < 0 : " + lastReturnedMicros);
     }
@@ -370,9 +367,9 @@ public class MSP430 extends MSP430Core {
                          +  " cycDiff: " + cd + " => " + 1000 * (cd / td )
                          + " cyc/s  cpuDiff:" + cpud + " => "
                          + 1000 * (cpud / td ) + " cyc/s  "
-                         + (10000 * cpud / cd)/100.0 + "%");
+                         + (10000.0 * cpud / cd)/100.0 + "%");
     }
-    lastCPUPercent = (10000 * cpud / cd) / 100.0;
+    lastCPUPercent = (10000.0 * cpud / cd) / 100.0;
     time = System.currentTimeMillis();
     lastCycles = cycles;
     lastCpuCycles = cpuCycles;
