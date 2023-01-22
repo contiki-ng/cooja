@@ -60,11 +60,11 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
     boolean blueLed;
     boolean greenLed;
 
-    private Leds leds;
-    private Button button;
+    private final Leds leds;
+    private final Button button;
     private Z1Gui gui;
 
-    private CC2420 radio;
+    private final CC2420 radio;
 //    private TMP102 tmp102;
     private final M25P80 flash;
     private String flashFile;

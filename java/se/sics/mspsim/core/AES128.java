@@ -332,17 +332,6 @@ public class AES128 extends IOUnit {
                 }
         }
 
-        /*
-         * The inherited log function is not working for whatever reason. A quick
-         * redefinition helps a lot while developing the module
-         */
-        @Override
-        protected void log(String msg) {
-                if (DEBUG) {
-                        System.out.println(msg);
-                }
-        }
-
         /**
          * Log using printf format
          *

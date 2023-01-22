@@ -995,25 +995,22 @@ public class AreaViewer extends VisPlugin {
   /**
    * Selects which graphical parts should be painted
    */
-  private final ActionListener selectGraphicsHandler = new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      if (e.getActionCommand().equals("toggle background")) {
-        drawBackgroundImage = ((JCheckBox) e.getSource()).isSelected();
-      } else if (e.getActionCommand().equals("toggle obstacles")) {
-        drawCalculatedObstacles = ((JCheckBox) e.getSource()).isSelected();
-      } else if (e.getActionCommand().equals("toggle channel")) {
-        drawChannelProbabilities = ((JCheckBox) e.getSource()).isSelected();
-      } else if (e.getActionCommand().equals("toggle radios")) {
-        drawRadios = ((JCheckBox) e.getSource()).isSelected();
+  private final ActionListener selectGraphicsHandler = e -> {
+    // FIXME: use a switch here.
+    if (e.getActionCommand().equals("toggle background")) {
+      drawBackgroundImage = ((JCheckBox) e.getSource()).isSelected();
+    } else if (e.getActionCommand().equals("toggle obstacles")) {
+      drawCalculatedObstacles = ((JCheckBox) e.getSource()).isSelected();
+    } else if (e.getActionCommand().equals("toggle channel")) {
+      drawChannelProbabilities = ((JCheckBox) e.getSource()).isSelected();
+    } else if (e.getActionCommand().equals("toggle radios")) {
+      drawRadios = ((JCheckBox) e.getSource()).isSelected();
 //      } else if (e.getActionCommand().equals("toggle radio activity")) {
 //        drawRadioActivity = ((JCheckBox) e.getSource()).isSelected();
-      } else if (e.getActionCommand().equals("toggle arrow")) {
-        drawScaleArrow = ((JCheckBox) e.getSource()).isSelected();
-      }
-
-      canvas.repaint();
+    } else if (e.getActionCommand().equals("toggle arrow")) {
+      drawScaleArrow = ((JCheckBox) e.getSource()).isSelected();
     }
+    canvas.repaint();
   };
 
   static class ObstacleFinderDialog extends JDialog {

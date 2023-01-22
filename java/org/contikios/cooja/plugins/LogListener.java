@@ -569,18 +569,15 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     /* Start observing motes for new log output */
     logUpdateAggregator.start();
-    simulation.getEventCentral().addLogOutputListener(logOutputListener = new LogOutputListener() {
-      @Override
-      public void newLogOutput(LogOutputEvent ev) {
-        if (!hasHours && ev.getTime() > TIME_HOUR) {
-          hasHours = true;
-          repaintTimeColumn();
-        }
-        LogData data = new LogData(ev);
-        logUpdateAggregator.add(data);
-        if (appendToFile) {
-          appendToFile(appendStreamFile, data.getTime() + "\t" + data.getID() + "\t" + data.ev.getMessage() + "\n");
-        }
+    simulation.getEventCentral().addLogOutputListener(logOutputListener = ev -> {
+      if (!hasHours && ev.getTime() > TIME_HOUR) {
+        hasHours = true;
+        repaintTimeColumn();
+      }
+      var data = new LogData(ev);
+      logUpdateAggregator.add(data);
+      if (appendToFile) {
+        appendToFile(appendStreamFile, data.getTime() + "\t" + data.getID() + "\t" + data.ev.getMessage() + "\n");
       }
     });
 

@@ -695,31 +695,7 @@ public class RTC extends IOUnit {
                 }
         }
 
-        /*
-         * The inherited log function is not working for whatever reason. A quick
-         * redefinition helps a lot while developing the module
-         */
-        @Override
-        protected void log(String msg) {
-                if (DEBUG) {
-                        System.out.println(msg);
-                }
-        }
-
-        /**
-         * Log using printf format
-         *
-         * @param format
-         * @param arguments
-         */
-        protected void log(final String format, final Object... arguments) {
-                if (DEBUG) {
-                        System.out.printf(format, arguments);
-                }
-        }
-
         private void logNotImplemented(String feature) {
                 logw(WarningType.EMULATION_ERROR, feature + " is not implemented");
         }
-
 }
