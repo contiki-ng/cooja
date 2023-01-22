@@ -42,7 +42,7 @@ package se.sics.mspsim.cli;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * @author joakim
@@ -51,7 +51,7 @@ public class FileTarget extends Target {
 
     private final FileWriter out;
 
-    public FileTarget(Hashtable<String,Target> targets, String name, FileWriter out) {
+    public FileTarget(Map<String,Target> targets, String name, FileWriter out) {
         super(targets, name, true);
         this.out = out;
     }

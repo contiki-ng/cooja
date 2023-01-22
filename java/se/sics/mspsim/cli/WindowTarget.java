@@ -1,12 +1,10 @@
 package se.sics.mspsim.cli;
 
 import java.awt.Font;
-import java.util.Hashtable;
-
+import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
 import se.sics.mspsim.extutil.jfreechart.LineChart;
 import se.sics.mspsim.extutil.jfreechart.LineSampleChart;
 import se.sics.mspsim.ui.ManagedWindow;
@@ -19,7 +17,7 @@ public class WindowTarget extends Target {
   private final JTextArea jta = new JTextArea(40,80);
   private WindowDataHandler dataHandler = null;
 
-  public WindowTarget(Hashtable<String,Target> targets, String name) {
+  public WindowTarget(Map<String,Target> targets, String name) {
     super(targets, name, false);
   }
 

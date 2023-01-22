@@ -1,12 +1,11 @@
 package se.sics.mspsim.cli;
 
-import java.util.Hashtable;
-
+import java.util.HashMap;
 import se.sics.mspsim.util.ComponentRegistry;
 
 public class FileCommands implements CommandBundle {
 
-    private final Hashtable <String,Target> fileTargets = new Hashtable<>();
+    private final HashMap<String,Target> fileTargets = new HashMap<>();
 
     @Override
     public void setupCommands(final ComponentRegistry registry, CommandHandler handler) {
