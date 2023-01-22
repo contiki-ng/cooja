@@ -57,16 +57,13 @@ public class NetworkPacket {
     final String name;
     final int pos;
     final int size;
-    int mask = 0;
-    int value = 0;
+    final int mask;
+    final int value;
 
-    Field(String name, int pos, int size) {
+    Field(String name, int pos, int size, int mask, int value) {
       this.name = name;
       this.pos = pos;
       this.size = size;
-    }
-
-    public void setMatchMask(int mask, int value) {
       this.mask = mask;
       this.value = value;
     }
@@ -93,11 +90,8 @@ public class NetworkPacket {
         matchVal = match[1];
       }
       int size = Integer.parseInt(val);
-      Field f = new Field(field[0], pos, size);
-      if (matchVal != null) {
-        int mask = Integer.parseInt(matchVal);
-        f.setMatchMask(mask, mask);
-      }
+      int mask = matchVal == null ? 0 : Integer.parseInt(matchVal);
+      Field f = new Field(field[0], pos, size, mask, mask);
       pos += size;
       System.out.println("Adding field: " + f);
       fields.put(f.name, f);
