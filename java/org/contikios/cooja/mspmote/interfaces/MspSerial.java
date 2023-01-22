@@ -36,7 +36,6 @@ import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.dialogs.SerialUI;
-import org.contikios.cooja.interfaces.SerialPort;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
 import se.sics.mspsim.core.USARTSource;
@@ -45,7 +44,7 @@ import se.sics.mspsim.core.USARTSource;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Serial port")
-public class MspSerial extends SerialUI implements SerialPort {
+public class MspSerial extends SerialUI {
   private static final long DELAY_INCOMING_DATA = 69; /* 115200 bit/s */
   
   private final Simulation simulation;
