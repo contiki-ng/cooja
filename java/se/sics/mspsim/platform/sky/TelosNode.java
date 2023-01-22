@@ -41,7 +41,6 @@
 
 package se.sics.mspsim.platform.sky;
 import se.sics.mspsim.chip.AT45DB;
-import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.USARTSource;
