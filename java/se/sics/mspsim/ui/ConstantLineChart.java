@@ -44,12 +44,7 @@ package se.sics.mspsim.ui;
 import java.awt.Graphics2D;
 
 public class ConstantLineChart extends AbstractChart {
-
   private final int lineY;
-
-  public ConstantLineChart(int y) {
-    this.lineY = y;
-  }
 
   public ConstantLineChart(String name, int y) {
     setName(name);
