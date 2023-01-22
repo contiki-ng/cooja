@@ -53,6 +53,35 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
         super("Tyndall", cpu);
 //        this.flash = flash;
 //        registry.registerComponent("xmem", flash);
+        port1 = cpu.getIOUnit(IOPort.class, "P1");
+        port1.addPortListener(this);
+        port3 = cpu.getIOUnit(IOPort.class, "P3");
+        port3.addPortListener(this);
+        port4 = cpu.getIOUnit(IOPort.class, "P4");
+        port4.addPortListener(this);
+        port5 = cpu.getIOUnit(IOPort.class, "P5");
+        port5.addPortListener(this);
+        port7 = cpu.getIOUnit(IOPort.class, "P7");
+        port7.addPortListener(this);
+        port8 = cpu.getIOUnit(IOPort.class, "P8");
+        port8.addPortListener(this);
+
+        if (cpu.getIOUnit("USCI B0") instanceof USARTSource usart0) {
+            radio = new CC2420(cpu);
+            radio.setCCAPort(port8, CC2420_CCA);
+            radio.setFIFOPPort(port8, CC2420_FIFOP);
+            radio.setFIFOPort(port8, CC2420_FIFO);
+
+            usart0.addUSARTListener(this);
+            radio.setSFDPort(port8, CC2420_SFD);
+        } else {
+            throw new EmulationException("Could not setup tyndall mote - missing USCI B0");
+        }
+
+        var usart = cpu.getIOUnit("USCI A0");
+        if (usart instanceof USARTSource) {
+            registry.registerComponent("serialio", usart);
+        }
     }
 
 //    public M25P80 getFlash() {
@@ -93,37 +122,6 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
 //        if (flashFile != null) {
 //            getFlash().setStorage(new FileStorage(flashFile));
 //        }
-
-        port1 = cpu.getIOUnit(IOPort.class, "P1");
-        port1.addPortListener(this);
-        port3 = cpu.getIOUnit(IOPort.class, "P3");
-        port3.addPortListener(this);
-        port4 = cpu.getIOUnit(IOPort.class, "P4");
-        port4.addPortListener(this);
-        port5 = cpu.getIOUnit(IOPort.class, "P5");
-        port5.addPortListener(this);
-        port7 = cpu.getIOUnit(IOPort.class, "P7");
-        port7.addPortListener(this);
-        port8 = cpu.getIOUnit(IOPort.class, "P8");
-        port8.addPortListener(this);
-
-        IOUnit usart0 = cpu.getIOUnit("USCI B0");
-        if (usart0 instanceof USARTSource) {
-            radio = new CC2420(cpu);
-            radio.setCCAPort(port8, CC2420_CCA);
-            radio.setFIFOPPort(port8, CC2420_FIFOP);
-            radio.setFIFOPort(port8, CC2420_FIFO);
-
-            ((USARTSource) usart0).addUSARTListener(this);
-            radio.setSFDPort(port8, CC2420_SFD);
-        } else {
-            throw new EmulationException("Could not setup tyndall mote - missing USCI B0");
-        }
-
-        IOUnit usart = cpu.getIOUnit("USCI A0");
-        if (usart instanceof USARTSource) {
-            registry.registerComponent("serialio", usart);
-        }
     }
 
     @Override

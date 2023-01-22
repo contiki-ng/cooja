@@ -40,7 +40,7 @@
  */
 
 package se.sics.mspsim.platform.jcreate;
-import se.sics.mspsim.chip.FileStorage;
+
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.chip.MMA7260QT;
@@ -53,7 +53,7 @@ import se.sics.mspsim.platform.sky.CC2420Node;
 /**
  * Emulation of Sentilla JCreate Mote
  */
-public class JCreateNode extends CC2420Node {
+public class JCreateNode extends CC2420Node<M25P80> {
 
     public static final int MODE_LEDS_OFF = 0;
     public static final int MODE_MAX = 9;
@@ -65,16 +65,12 @@ public class JCreateNode extends CC2420Node {
 
     private final Leds leds;
     private final MMA7260QT accelerometer;
-    private final M25P80 flash;
 
     private JCreateGui gui;
 
     public JCreateNode(MSP430 cpu, M25P80 flash) {
-        super("Sentilla JCreate", cpu);
-        this.flash = flash;
-        registry.registerComponent("xmem", flash);
+        super("Sentilla JCreate", cpu, flash);
         setMode(MODE_LEDS_OFF);
-        super.setupNodePorts();
         leds = new Leds(cpu, LEDS);
         accelerometer = new MMA7260QT(cpu);
         ADC12 adc = cpu.getIOUnit(ADC12.class, "ADC12");
@@ -91,10 +87,6 @@ public class JCreateNode extends CC2420Node {
         return accelerometer;
     }
 
-    public M25P80 getFlash() {
-        return flash;
-    }
-
     // USART Listener
     @Override
     public void dataReceived(USARTSource source, int data) {
@@ -109,13 +101,6 @@ public class JCreateNode extends CC2420Node {
     @Override
     protected void flashWrite(IOPort source, int data) {
         flash.portWrite(source, data);
-    }
-
-    @Override
-    public void setupNodePorts() {
-        if (flashFile != null) {
-            getFlash().setStorage(new FileStorage(flashFile));
-        }
     }
 
     @Override

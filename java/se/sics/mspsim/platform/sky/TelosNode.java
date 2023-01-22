@@ -51,27 +51,17 @@ import se.sics.mspsim.core.USARTSource;
  * <p>
  * TODO: Cleanup the MoteIVNode, SkyNode and TelosNode
  */
-public class TelosNode extends MoteIVNode {
-
+public class TelosNode extends MoteIVNode<AT45DB> {
   // P4.4 - Output: SPI Flash Chip Select
   public static final int FLASH_RESET = (1<<3);
   public static final int FLASH_CS = (1<<4);
-
-  private final AT45DB flash;
 
   /**
    * Creates a new <code>TelosNode</code> instance.
    *
    */
   public TelosNode(MSP430 cpu, AT45DB flash) {
-    super("Telos", cpu);
-    this.flash = flash;
-    // FIXME: should the flash be registered in the registry?
-    super.setupNodePorts();
-  }
-
-  public AT45DB getFlash() {
-    return flash;
+    super("Telos", cpu, flash);
   }
 
   @Override
@@ -85,12 +75,5 @@ public class TelosNode extends MoteIVNode {
   public void dataReceived(USARTSource source, int data) {
     radio.dataReceived(source, data);
     flash.dataReceived(source, data);
-  }
-
-  @Override
-  public void setupNodePorts() {
-    if (flashFile != null) {
-      getFlash().setStorage(new FileStorage(flashFile));
-    }
   }
 }

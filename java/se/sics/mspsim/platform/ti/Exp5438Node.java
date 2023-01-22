@@ -45,6 +45,35 @@ public class Exp5438Node extends GenericNode implements PortListener, USARTListe
 
     public Exp5438Node(MSP430 cpu) {
         super("Exp5438", cpu);
+        port1 = cpu.getIOUnit(IOPort.class, "P1");
+        port1.addPortListener(this);
+        port3 = cpu.getIOUnit(IOPort.class, "P3");
+        port3.addPortListener(this);
+        port4 = cpu.getIOUnit(IOPort.class, "P4");
+        port4.addPortListener(this);
+        port5 = cpu.getIOUnit(IOPort.class, "P5");
+        port5.addPortListener(this);
+        port7 = cpu.getIOUnit(IOPort.class, "P7");
+        port7.addPortListener(this);
+        port8 = cpu.getIOUnit(IOPort.class, "P8");
+        port8.addPortListener(this);
+
+        if (cpu.getIOUnit("USCI B0") instanceof USARTSource usart0) {
+            radio = new CC2420(cpu);
+            radio.setCCAPort(port1, CC2420_CCA);
+            radio.setFIFOPPort(port1, CC2420_FIFOP);
+            radio.setFIFOPort(port1, CC2420_FIFO);
+
+            usart0.addUSARTListener(this);
+            radio.setSFDPort(port1, CC2420_SFD);
+        } else {
+            throw new EmulationException("Could not setup exp5438 mote - missing USCI B0");
+        }
+
+        var usart = cpu.getIOUnit("USCI A1");
+        if (usart instanceof USARTSource) {
+            registry.registerComponent("serialio", usart);
+        }
     }
 
     @Override
@@ -70,43 +99,8 @@ public class Exp5438Node extends GenericNode implements PortListener, USARTListe
         }
     }
 
-    private void setupNodePorts() {
-        port1 = cpu.getIOUnit(IOPort.class, "P1");
-        port1.addPortListener(this);
-        port3 = cpu.getIOUnit(IOPort.class, "P3");
-        port3.addPortListener(this);
-        port4 = cpu.getIOUnit(IOPort.class, "P4");
-        port4.addPortListener(this);
-        port5 = cpu.getIOUnit(IOPort.class, "P5");
-        port5.addPortListener(this);
-        port7 = cpu.getIOUnit(IOPort.class, "P7");
-        port7.addPortListener(this);
-        port8 = cpu.getIOUnit(IOPort.class, "P8");
-        port8.addPortListener(this);
-
-        IOUnit usart0 = cpu.getIOUnit("USCI B0");
-        if (usart0 instanceof USARTSource) {
-            radio = new CC2420(cpu);
-            radio.setCCAPort(port1, CC2420_CCA);
-            radio.setFIFOPPort(port1, CC2420_FIFOP);
-            radio.setFIFOPort(port1, CC2420_FIFO);
-
-            ((USARTSource) usart0).addUSARTListener(this);
-            radio.setSFDPort(port1, CC2420_SFD);
-        } else {
-            throw new EmulationException("Could not setup exp5438 mote - missing USCI B0");
-        }
-
-        IOUnit usart = cpu.getIOUnit("USCI A1");
-        if (usart instanceof USARTSource) {
-            registry.registerComponent("serialio", usart);
-        }
-    }
-
     @Override
     public void setupNode() {
-        setupNodePorts();
-
         if (!config.getPropertyAsBoolean("nogui", true)) {
             // Add some windows for listening to serial output
             IOUnit usart = cpu.getIOUnit("USCI A1");
