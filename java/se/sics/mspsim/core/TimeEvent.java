@@ -44,7 +44,6 @@ package se.sics.mspsim.core;
 public abstract class TimeEvent {
   // For linking events...
   TimeEvent nextEvent;
-  TimeEvent prevEvent;
 
   // Keeps track of where this is scheduled
   EventQueue scheduledIn = null;
