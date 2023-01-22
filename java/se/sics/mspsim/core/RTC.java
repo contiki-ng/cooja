@@ -706,18 +706,6 @@ public class RTC extends IOUnit {
                 }
         }
 
-        /**
-         * Log using printf format
-         *
-         * @param format
-         * @param arguments
-         */
-        protected void log(final String format, final Object... arguments) {
-                if (DEBUG) {
-                        System.out.printf(format, arguments);
-                }
-        }
-
         private void logNotImplemented(String feature) {
                 logw(WarningType.EMULATION_ERROR, feature + " is not implemented");
         }
