@@ -138,7 +138,7 @@ public class ConfigManager {
 
   public int getPropertyAsInt(String name, int defaultValue) {
     String value = getProperty(name, null);
-    return value != null ? parseInt(name, value, defaultValue) : defaultValue;
+    return value == null ? defaultValue : parseInt(name, value, defaultValue);
   }
 
   public int[] getPropertyAsIntArray(String name) {
@@ -163,23 +163,17 @@ public class ConfigManager {
 
   public long getPropertyAsLong(String name, long defaultValue) {
     String value = getProperty(name, null);
-    return value != null
-    ? parseLong(name, value, defaultValue)
-        : defaultValue;
+    return value == null ? defaultValue : parseLong(name, value, defaultValue);
   }
 
   public float getPropertyAsFloat(String name, float defaultValue) {
     String value = getProperty(name, null);
-    return value != null
-    ? parseFloat(name, value, defaultValue)
-        : defaultValue;
+    return value == null ? defaultValue : parseFloat(name, value, defaultValue);
   }
 
   public double getPropertyAsDouble(String name, double defaultValue) {
     String value = getProperty(name, null);
-    return value != null
-    ? parseDouble(name, value, defaultValue)
-        : defaultValue;
+    return value == null ? defaultValue : parseDouble(name, value, defaultValue);
   }
 
   public boolean getPropertyAsBoolean(String name, boolean defaultValue) {
