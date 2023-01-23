@@ -96,7 +96,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     myCpu.setMonitorExec(true);
     myCpu.setTrace(0); /* TODO Enable */
     myCpu.getLogger().addLogListener(new LogListener() {
-      private final Logger mlogger = LoggerFactory.getLogger("MSPSim");
+      private static final Logger mlogger = LoggerFactory.getLogger("MSPSim");
       @Override
       public void log(Loggable source, String message) {
         mlogger.debug(getID() + ": " + source.getID() + ": " + message);
