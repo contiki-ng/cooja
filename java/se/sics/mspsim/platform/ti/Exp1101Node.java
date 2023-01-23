@@ -30,7 +30,7 @@ public class Exp1101Node extends GenericNode implements PortListener, USARTListe
     public static final int LEDS_CONF_RED    = (1 << 0); // 1.0
     public static final int LEDS_CONF_YELLOW = (1 << 1); // 1.1
 
-    public CC1101 radio;
+    public final CC1101 radio;
 
     public static MSP430Config makeChipConfig() {
         return new MSP430f5437Config();
