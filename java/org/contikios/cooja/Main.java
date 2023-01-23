@@ -41,6 +41,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import org.contikios.cooja.Cooja.Config;
 import org.contikios.cooja.Cooja.LogbackColors;
 import picocli.CommandLine;
@@ -306,11 +307,8 @@ class Main {
       Cooja.go(cfg, simConfigs);
     } else { // Start MSPSim.
       var config = new ArgumentManager(options.simulationFiles.toArray(new String[0]));
-      var nodeType = config.getProperty("nodeType");
-      if (nodeType == null) {
-        nodeType = getNodeTypeByPlatform(options.mspSimPlatform);
-      }
-      var node = createNode(nodeType);
+      var node = createNode(Objects.requireNonNullElseGet(config.getProperty("nodeType"), () ->
+              getNodeTypeByPlatform(options.mspSimPlatform)));
       if (node == null) {
         System.err.println("MSPSim does not currently support the platform '" + options.mspSimPlatform + "'.");
         System.exit(1);
