@@ -184,9 +184,7 @@ public class ConfigManager {
 
   public boolean getPropertyAsBoolean(String name, boolean defaultValue) {
     String value = getProperty(name, null);
-    return value != null
-    ? parseBoolean(name, value, defaultValue)
-        : defaultValue;
+    return value == null ? defaultValue : "true".equals(value) || "yes".equals(value) || "1".equals(value);
   }
 
   protected static int parseInt(String name, String value, int defaultValue) {
@@ -227,10 +225,6 @@ public class ConfigManager {
           + value + '\'');
     }
     return defaultValue;
-  }
-
-  protected static boolean parseBoolean(String name, String value, boolean defaultValue) {
-    return "true".equals(value) || "yes".equals(value) || "1".equals(value);
   }
 
   public void print(PrintStream out) {
