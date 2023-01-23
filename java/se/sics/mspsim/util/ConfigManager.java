@@ -171,7 +171,15 @@ public class ConfigManager {
 
   public long getPropertyAsLong(String name, long defaultValue) {
     String value = getProperty(name, null);
-    return value == null ? defaultValue : parseLong(name, value, defaultValue);
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Long.parseLong(value);
+    } catch (Exception e) {
+      System.err.println("config '" + name + "' has a non-long value '" + value + '\'');
+    }
+    return defaultValue;
   }
 
   public float getPropertyAsFloat(String name, float defaultValue) {
@@ -187,16 +195,6 @@ public class ConfigManager {
   public boolean getPropertyAsBoolean(String name, boolean defaultValue) {
     String value = getProperty(name, null);
     return value == null ? defaultValue : "true".equals(value) || "yes".equals(value) || "1".equals(value);
-  }
-
-  protected static long parseLong(String name, String value, long defaultValue) {
-    try {
-      return Long.parseLong(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-long value '"
-          + value + '\'');
-    }
-    return defaultValue;
   }
 
   protected static float parseFloat(String name, String value, float defaultValue) {
