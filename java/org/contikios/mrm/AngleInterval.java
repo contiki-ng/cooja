@@ -107,7 +107,7 @@ class AngleInterval {
       Interval subIntervalToSubtract = intervalToSubtract.subIntervals.get(i);
       Vector<Interval> newAfterSubtractionIntervals = new Vector<>();
       for (var afterSubtractionInterval : afterSubtractionIntervals) {
-        Vector<Interval> tempIntervals = afterSubtractionInterval.subtract(subIntervalToSubtract);
+        var tempIntervals = afterSubtractionInterval.subtract(subIntervalToSubtract);
         if (tempIntervals != null)
           newAfterSubtractionIntervals.addAll(tempIntervals);
       }

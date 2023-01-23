@@ -29,8 +29,7 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import java.util.Vector;
-
+import java.util.ArrayList;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -51,7 +50,7 @@ public class MspSerial extends SerialUI {
   private final MspMote mote;
   private final USARTSource usart;
   
-  private final Vector<Byte> incomingData = new Vector<>();
+  private final ArrayList<Byte> incomingData = new ArrayList<>();
  
   private final TimeEvent writeDataEvent;
 
