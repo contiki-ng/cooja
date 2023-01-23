@@ -292,7 +292,6 @@ public class DebugCommands implements CommandBundle {
             di = getELF().getDebugInfo(adr + 1);
           }
           if (di != null) {
-            di.getLine();
             context.out.println(di);
           } else {
             context.err.println("No line number found for: " + context.getArgument(0));

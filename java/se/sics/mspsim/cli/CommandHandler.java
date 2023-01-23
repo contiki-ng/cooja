@@ -234,11 +234,11 @@ public class CommandHandler implements ActiveComponent, LineListener {
           String helpText = command.getCommandHelp(cmd);
           String argHelp = command.getArgumentHelp(cmd);
           context.out.print(cmd);
-          if (argHelp != null && argHelp.length() > 0) {
+          if (argHelp != null && !argHelp.isEmpty()) {
             context.out.print(' ' + argHelp);
           }
           context.out.println();
-          if (helpText != null && helpText.length() > 0) {
+          if (helpText != null && !helpText.isEmpty()) {
             context.out.println("  " + helpText);
           }
           return 0;
@@ -251,7 +251,7 @@ public class CommandHandler implements ActiveComponent, LineListener {
     registerCommand("ps", new BasicCommand("list current executing commands/processes", "") {
       @Override
       public int executeCommand(CommandContext context) {
-        if (currentAsyncCommands.size() > 0) {
+        if (!currentAsyncCommands.isEmpty()) {
             context.out.println(" PID\tCommand");
           for (CommandContext[] currentAsyncCommand : currentAsyncCommands) {
             CommandContext cmd = currentAsyncCommand[0];

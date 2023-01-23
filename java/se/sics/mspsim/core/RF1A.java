@@ -32,7 +32,7 @@ package se.sics.mspsim.core;
 import se.sics.mspsim.chip.CC1101;
 import se.sics.mspsim.core.IOPort.PinState;
 
-public class RF1A extends IOUnit implements InterruptHandler {
+public class RF1A extends IOUnit {
     private static final boolean DEBUG = true;
 
     public static final int ADDRESS = 0xf00;

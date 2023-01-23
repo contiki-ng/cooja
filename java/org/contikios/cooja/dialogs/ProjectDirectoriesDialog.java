@@ -207,7 +207,7 @@ public class ProjectDirectoriesDialog extends JDialog {
       button.addActionListener(e -> {
         var newDefaultProjectDirs = new StringBuilder();
         for (COOJAProject p : currentProjects) {
-          if (newDefaultProjectDirs.length() > 0) {
+          if (!newDefaultProjectDirs.isEmpty()) {
             newDefaultProjectDirs.append(";");
           }
           var portablePath = Cooja.createContikiRelativePath(p.dir);
@@ -456,7 +456,7 @@ class ConfigViewer extends JDialog {
       var val = config.getStringValue(propertyName);
       // Add artificial space so the valuePane contains something. Otherwise, the next
       // row will have its values displayed on this row.
-      valuePane.add(new JLabel(val.equals("") ? " " : val));
+      valuePane.add(new JLabel(val.isEmpty() ? " " : val));
 		}
 
 		Container contentPane = getContentPane();

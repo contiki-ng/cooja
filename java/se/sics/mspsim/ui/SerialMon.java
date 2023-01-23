@@ -121,7 +121,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     commandField = new JTextField();
     commandField.addActionListener(e -> {
       String command = commandField.getText().trim();
-      if (command.length() > 0) {
+      if (!command.isEmpty()) {
         if (sendCommand(command)) {
           int previous = historyCount - 1;
           if (previous < 0) previous += history.length;
@@ -147,7 +147,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
               commandField.getToolkit().beep();
             } else {
               String cmd = commandField.getText().trim();
-              if (cmd.length() > 0) {
+              if (!cmd.isEmpty()) {
                 history[historyPos] = cmd;
               }
               historyPos = nextPos;
@@ -163,7 +163,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
               commandField.getToolkit().beep();
             } else {
               String cmd = commandField.getText().trim();
-              if (cmd.length() > 0) {
+              if (!cmd.isEmpty()) {
                 history[historyPos] = cmd;
               }
               historyPos = nextPos;

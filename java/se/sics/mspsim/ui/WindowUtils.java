@@ -127,7 +127,7 @@ public class WindowUtils {
       exitTable = new HashMap<>();
       Runtime.getRuntime().addShutdownHook(new Thread(() -> {
         var table = exitTable;
-        if (table != null && table.size() > 0) {
+        if (table != null && !table.isEmpty()) {
           exitTable = null;
           for (var entry : table.entrySet()) {
             putWindowBounds(entry.getValue(), entry.getKey());

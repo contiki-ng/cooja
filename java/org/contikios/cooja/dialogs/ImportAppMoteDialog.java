@@ -95,7 +95,7 @@ public class ImportAppMoteDialog extends JDialog {
 
     classField = new JTextField(40);
     String moteClass = moteType.getMoteClassName();
-    if (moteClass != null && moteClass.length() > 0) {
+    if (moteClass != null && !moteClass.isEmpty()) {
       classField.setText(moteClass);
     } else if (lastFile != null) {
       classField.setText(lastFile);
@@ -108,11 +108,11 @@ public class ImportAppMoteDialog extends JDialog {
       if (name.indexOf('/') >= 0 || name.indexOf(File.separatorChar) >= 0) {
         // Already full path
         fc.setSelectedFile(new File(name));
-      } else if (name.length() > 0) {
+      } else if (!name.isEmpty()) {
         fc.setSelectedFile(new File(new File(path), name.replace(".", "/") + ".class"));
       } else {
         var fp = cooja.restorePortablePath(new File(Cooja.getExternalToolsSetting("IMPORT_APP_LAST", "mymote.class")));
-        if (path.length() > 0 && !fp.getAbsolutePath().startsWith(path)) {
+        if (!path.isEmpty() && !fp.getAbsolutePath().startsWith(path)) {
           fc.setCurrentDirectory(new File(path));
         } else {
           fc.setSelectedFile(fp);
@@ -143,7 +143,7 @@ public class ImportAppMoteDialog extends JDialog {
     var createButton = new JButton("Create");
     createButton.addActionListener(e -> {
       String className = classField.getText();
-      if (className.length() == 0) {
+      if (className.isEmpty()) {
         JOptionPane.showMessageDialog(ImportAppMoteDialog.this,
             "No class specified", "Failed to load class", JOptionPane.ERROR_MESSAGE);
         return;
@@ -157,7 +157,7 @@ public class ImportAppMoteDialog extends JDialog {
       if (trySetClass(cooja, classFile)) {
         moteType.setDescription(descriptionField.getText());
         String path = pathField.getText();
-        if (path.length() > 0) {
+        if (!path.isEmpty()) {
           moteType.setMoteClassPath(new File(path));
           lastPath = path;
         } else {

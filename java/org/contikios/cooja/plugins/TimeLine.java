@@ -685,7 +685,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       output.append(stats.toString(logs, leds, radioHW, radioRXTX));
     }
 
-    if (allStats.size() == 0) {
+    if (allStats.isEmpty()) {
       return output.toString();
     }
 
@@ -1210,7 +1210,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           } else { // Trigger tooltip.
             JToolTip t = timeline.createToolTip();
             t.setTipText(Timeline.this.getMouseToolTipText(e));
-            if (t.getTipText() == null || t.getTipText().equals("")) {
+            if (t.getTipText() == null || t.getTipText().isEmpty()) {
               return;
             }
             t.validate();

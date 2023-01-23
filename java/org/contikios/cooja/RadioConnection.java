@@ -231,7 +231,7 @@ public class RadioConnection {
 
   @Override
   public String toString() {
-    if (destinationsNonInterfered.size() == 0) {
+    if (destinationsNonInterfered.isEmpty()) {
       return id + ": Radio connection: " + source.getMote() + " -> none";
     }
     if (destinationsNonInterfered.size() == 1) {

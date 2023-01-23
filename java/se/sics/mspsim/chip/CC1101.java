@@ -484,10 +484,10 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 case CC1101_RSSI:
                         return currentRssiReg;
                 case CC1101_RXFIFO:
-                        if (rxfifo.size() > 0) {
+                        if (!rxfifo.isEmpty()) {
                                 int ret = (int) rxfifo.remove(0);
                                 /*printRXFIFO();*/
-                if (triggerGDO0onFifoThreshold && rxfifo.size() == 0) {
+                if (triggerGDO0onFifoThreshold && rxfifo.isEmpty()) {
                     setGDO0(false);
                 }
                                 return ret;

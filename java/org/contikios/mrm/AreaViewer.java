@@ -355,7 +355,7 @@ public class AreaViewer extends VisPlugin {
         /* Select */
         if (inSelectMode) {
           ArrayList<Radio> hitRadios = trackClickedRadio(e1.getPoint());
-          if (hitRadios == null || hitRadios.size() == 0) {
+          if (hitRadios == null || hitRadios.isEmpty()) {
             if (e1.getButton() != MouseEvent.BUTTON1) {
               selectedRadio = null;
               channelImage = null;
@@ -434,7 +434,7 @@ public class AreaViewer extends VisPlugin {
           t.setTipText("<html>" +
                   trackedComponents.log.replace("\n", "<br>").replace(" pi", " &pi;") +
                   "</html>");
-          if (t.getTipText() == null || t.getTipText().equals("")) {
+          if (t.getTipText() == null || t.getTipText().isEmpty()) {
             return;
           }
           popUpToolTip = PopupFactory.getSharedInstance().getPopup(
@@ -1971,7 +1971,7 @@ public class AreaViewer extends VisPlugin {
       }
     }
 
-    if (hitRadios.size() == 0) {
+    if (hitRadios.isEmpty()) {
       return null;
     }
     return hitRadios;

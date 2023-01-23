@@ -523,7 +523,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     @Override
     boolean parseStartAddrAndSize() {
       // FIXME: Adjust this code to mirror the optimized method in MapSectionParser.
-      if (startRegExp == null || startRegExp.equals("")) {
+      if (startRegExp == null || startRegExp.isEmpty()) {
         dataStartAddr = bssStartAddr = commonStartAddr = -1;
       } else {
         long result;
@@ -537,7 +537,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
           }
         }
 
-        if (retString == null || retString.equals("")) {
+        if (retString == null || retString.isEmpty()) {
           result = -1;
         } else {
           result = Long.parseUnsignedLong(retString.trim(), 16);
@@ -546,7 +546,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
         dataStartAddr = bssStartAddr = commonStartAddr = result;
       }
 
-      if (dataStartAddr < 0 || endRegExp == null || endRegExp.equals("")) {
+      if (dataStartAddr < 0 || endRegExp == null || endRegExp.isEmpty()) {
         dataSize = bssSize = commonSize = -1;
         return false;
       }
@@ -562,7 +562,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
         }
       }
 
-      if (retString == null || retString.equals("")) {
+      if (retString == null || retString.isEmpty()) {
         end = -1;
       } else {
         end = Long.parseUnsignedLong(retString.trim(), 16);

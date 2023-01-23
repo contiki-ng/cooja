@@ -307,7 +307,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     out.println("************************* Profile Data **************************************");
     out.println("Function                              Calls    Average       Total  Exclusive");
 
-    if (functionNameRegexp != null && functionNameRegexp.length() > 0) {
+    if (functionNameRegexp != null && !functionNameRegexp.isEmpty()) {
       pattern = Pattern.compile(functionNameRegexp);
     }
     for (CallEntry entry : entries) {

@@ -63,7 +63,7 @@ public class CommandParser {
 
   public static String[][] parseLine(String line, boolean handlePipes, boolean handleRedirect) {
     line = line.trim();
-    if (line.length() == 0 || line.charAt(0) == '#') {
+    if (line.isEmpty() || line.charAt(0) == '#') {
       return null;
     }
 
@@ -196,7 +196,7 @@ public class CommandParser {
               }
             }
             state = TEXT;
-            if (args.size() == 0) {
+            if (args.isEmpty()) {
               throw new IllegalArgumentException("empty command");
             }
             if (redirectCommand != null) {
@@ -232,7 +232,7 @@ public class CommandParser {
       }
       redirectFilename = args.remove(redirectFile);
     }
-    if (args.size() > 0) {
+    if (!args.isEmpty()) {
       list.add(args.toArray(new String[0]));
     }
     if (redirectCommand != null) {

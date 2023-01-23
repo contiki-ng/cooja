@@ -694,7 +694,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
         /* reset state */
         rxFIFO.restore();
         setSFD(false);
-        setFIFO(rxFIFO.length() > 0);
+        setFIFO(!rxFIFO.isEmpty());
         frameRejected = true;
     }
 
@@ -1608,7 +1608,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
                     " fifo: " + rxFIFO.stateToString());
         } else if (--rxfifoReadLeft == 0) {
             /* check if we have another packet in buffer */
-            if (rxFIFO.length() > 0) {
+            if (!rxFIFO.isEmpty()) {
                 /* check if the packet is complete or longer than fifopThr */
                 if (rxFIFO.length() > rxFIFO.peek(0) ||
                         (rxFIFO.length() > fifopThr && !decodeAddress && !frameRejected)) {
@@ -1618,7 +1618,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
             }
         }
         // Set the FIFO pin low if there are no more bytes available in the RXFIFO.
-        if (rxFIFO.length() == 0) {
+        if (rxFIFO.isEmpty()) {
             if (DEBUG) log("Setting FIFO to low (buffer empty)");
             setFIFO(false);
         }

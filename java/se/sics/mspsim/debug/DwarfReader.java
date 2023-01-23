@@ -355,7 +355,7 @@ public class DwarfReader implements ELFDebug {
                 if (DEBUG) System.out.println("Line - Position " + sec.getPosition() + " totLen: " + totLen +
                         " endPos: " + endPos);
 
-                if (lineData.size() > 0) {
+                if (!lineData.isEmpty()) {
                     /* create a block of line-address data that can be used for lookup later.*/
                     LineData lineTable = new LineData();
                     lineTable.lineEntries = lineData.toArray(new LineEntry[0]);
