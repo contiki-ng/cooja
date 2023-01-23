@@ -121,12 +121,12 @@ public abstract class I2CUnit implements USARTListener {
         /**
          * Is this a read message
          */
-        private boolean isRead = false;
+        private boolean isRead;
 
         /**
          * Memory address of the peripheral to read/write
          */
-        private int registerAddress = 0x00;
+        private int registerAddress;
 
         /**
          * Length in bytes of the bus address
@@ -141,12 +141,12 @@ public abstract class I2CUnit implements USARTListener {
         /**
          * Number of received value bytes
          */
-        private int numBytesRxTx = 0;
+        private int numBytesRxTx;
 
         /**
          * Received bytes of the address
          */
-        private int regAddressBytesRx = 0;
+        private int regAddressBytesRx;
 
         /**
          * Value to read/write
@@ -156,11 +156,11 @@ public abstract class I2CUnit implements USARTListener {
         /**
          * Is the peripheral ready to receive / send data?
          */
-        private boolean ready = false;
+        private boolean ready;
 
         private final MSP430Core cpu;
         private final USARTSource source;
-        private boolean txScheduled = false;
+        private boolean txScheduled;
 
         /**
          * Tx Event Handler

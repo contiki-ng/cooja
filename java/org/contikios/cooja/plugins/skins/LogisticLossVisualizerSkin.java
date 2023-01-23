@@ -72,9 +72,9 @@ public class LogisticLossVisualizerSkin implements VisualizerSkin {
   private static final Color COLOR_TX = new Color(0, 255, 0, 100);
   private static final Color COLOR_INT = new Color(50, 50, 50, 100);
 
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
-  private LogisticLoss radioMedium = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
+  private LogisticLoss radioMedium;
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {

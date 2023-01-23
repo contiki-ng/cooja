@@ -76,8 +76,8 @@ public class ESBGui extends AbstractNodeGUI implements ADCInput {
 
   private final ESBNode node;
   private final StateChangeListener ledsListener = (source, oldState, newState) -> repaint(LED_BOUNDS);
-  private boolean buttonDown = false;
-  private boolean resetDown = false;
+  private boolean buttonDown;
+  private boolean resetDown;
 
   private TargetDataLine inDataLine;
 

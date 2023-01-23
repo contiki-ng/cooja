@@ -10,7 +10,7 @@ public class JFrameWindowManager implements WindowManager {
     public ManagedWindow createWindow(final String name) {
         return new ManagedWindow() {
             private final JFrame window = new JFrame(name);
-            private boolean restored = false;
+            private boolean restored;
 
             @Override
             public void setSize(int width, int height) {

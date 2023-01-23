@@ -54,8 +54,8 @@ import org.contikios.cooja.plugins.VisualizerSkin;
  */
 @ClassDescription("Log output: printf()'s")
 public class LogVisualizerSkin implements VisualizerSkin {
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
 
   private final LogOutputListener logOutputListener = ev -> visualizer.repaint();
 

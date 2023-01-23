@@ -51,8 +51,8 @@ import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
  */
 @ClassDescription("Mote type")
 public class MoteTypeVisualizerSkin implements VisualizerSkin {
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
 
   private static final Color[][] COLORS = new Color[][] {
     new Color[] {Color.GREEN},

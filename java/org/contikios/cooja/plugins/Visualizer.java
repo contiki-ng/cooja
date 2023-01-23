@@ -143,11 +143,11 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
   private final Simulation simulation;
   private final JPanel canvas;
-  private boolean loadedConfig = false;
+  private boolean loadedConfig;
 
   /* Viewport */
   private final AffineTransform viewportTransform;
-  public int resetViewport = 0;
+  public int resetViewport;
 
   enum MotesActionState {
     NONE,

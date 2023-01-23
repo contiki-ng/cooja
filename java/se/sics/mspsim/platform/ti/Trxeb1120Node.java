@@ -33,7 +33,7 @@ public class Trxeb1120Node extends GenericNode implements PortListener, USARTLis
         IOPort port10;
 
         public CC1120 radio;
-        public Enc28J60 enc = null;
+        public Enc28J60 enc;
 
         private final boolean withEnc;
 

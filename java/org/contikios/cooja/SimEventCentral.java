@@ -91,7 +91,7 @@ public class SimEventCentral {
 
   /* GENERIC */
   private static class MoteEvent {
-    public static int _ID_COUNTER = 0; /* Debugging */
+    public static int _ID_COUNTER; /* Debugging */
     public final int ID; /* Debugging */
 
     private final Mote mote;

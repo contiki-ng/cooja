@@ -131,7 +131,7 @@ public class ContikiRS232 extends SerialUI implements PolledAfterActiveTicks {
     return mote;
   }
 
-  private TimeEvent pendingBytesEvent = null;
+  private TimeEvent pendingBytesEvent;
   private final ArrayDeque<Byte> pendingBytes = new ArrayDeque<>();
   @Override
   public void writeArray(byte[] s) {

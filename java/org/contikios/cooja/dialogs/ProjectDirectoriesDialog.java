@@ -80,7 +80,7 @@ public class ProjectDirectoriesDialog extends JDialog {
 	private final JTextArea projectInfo = new JTextArea("Extension information:");
 
   final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
-	private COOJAProject[] returnedProjects = null;
+	private COOJAProject[] returnedProjects;
 
 	/**
 	 * Shows a blocking configuration dialog.

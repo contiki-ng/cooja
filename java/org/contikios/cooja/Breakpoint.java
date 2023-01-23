@@ -49,15 +49,15 @@ public abstract class Breakpoint implements Watchpoint {
   protected final WatchpointMote mote;
 
   protected long address = -1; /* Binary address */
-  protected File codeFile = null; /* Source code, may be null*/
+  protected File codeFile; /* Source code, may be null*/
   protected int lineNr = -1; /* Source code line number, may be null */
 
   protected boolean stopsSimulation = true;
 
-  protected String msg = null;
+  protected String msg;
   protected Color color = Color.BLACK;
 
-  protected String sourceCode = null;
+  protected String sourceCode;
 
   public Breakpoint(WatchpointMote mote) {
     this.mote = mote;

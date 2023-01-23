@@ -134,17 +134,17 @@ public class Timer extends IOUnit {
   // useful for setting expected compare and capture times to correct time.
   // valid for timer A
   private final int timerOverflow;
-  private long nextTimerTrigger = 0;
+  private long nextTimerTrigger;
 
   // this is used to create "tick" since last reset of the timer.
   // it will contain the full number of ticks since that reset and
   // is used to calculate the real counter value
-  private long counterStart = 0;
+  private long counterStart;
   private long counterAcc;
 
   // Counter stores the current timer counter register (TR)
-  private int counter = 0;
-  private int counterPassed = 0;
+  private int counter;
+  private int counterPassed;
 
   // Input map for timer A
   public static final int[] TIMER_Ax149 = new int[] {
@@ -190,8 +190,8 @@ public class Timer extends IOUnit {
   // The IO registers
   private int tctl;
 
-  private boolean interruptEnable = false;
-  private boolean interruptPending = false;
+  private boolean interruptEnable;
+  private boolean interruptPending;
 
   private final int ccr1Vector;
   private final int ccr0Vector;
@@ -210,10 +210,10 @@ public class Timer extends IOUnit {
       long expCaptureTime;
 
       int capMode;
-      boolean captureOn = false;
+      boolean captureOn;
       int inputSel;
       int inputSrc;
-      long cyclesLeft = 0;
+      long cyclesLeft;
       boolean sync;
       int outMode;
 

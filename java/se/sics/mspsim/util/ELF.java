@@ -70,7 +70,7 @@ public class ELF {
   int shstrndx;
 
   final byte[] elfData;
-  private int pos = 0;
+  private int pos;
 
   private ELFSection[] sections;
   private ELFProgram[] programs;

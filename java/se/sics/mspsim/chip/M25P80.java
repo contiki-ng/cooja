@@ -76,14 +76,14 @@ public class M25P80 extends ExternalFlash implements USARTListener, PortListener
   private static final double PROGRAM_PAGE_MILLIS = 1.0; // 0.8 - 5 ms
   private static final double SECTOR_ERASE_MILLIS = 800; // 800 - 3 000 ms
 
-  private int state = 0;
+  private int state;
   private boolean chipSelect;
 
   private int pos;
-  private int status = 0;
+  private int status;
 
-  private boolean writeEnable = false;
-  private boolean writing = false;
+  private boolean writeEnable;
+  private boolean writing;
 
   private final int[] identity = new int[] {
       0x20,0x20,0x14,0x10,

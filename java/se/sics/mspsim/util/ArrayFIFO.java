@@ -11,8 +11,8 @@ public class ArrayFIFO {
     private final int size;
     private final String name;
 
-    private int readPos = 0;
-    private int writePos = 0;
+    private int readPos;
+    private int writePos;
     private int len;
 
     private int markWritePos;

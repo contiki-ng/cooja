@@ -608,7 +608,7 @@ public class JavaScanner extends Scanner {
 
   private int charlength = 1;
 
-  private int pair = 0;
+  private int pair;
 
   private char next() {
     if (start >= end)

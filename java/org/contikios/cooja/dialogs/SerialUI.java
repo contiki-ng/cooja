@@ -61,9 +61,9 @@ public abstract class SerialUI extends Log implements SerialPort {
   private final static int MAX_LENGTH = 16*1024;
 
   protected final EventTriggers<EventTriggers.Update, Byte> serialDataTriggers = new EventTriggers<>();
-  private byte lastSerialData = 0; /* SerialPort */
+  private byte lastSerialData; /* SerialPort */
   private String lastLogMessage = ""; /* Log */
-  private int charactersReceived = 0;
+  private int charactersReceived;
   private final StringBuilder newMessage = new StringBuilder(); /* Log */
 
   /* Command history */

@@ -61,9 +61,9 @@ public class GCRCoder {
       0xff, 0x0d, 0x0e, 0xff, // 1c, 1f invalid...
   };
 
-  private int gcr_bits = 0;
+  private int gcr_bits;
 
-  private int gcr_val = 0;
+  private int gcr_val;
 
   public GCRCoder() {
   }

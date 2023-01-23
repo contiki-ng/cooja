@@ -63,8 +63,8 @@ public class WismoteGui extends AbstractNodeGUI {
 
     private final WismoteNode node;
     private final StateChangeListener ledsListener = (source, oldState, newState) -> repaint(LEDS_BOUNDS);
-    private boolean buttonDown = false;
-    private boolean resetDown = false;
+    private boolean buttonDown;
+    private boolean resetDown;
 
     public WismoteGui(WismoteNode node) {
         super("WismoteGui", "images/wismote.jpg");

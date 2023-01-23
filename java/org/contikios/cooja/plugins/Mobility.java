@@ -63,7 +63,7 @@ public class Mobility implements Plugin {
   private long periodStart; /* us */
   private int currentMove;
 
-  private File filePositions = null;
+  private File filePositions;
 
   private final MessageListUI log;
 

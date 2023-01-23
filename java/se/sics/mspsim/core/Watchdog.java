@@ -74,10 +74,10 @@ public class Watchdog extends IOUnit implements SFRModule {
   // The target time for this timer
   private long targetTime;
   // Timer ACLK
-  private boolean sourceACLK = false;
+  private boolean sourceACLK;
 
   // Timer or WDT mode
-  private boolean timerMode = false;
+  private boolean timerMode;
 
   private final TimeEvent wdtTrigger = new TimeEvent(0, "Watchdog") {
     @Override

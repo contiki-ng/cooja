@@ -123,7 +123,7 @@ public class Flash extends IOUnit {
   /**
    * Infomem Configurations
    */
-  private int infomemcfg = 0;
+  private int infomemcfg;
   /**
    * Whether the infomem is locked or not
    */

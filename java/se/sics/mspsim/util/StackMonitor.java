@@ -9,10 +9,10 @@ public class StackMonitor {
   private int heapStartAddress;
   private int stackStartAddress;
 
-  private int stackMin = 0;
-  private int stackMax = 0;
-  private int stack = 0;
-  private int profStackMax = 0;
+  private int stackMin;
+  private int stackMax;
+  private int stack;
+  private int profStackMax;
 
   private final DataSource maxDataSource = new DataSource() {
     @Override

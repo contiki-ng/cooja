@@ -46,7 +46,7 @@ public class LineNumberedBorder extends AbstractBorder {
    */
   private int location = LEFT_SIDE;
 
-  private Color separatorColor = null;
+  private Color separatorColor;
 
   public LineNumberedBorder(int location, int justify) {
     setLocation(location);

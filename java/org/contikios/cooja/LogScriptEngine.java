@@ -100,9 +100,9 @@ public class LogScriptEngine {
     }
   };
 
-  private Semaphore semaphoreScript = null; /* Semaphores blocking script/simulation */
-  private Semaphore semaphoreSim = null;
-  private Thread scriptThread = null; /* Script thread */
+  private Semaphore semaphoreScript; /* Semaphores blocking script/simulation */
+  private Semaphore semaphoreSim;
+  private Thread scriptThread; /* Script thread */
   private final Simulation simulation;
 
   private long timeout;

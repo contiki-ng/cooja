@@ -50,7 +50,7 @@ public class DbgInstruction {
   private int size;
   private int pos;
 
-  private boolean extWord = false;
+  private boolean extWord;
 
   public DbgInstruction() {
   }

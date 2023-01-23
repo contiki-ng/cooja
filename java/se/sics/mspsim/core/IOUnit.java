@@ -50,7 +50,7 @@ public abstract class IOUnit implements InterruptHandler, Loggable {
   private StateChangeListener stateListener;
   private int ioState;
   protected int logLevel;
-  protected boolean DEBUG = false;
+  protected boolean DEBUG;
 
   protected final EmulationLogger logger;
 

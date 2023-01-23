@@ -24,7 +24,7 @@ public abstract class PacketAnalyzer {
     byte[] llsender;
     byte[] llreceiver;
 
-    byte lastDispatch = 0;
+    byte lastDispatch;
 
     public Packet(byte[] data, int level, long ts) {
       this.level = level;

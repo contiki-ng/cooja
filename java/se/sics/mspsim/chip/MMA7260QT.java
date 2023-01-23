@@ -55,7 +55,7 @@ public class MMA7260QT extends Accelerometer {
         1.5f, 2, 4, 6
     };
 
-    private int gSelect = 0;
+    private int gSelect;
 
     public MMA7260QT(MSP430Core cpu) {
         super("MMA7260QT", cpu);

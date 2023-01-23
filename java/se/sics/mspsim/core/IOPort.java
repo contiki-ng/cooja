@@ -61,7 +61,7 @@ public class IOPort extends IOUnit {
 
     private final PortReg[] portMap;
 
-    private PortListener portListener = null;
+    private PortListener portListener;
 
     /* Registers for Digital I/O */
 

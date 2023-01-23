@@ -62,9 +62,9 @@ import org.slf4j.LoggerFactory;
 public class ImportAppMoteType extends AbstractApplicationMoteType {
   private static final Logger logger = LoggerFactory.getLogger(ImportAppMoteType.class);
 
-  private File moteClassPath = null;
-  private String moteClassName = null;
-  private Constructor<? extends AbstractApplicationMote> moteConstructor = null;
+  private File moteClassPath;
+  private String moteClassName;
+  private Constructor<? extends AbstractApplicationMote> moteConstructor;
 
   public ImportAppMoteType() {
     super(true);

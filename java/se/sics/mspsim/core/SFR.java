@@ -53,12 +53,12 @@ public class SFR extends IOUnit {
   public static final int ME1 = 4;
   public static final int ME2 = 5;
 
-  private int ie1 = 0;
-  private int ie2 = 0;
-  private int ifg1 = 0;
-  private int ifg2 = 0;
-  private int me1 = 0;
-  private int me2 = 0;
+  private int ie1;
+  private int ie2;
+  private int ifg1;
+  private int ifg2;
+  private int me1;
+  private int me2;
 
   /* 64 = max number of interrupts */
   private final SFRModule[] sfrModule = new SFRModule[64];

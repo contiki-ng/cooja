@@ -250,7 +250,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
 //    public static final int RAM_CBCSTATE            = 0x150;
 
     /* one single byte instruction can be stored in the IBUF */
-    int instructionBuffer = 0;
+    int instructionBuffer;
 
     // IOCFG0 memory Bit masks
     public static final int BCN_ACCEPT = (1<<11);
@@ -364,24 +364,24 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     private int fifopThr = 0x40;
 
     /* Configuration for frame filtering and auto acknowledgments */
-    private boolean frameFilter = false;
-    private boolean autoAck = false;
-    private boolean shouldAck = false;
-    private boolean ackRequest = false;
-    private boolean autoCRC = false;
+    private boolean frameFilter;
+    private boolean autoAck;
+    private boolean shouldAck;
+    private boolean ackRequest;
+    private boolean autoCRC;
 
     // Data from last received packet
-    private int dsn = 0;
-    private int fcf0 = 0;
-    private int fcf1 = 0;
-    private int frameType = 0;
-    private boolean crcOk = false;
+    private int dsn;
+    private int fcf0;
+    private int fcf1;
+    private int frameType;
+    private boolean crcOk;
 
-    private int activeFrequency = 0;
-    private int activeChannel = 0;
+    private int activeFrequency;
+    private int activeChannel;
 
     //private int status = STATUS_XOSC16M_STABLE | STATUS_RSSI_VALID;
-    private int status = 0;
+    private int status;
 
     private final int[] memory = new int[0x400]; /* total memory */
 
@@ -406,7 +406,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     private boolean currentFIFOP;
 
     /* current CCA value */
-    private boolean currentCCA = false;
+    private boolean currentCCA;
 
     private int txCursor;
     private boolean isRadioOn;
@@ -473,12 +473,12 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
         }
     };
     private boolean overflow;
-    private boolean frameRejected = false;
+    private boolean frameRejected;
 
     private int ackPos;
     /* type = 2 (ACK), third byte needs to be sequence number... */
     private final int[] ackBuf = {0x05, 0x02, 0x00, 0x00, 0x00, 0x00};
-    private boolean ackFramePending = false;
+    private boolean ackFramePending;
     private final CCITT_CRC rxCrc = new CCITT_CRC();
     private final CCITT_CRC txCrc = new CCITT_CRC();
 
@@ -699,8 +699,8 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     }
 
     /* variables for the address recognition */
-    int destinationAddressMode = 0;
-    boolean decodeAddress = false;
+    int destinationAddressMode;
+    boolean decodeAddress;
     /* Receive a byte from the radio medium
      * @see se.sics.mspsim.chip.RFListener#receivedByte(byte)
      */

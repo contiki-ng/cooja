@@ -67,7 +67,7 @@ public class ContikiChecker implements CallListener, ActiveComponent {
     private Profiler profiler;
 
     private final HashMap<String,Integer> callTable = new HashMap<>();
-    private int callCount = 0;
+    private int callCount;
 
     @Override
     public void init(String name, ComponentRegistry registry) {

@@ -54,8 +54,8 @@ import se.sics.mspsim.core.MSP430;
  */
 @ClassDescription("Code")
 public class CodeVisualizerSkin implements VisualizerSkin {
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
 
   private final Timer repaintTimer = new Timer(100, e -> {
     if (simulation.isRunning()) {

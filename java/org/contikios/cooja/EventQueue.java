@@ -38,7 +38,7 @@ import java.util.function.Predicate;
  */
 final class EventQueue {
 
-  private long count = 0;
+  private long count;
 
   public static final class Pair implements Comparable<Pair> {
     public final TimeEvent event;

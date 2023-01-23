@@ -64,7 +64,7 @@ public class HighlightSourceViewer implements SourceViewer {
   private JFrame window;
   private SyntaxHighlighter highlighter;
   private String currentFile;
-  private ArrayList<File> path = null;
+  private ArrayList<File> path;
   private JFileChooser fileChooser;
 
   public HighlightSourceViewer() {

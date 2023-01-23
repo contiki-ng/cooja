@@ -104,12 +104,12 @@ public class SerialSocketServer implements Plugin, MotePlugin {
   private JFormattedTextField listenPortField;
   private JButton serverStartButton;
 
-  private int inBytes = 0, outBytes = 0;
+  private int inBytes, outBytes;
 
   private ServerSocket serverSocket;
   private Socket clientSocket;
 
-  private String commands = null;
+  private String commands;
 
   private final Mote mote;
   private final Simulation simulation;
@@ -591,7 +591,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
     notifyClientDisconnected();
   }
 
-  private boolean closed = false;
+  private boolean closed;
 
   @Override
   public JInternalFrame getCooja() {

@@ -79,8 +79,8 @@ public class ConsoleUI extends JComponent {
   /* up to 200 visible lines */
   private final String[] lines = new String[200];
 
-  private int lineCount = 0;
-  private int lastVisible = 0;
+  private int lineCount;
+  private int lastVisible;
 
   /* the lines that are on the screen */
   /*
@@ -93,8 +93,8 @@ public class ConsoleUI extends JComponent {
 
   private final ArrayDeque<String> commands = new ArrayDeque<>();
 
-  private int len = 0;
-  private int back = 0;
+  private int len;
+  private int back;
 
   private static final int charWidth = 7;
   private static final int charHeight = 11;
@@ -104,19 +104,19 @@ public class ConsoleUI extends JComponent {
 
   /* editor variables */
   private static final boolean insert = true;
-  private boolean editing = false;
+  private boolean editing;
   private boolean cursor;
 
-  private int editPos = 0;
-  private int cursorX = 0;
-  private int minCursorX = 0;
-  private int cursorY = 0;
+  private int editPos;
+  private int cursorX;
+  private int minCursorX;
+  private int cursorY;
 
-  private boolean selectActive = false;
-  private int selectStartX = 0;
-  private int selectStartY = 0;
-  private int selectEndX = 0;
-  private int selectEndY = 0;
+  private boolean selectActive;
+  private int selectStartX;
+  private int selectStartY;
+  private int selectEndX;
+  private int selectEndY;
 
 
   private static final int MIN_X = 8;
@@ -391,8 +391,8 @@ public class ConsoleUI extends JComponent {
    * the screen completely. It is possible to just scroll upwards if just adding
    * another "last" line.
    */
-  int scrCursorX = 0;
-  int scrCursorY = 0;
+  int scrCursorX;
+  int scrCursorY;
 
   private int layoutRows() {
 
@@ -459,7 +459,7 @@ public class ConsoleUI extends JComponent {
 
   final StringBuffer currentOutput = new StringBuffer();
 
-  int oldBottomLine = 0;
+  int oldBottomLine;
   @Override
   protected void paintComponent(Graphics g) {
     int pos;

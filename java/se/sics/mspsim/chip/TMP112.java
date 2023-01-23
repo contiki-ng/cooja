@@ -43,16 +43,16 @@ import se.sics.mspsim.core.USARTSource;
  */
 public class TMP112 extends I2CUnit implements TemperatureChip {
 
-        private int temperature = 0; // in degrees
+        private int temperature; // in degrees
         private int config = 0x60a0; // default config
 
-        private boolean extendedMode = false;
-        private boolean polarity = false;
-        private boolean alarm = false;
-        private boolean shutdown = false;
-        private boolean thermostat = false;
+        private boolean extendedMode;
+        private boolean polarity;
+        private boolean alarm;
+        private boolean shutdown;
+        private boolean thermostat;
         private int resolution = 0x03;
-        private boolean oneShot = false;
+        private boolean oneShot;
 
         private final float[] resFactors = { 50f, 25f, 12.5f, 6.25f };
 

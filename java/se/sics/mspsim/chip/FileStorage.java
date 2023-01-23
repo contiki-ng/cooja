@@ -48,7 +48,7 @@ public class FileStorage implements Storage {
     private RandomAccessFile file;
     private FileChannel fileChannel;
     private FileLock fileLock;
-    private long maxSize = 0;
+    private long maxSize;
 
     public FileStorage(String filename) {
         this.filename = filename;

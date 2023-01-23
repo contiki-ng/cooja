@@ -100,21 +100,21 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
    */
   private double radioTransmissionRateKBPS;
 
-  private RadioPacket packetToMote = null;
+  private RadioPacket packetToMote;
 
-  private RadioPacket packetFromMote = null;
+  private RadioPacket packetFromMote;
 
   private boolean radioOn;
 
-  private boolean isTransmitting = false;
+  private boolean isTransmitting;
 
-  private boolean isInterfered = false;
+  private boolean isInterfered;
 
   private long transmissionEndTime = -1;
 
   private RadioEvent lastEvent = RadioEvent.UNKNOWN;
 
-  private long lastEventTime = 0;
+  private long lastEventTime;
 
   private int oldOutputPowerIndicator = -1;
 

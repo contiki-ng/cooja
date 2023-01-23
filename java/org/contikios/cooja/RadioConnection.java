@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 public class RadioConnection {
   private static final Logger logger = LoggerFactory.getLogger(RadioConnection.class);
 
-  private static int ID = 0; /* Unique radio connection ID. For internal use */
+  private static int ID; /* Unique radio connection ID. For internal use */
   private final int id;
 
   private final Radio source;

@@ -91,9 +91,9 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
   private static final Color COLOR_TX = new Color(0, 255, 0, 100);
   private static final Color COLOR_INT = new Color(50, 50, 50, 100);
 
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
-  private UDGM radioMedium = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
+  private UDGM radioMedium;
 
   private JInternalFrame rrFrame;
   private Box ratioRX, ratioTX, rangeTX, rangeINT;

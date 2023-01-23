@@ -65,7 +65,7 @@ public class CC2420PacketHandler extends AbstractPacketHandler implements RFList
   int mode = SFD_SEARCH;
   int pos;
   int packetLen;
-  int sfdSearch = 0;
+  int sfdSearch;
 
   final MSP430Core cpu;
   public CC2420PacketHandler(MSP430Core cpu) {

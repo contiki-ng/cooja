@@ -21,7 +21,7 @@ public class CPUHeatMap extends JComponent implements MemoryMonitor {
     private final int[] heatR;
     private final int[] heatW;
     private final int[] heatE;
-    private int heatMax = 0;
+    private int heatMax;
     private int mode = 1;
 
     private final MSP430Core cpu;

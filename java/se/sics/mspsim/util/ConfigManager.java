@@ -51,7 +51,7 @@ import java.util.StringTokenizer;
 
 public class ConfigManager {
 
-  protected Properties properties = null;
+  protected Properties properties;
 
 
   // -------------------------------------------------------------------

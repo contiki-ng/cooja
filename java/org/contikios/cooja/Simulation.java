@@ -94,7 +94,7 @@ public final class Simulation {
 
   private long lastStartRealTime;
   private long lastStartSimulationTime;
-  private long currentSimulationTime = 0;
+  private long currentSimulationTime;
 
   private String title;
 
@@ -102,8 +102,8 @@ public final class Simulation {
 
   private static final Logger logger = LoggerFactory.getLogger(Simulation.class);
 
-  private volatile boolean isRunning = false;
-  private volatile boolean isShutdown = false;
+  private volatile boolean isRunning;
+  private volatile boolean isShutdown;
 
   private final Cooja cooja;
 
@@ -139,7 +139,7 @@ public final class Simulation {
   private final SimEventCentral eventCentral = new SimEventCentral(this);
 
   /** The return value from startSimulation. */
-  private volatile Integer returnValue = null;
+  private volatile Integer returnValue;
 
   /** Mote relation (directed). */
   public record MoteRelation(Mote source, Mote dest, Color color) {}

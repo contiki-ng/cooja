@@ -95,8 +95,8 @@ public class Multiplier32 extends IOUnit {
     private int mpy32ctl0;
     private long res64;
 
-    private boolean signed = false;
-    private boolean accumulating = false;
+    private boolean signed;
+    private boolean accumulating;
 
     /**
      * Creates a new <code>Multiplier32</code> instance.

@@ -39,7 +39,7 @@ import java.util.ArrayList;
 public class ComponentRegistry {
 
     private final ArrayList<ComponentEntry> components = new ArrayList<>();
-    private boolean running = false;
+    private boolean running;
 
     public ComponentRegistry(ComponentEntry... entries) {
         for (var e : entries) {

@@ -15,7 +15,7 @@ public class WindowTarget extends Target {
   private ManagedWindow window;
   // Default in the current version - TODO: replace with better
   private final JTextArea jta = new JTextArea(40,80);
-  private WindowDataHandler dataHandler = null;
+  private WindowDataHandler dataHandler;
 
   public WindowTarget(Map<String,Target> targets, String name) {
     super(targets, name, false);

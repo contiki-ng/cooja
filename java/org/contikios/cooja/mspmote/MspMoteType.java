@@ -60,8 +60,8 @@ import org.slf4j.LoggerFactory;
 public abstract class MspMoteType extends BaseContikiMoteType {
   private static final Logger logger = LoggerFactory.getLogger(MspMoteType.class);
 
-  private boolean loadedDebugInfo = false;
-  private HashMap<File, HashMap<Integer, Integer>> debuggingInfo = null; /* cached */
+  private boolean loadedDebugInfo;
+  private HashMap<File, HashMap<Integer, Integer>> debuggingInfo; /* cached */
   private ELF elf; /* cached */
 
   @Override

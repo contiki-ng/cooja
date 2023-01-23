@@ -73,7 +73,7 @@ public class AddMoteDialog extends JDialog {
   private final JFormattedTextField endY;
   private final JFormattedTextField startZ;
   private final JFormattedTextField endZ;
-  private MoteAdditions returnValue = null;
+  private MoteAdditions returnValue;
 
   /**
    * Shows a dialog which enables a user to create and add motes of the given

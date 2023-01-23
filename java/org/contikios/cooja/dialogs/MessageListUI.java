@@ -77,8 +77,8 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
   private final Color[] foregrounds = new Color[] { null, Color.red };
   private final Color[] backgrounds = new Color[] { null, null };
 
-  private JPopupMenu popup = null;
-  private boolean hideNormal = false;
+  private JPopupMenu popup;
+  private boolean hideNormal;
   private boolean isAutoScrolling = true;
   private int max = -1;
   

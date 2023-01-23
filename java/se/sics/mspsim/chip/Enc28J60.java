@@ -89,17 +89,17 @@ public class Enc28J60 extends Chip {
                 }
         }
 
-        private boolean writingToWBM = false;
-        private boolean readingFromRBM = false;
-        private boolean nextEcon1 = false;
-        private boolean nextEcon2 = false;
+        private boolean writingToWBM;
+        private boolean readingFromRBM;
+        private boolean nextEcon1;
+        private boolean nextEcon2;
 
         private final ArrayList<Byte> wbmData = new ArrayList<>();
 
         private final ArrayList<RbmPacket> rbmPackets = new ArrayList<>();
         private static class RbmPacket {
                 final ArrayList<Byte> data = new ArrayList<>();
-                boolean wasRead = false;
+                boolean wasRead;
         }
 
         public void writePacket(byte[] data) {
@@ -123,7 +123,7 @@ public class Enc28J60 extends Chip {
                 log("Enc28j60: nr pending packets increased to: " + rbmPackets.size());
         }
 
-        private PacketListener listener = null;
+        private PacketListener listener;
         public interface PacketListener {
                 void packetSent(Byte[] packetData);
         }
@@ -205,10 +205,10 @@ public class Enc28J60 extends Chip {
         }
 
 
-        private int spiOut = 0; /* byte being sent over SPI */
-        private int spiOutCount = 0;
-        private int spiIn = 0; /* byte being received over SPI */
-        private int spiInCount = 0;
+        private int spiOut; /* byte being sent over SPI */
+        private int spiOutCount;
+        private int spiIn; /* byte being received over SPI */
+        private int spiInCount;
         public void write(IOPort port, int data) {
                 if (port != myPort) {
                         /* ignore  */

@@ -59,8 +59,8 @@ import org.contikios.cooja.util.EventTriggers;
  */
 @ClassDescription("IP addresses")
 public class AddressVisualizerSkin implements VisualizerSkin {
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
 
   private AnyMoteEventTriggers<EventTriggers.Update> newMotesListener;
 

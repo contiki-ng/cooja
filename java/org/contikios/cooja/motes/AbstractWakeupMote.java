@@ -268,7 +268,7 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
     return true;
   }
 
-  private HashMap<String, Object> properties = null;
+  private HashMap<String, Object> properties;
   @Override
   public void setProperty(String key, Object obj) {
     if (properties == null) {

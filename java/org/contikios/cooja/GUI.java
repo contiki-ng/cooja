@@ -121,7 +121,7 @@ public class GUI {
 
   static JFrame frame;
   final JDesktopPane myDesktopPane;
-  private static JProgressBar PROGRESS_BAR = null;
+  private static JProgressBar PROGRESS_BAR;
   private static final ArrayList<String> PROGRESS_WARNINGS = new ArrayList<>();
 
   final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();

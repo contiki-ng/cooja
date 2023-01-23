@@ -78,14 +78,14 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	
 	private final ArrayList<RadioConnection> activeConnections = new ArrayList<>();
 	
-	private RadioConnection lastConnection = null;
+	private RadioConnection lastConnection;
 	
 	protected final Simulation simulation;
 	
 	/* Bookkeeping */
-	public int COUNTER_TX = 0;
-	public int COUNTER_RX = 0;
-	public int COUNTER_INTERFERED = 0;
+	public int COUNTER_TX;
+	public int COUNTER_RX;
+	public int COUNTER_INTERFERED;
 
   protected final EventTriggers<EventTriggers.AddRemove, Radio> radioMediumTriggers = new EventTriggers<>();
 

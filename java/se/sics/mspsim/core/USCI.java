@@ -91,20 +91,20 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
   private final int urxifg;
   private final int rxVector;
 
-  private int clockSource = 0;
-  private int baudRate = 0;
+  private int clockSource;
+  private int baudRate;
   private int tickPerByte = 1000;
   private long nextTXReady = -1;
   private int nextTXByte = -1;
   private int txShiftReg = -1;
-  private boolean transmitting = false;
+  private boolean transmitting;
 
   private final SFR sfr;
   private final int sfrAddress;
 
   /* ifg and ie if not in sfr... - assume IE in sfraddr and IFG in addr + 1*/
-  private int ifgAddress = 0;
-  private int ieAddress = 0;
+  private int ifgAddress;
+  private int ieAddress;
 
   private int uctl0;
   private int uctl1;
@@ -116,9 +116,9 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
   private int ustat;
   private final int txbit;
 
-  private boolean txEnabled = false;
-  private boolean rxEnabled = false;
-  private boolean spiMode = false;
+  private boolean txEnabled;
+  private boolean rxEnabled;
+  private boolean spiMode;
 
   /* DMA controller that needs to be called at certain times */
   private DMA dma;

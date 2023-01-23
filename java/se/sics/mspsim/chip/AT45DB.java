@@ -120,7 +120,7 @@ public class AT45DB extends ExternalFlash implements USARTListener {
 
   private int pageAddress;
   private int bufferAddress;
-  private int dummy=0;	// Number of dummy bytes following command
+  private int dummy;	// Number of dummy bytes following command
 
 
 

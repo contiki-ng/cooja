@@ -70,7 +70,7 @@ public class MiscCommands implements CommandBundle {
     handler.registerCommand("grep", new BasicLineCommand("print lines matching the specified pattern", "[-i] [-v] <regexp>") {
       private PrintStream out;
       private Pattern pattern;
-      private boolean isInverted = false;
+      private boolean isInverted;
 
       @Override
       public int executeCommand(CommandContext context) {
@@ -203,7 +203,7 @@ public class MiscCommands implements CommandBundle {
 
       private MSP430 cpu;
       private int period = 1;
-      private int count = 0;
+      private int count;
       private int maxCount = -1;
       private String commandLine;
       private boolean isRunning = true;
@@ -270,7 +270,7 @@ public class MiscCommands implements CommandBundle {
     handler.registerCommand("exec", new ExecCommand());
 
     handler.registerCommand("trig", new BasicLineCommand("trigg command when getting input", "<command>") {
-      String command = null;
+      String command;
       CommandContext context;
       @Override
       public int executeCommand(CommandContext context) {
