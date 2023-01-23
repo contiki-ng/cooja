@@ -47,7 +47,6 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
 public class ConfigManager {
 
@@ -74,20 +73,6 @@ public class ConfigManager {
   // -------------------------------------------------------------------
   // Properties handling
   // -------------------------------------------------------------------
-
-  /**
-   * Returns the property names. Does not include inherited properties.
-   *
-   * @return an array with the non-inherited property names
-   */
-  public String[] getPropertyNames() {
-    if (properties == null) {
-      return new String[0];
-    }
-    synchronized (properties) {
-      return properties.keySet().toArray(new String[0]);
-    }
-  }
 
   public String getProperty(String name) {
     return getProperty(name, null);
@@ -120,94 +105,6 @@ public class ConfigManager {
     }
   }
 
-  public String[] getPropertyAsArray(String name) {
-    String valueList = getProperty(name, null);
-    if (valueList != null) {
-      StringTokenizer tok = new StringTokenizer(valueList, ", \t");
-      int len = tok.countTokens();
-      if (len > 0) {
-        String[] values = new String[len];
-        for (int i = 0; i < len; i++) {
-          values[i] = tok.nextToken();
-        }
-        return values;
-      }
-    }
-    return null;
-  }
-
-  public int getPropertyAsInt(String name, int defaultValue) {
-    String value = getProperty(name, null);
-    if (value == null) {
-      return defaultValue;
-    }
-    try {
-      return Integer.parseInt(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-integer value '" + value + '\'');
-    }
-    return defaultValue;
-  }
-
-  public int[] getPropertyAsIntArray(String name) {
-    String valueList = getProperty(name, null);
-    if (valueList != null) {
-      StringTokenizer tok = new StringTokenizer(valueList, ", \t/");
-      int len = tok.countTokens();
-      if (len > 0) {
-        try {
-          int[] values = new int[len];
-          for (int i = 0; i < len; i++) {
-            values[i] = Integer.parseInt(tok.nextToken());
-          }
-          return values;
-        } catch (NumberFormatException e) {
-          // Ignore parse errors and try secondary value if specified and not already tried
-        }
-      }
-    }
-    return null;
-  }
-
-  public long getPropertyAsLong(String name, long defaultValue) {
-    String value = getProperty(name, null);
-    if (value == null) {
-      return defaultValue;
-    }
-    try {
-      return Long.parseLong(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-long value '" + value + '\'');
-    }
-    return defaultValue;
-  }
-
-  public float getPropertyAsFloat(String name, float defaultValue) {
-    String value = getProperty(name, null);
-    if (value == null) {
-      return defaultValue;
-    }
-    try {
-      return Float.parseFloat(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-float value '" + value + '\'');
-    }
-    return defaultValue;
-  }
-
-  public double getPropertyAsDouble(String name, double defaultValue) {
-    String value = getProperty(name, null);
-    if (value == null) {
-      return defaultValue;
-    }
-    try {
-      return Double.parseDouble(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-double value '" + value + '\'');
-    }
-    return defaultValue;
-  }
-
   public boolean getPropertyAsBoolean(String name, boolean defaultValue) {
     String value = getProperty(name, null);
     return value == null ? defaultValue : "true".equals(value) || "yes".equals(value) || "1".equals(value);
@@ -216,6 +113,4 @@ public class ConfigManager {
   public void print(PrintStream out) {
       properties.list(out);
   }
-
-
 } // ConfigManager
