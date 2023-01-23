@@ -58,7 +58,7 @@ public class ConfigManager {
   // Config file handling
   // -------------------------------------------------------------------
 
-  public boolean loadConfiguration(String configFile) {
+  boolean loadConfiguration(String configFile) {
     try (var input = Files.newBufferedReader(new File(configFile).toPath(), StandardCharsets.UTF_8)) {
       var p = new Properties();
       p.load(input);
@@ -121,11 +121,7 @@ public class ConfigManager {
   }
 
   public String[] getPropertyAsArray(String name) {
-    return getPropertyAsArray(name, null);
-  }
-
-  public String[] getPropertyAsArray(String name, String defaultValue) {
-    String valueList = getProperty(name, defaultValue);
+    String valueList = getProperty(name, null);
     if (valueList != null) {
       StringTokenizer tok = new StringTokenizer(valueList, ", \t");
       int len = tok.countTokens();
@@ -142,114 +138,79 @@ public class ConfigManager {
 
   public int getPropertyAsInt(String name, int defaultValue) {
     String value = getProperty(name, null);
-    return value != null ? parseInt(name, value, defaultValue) : defaultValue;
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Integer.parseInt(value);
+    } catch (Exception e) {
+      System.err.println("config '" + name + "' has a non-integer value '" + value + '\'');
+    }
+    return defaultValue;
   }
 
   public int[] getPropertyAsIntArray(String name) {
-    return getPropertyAsIntArray(name, null);
-  }
-
-  public int[] getPropertyAsIntArray(String name, String defaultValue) {
-    String valueList = getProperty(name, defaultValue);
+    String valueList = getProperty(name, null);
     if (valueList != null) {
-      return parseIntArray(valueList, defaultValue);
-    } else if (defaultValue != null) {
-      return parseIntArray(defaultValue, null);
-    } else {
-      return null;
-    }
-  }
-
-  private static int[] parseIntArray(String valueList, String secondaryValue) {
-    StringTokenizer tok = new StringTokenizer(valueList, ", \t/");
-    int len = tok.countTokens();
-    if (len > 0) {
-      try {
-        int[] values = new int[len];
-        for (int i = 0; i < len; i++) {
-          values[i] = Integer.parseInt(tok.nextToken());
+      StringTokenizer tok = new StringTokenizer(valueList, ", \t/");
+      int len = tok.countTokens();
+      if (len > 0) {
+        try {
+          int[] values = new int[len];
+          for (int i = 0; i < len; i++) {
+            values[i] = Integer.parseInt(tok.nextToken());
+          }
+          return values;
+        } catch (NumberFormatException e) {
+          // Ignore parse errors and try secondary value if specified and not already tried
         }
-        return values;
-      } catch (NumberFormatException e) {
-        // Ignore parse errors and try secondary value if specified and not already tried
       }
-    }
-    if(secondaryValue != null && !secondaryValue.equals(valueList)) {
-      return parseIntArray(secondaryValue, null);
     }
     return null;
   }
 
   public long getPropertyAsLong(String name, long defaultValue) {
     String value = getProperty(name, null);
-    return value != null
-    ? parseLong(name, value, defaultValue)
-        : defaultValue;
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Long.parseLong(value);
+    } catch (Exception e) {
+      System.err.println("config '" + name + "' has a non-long value '" + value + '\'');
+    }
+    return defaultValue;
   }
 
   public float getPropertyAsFloat(String name, float defaultValue) {
     String value = getProperty(name, null);
-    return value != null
-    ? parseFloat(name, value, defaultValue)
-        : defaultValue;
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Float.parseFloat(value);
+    } catch (Exception e) {
+      System.err.println("config '" + name + "' has a non-float value '" + value + '\'');
+    }
+    return defaultValue;
   }
 
   public double getPropertyAsDouble(String name, double defaultValue) {
     String value = getProperty(name, null);
-    return value != null
-    ? parseDouble(name, value, defaultValue)
-        : defaultValue;
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Double.parseDouble(value);
+    } catch (Exception e) {
+      System.err.println("config '" + name + "' has a non-double value '" + value + '\'');
+    }
+    return defaultValue;
   }
 
   public boolean getPropertyAsBoolean(String name, boolean defaultValue) {
     String value = getProperty(name, null);
-    return value != null
-    ? parseBoolean(name, value, defaultValue)
-        : defaultValue;
-  }
-
-  protected static int parseInt(String name, String value, int defaultValue) {
-    try {
-      return Integer.parseInt(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-integer value '"
-          + value + '\'');
-    }
-    return defaultValue;
-  }
-
-  protected static long parseLong(String name, String value, long defaultValue) {
-    try {
-      return Long.parseLong(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-long value '"
-          + value + '\'');
-    }
-    return defaultValue;
-  }
-
-  protected static float parseFloat(String name, String value, float defaultValue) {
-    try {
-      return Float.parseFloat(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-float value '"
-          + value + '\'');
-    }
-    return defaultValue;
-  }
-
-  protected static double parseDouble(String name, String value, double defaultValue) {
-    try {
-      return Double.parseDouble(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-double value '"
-          + value + '\'');
-    }
-    return defaultValue;
-  }
-
-  protected static boolean parseBoolean(String name, String value, boolean defaultValue) {
-    return "true".equals(value) || "yes".equals(value) || "1".equals(value);
+    return value == null ? defaultValue : "true".equals(value) || "yes".equals(value) || "1".equals(value);
   }
 
   public void print(PrintStream out) {
