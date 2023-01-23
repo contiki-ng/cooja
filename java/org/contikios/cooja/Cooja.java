@@ -118,22 +118,22 @@ public class Cooja {
           new PathIdentifier("[APPS_DIR]","PATH_APPS")
   };
 
-  public static File externalToolsUserSettingsFile = null;
-  private File currentConfigFile = null; /* Used to generate config relative paths */
+  private static File externalToolsUserSettingsFile;
+  private File currentConfigFile; /* Used to generate config relative paths */
 
   // External tools setting names
   private static final Properties defaultExternalToolsSettings = getExternalToolsDefaultSettings();
   private static Properties currentExternalToolsSettings;
 
-  static GUI gui = null;
+  static GUI gui;
 
   /** The Cooja startup configuration. */
-  public static Config configuration = null;
+  public static Config configuration;
 
   /** Used mote type IDs. Used by mote types to ensure uniqueness during Cooja lifetime. */
   public static final Set<String> usedMoteTypeIDs = new HashSet<>();
 
-  private Simulation mySimulation = null;
+  private Simulation mySimulation;
 
   private final ArrayList<Plugin> startedPlugins = new ArrayList<>();
 
