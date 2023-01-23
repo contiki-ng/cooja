@@ -144,23 +144,18 @@ public class ConfigManager {
   public int[] getPropertyAsIntArray(String name) {
     String valueList = getProperty(name, null);
     if (valueList != null) {
-      return parseIntArray(valueList);
-    }
-    return null;
-  }
-
-  private static int[] parseIntArray(String valueList) {
-    StringTokenizer tok = new StringTokenizer(valueList, ", \t/");
-    int len = tok.countTokens();
-    if (len > 0) {
-      try {
-        int[] values = new int[len];
-        for (int i = 0; i < len; i++) {
-          values[i] = Integer.parseInt(tok.nextToken());
+      StringTokenizer tok = new StringTokenizer(valueList, ", \t/");
+      int len = tok.countTokens();
+      if (len > 0) {
+        try {
+          int[] values = new int[len];
+          for (int i = 0; i < len; i++) {
+            values[i] = Integer.parseInt(tok.nextToken());
+          }
+          return values;
+        } catch (NumberFormatException e) {
+          // Ignore parse errors and try secondary value if specified and not already tried
         }
-        return values;
-      } catch (NumberFormatException e) {
-        // Ignore parse errors and try secondary value if specified and not already tried
       }
     }
     return null;
