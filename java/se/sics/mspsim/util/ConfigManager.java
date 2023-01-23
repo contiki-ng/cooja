@@ -197,22 +197,20 @@ public class ConfigManager {
 
   public double getPropertyAsDouble(String name, double defaultValue) {
     String value = getProperty(name, null);
-    return value == null ? defaultValue : parseDouble(name, value, defaultValue);
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Double.parseDouble(value);
+    } catch (Exception e) {
+      System.err.println("config '" + name + "' has a non-double value '" + value + '\'');
+    }
+    return defaultValue;
   }
 
   public boolean getPropertyAsBoolean(String name, boolean defaultValue) {
     String value = getProperty(name, null);
     return value == null ? defaultValue : "true".equals(value) || "yes".equals(value) || "1".equals(value);
-  }
-
-  protected static double parseDouble(String name, String value, double defaultValue) {
-    try {
-      return Double.parseDouble(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-double value '"
-          + value + '\'');
-    }
-    return defaultValue;
   }
 
   public void print(PrintStream out) {
