@@ -12,12 +12,12 @@ import se.sics.mspsim.ui.SerialMon;
 
 public class CC430Node extends GenericNode implements PortListener, USARTListener {
 
-    IOPort port1;
-    IOPort port3;
-    IOPort port4;
-    IOPort port5;
-    IOPort port7;
-    IOPort port8;
+    final IOPort port1;
+    final IOPort port3;
+    final IOPort port4;
+    final IOPort port5;
+    final IOPort port7;
+    final IOPort port8;
 
     public static MSP430Config makeChipConfig() {
         // TODO: this should be a config for MSP430F5438.
@@ -26,18 +26,6 @@ public class CC430Node extends GenericNode implements PortListener, USARTListene
 
     public CC430Node() {
         super("CC430", makeCPU(makeChipConfig()));
-    }
-
-    @Override
-    public void dataReceived(USARTSource source, int data) {
-    }
-
-    @Override
-    public void portWrite(IOPort source, int data) {
-
-    }
-
-    private void setupNodePorts() {
         port1 = cpu.getIOUnit(IOPort.class, "P1");
         port1.addPortListener(this);
         port3 = cpu.getIOUnit(IOPort.class, "P3");
@@ -50,22 +38,27 @@ public class CC430Node extends GenericNode implements PortListener, USARTListene
         port7.addPortListener(this);
         port8 = cpu.getIOUnit(IOPort.class, "P8");
         port8.addPortListener(this);
-
-        IOUnit usart0 = cpu.getIOUnit("USCI B0");
-        if (usart0 instanceof USARTSource) {
+        if (cpu.getIOUnit("USCI B0") instanceof USARTSource usart0) {
             registry.registerComponent("serialio0", usart0);
         }
 
-        IOUnit usart = cpu.getIOUnit("USCI A0");
+        var usart = cpu.getIOUnit("USCI A0");
         if (usart instanceof USARTSource) {
             registry.registerComponent("serialio", usart);
         }
     }
 
     @Override
-    public void setupNode() {
-        setupNodePorts();
+    public void dataReceived(USARTSource source, int data) {
+    }
 
+    @Override
+    public void portWrite(IOPort source, int data) {
+
+    }
+
+    @Override
+    public void setupNode() {
         if (!config.getPropertyAsBoolean("nogui", true)) {
             // Add some windows for listening to serial output
             IOUnit usart = cpu.getIOUnit("USCI A0");
