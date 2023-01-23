@@ -114,15 +114,9 @@ public class ContikiMoteCompileDialog extends AbstractCompileDialog {
     container.add(BorderLayout.NORTH, box);
     tabbedPane.addTab("Advanced", null, new JScrollPane(container), "Advanced Contiki Mote Type settings");
     // Create new tab, fill with current environment data.
-    var table = new JTable(0, 2) {
-      @Override
-      public boolean isCellEditable(int row, int column) {
-        return false;
-      }
-    };
-    final var model = (DefaultTableModel) table.getModel();
-    String[] columnNames = { "Variable", "Value" };
-    model.setColumnIdentifiers(columnNames);
+    final var model = new DefaultTableModel(new String[] { "Variable", "Value" }, 0);
+    var table = new JTable(model);
+    table.setDefaultEditor(Object.class, null);
     for (var entry : moteType.getCompilationEnvironment().entrySet()) {
       model.addRow(new Object[] { entry.getKey(), entry.getValue() });
     }
