@@ -984,7 +984,7 @@ public class ChannelModel {
         }
 
         // <<<< Get visible obstacle candidates inside this angle interval >>>>
-        Vector<Rectangle2D> visibleObstacleCandidates =
+        var visibleObstacleCandidates =
           myObstacleWorld.getAllObstaclesInAngleInterval(source, angleIntervalToCheck);
 
         //logger.info("Obstacle candidates count = " + visibleObstacleCandidates.size());
@@ -1395,8 +1395,7 @@ public class ChannelModel {
           // Fetch attenuation constant
           double attenuationConstant = getParameterDoubleValue(Parameter.obstacle_attenuation);
 
-          Vector<Rectangle2D> allPossibleObstacles = myObstacleWorld.getAllObstaclesNear(subPath.getP1());
-
+          var allPossibleObstacles = myObstacleWorld.getAllObstaclesNear(subPath.getP1());
           for (var obstacle : allPossibleObstacles) {
             // Calculate the intersection distance
             Line2D line = getIntersectionLine(
