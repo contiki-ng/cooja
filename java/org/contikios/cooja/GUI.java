@@ -122,7 +122,7 @@ public class GUI {
   static JFrame frame;
   final JDesktopPane myDesktopPane;
   private static JProgressBar PROGRESS_BAR;
-  private static final ArrayList<String> PROGRESS_WARNINGS = new ArrayList<>();
+  private final ArrayList<String> PROGRESS_WARNINGS = new ArrayList<>();
 
   final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
   private final JTextPane quickHelpTextPane;
@@ -1539,11 +1539,10 @@ public class GUI {
         // Optionally show compilation warnings.
         var hideWarn = Boolean.parseBoolean(Cooja.getExternalToolsSetting("HIDE_WARNINGS", "false"));
         if (quick && !hideWarn && !PROGRESS_WARNINGS.isEmpty()) {
-          final String[] warnings = PROGRESS_WARNINGS.toArray(new String[0]);
           final JDialog dialog = new JDialog(GUI.frame, "Compilation warnings", false);
           // Warnings message list.
           MessageListUI compilationOutput = new MessageListUI();
-          for (String w : warnings) {
+          for (var w : PROGRESS_WARNINGS) {
             compilationOutput.addMessage(w, MessageList.ERROR);
           }
           compilationOutput.addPopupMenuItem(null, true);
@@ -1624,7 +1623,7 @@ public class GUI {
     myDesktopPane.revalidate();
   }
 
-  public static void setProgressMessage(String msg, int type) {
+  public void setProgressMessage(String msg, int type) {
     if (PROGRESS_BAR != null && PROGRESS_BAR.isShowing()) {
       PROGRESS_BAR.setString(msg);
       PROGRESS_BAR.setStringPainted(true);
