@@ -43,7 +43,7 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
 
     //private final M25P80 flash;
     //private String flashFile;
-    public CC2420 radio;
+    public final CC2420 radio;
 
     public static MSP430Config makeChipConfig() {
         return new MSP430f5437Config();
