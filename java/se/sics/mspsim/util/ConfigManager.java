@@ -138,7 +138,15 @@ public class ConfigManager {
 
   public int getPropertyAsInt(String name, int defaultValue) {
     String value = getProperty(name, null);
-    return value == null ? defaultValue : parseInt(name, value, defaultValue);
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Integer.parseInt(value);
+    } catch (Exception e) {
+      System.err.println("config '" + name + "' has a non-integer value '" + value + '\'');
+    }
+    return defaultValue;
   }
 
   public int[] getPropertyAsIntArray(String name) {
@@ -179,16 +187,6 @@ public class ConfigManager {
   public boolean getPropertyAsBoolean(String name, boolean defaultValue) {
     String value = getProperty(name, null);
     return value == null ? defaultValue : "true".equals(value) || "yes".equals(value) || "1".equals(value);
-  }
-
-  protected static int parseInt(String name, String value, int defaultValue) {
-    try {
-      return Integer.parseInt(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-integer value '"
-          + value + '\'');
-    }
-    return defaultValue;
   }
 
   protected static long parseLong(String name, String value, long defaultValue) {
