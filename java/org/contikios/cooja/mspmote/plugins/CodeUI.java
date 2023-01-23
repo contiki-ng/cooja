@@ -75,7 +75,7 @@ public class CodeUI extends JPanel {
 
   private final JEditorPane codeEditor;
   private final HashMap<Integer, Integer> codeEditorLines = new HashMap<>();
-  protected File displayedFile = null;
+  protected File displayedFile;
 
   private static final HighlightPainter CURRENT_LINE_MARKER = new Markers.SimpleMarker(Color.ORANGE);
   private static final HighlightPainter SELECTED_LINE_MARKER = new Markers.SimpleMarker(Color.GREEN);
@@ -84,8 +84,8 @@ public class CodeUI extends JPanel {
   private final Object selectedLineTag;
   private final ArrayList<Object> breakpointsLineTags = new ArrayList<>();
 
-  private JSyntaxAddBreakpoint actionAddBreakpoint = null;
-  private JSyntaxRemoveBreakpoint actionRemoveBreakpoint = null;
+  private JSyntaxAddBreakpoint actionAddBreakpoint;
+  private JSyntaxRemoveBreakpoint actionRemoveBreakpoint;
 
   private final WatchpointMote mote;
 

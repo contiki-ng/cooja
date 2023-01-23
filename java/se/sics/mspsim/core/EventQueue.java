@@ -47,7 +47,7 @@ public class EventQueue {
 
   private TimeEvent first;
   public long nextTime;
-  public int eventCount = 0;
+  public int eventCount;
 
   public EventQueue() {
   }

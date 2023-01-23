@@ -56,8 +56,8 @@ import se.sics.mspsim.util.MapEntry;
 import se.sics.mspsim.util.Utils;
 
 public class DebugCommands implements CommandBundle {
-  private long lastCall = 0;
-  private long lastWall = 0;
+  private long lastCall;
+  private long lastWall;
   private ComponentRegistry registry;
 
   private ELF getELF() {
@@ -104,8 +104,8 @@ public class DebugCommands implements CommandBundle {
 
       ch.registerCommand("watch",
           new BasicAsyncCommand("add a write/read watch to a given address or symbol", "<address or symbol> [length] [char | hex | break]") {
-        int mode = 0;
-        int address = 0;
+        int mode;
+        int address;
         int length = 1;
         MemoryMonitor monitor;
         @Override
@@ -195,8 +195,8 @@ public class DebugCommands implements CommandBundle {
 
       ch.registerCommand("watchreg",
           new BasicAsyncCommand("add a write watch to a given register", "<register> [int]") {
-        int watchMode = 0;
-        int register = 0;
+        int watchMode;
+        int register;
         RegisterMonitor monitor;
         @Override
         public int executeCommand(final CommandContext context) {
@@ -613,7 +613,7 @@ public class DebugCommands implements CommandBundle {
           }});
 
         ch.registerCommand("gdbstubs", new BasicCommand("open up a gdb stubs server for GDB remote debugging", "port") {
-          private GDBStubs stubs = null;
+          private GDBStubs stubs;
           @Override
           public int executeCommand(CommandContext context) {
             if (stubs != null) {

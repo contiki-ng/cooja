@@ -59,7 +59,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
 public class ContikiMoteID implements MoteID {
   private final VarMemory moteMem;
 
-  private int moteID = 0;
+  private int moteID;
 
   private final Mote mote;
   private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();

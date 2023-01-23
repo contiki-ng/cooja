@@ -54,7 +54,7 @@ import java.io.PrintStream;
 public class StreamCommandHandler extends CommandHandler implements Runnable {
 
   private final BufferedReader inReader;
-  private boolean workaround = false;
+  private boolean workaround;
   private boolean exit;
   private final String prompt;
 

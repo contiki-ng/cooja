@@ -56,11 +56,11 @@ public class DS2411 extends Chip {
   private STATE state = STATE.IDLE;
   private boolean lastPin;
 
-  private int pos = 0;
-  private int readByte = 0;
-  private int writeByte = 0;
-  private int writeLen = 0;
-  private int writePos = 0;
+  private int pos;
+  private int readByte;
+  private int writeByte;
+  private int writeLen;
+  private int writePos;
   /* max 10 bytes to write back */
   private final int[] writeBuf = new int[10];
   private final int[] macID = new int[]{1, 2, 3, 4, 5, 6};

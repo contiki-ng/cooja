@@ -133,13 +133,13 @@ public class AreaViewer extends VisPlugin {
 
   // General drawing parameters
   private Point lastHandledPosition = new Point(0,0);
-  private double zoomCenterX = 0.0;
-  private double zoomCenterY = 0.0;
+  private double zoomCenterX;
+  private double zoomCenterY;
   private Point zoomCenterPoint = new Point();
   private double currentZoomX = 1.0f;
   private double currentZoomY = 1.0f;
-  private double currentPanX = 0.0f;
-  private double currentPanY = 0.0f;
+  private double currentPanX;
+  private double currentPanY;
 
   private boolean drawBackgroundImage = true;
   private boolean drawCalculatedObstacles = true;
@@ -149,27 +149,27 @@ public class AreaViewer extends VisPlugin {
   private boolean drawScaleArrow = true;
 
   // Background drawing parameters (meters)
-  private double backgroundStartX = 0.0;
-  private double backgroundStartY = 0.0;
-  private double backgroundWidth = 0.0;
-  private double backgroundHeight = 0.0;
-  private Image backgroundImage = null;
-  private File backgroundImageFile = null;
+  private double backgroundStartX;
+  private double backgroundStartY;
+  private double backgroundWidth;
+  private double backgroundHeight;
+  private Image backgroundImage;
+  private File backgroundImageFile;
 
   // Obstacle drawing parameters (same scale as background)
-  private boolean needToRepaintObstacleImage = false;
-  private double obstacleStartX = 0.0;
-  private double obstacleStartY = 0.0;
-  private double obstacleWidth = 0.0;
-  private double obstacleHeight = 0.0;
-  private Image obstacleImage = null;
+  private boolean needToRepaintObstacleImage;
+  private double obstacleStartX;
+  private double obstacleStartY;
+  private double obstacleWidth;
+  private double obstacleHeight;
+  private Image obstacleImage;
 
   // Channel probabilities drawing parameters (meters)
-  private double channelStartX = 0.0;
-  private double channelStartY = 0.0;
-  private double channelWidth = 0.0;
-  private double channelHeight = 0.0;
-  private Image channelImage = null;
+  private double channelStartX;
+  private double channelStartY;
+  private double channelWidth;
+  private double channelHeight;
+  private Image channelImage;
 
   private final JSlider resolutionSlider;
   private final JScrollPane scrollControlPanel;
@@ -181,19 +181,19 @@ public class AreaViewer extends VisPlugin {
   private static final String antennaImageFilename = "/images/antenna.png";
   private final Image antennaImage;
 
-  private Radio selectedRadio = null;
+  private Radio selectedRadio;
   private boolean inSelectMode = true;
-  private boolean inTrackMode = false;
+  private boolean inTrackMode;
 
-  private ChannelModel.TrackedSignalComponents trackedComponents = null;
+  private ChannelModel.TrackedSignalComponents trackedComponents;
 
   // Coloring variables
   private final JPanel coloringIntervalPanel;
-  private double coloringHighest = 0;
-  private double coloringLowest = 0;
+  private double coloringHighest;
+  private double coloringLowest;
   private boolean coloringIsFixed = true;
 
-  private Thread attenuatorThread = null;
+  private Thread attenuatorThread;
 
   private final JCheckBox showSettingsBox;
   private final JCheckBox backgroundCheckBox;
@@ -293,10 +293,10 @@ public class AreaViewer extends VisPlugin {
     canvas.setBackground(Color.WHITE);
     canvas.setLayout(new BorderLayout());
     canvas.addMouseListener(new MouseAdapter() {
-      private Popup popUpToolTip = null;
-      private boolean temporaryZoom = false;
-      private boolean temporaryPan = false;
-      private boolean trackedPreviously = false;
+      private Popup popUpToolTip;
+      private boolean temporaryZoom;
+      private boolean temporaryPan;
+      private boolean trackedPreviously;
 
       @Override
       public void mouseReleased(MouseEvent e1) {
@@ -1016,9 +1016,9 @@ public class AreaViewer extends VisPlugin {
   static class ObstacleFinderDialog extends JDialog {
     private final BufferedImage imageToAnalyze;
     private BufferedImage obstacleImage;
-    private JPanel canvasPanel = null;
-    private boolean[][] obstacleArray = null;
-    private boolean exitedOK = false;
+    private JPanel canvasPanel;
+    private boolean[][] obstacleArray;
+    private boolean exitedOK;
 
     private final JSlider redSlider;
     private final JSlider greenSlider;
@@ -2174,16 +2174,16 @@ public class AreaViewer extends VisPlugin {
   }
 
   static class ImageSettingsDialog extends JDialog {
-    private double virtualStartX = 0.0;
-    private double virtualStartY = 0.0;
-    private double virtualWidth = 0.0;
-    private double virtualHeight = 0.0;
+    private double virtualStartX;
+    private double virtualStartY;
+    private double virtualWidth;
+    private double virtualHeight;
 
     private final JFormattedTextField virtualStartXField;
     private final JFormattedTextField virtualStartYField;
     private final JFormattedTextField virtualWidthField;
     private final JFormattedTextField virtualHeightField;
-    private boolean terminatedOK = false;
+    private boolean terminatedOK;
 
     /**
      * Creates a new dialog for settings background parameters

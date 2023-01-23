@@ -86,15 +86,15 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   private final int urxifg;
   private final int rxVector;
 
-  private int clockSource = 0;
-  private int baudRate = 0;
+  private int clockSource;
+  private int baudRate;
   private int tickPerByte = 1000;
   private long nextTXReady = -1;
   private int nextTXByte = -1;
   private int txShiftReg = -1;
-  private boolean transmitting = false;
+  private boolean transmitting;
   private int nextRXByte = -1;
-  private boolean receiving = false;
+  private boolean receiving;
 
   private final SFR sfr;
 
@@ -108,9 +108,9 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   private int utxbuf;
   private final int txbit;
 
-  private boolean txEnabled = false;
-  private boolean rxEnabled = false;
-  private boolean spiMode = false;
+  private boolean txEnabled;
+  private boolean rxEnabled;
+  private boolean spiMode;
 
   /* DMA controller that needs to be called at certain times */
   private DMA dma;

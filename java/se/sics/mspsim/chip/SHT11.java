@@ -60,7 +60,7 @@ public class SHT11 extends Chip {
   private static final int CMD_MEASURE_HUM = 0x05;
 
   private final static char[] INIT_COMMAND = "CdcCDc".toCharArray();
-  private int initPos = 0;
+  private int initPos;
 
 
   /* Serial data pins */
@@ -71,16 +71,16 @@ public class SHT11 extends Chip {
 
   int state = IDLE;
 
-  boolean clockHi = false;
-  boolean dataHi = false;
-  private int readData = 0;
-  private int bitCnt = 0;
+  boolean clockHi;
+  boolean dataHi;
+  private int readData;
+  private int bitCnt;
   private int temp = 3960 + 2400;
   private int humid = 0x1040;
   private final int[] output = new int[3];
-  private int writePos = 0;
-  private int writeLen = 0;
-  private int writeData = 0;
+  private int writePos;
+  private int writeLen;
+  private int writeData;
 
   private static int rev8bits(int v) {
     int r = 0;

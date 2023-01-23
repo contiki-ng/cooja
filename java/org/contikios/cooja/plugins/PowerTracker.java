@@ -296,11 +296,11 @@ public class PowerTracker implements Plugin {
     private long lastUpdateTime;
 
     /* accumulating radio state durations */
-    long duration = 0;
-    long radioOn = 0;
-    long radioTx = 0;
-    long radioRx = 0;
-    long radioInterfered = 0;
+    long duration;
+    long radioOn;
+    long radioTx;
+    long radioRx;
+    long radioInterfered;
 
     private final Simulation simulation;
     private Mote mote;

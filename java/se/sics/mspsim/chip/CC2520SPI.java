@@ -57,7 +57,7 @@ public class CC2520SPI {
             new SPICommand("SRES 0 0 0 0 1 1 1 1 - - - - - - - -"),
             new SPICommand("MEMRD 0 0 0 1 a a a a a a a a a a a a - - - - - - - - ...") {
                 final BitField adr = getBitField("a");
-                int cAdr = 0;
+                int cAdr;
                 @Override
                 public boolean dataReceived(int data) {
                     /* check if this is first two bytes*/
@@ -205,7 +205,7 @@ public class CC2520SPI {
             new SPICommand("ABORT 0 1 1 1 1 1 1 1 0 0 0 0 0 0 c c"),
             new SPICommand("REGRD 1 0 a a a a a a - - - - - - - - ...") {
                 final BitField adr = getBitField("a");
-                int cAdr = 0;
+                int cAdr;
                 @Override
                 public boolean dataReceived(int data) {
                     /* check if this is first byte*/
@@ -222,7 +222,7 @@ public class CC2520SPI {
             },
             new SPICommand("REGWR 1 1 a a a a a a d d d d d d d d ...") {
                 final BitField adr = getBitField("a");
-                int cAdr = 0;
+                int cAdr;
                 @Override
                 public boolean dataReceived(int data) {
                     /* check if this is first byte*/

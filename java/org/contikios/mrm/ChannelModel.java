@@ -77,14 +77,14 @@ public class ChannelModel {
 
   // Parameters used for speeding up calculations
   private boolean needToPrecalculateFSPL = true;
-  private double paramFSPL = 0;
+  private double paramFSPL;
 
   private ObstacleWorld myObstacleWorld = new ObstacleWorld();
 
   /* Log mode: visualize signal components */
-  private boolean logMode = false;
-  private StringBuilder logInfo = null;
-  private ArrayList<Line2D> loggedRays = null;
+  private boolean logMode;
+  private StringBuilder logInfo;
+  private ArrayList<Line2D> loggedRays;
 
   // Ray tracing components temporary vector
   private final Vector<Vector<Line2D>> calculatedVisibleSides = new Vector<>();

@@ -44,7 +44,7 @@ import se.sics.mspsim.core.MemoryMonitor;
  */
 public class MspBreakpoint extends Breakpoint {
   private final MspMote mspMote;
-  private MemoryMonitor memoryMonitor = null;
+  private MemoryMonitor memoryMonitor;
   public MspBreakpoint(MspMote mote) {
     super(mote);
     mspMote = mote;

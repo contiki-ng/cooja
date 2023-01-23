@@ -160,8 +160,8 @@ public class BufferListener extends VisPlugin {
     registerBufferType(CustomPointerBuffer.class);
   }
 
-  private Parser parser = null;
-  private Buffer buffer = null;
+  private Parser parser;
+  private Buffer buffer;
   @Override
   public void startPlugin() {
     super.startPlugin();
@@ -178,8 +178,8 @@ public class BufferListener extends VisPlugin {
     }
   }
 
-  private boolean formatTimeString = false;
-  private boolean hasHours = false;
+  private boolean formatTimeString;
+  private boolean hasHours;
 
   private final JTable logTable;
   private final TableRowSorter<TableModel> logFilter;
@@ -193,16 +193,16 @@ public class BufferListener extends VisPlugin {
 
   private final AbstractTableModel model;
 
-  private boolean backgroundColors = false;
+  private boolean backgroundColors;
   private final JCheckBoxMenuItem colorCheckbox;
 
-  private boolean inverseFilter = false;
+  private boolean inverseFilter;
   private final JCheckBoxMenuItem inverseFilterCheckbox;
 
   private boolean hideReads = true;
   private final JCheckBoxMenuItem hideReadsCheckbox;
 
-  private boolean withStackTrace = false;
+  private boolean withStackTrace;
   private final JCheckBoxMenuItem withStackTraceCheckbox;
 
   private final JMenu bufferMenu = new JMenu("Buffer");
@@ -433,7 +433,7 @@ public class BufferListener extends VisPlugin {
       }
     });
     logTable.addMouseListener(new MouseAdapter() {
-      private Parser lastParser = null;
+      private Parser lastParser;
       @Override
       public void mousePressed(MouseEvent e) {
         if (e.getButton() != MouseEvent.BUTTON2) {
@@ -754,7 +754,7 @@ public class BufferListener extends VisPlugin {
   public enum MemoryMonitorType { SEGMENT, POINTER }
 
   static class PointerMemoryMonitor extends SegmentMemoryMonitor {
-    private SegmentMemoryMonitor segmentMonitor = null;
+    private SegmentMemoryMonitor segmentMonitor;
     private long lastSegmentAddress = -1;
     private final long pointerAddress;
     private final int pointerSize;
@@ -822,7 +822,7 @@ public class BufferListener extends VisPlugin {
     private final long address;
     private final int size;
 
-    private byte[] oldData = null;
+    private byte[] oldData;
 
     public SegmentMemoryMonitor(BufferListener bl, Mote mote, long address, int size)
     throws Exception {
@@ -1077,7 +1077,7 @@ public class BufferListener extends VisPlugin {
     public final long time;
 
     public final byte[] mem;
-    private boolean[] accessedBitpattern = null;
+    private boolean[] accessedBitpattern;
 
     public final SegmentMonitor.EventType type;
     public final String sourceStr;
@@ -1313,7 +1313,7 @@ public class BufferListener extends VisPlugin {
     Object parse(BufferAccess ba);
   }
   public static abstract class GraphicalParser implements Parser {
-    BufferAccess ba = null;
+    BufferAccess ba;
     @Override
     public Object parse(BufferAccess ba) {
       this.ba = ba;

@@ -46,7 +46,7 @@ public abstract class TimeEvent {
   TimeEvent nextEvent;
 
   // Keeps track of where this is scheduled
-  EventQueue scheduledIn = null;
+  EventQueue scheduledIn;
   String name;
 
   protected long time;

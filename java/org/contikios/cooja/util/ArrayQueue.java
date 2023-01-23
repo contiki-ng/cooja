@@ -51,9 +51,9 @@ import java.util.RandomAccess;
  */
 public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Cloneable {
   private E[] queueData;
-  private int first = 0;
-  private int last = 0;
-  private int size = 0;
+  private int first;
+  private int last;
+  private int size;
 
   public ArrayQueue() {
     this(16);

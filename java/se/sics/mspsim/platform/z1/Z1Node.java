@@ -138,7 +138,7 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
         }
     }
 
-    private int lastPort5 = 0;
+    private int lastPort5;
     @Override
     public void portWrite(IOPort source, int data) {
         switch (source.getPort()) {

@@ -47,7 +47,7 @@ import org.contikios.cooja.plugins.VisualizerSkin;
  */
 @ClassDescription("10m background grid")
 public class GridVisualizerSkin implements VisualizerSkin {
-  private Visualizer visualizer = null;
+  private Visualizer visualizer;
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {

@@ -60,8 +60,8 @@ public class MspDebugOutput extends Log {
   private final MspMote mote;
   private final VarMemory mem;
   
-  private String lastLog = null;
-  private MemoryMonitor memoryMonitor = null;
+  private String lastLog;
+  private MemoryMonitor memoryMonitor;
   
   public MspDebugOutput(Mote mote) {
     this.mote = (MspMote) mote;

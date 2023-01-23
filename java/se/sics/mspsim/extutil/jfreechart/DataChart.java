@@ -31,7 +31,7 @@ public class DataChart extends JPanel implements ServiceComponent {
   private MSP430 cpu;
   private DataSourceSampler dss;
   private Status status = Status.STOPPED;
-  private String name = null;
+  private String name;
 
   public DataChart(String title, String yaxis) {
     DateAxis domain = new DateAxis("Time");

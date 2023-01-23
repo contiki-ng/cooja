@@ -213,7 +213,7 @@ public class AES128 extends IOUnit {
         /**
          * Syntax sugar
          */
-        private boolean isBusy = false;
+        private boolean isBusy;
 
         /**
          * Nice names for buffer operations :-)
@@ -255,15 +255,15 @@ public class AES128 extends IOUnit {
         }
 
         /* AESACTL0 register */
-        private boolean advancedCipherMode = false;
-        private boolean interruptEnable = false;
-        private boolean errorFlag = false;
-        private boolean readyInterruptFlag = false;
-        private boolean resetFlag = false;
+        private boolean advancedCipherMode;
+        private boolean interruptEnable;
+        private boolean errorFlag;
+        private boolean readyInterruptFlag;
+        private boolean resetFlag;
         private int cipherMode = MODE_ECB;
         private int keyLength = KEY_128;
         private int operation = AESOP_0;
-        private int cipherBlockCounter = 0;
+        private int cipherBlockCounter;
 
         /**
          * CTL0 Register built upon variables

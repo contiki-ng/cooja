@@ -186,13 +186,13 @@ public class CC1101 extends Radio802154 implements USARTListener {
   private static final boolean triggerGDO0onSynch = false;
   private static final boolean triggerGDO0onFifoThreshold = true;
 
-        private StateListener stateListener = null;
-        private ReceiverListener receiverListener = null;
+        private StateListener stateListener;
+        private ReceiverListener receiverListener;
 
         private boolean currentRssiValid;
-        private int currentRssiReg = 0;
+        private int currentRssiReg;
 
-        private CC1101RadioState state = null;
+        private CC1101RadioState state;
 
         protected final List<Byte> txfifo = new ArrayList<>();
         protected final List<Byte> rxfifo = new ArrayList<>();
@@ -202,12 +202,12 @@ public class CC1101 extends Radio802154 implements USARTListener {
 
         private boolean chipSelect;
 
-        private IOPort gdo0Port = null;
+        private IOPort gdo0Port;
         private int gdo0Pin = -1;
-        private IOPort gdo2Port = null;
+        private IOPort gdo2Port;
         private int gdo2Pin = -1;
 
-        private int channel = 0;
+        private int channel;
 
         public CC1101(MSP430Core cpu) {
                 super("CC1101", "Radio", cpu);
@@ -367,9 +367,9 @@ public class CC1101 extends Radio802154 implements USARTListener {
         public final static int SPI_READ_BIT = 0x80;
         public final static int SPI_BURST_BIT = 0x40;
 
-        private boolean spiBurstMode = false;
-        private boolean spiReadMode = false;
-        private boolean spiGotAddress = false;
+        private boolean spiBurstMode;
+        private boolean spiReadMode;
+        private boolean spiGotAddress;
         private int spiAddress;
 
         public static boolean spiIsBurst(int data) {
@@ -518,9 +518,9 @@ public class CC1101 extends Radio802154 implements USARTListener {
         public static final int NUM_PREAMBLE = 4;
     public static final int NUM_SYNCH = 4;
     public static final byte SYNCH_BYTE_LAST = (byte) 0x91;
-    private boolean txSentSynchByte = false;
-    private int txSendSynchByteCnt = 0;
-    private boolean txSentFirstCRC = false;
+    private boolean txSentSynchByte;
+    private int txSendSynchByteCnt;
+    private boolean txSentFirstCRC;
     void txNext() {
         if (txFooterCountdown < 0) {
             System.out.println("Warning: Aborting transmit since txFooterCountdown=" + txFooterCountdown);
@@ -637,7 +637,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
         public interface GDOListener {
           void event(PinState state);
         }
-        private GDOListener gdo0Listener = null;
+        private GDOListener gdo0Listener;
         public void setGDO0Listener(GDOListener l) {
     gdo0Listener = l;
   }
@@ -687,7 +687,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
     receiverListener = listener;
   }
 
-  boolean receiverOn = false;
+  boolean receiverOn;
         boolean setState(CC1101RadioState newState) {
                 if (newState != CC1101RadioState.CC1101_STATE_IDLE
                                 && newState != CC1101RadioState.CC1101_STATE_RX
@@ -708,7 +708,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
     return true;
         }
 
-        boolean rxGotSynchByte = false;
+        boolean rxGotSynchByte;
         private int rxExpectedLen = -1;
         @Override
         public void receivedByte(byte data) {
@@ -859,7 +859,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 return getState().getStateAsInt();
         }
 
-        private boolean lastWasRead = false;
+        private boolean lastWasRead;
   public void setLastInstructionWasRead(boolean wasRead) {
     lastWasRead = wasRead;
   }

@@ -57,8 +57,8 @@ import org.slf4j.LoggerFactory;
 public class AttributeVisualizerSkin implements VisualizerSkin {
   private static final Logger logger = LoggerFactory.getLogger(AttributeVisualizerSkin.class);
 
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
 
   private final BiConsumer<EventTriggers.AddRemoveUpdate, MoteAttributes.MoteAttributeUpdateData> attributesTrigger = (obs, obj) -> visualizer.repaint();
   private final BiConsumer<EventTriggers.AddRemove, Mote> newMotesListener = (event, mote) -> {

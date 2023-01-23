@@ -59,7 +59,7 @@ import org.contikios.cooja.Positioner;
 @ClassDescription("Manual positioning")
 public class ManualPositioner extends Positioner {
   private int nodesLeft;
-  private boolean skipRemainder = false;
+  private boolean skipRemainder;
   private double lastX, lastY, lastZ;
 
   private final double startX;
@@ -136,7 +136,7 @@ public class ManualPositioner extends Positioner {
   }
 
   static class PositionDialog extends JDialog {
-    public boolean shouldSkipRemainder = false;
+    public boolean shouldSkipRemainder;
     public final JFormattedTextField xField;
     public final JFormattedTextField yField;
     public final JFormattedTextField zField;

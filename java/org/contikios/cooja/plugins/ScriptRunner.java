@@ -93,7 +93,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
   private final Simulation simulation;
   private final LogScriptEngine engine;
 
-  private boolean activated = false;
+  private boolean activated;
 
   /** The script text when running in headless mode. */
   private final ArrayList<String> headlessScript = new ArrayList<>();

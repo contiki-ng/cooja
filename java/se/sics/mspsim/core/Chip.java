@@ -57,12 +57,12 @@ public abstract class Chip implements Loggable, EventSource {
   private ConfigurationChangeListener[] ccListeners;
 
   private EventListener eventListener;
-  protected boolean sendEvents = false;
-  private String[] modeNames = null;
+  protected boolean sendEvents;
+  private String[] modeNames;
   private int mode;
   private int chipState;
   protected final EmulationLogger logger;
-  protected boolean DEBUG = false;
+  protected boolean DEBUG;
   protected int logLevel;
 
   public Chip(String id, MSP430Core cpu) {

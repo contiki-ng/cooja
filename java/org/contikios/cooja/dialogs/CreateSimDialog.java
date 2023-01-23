@@ -69,7 +69,7 @@ public class CreateSimDialog extends JDialog {
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 25;
 
-  private SimConfig config = null;
+  private SimConfig config;
 
   /**
    * Shows a dialog for configuring a simulation.

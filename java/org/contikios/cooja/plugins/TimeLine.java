@@ -119,7 +119,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   	20, 50, 100, 200, 500, 1000,
   	2000, 5000, 10000, 20000, 50000, 100000 };
 
-  private boolean needZoomOut = false;
+  private boolean needZoomOut;
 
   private static final Logger logger = LoggerFactory.getLogger(TimeLine.class);
 
@@ -130,10 +130,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private final LogOutputListener newMotesListener;
 
   /* Experimental features: Use currently active plugin to filter Timeline Log outputs */
-  private LogListener logEventFilterPlugin = null;
+  private LogListener logEventFilterPlugin;
   private String      logEventFilterLast = "";
   private boolean     logEventFilterChanged = true;
-  private boolean     logEventColorOfMote   = false;
+  private boolean     logEventColorOfMote;
 
   private final MoteRuler timelineMoteRuler = new MoteRuler();
   private final JComponent timeline = new Timeline();
@@ -146,13 +146,13 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private ArrayList<MoteEvents> allMoteEvents = new ArrayList<>();
 
   private boolean showRadioRXTX = true;
-  private boolean showRadioChannels = false;
+  private boolean showRadioChannels;
   private boolean showRadioOnoff = true;
   private boolean showLeds = true;
-  private boolean showLogOutputs = false;
-  private boolean showWatchpoints = false;
+  private boolean showLogOutputs;
+  private boolean showWatchpoints;
 
-  private Point popupLocation = null;
+  private Point popupLocation;
 
   private final JCheckBox showWatchpointsCheckBox = new JCheckBox("Watchpoints", true);
   private final JCheckBox showLogsCheckBox = new JCheckBox("Log output", true);
@@ -558,10 +558,10 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   private class MoteStatistics {
     Mote mote;
-    long onTimeRedLED = 0, onTimeGreenLED = 0, onTimeBlueLED = 0;
-    int nrLogs = 0;
-    long radioOn = 0;
-    long onTimeRX = 0, onTimeTX = 0, onTimeInterfered = 0;
+    long onTimeRedLED, onTimeGreenLED, onTimeBlueLED;
+    int nrLogs;
+    long radioOn;
+    long onTimeRX, onTimeTX, onTimeInterfered;
 
     @Override
     public String toString() {
@@ -760,7 +760,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   };
 
-  private boolean executionDetails = false;
+  private boolean executionDetails;
   private final Action executionDetailsAction = new AbstractAction("Show execution details in tooltips") {
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1153,7 +1153,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       setToolTipText(null);
       setBackground(COLOR_BACKGROUND);
       var mouseAdapter = new MouseAdapter() {
-        private Popup popUpToolTip = null;
+        private Popup popUpToolTip;
         private double zoomInitialPixelDivisor;
         private int zoomInitialMouseY;
         private long zoomCenterTime = -1;
@@ -1759,9 +1759,9 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   /* Event classes */
   static abstract class MoteEvent {
-    String details = null;
-    int fixedWidth = 0;
-    boolean collapseOverlapping = false;
+    String details;
+    int fixedWidth;
+    boolean collapseOverlapping;
     final long time;
     public MoteEvent(long time) {
       this.time = time;

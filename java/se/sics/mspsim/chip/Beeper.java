@@ -68,9 +68,9 @@ public class Beeper extends Chip {
     private static byte[] buffer;
     private static byte[] quiet;
 
-    private boolean beepOn = false;
+    private boolean beepOn;
     private int beepCtrl;
-    private boolean isSoundEnabled = false;
+    private boolean isSoundEnabled;
 
     private SourceDataLine dataLine;
     private FloatControl volume;

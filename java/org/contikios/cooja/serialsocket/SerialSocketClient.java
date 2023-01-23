@@ -100,7 +100,7 @@ public class SerialSocketClient implements Plugin, MotePlugin {
   private JFormattedTextField serverPortField;
   private JButton serverSelectButton;
   
-  private int inBytes = 0, outBytes = 0;
+  private int inBytes, outBytes;
 
   private Socket socket;
   private DataInputStream in;

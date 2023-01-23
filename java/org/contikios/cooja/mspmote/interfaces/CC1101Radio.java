@@ -65,15 +65,15 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 	private final MspMote mote;
 	private final CC1101 cc1101;
 
-	private boolean isInterfered = false;
-	private boolean isTransmitting = false;
-	private boolean isReceiving = false;
+	private boolean isInterfered;
+	private boolean isTransmitting;
+	private boolean isReceiving;
 
 	private byte lastOutgoingByte;
 	private byte lastIncomingByte;
 
-	private RadioPacket lastOutgoingPacket = null;
-	private RadioPacket lastIncomingPacket = null;
+	private RadioPacket lastOutgoingPacket;
+	private RadioPacket lastIncomingPacket;
 
 	public CC1101Radio(Mote m) {
 		this.mote = (MspMote)m;
@@ -84,10 +84,10 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
     this.cc1101 = (CC1101) r;
 
 		cc1101.addRFListener(new RFListener() {
-			int len = 0;
-			int expLen = 0;
+			int len;
+			int expLen;
 			final byte[] buffer = new byte[256 + 15];
-			private boolean gotSynchbyte = false;
+			private boolean gotSynchbyte;
 			@Override
 			public void receivedByte(byte data) {
 				if (!isTransmitting()) {
@@ -333,9 +333,9 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 	/**
 	 * Last 8 received signal strengths
 	 */
-	double currentSignalStrength = 0;
+	double currentSignalStrength;
 	private final double[] rssiLast = new double[8];
-	private int rssiLastCounter = 0;
+	private int rssiLastCounter;
 
 	@Override
 	public double getCurrentSignalStrength() {

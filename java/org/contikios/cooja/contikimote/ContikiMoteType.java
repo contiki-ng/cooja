@@ -163,10 +163,10 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
   // Type specific class configuration
 
-  private CoreComm myCoreComm = null;
+  private CoreComm myCoreComm;
 
   // Initial memory for all motes of this type
-  private SectionMoteMemory initialMemory = null;
+  private SectionMoteMemory initialMemory;
 
   /**
    * Creates a new uninitialized Cooja mote type. This mote type needs to load

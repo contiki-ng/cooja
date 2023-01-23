@@ -69,15 +69,15 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
   private JTextArea textArea;
   private JTextField commandField;
   private final String[] history = new String[50];
-  private int historyPos = 0;
-  private int historyCount = 0;
+  private int historyPos;
+  private int historyCount;
   private String text = "*** Serial mon for MSPsim ***\n";
 
   private final ArrayDeque<String> sendQueue = new ArrayDeque<>(8);
   private int sendIndex;
 
   private int lines = 1;
-  private boolean isUpdatePending = false;
+  private boolean isUpdatePending;
 
   public SerialMon(USARTSource usart, String title) {
     this.usart = usart;

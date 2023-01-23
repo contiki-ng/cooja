@@ -74,13 +74,13 @@ public class MSP430Core extends Chip implements MSP430Constants {
   public final int[] memory;
   private final Flash flash;
   boolean isFlashBusy;
-  boolean isStopping = false;
+  boolean isStopping;
 
   private final Memory[] memorySegments;
   Memory currentSegment;
 
-  public long cycles = 0;
-  public long cpuCycles = 0;
+  public long cycles;
+  public long cpuCycles;
   MapTable map;
   public final boolean MSP430XArch;
   public final MSP430Config config;
@@ -101,18 +101,18 @@ public class MSP430Core extends Chip implements MSP430Constants {
   public int instruction;
   private int extWord;
   int servicedInterrupt = -1;
-  InterruptHandler servicedInterruptUnit = null;
+  InterruptHandler servicedInterruptUnit;
 
-  protected boolean interruptsEnabled = false;
-  protected boolean cpuOff = false;
+  protected boolean interruptsEnabled;
+  protected boolean cpuOff;
 
   // Not private since they are needed (for fast access...)
   public int dcoFrq = 2500000;
   int aclkFrq = 32768;
   public int smclkFrq = dcoFrq;
 
-  long lastCyclesTime = 0;
-  long lastVTime = 0;
+  long lastCyclesTime;
+  long lastVTime;
   long lastMicrosDelta;
   double currentDCOFactor = 1.0;
 

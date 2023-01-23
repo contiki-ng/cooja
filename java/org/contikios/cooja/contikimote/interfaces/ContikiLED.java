@@ -59,7 +59,7 @@ public class ContikiLED extends LED implements PolledAfterActiveTicks {
 
   private final Mote mote;
   private final VarMemory moteMem;
-  private byte currentLedValue = 0;
+  private byte currentLedValue;
 
   private static final byte LEDS_GREEN = 1;
   private static final byte LEDS_YELLOW = 2;

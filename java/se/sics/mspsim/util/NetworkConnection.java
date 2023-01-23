@@ -54,9 +54,9 @@ public class NetworkConnection implements Runnable {
   private final static boolean DEBUG = false;
   private final static int DEFAULT_PORT = 4711;
 
-  private ServerSocket serverSocket = null;
+  private ServerSocket serverSocket;
   private final SendThread sendThread;
-  private ConnectionThread[] connections = null;
+  private ConnectionThread[] connections;
   private PacketListener packetListener;
 
   public NetworkConnection() {

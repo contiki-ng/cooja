@@ -56,12 +56,12 @@ import org.contikios.cooja.interfaces.Position;
 @ClassDescription("Application Mote Type")
 public abstract class AbstractApplicationMoteType implements MoteType {
   /** Description of the mote type. */
-  protected String description = null;
+  protected String description;
   /** Identifier of the mote type. */
   protected String identifier;
 
   /** Project configuration of the mote type. */
-  protected ProjectConfig myConfig = null;
+  protected ProjectConfig myConfig;
 
   /** MoteInterface classes used by the mote type. */
   protected final ArrayList<Class<? extends MoteInterface>> moteInterfaceClasses = new ArrayList<>();

@@ -60,10 +60,10 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
   private final float[] TRANSMITTED_COLOR_RGB = Color.BLUE.getRGBColorComponents(null);
   private final float[] UNTRANSMITTED_COLOR_RGB = Color.RED.getRGBColorComponents(null);
 
-  private boolean active = false;
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
-  private AbstractRadioMedium radioMedium = null;
+  private boolean active;
+  private Simulation simulation;
+  private Visualizer visualizer;
+  private AbstractRadioMedium radioMedium;
 
   private final List<RadioConnectionArrow> historyList = new ArrayList<>();
 

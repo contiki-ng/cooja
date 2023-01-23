@@ -85,8 +85,8 @@ public class ContikiEEPROM implements MoteInterface, PolledAfterActiveTicks {
   public static final int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */
   private final Mote mote;
   private final VarMemory moteMem;
-  private int lastRead = 0;
-  private int lastWritten = 0;
+  private int lastRead;
+  private int lastWritten;
   private final LinkedHashMap<JPanel, Updates> labels = new LinkedHashMap<>();
 
   /**

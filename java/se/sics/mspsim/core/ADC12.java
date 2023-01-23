@@ -103,21 +103,21 @@ public class ADC12 extends IOUnit {
   public static final int CONSEQ_REPEAT_SEQUENCE = 0x03;
   public static final int CONSEQ_SEQUENCE_MASK = 0x01;
 
-  private int adc12ctl0 = 0;
-  private int adc12ctl1 = 0;
+  private int adc12ctl0;
+  private int adc12ctl1;
   private final int[] adc12mctl = new int[16];
   private final int[] adc12mem = new int[16];
-  private int adc12Pos = 0;
+  private int adc12Pos;
 
   private int shTime0 = 4;
   private int shTime1 = 4;
-  private boolean adc12On = false;
+  private boolean adc12On;
   private boolean enableConversion;
   private boolean startConversion;
   private boolean isConverting;
 
-  private int shSource = 0;
-  private int startMem = 0;
+  private int shSource;
+  private int startMem;
   private int adcDiv = 1;
 
   private final ADCInput[] adcInput = new ADCInput[16];
@@ -262,7 +262,7 @@ public class ADC12 extends IOUnit {
     return 0;
   }
 
-  int smp = 0;
+  int smp;
   private void convert() {
     // If off then just return...
     if (!adc12On) {

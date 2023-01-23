@@ -56,8 +56,8 @@ public class DGRMVisualizerSkin implements VisualizerSkin {
 
   private static final Logger logger = LoggerFactory.getLogger(DGRMVisualizerSkin.class);
 
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {

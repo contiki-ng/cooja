@@ -69,7 +69,7 @@ public class ChartPanel extends JComponent {
   private static final Color LIGHT_GRAY = new Color(0xff909090);
 
   private final HashMap<String,Object> config = new HashMap<>();
-  private Chart[] charts = null;
+  private Chart[] charts;
 
   private Chart axisChart;
 

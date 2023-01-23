@@ -72,13 +72,13 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
   private final MspMote mspMote;
 
   private final StackUI stackUI;
-  private RegisterMonitor.Adapter registerMonitor = null;
+  private RegisterMonitor.Adapter registerMonitor;
 
   private final JToggleButton toggleButton;
 
   private final MoteTimeEvent increasePosTimeEvent;
 
-  private Integer userOverriddenStack = null;
+  private Integer userOverriddenStack;
 
   private final JLabel memLabel = new JLabel("");
   

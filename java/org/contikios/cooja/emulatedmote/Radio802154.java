@@ -49,21 +49,21 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
     
     private static final Logger logger = LoggerFactory.getLogger(Radio802154.class);
 
-    protected long lastEventTime = 0;
+    protected long lastEventTime;
 
     protected RadioEvent lastEvent = RadioEvent.UNKNOWN;
 
-    protected boolean isInterfered = false;
+    protected boolean isInterfered;
 
-    protected boolean isReceiving = false;
+    protected boolean isReceiving;
 
-    private RadioByte lastOutgoingByte = null;
+    private RadioByte lastOutgoingByte;
 
-    private RadioByte lastIncomingByte = null;
+    private RadioByte lastIncomingByte;
 
-    private RadioPacket lastOutgoingPacket = null;
+    private RadioPacket lastOutgoingPacket;
 
-    private RadioPacket lastIncomingPacket = null;
+    private RadioPacket lastIncomingPacket;
 
     //    private int mode;
     protected final Mote mote;
@@ -72,8 +72,8 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
         this.mote = mote;
     }
 
-    int len = 0;
-    int expLen = 0;
+    int len;
+    int expLen;
     final byte[] buffer = new byte[127 + 15];
     protected void handleTransmit(byte val) {
         if (len == 0) {

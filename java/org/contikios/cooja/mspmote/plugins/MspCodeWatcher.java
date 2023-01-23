@@ -93,7 +93,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
 
   private static final Logger logger = LoggerFactory.getLogger(MspCodeWatcher.class);
   private final Simulation simulation;
-  private File currentCodeFile = null;
+  private File currentCodeFile;
   private int currentLineNumber = -1;
 
   private final DebugUI assCodeUI;
@@ -379,8 +379,8 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   private class Rule {
     String from;
     String to;
-    int prefixMatches = 0;
-    int locatesFile = 0;
+    int prefixMatches;
+    int locatesFile;
     public Rule(String from, String to) {
       this.from = from;
       this.to = to;
@@ -464,10 +464,10 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   }
 
   private final MessageListUI rulesDebuggingOutput = new MessageListUI();
-  private boolean rulesWithDebuggingOutput = false;
-  private int[] rulesMatched = null;
-  private int[] rulesOK = null;
-  private JTable table = null;
+  private boolean rulesWithDebuggingOutput;
+  private int[] rulesMatched;
+  private int[] rulesOK;
+  private JTable table;
   private void tryMapDebugInfo() {
     /* called from AWT */
     int r = JOptionPane.showConfirmDialog(Cooja.getTopParentContainer(),

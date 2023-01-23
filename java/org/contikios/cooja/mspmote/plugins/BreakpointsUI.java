@@ -75,7 +75,7 @@ public class BreakpointsUI extends JPanel {
   private final WatchpointMote mote;
   private final JTable table;
 
-  private Watchpoint selectedWatchpoint = null;
+  private Watchpoint selectedWatchpoint;
 
   public BreakpointsUI(WatchpointMote mote, final MspCodeWatcher codeWatcher) {
     this.mote = mote;

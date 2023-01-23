@@ -68,7 +68,7 @@ public class ImportAppMoteDialog extends JDialog {
 
   private final JTextField pathField;
   private final JTextField classField;
-  private boolean hasSelected = false;
+  private boolean hasSelected;
 
   public ImportAppMoteDialog(final Cooja cooja, final ImportAppMoteType moteType) {
     super(Cooja.getTopParentContainer(), "Create Mote Type: Application Mote", ModalityType.APPLICATION_MODAL);

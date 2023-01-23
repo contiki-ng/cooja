@@ -50,19 +50,19 @@ public class DMA extends IOUnit {
         int currentDestinationAddress;
         int storedSize;
 
-        int srcIncr = 0;
-        int dstIncr = 0;
-        boolean dstByteMode = false;
-        boolean srcByteMode = false;
+        int srcIncr;
+        int dstIncr;
+        boolean dstByteMode;
+        boolean srcByteMode;
 
         DMATrigger trigger;
         int triggerIndex;
-        int transferMode = 0;
+        int transferMode;
 
-        boolean enable = false;
-        boolean dmaLevel = false; /* edge or level sensitive trigger */
-        boolean dmaIE = false;
-        boolean dmaIFG = false;
+        boolean enable;
+        boolean dmaLevel; /* edge or level sensitive trigger */
+        boolean dmaIE;
+        boolean dmaIFG;
 
         public Channel(int i) {
             channelNo = i;

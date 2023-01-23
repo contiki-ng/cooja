@@ -86,7 +86,7 @@ public class ELFSection {
 
   ELF elf;
 
-  int pos = 0;
+  int pos;
 
   public String getSectionName() {
     if (elf.strTable != null) {

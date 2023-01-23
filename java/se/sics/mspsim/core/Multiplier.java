@@ -66,8 +66,8 @@ public class Multiplier extends IOUnit {
 
   private int op1;
 
-  private boolean signed = false;
-  private boolean accumulating = false;
+  private boolean signed;
+  private boolean accumulating;
   /**
    * Creates a new <code>Multiplier</code> instance.
    *

@@ -67,7 +67,7 @@ public class DotDiagram extends JComponent {
   private final int[] minData;
   private int totMax;
   private int totMin;
-  private boolean lockMinMax = false;
+  private boolean lockMinMax;
   private int maxDataLen;
   private double factor;
 
@@ -78,12 +78,12 @@ public class DotDiagram extends JComponent {
   private int sizeY;
   private int lowerY;
   private double xspace;
-  private int ySpacing = 0;
-  private boolean rescale = false;
-  private boolean gridVisible = false;
+  private int ySpacing;
+  private boolean rescale;
+  private boolean gridVisible;
 
-  private String yLabel = null;
-  private String xLabel = null;
+  private String yLabel;
+  private String xLabel;
 
   private final boolean isAdditive;
   private final boolean isFilled;

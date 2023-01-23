@@ -65,7 +65,7 @@ public class SkyCoffeeFilesystem implements MoteInterface {
 
   private final Mote mote;
 
-  private CoffeeFS coffeeFS = null;
+  private CoffeeFS coffeeFS;
   private CoffeeFile[] files = new CoffeeFile[0];
 
   private static final int COLUMN_NAME = 0;

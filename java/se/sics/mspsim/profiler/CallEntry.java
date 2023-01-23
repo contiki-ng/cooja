@@ -5,7 +5,7 @@ import se.sics.mspsim.util.MapEntry;
 public class CallEntry {
 
     static class CallCounter implements Comparable<CallCounter> {
-        public int count = 0;
+        public int count;
 
         @Override
         public int compareTo(CallCounter o) {

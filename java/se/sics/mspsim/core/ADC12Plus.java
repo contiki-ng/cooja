@@ -155,22 +155,22 @@ public class ADC12Plus extends IOUnit {
         public static final int CONSEQ_REPEAT_SEQUENCE = 0x03;
         public static final int CONSEQ_SEQUENCE_MASK = 0x01;
 
-        private int adc12ctl0 = 0;
-        private int adc12ctl1 = 0;
-        private int adc12ctl2 = 0;
+        private int adc12ctl0;
+        private int adc12ctl1;
+        private int adc12ctl2;
         private final int[] adc12mctl = new int[16];
         private final int[] adc12mem = new int[16];
-        private int adc12Pos = 0;
+        private int adc12Pos;
 
         private int shTime0 = 4;
         private int shTime1 = 4;
-        private boolean adc12On = false;
+        private boolean adc12On;
         private boolean enableConversion;
         private boolean startConversion;
         private boolean isConverting;
 
-        private int shSource = 0;
-        private int startMem = 0;
+        private int shSource;
+        private int startMem;
         private int adcDiv = 1;
 
         private final ADCInput[] adcInput = new ADCInput[16];
@@ -192,11 +192,11 @@ public class ADC12Plus extends IOUnit {
 
         /* These are CTL2 variables */
         private int bitsResolution = 12;
-        private boolean formatSigned = false;
+        private boolean formatSigned;
         private int clockPredivider = 1;
 
         /* Reference voltage 2.5V or 1.5V */
-        private boolean ref25V = false;
+        private boolean ref25V;
 
         public ADC12Plus(MSP430Core cpu, int offset, int intVector) {
                 super("ADC12Plus", cpu, cpu.memory, offset);
@@ -381,7 +381,7 @@ public class ADC12Plus extends IOUnit {
                 return 0;
         }
 
-        int smp = 0;
+        int smp;
 
         private void convert() {
                 // If off then just return...

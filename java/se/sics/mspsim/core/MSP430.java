@@ -48,19 +48,19 @@ public class MSP430 extends MSP430Core {
   private int[] trace;
   private int tracePos;
 
-  private boolean debug = false;
-  private boolean running = false;
-  private boolean isBreaking = false;
+  private boolean debug;
+  private boolean running;
+  private boolean isBreaking;
   private double rate = 2.0;
 
   // Debug time - measure cycles
-  private long lastCycles = 0;
-  private long lastCpuCycles = 0;
+  private long lastCycles;
+  private long lastCpuCycles;
   private long time;
-  private long nextSleep = 0;
-  private long nextOut = 0;
+  private long nextSleep;
+  private long nextOut;
 
-  private double lastCPUPercent = 0d;
+  private double lastCPUPercent;
 
   private final DisAsm disAsm;
 
@@ -191,7 +191,7 @@ public class MSP430 extends MSP430Core {
    */
   long lastReturnedMicros;
   long lastMicrosCycles;
-  boolean microClockReady = false;
+  boolean microClockReady;
 
   /* when DCO has changed speed, this method will be called */
   @Override
@@ -204,7 +204,7 @@ public class MSP430 extends MSP430Core {
    * Note: jumpMicros just jump the clock until that time
    * executeMicros also check eventQ, etc. and executes instructions
    */
-  long maxCycles = 0;
+  long maxCycles;
   public long stepMicros(long jumpMicros, long executeMicros) throws EmulationException {
     if (isRunning()) {
       throw new IllegalStateException("step not possible when CPU is running");

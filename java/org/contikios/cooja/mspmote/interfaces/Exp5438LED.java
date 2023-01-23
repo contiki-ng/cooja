@@ -48,8 +48,8 @@ import se.sics.mspsim.platform.ti.Exp5438Node;
  */
 @ClassDescription("Exp5438 LEDs")
 public class Exp5438LED extends LED {
-  private boolean redOn = false;
-  private boolean yellowOn = false;
+  private boolean redOn;
+  private boolean yellowOn;
 
   private static final Color RED = new Color(255, 0, 0);
   private static final Color DARK_RED = new Color(100, 0, 0);

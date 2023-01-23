@@ -134,7 +134,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   public static final long TIME_HOUR = 60*TIME_MINUTE;
 
   private boolean formatTimeString = true;
-  private boolean hasHours = false;
+  private boolean hasHours;
 
   private final JTable logTable;
   private final TableRowSorter<TableModel> logFilter;
@@ -153,10 +153,10 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   private boolean backgroundColors = true;
   private final JCheckBoxMenuItem colorCheckbox;
 
-  private boolean inverseFilter = false;
+  private boolean inverseFilter;
   private final JCheckBoxMenuItem inverseFilterCheckbox;
 
-  private boolean hideDebug = false;
+  private boolean hideDebug;
   private final JCheckBoxMenuItem hideDebugCheckbox;
 
   private final JCheckBoxMenuItem appendCheckBox;
@@ -804,10 +804,10 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
   }
 
-  private boolean appendToFile = false;
-  private File appendStreamFile = null;
-  private boolean appendToFileWroteHeader = false;
-  private PrintWriter appendStream = null;
+  private boolean appendToFile;
+  private File appendStreamFile;
+  private boolean appendToFileWroteHeader;
+  private PrintWriter appendStream;
   public boolean appendToFile(File file, String text) {
     /* Close stream */
     if (file == null) {

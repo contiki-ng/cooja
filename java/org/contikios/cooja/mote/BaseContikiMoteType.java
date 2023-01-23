@@ -133,11 +133,11 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
 
   // FIXME: combine fileSource and fileFirmware so only one can be active.
   /** Source file of the mote type. */
-  protected File fileSource = null;
+  protected File fileSource;
   /** Commands to compile the source into the firmware. */
-  protected String compileCommands = null;
+  protected String compileCommands;
   /** Firmware of the mote type. */
-  protected File fileFirmware = null;
+  protected File fileFirmware;
 
   protected BaseContikiMoteType() {
     super(false);

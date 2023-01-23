@@ -67,8 +67,8 @@ public class MapTable {
 
   public int heapStartAddress = -1;
   public int stackStartAddress = -1;
-  private int bssFill = 0;
-  private int dataFill = 0;
+  private int bssFill;
+  private int dataFill;
 
   private final ArrayList<MapEntry> modules = new ArrayList<>();
   private final ArrayList<MapEntry> entries = new ArrayList<>();

@@ -44,7 +44,7 @@ import java.util.Random;
 class SafeRandom extends Random {
   
   final Simulation sim;
-  Thread initThread = null;
+  Thread initThread;
   Boolean simStarted = false;
   
   private void assertSimThread() {

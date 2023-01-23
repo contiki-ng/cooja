@@ -85,7 +85,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   public final ComponentRegistry registry;
 
   /* Stack monitoring variables */
-  private boolean stopNextInstruction = false;
+  private boolean stopNextInstruction;
 
   public MspMote(MspMoteType moteType, Simulation sim, GenericNode node) throws MoteType.MoteTypeCreationException {
     super(moteType, new MspMoteMemory(moteType.getEntries(node), node.getCPU()), sim);
@@ -195,11 +195,11 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   public void idUpdated(int newID) {
   }
 
-  private boolean booted = false;
+  private boolean booted;
 
   private long lastExecute = -1; /* Last time mote executed */
 
-  private double jumpError = 0.;
+  private double jumpError;
 
   @Override
   public void execute(long time) {

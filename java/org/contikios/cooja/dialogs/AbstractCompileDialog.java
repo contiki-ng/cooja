@@ -93,7 +93,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 
   protected final static Dimension LABEL_DIMENSION = new Dimension(170, 25);
 
-  private static File lastFile = null;
+  private static File lastFile;
 
   public enum DialogState {
     NO_SELECTION,
@@ -114,12 +114,12 @@ public abstract class AbstractCompileDialog extends JDialog {
   private final JButton createButton = new JButton("Create");
 
   protected final String targetName;
-  private Component currentCompilationOutput = null;
-  private Process currentCompilationProcess = null;
+  private Component currentCompilationOutput;
+  private Process currentCompilationProcess;
 
   /* Accessible at Contiki compilation success */
-  protected File contikiSource = null;
-  protected File contikiFirmware = null;
+  protected File contikiSource;
+  protected File contikiFirmware;
 
   public AbstractCompileDialog(Cooja gui, final BaseContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
     super(Cooja.getTopParentContainer(), "Create Mote Type: Compile Contiki", ModalityType.APPLICATION_MODAL);

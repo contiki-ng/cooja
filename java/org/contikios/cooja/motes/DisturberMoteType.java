@@ -78,7 +78,7 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
   }
 
   public static class DisturberMote extends AbstractApplicationMote {
-    private ApplicationRadio radio = null;
+    private ApplicationRadio radio;
     
     private final RadioPacket radioPacket = new COOJARadioPacket(new byte[] {
         0x01, 0x02, 0x03, 0x04, 0x05

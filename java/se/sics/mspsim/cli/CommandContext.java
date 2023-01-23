@@ -11,7 +11,7 @@ public class CommandContext {
   private final String commandLine;
   private final MapTable mapTable;
   private final int pid;
-  private boolean exited = false;
+  private boolean exited;
   private final Command command;
 
   public PrintStream out;

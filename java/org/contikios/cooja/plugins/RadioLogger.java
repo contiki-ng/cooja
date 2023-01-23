@@ -119,7 +119,7 @@ public class RadioLogger extends VisPlugin {
   private final static int COLUMN_DATA = 4;
 
   private final JSplitPane splitPane;
-  private JTextPane verboseBox = null;
+  private JTextPane verboseBox;
 
   private boolean formatTimeString = true;
 
@@ -139,8 +139,8 @@ public class RadioLogger extends VisPlugin {
   private final AbstractTableModel model;
 
   private final HashMap<String, Action> analyzerMap = new HashMap<>();
-  private String analyzerName = null;
-  private ArrayList<PacketAnalyzer> analyzers = null;
+  private String analyzerName;
+  private ArrayList<PacketAnalyzer> analyzers;
   private final IEEE802154Analyzer analyzerWithPcap;
   private File pcapFile;
 
@@ -976,11 +976,11 @@ public class RadioLogger extends VisPlugin {
     RadioConnection connection;
     RadioPacket packet;
 
-    RadioConnectionLog hiddenBy = null;
-    int hides = 0;
+    RadioConnectionLog hiddenBy;
+    int hides;
 
-    String data = null;
-    String tooltip = null;
+    String data;
+    String tooltip;
 
     @Override
     public String toString() {
@@ -1079,9 +1079,9 @@ public class RadioLogger extends VisPlugin {
     }
   };
 
-  private Properties aliases = null;
+  private Properties aliases;
 
-  private boolean showDuplicates = false;
+  private boolean showDuplicates;
   private final AbstractAction showDuplicatesAction = new AbstractAction("Show duplicates") {
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -1090,7 +1090,7 @@ public class RadioLogger extends VisPlugin {
     }
   };
 
-  private boolean hideNoDestinationPackets = false;
+  private boolean hideNoDestinationPackets;
   private final AbstractAction hideNoDestinationAction = new AbstractAction("Hide airshots") {
     @Override
     public void actionPerformed(ActionEvent e) {

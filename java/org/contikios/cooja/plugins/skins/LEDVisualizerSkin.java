@@ -54,8 +54,8 @@ import org.contikios.cooja.util.EventTriggers;
  */
 @ClassDescription("LEDs")
 public class LEDVisualizerSkin implements VisualizerSkin {
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
   private AnyMoteEventTriggers<EventTriggers.Update> ledTriggers;
 
   @Override

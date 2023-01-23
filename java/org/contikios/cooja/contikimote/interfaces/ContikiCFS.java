@@ -75,8 +75,8 @@ public class ContikiCFS implements MoteInterface, PolledAfterActiveTicks {
   private final Mote mote;
   private final VarMemory moteMem;
 
-  private int lastRead = 0;
-  private int lastWritten = 0;
+  private int lastRead;
+  private int lastWritten;
   private final LinkedHashMap<JPanel, Updates> labels = new LinkedHashMap<>();
 
   /**

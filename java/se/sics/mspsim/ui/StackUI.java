@@ -69,10 +69,10 @@ public class StackUI extends JPanel implements ServiceComponent {
   private final int[] maxCache = new int[STACK_FRAME];
   private final int[] maxUsageCache = new int[STACK_FRAME];
 
-  private long lastCycles = 0;
-  private int pos = 0;
+  private long lastCycles;
+  private int pos;
 
-  private boolean update = false;
+  private boolean update;
 
   private Status status = Status.STOPPED;
 
@@ -83,7 +83,7 @@ public class StackUI extends JPanel implements ServiceComponent {
 
   private String name;
 
-  private boolean increasePos = false;
+  private boolean increasePos;
 
   public StackUI(MSP430 cpu) {
     this(cpu, 2500);
@@ -149,7 +149,7 @@ public class StackUI extends JPanel implements ServiceComponent {
       }
 
       registerMonitor = new RegisterMonitor.Adapter() {
-          private int m = 0;
+          private int m;
           @Override
           public void notifyWriteBefore(int register, int data, AccessMode mode) {
               int size = stackStartAddress - data;

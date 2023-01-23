@@ -252,8 +252,8 @@ public class CC1120 extends Radio802154 implements USARTListener {
 
   public final static int CCA_THRESHOLD = -95;
 
-        private boolean triggerGDO0onSynch = false;
-        private boolean triggerGDO0onFifoThreshold = false;
+        private boolean triggerGDO0onSynch;
+        private boolean triggerGDO0onFifoThreshold;
 
         public enum CC1120RadioState {
                 CC1120_STATE_SLEEP(0b00000)/* 0 */,
@@ -305,11 +305,11 @@ public class CC1120 extends Radio802154 implements USARTListener {
         public final static double FREQUENCY_CHANNEL_0 = 902; /* MHz */
         public final static double FREQUENCY_CHANNEL_WIDTH = 0.125; /* MHz */
 
-  private StateListener stateListener = null;
-  private ReceiverListener receiverListener = null;
+  private StateListener stateListener;
+  private ReceiverListener receiverListener;
 
   /* RSSI1: RSSI_11_4 */
-        private int currentRssiReg1 = 0;
+        private int currentRssiReg1;
   /* RSSI0: RSSI_3_0 TODO XXX Ignored */
         private static final int currentRssiReg0 = 0;
 
@@ -317,7 +317,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
         private int nextFreq0 = -1, nextFreq1 = -1, nextFreq2 = -1; /* regs */
         private boolean changeFrequencyNextState;
 
-        private CC1120RadioState state = null;
+        private CC1120RadioState state;
 
         protected final List<Byte> txfifo = new ArrayList<>();
         protected final List<Byte> rxfifo = new ArrayList<>();
@@ -328,9 +328,9 @@ public class CC1120 extends Radio802154 implements USARTListener {
 
         private boolean chipSelect;
 
-        private IOPort gdo0Port = null;
+        private IOPort gdo0Port;
         private int gdo0Pin = -1;
-        private IOPort gdo2Port = null;
+        private IOPort gdo2Port;
         private int gdo2Pin = -1;
 
         public CC1120(MSP430Core cpu) {
@@ -470,11 +470,11 @@ public class CC1120 extends Radio802154 implements USARTListener {
         private final static int SPI_BURST_BIT = 0x40;
         private final static int SPI_EXTENDED_ADDRESS = 0x2F;
 
-        private boolean spiAwaitingAddressExtended = false;
-        private boolean spiExtendedMode = false;
-        private boolean spiBurstMode = false;
-        private boolean spiReadMode = false;
-        private boolean spiGotAddress = false;
+        private boolean spiAwaitingAddressExtended;
+        private boolean spiExtendedMode;
+        private boolean spiBurstMode;
+        private boolean spiReadMode;
+        private boolean spiGotAddress;
         private int spiAddress;
 
         private static boolean spiIsBurst(int data) {
@@ -713,10 +713,10 @@ public class CC1120 extends Radio802154 implements USARTListener {
         public static final int NUM_PREAMBLE = 4;
         public static final int NUM_SYNCH = 4;
         public static final byte SYNCH_BYTE_LAST = (byte) 0xDE;
-        private boolean txPreambleDelay = false;
-        private boolean txSentSynchByte = false;
-        private int txSendSynchByteCnt = 0;
-        private boolean txSentFirstCRC = false;
+        private boolean txPreambleDelay;
+        private boolean txSentSynchByte;
+        private int txSendSynchByteCnt;
+        private boolean txSentFirstCRC;
         void txNext() {
                 if (txFooterCountdown < 0) {
                         System.out.println("Warning: Aborting transmit since txFooterCountdown=" + txFooterCountdown);
@@ -866,7 +866,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
           receiverListener = listener;
         }
 
-        boolean receiverOn = false;
+        boolean receiverOn;
         boolean setState(final CC1120RadioState newState) {
                 if (newState != CC1120RadioState.CC1120_STATE_IDLE
                                 && newState != CC1120RadioState.CC1120_STATE_RX
@@ -907,7 +907,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 return true;
         }
 
-        boolean rxGotSynchByte = false;
+        boolean rxGotSynchByte;
         private int rxExpectedLen = -1;
         @Override
         public void receivedByte(byte data) {

@@ -78,8 +78,8 @@ public class SkyGui extends AbstractNodeGUI {
   protected void startGUI() {
     MouseAdapter mouseHandler = new MouseAdapter() {
 
-        private boolean buttonDown = false;
-        private boolean resetDown = false;
+        private boolean buttonDown;
+        private boolean resetDown;
 
         // For the button sensor and reset button on the Sky nodes.
         @Override

@@ -65,8 +65,8 @@ public class RF1A extends IOUnit {
 
     private final CC1101 cc1101;
 
-    private boolean interruptOnCC1101GDO0 = false;
-    private boolean gdo0IsHigh = false;
+    private boolean interruptOnCC1101GDO0;
+    private boolean gdo0IsHigh;
 
     public RF1A(final MSP430Core cpu, int[] memory) {
         super("RF1A", "RF1A", cpu, memory, ADDRESS);
@@ -122,10 +122,10 @@ public class RF1A extends IOUnit {
     }
 
     private int ioAddress = -1;
-    private boolean ioBurst = false;
-    private boolean ioRead = false;
-    private boolean ioWrite = false;
-    private boolean expectingDummyWrite = false;
+    private boolean ioBurst;
+    private boolean ioRead;
+    private boolean ioWrite;
+    private boolean expectingDummyWrite;
     @Override
     public void write(int address, int value, boolean word, long cycles) {
 

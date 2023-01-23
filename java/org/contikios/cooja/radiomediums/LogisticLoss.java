@@ -137,7 +137,7 @@ public class LogisticLoss extends AbstractRadioMedium {
     public static final double DEFAULT_TX_POWER_DBM = 0.0;
 
     /* Enable the time-varying component? */
-    public boolean ENABLE_TIME_VARIATION = false;
+    public boolean ENABLE_TIME_VARIATION;
 
     /* Bounds for the time-varying component */
     public double TIME_VARIATION_MIN_PL_DB = -10;
@@ -146,7 +146,7 @@ public class LogisticLoss extends AbstractRadioMedium {
     /* How often to update the time-varying path loss value (in simulation time)? */
     private static final double TIME_VARIATION_STEP_SEC = 10.0;
 
-    private long lastTimeVariationUpdatePeriod = 0;
+    private long lastTimeVariationUpdatePeriod;
 
     private final DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
 

@@ -57,7 +57,7 @@ class ObstacleWorld {
   // All registered obstacles, with spatial information
   private static final int spatialResolution = 10;
   private final Vector<Rectangle2D>[][] allObstaclesSpatial = new Vector[spatialResolution][spatialResolution];
-  private boolean obstaclesOrganized = false;
+  private boolean obstaclesOrganized;
   
   // Outer bounds of all obstacles
   private Rectangle2D outerBounds;
