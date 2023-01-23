@@ -1571,7 +1571,7 @@ public class ChannelModel {
 
     // Calculate received signal strength
     double[] signalStrength = getReceivedSignalStrength(txPair);
-    double[] snrData = new double[] { signalStrength[0], signalStrength[1], signalStrength[0] };
+    double[] snrData = { signalStrength[0], signalStrength[1], signalStrength[0] };
 
     // Add antenna gain
     if (getParameterBooleanValue(Parameter.rx_with_gain)) {

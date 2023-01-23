@@ -183,7 +183,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   public static final int MODE_TXRX_ON = 0x02;
   public static final int MODE_POWER_OFF = 0x03;
   public static final int MODE_MAX = MODE_POWER_OFF;
-  private static final String[] MODE_NAMES = new String[] {
+  private static final String[] MODE_NAMES = {
     "off", "listen", "transmit", "power_off"
   };
 
@@ -246,7 +246,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   // When accessing RAM the second byte of the address contains
   // a flag indicating read/write
   public static final int FLAG_RAM_READ = 0x20;
-  private static final int[] BC_ADDRESS = new int[] {0xff, 0xff};
+  private static final int[] BC_ADDRESS = {0xff, 0xff};
 
   private SpiState state = SpiState.WAITING;
   private int usartDataPos;

@@ -49,7 +49,7 @@ public class ELF {
 
   // private static final int EI_NIDENT = 16;
   private static final int EI_ENCODING = 5;
-  private static final int[] MAGIC = new int[] {0x7f, 'E', 'L', 'F'};
+  private static final int[] MAGIC = {0x7f, 'E', 'L', 'F'};
 
   public static final boolean DEBUG = false;
 

@@ -1894,23 +1894,23 @@ public class AreaViewer extends VisPlugin {
 
       // Decide on scale comparator
       double currentArrowDistance = 0.1; // in meters
-      if (currentZoomX < canvas.getWidth() / 2) {
+      if (currentZoomX < canvas.getWidth() / 2.0) {
         currentArrowDistance = 1; // 1m
       }
-      if (10 * currentZoomX < canvas.getWidth() / 2) {
+      if (10 * currentZoomX < canvas.getWidth() / 2.0) {
         currentArrowDistance = 10; // 10m
       }
-      if (100 * currentZoomX < canvas.getWidth() / 2) {
+      if (100 * currentZoomX < canvas.getWidth() / 2.0) {
         currentArrowDistance = 100; // 100m
       }
-      if (1000 * currentZoomX < canvas.getWidth() / 2) {
-        currentArrowDistance = 1000; // 100m
+      if (1000 * currentZoomX < canvas.getWidth() / 2.0) {
+        currentArrowDistance = 1000; // 1000m
       }
 
       // "Arrow" points
       int pixelArrowLength = (int) (currentArrowDistance * currentZoomX);
-      int[] xPoints = new int[] { -pixelArrowLength, -pixelArrowLength, -pixelArrowLength, 0, 0, 0 };
-      int[] yPoints = new int[] { -5, 5, 0, 0, -5, 5 };
+      int[] xPoints = { -pixelArrowLength, -pixelArrowLength, -pixelArrowLength, 0, 0, 0 };
+      int[] yPoints = { -5, 5, 0, 0, -5, 5 };
 
       // Paint arrow and text
       g2d.setTransform(originalTransform);

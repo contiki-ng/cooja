@@ -32,7 +32,7 @@ public class NetCommands implements CommandBundle {
         listener.addUpperLayerHandler(0, ieeeHandler);
         ieeeHandler.setLowerLayerHandler(listener);
         ipStack = new IPStack();
-        byte[] macAddr = new byte[] {0x2,0x12,0x74,0x00,0x11,0x11,0x12,0x12};
+        byte[] macAddr = {0x2,0x12,0x74,0x00,0x11,0x11,0x12,0x12};
         ipStack.setLinkLayerAddress(macAddr);
         ipStack.setRouter(true);
         LoWPANHandler lowpanHandler = new LoWPANHandler();

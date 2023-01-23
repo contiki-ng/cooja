@@ -50,13 +50,13 @@ import se.sics.mspsim.core.StateChangeListener;
 import se.sics.mspsim.platform.AbstractNodeGUI;
 
 public class SentillaUSBGui extends AbstractNodeGUI {
-    private static final Color[] RED = new Color[] {
+    private static final Color[] RED = {
         new Color(0xff, 0x40, 0x40, 0xa0),
         new Color(0xff,0x40,0x40,0xff),
         new Color(0xff,0x60,0x60,0xff),
         new Color(0xff,0xa0,0xa0,0xff)
     };
-    private static final Color[] GREEN = new Color[] {
+    private static final Color[] GREEN = {
         new Color(0x40, 0xff, 0x40, 0xa0),
         new Color(0x40,0xff,0x40,0xff),
         new Color(0x60,0xff,0x60,0xff),

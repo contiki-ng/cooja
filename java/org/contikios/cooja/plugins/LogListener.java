@@ -105,7 +105,7 @@ import org.slf4j.LoggerFactory;
 public class LogListener extends VisPlugin implements HasQuickHelp {
   private static final Logger logger = LoggerFactory.getLogger(LogListener.class);
 
-  private final Color[] BG_COLORS = new Color[] {
+  private final Color[] BG_COLORS = {
       new Color(200, 200, 200),
       new Color(200, 200, 255),
       new Color(200, 255, 200),

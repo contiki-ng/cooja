@@ -89,7 +89,7 @@ public class ADC12 extends IOUnit {
   public static final int ADC12MCTL14 = 0x08E; //Reset with POR
   public static final int ADC12MCTL15 = 0x08F; //Reset with POR
 
-  public static final int[] SHTBITS = new int[] {
+  public static final int[] SHTBITS = {
     4, 8, 16, 32, 64, 96, 128, 192,
     256, 384, 512, 768, 1024, 1024, 1024, 1024
   };

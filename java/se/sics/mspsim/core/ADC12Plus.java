@@ -143,7 +143,7 @@ public class ADC12Plus extends IOUnit {
         public static final int ADC12MCTL14 = 0x001E; // Reset with POR
         public static final int ADC12MCTL15 = 0x001F; // Reset with POR
 
-        public static final int[] SHTBITS = new int[] { 4, 8, 16, 32, 64, 96, 128,
+        public static final int[] SHTBITS = { 4, 8, 16, 32, 64, 96, 128,
                         192, 256, 384, 512, 768, 1024, 1024, 1024, 1024 };
 
         public static final int BUSY_MASK = 0x01;

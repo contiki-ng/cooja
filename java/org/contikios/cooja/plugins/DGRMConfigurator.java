@@ -86,7 +86,7 @@ public class DGRMConfigurator extends VisPlugin {
   private final static int IDX_LQI = 4;
   private final static int IDX_DELAY = 5;
 
-  private final static String[] COLUMN_NAMES = new String[] {
+  private final static String[] COLUMN_NAMES = {
     "Source", "Destination", "RX Ratio", "RSSI","LQI", "Delay"
   };
 
@@ -227,7 +227,7 @@ public class DGRMConfigurator extends VisPlugin {
     JOptionPane optionPane = new JOptionPane();
     optionPane.setMessage(description);
     optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-    String[] options = new String[] {"Cancel", "Add"};
+    String[] options = {"Cancel", "Add"};
     optionPane.setOptions(options);
     optionPane.setInitialValue(options[1]);
     JDialog dialog = optionPane.createDialog(this, title);
@@ -263,7 +263,7 @@ public class DGRMConfigurator extends VisPlugin {
 	private void doImportFromFile() {
 		/* Delete existing edges */
     if (radioMedium.getEdges().length > 0) {
-      String[] options = new String[] { "Remove", "Cancel" };
+      String[] options = { "Remove", "Cancel" };
       int n = JOptionPane.showOptionDialog(
           Cooja.getTopParentContainer(),
           "Importing edges will remove all your existing edges.",

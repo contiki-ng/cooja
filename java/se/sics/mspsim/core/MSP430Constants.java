@@ -180,7 +180,7 @@ public interface MSP430Constants {
   int CG1 = 2;
   int CG2 = 3;
 
-  int[][] CREG_VALUES = new int[][]{
+  int[][] CREG_VALUES = {
     {0, 0, 4, 8}, {0, 1, 2, 0xffff}
   };
 

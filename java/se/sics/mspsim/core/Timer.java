@@ -147,7 +147,7 @@ public class Timer extends IOUnit {
   private int counterPassed;
 
   // Input map for timer A
-  public static final int[] TIMER_Ax149 = new int[] {
+  public static final int[] TIMER_Ax149 = {
     SRC_PORT + 0x10, SRC_ACLK, SRC_SMCLK, SRC_PORT + 0x21, // Timer
     SRC_PORT + 0x11, SRC_PORT + 0x22, SRC_GND, SRC_VCC,    // Cap 0
     SRC_PORT + 0x12, SRC_CAOUT, SRC_GND, SRC_VCC,          // Cap 1
@@ -155,7 +155,7 @@ public class Timer extends IOUnit {
   };
 
   // Input map for timer B (configurable in later versions for other MSP430 versions)
-  public static final int[] TIMER_Bx149 = new int[] {
+  public static final int[] TIMER_Bx149 = {
     SRC_PORT + 0x47, SRC_ACLK, SRC_SMCLK, SRC_PORT + 0x47, // Timer
     SRC_PORT + 0x40, SRC_PORT + 0x40, SRC_GND, SRC_VCC,    // Cap 0
     SRC_PORT + 0x41, SRC_PORT + 0x41, SRC_GND, SRC_VCC,    // Cap 1
@@ -166,7 +166,7 @@ public class Timer extends IOUnit {
     SRC_PORT + 0x46, SRC_ACLK, SRC_GND, SRC_VCC            // Cap 6
   };
 
-  public static final String[] capNames = new String[] {
+  public static final String[] capNames = {
     "NONE", "RISING", "FALLING", "BOTH"
   };
 

@@ -48,10 +48,10 @@ public class MMA7260QT extends Accelerometer {
 
     public static final int MODE_SLEEP = 0x00;
     public static final int MODE_ACTIVE = 0x01;
-    private static final String[] MODE_NAMES = new String[] {
+    private static final String[] MODE_NAMES = {
       "sleep", "active"
     };
-    private static final float[] GSELECT = new float[] {
+    private static final float[] GSELECT = {
         1.5f, 2, 4, 6
     };
 
