@@ -58,7 +58,7 @@ public class ConfigManager {
   // Config file handling
   // -------------------------------------------------------------------
 
-  public boolean loadConfiguration(String configFile) {
+  boolean loadConfiguration(String configFile) {
     try (var input = Files.newBufferedReader(new File(configFile).toPath(), StandardCharsets.UTF_8)) {
       var p = new Properties();
       p.load(input);
