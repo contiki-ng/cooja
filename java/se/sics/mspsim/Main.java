@@ -157,9 +157,7 @@ public class Main {
   }
 
   public static void main(String[] args) throws IOException {
-    ArgumentManager config = new ArgumentManager();
-    config.handleArguments(args);
-
+    var config = new ArgumentManager(args);
     String nodeType = config.getProperty("nodeType");
     String platform = nodeType;
     GenericNode node;
