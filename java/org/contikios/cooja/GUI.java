@@ -135,7 +135,7 @@ public class GUI {
   private final ToolbarListener toolbarListener;
 
   private final Cooja cooja;
-  boolean hasFileHistoryChanged;
+  private boolean hasFileHistoryChanged;
 
   public GUI(Cooja cooja) {
     this.cooja = cooja;
@@ -324,7 +324,7 @@ public class GUI {
       private static final long TIME_MINUTE = 60 * TIME_SECOND;
       private static final long TIME_HOUR = 60 * TIME_MINUTE;
 
-      public static String getTimeString(Simulation sim) {
+      static String getTimeString(Simulation sim) {
         if (sim == null) {
           return "Time:";
         }
@@ -1342,8 +1342,8 @@ public class GUI {
    * @param manualRandomSeed The random seed to use for the simulation
    * @return The worker that will load the simulation.
    */
-  public SwingWorker<Simulation, Object> createLoadSimWorker(Simulation.SimConfig cfg, final boolean quick,
-                                                             Long manualRandomSeed) {
+  private SwingWorker<Simulation, Object> createLoadSimWorker(Simulation.SimConfig cfg, final boolean quick,
+                                                              Long manualRandomSeed) {
     assert java.awt.EventQueue.isDispatchThread() : "Call from AWT thread";
     final var configFile = cfg == null ? null : new File(cfg.file());
     final var autoStart = configFile == null && cooja.getSimulation().isRunning();
@@ -1791,7 +1791,7 @@ public class GUI {
     return n != JOptionPane.YES_OPTION;
   }
 
-  public static void setLookAndFeel() {
+  static void setLookAndFeel() {
     JFrame.setDefaultLookAndFeelDecorated(true);
     JDialog.setDefaultLookAndFeelDecorated(true);
     ToolTipManager.sharedInstance().setDismissDelay(60000);
@@ -1941,25 +1941,25 @@ public class GUI {
 
   /** GUI actions */
   abstract static class GUIAction extends AbstractAction {
-    public GUIAction(String name) {
+    GUIAction(String name) {
       super(name);
     }
-    public GUIAction(String name, int mnemonic) {
+    GUIAction(String name, int mnemonic) {
       this(name);
       putValue(Action.MNEMONIC_KEY, mnemonic);
     }
-    public GUIAction(String name, KeyStroke accelerator) {
+    GUIAction(String name, KeyStroke accelerator) {
       this(name);
       putValue(Action.ACCELERATOR_KEY, accelerator);
     }
-    public GUIAction(String name, int mnemonic, KeyStroke accelerator) {
+    GUIAction(String name, int mnemonic, KeyStroke accelerator) {
       this(name, mnemonic);
       putValue(Action.ACCELERATOR_KEY, accelerator);
     }
     public abstract boolean shouldBeEnabled();
   }
   class StartPluginGUIAction extends GUIAction {
-    public StartPluginGUIAction(String name) {
+    StartPluginGUIAction(String name) {
       super(name);
     }
     @Override

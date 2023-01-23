@@ -118,7 +118,7 @@ public class Cooja {
           new PathIdentifier("[APPS_DIR]","PATH_APPS")
   };
 
-  public static File externalToolsUserSettingsFile = null;
+  private static File externalToolsUserSettingsFile = null;
   private File currentConfigFile = null; /* Used to generate config relative paths */
 
   // External tools setting names
