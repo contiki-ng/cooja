@@ -53,27 +53,12 @@ public class NetworkPacket {
 
   Map<String,Field> fields = new HashMap<>();
 
-  private static class Field {
-    final String name;
-    final int pos;
-    final int size;
-    final int mask;
-    final int value;
-
-    Field(String name, int pos, int size, int mask, int value) {
-      this.name = name;
-      this.pos = pos;
-      this.size = size;
-      this.mask = mask;
-      this.value = value;
-    }
-
+  private record Field(String name, int pos, int size, int mask, int value) {
     @Override
-    public String toString() {
-      return name + ":" + pos + "-" + (pos + size - 1) +
-      (mask != 0 ? "=" + value : "");
+      public String toString() {
+        return name + ":" + pos + "-" + (pos + size - 1) + (mask != 0 ? "=" + value : "");
+      }
     }
-  }
 
 
   public NetworkPacket(String pattern) {
