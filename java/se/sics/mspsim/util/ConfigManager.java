@@ -121,11 +121,7 @@ public class ConfigManager {
   }
 
   public String[] getPropertyAsArray(String name) {
-    return getPropertyAsArray(name, null);
-  }
-
-  public String[] getPropertyAsArray(String name, String defaultValue) {
-    String valueList = getProperty(name, defaultValue);
+    String valueList = getProperty(name, null);
     if (valueList != null) {
       StringTokenizer tok = new StringTokenizer(valueList, ", \t");
       int len = tok.countTokens();
@@ -146,18 +142,11 @@ public class ConfigManager {
   }
 
   public int[] getPropertyAsIntArray(String name) {
-    return getPropertyAsIntArray(name, null);
-  }
-
-  public int[] getPropertyAsIntArray(String name, String defaultValue) {
-    String valueList = getProperty(name, defaultValue);
+    String valueList = getProperty(name, null);
     if (valueList != null) {
-      return parseIntArray(valueList, defaultValue);
-    } else if (defaultValue != null) {
-      return parseIntArray(defaultValue, null);
-    } else {
-      return null;
+      return parseIntArray(valueList, null);
     }
+    return null;
   }
 
   private static int[] parseIntArray(String valueList, String secondaryValue) {
