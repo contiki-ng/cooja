@@ -286,7 +286,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     public static final int MODE_TXRX_ON = 0x02;
     public static final int MODE_POWER_OFF = 0x03;
     public static final int MODE_MAX = MODE_POWER_OFF;
-    private static final String[] MODE_NAMES = new String[] {
+    private static final String[] MODE_NAMES = {
         "off", "listen", "transmit", "power_off"
     };
 
@@ -341,7 +341,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     // 802.15.4 symbol period in ms
     public static final double SYMBOL_PERIOD = 0.016; // 16 us
 
-    private static final int[] BC_ADDRESS = new int[] {0xff, 0xff};
+    private static final int[] BC_ADDRESS = {0xff, 0xff};
 
     private int shrPos;
     private int txfifoPos;

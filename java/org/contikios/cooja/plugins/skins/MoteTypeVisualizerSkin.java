@@ -54,7 +54,7 @@ public class MoteTypeVisualizerSkin implements VisualizerSkin {
   private Simulation simulation;
   private Visualizer visualizer;
 
-  private static final Color[][] COLORS = new Color[][] {
+  private static final Color[][] COLORS = {
     new Color[] {Color.GREEN},
     new Color[] {Color.ORANGE},
     new Color[] {Color.MAGENTA},

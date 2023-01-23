@@ -31,14 +31,14 @@ public class ICMPv6Analyzer extends PacketAnalyzer {
   public static final int PREFIX_INFO = 3;
   public static final int MTU_INFO = 5;
 
-  public static final String[] TYPE_NAME = new String[]{
+  public static final String[] TYPE_NAME = {
     "Echo Request", "Echo Reply",
     "Group Query", "Group Report", "Group Reduction",
     "Router Solicitation", "Router Advertisement",
     "Neighbor Solicitation", "Neighbor Advertisement", "Redirect",
     "Router Renumber", "Node Information Query", "Node Information Response"};
 
-  public static final String[] BRIEF_TYPE_NAME = new String[]{
+  public static final String[] BRIEF_TYPE_NAME = {
     "ECHO REQ", "ECHO RPLY",
     "GRP QUERY", "GRP REPORT", "GRP REDUCTION",
     "RS", "RA",

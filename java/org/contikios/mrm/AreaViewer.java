@@ -1909,8 +1909,8 @@ public class AreaViewer extends VisPlugin {
 
       // "Arrow" points
       int pixelArrowLength = (int) (currentArrowDistance * currentZoomX);
-      int[] xPoints = new int[] { -pixelArrowLength, -pixelArrowLength, -pixelArrowLength, 0, 0, 0 };
-      int[] yPoints = new int[] { -5, 5, 0, 0, -5, 5 };
+      int[] xPoints = { -pixelArrowLength, -pixelArrowLength, -pixelArrowLength, 0, 0, 0 };
+      int[] yPoints = { -5, 5, 0, 0, -5, 5 };
 
       // Paint arrow and text
       g2d.setTransform(originalTransform);

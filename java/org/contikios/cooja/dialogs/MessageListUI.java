@@ -74,8 +74,8 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
 
   private static final Logger logger = LoggerFactory.getLogger(MessageListUI.class);
 
-  private final Color[] foregrounds = new Color[] { null, Color.red };
-  private final Color[] backgrounds = new Color[] { null, null };
+  private final Color[] foregrounds = { null, Color.red };
+  private final Color[] backgrounds = { null, null };
 
   private JPopupMenu popup;
   private boolean hideNormal;

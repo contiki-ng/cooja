@@ -832,7 +832,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * @throws MoteTypeCreationException If Java class compilation error occurs
    */
   private static void compileSourceFile(Path tempDir, String className) throws MoteTypeCreationException {
-    String[] cmd = new String[] {Cooja.configuration.javac(),
+    String[] cmd = {Cooja.configuration.javac(),
             "-cp", System.getProperty("java.class.path"), "--release", String.valueOf(Runtime.version().feature()),
             // Disable warnings to avoid 3 lines of "warning: using incubating module(s): jdk.incubator.foreign".
             "-nowarn", "--add-modules", "jdk.incubator.foreign",

@@ -65,7 +65,7 @@ public class BaseRSSIconf extends VisPlugin {
 	private final static int IDX_Mote = 0;
 	private final static int IDX_BaseRSSI = 1;
 
-	private final static String[] COLUMN_NAMES = new String[] { "Mote",
+	private final static String[] COLUMN_NAMES = { "Mote",
 			"BaseRSSI (-45!)" }; // TODO maybe include offset of -45 directly
 
 	private final AbstractRadioMedium radioMedium;

@@ -145,7 +145,7 @@ public class NetworkPacket {
   }
 
   public static void main(String[] args) {
-    byte[] data = new byte[] {
+    byte[] data = {
         0x61, 0x04, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,

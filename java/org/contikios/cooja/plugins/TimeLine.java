@@ -199,7 +199,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
         JOptionPane optionPane = new JOptionPane();
         optionPane.setMessage(description);
         optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-        String[] options = new String[]{"Cancel", "Show"};
+        String[] options = {"Cancel", "Show"};
         optionPane.setOptions(options);
         optionPane.setInitialValue(options[1]);
         JDialog dialog = optionPane.createDialog(Cooja.getTopParentContainer(), "Show mote in timeline");
@@ -1834,7 +1834,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   }
 
-  private final static Color[] CHANNEL_COLORS = new Color[] {
+  private final static Color[] CHANNEL_COLORS = {
     Color.decode("0x008080"), Color.decode("0x808080"), Color.decode("0xC00000"),
     Color.decode("0x000020"), Color.decode("0x202000"), Color.decode("0x200020"),
     Color.decode("0x002020"), Color.decode("0x202020"), Color.decode("0x006060"),

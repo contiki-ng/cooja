@@ -347,7 +347,7 @@ public class BufferListener extends VisPlugin {
       }
     };
     DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
-      private final Color[] BG_COLORS = new Color[] {
+      private final Color[] BG_COLORS = {
           new Color(200, 200, 200),
           new Color(200, 200, 255),
           new Color(200, 255, 200),
