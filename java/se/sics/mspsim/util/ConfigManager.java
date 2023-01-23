@@ -184,7 +184,15 @@ public class ConfigManager {
 
   public float getPropertyAsFloat(String name, float defaultValue) {
     String value = getProperty(name, null);
-    return value == null ? defaultValue : parseFloat(name, value, defaultValue);
+    if (value == null) {
+      return defaultValue;
+    }
+    try {
+      return Float.parseFloat(value);
+    } catch (Exception e) {
+      System.err.println("config '" + name + "' has a non-float value '" + value + '\'');
+    }
+    return defaultValue;
   }
 
   public double getPropertyAsDouble(String name, double defaultValue) {
@@ -195,16 +203,6 @@ public class ConfigManager {
   public boolean getPropertyAsBoolean(String name, boolean defaultValue) {
     String value = getProperty(name, null);
     return value == null ? defaultValue : "true".equals(value) || "yes".equals(value) || "1".equals(value);
-  }
-
-  protected static float parseFloat(String name, String value, float defaultValue) {
-    try {
-      return Float.parseFloat(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-float value '"
-          + value + '\'');
-    }
-    return defaultValue;
   }
 
   protected static double parseDouble(String name, String value, double defaultValue) {
