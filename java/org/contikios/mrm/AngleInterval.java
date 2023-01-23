@@ -292,15 +292,14 @@ class AngleInterval {
   
   @Override
   public String toString() {
-    String retString = "";
+    var retString = new StringBuilder();
     for (var subInterval : subIntervals) {
       if (!retString.isEmpty())
-        retString = retString + " && ";
-
-      retString += "(" + Math.toDegrees(subInterval.getLow()) + " -> " + Math.toDegrees(subInterval.getHigh()) + ")";
+        retString.append(" && ");
+      retString.append('(').append(Math.toDegrees(subInterval.getLow())).append(" -> ")
+              .append(Math.toDegrees(subInterval.getHigh())).append(')');
     }
-    
-    return retString;
+    return retString.toString();
   }
   
   /**
