@@ -41,25 +41,18 @@ import java.util.ArrayList;
  */
 public class ArgumentManager extends ConfigManager {
 
-  private String[] arguments;
+  private final String[] arguments;
 
-  public ArgumentManager() {
-  }
-
-  public String[] getArguments() {
-    return arguments;
-  }
-
-  public void handleArguments(String[] args) {
+  public ArgumentManager(String[] args) {
     ArrayList<String> list = new ArrayList<>();
     ArrayList<String> config = new ArrayList<>();
     for (int i = 0, n = args.length; i < n; i++) {
       if ("-".equals(args[i])) {
-          // The rest should be considered arguments
-          for(++i; i < args.length; i++) {
-              list.add(args[i]);
-          }
-          break;
+        // The rest should be considered arguments
+        for(++i; i < args.length; i++) {
+          list.add(args[i]);
+        }
+        break;
       }
       if (args[i].startsWith("-")) {
         String param = args[i].substring(1);
@@ -83,14 +76,17 @@ public class ArgumentManager extends ConfigManager {
         config.add(param);
         config.add(!value.isEmpty() ? value : "true");
       } else {
-        // Normal argument
+        // Normal argument.
         list.add(args[i]);
       }
     }
-    this.arguments = list.toArray(new String[0]);
+    arguments = list.toArray(new String[0]);
     for (int i = 0, n = config.size(); i < n; i += 2) {
       setProperty(config.get(i), config.get(i + 1));
     }
   }
 
+  public String[] getArguments() {
+    return arguments;
+  }
 } // ArgumentManager

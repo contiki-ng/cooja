@@ -305,8 +305,7 @@ class Main {
                 options.logDir, options.contikiPath, options.coojaPath, options.javac);
       Cooja.go(cfg, simConfigs);
     } else { // Start MSPSim.
-      var config = new ArgumentManager();
-      config.handleArguments(options.simulationFiles.toArray(new String[0]));
+      var config = new ArgumentManager(options.simulationFiles.toArray(new String[0]));
       var nodeType = config.getProperty("nodeType");
       if (nodeType == null) {
         nodeType = getNodeTypeByPlatform(options.mspSimPlatform);
