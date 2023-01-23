@@ -159,10 +159,8 @@ public class Main {
   public static void main(String[] args) throws IOException {
     var config = new ArgumentManager(args);
     String nodeType = config.getProperty("nodeType");
-    String platform = nodeType;
-    GenericNode node;
     if (nodeType == null) {
-      platform = config.getProperty("platform");
+      var platform = config.getProperty("platform");
       if (platform == null) {
           // Default platform
           platform = "sky";
@@ -179,9 +177,9 @@ public class Main {
       }
       nodeType = getNodeTypeByPlatform(platform);
     }
-    node = createNode(nodeType);
+    var node = createNode(nodeType);
     if (node == null) {
-      System.err.println("MSPSim does not currently support the platform '" + platform + "'.");
+      System.err.println("MSPSim does not currently support the platform '" + nodeType + "'.");
       System.exit(1);
     }
     node.setupArgs(config);
