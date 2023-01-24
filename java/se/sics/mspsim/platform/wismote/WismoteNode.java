@@ -87,8 +87,6 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 
     private static final int[] LEDS = { 0xff2020, 0x20ff20, 0xff2020 };
 
-    //private final M25P80 flash;
-    //private String flashFile;
     private final CC2520 radio;
     private final Leds leds;
     private final Button button;
@@ -101,8 +99,6 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 
     public WismoteNode(MSP430 cpu) {
         super("Wismote", cpu);
-//        this.flash = flash;
-//        registry.registerComponent("xmem", flash);
         ds2411 = new DS2411(cpu);
 
         var port1 = cpu.getIOUnit(IOPort.class, "P1");
@@ -143,10 +139,6 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
         return button;
     }
 
-//    public M25P80 getFlash() {
-//        return flash;
-//    }
-
     @Override
     public void dataReceived(USARTSource source, int data) {
         radio.dataReceived(source, data);
@@ -177,33 +169,9 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
         }
     }
 
-    private void setupNodePorts() {
-//        if (flashFile != null) {
-//            getFlash().setStorage(new FileStorage(flashFile));
-//        }
-    }
-
     @Override
     public void setupNode() {
-        // create a filename for the flash file
-        // This should be possible to take from a config file later!
-        String fileName = config.getProperty("flashfile");
-        if (fileName == null) {
-            fileName = firmwareFile;
-            if (fileName != null) {
-                int ix = fileName.lastIndexOf('.');
-                if (ix > 0) {
-                    fileName = fileName.substring(0, ix);
-                }
-                fileName = fileName + ".flash";
-            }
-        }
-        if (DEBUG) System.out.println("Using flash file: " + (fileName == null ? "no file" : fileName));
-
-        //this.flashFile = fileName;
-
-        setupNodePorts();
-
+        // To add flash support: super.setupNode();
         if (!config.getPropertyAsBoolean("nogui", true)) {
             setupGUI();
 

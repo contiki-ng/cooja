@@ -41,8 +41,6 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
     public static final int LEDS_CONF_GREEN  = 0x01;
     public static final int LEDS_CONF_YELLOW = 0x01;
 
-    //private final M25P80 flash;
-    //private String flashFile;
     public final CC2420 radio;
 
     public static MSP430Config makeChipConfig() {
@@ -51,8 +49,6 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
 
     public TyndallNode(MSP430 cpu) {
         super("Tyndall", cpu);
-//        this.flash = flash;
-//        registry.registerComponent("xmem", flash);
         port1 = cpu.getIOUnit(IOPort.class, "P1");
         port1.addPortListener(this);
         port3 = cpu.getIOUnit(IOPort.class, "P3");
@@ -84,10 +80,6 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
         }
     }
 
-//    public M25P80 getFlash() {
-//        return flash;
-//    }
-
     @Override
     public void dataReceived(USARTSource source, int data) {
         radio.dataReceived(source, data);
@@ -118,33 +110,9 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
         }
     }
 
-    private void setupNodePorts() {
-//        if (flashFile != null) {
-//            getFlash().setStorage(new FileStorage(flashFile));
-//        }
-    }
-
     @Override
     public void setupNode() {
-        // create a filename for the flash file
-        // This should be possible to take from a config file later!
-        String fileName = config.getProperty("flashfile");
-        if (fileName == null) {
-            fileName = firmwareFile;
-            if (fileName != null) {
-                int ix = fileName.lastIndexOf('.');
-                if (ix > 0) {
-                    fileName = fileName.substring(0, ix);
-                }
-                fileName = fileName + ".flash";
-            }
-        }
-        if (DEBUG) System.out.println("Using flash file: " + (fileName == null ? "no file" : fileName));
-
-        //this.flashFile = fileName;
-
-        setupNodePorts();
-
+        // To add flash support: super.setupNode();
         if (!config.getPropertyAsBoolean("nogui", true)) {
             setupGUI();
 
