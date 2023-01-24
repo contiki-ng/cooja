@@ -35,7 +35,6 @@ import java.util.Collection;
 import org.contikios.cooja.COOJARadioPacket;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioPacket;
-import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMote;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.interfaces.Position;
@@ -87,11 +86,15 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
 
   private static final Logger logger = LoggerFactory.getLogger(ContikiRadio.class);
 
+  private static final byte[] SHR = { 0x00, 0x00, 0x00, 0x00, (byte) 0xA7 };
+
   /**
    * Project default transmission bitrate (kbps).
    */
+  private long TICKS_PER_BYTE = 32;
   private final double RADIO_TRANSMISSION_RATE_KBPS;
   private final CCITT_CRC txCrc = new CCITT_CRC();
+  private final int CRC_LEN = 2;
 
   /**
    * Configured transmission bitrate (kbps).
@@ -104,19 +107,27 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
 
   private boolean radioOn;
 
-  private boolean isTransmitting;
-
   private boolean isInterfered;
 
-  private long transmissionEndTime = -1;
+  private long transmissionStartTime = -1;
+
+  private boolean transmissionShrIssued;
+
+  private byte sequencePointer;
+
+  private int alreadyTransmittedBytes;
 
   private RadioEvent lastEvent = RadioEvent.UNKNOWN;
-
-  private long lastEventTime;
 
   private int oldOutputPowerIndicator = -1;
 
   private int oldRadioChannel = -1;
+
+  private boolean fifopIssued;
+
+  private boolean receptionShrIssued;
+
+  private long receptionStartTime = -1;
 
   /**
    * Creates an interface to the radio at mote.
@@ -162,12 +173,12 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
 
   @Override
   public boolean isTransmitting() {
-    return isTransmitting;
+    return myMoteMemory.getIntValueOf("simTransmitting") == 1;
   }
 
   @Override
   public boolean isReceiving() {
-    return myMoteMemory.getByteValueOf("simReceiving") == 1;
+    return myMoteMemory.getIntValueOf("simReceiving") == 1;
   }
 
   @Override
@@ -180,38 +191,92 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     return myMoteMemory.getIntValueOf("simRadioChannel");
   }
 
+  private boolean hasPendingOutgoingFrame() {
+    return myMoteMemory.getIntValueOf("simPendingOutgoingFrame") != 0;
+  }
+
+  private boolean isSearchingForShr() {
+    return myMoteMemory.getIntValueOf("simShrSearching") != 0;
+  }
+
+  private int getFifopThreshold() {
+    return myMoteMemory.getIntValueOf("simFifopThreshold");
+  }
+
+  private boolean isAutoCrcOn() {
+    return myMoteMemory.getIntValueOf("simAutoCrc") != 0;
+  }
+
+  private boolean shallEnterRxAfterTx() {
+    return myMoteMemory.getIntValueOf("simShallEnterRxAfterTx") != 0;
+  }
+
+  private boolean isSequence() {
+    return myMoteMemory.getIntValueOf("simIsSequence") != 0;
+  }
+
+  private boolean shallStopSequence() {
+    return myMoteMemory.getIntValueOf("simStopSequence") != 0;
+  }
+
   @Override
   public void signalReceptionStart() {
-    packetToMote = null;
-    if (isInterfered() || isReceiving() || isTransmitting()) {
+    assert packetToMote != null;
+    assert radioOn;
+
+    /* check if we can receive right now */
+    if (isInterfered() || isReceiving() || isTransmitting() || !isSearchingForShr()) {
       interfereAnyReception();
       return;
     }
 
-    myMoteMemory.setByteValueOf("simReceiving", (byte) 1);
-    mote.requestImmediateWakeup();
+    /* update C side */
+    myMoteMemory.setIntValueOf("simReceiving", 1); /* TODO delay until SHR */
 
-    lastEventTime = mote.getSimulation().getSimulationTime();
+    /* update internal state */
+    fifopIssued = false;
+    receptionShrIssued = false;
+    receptionStartTime = mote.getSimulation().getSimulationTime();
+
+    /* notify */
     lastEvent = RadioEvent.RECEPTION_STARTED;
-
-    myMoteMemory.setInt64ValueOf("simLastPacketTimestamp", lastEventTime);
     radioEventTriggers.trigger(RadioEvent.RECEPTION_STARTED, this);
+
+    mote.scheduleNextWakeup(receptionStartTime + computeTransmissionDuration(SHR.length));
+  }
+
+  private void receiveNextByte(int receivedBytes) {
+    byte newData[] = packetToMote.getPacketData();
+    byte oldData[] = myMoteMemory.getByteArray("simInDataBuffer", 128);
+
+    myMoteMemory.setIntValueOf("simReceivedBytes", receivedBytes);
+    oldData[receivedBytes - 1] = isInterfered
+        ? (byte) ~newData[receivedBytes - 1]
+        : newData[receivedBytes - 1];
+    /* TODO handle the case when the previous packet is unread */
+    myMoteMemory.setByteArray("simInDataBuffer", oldData);
   }
 
   @Override
   public void signalReceptionEnd() {
-    if (isInterfered || packetToMote == null) {
-      isInterfered = false;
-      packetToMote = null;
-      myMoteMemory.setIntValueOf("simInSize", 0);
-    } else {
-      myMoteMemory.setIntValueOf("simInSize", packetToMote.getPacketData().length - 2);
-      myMoteMemory.setByteArray("simInDataBuffer", packetToMote.getPacketData());
+    if (isReceiving()) {
+      assert radioOn;
+
+      /* receive final byte */
+      receiveNextByte(packetToMote.getPacketData().length);
+
+      /* update C side */
+      myMoteMemory.setIntValueOf("simPendingIncomingFrame",
+          isInterfered && isAutoCrcOn() ? 0 : 1);
+      myMoteMemory.setIntValueOf("simRxdoneInterrupt", 1);
+      myMoteMemory.setIntValueOf("simReceiving", 0);
+      mote.requestImmediateWakeup();
     }
 
-    myMoteMemory.setByteValueOf("simReceiving", (byte) 0);
-    mote.requestImmediateWakeup();
-    lastEventTime = mote.getSimulation().getSimulationTime();
+    /* update internal state */
+    isInterfered = false;
+
+    /* notify */
     lastEvent = RadioEvent.RECEPTION_FINISHED;
     radioEventTriggers.trigger(RadioEvent.RECEPTION_FINISHED, this);
   }
@@ -226,11 +291,10 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     if (isInterfered()) {
       return;
     }
- 
+
     isInterfered = true;
 
     lastEvent = RadioEvent.RECEPTION_INTERFERED;
-    lastEventTime = mote.getSimulation().getSimulationTime();
     radioEventTriggers.trigger(RadioEvent.RECEPTION_INTERFERED, this);
   }
 
@@ -262,7 +326,7 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
   }
 
   /** Set LQI to a value between 0 and 255.
-   * 
+   *
    * @see org.contikios.cooja.interfaces.Radio#setLQI(int)
    */
   @Override
@@ -286,6 +350,20 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     return mote.getInterfaces().getPosition();
   }
 
+  private long computeTransmissionDuration(int bytes) {
+    return bytes * TICKS_PER_BYTE;
+  }
+
+  private int computeReceivedBytes() {
+    long now = mote.getSimulation().getSimulationTime();
+    return (int) ((now - receptionStartTime) / TICKS_PER_BYTE);
+  }
+
+  private int computeTransmittedBytes() {
+    long now = mote.getSimulation().getSimulationTime();
+    return (int) ((now - transmissionStartTime) / TICKS_PER_BYTE);
+  }
+
   @Override
   public void doActionsAfterTick() {
     long now = mote.getSimulation().getSimulationTime();
@@ -295,17 +373,24 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
       radioOn = !radioOn;
 
       if (!radioOn) {
-        myMoteMemory.setByteValueOf("simReceiving", (byte) 0);
-        myMoteMemory.setIntValueOf("simInSize", 0);
-        myMoteMemory.setIntValueOf("simOutSize", 0);
-        isTransmitting = false;
+        if (isTransmitting()) {
+          /* cause ongoing receptions to fail by invalidating CRC or MIC */
+          packetFromMote.getPacketData()[packetFromMote.getPacketData().length - 1] =
+              (byte) ~packetFromMote.getPacketData()[packetFromMote.getPacketData().length - 1];
+          lastEvent = RadioEvent.TRANSMISSION_FINISHED;
+          radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, this);
+          /* TODO in the case of a canceled transmission, receivers that received
+           * an SHR interrupt should also get FIFOP and RXDONE interrupts */
+        }
+        myMoteMemory.setIntValueOf("simPendingIncomingFrame", 0);
+        myMoteMemory.setIntValueOf("simReceiving", 0);
+        myMoteMemory.setIntValueOf("simTransmitting", 0);
         lastEvent = RadioEvent.HW_OFF;
       } else {
         lastEvent = RadioEvent.HW_ON;
       }
 
-      lastEventTime = now;
-      radioEventTriggers.trigger(radioOn ? RadioEvent.HW_ON : RadioEvent.HW_OFF, this);
+      radioEventTriggers.trigger(lastEvent, this);
     }
     if (!radioOn) {
       return;
@@ -328,56 +413,144 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
       radioEventTriggers.trigger(RadioEvent.CHANNEL_HOP, this);
     }
 
-    /* Ongoing transmission */
-    if (isTransmitting && now >= transmissionEndTime) {
-      myMoteMemory.setIntValueOf("simOutSize", 0);
-      isTransmitting = false;
-      mote.requestImmediateWakeup();
+    if (isReceiving()) {
+      assert !isTransmitting();
+      int receivedBytes = computeReceivedBytes();
 
-      lastEventTime = now;
-      lastEvent = RadioEvent.TRANSMISSION_FINISHED;
-      radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, this);
+      /* move received data to mote */
+      if (receivedBytes > SHR.length) {
+        receiveNextByte(receivedBytes - SHR.length);
+      } else {
+        myMoteMemory.setIntValueOf("simReceivedBytes", 0);
+      }
+
+      if (!receptionShrIssued && receivedBytes >= SHR.length) {
+        /* issue SHR interrupt */
+        myMoteMemory.setInt64ValueOf("simLastPacketTimestamp", now);
+        myMoteMemory.setIntValueOf("simShrInterrupt", 1);
+        mote.requestImmediateWakeup();
+        receptionShrIssued = true;
+      } else if (!fifopIssued && ((receivedBytes - SHR.length) > getFifopThreshold())) {
+        /* issue FIFOP interrupt */
+        myMoteMemory.setIntValueOf("simFifopInterrupt", 1);
+        mote.requestImmediateWakeup();
+        fifopIssued = true;
+      }
+
+      /* schedule next wake up */
+      mote.scheduleNextWakeup(receptionStartTime + computeTransmissionDuration(receivedBytes + 1));
     }
 
     /* New transmission */
-    int size;
-    if (!isTransmitting && (size = myMoteMemory.getIntValueOf("simOutSize")) > 0) {
-      packetFromMote = new COOJARadioPacket(myMoteMemory.getByteArray("simOutDataBuffer", size + 2));
+    if (hasPendingOutgoingFrame()) {
+      if (isReceiving()) {
+        myMoteMemory.setIntValueOf("simReceiving", 0);
+      }
+      myMoteMemory.setIntValueOf("simPendingOutgoingFrame", 0);
+      myMoteMemory.setIntValueOf("simTransmitting", 1);
 
-      if (packetFromMote.getPacketData() == null || packetFromMote.getPacketData().length == 0) {
+      /* instantiate COOJARadioPacket */
+      int size = myMoteMemory.getByteValueOf("simOutDataBuffer");
+      if (size == 0) {
         logger.warn("Skipping zero sized Contiki packet (no buffer)");
-        myMoteMemory.setIntValueOf("simOutSize", 0);
         mote.requestImmediateWakeup();
         return;
       }
-
-      byte[] data = packetFromMote.getPacketData();
-      txCrc.setCRC(0);
-      for (int i = 0; i < size; i++) {
-        txCrc.addBitrev(data[i]);
+      if (isAutoCrcOn()) {
+        size += CRC_LEN;
       }
-      data[size] = (byte)txCrc.getCRCHi();
-      data[size + 1] = (byte)txCrc.getCRCLow();
+      packetFromMote = new COOJARadioPacket(new byte[1 + size]);
 
-      isTransmitting = true;
+      /* update internal state */
+      transmissionShrIssued = false;
+      transmissionStartTime = now;
+      alreadyTransmittedBytes = 0;
 
-      /* Calculate transmission duration (us) */
-      /* XXX Currently floored due to millisecond scheduling! */
-      long duration = (int) (Simulation.MILLISECOND*((8 * size /*bits*/) / radioTransmissionRateKBPS));
-      transmissionEndTime = now + Math.max(1, duration);
-
-      lastEventTime = now;
+      /* notify */
       lastEvent = RadioEvent.TRANSMISSION_STARTED;
       radioEventTriggers.trigger(RadioEvent.TRANSMISSION_STARTED, this);
-
-      // Deliver packet right away
-      lastEvent = RadioEvent.PACKET_TRANSMITTED;
-      radioEventTriggers.trigger(RadioEvent.PACKET_TRANSMITTED, this);
     }
 
-    if (isTransmitting && transmissionEndTime > now) {
-      mote.scheduleNextWakeup(transmissionEndTime);
+    if (isTransmitting()) {
+      int transmittedBytes = computeTransmittedBytes();
+      sequencePointer = (byte) ((transmittedBytes - SHR.length) & 0x7F);
+      transmittedBytes -= alreadyTransmittedBytes;
+
+      if (!isSequence() && !transmissionShrIssued && (transmittedBytes >= SHR.length)) {
+        /* issue SHR interrupt */
+        myMoteMemory.setIntValueOf("simShrInterrupt", 1);
+        mote.requestImmediateWakeup();
+        transmissionShrIssued = true;
+      } else if (transmittedBytes == SHR.length + packetFromMote.getPacketData().length) {
+        if (!isSequence()) {
+          /* issue TXDONE interrupt */
+          myMoteMemory.setIntValueOf("simTransmitting", 0);
+          mote.requestImmediateWakeup();
+          myMoteMemory.setIntValueOf("simTxdoneInterrupt", 1);
+        } else if (shallStopSequence()) {
+          myMoteMemory.setIntValueOf("simTransmitting", 0);
+          mote.requestImmediateWakeup();
+        }
+
+        /* notify */
+        lastEvent = RadioEvent.TRANSMISSION_FINISHED;
+        radioEventTriggers.trigger(RadioEvent.TRANSMISSION_FINISHED, this);
+
+        if (isSequence() && !shallStopSequence()) {
+          alreadyTransmittedBytes += transmittedBytes;
+          byte outDataBuffer[] = myMoteMemory.getByteArray("simOutDataBuffer", 128);
+          int index = (sequencePointer + SHR.length) & 0x7F;
+          packetFromMote = new COOJARadioPacket(new byte[1 + outDataBuffer[index]]);
+          lastEvent = RadioEvent.TRANSMISSION_STARTED;
+          radioEventTriggers.trigger(RadioEvent.TRANSMISSION_STARTED, this);
+          mote.scheduleNextWakeup(
+              transmissionStartTime
+                  + computeTransmissionDuration(alreadyTransmittedBytes + 1));
+        } else {
+          myMoteMemory.setIntValueOf("simStopSequence", 0);
+          /* either enter RX or switch off */
+          if (shallEnterRxAfterTx()) {
+            myMoteMemory.setIntValueOf("simPendingIncomingFrame", 0);
+            myMoteMemory.setIntValueOf("simReceiving", 0);
+          } else {
+            radioOn = false;
+            myMoteMemory.setByteValueOf("simRadioHWOn", (byte) 0);
+            lastEvent = RadioEvent.HW_OFF;
+            radioEventTriggers.trigger(RadioEvent.HW_OFF, this);
+          }
+        }
+      } else {
+        /* update packet contents gradually for supporting async_reprepare */
+        byte oldPacketData[] = packetFromMote.getPacketData();
+        byte newPacketData[] = myMoteMemory.getByteArray("simOutDataBuffer", 128);
+        int size = oldPacketData.length;
+        if (transmittedBytes >= SHR.length) {
+          if (!isAutoCrcOn() || ((transmittedBytes - SHR.length) < (size - CRC_LEN))) {
+            oldPacketData[transmittedBytes - SHR.length] = newPacketData[sequencePointer];
+          } else if ((transmittedBytes - SHR.length) == (size - CRC_LEN)) {
+            txCrc.setCRC(0);
+            for (int i = 1; i < size - CRC_LEN; i++) {
+              txCrc.addBitrev(oldPacketData[i]);
+            }
+            oldPacketData[size - CRC_LEN] = (byte) txCrc.getCRCHi();
+          } else {
+            oldPacketData[size - 1] = (byte) txCrc.getCRCLow();
+          }
+        }
+        mote.scheduleNextWakeup(
+            transmissionStartTime + computeTransmissionDuration(alreadyTransmittedBytes + transmittedBytes + 1));
+      }
     }
+  }
+
+  public static String print(byte[] bytes) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("[ ");
+    for (byte b : bytes) {
+      sb.append(String.format("0x%02X ", b));
+    }
+    sb.append("]");
+    return sb.toString();
   }
 
   @Override
