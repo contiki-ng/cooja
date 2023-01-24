@@ -215,11 +215,15 @@ class Main {
       }
     }
 
+    var mspSim = options.mspSimPlatform != null;
+    if (mspSim && options.simulationFiles.isEmpty()) {
+      System.err.println("MSPSim: missing firmware name argument");
+      System.exit(1);
+    }
+
     // Parse and verify soundness of simulation files argument.
     ArrayList<Simulation.SimConfig> simConfigs = new ArrayList<>();
     for (var arg : options.simulationFiles) {
-      // Pass simulationFiles to MSPSim if given --platform.
-      if (options.mspSimPlatform != null) continue;
       // Argument on the form "file.csc[,key1=value1,key2=value2, ..]"
       var map = new HashMap<String, String>();
       String file = null;
@@ -239,7 +243,7 @@ class Main {
         System.err.println("Failed argument parsing of simulation file " + arg);
         System.exit(1);
       }
-      if (!file.endsWith(".csc") && !file.endsWith(".csc.gz")) {
+      if (!mspSim && !file.endsWith(".csc") && !file.endsWith(".csc.gz")) {
         System.err.println("Cooja expects simulation filenames to have an extension of '.csc' or '.csc.gz");
         System.exit(1);
       }
@@ -247,6 +251,8 @@ class Main {
         System.err.println("File '" + file + "' does not exist");
         System.exit(1);
       }
+      // MSPSim does not use the SimConfig record, so skip to next validation.
+      if (mspSim) continue;
       var randomSeed = map.get("random-seed");
       var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || !options.gui));
       var updateSim = map.getOrDefault("update-simulation", Boolean.toString(options.updateSimulation));

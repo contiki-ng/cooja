@@ -40,6 +40,8 @@ package se.sics.mspsim;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import se.sics.mspsim.chip.AT45DB;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.platform.GenericNode;
@@ -158,6 +160,15 @@ public class Main {
 
   public static void main(String[] args) throws IOException {
     var config = new ArgumentManager(args);
+    var processedArgs = config.getArguments();
+    if (processedArgs.length == 0) {
+      System.err.println("Usage: -platform=name <firmware>");
+      System.exit(1);
+    }
+    if (!Files.exists(Path.of(processedArgs[0]))) {
+      System.err.println("Could not find the firmware file '" + processedArgs[0] + "'.");
+      System.exit(1);
+    }
     String nodeType = config.getProperty("nodeType");
     if (nodeType == null) {
       var platform = config.getProperty("platform");
