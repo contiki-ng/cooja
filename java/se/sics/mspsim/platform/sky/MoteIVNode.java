@@ -61,6 +61,7 @@ public abstract class MoteIVNode<FlashType extends ExternalFlash> extends CC2420
 
   @Override
   public void setupGUI() {
+    super.setupGUI();
     if (gui == null) {
       gui = new SkyGui(this);
       registry.registerComponent("nodegui", gui);

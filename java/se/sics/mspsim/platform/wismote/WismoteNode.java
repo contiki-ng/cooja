@@ -174,13 +174,6 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
         // To add flash support: super.setupNode();
         if (!config.getPropertyAsBoolean("nogui", true)) {
             setupGUI();
-
-            // Add some windows for listening to serial output
-            IOUnit usart = cpu.getIOUnit("USCI A1");
-            if (usart instanceof USARTSource) {
-                SerialMon serial = new SerialMon((USARTSource)usart, "USCI A1 Port Output");
-                registry.registerComponent("serialgui", serial);
-            }
         }
     }
 
@@ -188,6 +181,10 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
         if (gui == null) {
             gui = new WismoteGui(this);
             registry.registerComponent("nodegui", gui);
+            // Add some windows for listening to serial output.
+            if (cpu.getIOUnit("USCI A1") instanceof USARTSource usart) {
+                registry.registerComponent("serialgui", new SerialMon(usart, "USCI A1 Port Output"));
+            }
         }
     }
 

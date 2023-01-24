@@ -166,13 +166,6 @@ public class Z1Node extends GenericFlashNode<M25P80> implements PortListener, US
         super.setupNode();
         if (!config.getPropertyAsBoolean("nogui", true)) {
             setupGUI();
-
-            // Add some windows for listening to serial output
-            IOUnit usart = cpu.getIOUnit("USCI A0");
-            if (usart instanceof USARTSource) {
-                SerialMon serial = new SerialMon((USARTSource)usart, "USCI A0 Port Output");
-                registry.registerComponent("serialgui", serial);
-            }
         }
     }
 
@@ -180,6 +173,10 @@ public class Z1Node extends GenericFlashNode<M25P80> implements PortListener, US
         if (gui == null) {
             gui = new Z1Gui(this);
             registry.registerComponent("nodegui", gui);
+            // Add some windows for listening to serial output.
+            if (cpu.getIOUnit("USCI A0") instanceof USARTSource usart) {
+                registry.registerComponent("serialgui", new SerialMon(usart, "USCI A0 Port Output"));
+            }
         }
     }
 

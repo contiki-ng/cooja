@@ -87,12 +87,14 @@ public class Exp1101Node extends GenericNode implements PortListener, USARTListe
     @Override
     public void setupNode() {
         if (!config.getPropertyAsBoolean("nogui", true)) {
-            // Add some windows for listening to serial output
-            IOUnit usart = cpu.getIOUnit("USCI A1");
-            if (usart instanceof USARTSource) {
-                SerialMon serial = new SerialMon((USARTSource)usart, "USCI A1 Port Output");
-                registry.registerComponent("serialgui", serial);
-            }
+            setupGUI();
+        }
+    }
+
+    public void setupGUI() {
+        // Add some windows for listening to serial output.
+        if (cpu.getIOUnit("USCI A1") instanceof USARTSource usart) {
+            registry.registerComponent("serialgui", new SerialMon(usart, "USCI A1 Port Output"));
         }
     }
 

@@ -107,13 +107,6 @@ public abstract class CC2420Node<FlashType extends ExternalFlash> extends Generi
         }
         if (!config.getPropertyAsBoolean("nogui", true)) {
             setupGUI();
-
-            // Add some windows for listening to serial output
-            USART usart = cpu.getIOUnit(USART.class, "USART1");
-            if (usart != null) {
-                SerialMon serial = new SerialMon(usart, "USART1 Port Output");
-                registry.registerComponent("serialgui", serial);
-            }
             if (stats != null) {
                 // A HACK for some "graphs"!!!
                 DataChart dataChart = new DataChart("Duty Cycle", "Duty Cycle");
@@ -153,6 +146,11 @@ public abstract class CC2420Node<FlashType extends ExternalFlash> extends Generi
     }
 
     public void setupGUI() {
+        // Add some windows for listening to serial output.
+        var usart = cpu.getIOUnit(USART.class, "USART1");
+        if (usart != null) {
+            registry.registerComponent("serialgui", new SerialMon(usart, "USART1 Port Output"));
+        }
     }
 
     @Override

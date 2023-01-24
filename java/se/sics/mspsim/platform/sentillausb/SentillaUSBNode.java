@@ -96,6 +96,7 @@ public class SentillaUSBNode extends CC2420Node<M25P80> {
 
     @Override
     public void setupGUI() {
+        super.setupGUI();
         if (gui == null) {
             gui = new SentillaUSBGui(this);
             registry.registerComponent("nodegui", gui);
