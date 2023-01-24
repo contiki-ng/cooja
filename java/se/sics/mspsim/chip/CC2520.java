@@ -228,10 +228,10 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     public static final int STATUS_DPU_H            = 1 << 3;
     public static final int STATUS_DPU_L            = 1 << 2;
     public static final int STATUS_TX_ACTIVE        = 1 << 1;
-    public static final int STATUS_RX_ACTIVE        = 1 << 0;
+    public static final int STATUS_RX_ACTIVE        = 1;
 
     // Exceptions (bits in the EXCFLAGx memory)
-    public final static int EXC_RF_IDLE             = 1 << 0;
+    public final static int EXC_RF_IDLE             = 1;
     public final static int EXC_TX_FRM_DONE         = 1 << 1;
     public final static int EXC_RX_FRM_ABORTED      = 0x20;
     public final static int EXC_RX_FRM_UNDERFLOW    = 0x20;
@@ -265,7 +265,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
 //    public static final int CCAMUX_XOSC16M_STABLE = 24;
 
     // FRMFILT0/FRMCTRL0 values
-    public static final int FRAME_FILTER = (1 << 0);
+    public static final int FRAME_FILTER = (1);
     public static final int AUTOCRC      = (1 << 6);
     public static final int AUTOACK      = (1 << 5);
 
