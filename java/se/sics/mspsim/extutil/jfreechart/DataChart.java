@@ -19,9 +19,7 @@ import se.sics.mspsim.util.DataSource;
 import se.sics.mspsim.util.ServiceComponent;
 import se.sics.mspsim.util.StackMonitor;
 
-@SuppressWarnings("serial")
 public class DataChart extends JPanel implements ServiceComponent {
-
   private enum Mode {NONE, STACK, DUTY}
   private Mode mode = Mode.NONE;
 
