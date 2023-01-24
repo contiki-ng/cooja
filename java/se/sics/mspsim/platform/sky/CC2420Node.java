@@ -14,12 +14,13 @@ import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.extutil.jfreechart.DataChart;
 import se.sics.mspsim.extutil.jfreechart.DataSourceSampler;
-import se.sics.mspsim.platform.GenericNode;
+import se.sics.mspsim.platform.GenericFlashNode;
 import se.sics.mspsim.ui.SerialMon;
 import se.sics.mspsim.util.NetworkConnection;
 import se.sics.mspsim.util.OperatingModeStatistics;
 
-public abstract class CC2420Node<FlashType extends ExternalFlash> extends GenericNode implements PortListener, USARTListener {
+public abstract class CC2420Node<FlashType extends ExternalFlash> extends GenericFlashNode<FlashType>
+        implements PortListener, USARTListener {
 
     // Port 2.
     public static final int DS2411_DATA_PIN = 4;
@@ -47,18 +48,13 @@ public abstract class CC2420Node<FlashType extends ExternalFlash> extends Generi
     public final CC2420 radio;
     public final DS2411 ds2411;
 
-    protected final FlashType flash;
-    protected String flashFile;
-
     public static MSP430Config makeChipConfig() {
         // FIXME: this should be a config for the MSP430x1611.
         return new MSP430f1611Config();
     }
 
     public CC2420Node(String id, MSP430 cpu, FlashType flash) {
-        super(id, cpu);
-        this.flash = flash;
-        registry.registerComponent("xmem", flash);
+        super(id, cpu, flash);
         ds2411 = new DS2411(cpu);
 
         port1 = cpu.getIOUnit(IOPort.class, "P1");
@@ -89,10 +85,6 @@ public abstract class CC2420Node<FlashType extends ExternalFlash> extends Generi
         }
     }
 
-    public FlashType getFlash() {
-        return flash;
-    }
-
     public void setDebug(boolean debug) {
         cpu.setDebug(debug);
     }
@@ -107,27 +99,7 @@ public abstract class CC2420Node<FlashType extends ExternalFlash> extends Generi
 
     @Override
     public void setupNode() {
-        // create a filename for the flash file
-        // This should be possible to take from a config file later!
-        String fileName = config.getProperty("flashfile");
-        if (fileName == null) {
-            fileName = firmwareFile;
-            if (fileName != null) {
-                int ix = fileName.lastIndexOf('.');
-                if (ix > 0) {
-                    fileName = fileName.substring(0, ix);
-                }
-                fileName = fileName + ".flash";
-            }
-        }
-        if (DEBUG) System.out.println("Using flash file: " + (fileName == null ? "no file" : fileName));
-
-        this.flashFile = fileName;
-
-        if (flashFile != null) {
-            getFlash().setStorage(new FileStorage(flashFile));
-        }
-
+        super.setupNode();
         if (stats != null) {
             stats.addMonitor(this);
             stats.addMonitor(radio);
