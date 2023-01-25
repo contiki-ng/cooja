@@ -93,10 +93,8 @@ jar {
   dependsOn copyDependencies
   reproducibleFileOrder = true
   manifest {
-    // Set Multi-Release to true to ensure the JVM uses the right class from log4j.
     attributes 'Main-Class': 'org.contikios.cooja.Main',
-      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' '),
-      'Multi-Release': 'true'
+      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' ')
   }
 }
 
@@ -107,8 +105,7 @@ tasks.register('fullJar', Jar) {
   reproducibleFileOrder = true
   manifest {
     attributes 'Main-Class': 'org.contikios.cooja.Main',
-      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' '),
-      'Multi-Release': 'true'
+      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' ')
   }
 
   from sourceSets.main.output
