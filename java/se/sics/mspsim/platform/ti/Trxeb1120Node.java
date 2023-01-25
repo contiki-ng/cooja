@@ -24,18 +24,18 @@ public class Trxeb1120Node extends GenericNode implements PortListener, USARTLis
         public static final int ENC28J60_MISO = 0; /* 10.0 */
         public static final int ENC28J60_CHIP_SELECT = 3; /* 10.3 */
 
-        IOPort port1;
-        IOPort port3;
-        IOPort port4;
-        IOPort port5;
-        IOPort port7;
-        IOPort port8;
-        IOPort port10;
+  final IOPort port1;
+  final IOPort port3;
+  final IOPort port4;
+  final IOPort port5;
+  final IOPort port7;
+  final IOPort port8;
+  final IOPort port10;
 
-        public CC1120 radio;
-        public Enc28J60 enc;
+  public final CC1120 radio;
+  public final Enc28J60 enc;
 
-        private final boolean withEnc;
+  private final boolean withEnc;
 
         public static MSP430Config makeChipConfig() {
                 return new MSP430f5437Config();
@@ -66,10 +66,10 @@ public class Trxeb1120Node extends GenericNode implements PortListener, USARTLis
       throw new EmulationException("Error creating Trxeb1120Node: no USCI B0");
     }
 
+    port10 = withEnc ? cpu.getIOUnit(IOPort.class, "P10") : null;
+    enc = withEnc ? new Enc28J60(cpu, port10, ENC28J60_CLK, ENC28J60_MOSI, ENC28J60_MISO, ENC28J60_CHIP_SELECT) : null;
     if (withEnc) {
-      port10 = cpu.getIOUnit(IOPort.class, "P10");
       port10.addPortListener(this);
-      enc = new Enc28J60(cpu, port10, ENC28J60_CLK, ENC28J60_MOSI, ENC28J60_MISO, ENC28J60_CHIP_SELECT);
     }
 
     var usart = cpu.getIOUnit("USCI A1");
@@ -95,42 +95,6 @@ public class Trxeb1120Node extends GenericNode implements PortListener, USARTLis
                         radio.setChipSelect((data & CC1120_CHIP_SELECT) == 0);
                 } else if (withEnc && source == port10) {
                         enc.write(port10, data);
-                }
-        }
-
-        private void setupNodePorts() {
-                port1 = cpu.getIOUnit(IOPort.class, "P1");
-                port1.addPortListener(this);
-                port3 = cpu.getIOUnit(IOPort.class, "P3");
-                port3.addPortListener(this);
-                port4 = cpu.getIOUnit(IOPort.class, "P4");
-                port4.addPortListener(this);
-                port5 = cpu.getIOUnit(IOPort.class, "P5");
-                port5.addPortListener(this);
-                port7 = cpu.getIOUnit(IOPort.class, "P7");
-                port7.addPortListener(this);
-                port8 = cpu.getIOUnit(IOPort.class, "P8");
-                port8.addPortListener(this);
-
-                IOUnit usart0 = cpu.getIOUnit("USCI B0");
-                if (usart0 instanceof USARTSource) {
-                        radio = new CC1120(cpu);
-                        radio.setGDO0(port1, CC1120_GDO0);
-                        radio.setGDO2(port1, CC1120_GDO2);
-                        ((USARTSource) usart0).addUSARTListener(this);
-                } else {
-                        throw new EmulationException("Error creating Trxeb1120Node: no USCI B0");
-                }
-
-                if (withEnc) {
-                        port10 = cpu.getIOUnit(IOPort.class, "P10");
-                        port10.addPortListener(this);
-                        enc = new Enc28J60(cpu, port10, ENC28J60_CLK, ENC28J60_MOSI, ENC28J60_MISO, ENC28J60_CHIP_SELECT);
-                }
-
-                IOUnit usart = cpu.getIOUnit("USCI A1");
-                if (usart instanceof USARTSource) {
-                        registry.registerComponent("serialio", usart);
                 }
         }
 

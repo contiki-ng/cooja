@@ -15,10 +15,11 @@ import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.core.USCI;
+import se.sics.mspsim.platform.GenericFlashNode;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.ui.SerialMon;
 
-public class Z1Node extends GenericNode implements PortListener, USARTListener {
+public class Z1Node extends GenericFlashNode<M25P80> implements PortListener, USARTListener {
 
     public static final int MODE_LEDS_OFF = 0;
     public static final int MODE_LEDS_1 = 1;
@@ -66,17 +67,15 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
 
     private final CC2420 radio;
 //    private TMP102 tmp102;
-    private final M25P80 flash;
-    private String flashFile;
 
     public static MSP430Config makeChipConfig() {
         return new MSP430f2617Config();
     }
 
+    // FIXME: replace flash with M25P16.
+    // The Z1 platform has a M25P16 chip with 2MB compared to the M25P80 with 1MB, but the chips are compatible.
     public Z1Node(MSP430 cpu, M25P80 flash) {
-        super("Z1", cpu);
-        this.flash = flash;
-        registry.registerComponent("xmem", flash);
+        super("Z1", cpu, flash);
         setMode(MODE_LEDS_OFF);
         var port1 = cpu.getIOUnit(IOPort.class, "P1");
 //        port1.addPortListener(this);
@@ -118,13 +117,6 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
 
     public Button getButton() {
         return button;
-    }
-
-    public M25P80 getFlash() {
-        // TODO Replace with M25P16.
-        // The Z1 platform has a M25P16 chip with 2MB compared to the M25P80
-        // with 1MB but the chips are compatible.
-        return flash;
     }
 
     @Override
@@ -169,51 +161,22 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
         }
     }
 
-    private void setupNodePorts() {
-        if (flashFile != null) {
-            getFlash().setStorage(new FileStorage(flashFile));
-        }
-    }
-
     @Override
     public void setupNode() {
-        // create a filename for the flash file
-        // This should be possible to take from a config file later!
-        String fileName = config.getProperty("flashfile");
-        if (fileName == null) {
-            fileName = firmwareFile;
-            if (fileName != null) {
-                int ix = fileName.lastIndexOf('.');
-                if (ix > 0) {
-                    fileName = fileName.substring(0, ix);
-                }
-                fileName = fileName + ".flash";
-            }
-        }
-        if (DEBUG) log("Using flash file: " + (fileName == null ? "no file" : fileName));
-
-        this.flashFile = fileName;
-
-        setupNodePorts();
-
+        super.setupNode();
         if (!config.getPropertyAsBoolean("nogui", true)) {
             setupGUI();
-
-            // Add some windows for listening to serial output
-            IOUnit usart = cpu.getIOUnit("USCI A0");
-            if (usart instanceof USARTSource) {
-                SerialMon serial = new SerialMon((USARTSource)usart, "USCI A0 Port Output");
-                registry.registerComponent("serialgui", serial);
-            }
         }
-
-
     }
 
     public void setupGUI() {
         if (gui == null) {
             gui = new Z1Gui(this);
             registry.registerComponent("nodegui", gui);
+            // Add some windows for listening to serial output.
+            if (cpu.getIOUnit("USCI A0") instanceof USARTSource usart) {
+                registry.registerComponent("serialgui", new SerialMon(usart, "USCI A0 Port Output"));
+            }
         }
     }
 

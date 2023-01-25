@@ -300,7 +300,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
 
   @Override
   public String getExecutionDetails() {
-    return executeCLICommand("stacktrace");
+    return getStackTrace();
   }
 
   @Override

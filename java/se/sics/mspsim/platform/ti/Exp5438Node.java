@@ -36,7 +36,7 @@ public class Exp5438Node extends GenericNode implements PortListener, USARTListe
     public static final int LEDS_CONF_RED    = (1 << 0); // 1.0
     public static final int LEDS_CONF_YELLOW = (1 << 1); // 1.1
 
-    public CC2420 radio;
+    public final CC2420 radio;
 
     public static MSP430Config makeChipConfig() {
         // TODO: MSP430F5438
@@ -102,12 +102,14 @@ public class Exp5438Node extends GenericNode implements PortListener, USARTListe
     @Override
     public void setupNode() {
         if (!config.getPropertyAsBoolean("nogui", true)) {
-            // Add some windows for listening to serial output
-            IOUnit usart = cpu.getIOUnit("USCI A1");
-            if (usart instanceof USARTSource) {
-                SerialMon serial = new SerialMon((USARTSource)usart, "USCI A1 Port Output");
-                registry.registerComponent("serialgui", serial);
-            }
+            setupGUI();
+        }
+    }
+
+    public void setupGUI() {
+        // Add some windows for listening to serial output.
+        if (cpu.getIOUnit("USCI A1") instanceof USARTSource usart) {
+            registry.registerComponent("serialgui", new SerialMon(usart, "USCI A1 Port Output"));
         }
     }
 

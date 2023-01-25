@@ -182,13 +182,6 @@ public class ESBNode extends GenericNode implements PortListener {
 
       beeper.setSoundEnabled(true);
 
-      // Add some windows for listening to serial output
-      USART usart = cpu.getIOUnit(USART.class, "USART1");
-      if (usart != null) {
-          SerialMon serial = new SerialMon(usart, "USART1 Port Output");
-          registry.registerComponent("serialgui", serial);
-      }
-
       if (stats != null) {
         // A HACK for some "graphs"!!!
         DataChart dataChart =  new DataChart("Duty Cycle", "Duty Cycle");
@@ -206,6 +199,11 @@ public class ESBNode extends GenericNode implements PortListener {
     if (gui == null) {
       gui = new ESBGui(this);
       registry.registerComponent("nodegui", gui);
+      // Add some windows for listening to serial output.
+      USART usart = cpu.getIOUnit(USART.class, "USART1");
+      if (usart != null) {
+        registry.registerComponent("serialgui", new SerialMon(usart, "USART1 Port Output"));
+      }
     }
   }
 
