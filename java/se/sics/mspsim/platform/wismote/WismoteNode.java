@@ -77,7 +77,7 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 
     /* P8.6 - Red (left) led */
     private static final int LEDS_CONF_RED1   = 1 << 6;
-    private static final int LEDS_RED1        = 1 << 0;
+    private static final int LEDS_RED1        = 1;
     /* P5.2 - Green (middle) led */
     private static final int LEDS_CONF_GREEN  = 1 << 4;
     private static final int LEDS_GREEN       = 1 << 1;

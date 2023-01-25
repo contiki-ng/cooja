@@ -51,6 +51,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -836,7 +838,8 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     /* Append to file */
     if (!appendToFileWroteHeader) {
-      appendStream.println("-- Log Listener [" + simulation.getTitle() + "]: Started at " + (new Date()));
+      appendStream.println("-- Log Listener [" + simulation.getTitle() + "]: Started at " +
+              (ZonedDateTime.now().format(DateTimeFormatter.RFC_1123_DATE_TIME)));
       appendToFileWroteHeader = true;
     }
     appendStream.print(text);

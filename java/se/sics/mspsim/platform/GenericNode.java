@@ -259,8 +259,7 @@ public abstract class GenericNode extends Chip implements Runnable {
       try {
         cpu.cpuloop();
       } catch (Exception e) {
-        /* what should we do here */
-        e.printStackTrace();
+        System.err.println("Exception in cpu loop: " + e.getMessage());
       }
     }
   }

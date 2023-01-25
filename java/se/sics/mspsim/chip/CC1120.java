@@ -878,7 +878,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                                 && newState == CC1120RadioState.CC1120_STATE_RX
                                 || newState == CC1120RadioState.CC1120_STATE_TX) {
                         changeFrequencyNextState = false;
-                        frequency = ((0xff & nextFreq0) << 0) + ((0xff & nextFreq1) << 8)
+                        frequency = ((0xff & nextFreq0)) + ((0xff & nextFreq1) << 8)
                                         + ((0xff & nextFreq2) << 16);
 
                         frequency *= 32; /* frequency oscillator */

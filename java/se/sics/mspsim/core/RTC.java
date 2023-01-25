@@ -153,7 +153,7 @@ public class RTC extends IOUnit {
                 ctl0 |= (oscFaultInterruptFlag ? 1 : 0) << 3;
                 ctl0 |= (eventInterruptFlag ? 1 : 0) << 2;
                 ctl0 |= (alarmInterruptFlag ? 1 : 0) << 1;
-                ctl0 |= (readyInterruptFlag ? 1 : 0) << 0;
+                ctl0 |= (readyInterruptFlag ? 1 : 0);
                 return ctl0;
         }
 
