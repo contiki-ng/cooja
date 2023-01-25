@@ -36,21 +36,18 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.Vector;
 import javax.swing.tree.DefaultMutableTreeNode;
-
-import org.jdom2.Element;
-
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.DirectionalAntennaRadio;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 import org.contikios.cooja.util.EventTriggers;
 import org.contikios.mrm.statistics.GaussianWrapper;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,13 +81,13 @@ public class ChannelModel {
   /* Log mode: visualize signal components */
   private boolean logMode;
   private StringBuilder logInfo;
-  private ArrayList<Line2D> loggedRays;
+  private List<Line2D> loggedRays;
 
   // Ray tracing components temporary vector
-  private final Vector<Vector<Line2D>> calculatedVisibleSides = new Vector<>();
-  private final Vector<Point2D> calculatedVisibleSidesSources = new Vector<>();
-  private final Vector<Line2D> calculatedVisibleSidesLines = new Vector<>();
-  private final Vector<AngleInterval> calculatedVisibleSidesAngleIntervals = new Vector<>();
+  private final List<List<Line2D>> calculatedVisibleSides = new ArrayList<>();
+  private final List<Point2D> calculatedVisibleSidesSources = new ArrayList<>();
+  private final List<Line2D> calculatedVisibleSidesLines = new ArrayList<>();
+  private final List<AngleInterval> calculatedVisibleSidesAngleIntervals = new ArrayList<>();
   private static final int maxSavedVisibleSides = 30; // Max size of lists above
 
   /**
@@ -419,8 +416,7 @@ public class ChannelModel {
     Line2D testLine = new Line2D.Double(x1, y1, x2, y2);
 
     // Check which sides of the rectangle the test line passes through
-    Vector<Line2D> intersectedSides = new Vector<>();
-
+    var intersectedSides = new ArrayList<Line2D>();
     if (rectangleLower.intersectsLine(testLine)) {
       intersectedSides.add(rectangleLower);
     }
@@ -443,8 +439,7 @@ public class ChannelModel {
     }
 
     // Calculate all resulting line points (should be 2)
-    Vector<Point2D> intersectingLinePoints = new Vector<>();
-
+    var intersectingLinePoints = new ArrayList<Point2D>();
     for (var intersectedSide : intersectedSides) {
       intersectingLinePoints.add(getIntersectionPoint(testLine, intersectedSide));
     }
@@ -551,7 +546,7 @@ public class ChannelModel {
     Line2D line = rayData.getLine();
 
     // Find all visible lines
-    Vector<Line2D> visibleSides = getAllVisibleSides(
+    var visibleSides = getAllVisibleSides(
         source.getX(),
         source.getY(),
         null,
@@ -560,12 +555,8 @@ public class ChannelModel {
 
     // Create refracted subtrees
     if (rayData.getRefractedSubRaysLimit() > 0 && visibleSides != null) {
-      Enumeration<Line2D> visibleSidesEnum = visibleSides.elements();
-      while (visibleSidesEnum.hasMoreElements()) {
-        Line2D refractingSide = visibleSidesEnum.nextElement();
-
+      for (var refractingSide : visibleSides) {
         // Keeping old source, but looking through this line to see behind it
-
         // Recursively build and add subtrees
         RayData newRayData = new RayData(
             RayData.RayType.REFRACTION,
@@ -584,10 +575,7 @@ public class ChannelModel {
 
     // Create reflection subtrees
     if (rayData.getReflectedSubRaysLimit() > 0 && visibleSides != null) {
-      Enumeration<Line2D> visibleSidesEnum = visibleSides.elements();
-      while (visibleSidesEnum.hasMoreElements()) {
-        Line2D reflectingSide = visibleSidesEnum.nextElement();
-
+      for (var reflectingSide : visibleSides) {
         // Create new pseudo-source
         Rectangle2D bounds = reflectingSide.getBounds2D();
         double newPsuedoSourceX = source.getX();
@@ -615,17 +603,14 @@ public class ChannelModel {
     }
 
     // Get possible diffraction sources
-    Vector<Point2D> diffractionSources = null;
+    List<Point2D> diffractionSources = null;
     if (rayData.getDiffractedSubRaysLimit() > 0 && visibleSides != null) {
       diffractionSources = getAllDiffractionSources(visibleSides);
     }
 
     // Create diffraction subtrees
     if (rayData.getDiffractedSubRaysLimit() > 0 && diffractionSources != null) {
-      Enumeration<Point2D> diffractionSourcesEnum = diffractionSources.elements();
-      while (diffractionSourcesEnum.hasMoreElements()) {
-        Point2D diffractionSource = diffractionSourcesEnum.nextElement();
-
+      for (var diffractionSource : diffractionSources) {
         // Recursively build and add subtrees
         RayData newRayData = new RayData(
             RayData.RayType.DIFFRACTION,
@@ -655,9 +640,8 @@ public class ChannelModel {
    * @see #buildVisibleLinesTree(RayData)
    * @return All ray paths from origin to destnation
    */
-  private Vector<RayPath> getConnectingPaths(Point2D origin, Point2D dest, DefaultMutableTreeNode visibleLinesTree) {
-    Vector<RayPath> allPaths = new Vector<>();
-
+  private List<RayPath> getConnectingPaths(Point2D origin, Point2D dest, DefaultMutableTreeNode visibleLinesTree) {
+    var allPaths = new ArrayList<RayPath>();
     // Analyse the possible paths to find which actually reached destination
     var treeEnum = visibleLinesTree.breadthFirstEnumeration();
     while (treeEnum.hasMoreElements()) {
@@ -831,7 +815,7 @@ public class ChannelModel {
     double angleSourceToDest = Math.atan2(deltaY, deltaX);
 
     // Get all visible sides near angle
-    Vector<Line2D> visibleSides = getAllVisibleSides(
+    var visibleSides = getAllVisibleSides(
         source.getX(),
         source.getY(),
         new AngleInterval(angleSourceToDest - 0.1, angleSourceToDest + 0.1),
@@ -888,13 +872,9 @@ public class ChannelModel {
    * @param allVisibleLines Lines which may hold diffraction sources
    * @return All diffraction sources
    */
-  private Vector<Point2D> getAllDiffractionSources(Vector<Line2D> allVisibleLines) {
-    Vector<Point2D> allDiffractionSources = new Vector<>();
-    Enumeration<Line2D> allVisibleLinesEnum = allVisibleLines.elements();
-
-    while (allVisibleLinesEnum.hasMoreElements()) {
-      Line2D visibleLine = allVisibleLinesEnum.nextElement();
-
+  private List<Point2D> getAllDiffractionSources(List<Line2D> allVisibleLines) {
+    var allDiffractionSources = new ArrayList<Point2D>();
+    for (var visibleLine : allVisibleLines) {
       // Check both end points of line for possible diffraction point
       if (myObstacleWorld.pointIsNearCorner(visibleLine.getP1())) {
         allDiffractionSources.add(visibleLine.getP1());
@@ -921,7 +901,7 @@ public class ChannelModel {
    * @param lookThrough Line to look through (or null)
    * @return All visible sides
    */
-  synchronized private Vector<Line2D> getAllVisibleSides(double sourceX, double sourceY, AngleInterval angleInterval, Line2D lookThrough) {
+  synchronized private List<Line2D> getAllVisibleSides(double sourceX, double sourceY, AngleInterval angleInterval, Line2D lookThrough) {
     // synchronized because a race condition happens in this method when MRMVisualizerSkin accesses this module from another thread
     Point2D source = new Point2D.Double(sourceX, sourceY);
 
@@ -943,7 +923,7 @@ public class ChannelModel {
         Point2D oldSource = calculatedVisibleSidesSources.remove(i);
         Line2D oldLine = calculatedVisibleSidesLines.remove(i);
         AngleInterval oldAngleInterval = calculatedVisibleSidesAngleIntervals.remove(i);
-        Vector<Line2D> oldVisibleLines = calculatedVisibleSides.remove(i);
+        var oldVisibleLines = calculatedVisibleSides.remove(i);
 
         calculatedVisibleSidesSources.add(0, oldSource);
         calculatedVisibleSidesLines.add(0, oldLine);
@@ -955,8 +935,8 @@ public class ChannelModel {
       }
     }
 
-    Vector<Line2D> visibleLines = new Vector<>();
-    Vector<AngleInterval> unhandledAngles = new Vector<>();
+    List<Line2D> visibleLines = new ArrayList<>();
+    List<AngleInterval> unhandledAngles = new ArrayList<>();
 
     if (lookThrough != null) {
       if (angleInterval == null) {
@@ -974,7 +954,7 @@ public class ChannelModel {
       // While unhandled angles still exist, keep searching for visible lines
       while (!unhandledAngles.isEmpty()) {
         //logger.info("Beginning of while-loop, unhandled angles left = " + unhandledAngles.size());
-        AngleInterval angleIntervalToCheck = unhandledAngles.firstElement();
+        var angleIntervalToCheck = unhandledAngles.get(0);
 
         // Check that interval is not empty or "infinite small"
         if (angleIntervalToCheck == null || angleIntervalToCheck.isEmpty()) {
@@ -995,7 +975,7 @@ public class ChannelModel {
         }
 
         // <<<< Get visible line candidates of these obstacles >>>>
-        Vector<Line2D> visibleLineCandidates = new Vector<>();
+        var visibleLineCandidates = new ArrayList<Line2D>();
         for (var obstacle : visibleObstacleCandidates) {
           int outcode = obstacle.outcode(source);
 
@@ -1027,7 +1007,7 @@ public class ChannelModel {
         }
 
         // <<<< Get cropped visible line candidates of these lines >>>>
-        Vector<Line2D> croppedVisibleLineCandidates = new Vector<>();
+        var croppedVisibleLineCandidates = new ArrayList<Line2D>();
         for (var lineCandidate : visibleLineCandidates) {
           // Create angle interval of this line
           AngleInterval lineAngleInterval = AngleInterval.getAngleIntervalOfLine(source, lineCandidate);
@@ -1206,15 +1186,13 @@ public class ChannelModel {
 
               } else if (visibleLineCandidateAngleInterval.intersects(shadowLineCandidateAngleInterval)) {
                 // Covers us partly, split angle interval
-                Vector<AngleInterval> newIntervalsToAdd = new Vector<>();
+                var newIntervalsToAdd = new ArrayList<AngleInterval>();
 
                 // Create angle interval of intersection between shadow and visible candidate
                 AngleInterval intersectedInterval =
                   visibleLineCandidateAngleInterval.intersectWith(shadowLineCandidateAngleInterval);
                 if (intersectedInterval != null) {
-                  Vector<AngleInterval> tempVector1 =
-                    AngleInterval.intersect(unhandledAngles, intersectedInterval);
-
+                  var tempVector1 = AngleInterval.intersect(unhandledAngles, intersectedInterval);
                   if (tempVector1 != null) {
                     for (var interval : tempVector1) {
                       if (interval != null && !interval.isEmpty()) {
@@ -1225,8 +1203,7 @@ public class ChannelModel {
                 }
 
                 // Add angle interval of visible candidate without shadow candidate
-                Vector<AngleInterval> tempVector2 =
-                  visibleLineCandidateAngleInterval.subtract(shadowLineCandidateAngleInterval);
+                var tempVector2 = visibleLineCandidateAngleInterval.subtract(shadowLineCandidateAngleInterval);
                 if (tempVector2 != null) {
                   for (var interval : tempVector2) {
                     if (interval != null && !interval.isEmpty()) {
@@ -1336,13 +1313,10 @@ public class ChannelModel {
     DefaultMutableTreeNode visibleLinesTree = buildVisibleLinesTree(originRayData);
 
     // Calculate all paths from source to destination, using above calculated tree
-    Vector<RayPath> allPaths = getConnectingPaths(source, dest, visibleLinesTree);
-
+    var allPaths = getConnectingPaths(source, dest, visibleLinesTree);
     if (logMode) {
       logInfo.append("Signal components:\n");
-      Enumeration<RayPath> pathsEnum = allPaths.elements();
-      while (pathsEnum.hasMoreElements()) {
-        RayPath currentPath = pathsEnum.nextElement();
+      for (var currentPath : allPaths) {
         logInfo.append("* ").append(currentPath).append("\n");
         for (int i=0; i < currentPath.getSubPathCount(); i++) {
           loggedRays.add(currentPath.getSubPath(i));
@@ -1519,7 +1493,7 @@ public class ChannelModel {
   }
 
   public static class TrackedSignalComponents {
-    ArrayList<Line2D> components;
+    List<Line2D> components;
     String log;
   }
   
