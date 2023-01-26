@@ -281,12 +281,13 @@ public class ELF {
     }
   }
 
-  public void loadPrograms(int[] memory) {
+  public int[] loadPrograms(int[] memory, int size) {
     for (int i = 0, n = phnum; i < n; i++) {
       // paddr or vaddr???
       loadBytes(memory, programs[i].offset, programs[i].paddr,
                 programs[i].fileSize, programs[i].memSize);
     }
+    return memory;
   }
 
   private void loadBytes(int[] memory, int offset, int addr, int len,
