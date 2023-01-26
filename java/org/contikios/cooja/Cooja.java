@@ -1012,12 +1012,9 @@ public class Cooja {
   /** Returns the external tools settings that differ from default. */
   public static Properties getDifferingExternalToolsSettings() {
     var differingSettings = new Properties();
-    var keyEnum = currentExternalToolsSettings.keys();
-    while (keyEnum.hasMoreElements()) {
-      String key = (String) keyEnum.nextElement();
-      String defaultSetting = getExternalToolsDefaultSetting(key, "");
-      String currentSetting = currentExternalToolsSettings.getProperty(key, "");
-      if (!defaultSetting.equals(currentSetting)) {
+    for (var entry : currentExternalToolsSettings.entrySet()) {
+      if (!(entry.getKey() instanceof String key && entry.getValue() instanceof String currentSetting)) continue;
+      if (!getExternalToolsDefaultSetting(key, "").equals(currentSetting)) {
         differingSettings.setProperty(key, currentSetting);
       }
     }
@@ -1155,10 +1152,9 @@ public class Cooja {
         logger.error("Error when reading user settings from: " + externalToolsUserSettingsFile);
         System.exit(1);
       }
-      var en = settings.keys();
-      while (en.hasMoreElements()) {
-        String key = (String) en.nextElement();
-        setExternalToolsSetting(key, settings.getProperty(key));
+      for (var entry : settings.entrySet()) {
+        if (!(entry.getKey() instanceof String key && entry.getValue() instanceof String value)) continue;
+        setExternalToolsSetting(key, value);
       }
     }
 

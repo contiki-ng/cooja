@@ -40,7 +40,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -449,11 +448,9 @@ class ConfigViewer extends JDialog {
 		label.setForeground(Color.RED);
 		valuePane.add(label);
 
-		Enumeration<String> allPropertyNames = config.getPropertyNames();
-		while (allPropertyNames.hasMoreElements()) {
-			String propertyName = allPropertyNames.nextElement();
+    for (var entry : config.getEntrySet()) {
+      if (!(entry.getKey() instanceof String propertyName && entry.getValue() instanceof String val)) continue;
 			keyPane.add(new JLabel(propertyName));
-      var val = config.getStringValue(propertyName);
       // Add artificial space so the valuePane contains something. Otherwise, the next
       // row will have its values displayed on this row.
       valuePane.add(new JLabel(val.isEmpty() ? " " : val));

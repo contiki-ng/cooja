@@ -35,8 +35,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -248,10 +249,8 @@ public class ProjectConfig {
   }
 
   private static boolean appendConfig(Properties currentValues, Properties newProps) {
-    var en = newProps.keys();
-    while (en.hasMoreElements()) {
-      String key = (String) en.nextElement();
-      String property = newProps.getProperty(key);
+    for (var entry : newProps.entrySet()) {
+      if (!(entry.getKey() instanceof String key && entry.getValue() instanceof String property)) continue;
       if (property.startsWith("+ ")) {
         if (currentValues.getProperty(key) != null) {
           currentValues.setProperty(key, currentValues.getProperty(key) + " "
@@ -268,10 +267,8 @@ public class ProjectConfig {
   }
 
   public boolean appendConfig(ProjectConfig config) {
-  	Enumeration<String> propertyNames = config.getPropertyNames();
-  	while (propertyNames.hasMoreElements()) {
-  		String key = propertyNames.nextElement();
-  		String property = config.getStringValue(key);
+    for (var entry : config.myConfig.entrySet()) {
+      if (!(entry.getKey() instanceof String key && entry.getValue() instanceof String property)) continue;
       if (property.startsWith("+ ")) {
         if (myConfig.getProperty(key) != null) {
         	myConfig.setProperty(key, myConfig.getProperty(key) + " "
@@ -287,10 +284,11 @@ public class ProjectConfig {
   }
 
   /**
-   * @return All property names in configuration
+   * Returns the entry set of the configuration.
+   * @return Entry set of the configuration
    */
-  public Enumeration<String> getPropertyNames() {
-    return (Enumeration<String>) myConfig.propertyNames();
+  public Set<Map.Entry<Object, Object>> getEntrySet() {
+    return myConfig.entrySet();
   }
 
   /**
