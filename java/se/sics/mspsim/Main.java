@@ -80,7 +80,10 @@ public class Main {
         var cpu = SentillaUSBNode.makeCPU(SentillaUSBNode.makeChipConfig());
         yield new SentillaUSBNode(cpu, new M25P80(cpu));
       }
-      case "se.sics.mspsim.platform.ti.CC430Node" -> new CC430Node();
+      case "se.sics.mspsim.platform.ti.CC430Node" -> {
+        var cpu = CC430Node.makeCPU(CC430Node.makeChipConfig());
+        yield new CC430Node(cpu);
+      }
       case "se.sics.mspsim.platform.ti.Exp1101Node" -> {
         var cpu = Exp1101Node.makeCPU(Exp1101Node.makeChipConfig());
         yield new Exp1101Node(cpu);
