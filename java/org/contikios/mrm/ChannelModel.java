@@ -189,34 +189,35 @@ public class ChannelModel {
     }
 
     public static String getDescription(Parameter p) {
-      switch (p) {
-      case apply_random: return "(DEBUG) Apply random values";
-      case snr_threshold: return "SNR reception threshold (dB)";
-      case bg_noise_mean: return "Background noise mean (dBm)";
-      case bg_noise_var: return "Background noise variance (dB)";
-      case system_gain_mean: return "Extra system gain mean (dB)";
-      case system_gain_var: return "Extra system gain variance (dB)";
-      case frequency: return "Frequency (MHz)";
-      case tx_power: return "Default transmitter output power (dBm)";
-      case tx_with_gain: return "Directional antennas: with TX gain";
-      case rx_sensitivity: return "Receiver sensitivity (dBm)";
-      case rx_with_gain: return "Directional antennas: with RX gain";
-      case rt_disallow_direct_path: return "Disallow direct path";
-      case rt_ignore_non_direct: return "If existing: return only use direct path";
-      case rt_fspl_on_total_length: return "Use FSPL on total path lengths only";
-      case rt_max_rays: return "Max path rays";
-      case rt_max_refractions: return "Max refractions";
-      case rt_max_reflections: return "Max reflections";
-      case rt_max_diffractions: return "Max diffractions";
-      case rt_refrac_coefficient: return "Refraction coefficient (dB)";
-      case rt_reflec_coefficient: return "Reflection coefficient (dB)";
-      case rt_diffr_coefficient: return "Diffraction coefficient (dB)";
-      case obstacle_attenuation: return "Obstacle attenuation (dB/m)";
-      case captureEffect: return "Use Capture Effect";
-      case captureEffectPreambleDuration: return "Capture effect preamble (us)";
-      case captureEffectSignalTreshold: return "Capture effect threshold (dB)";
-      }
-      throw new RuntimeException("Unknown decrption: " + p);
+      return switch (p) {
+        case apply_random -> "(DEBUG) Apply random values";
+        case snr_threshold -> "SNR reception threshold (dB)";
+        case bg_noise_mean -> "Background noise mean (dBm)";
+        case bg_noise_var -> "Background noise variance (dB)";
+        case system_gain_mean -> "Extra system gain mean (dB)";
+        case system_gain_var -> "Extra system gain variance (dB)";
+        case frequency -> "Frequency (MHz)";
+        case tx_power -> "Default transmitter output power (dBm)";
+        case tx_with_gain -> "Directional antennas: with TX gain";
+        case rx_sensitivity -> "Receiver sensitivity (dBm)";
+        case rx_with_gain -> "Directional antennas: with RX gain";
+        case rt_disallow_direct_path -> "Disallow direct path";
+        case rt_ignore_non_direct -> "If existing: return only use direct path";
+        case rt_fspl_on_total_length -> "Use FSPL on total path lengths only";
+        case rt_max_rays -> "Max path rays";
+        case rt_max_refractions -> "Max refractions";
+        case rt_max_reflections -> "Max reflections";
+        case rt_max_diffractions -> "Max diffractions";
+        case rt_use_scattering -> "Use scattering";
+        case rt_refrac_coefficient -> "Refraction coefficient (dB)";
+        case rt_reflec_coefficient -> "Reflection coefficient (dB)";
+        case rt_diffr_coefficient -> "Diffraction coefficient (dB)";
+        case rt_scatt_coefficient -> "Scattering coefficient";
+        case obstacle_attenuation -> "Obstacle attenuation (dB/m)";
+        case captureEffect -> "Use Capture Effect";
+        case captureEffectPreambleDuration -> "Capture effect preamble (us)";
+        case captureEffectSignalTreshold -> "Capture effect threshold (dB)";
+      };
     }
   }
   
