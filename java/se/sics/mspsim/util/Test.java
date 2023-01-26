@@ -47,6 +47,7 @@ import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.USART;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
+import se.sics.mspsim.platform.sky.CC2420Node;
 
 /**
  * Test - tests a firmware file and exits when reporting "FAIL:" first
@@ -90,22 +91,24 @@ public class Test implements USARTListener {
   }
 
   public static void main(String[] args) {
-    MSP430 cpu = new MSP430(new MSP430f1611Config());
     int index = 0;
+    boolean debug = false;
     if (args[index].startsWith("-")) {
       // Flag
       if ("-debug".equalsIgnoreCase(args[index])) {
-        cpu.setDebug(true);
+        debug = true;
       } else {
         System.err.println("Unknown flag: " + args[index]);
         System.exit(1);
       }
       index++;
     }
-
     try {
+      var firmware = args[index++];
+      var cpu = CC2420Node.makeCPU(CC2420Node.makeChipConfig(), firmware);
+      cpu.setDebug(debug);
       int[] memory = cpu.memory;
-      ELF elf = ELF.readELF(args[index++]);
+      ELF elf = ELF.readELF(firmware);
       elf.loadPrograms(memory, cpu.MAX_MEM);
       MapTable map = elf.getMap();
       cpu.getDisAsm().setMap(map);

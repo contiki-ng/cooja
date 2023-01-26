@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.mspsim.config.MSP430f1611Config;
 import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.platform.sky.CC2420Node;
 
 public class IHexReader {
   private static final Logger logger = LoggerFactory.getLogger(IHexReader.class);
@@ -118,7 +119,7 @@ public class IHexReader {
     int data = 0x84;
     System.out.println("RRA: " + hex((data & 0x80) + (data >> 1)));
 
-    MSP430 cpu = new MSP430(new MSP430f1611Config());
+    MSP430 cpu = CC2420Node.makeCPU(CC2420Node.makeChipConfig(), args[0]);
     int[] memory = cpu.memory;
     IHexReader.readFile(memory, args[0]);
     cpu.reset();
