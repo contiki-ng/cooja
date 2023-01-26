@@ -65,14 +65,12 @@ public class IHexReader {
     for (int i = 0, n = tmpMemory.length; i < n; i++) {
       tmpMemory[i] = -1;
     }
-    try {
-      BufferedReader bInput = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8));
+    try (var bInput = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8))) {
       String line;
       boolean terminate = false;
       while ((line = bInput.readLine()) != null && !terminate) {
         if (line.charAt(0) != ':') {
           System.out.println("Not an IHex file?! " + line.charAt(0));
-          bInput.close();
           return false;
         }
         int size = hexToInt(line.charAt(1)) * 0x10 + hexToInt(line.charAt(2));
@@ -94,7 +92,6 @@ public class IHexReader {
 
         }
       }
-      bInput.close();
 
       // Write all data that we got in to the real memory!!!
       System.out.println("Writing to memory!");
