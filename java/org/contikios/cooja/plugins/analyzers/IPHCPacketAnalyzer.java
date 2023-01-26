@@ -464,6 +464,7 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
     verbose.append("<br/><b>IPv6</b>")
             .append(" TC = ").append(trafficClass)
             .append(", FL = ").append(flowLabel)
+            .append(", ttl = ").append(ttl)
             .append("<br>");
     verbose.append("From ");
     IPUtils.getUncompressedIPv6AddressString(verbose, srcAddress);
