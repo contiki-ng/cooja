@@ -69,7 +69,7 @@ public class Z1MoteType extends MspMoteType {
 
     @Override
     public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
-        var cpu = Z1Node.makeCPU(Z1Node.makeChipConfig());
+        var cpu = Z1Node.makeCPU(Z1Node.makeChipConfig(), fileFirmware.getAbsolutePath());
         return new Z1Mote(this, simulation, new Z1Node(cpu, new CoojaM25P80(cpu)));
     }
 

@@ -79,7 +79,7 @@ public abstract class GenericNode extends Chip implements Runnable {
   protected String firmwareFile;
   protected final OperatingModeStatistics stats;
 
-  public static MSP430 makeCPU(MSP430Config config) {
+  public static MSP430 makeCPU(MSP430Config config, String firmwareFile) {
     return new MSP430(config);
   }
 

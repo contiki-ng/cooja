@@ -314,7 +314,7 @@ class Main {
     } else { // Start MSPSim.
       var config = new ArgumentManager(options.simulationFiles.toArray(new String[0]));
       var node = createNode(Objects.requireNonNullElseGet(config.getProperty("nodeType"), () ->
-              getNodeTypeByPlatform(options.mspSimPlatform)));
+              getNodeTypeByPlatform(options.mspSimPlatform)), options.simulationFiles.get(0));
       if (node == null) {
         System.err.println("MSPSim does not currently support the platform '" + options.mspSimPlatform + "'.");
         System.exit(1);
