@@ -29,6 +29,7 @@
  */
 
 package org.contikios.cooja.mspmote;
+import java.io.IOException;
 import java.util.List;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
@@ -46,6 +47,7 @@ import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
 import org.contikios.cooja.mspmote.interfaces.MspDefaultSerial;
 import org.contikios.cooja.mspmote.interfaces.MspLED;
 import org.contikios.cooja.mspmote.interfaces.MspMoteID;
+import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.platform.z1.Z1Node;
 
 @ClassDescription("Z1 mote")
@@ -69,7 +71,12 @@ public class Z1MoteType extends MspMoteType {
 
     @Override
     public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
-        var cpu = Z1Node.makeCPU(Z1Node.makeChipConfig(), fileFirmware.getAbsolutePath());
+        MSP430 cpu;
+        try {
+            cpu = Z1Node.makeCPU(Z1Node.makeChipConfig(), fileFirmware.getAbsolutePath());
+        } catch (IOException e) {
+            throw new MoteTypeCreationException("Failed to create CPU", e);
+        }
         return new Z1Mote(this, simulation, new Z1Node(cpu, new CoojaM25P80(cpu)));
     }
 

@@ -28,6 +28,7 @@
  */
 
 package org.contikios.cooja.mspmote;
+import java.io.IOException;
 import java.util.List;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
@@ -66,32 +67,36 @@ public class Exp5438MoteType extends MspMoteType {
     final GenericNode exp5438Node;
     final String desc;
     final MSP430 cpu;
-    if (filename.endsWith(".exp1101")) {
-      cpu = Exp1101Node.makeCPU(Exp1101Node.makeChipConfig(), firmwareFile);
-      exp5438Node = new Exp1101Node(cpu);
-      desc = "Exp5438+CC1101";
-    } else if (filename.endsWith(".exp1120")) {
-      cpu = Exp1120Node.makeCPU(Exp1120Node.makeChipConfig(), firmwareFile);
-      exp5438Node = new Exp1120Node(cpu);
-      desc = "Exp5438+CC1120";
-    } else if (filename.endsWith(".trxeb2520")) {
-      cpu = Trxeb2520Node.makeCPU(Trxeb2520Node.makeChipConfig(), firmwareFile);
-      exp5438Node = new Trxeb2520Node(cpu);
-      desc = "Trxeb2520";
-    } else if (filename.endsWith(".trxeb1120")) {
-      cpu = Trxeb1120Node.makeCPU(Trxeb1120Node.makeChipConfig(), firmwareFile);
-      exp5438Node = new Trxeb1120Node(false, cpu);
-      desc = "Trxeb1120";
-    } else if (filename.endsWith(".eth1120")) {
-      cpu = Trxeb1120Node.makeCPU(Trxeb1120Node.makeChipConfig(), firmwareFile);
-      exp5438Node = new Trxeb1120Node(true, cpu);
-      desc = "Eth1120";
-    } else if (filename.endsWith(".exp2420") || filename.endsWith(".exp5438")) {
-      cpu = Exp5438Node.makeCPU(Exp5438Node.makeChipConfig(), firmwareFile);
-      exp5438Node = new Exp5438Node(cpu);
-      desc = "Exp5438+CC2420";
-    } else {
-      throw new IllegalStateException("Unknown file extension, cannot figure out what MSPSim node type to use: " + filename);
+    try {
+      if (filename.endsWith(".exp1101")) {
+        cpu = Exp1101Node.makeCPU(Exp1101Node.makeChipConfig(), firmwareFile);
+        exp5438Node = new Exp1101Node(cpu);
+        desc = "Exp5438+CC1101";
+      } else if (filename.endsWith(".exp1120")) {
+        cpu = Exp1120Node.makeCPU(Exp1120Node.makeChipConfig(), firmwareFile);
+        exp5438Node = new Exp1120Node(cpu);
+        desc = "Exp5438+CC1120";
+      } else if (filename.endsWith(".trxeb2520")) {
+        cpu = Trxeb2520Node.makeCPU(Trxeb2520Node.makeChipConfig(), firmwareFile);
+        exp5438Node = new Trxeb2520Node(cpu);
+        desc = "Trxeb2520";
+      } else if (filename.endsWith(".trxeb1120")) {
+        cpu = Trxeb1120Node.makeCPU(Trxeb1120Node.makeChipConfig(), firmwareFile);
+        exp5438Node = new Trxeb1120Node(false, cpu);
+        desc = "Trxeb1120";
+      } else if (filename.endsWith(".eth1120")) {
+        cpu = Trxeb1120Node.makeCPU(Trxeb1120Node.makeChipConfig(), firmwareFile);
+        exp5438Node = new Trxeb1120Node(true, cpu);
+        desc = "Eth1120";
+      } else if (filename.endsWith(".exp2420") || filename.endsWith(".exp5438")) {
+        cpu = Exp5438Node.makeCPU(Exp5438Node.makeChipConfig(), firmwareFile);
+        exp5438Node = new Exp5438Node(cpu);
+        desc = "Exp5438+CC2420";
+      } else {
+        throw new IllegalStateException("Unknown file extension, cannot figure out what MSPSim node type to use: " + filename);
+      }
+    } catch (IOException e) {
+      throw new MoteTypeCreationException("Failed to create CPU", e);
     }
     return new Exp5438Mote(this, simulation, exp5438Node, desc);
   }

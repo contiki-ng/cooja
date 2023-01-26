@@ -30,6 +30,7 @@
 
 package org.contikios.cooja.mspmote;
 
+import java.io.IOException;
 import java.util.List;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
@@ -50,6 +51,7 @@ import org.contikios.cooja.mspmote.interfaces.SkyButton;
 import org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem;
 import org.contikios.cooja.mspmote.interfaces.SkyFlash;
 import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
+import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.platform.sky.SkyNode;
 
 @ClassDescription("Sky mote")
@@ -58,7 +60,12 @@ public class SkyMoteType extends MspMoteType {
 
   @Override
   public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
-    var cpu = SkyNode.makeCPU(SkyNode.makeChipConfig(), fileFirmware.getAbsolutePath());
+    MSP430 cpu;
+    try {
+      cpu = SkyNode.makeCPU(SkyNode.makeChipConfig(), fileFirmware.getAbsolutePath());
+    } catch (IOException e) {
+      throw new MoteTypeCreationException("Failed to create CPU", e);
+    }
     return new SkyMote(this, simulation, new SkyNode(cpu, new CoojaM25P80(cpu)));
   }
 

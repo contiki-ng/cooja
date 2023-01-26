@@ -104,15 +104,8 @@ public class Test implements USARTListener {
       index++;
     }
     try {
-      var firmware = args[index++];
-      var cpu = CC2420Node.makeCPU(CC2420Node.makeChipConfig(), firmware);
+      var cpu = CC2420Node.makeCPU(CC2420Node.makeChipConfig(), args[index++]);
       cpu.setDebug(debug);
-      int[] memory = cpu.memory;
-      ELF elf = ELF.readELF(firmware);
-      elf.loadPrograms(memory, cpu.MAX_MEM);
-      MapTable map = elf.getMap();
-      cpu.getDisAsm().setMap(map);
-      cpu.setMap(map);
       cpu.reset();
 
       // Create the "tester"

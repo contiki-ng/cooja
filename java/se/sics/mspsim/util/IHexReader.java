@@ -59,11 +59,10 @@ public class IHexReader {
    */
   private IHexReader() {}
 
-  public static boolean readFile(int[] memory, String file) {
-    // 64k tmp ram!
-    var tmpMemory = new int[64 * 1024];
-    for (int i = 0, n = tmpMemory.length; i < n; i++) {
-      tmpMemory[i] = -1;
+  public static int[] readFile(String file, int memSize) {
+    var memory = new int[memSize];
+    for (int i = 0, n = memory.length; i < n; i++) {
+      memory[i] = -1;
     }
     try (var bInput = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8))) {
       String line;
@@ -71,7 +70,7 @@ public class IHexReader {
       while ((line = bInput.readLine()) != null && !terminate) {
         if (line.charAt(0) != ':') {
           logger.error("{} not an IHex file? Line starting with '{}'", file, line.charAt(0));
-          return false;
+          return null;
         }
         int size = hexToInt(line.charAt(1)) * 0x10 + hexToInt(line.charAt(2));
         int adr =  hexToInt(line.charAt(3)) * 0x1000 +
@@ -85,22 +84,16 @@ public class IHexReader {
         } else {
           int index = 9;
           for (int i = 0; i < size; i++) {
-            tmpMemory[adr + i] = (hexToInt(line.charAt(index++)) * 0x10 +
+            memory[adr + i] = (hexToInt(line.charAt(index++)) * 0x10 +
                                   hexToInt(line.charAt(index++)));
           }
         }
       }
     } catch (IOException ioe) {
       logger.error("IO exception when reading {}", file, ioe);
-      return false;
+      return null;
     }
-    // Write all data that we got in to the real memory!!!
-    for (int i = 0, n = tmpMemory.length; i < n; i++) {
-      if (tmpMemory[i] != -1) {
-        memory[i] = tmpMemory[i];
-      }
-    }
-    return true;
+    return memory;
   }
 
   private static String hex(int data) {
@@ -115,13 +108,11 @@ public class IHexReader {
     }
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     int data = 0x84;
     System.out.println("RRA: " + hex((data & 0x80) + (data >> 1)));
 
     MSP430 cpu = CC2420Node.makeCPU(CC2420Node.makeChipConfig(), args[0]);
-    int[] memory = cpu.memory;
-    IHexReader.readFile(memory, args[0]);
     cpu.reset();
     cpu.cpuloop();
   }

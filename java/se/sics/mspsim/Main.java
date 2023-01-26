@@ -66,7 +66,7 @@ import se.sics.mspsim.util.ArgumentManager;
  */
 public class Main {
 
-  public static GenericNode createNode(String className, String firmwareFile) {
+  public static GenericNode createNode(String className, String firmwareFile) throws IOException {
     return switch (className) { // Sorted alphabetically.
       case "se.sics.mspsim.platform.esb.ESBNode" -> {
         var cpu = ESBNode.makeCPU(ESBNode.makeChipConfig(), firmwareFile);

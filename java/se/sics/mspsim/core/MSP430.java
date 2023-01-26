@@ -40,6 +40,7 @@ import java.io.PrintStream;
 
 import se.sics.mspsim.profiler.SimpleProfiler;
 import se.sics.mspsim.util.ArrayUtils;
+import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.MapTable;
 
 public class MSP430 extends MSP430Core {
@@ -70,9 +71,16 @@ public class MSP430 extends MSP430Core {
    * Creates a new <code>MSP430</code> instance.
    *
    */
-  public MSP430(MSP430Config config, int[] mem) {
+  public MSP430(MSP430Config config, int[] mem, ELF elf) {
     super(config, mem);
     disAsm = new DisAsm();
+    if (elf != null) {
+      var map = elf.getMap();
+      disAsm.setMap(map);
+      setMap(map);
+      registry.registerComponent("elf", elf);
+      registry.registerComponent("mapTable", map);
+    }
   }
 
   public double getCPUPercent() {
