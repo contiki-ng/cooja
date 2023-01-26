@@ -347,7 +347,7 @@ public final class Simulation {
       for (var pluginElement : root.getChildren("plugin")) {
         var pluginClassName = pluginElement.getText().trim();
         if (pluginClassName.startsWith("se.sics")) {
-          pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
+          pluginClassName = pluginClassName.replaceFirst("^se\\.sics", "org.contikios");
         }
         // Skip plugins that have been removed or merged into other classes.
         if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName) ||
