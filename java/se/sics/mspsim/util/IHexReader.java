@@ -46,10 +46,13 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.sics.mspsim.config.MSP430f1611Config;
 import se.sics.mspsim.core.MSP430;
 
 public class IHexReader {
+  private static final Logger logger = LoggerFactory.getLogger(IHexReader.class);
   /**
    * Utility class, should not be constructed.
    */
@@ -66,7 +69,7 @@ public class IHexReader {
       boolean terminate = false;
       while ((line = bInput.readLine()) != null && !terminate) {
         if (line.charAt(0) != ':') {
-          System.out.println("Not an IHex file?! " + line.charAt(0));
+          logger.error("{} not an IHex file? Line starting with '{}'", file, line.charAt(0));
           return false;
         }
         int size = hexToInt(line.charAt(1)) * 0x10 + hexToInt(line.charAt(2));
@@ -77,7 +80,6 @@ public class IHexReader {
 
         // Termination !!!
         if (type == 0x01) {
-          System.out.println("IHEX file ended (termination)");
           terminate = true;
         } else {
           int index = 9;
@@ -88,11 +90,10 @@ public class IHexReader {
         }
       }
     } catch (IOException ioe) {
-      ioe.printStackTrace();
+      logger.error("IO exception when reading {}", file, ioe);
       return false;
     }
     // Write all data that we got in to the real memory!!!
-    System.out.println("Writing to memory!");
     for (int i = 0, n = tmpMemory.length; i < n; i++) {
       if (tmpMemory[i] != -1) {
         memory[i] = tmpMemory[i];
