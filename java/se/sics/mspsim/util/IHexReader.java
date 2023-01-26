@@ -89,23 +89,20 @@ public class IHexReader {
             tmpMemory[adr + i] = (hexToInt(line.charAt(index++)) * 0x10 +
                                   hexToInt(line.charAt(index++)));
           }
-
         }
       }
-
-      // Write all data that we got in to the real memory!!!
-      System.out.println("Writing to memory!");
-      for (int i = 0, n = tmpMemory.length; i < n; i++) {
-        if (tmpMemory[i] != -1) {
-          memory[i] = tmpMemory[i];
-        }
-      }
-
-      return true;
     } catch (IOException ioe) {
       ioe.printStackTrace();
+      return false;
     }
-    return false;
+    // Write all data that we got in to the real memory!!!
+    System.out.println("Writing to memory!");
+    for (int i = 0, n = tmpMemory.length; i < n; i++) {
+      if (tmpMemory[i] != -1) {
+        memory[i] = tmpMemory[i];
+      }
+    }
+    return true;
   }
 
   private static String hex(int data) {
