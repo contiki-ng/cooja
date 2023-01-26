@@ -2,13 +2,11 @@ package se.sics.mspsim.platform.z1;
 
 import se.sics.mspsim.chip.Button;
 import se.sics.mspsim.chip.CC2420;
-import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.config.MSP430f2617Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
-import se.sics.mspsim.core.IOUnit;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
@@ -16,7 +14,6 @@ import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.core.USCI;
 import se.sics.mspsim.platform.GenericFlashNode;
-import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.ui.SerialMon;
 
 public class Z1Node extends GenericFlashNode<M25P80> implements PortListener, USARTListener {

@@ -2,7 +2,6 @@ package se.sics.mspsim.platform.sky;
 import se.sics.mspsim.chip.CC2420;
 import se.sics.mspsim.chip.DS2411;
 import se.sics.mspsim.chip.ExternalFlash;
-import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.PacketListener;
 import se.sics.mspsim.config.MSP430f1611Config;
 import se.sics.mspsim.core.IOPort;
