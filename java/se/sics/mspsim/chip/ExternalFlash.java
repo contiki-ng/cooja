@@ -54,11 +54,5 @@ public abstract class ExternalFlash extends Chip {
         this.storage = storage;
     }
 
-    @Override
-    public int getConfiguration(int param) {
-        return 0;
-    }
-
     public abstract int getSize();
-
 }

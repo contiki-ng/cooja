@@ -288,11 +288,4 @@ public class SHT11 extends Chip {
   public int getModeMax() {
     return 0;
   }
-
-  /* no configuration for the SHT11 ? */
-  @Override
-  public int getConfiguration(int parameter) {
-      return 0;
-  }
-
 }

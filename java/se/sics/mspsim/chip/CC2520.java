@@ -1563,13 +1563,6 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     public void stateChanged(int state) {
     }
 
-    /* return data in register at the correct position */
-    @Override
-    public int getConfiguration(int parameter) {
-        return memory[parameter];
-    }
-
-
     /* For SPI Commands */
     @Override
     public int getSPIData(int offset) {

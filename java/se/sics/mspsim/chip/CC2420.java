@@ -1505,11 +1505,4 @@ public class CC2420 extends Radio802154 implements USARTListener {
   @Override
   public void stateChanged(int state) {
   }
-
-  /* return data in register at the correct position */
-  @Override
-  public int getConfiguration(int parameter) {
-      return registers[parameter];
-  }
-
 } // CC2420

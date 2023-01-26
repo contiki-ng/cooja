@@ -305,9 +305,4 @@ public abstract class GenericNode extends Chip implements Runnable {
     registry.registerComponent("mapTable", map);
     return elf;
   }
-
-  @Override
-  public int getConfiguration(int param) {
-      return 0;
-  }
 }

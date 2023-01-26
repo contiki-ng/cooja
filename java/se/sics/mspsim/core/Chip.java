@@ -196,10 +196,6 @@ public abstract class Chip implements Loggable, EventSource {
       }
   }
 
-  /* interface for getting hold of configuration values - typically mapped to some kind of address */
-  public abstract int getConfiguration(int parameter);
-
-
   @Override
   public String getID() {
     return id;

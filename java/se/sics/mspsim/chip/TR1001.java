@@ -118,9 +118,4 @@ public class TR1001 extends Chip implements RFListener, RFSource {
       }
     }
   }
-
-  @Override
-  public int getConfiguration(int parameter) {
-      return 0;
-  }
 }
