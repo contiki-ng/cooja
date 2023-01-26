@@ -70,8 +70,8 @@ public class MSP430 extends MSP430Core {
    * Creates a new <code>MSP430</code> instance.
    *
    */
-  public MSP430(MSP430Config config) {
-    super(config);
+  public MSP430(MSP430Config config, int[] mem) {
+    super(config, mem);
     disAsm = new DisAsm();
   }
 
