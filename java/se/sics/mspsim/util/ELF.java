@@ -86,7 +86,9 @@ public class ELF {
   public ELF(byte[] data) throws ELFException {
     elfData = data;
     setPos(0);
-    readAll();
+    readHeader();
+    readPrograms();
+    readSections();
   }
 
   private void readHeader() throws ELFException {
@@ -277,12 +279,6 @@ public class ELF {
         System.out.println("-- Program header --\n" + programs[i].toString());
       }
     }
-  }
-
-  public void readAll() throws ELFException {
-    readHeader();
-    readPrograms();
-    readSections();
   }
 
   public void loadPrograms(int[] memory) {
