@@ -137,8 +137,7 @@ public abstract class GenericNode extends Chip implements Runnable {
     if (firmwareFile.endsWith("ihex")) {
       // IHEX Reading
       int[] memory = cpu.memory;
-      IHexReader reader = new IHexReader();
-      reader.readFile(memory, firmwareFile);
+      IHexReader.readFile(memory, firmwareFile);
     } else {
       loadFirmware(firmwareFile);
     }

@@ -50,18 +50,14 @@ import se.sics.mspsim.config.MSP430f1611Config;
 import se.sics.mspsim.core.MSP430;
 
 public class IHexReader {
-
-  // 64k tmp ram!
-  private final int[] tmpMemory = new int[64 * 1024];
-
   /**
-   * Creates a new <code>IHexReader</code> instance.
-   *
+   * Utility class, should not be constructed.
    */
-  public IHexReader() {
-  }
+  private IHexReader() {}
 
-  public boolean readFile(int[] memory, String file) {
+  public static boolean readFile(int[] memory, String file) {
+    // 64k tmp ram!
+    var tmpMemory = new int[64 * 1024];
     for (int i = 0, n = tmpMemory.length; i < n; i++) {
       tmpMemory[i] = -1;
     }
@@ -118,13 +114,12 @@ public class IHexReader {
   }
 
   public static void main(String[] args) {
-    IHexReader reader = new IHexReader();
     int data = 0x84;
     System.out.println("RRA: " + hex((data & 0x80) + (data >> 1)));
 
     MSP430 cpu = new MSP430(new MSP430f1611Config());
     int[] memory = cpu.memory;
-    reader.readFile(memory, args[0]);
+    IHexReader.readFile(memory, args[0]);
     cpu.reset();
     cpu.cpuloop();
   }
