@@ -2,7 +2,6 @@ package se.sics.mspsim.platform.ti;
 
 import se.sics.mspsim.config.CC430f5137Config;
 import se.sics.mspsim.core.IOPort;
-import se.sics.mspsim.core.IOUnit;
 import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
