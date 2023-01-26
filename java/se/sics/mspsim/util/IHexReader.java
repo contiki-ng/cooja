@@ -80,8 +80,6 @@ public class IHexReader {
           hexToInt(line.charAt(4)) * 0x100 + hexToInt(line.charAt(5)) * 0x10 +
           hexToInt(line.charAt(6));
         int type = hexToInt(line.charAt(7)) * 0x10 + hexToInt(line.charAt(8));
-//      System.out.println("Block:  size: " + size + "=>  address: " +
-//                         hex(adr) +   "  type: " + type);
 
         // Termination !!!
         if (type == 0x01) {
