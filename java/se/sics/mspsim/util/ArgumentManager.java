@@ -45,7 +45,6 @@ public class ArgumentManager extends ConfigManager {
 
   public ArgumentManager(String[] args) {
     ArrayList<String> list = new ArrayList<>();
-    ArrayList<String> config = new ArrayList<>();
     for (int i = 0, n = args.length; i < n; i++) {
       if ("-".equals(args[i])) {
         // The rest should be considered arguments
@@ -73,17 +72,13 @@ public class ArgumentManager extends ConfigManager {
             throw new IllegalArgumentException("failed to load configuration " + value);
           }
         }
-        config.add(param);
-        config.add(!value.isEmpty() ? value : "true");
+        setProperty(param, !value.isEmpty() ? value : "true");
       } else {
         // Normal argument.
         list.add(args[i]);
       }
     }
     arguments = list.toArray(new String[0]);
-    for (int i = 0, n = config.size(); i < n; i += 2) {
-      setProperty(config.get(i), config.get(i + 1));
-    }
   }
 
   public String[] getArguments() {
