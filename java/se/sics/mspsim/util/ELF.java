@@ -83,9 +83,10 @@ public class ELF {
 
   ELFDebug debug;
 
-  public ELF(byte[] data) {
+  public ELF(byte[] data) throws ELFException {
     elfData = data;
     setPos(0);
+    readAll();
   }
 
   private void readHeader() throws ELFException {
@@ -438,9 +439,7 @@ public class ELF {
       if (DEBUG) {
         System.out.println("Length of data: " + data.length);
       }
-      ELF elf = new ELF(data);
-      elf.readAll();
-      return elf;
+      return new ELF(data);
     }
   }
 
