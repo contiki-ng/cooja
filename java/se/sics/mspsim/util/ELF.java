@@ -262,7 +262,9 @@ public class ELF {
         dwarf.read();
         debug = dwarf;
     }
-
+    if (dbgStab != null) {
+      debug = new StabDebug(this, dbgStab, dbgStabStr);
+    }
   }
 
   private void readPrograms() {
@@ -280,9 +282,6 @@ public class ELF {
     readHeader();
     readPrograms();
     readSections();
-    if (dbgStab != null) {
-      debug = new StabDebug(this, dbgStab, dbgStabStr);
-    }
   }
 
   public void loadPrograms(int[] memory) {
