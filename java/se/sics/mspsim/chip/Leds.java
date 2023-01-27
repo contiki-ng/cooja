@@ -102,10 +102,4 @@ public class Leds extends Chip {
     public String info() {
         return "Leds: " + (ledColors.length <= 8 ? Utils.binary8(leds) : Utils.binary16(leds));
     }
-
-    @Override
-    public int getConfiguration(int parameter) {
-        return 0;
-    }
-
 }

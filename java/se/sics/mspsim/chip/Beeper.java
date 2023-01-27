@@ -198,11 +198,4 @@ public class Beeper extends Chip {
         return "Volume: " + getVolume() + " Beep: " + (beepOn ? "on" : "off")
         + " Sound Enabled: " + isSoundEnabled;
     }
-
-    /* just return some value */
-    @Override
-    public int getConfiguration(int parameter) {
-        return beepOn ? 1 : 0;
-    }
-
 }

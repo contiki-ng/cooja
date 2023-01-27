@@ -264,11 +264,6 @@ public class Enc28J60 extends Chip {
         }
 
         @Override
-        public int getConfiguration(int parameter) {
-                return -1;
-        }
-
-        @Override
         public int getModeMax() {
                 return -1;
         }

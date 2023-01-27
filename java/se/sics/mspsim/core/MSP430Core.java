@@ -2217,11 +2217,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
   }
 
   @Override
-  public int getConfiguration(int parameter) {
-      return 0;
-  }
-
-  @Override
   public String info() {
       StringBuilder buf = new StringBuilder();
       buf.append(" Mode: ").append(getModeName(getMode()))

@@ -116,11 +116,4 @@ public class MMA7260QT extends Accelerometer {
         + String.format(" [x=%.2f (%d),y=%.2f (%d),z=%.2f (%d)]",
                 getX(), getADCX(), getY(), getADCY(), getZ(), getADCZ());
     }
-
-    /* currently just return the gSelect as configuration */
-    @Override
-    public int getConfiguration(int parameter) {
-        return gSelect;
-    }
-
 }

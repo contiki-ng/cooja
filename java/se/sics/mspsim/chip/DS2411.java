@@ -240,9 +240,4 @@ public class DS2411 extends Chip {
     macID[4] = m;
     macID[5] = n;
   }
-
-  @Override
-  public int getConfiguration(int parameter) {
-      return 0;
-  }
 }

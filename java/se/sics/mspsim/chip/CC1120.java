@@ -1022,12 +1022,6 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 return 0;
         }
 
-        /* return data in register at the correct position */
-        @Override
-        public int getConfiguration(int parameter) {
-                return registers[parameter];
-        }
-
         @Override
         public boolean getChipSelect() {
                 return chipSelect;

@@ -65,11 +65,6 @@ public class Button extends Chip {
     }
 
     @Override
-    public int getConfiguration(int parameter) {
-        return 0;
-    }
-
-    @Override
     public int getModeMax() {
         return 0;
     }
