@@ -137,10 +137,9 @@ public abstract class GenericNode extends Chip implements Runnable {
     if (firmwareFile.endsWith("ihex")) {
       // IHEX Reading
       int[] memory = cpu.memory;
-      IHexReader reader = new IHexReader();
-      reader.readFile(memory, firmwareFile);
+      IHexReader.readFile(memory, firmwareFile);
     } else {
-      loadFirmware(firmwareFile);
+      loadFirmware(ELF.readELF(firmwareFile));
     }
     config.setProperty("firmwareFile", firmwareFile);
 
@@ -287,10 +286,6 @@ public abstract class GenericNode extends Chip implements Runnable {
     if (!cpu.isRunning()) {
       cpu.stepInstructions(nr);
     }
-  }
-
-  public ELF loadFirmware(String name) throws IOException {
-    return loadFirmware(ELF.readELF(firmwareFile = name));
   }
 
   public ELF loadFirmware(ELF elf) {
