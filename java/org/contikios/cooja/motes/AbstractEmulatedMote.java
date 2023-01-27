@@ -29,6 +29,7 @@
 package org.contikios.cooja.motes;
 
 import org.contikios.cooja.Breakpoint;
+import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mote.memory.MemoryInterface;
@@ -40,9 +41,10 @@ public abstract class AbstractEmulatedMote<T extends MoteType, C extends Chip, M
   protected final C myCpu;
   protected long lastBreakpointCycles = -1;
 
-  protected AbstractEmulatedMote(T moteType, C cpu, M moteMemory, Simulation sim) {
+  protected AbstractEmulatedMote(T moteType, C cpu, M moteMemory, Simulation sim) throws MoteType.MoteTypeCreationException {
     super(moteType, moteMemory, sim);
     myCpu = cpu;
+    moteInterfaces = new MoteInterfaceHandler(this);
   }
 
   /**

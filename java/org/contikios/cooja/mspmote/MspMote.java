@@ -37,7 +37,6 @@ import org.contikios.cooja.Simulation.SimulationStop;
 import org.contikios.cooja.WatchpointMote;
 import org.contikios.cooja.ContikiError;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.Watchpoint;
@@ -108,7 +107,6 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MSP430, 
     // Throw exceptions at bad memory access.
     //myCpu.setThrowIfWarning(true);
     myCpu.reset();
-    moteInterfaces = new MoteInterfaceHandler(this);
     registry.removeComponent("windowManager");
     registry.registerComponent("windowManager", new WindowManager() {
       @Override
