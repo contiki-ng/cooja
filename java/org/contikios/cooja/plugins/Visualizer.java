@@ -1387,7 +1387,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           String wanted = element.getText();
           /* Backwards compatibility: se.sics -> org.contikios */
           if (wanted.startsWith("se.sics")) {
-            wanted = wanted.replaceFirst("se\\.sics", "org.contikios");
+            wanted = wanted.replaceFirst("^se\\.sics", "org.contikios");
           }
           for (final var skinClass : visualizerSkins) {
             if (wanted.equals(skinClass.getName()) || wanted.equals(Cooja.getDescriptionOf(skinClass))) {

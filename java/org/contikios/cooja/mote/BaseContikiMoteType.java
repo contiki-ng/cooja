@@ -293,7 +293,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
         case "moteinterface" -> {
           var name = element.getText().trim();
           if (name.startsWith("se.sics")) {
-            name = name.replaceFirst("se\\.sics", "org.contikios");
+            name = name.replaceFirst("^se\\.sics", "org.contikios");
           }
           // Skip interfaces that have been removed or merged into other classes.
           if ("org.contikios.cooja.interfaces.RimeAddress".equals(name)) {

@@ -297,7 +297,7 @@ public class MoteInterfaceHandler {
   public boolean setConfigXML(Mote mote, Element element, boolean ignoreFailure) {
     var name = element.getText().trim();
     if (name.startsWith("se.sics")) {
-      name = name.replaceFirst("se\\.sics", "org.contikios");
+      name = name.replaceFirst("^se\\.sics", "org.contikios");
     }
     MoteInterface moteInterface = null;
     for (var candidateInterface : getInterfaces()) {

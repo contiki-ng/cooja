@@ -144,7 +144,7 @@ public class ExtensionManager {
   public static RadioMedium createRadioMedium(Cooja cooja, Simulation sim, String name)
           throws Cooja.SimulationCreationException {
     if (name.startsWith("se.sics")) {
-      name = name.replaceFirst("se\\.sics", "org.contikios");
+      name = name.replaceFirst("^se\\.sics", "org.contikios");
     }
     return switch (name) {
       case "org.contikios.cooja.radiomediums.UDGM" -> new UDGM(sim);
@@ -170,7 +170,7 @@ public class ExtensionManager {
   /** Create a mote of a certain class, returns null on failure. */
   public static MoteType createMoteType(Cooja cooja, String name) throws MoteType.MoteTypeCreationException {
     if (name.startsWith("se.sics")) {
-      name = name.replaceFirst("se\\.sics", "org.contikios");
+      name = name.replaceFirst("^se\\.sics", "org.contikios");
     }
     return switch (name) {
       case "org.contikios.cooja.motes.ImportAppMoteType" -> new ImportAppMoteType();
