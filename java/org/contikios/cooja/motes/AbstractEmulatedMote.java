@@ -34,12 +34,24 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mote.memory.MemoryInterface;
 import org.contikios.cooja.plugins.BufferListener;
 import org.contikios.cooja.plugins.TimeLine;
+import se.sics.mspsim.core.Chip;
 
-public abstract class AbstractEmulatedMote<T extends MoteType, M extends MemoryInterface> extends AbstractWakeupMote<T, M> {
+public abstract class AbstractEmulatedMote<T extends MoteType, C extends Chip, M extends MemoryInterface> extends AbstractWakeupMote<T, M> {
+  protected final C myCpu;
   protected long lastBreakpointCycles = -1;
 
-  protected AbstractEmulatedMote(T moteType, M moteMemory, Simulation sim) {
+  protected AbstractEmulatedMote(T moteType, C cpu, M moteMemory, Simulation sim) {
     super(moteType, moteMemory, sim);
+    myCpu = cpu;
+  }
+
+  /**
+   * Returns the CPU.
+   *
+   * @return CPU
+   */
+  public C getCPU() {
+    return myCpu;
   }
 
   /**
