@@ -106,7 +106,7 @@ public class Test implements USARTListener {
     try {
       int[] memory = cpu.memory;
       ELF elf = ELF.readELF(args[index++]);
-      elf.loadPrograms(memory);
+      elf.loadPrograms(memory, cpu.MAX_MEM);
       MapTable map = elf.getMap();
       cpu.getDisAsm().setMap(map);
       cpu.setMap(map);

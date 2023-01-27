@@ -83,9 +83,12 @@ public class ELF {
 
   ELFDebug debug;
 
-  public ELF(byte[] data) {
+  public ELF(byte[] data) throws ELFException {
     elfData = data;
     setPos(0);
+    readHeader();
+    readPrograms();
+    readSections();
   }
 
   private void readHeader() throws ELFException {
@@ -262,7 +265,9 @@ public class ELF {
         dwarf.read();
         debug = dwarf;
     }
-
+    if (dbgStab != null) {
+      debug = new StabDebug(this, dbgStab, dbgStabStr);
+    }
   }
 
   private void readPrograms() {
@@ -276,21 +281,13 @@ public class ELF {
     }
   }
 
-  public void readAll() throws ELFException {
-    readHeader();
-    readPrograms();
-    readSections();
-    if (dbgStab != null) {
-      debug = new StabDebug(this, dbgStab, dbgStabStr);
-    }
-  }
-
-  public void loadPrograms(int[] memory) {
+  public int[] loadPrograms(int[] memory, int size) {
     for (int i = 0, n = phnum; i < n; i++) {
       // paddr or vaddr???
       loadBytes(memory, programs[i].offset, programs[i].paddr,
                 programs[i].fileSize, programs[i].memSize);
     }
+    return memory;
   }
 
   private void loadBytes(int[] memory, int offset, int addr, int len,
@@ -439,9 +436,7 @@ public class ELF {
       if (DEBUG) {
         System.out.println("Length of data: " + data.length);
       }
-      ELF elf = new ELF(data);
-      elf.readAll();
-      return elf;
+      return new ELF(data);
     }
   }
 

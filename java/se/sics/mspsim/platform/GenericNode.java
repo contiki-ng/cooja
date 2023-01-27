@@ -292,7 +292,7 @@ public abstract class GenericNode extends Chip implements Runnable {
     if (cpu.isRunning()) {
         stop();
     }
-    elf.loadPrograms(cpu.memory);
+    elf.loadPrograms(cpu.memory, cpu.MAX_MEM);
     MapTable map = elf.getMap();
     cpu.getDisAsm().setMap(map);
     cpu.setMap(map);
