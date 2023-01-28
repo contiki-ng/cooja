@@ -73,11 +73,11 @@ public class MoteInterfaceHandler {
   private SerialPort mySerialPort;
 
   /**
-   * Creates new mote interface handler. All given interfaces are created.
+   * Initializes mote interface handler. All given interfaces are created.
    *
    * @param mote Mote
    */
-  public MoteInterfaceHandler(Mote mote) throws MoteType.MoteTypeCreationException {
+  public void init(Mote mote) throws MoteType.MoteTypeCreationException {
     for (var interfaceClass : mote.getType().getMoteInterfaceClasses()) {
       try {
         moteInterfaces.add(interfaceClass.getConstructor(Mote.class).newInstance(mote));

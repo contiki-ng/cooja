@@ -29,7 +29,6 @@
 package org.contikios.cooja.motes;
 
 import java.util.HashMap;
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.RadioPacket;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
@@ -50,7 +49,7 @@ public abstract class AbstractApplicationMote extends AbstractWakeupMote<MoteTyp
   
   public AbstractApplicationMote(MoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
     super(moteType, new SectionMoteMemory(new HashMap<>()), sim);
-    this.moteInterfaces = new MoteInterfaceHandler(this);
+    moteInterfaces.init(this);
     // Observe our own radio for incoming radio packets.
     moteInterfaces.getRadio().getRadioEventTriggers().addTrigger(this, (event, radio) -> {
       if (radio.getLastEvent() == Radio.RadioEvent.RECEPTION_FINISHED) {

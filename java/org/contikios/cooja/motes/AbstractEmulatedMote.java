@@ -44,7 +44,7 @@ public abstract class AbstractEmulatedMote<T extends MoteType, C extends Chip, M
   protected AbstractEmulatedMote(T moteType, C cpu, M moteMemory, Simulation sim) throws MoteType.MoteTypeCreationException {
     super(moteType, moteMemory, sim);
     myCpu = cpu;
-    moteInterfaces = new MoteInterfaceHandler(this);
+    moteInterfaces.init(this);
   }
 
   /**

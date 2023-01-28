@@ -49,7 +49,7 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
   protected final T moteType;
   protected final M moteMemory;
 
-  protected MoteInterfaceHandler moteInterfaces;
+  protected final MoteInterfaceHandler moteInterfaces = new MoteInterfaceHandler();
   private long nextWakeupTime = -1;
 
   protected final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<>();

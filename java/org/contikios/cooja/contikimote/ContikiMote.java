@@ -35,7 +35,6 @@ import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.Simulation;
@@ -72,7 +71,7 @@ public class ContikiMote extends AbstractWakeupMote<ContikiMoteType, SectionMote
    */
   protected ContikiMote(ContikiMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
     super(moteType, moteType.createInitialMemory(), sim);
-    moteInterfaces = new MoteInterfaceHandler(this);
+    moteInterfaces.init(this);
     for (var intf : moteInterfaces.getInterfaces()) {
       if (intf instanceof PolledBeforeActiveTicks intf2) {
         polledBeforeActive.add(intf2);
