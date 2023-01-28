@@ -270,8 +270,6 @@ public class IOPort extends IOUnit {
             PortListener listener = portListener;
             if (listener != null) {
                 // Any output configured pin (pin-bit = 0) should have 1 here?!
-                //              if (name.equals("1"))
-                //                System.out.println(getName() + " write to IOPort via DIR reg: " + Utils.hex8(data));
                 listener.portWrite(this, out | (~dir) & 0xff);
             }
             break;

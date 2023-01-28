@@ -210,9 +210,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
             if (ramMirrorSegment == null) {
                 ramMirrorSegment = new RAMOffsetSegment(this, config.ramMirrorAddress - config.ramMirrorStart);
             }
-//            System.out.println("Setting RAM mirror segment at: " + Utils.hex(i << 8, 4)
-//                    + " => " + Utils.hex((i << 8) + ramMirrorSegment.getOffset()));
-            memorySegments[i] = ramMirrorSegment;
+          memorySegments[i] = ramMirrorSegment;
         } else if (config.isFlash(i << 8) || config.isInfoMem(i << 8)) {
 //            System.out.println("Setting Flash segment at: " + Utils.hex16(i << 8));
             memorySegments[i] = flashSegment;
@@ -453,12 +451,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
       }
 
     // Before the write!
-//    if (value >= MAX_MEM) {
-//        System.out.println("Writing larger than MAX_MEM to " + r + " value:" + value);
-//        new Throwable().printStackTrace();
-//    }
 
-      RegisterMonitor rwm = regWriteMonitors[r];
+    RegisterMonitor rwm = regWriteMonitors[r];
     if (rwm != null) {
         // TODO Add register access mode
         rwm.notifyWriteBefore(r, value, AccessMode.WORD);
@@ -480,9 +474,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
 //      if (debugInterrupts) System.out.println("Wrote to InterruptEnabled: " + interruptsEnabled + " was: " + oldIE);
 
       if (!oldIE && interruptsEnabled && servicedInterrupt >= 0) {
-//          System.out.println("*** Interrupts enabled while in interrupt : " +
-//                  servicedInterrupt + " PC: $" + getAddressAsString(reg[PC]));
-          /* must handle pending immediately */
+        /* must handle pending immediately */
           handlePendingInterrupts();
       }
 
@@ -580,8 +572,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
     currentDCOFactor = 1.0 * bcs.getMaxDCOFrequency() / frequency;
 
-    /*    System.out.println("*** DCO: MAX:" + bcs.getMaxDCOFrequency() +
-          " current: " + frequency + " DCO_FAC = " + currentDCOFactor);*/
     if (DEBUG)
       log("Set smclkFrq: " + smclkFrq);
     dcoReset();
@@ -616,10 +606,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
       } else {
         TimeEvent te = vTimeEventQueue.popFirst();
         long now = getTime();
-//        if (now > te.time) {
-//          System.out.println("VTimeEvent got delayed by: " + (now - te.time) + " at " +
-//              cycles + " target Time: " + te.time + " class: " + te.getClass().getName());
-//        }
         te.execute(now);
         if (vTimeEventQueue.eventCount > 0) {
           nextVTimeEventCycles = convertVTime(vTimeEventQueue.nextTime);
@@ -1026,8 +1012,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
         wordx20 = (instruction & 0x40) == 0;
 
         instruction = currentSegment.read(pc, AccessMode.WORD, AccessType.EXECUTE);
-        /*System.out.println("*** Extension word!!! " + Utils.hex16(extWord) +
-                "  read the instruction too: " + Utils.hex16(instruction) + " at " + Utils.hex16(pc - 2));*/
     } else {
         extWord = 0;
     }
@@ -1065,9 +1049,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
         op = instruction & 0xf0f0;
         if (!MSP430XArch)
             throw new EmulationException("Executing MSP430X instruction but MCU is not a MSP430X");
-//        System.out.println("Executing MSP430X instruction op:" + Utils.hex16(op) +
-//                " ins:" + Utils.hex16(instruction) + " PC = $" + getAddressAsString(pc - 2));
-        int src;
+      int src;
         /* data is either bit 19-16 or src register */
         int srcData = (instruction & 0x0f00) >> 8;
         int dstData = (instruction & 0x000f);
@@ -1089,9 +1071,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
             writeRegister(PC, pc);
             /* read from address in register */
             src = readRegister(srcData);
-//            System.out.println("Reading $" + getAddressAsString(src) +
-//                    " from register: " + srcData);
-            dst = currentSegment.read(src, mode, AccessType.READ);
+          dst = currentSegment.read(src, mode, AccessType.READ);
 //            System.out.println("Reading from mem: $" + getAddressAsString(dst));
             writeRegister(srcData, src + 4);
 //            System.out.println("*** Writing $" + getAddressAsString(dst) + " to reg: " + dstData);
@@ -1448,10 +1428,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
                           int n = 1 + ((instruction >> 4) & 0x0f);
                           int regNo = instruction & 0x0f;
 
-                          //                  System.out.println("PUSHM " + (type == AccessMode.WORD20 ? "A" : "W") +
-                          //                          " n: " + n + " " + regNo + " at " + Utils.hex16(pcBefore));
-
-                          /* decrease stack pointer and write n times */
+                    /* decrease stack pointer and write n times */
                           for(int i = 0; i < n; i++) {
                                   sp -= size;
                                   cycles += 2;
@@ -1612,9 +1589,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
               }
               zeroCarry = (extWord & EXTWORD_ZC) > 0;
 
-//              if (repeats > 1) {
-//                  System.out.println("*** Repeat " + repeats + " ZeroCarry: " + zeroCarry);
-//              }
           } else if (dst == -1) {
               dst = currentSegment.read(dstAddress, mode, AccessType.READ);
           }
@@ -1970,10 +1944,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
       // **** Perform the read...
       if (srcAddress != -1) {
 
-//        if (srcAddress  > 0xffff) {
-//            System.out.println("SrcAddress is: " + Utils.hex20(srcAddress));
-//        }
-//	srcAddress = srcAddress & 0xffff;
         src = currentSegment.read(srcAddress, mode, AccessType.READ);
 
 //	src = currentSegment.read(srcAddress, word ? AccessMode.WORD : AccessMode.BYTE, AccessType.READ);
@@ -2034,13 +2004,9 @@ public class MSP430Core extends Chip implements MSP430Constants {
               // If tmp == 0 and currenly not the same sign for src & dst
               if (tmp == 0 && ((src ^ dst) & b) != 0) {
                   sr |= OVERFLOW;
-                  //        System.out.println("OVERFLOW - ADD/SUB " + Utils.hex16(src)
-                  //                           + " + " + Utils.hex16(tmpDst));
               }
 
-              //          System.out.println(Utils.hex16(dst) + " [SR=" +
-              //                             Utils.hex16(reg[SR]) + "]");
-              writeRegister(SR, sr);
+            writeRegister(SR, sr);
               write = true;
               break;
           case CMP: // CMP
@@ -2077,11 +2043,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
               break;
           case BIC: // BIC
               // No status reg change
-              //          System.out.println("BIC: =>" + Utils.hex16(dstAddress) + " => "
-              //                             + Utils.hex16(dst) + " AS: " + as +
-              //                             " sReg: " + srcRegister + " => " + src +
-              //                             " dReg: " + dstRegister + " => " + dst);
-              dst = (~src) & dst;
+            dst = (~src) & dst;
 
               write = true;
               updateStatus = false;

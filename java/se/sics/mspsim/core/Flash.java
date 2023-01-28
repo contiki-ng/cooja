@@ -230,9 +230,6 @@ public class Flash extends IOUnit {
       }
       case SMCLK -> {
         finish_msec = ((double) time * freqdiv * 1000) / cpu.smclkFrq;
-      /* if (DEBUG)
-        System.out.println("Flash: Using SMCLK source with f=" + myfreq
-            + " Hz\nFlash: Time required=" + finish_msec + " ms"); */
         cpu.scheduleTimeEventMillis(end_process, finish_msec);
       }
       case MCLK -> {

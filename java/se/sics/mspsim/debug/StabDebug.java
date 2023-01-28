@@ -199,16 +199,6 @@ public class StabDebug implements ELFDebug {
 //            currentLine = stab.desc;
               currentLineAdr = lastAddress + stab.value;
               allAddresses.add(currentLineAdr);
-            /*if (currentLineAdr >= address) {
-              // Finished!!!
-              if (DEBUG) {
-                System.out.println("File: " + currentPath + " " + currentFile);
-                System.out.println("Function: " + currentFunction);
-                System.out.println("Line No: " + currentLine);
-              }
-              return new DebugInfo(currentLine, currentPath, currentFile,
-                  currentFunction);
-            }*/
             }
           }
         }
