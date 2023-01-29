@@ -1010,7 +1010,7 @@ public class Cooja {
   }
 
   /** Returns the external tools settings that differ from default. */
-  public static Properties getDifferingExternalToolsSettings() {
+  private static Properties getDifferingExternalToolsSettings() {
     var differingSettings = new Properties();
     for (var entry : currentExternalToolsSettings.entrySet()) {
       if (!(entry.getKey() instanceof String key && entry.getValue() instanceof String currentSetting)) continue;

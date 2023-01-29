@@ -46,7 +46,7 @@ final class EventQueue {
 
     private final long uuid;
 
-    public Pair(TimeEvent event, long time, long uuid) {
+    Pair(TimeEvent event, long time, long uuid) {
       this.event = event;
       this.time = time;
       this.uuid = uuid;
