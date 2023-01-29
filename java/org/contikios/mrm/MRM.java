@@ -420,28 +420,28 @@ public class MRM extends AbstractRadioMedium {
   static class MRMRadioConnection extends RadioConnection {
     private final HashMap<Radio, Double> signalStrengths = new HashMap<>();
 
-    public MRMRadioConnection(Radio sourceRadio) {
+    MRMRadioConnection(Radio sourceRadio) {
       super(sourceRadio);
     }
 
-    public void addDestination(Radio radio, double signalStrength) {
+    void addDestination(Radio radio, double signalStrength) {
       signalStrengths.put(radio, signalStrength);
       addDestination(radio);
     }
 
-    public void addInterfered(Radio radio, double signalStrength) {
+    void addInterfered(Radio radio, double signalStrength) {
       signalStrengths.put(radio, signalStrength);
       addInterfered(radio);
     }
 
-    public double getDestinationSignalStrength(Radio radio) {
+    double getDestinationSignalStrength(Radio radio) {
         if (signalStrengths.get(radio) == null) {
                 return Double.MIN_VALUE;
         }
       return signalStrengths.get(radio);
     }
 
-    public double getInterferenceSignalStrength(Radio radio) {
+    double getInterferenceSignalStrength(Radio radio) {
         if (signalStrengths.get(radio) == null) {
                 return Double.MIN_VALUE;
         }
