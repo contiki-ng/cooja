@@ -136,11 +136,11 @@ public class ManualPositioner extends Positioner {
   }
 
   static class PositionDialog extends JDialog {
-    public boolean shouldSkipRemainder;
-    public final JFormattedTextField xField;
-    public final JFormattedTextField yField;
-    public final JFormattedTextField zField;
-    public PositionDialog(int mote) {
+    boolean shouldSkipRemainder;
+    final JFormattedTextField xField;
+    final JFormattedTextField yField;
+    final JFormattedTextField zField;
+    PositionDialog(int mote) {
       JButton button;
       JFormattedTextField numberField;
 
