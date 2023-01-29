@@ -36,7 +36,7 @@ import se.sics.mspsim.platform.z1.Z1Node;
 /**
  * @author Fredrik Osterlind, Niclas Finne
  */
-public class Z1Mote extends MspMote {
+class Z1Mote extends MspMote {
     public Z1Mote(MspMoteType moteType, Simulation sim, Z1Node node) throws MoteType.MoteTypeCreationException {
         super(moteType, sim, node);
     }

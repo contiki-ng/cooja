@@ -381,7 +381,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     String to;
     int prefixMatches;
     int locatesFile;
-    public Rule(String from, String to) {
+    Rule(String from, String to) {
       this.from = from;
       this.to = to;
     }
