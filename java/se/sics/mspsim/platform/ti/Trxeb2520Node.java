@@ -26,14 +26,14 @@ public class Trxeb2520Node extends GenericNode implements PortListener, USARTLis
     public static final int CC2520_CHIP_SELECT = (1); /* 3.0 */
     public static final int CC2520_RESET = (1); /* 8.0 */
 
-        final IOPort port1;
-        final IOPort port3;
-        final IOPort port4;
-        final IOPort port5;
-        final IOPort port7;
-        final IOPort port8;
+        private final IOPort port1;
+        private final IOPort port3;
+        private final IOPort port4;
+        private final IOPort port5;
+        private final IOPort port7;
+        private final IOPort port8;
 
-        public final CC2520 radio;
+        private final CC2520 radio;
 
     public static MSP430Config makeChipConfig() {
         return new MSP430f5437Config();

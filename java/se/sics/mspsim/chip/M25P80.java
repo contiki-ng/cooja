@@ -102,7 +102,7 @@ public class M25P80 extends ExternalFlash implements USARTListener, PortListener
       writing = false;
     }};
 
-  protected M25P80(String id, MSP430Core cpu) {
+  M25P80(String id, MSP430Core cpu) {
       super(id, cpu);
   }
 

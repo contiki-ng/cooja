@@ -57,7 +57,7 @@ public class EventQueue {
     addEvent(event);
   }
 
-  public void addEvent(TimeEvent event) {
+  private void addEvent(TimeEvent event) {
     if (event.scheduledIn != null) {
       event.remove();
     }

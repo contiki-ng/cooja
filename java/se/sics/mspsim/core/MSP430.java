@@ -197,9 +197,9 @@ public class MSP430 extends MSP430Core {
   /* this represents the micros time that was "promised" last time */
   /* NOTE: this is a delta compared to "current micros"
    */
-  long lastReturnedMicros;
-  long lastMicrosCycles;
-  boolean microClockReady;
+  private long lastReturnedMicros;
+  private long lastMicrosCycles;
+  private boolean microClockReady;
 
   /* when DCO has changed speed, this method will be called */
   @Override
@@ -212,7 +212,7 @@ public class MSP430 extends MSP430Core {
    * Note: jumpMicros just jump the clock until that time
    * executeMicros also check eventQ, etc. and executes instructions
    */
-  long maxCycles;
+  private long maxCycles;
   public long stepMicros(long jumpMicros, long executeMicros) throws EmulationException {
     if (isRunning()) {
       throw new IllegalStateException("step not possible when CPU is running");

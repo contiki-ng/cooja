@@ -150,7 +150,7 @@ public class DebugUI extends JPanel {
   }
 
   class MyCellRenderer extends JLabel implements ListCellRenderer<DbgInstruction> {
-    public MyCellRenderer() {
+    MyCellRenderer() {
       setOpaque(true);
     }
 

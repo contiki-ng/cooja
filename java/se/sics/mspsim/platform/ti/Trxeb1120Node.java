@@ -23,16 +23,16 @@ public class Trxeb1120Node extends GenericNode implements PortListener, USARTLis
         public static final int ENC28J60_MISO = 0; /* 10.0 */
         public static final int ENC28J60_CHIP_SELECT = 3; /* 10.3 */
 
-  final IOPort port1;
-  final IOPort port3;
-  final IOPort port4;
-  final IOPort port5;
-  final IOPort port7;
-  final IOPort port8;
-  final IOPort port10;
+  private final IOPort port1;
+  private final IOPort port3;
+  private final IOPort port4;
+  private final IOPort port5;
+  private final IOPort port7;
+  private final IOPort port8;
+  private final IOPort port10;
 
-  public final CC1120 radio;
-  public final Enc28J60 enc;
+  private final CC1120 radio;
+  private final Enc28J60 enc;
 
   private final boolean withEnc;
 

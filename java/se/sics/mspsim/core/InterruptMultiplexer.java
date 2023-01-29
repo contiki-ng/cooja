@@ -5,7 +5,7 @@ public class InterruptMultiplexer implements InterruptHandler {
     private final MSP430Core cpu;
     private final int vector;
 
-    int interruptBits;
+    private int interruptBits;
 
     public InterruptMultiplexer(MSP430Core cpu, int vector) {
         this.cpu = cpu;

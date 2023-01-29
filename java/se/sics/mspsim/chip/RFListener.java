@@ -44,7 +44,7 @@ public interface RFListener {
     void receivedByte(byte data);
 
     class Proxy extends ProxySupport<RFListener> implements RFListener {
-        public static final Proxy INSTANCE = new Proxy();
+        static final Proxy INSTANCE = new Proxy();
 
         @Override
         public void receivedByte(byte data) {
