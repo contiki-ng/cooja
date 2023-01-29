@@ -75,10 +75,10 @@ public class ProjectDirectoriesDialog extends JDialog {
 
   private final Cooja gui;
 
-  final JTable table;
+  private final JTable table;
 	private final JTextArea projectInfo = new JTextArea("Extension information:");
 
-  final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
+  private final ArrayList<COOJAProject> currentProjects = new ArrayList<>();
 	private COOJAProject[] returnedProjects;
 
 	/**
@@ -331,7 +331,7 @@ public class ProjectDirectoriesDialog extends JDialog {
     setLocationRelativeTo(Cooja.getTopParentContainer());
 	}
 
-	protected void showProjectInfo(COOJAProject project) {
+	private void showProjectInfo(COOJAProject project) {
 		projectInfo.setText("");
 		if (project.getDescription() != null) {
 			projectInfo.append("-- " + project.getDescription() + " --\n\n");
@@ -393,16 +393,16 @@ public class ProjectDirectoriesDialog extends JDialog {
     }
 	}
 
-	public COOJAProject[] getProjects() {
+	private COOJAProject[] getProjects() {
 		return currentProjects.toArray(new COOJAProject[0]);
 	}
 
-  protected void addProjectDir(COOJAProject project, int index) {
+  private void addProjectDir(COOJAProject project, int index) {
 		currentProjects.add(index, project);
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 	}
 
-  protected void removeProjectDir(COOJAProject project) {
+  private void removeProjectDir(COOJAProject project) {
 		currentProjects.remove(project);
 		((AbstractTableModel)table.getModel()).fireTableDataChanged();
 		repaint();
