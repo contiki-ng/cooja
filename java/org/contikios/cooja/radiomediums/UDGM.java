@@ -170,7 +170,7 @@ public class UDGM extends AbstractRadioMedium {
   }
 
   @Override
-  public RadioConnection createConnections(Radio sender) {
+  protected RadioConnection createConnections(Radio sender) {
     RadioConnection newConnection = new RadioConnection(sender);
 
     /* Fail radio transmission randomly - no radios will hear this transmission */
@@ -285,7 +285,7 @@ public class UDGM extends AbstractRadioMedium {
   }
 
   @Override
-  public void updateSignalStrengths() {
+  protected void updateSignalStrengths() {
     /* Override: uses distance as signal strength factor */
     
     /* Reset signal strengths */

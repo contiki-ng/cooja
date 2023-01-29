@@ -145,7 +145,7 @@ public class MRM extends AbstractRadioMedium {
   }
   
   @Override
-  public MRMRadioConnection createConnections(final Radio sender) {
+  protected MRMRadioConnection createConnections(final Radio sender) {
     MRMRadioConnection newConnection = new MRMRadioConnection(sender);
 
     /* TODO Cache potential destination in DGRM */
@@ -274,7 +274,7 @@ public class MRM extends AbstractRadioMedium {
   }
 
   @Override
-  public void updateSignalStrengths() {
+  protected void updateSignalStrengths() {
 
     /* Reset: Background noise */
         double background = 

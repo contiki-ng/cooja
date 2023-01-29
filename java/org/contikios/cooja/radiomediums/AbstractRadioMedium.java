@@ -298,14 +298,13 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	 * @param radio Source radio
 	 * @return New connection
 	 */
-	abstract public RadioConnection createConnections(Radio radio);
+  protected abstract RadioConnection createConnections(Radio radio);
 	
 	/**
 	 * Updates all radio interfaces' signal strengths according to
 	 * the current active connections.
 	 */
-	public void updateSignalStrengths() {
-		
+  protected void updateSignalStrengths() {
 		/* Reset signal strengths */
 		for (Radio radio : getRegisteredRadios()) {
 			radio.setCurrentSignalStrength(getBaseRssi(radio));
@@ -462,7 +461,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	* @param rssi
 	*          The minimum RSSI value to set when sending
 	*/
-	public void setSendRssi(Radio radio, double rssi) {
+  private void setSendRssi(Radio radio, double rssi) {
     simulation.invokeSimulationThread(() -> sendRssi.put(radio, rssi));
 	}
 	
