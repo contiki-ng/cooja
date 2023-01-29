@@ -206,7 +206,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     execute(time, EXECUTE_DURATION_US);
   }
 
-  public void execute(long t, int duration) {
+  void execute(long t, int duration) {
     var clock = moteInterfaces.getClock();
     // Wait until mote boots.
     if (!booted && clock.getTime() < 0) {
@@ -278,7 +278,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     return commandHandler.executeCommand(cmd, context);
   }
 
-  public String executeCLICommand(String cmd) {
+  String executeCLICommand(String cmd) {
     final StringBuilder sb = new StringBuilder();
     LineListener ll = line -> sb.append(line).append("\n");
     PrintStream po = new PrintStream(new LineOutputStream(ll));
