@@ -278,7 +278,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
   public void startPlugin() {
   }
 
-  public boolean setLinkFile(File source) {
+  private boolean setLinkFile(File source) {
     String script = StringUtils.loadFromFile(source);
     if (script == null) {
       logger.error("Could not read " + source);

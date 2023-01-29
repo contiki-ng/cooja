@@ -791,18 +791,18 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     private WatchpointMote watchpointMote; /* XXX */
     private WatchpointListener watchpointListener; /* XXX */
 
-    public MoteObservation(Mote mote, Radio radio, EventTriggers<RadioEvent, Radio> triggers) {
+    MoteObservation(Mote mote, Radio radio, EventTriggers<RadioEvent, Radio> triggers) {
       this.mote = mote;
       radioEventTriggers = triggers;
     }
 
-    public MoteObservation(Mote mote, EventTriggers<EventTriggers.Update, Mote> triggers) {
+    MoteObservation(Mote mote, EventTriggers<EventTriggers.Update, Mote> triggers) {
       this.mote = mote;
       moteEventTriggers = triggers;
     }
 
     /* XXX Special case, should be generalized */
-    public MoteObservation(Mote mote, WatchpointMote watchpointMote, WatchpointListener listener) {
+    MoteObservation(Mote mote, WatchpointMote watchpointMote, WatchpointListener listener) {
       this.mote = mote;
       this.watchpointMote = watchpointMote;
       this.watchpointListener = listener;

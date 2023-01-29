@@ -307,7 +307,7 @@ public class PowerTracker implements Plugin {
     private Radio radio;
 
     private final BiConsumer<Radio.RadioEvent, Radio> trigger = (event, radio) -> update();
-    public MoteTracker(Mote mote) {
+    MoteTracker(Mote mote) {
       this.simulation = mote.getSimulation();
       this.mote = mote;
       this.radio = mote.getInterfaces().getRadio();
@@ -326,7 +326,7 @@ public class PowerTracker implements Plugin {
       radio.getRadioEventTriggers().addTrigger(this, trigger);
     }
 
-    public void update() {
+    void update() {
       long now = simulation.getSimulationTime();
 
       accumulateDuration(now - lastUpdateTime);
@@ -361,43 +361,43 @@ public class PowerTracker implements Plugin {
       lastUpdateTime = now;
     }
 
-    protected void accumulateDuration(long t) {
+    void accumulateDuration(long t) {
       duration += t;
     }
-    protected void accumulateRadioOn(long t) {
+    void accumulateRadioOn(long t) {
       radioOn += t;
     }
-    protected void accumulateRadioTx(long t) {
+    void accumulateRadioTx(long t) {
       radioTx += t;
     }
-    protected void accumulateRadioRx(long t) {
+    void accumulateRadioRx(long t) {
       radioRx += t;
     }
-    protected void accumulateRadioIntefered(long t) {
+    void accumulateRadioIntefered(long t) {
       radioInterfered += t;
     }
 
-    public double getRadioOnRatio() {
+    double getRadioOnRatio() {
       return 1.0*radioOn/duration;
     }
 
-    public double getRadioTxRatio() {
+    double getRadioTxRatio() {
       return 1.0*radioTx/duration;
     }
 
-    public double getRadioInterferedRatio() {
+    double getRadioInterferedRatio() {
       return 1.0*radioInterfered/duration;
     }
 
-    public double getRadioRxRatio() {
+    double getRadioRxRatio() {
       return 1.0*radioRx/duration;
     }
 
-    public Mote getMote() {
+    Mote getMote() {
       return mote;
     }
 
-    public void dispose() {
+    void dispose() {
       radio.getRadioEventTriggers().removeTrigger(this, trigger);
       radio = null;
       mote = null;
@@ -407,7 +407,7 @@ public class PowerTracker implements Plugin {
     public String toString() {
       return toString(true, true);
     }
-    public String toString(boolean radioHW, boolean radioRXTX) {
+    String toString(boolean radioHW, boolean radioRXTX) {
       StringBuilder sb = new StringBuilder();
       String moteString = mote.toString().replace(' ', '_');
 
