@@ -202,7 +202,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   private double jumpError;
 
   @Override
-  public void execute(long time) {
+  protected void execute(long time) {
     execute(time, EXECUTE_DURATION_US);
   }
 

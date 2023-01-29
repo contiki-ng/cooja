@@ -101,7 +101,7 @@ public class ContikiMote extends AbstractWakeupMote<ContikiMoteType, SectionMote
    * @param simTime Current simulation time
    */
   @Override
-  public void execute(long simTime) {
+  protected void execute(long simTime) {
     // (Jan 2023, Java 17/IntelliJ): Keep the interface actions in explicit for-loops,
     // so costs are clearly attributed in performance profiles.
     for (var moteInterface : polledBeforeActive) {
