@@ -32,8 +32,6 @@
  */
 package se.sics.mspsim.core;
 
-import java.util.Arrays;
-
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.Memory.AccessMode;
 import se.sics.mspsim.util.Utils;
