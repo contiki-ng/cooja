@@ -53,7 +53,7 @@ public class IPUtils {
    * @param builder Buffer to append to
    * @param ip byte array holding IPv6 address information
    */
-  public static void getCompressedIPv6AddressString(StringBuilder builder, byte[] ip) {
+  private static void getCompressedIPv6AddressString(StringBuilder builder, byte[] ip) {
     int startMax = 0, startCurr = 0, zeroMax = 0, zeroCurr = 0;
 
     if (ip.length != 16) {
