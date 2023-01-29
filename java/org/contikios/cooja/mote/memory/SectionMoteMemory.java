@@ -269,12 +269,12 @@ public class SectionMoteMemory implements MemoryInterface {
   }
 
   private class PolledMemorySegments {
-    public final SegmentMonitor mm;
-    public final long address;
-    public final int size;
+    final SegmentMonitor mm;
+    final long address;
+    final int size;
     private byte[] oldMem;
 
-    public PolledMemorySegments(SegmentMonitor mm, long address, int size) {
+    PolledMemorySegments(SegmentMonitor mm, long address, int size) {
       this.mm = mm;
       this.address = address;
       this.size = size;

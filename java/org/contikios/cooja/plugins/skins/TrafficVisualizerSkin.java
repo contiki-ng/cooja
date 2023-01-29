@@ -210,7 +210,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
      * @return true if max age was not reached yet, false, if max age was
      * reached
      */
-    public boolean increaseAge() {
+    boolean increaseAge() {
       if (age < MAX_AGE) {
         age++;
         return true;
@@ -224,7 +224,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
      *
      * @return Relative age (0.0 - 1.0)
      */
-    public float getAge() {
+    float getAge() {
       return (float) age / (float) MAX_AGE;
     }
 
@@ -233,7 +233,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
      *
      * @return radio connection
      */
-    public RadioConnection getConnection() {
+    RadioConnection getConnection() {
       return conn;
     }
   }

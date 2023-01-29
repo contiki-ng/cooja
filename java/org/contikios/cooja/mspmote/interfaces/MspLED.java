@@ -129,7 +129,7 @@ public class MspLED extends LED {
         private static final int D = 25;
         private static final int S = D + 15;
 
-        public LedsPanel() {
+        LedsPanel() {
             super(null);
 
             Dimension d = new Dimension(5 + S * (leds.getLedsCount() - 1) + D + 5, 5 + D + 5);

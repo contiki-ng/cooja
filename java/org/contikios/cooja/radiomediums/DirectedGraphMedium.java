@@ -141,7 +141,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
 
   
   @Override
-  public void updateSignalStrengths() {
+  protected void updateSignalStrengths() {
 
     /* Reset signal strengths (Default: SS_NOTHING) */
     for (Radio radio : getRegisteredRadios()) {
@@ -235,7 +235,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
   }
 
   @Override
-  public RadioConnection createConnections(Radio source) {
+  protected RadioConnection createConnections(Radio source) {
     if (edgesDirty) {
       analyzeEdges();
     }

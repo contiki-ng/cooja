@@ -50,12 +50,12 @@ public class SilentRadioMedium extends AbstractRadioMedium {
   }
 
   @Override
-  public RadioConnection createConnections(Radio radio) {
+  protected RadioConnection createConnections(Radio radio) {
     return null;
   }
   
   @Override
-  public void updateSignalStrengths() {
+  protected void updateSignalStrengths() {
   }
   
 

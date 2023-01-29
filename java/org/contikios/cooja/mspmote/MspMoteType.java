@@ -142,7 +142,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return -1;
   }
 
-  protected Map<String, Symbol> getEntries(GenericNode node) {
+  Map<String, Symbol> getEntries(GenericNode node) {
     if (Cooja.isVisualized()) {
       EventQueue.invokeLater(() -> Cooja.setProgressMessage("Loading " + getContikiFirmwareFile().getName()));
     }
@@ -164,7 +164,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return elf;
   }
 
-  public HashMap<File, HashMap<Integer, Integer>> getFirmwareDebugInfo()
+  private HashMap<File, HashMap<Integer, Integer>> getFirmwareDebugInfo()
   throws IOException {
     if (debuggingInfo == null) {
       debuggingInfo = getFirmwareDebugInfo(getELF());
@@ -172,7 +172,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return debuggingInfo;
   }
 
-  public static HashMap<File, HashMap<Integer, Integer>> getFirmwareDebugInfo(ELF elf) {
+  private static HashMap<File, HashMap<Integer, Integer>> getFirmwareDebugInfo(ELF elf) {
     HashMap<File, HashMap<Integer, Integer>> fileToLineHash = new HashMap<>();
 
     if (elf.getDebug() == null) {

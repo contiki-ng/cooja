@@ -216,7 +216,7 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
    * 
    * @param time Simulation time.
    */
-  public abstract void execute(long time);
+  protected abstract void execute(long time);
 
   /**
    * Execute mote software as soon as possible.

@@ -220,7 +220,7 @@ public class Timer extends IOUnit {
       final int interruptVector;
       final int index;
 
-      public CCR(long time, String name, int vector, int index) {
+      CCR(long time, String name, int vector, int index) {
           super(time, name);
           interruptVector = vector;
           this.index = index;
@@ -282,7 +282,7 @@ public class Timer extends IOUnit {
       }
 
       /* this method only takes care of the interrupt triggering! */
-      public void triggerInterrupt(long cycles) {
+      void triggerInterrupt(long cycles) {
           /* trigger if trigger should be... */
           if ((tcctl & CC_TRIGGER_INT) == CC_TRIGGER_INT) {
               if (index == 0) {
@@ -299,7 +299,7 @@ public class Timer extends IOUnit {
           }
       }
 
-      public void updateCaptures(long cycles) {
+      void updateCaptures(long cycles) {
           int divisor = 1;
           int frqClk = 1;
           /* used to set next capture independent of counter when another clock is source
@@ -787,7 +787,7 @@ public class Timer extends IOUnit {
       //calculateNextEventTime(cycles);
     }
   }
-  void updateCyclesMultiplicator() {
+  private void updateCyclesMultiplicator() {
     cyclesMultiplicator = inputDivider;
     if (clockSource == SRC_ACLK) {
       cyclesMultiplicator = (cyclesMultiplicator * cpu.smclkFrq) /
@@ -883,7 +883,7 @@ public class Timer extends IOUnit {
    return counter;
   }
 
-  public static String getSourceName(int source) {
+  private static String getSourceName(int source) {
     switch (source) {
     case SRC_ACLK:
       return "ACLK";

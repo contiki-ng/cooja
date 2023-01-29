@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.sics.mspsim.config.MSP430f1611Config;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.platform.sky.CC2420Node;
 

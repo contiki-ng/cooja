@@ -91,7 +91,7 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
     }
     
     @Override
-    public void execute(long time) {
+    protected void execute(long time) {
       if (radio == null) {
         radio = (ApplicationRadio) getInterfaces().getRadio();
       }
