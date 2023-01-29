@@ -66,60 +66,63 @@ import se.sics.mspsim.util.ArgumentManager;
  */
 public class Main {
 
-  public static GenericNode createNode(String className) {
+  public static GenericNode createNode(String className, String firmwareFile) throws IOException {
     return switch (className) { // Sorted alphabetically.
       case "se.sics.mspsim.platform.esb.ESBNode" -> {
-        var cpu = ESBNode.makeCPU(ESBNode.makeChipConfig());
+        var cpu = ESBNode.makeCPU(ESBNode.makeChipConfig(), firmwareFile);
         yield new ESBNode(cpu);
       }
       case "se.sics.mspsim.platform.jcreate.JCreateNode" -> {
-        var cpu = JCreateNode.makeCPU(JCreateNode.makeChipConfig());
+        var cpu = JCreateNode.makeCPU(JCreateNode.makeChipConfig(), firmwareFile);
         yield new JCreateNode(cpu, new M25P80(cpu));
       }
       case "se.sics.mspsim.platform.sentillausb.SentillaUSBNode" -> {
-        var cpu = SentillaUSBNode.makeCPU(SentillaUSBNode.makeChipConfig());
+        var cpu = SentillaUSBNode.makeCPU(SentillaUSBNode.makeChipConfig(), firmwareFile);
         yield new SentillaUSBNode(cpu, new M25P80(cpu));
       }
-      case "se.sics.mspsim.platform.ti.CC430Node" -> new CC430Node();
+      case "se.sics.mspsim.platform.ti.CC430Node" -> {
+        var cpu = CC430Node.makeCPU(CC430Node.makeChipConfig(), firmwareFile);
+        yield new CC430Node(cpu);
+      }
       case "se.sics.mspsim.platform.ti.Exp1101Node" -> {
-        var cpu = Exp1101Node.makeCPU(Exp1101Node.makeChipConfig());
+        var cpu = Exp1101Node.makeCPU(Exp1101Node.makeChipConfig(), firmwareFile);
         yield new Exp1101Node(cpu);
       }
       case "se.sics.mspsim.platform.ti.Exp1120Node" -> {
-        var cpu = Exp1120Node.makeCPU(Exp1120Node.makeChipConfig());
+        var cpu = Exp1120Node.makeCPU(Exp1120Node.makeChipConfig(), firmwareFile);
         yield new Exp1120Node(cpu);
       }
       case "se.sics.mspsim.platform.ti.Exp5438Node" -> {
-        var cpu = Exp5438Node.makeCPU(Exp5438Node.makeChipConfig());
+        var cpu = Exp5438Node.makeCPU(Exp5438Node.makeChipConfig(), firmwareFile);
         yield new Exp5438Node(cpu);
       }
       // Default to the Trxeb1120 node without ethernet.
       case "se.sics.mspsim.platform.ti.Trxeb1120Node" -> {
-        var cpu = Trxeb1120Node.makeCPU(Trxeb1120Node.makeChipConfig());
+        var cpu = Trxeb1120Node.makeCPU(Trxeb1120Node.makeChipConfig(), firmwareFile);
         yield new Trxeb1120Node(false, cpu);
       }
       case "se.sics.mspsim.platform.ti.Trxeb2520Node" -> {
-        var cpu = Trxeb2520Node.makeCPU(Trxeb2520Node.makeChipConfig());
+        var cpu = Trxeb2520Node.makeCPU(Trxeb2520Node.makeChipConfig(), firmwareFile);
         yield new Trxeb2520Node(cpu);
       }
       case "se.sics.mspsim.platform.sky.SkyNode" -> {
-        var cpu = SkyNode.makeCPU(SkyNode.makeChipConfig());
+        var cpu = SkyNode.makeCPU(SkyNode.makeChipConfig(), firmwareFile);
         yield new SkyNode(cpu, new M25P80(cpu));
       }
       case "se.sics.mspsim.platform.sky.TelosNode" -> {
-        var cpu = TelosNode.makeCPU(TelosNode.makeChipConfig());
+        var cpu = TelosNode.makeCPU(TelosNode.makeChipConfig(), firmwareFile);
         yield new TelosNode(cpu, new AT45DB(cpu));
       }
       case "se.sics.mspsim.platform.tyndall.TyndallNode" -> {
-        var cpu = TyndallNode.makeCPU(TyndallNode.makeChipConfig());
+        var cpu = TyndallNode.makeCPU(TyndallNode.makeChipConfig(), firmwareFile);
         yield new TyndallNode(cpu);
       }
       case "se.sics.mspsim.platform.wismote.WismoteNode" -> {
-        var cpu = WismoteNode.makeCPU(WismoteNode.makeChipConfig());
+        var cpu = WismoteNode.makeCPU(WismoteNode.makeChipConfig(), firmwareFile);
         yield new WismoteNode(cpu);
       }
       case "se.sics.mspsim.platform.z1.Z1Node" -> {
-        var cpu = Z1Node.makeCPU(Z1Node.makeChipConfig());
+        var cpu = Z1Node.makeCPU(Z1Node.makeChipConfig(), firmwareFile);
         yield new Z1Node(cpu, new M25P80(cpu));
       }
       default -> {
@@ -188,7 +191,7 @@ public class Main {
       }
       nodeType = getNodeTypeByPlatform(platform);
     }
-    var node = createNode(nodeType);
+    var node = createNode(nodeType, config.getArguments()[0]);
     if (node == null) {
       System.err.println("MSPSim does not currently support the platform '" + nodeType + "'.");
       System.exit(1);

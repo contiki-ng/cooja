@@ -79,8 +79,16 @@ public abstract class GenericNode extends Chip implements Runnable {
   protected String firmwareFile;
   protected final OperatingModeStatistics stats;
 
-  public static MSP430 makeCPU(MSP430Config config) {
-    return new MSP430(config);
+  public static MSP430 makeCPU(MSP430Config config, String firmwareFile) throws IOException {
+    ELF elf = null;
+    int[] memory;
+    if (firmwareFile.endsWith("ihex")) { // IHEX Reading.
+      memory = IHexReader.readFile(firmwareFile, config.maxMem);
+    } else {
+      elf = ELF.readELF(firmwareFile);
+      memory = elf.loadPrograms(config.maxMem);
+    }
+    return new MSP430(config, memory, elf);
   }
 
   public GenericNode(String id, MSP430 cpu) {
@@ -132,14 +140,6 @@ public abstract class GenericNode extends Chip implements Runnable {
       if (fp.exists()) {
         config.setProperty("autorun", fp.getAbsolutePath());
       }
-    }
-
-    if (firmwareFile.endsWith("ihex")) {
-      // IHEX Reading
-      int[] memory = cpu.memory;
-      IHexReader.readFile(memory, firmwareFile);
-    } else {
-      loadFirmware(ELF.readELF(firmwareFile));
     }
     config.setProperty("firmwareFile", firmwareFile);
 
@@ -286,18 +286,5 @@ public abstract class GenericNode extends Chip implements Runnable {
     if (!cpu.isRunning()) {
       cpu.stepInstructions(nr);
     }
-  }
-
-  public ELF loadFirmware(ELF elf) {
-    if (cpu.isRunning()) {
-        stop();
-    }
-    elf.loadPrograms(cpu.memory, cpu.MAX_MEM);
-    MapTable map = elf.getMap();
-    cpu.getDisAsm().setMap(map);
-    cpu.setMap(map);
-    registry.registerComponent("elf", elf);
-    registry.registerComponent("mapTable", map);
-    return elf;
   }
 }

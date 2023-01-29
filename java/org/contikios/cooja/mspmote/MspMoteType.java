@@ -142,18 +142,11 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return -1;
   }
 
-  protected Map<String, Symbol> getEntries(GenericNode node) throws MoteTypeCreationException {
+  protected Map<String, Symbol> getEntries(GenericNode node) {
     if (Cooja.isVisualized()) {
       EventQueue.invokeLater(() -> Cooja.setProgressMessage("Loading " + getContikiFirmwareFile().getName()));
     }
-    ELF elf;
-    try {
-      elf = getELF();
-    } catch (Exception e) {
-      logger.error("Error when reading firmware:", e);
-      throw new MoteTypeCreationException("Error when reading firmware: " + e.getMessage());
-    }
-    node.loadFirmware(elf);
+    var elf = (ELF) node.getRegistry().getComponent("elf");
     var vars = new HashMap<String, Symbol>();
     for (var entry : elf.getMap().getAllEntries()) {
       if (entry.getType() != MapEntry.TYPE.variable) {

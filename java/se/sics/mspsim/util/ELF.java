@@ -281,7 +281,8 @@ public class ELF {
     }
   }
 
-  public int[] loadPrograms(int[] memory, int size) {
+  public int[] loadPrograms(int size) {
+    var memory = new int[size];
     for (int i = 0, n = phnum; i < n; i++) {
       // paddr or vaddr???
       loadBytes(memory, programs[i].offset, programs[i].paddr,

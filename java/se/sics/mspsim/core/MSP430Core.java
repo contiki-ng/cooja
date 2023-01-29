@@ -131,7 +131,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
   final ComponentRegistry registry;
   Profiler profiler;
 
-  public MSP430Core(MSP430Config config) {
+  public MSP430Core(MSP430Config config, int[] mem) {
     super("MSP430", "MSP430 Core", null);
     var registry = new ComponentRegistry(
             new ComponentEntry("cpu", this),
@@ -141,7 +141,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
     MAX_MEM = config.maxMem;
     MSP430XArch = config.MSP430XArch;
 
-    memory = new int[MAX_MEM];
+    memory = mem;
     memorySegments = new Memory[MAX_MEM >> 8];
 
     flash = new Flash(this, memory,

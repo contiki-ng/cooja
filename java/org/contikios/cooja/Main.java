@@ -48,6 +48,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.util.ArgumentManager;
 
 /**
@@ -313,8 +314,14 @@ class Main {
       Cooja.go(cfg, simConfigs);
     } else { // Start MSPSim.
       var config = new ArgumentManager(options.simulationFiles.toArray(new String[0]));
-      var node = createNode(Objects.requireNonNullElseGet(config.getProperty("nodeType"), () ->
-              getNodeTypeByPlatform(options.mspSimPlatform)));
+      GenericNode node = null;
+      try {
+        node = createNode(Objects.requireNonNullElseGet(config.getProperty("nodeType"), () ->
+                getNodeTypeByPlatform(options.mspSimPlatform)), options.simulationFiles.get(0));
+      } catch (IOException e) {
+        System.err.println("IOException from createNode: " + e.getMessage());
+        System.exit(1);
+      }
       if (node == null) {
         System.err.println("MSPSim does not currently support the platform '" + options.mspSimPlatform + "'.");
         System.exit(1);
