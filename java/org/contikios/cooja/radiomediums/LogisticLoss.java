@@ -556,7 +556,7 @@ public class LogisticLoss extends AbstractRadioMedium {
         private final int x;
         private final int y;
 
-        public Index(int a, int b) {
+        Index(int a, int b) {
             if(a <= b) {
                 this.x = a;
                 this.y = b;
@@ -590,11 +590,11 @@ public class LogisticLoss extends AbstractRadioMedium {
         /* The current value of the time-varying */
         private double timeVariationPlDb;
 
-        public TimeVaryingEdge() {
+        TimeVaryingEdge() {
             timeVariationPlDb = 0.0;
         }
 
-        public void evolve() {
+        void evolve() {
             /* evolve the value */
             timeVariationPlDb += random.nextDouble() - 0.5;
             /* bound the value */
@@ -605,7 +605,7 @@ public class LogisticLoss extends AbstractRadioMedium {
             }
         }
 
-        public double getPL() {
+        double getPL() {
             return timeVariationPlDb;
         }
     }
