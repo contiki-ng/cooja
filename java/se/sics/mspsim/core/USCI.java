@@ -194,10 +194,6 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
   }
 
   private void setBitIFG(int bits) {
-//    if ((bits) > 0) {
-//        System.out.println(getName() + " Set utxifg = " + utxifg +
-//                " sfrA: " + sfrAddress + " bits: " + bits);
-//    }
     if (sfr != null) {
         sfr.setBitIFG(sfrAddress, bits);
 //        System.out.println("SFR =>" + sfr.getIFG(sfrAddress));
@@ -213,10 +209,7 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
   }
 
   private void clrBitIFG(int bits) {
-//      if ((bits & utxifg) > 0) {
-//          System.out.println(getName() + " Clear utxifg");
-//      }
-      if (sfr != null) {
+    if (sfr != null) {
           sfr.clrBitIFG(sfrAddress, bits);
       } else {
           memory[ifgAddress] &= ~bits;
@@ -255,8 +248,6 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
     address = address - offset;
 
     // Indicate ready to write!!! - this should not be done here...
-//    System.out.println(">>>> Write to " + getName() + " at " +
-//            address + " = " + data);
     switch (address) {
     case UAxCTL0:
     case UBxCTL0:
@@ -340,8 +331,6 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
           return memory[address];
       }
     address = address - offset;
-//    System.out.println(">>>>> Read from " + getName() + " at " +
-//            address);
 
     switch (address) {
     case UAxCTL0:

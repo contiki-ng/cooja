@@ -135,20 +135,7 @@ public class CommandParser {
             quote = c;
           }
           break;
-//        case '#':
-//          if (!handleRedirect) {
-//            // No redirect handling. Process as normal character.
-//            if (state == TEXT) {
-//              index = i;
-//              state = ARG;
-//            }
-//          } else if (state == TEXT && redirectCommand != null && redirectFile == args.size()) {
-//            redirectCommand += '#';
-//          } else if (state != QUOTE) {
-//            throw new IllegalArgumentException("illegal character '#'");
-//          }
-//          break;
-        case '>':
+          case '>':
           if (!handleRedirect) {
             // No redirect handling. Process as normal character.
             if (state == TEXT) {

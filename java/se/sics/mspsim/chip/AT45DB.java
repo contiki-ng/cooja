@@ -150,9 +150,6 @@ public class AT45DB extends ExternalFlash implements USARTListener {
       int buf_num;
 
       if (chipSelect) {
-        //if (DEBUG) {
-        //  log("byte received: " + data);
-        //}
 
         switch(state) {
 
@@ -274,9 +271,6 @@ public class AT45DB extends ExternalFlash implements USARTListener {
     }
 
     private int readBuffer(int num, int address) {
-      //if(DEBUG) {
-      //  log("Reading RAM Buffer" + num + " Address: " + Integer.toHexString(address));
-      //}
       if(num == 1)
         return buffer1[address & 0x1ff];
       else
@@ -284,9 +278,6 @@ public class AT45DB extends ExternalFlash implements USARTListener {
     }
 
     private void writeBuffer(int num, int address, int data) {
-      //if(DEBUG) {
-      //	  log("Writing RAM Buffer" + num + " Address: " + Integer.toHexString(address) + " Data: " + data);
-      //}
       if(num == 1)
         buffer1[address & 0x1ff] = (byte)data;
       else

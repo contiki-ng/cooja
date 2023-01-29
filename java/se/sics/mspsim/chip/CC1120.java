@@ -568,8 +568,6 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 source.byteReceived(getMarcstate());
         }
         int setReg(int address, int data, boolean extended) {
-                /*System.err.println(String.format("setReg(0x%02x, %s) 0x%02x", address,
-                                extended ? "extended" : "normal", data));*/
 
                 switch (address) {
                 case CC1120_TXFIFO:
@@ -684,10 +682,6 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 }
 
                 if (address != CC1120.CC1120_MARCSTATE) {
-                        /*System.out.println(String.format("getReg(0x%02x, %s) 0x%02x",
-                                        address, extended ? "extended" : "normal",
-                                                        extended ? extendedRegisters[address]
-                                                                        : registers[address]));*/
                 }
 
                 if (extended) {

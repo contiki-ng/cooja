@@ -82,9 +82,6 @@ public class CC2520SPI {
 //                    int sdata[] = spiData.getSPIData();
                     if (len == 2) {
                         cAdr = adr.getValue(spiData);
-//                        System.out.println("SPI BitValue: [" + adr.startBit + " - " +
-//                                adr.endBit + "] mask:" + adr.firstMask);
-//                        System.out.printf("SPI Data: %02x %02x  => adr:%x\n", sdata[0], sdata[1], cAdr);
                     } else if (len > 2){
                         cc2520.writeMemory(cAdr, data);
                         cAdr = (cAdr + 1) & 0x3ff;

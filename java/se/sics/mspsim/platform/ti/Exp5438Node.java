@@ -93,8 +93,6 @@ public class Exp5438Node extends GenericNode implements PortListener, USARTListe
         }
         if (source == port1) {
             radio.setVRegOn((data & CC2420_VREG) != 0);
-            //System.out.println("Red led: " + ((data & LEDS_CONF_RED) > 0));
-            //System.out.println("Yellow led: " + ((data & LEDS_CONF_YELLOW) > 0));
         }
     }
 

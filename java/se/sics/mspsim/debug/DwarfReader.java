@@ -160,8 +160,6 @@ public class DwarfReader implements ELFDebug {
                 sec.readElf8();
             }
 
-            //        pos = pos + 15 + opcodeBase - 1;
-            //        System.out.println("Line pos = " + pos + " sec-pos = " + sec.getPosition());
             if (DEBUG) System.out.println("Line --- include files ---");
             ArrayList<String> directories = new ArrayList<>();
             directories.add("./");
