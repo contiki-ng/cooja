@@ -314,7 +314,7 @@ public class DGRMConfigurator extends VisPlugin {
 	static final int INDEX_RSSI_MEDIAN = 6;
 	static final int INDEX_RSSI_MIN = 7;
 	static final int INDEX_RSSI_MAX = 8;
-	public static DirectedGraphMedium.Edge[] parseDGRMLinksFile(File file, Simulation simulation) {
+	private static DirectedGraphMedium.Edge[] parseDGRMLinksFile(File file, Simulation simulation) {
 		String fileContents = StringUtils.loadFromFile(file);
 		ArrayList<DirectedGraphMedium.Edge> edges = new ArrayList<>();
 
@@ -357,7 +357,7 @@ public class DGRMConfigurator extends VisPlugin {
 		return edges.toArray(new DirectedGraphMedium.Edge[0]);
 	}
 
-  final AbstractTableModel model = new AbstractTableModel() {
+  private final AbstractTableModel model = new AbstractTableModel() {
     @Override
     public String getColumnName(int column) {
       if (column < 0 || column >= COLUMN_NAMES.length) {
