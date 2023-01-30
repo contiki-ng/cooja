@@ -30,13 +30,17 @@
 
 package org.contikios.cooja.interfaces;
 
+import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.jdom2.Element;
-
+import java.util.LinkedHashMap;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
+import org.jdom2.Element;
 
 /**
  * A MoteID represents a mote ID number. An implementation should notify all
@@ -45,20 +49,39 @@ import org.contikios.cooja.MoteInterface;
  * @author Fredrik Osterlind
  */
 @ClassDescription("ID")
-public interface MoteID extends MoteInterface {
+public abstract class MoteID<M extends Mote> implements MoteInterface {
+  protected final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
+  protected final M mote;
+  protected int moteID = -1;
+
+  protected MoteID(M mote) {
+    this.mote = mote;
+  }
+
   /**
    * @return Current mote ID number
    */
-  int getMoteID();
-  
+  public int getMoteID() {
+    return moteID;
+  }
+
   /**
    * Sets mote ID to given number.
    * @param id New mote ID number
    */
-  void setMoteID(int id);
+  public void setMoteID(int id) {
+    moteID = id;
+    if (Cooja.isVisualized()) {
+      EventQueue.invokeLater(() -> {
+        for (var label : labels.values()) {
+          label.setText("Mote ID: " + id);
+        }
+      });
+    }
+  }
   
   @Override
-  default Collection<Element> getConfigXML() {
+  public Collection<Element> getConfigXML() {
     ArrayList<Element> config = new ArrayList<>();
     Element element = new Element("id");
     element.setText(Integer.toString(getMoteID()));
@@ -67,12 +90,26 @@ public interface MoteID extends MoteInterface {
   }
 
   @Override
-  default void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
+  public void setConfigXML(Collection<Element> configXML, boolean visAvailable) {
     for (Element element : configXML) {
       if (element.getName().equals("id")) {
         setMoteID(Integer.parseInt(element.getText()));
         break;
       }
     }
+  }
+
+  @Override
+  public JPanel getInterfaceVisualizer() {
+    var panel = new JPanel();
+    final var idLabel = new JLabel("Mote ID: " + getMoteID());
+    panel.add(idLabel);
+    labels.put(panel, idLabel);
+    return panel;
+  }
+
+  @Override
+  public void releaseInterfaceVisualizer(JPanel panel) {
+    labels.remove(panel);
   }
 }
