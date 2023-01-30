@@ -75,7 +75,7 @@ public class CodeUI extends JPanel {
 
   private final JEditorPane codeEditor;
   private final HashMap<Integer, Integer> codeEditorLines = new HashMap<>();
-  protected File displayedFile;
+  private File displayedFile;
 
   private static final HighlightPainter CURRENT_LINE_MARKER = new Markers.SimpleMarker(Color.ORANGE);
   private static final HighlightPainter SELECTED_LINE_MARKER = new Markers.SimpleMarker(Color.GREEN);

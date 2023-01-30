@@ -268,7 +268,7 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
 //    return 31;
   }
 
-  double currentSignalStrength;
+  private double currentSignalStrength;
 
   /**
    * Last 8 received signal strengths

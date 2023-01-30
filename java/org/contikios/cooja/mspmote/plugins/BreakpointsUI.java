@@ -59,7 +59,7 @@ import org.contikios.cooja.WatchpointMote;
  * 
  * @author Fredrik Osterlind
  */
-public class BreakpointsUI extends JPanel {
+class BreakpointsUI extends JPanel {
   private static final int COLUMN_ADDRESS = 0;
   private static final int COLUMN_FILELINE = 1;
   private static final int COLUMN_INFO = 2;
