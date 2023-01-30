@@ -29,11 +29,6 @@
  */
 
 package org.contikios.cooja.mspmote.interfaces;
-import java.awt.EventQueue;
-import java.util.LinkedHashMap;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.mote.memory.VarMemory;
@@ -46,16 +41,12 @@ import se.sics.mspsim.core.MemoryMonitor;
  *
  * @author Fredrik Osterlind
  */
-public class MspMoteID implements MoteID {
-	private final MspMote mote;
+public class MspMoteID extends MoteID<MspMote> {
 	private final VarMemory moteMem;
 
 	private boolean writeFlashHeader = true;
-	private int moteID = -1;
 
 	private MemoryMonitor memoryMonitor;
-
-  private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
 
 	/**
 	 * Creates an interface to the mote ID at mote.
@@ -65,28 +56,16 @@ public class MspMoteID implements MoteID {
 	 * @see org.contikios.cooja.MoteInterfaceHandler
 	 */
 	public MspMoteID(Mote m) {
-		this.mote = (MspMote) m;
+    super((MspMote) m);
 		this.moteMem = new VarMemory(mote.getMemory());
-	}
-
-	@Override
-	public int getMoteID() {
-		return moteID;
 	}
 
 	@Override
 	public void setMoteID(int newID) {
 		if (moteID != newID) {
 			mote.idUpdated(newID);
-      if (Cooja.isVisualized()) {
-        EventQueue.invokeLater(() -> {
-          for (var label : labels.values()) {
-            label.setText("Mote ID: " + getMoteID());
-          }
-        });
-      }
+      super.setMoteID(newID);
 		}
-		moteID = newID;
 
 		/* Write node-unique infomem entry, used to configure node_id and node_mac */
 		byte[] infomemCurrent = mote.getMemory().getMemorySegment(0x1980, 10);
@@ -159,23 +138,6 @@ public class MspMoteID implements MoteID {
                     addMonitor("ActiveMessageAddressC__addr", memoryMonitor);
                     addMonitor("ActiveMessageAddressC$addr", memoryMonitor);
 		}
-	}
-
-	@Override
-	public JPanel getInterfaceVisualizer() {
-		JPanel panel = new JPanel();
-		final JLabel idLabel = new JLabel();
-
-		idLabel.setText("Mote ID: " + getMoteID());
-
-		panel.add(idLabel);
-		labels.put(panel, idLabel);
-		return panel;
-	}
-
-	@Override
-	public void releaseInterfaceVisualizer(JPanel panel) {
-    labels.remove(panel);
 	}
 
 	@Override

@@ -177,17 +177,9 @@ public abstract class AbstractApplicationMoteType implements MoteType {
     return configureAndInit(Cooja.getTopParentContainer(), simulation, Cooja.isVisualized());
   }
 
-  public static class SimpleMoteID implements MoteID {
-    private int id = -1;
+  public static class SimpleMoteID extends MoteID<Mote> {
     public SimpleMoteID(Mote mote) {
-    }
-    @Override
-    public int getMoteID() {
-      return id;
-    }
-    @Override
-    public void setMoteID(int newID) {
-      this.id = newID;
+      super(mote);
     }
     @Override
     public JPanel getInterfaceVisualizer() {
@@ -197,5 +189,4 @@ public abstract class AbstractApplicationMoteType implements MoteType {
     public void releaseInterfaceVisualizer(JPanel panel) {
     }
   }
-
 }

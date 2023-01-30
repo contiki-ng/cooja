@@ -30,13 +30,8 @@
 
 package org.contikios.cooja.contikimote.interfaces;
 
-import java.awt.EventQueue;
-import java.util.LinkedHashMap;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
-
+import org.contikios.cooja.contikimote.ContikiMote;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.mote.memory.VarMemory;
 
@@ -56,13 +51,8 @@ import org.contikios.cooja.mote.memory.VarMemory;
  *
  * @author Fredrik Osterlind
  */
-public class ContikiMoteID implements MoteID {
+public class ContikiMoteID extends MoteID<ContikiMote> {
   private final VarMemory moteMem;
-
-  private int moteID;
-
-  private final Mote mote;
-  private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
 
   /**
    * Creates an interface to the mote ID at mote.
@@ -73,44 +63,15 @@ public class ContikiMoteID implements MoteID {
    * @see org.contikios.cooja.MoteInterfaceHandler
    */
   public ContikiMoteID(Mote mote) {
-    this.mote = mote;
+    super((ContikiMote) mote);
     this.moteMem = new VarMemory(mote.getMemory());
   }
 
   @Override
-  public int getMoteID() {
-    return moteID;
-  }
-
-  @Override
   public void setMoteID(int newID) {
-    moteID = newID;
-    moteMem.setIntValueOf("simMoteID", moteID);
+    super.setMoteID(newID);
+    moteMem.setIntValueOf("simMoteID", newID);
     moteMem.setByteValueOf("simMoteIDChanged", (byte) 1);
     moteMem.setIntValueOf("simRandomSeed", (int) (mote.getSimulation().getRandomSeed() + newID));
-    if (Cooja.isVisualized()) {
-      EventQueue.invokeLater(() -> {
-        for (var label : labels.values()) {
-          label.setText("Mote ID: " + moteID);
-        }
-      });
-    }
-  }
-
-  @Override
-  public JPanel getInterfaceVisualizer() {
-    JPanel panel = new JPanel();
-    final JLabel idLabel = new JLabel();
-
-    idLabel.setText("Mote ID: " + moteID);
-
-    panel.add(idLabel);
-    labels.put(panel, idLabel);
-    return panel;
-  }
-
-  @Override
-  public void releaseInterfaceVisualizer(JPanel panel) {
-    labels.remove(panel);
   }
 }
