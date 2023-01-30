@@ -89,7 +89,7 @@ public class ConsoleUI extends JComponent {
 
   private String[] screenLines = new String[50];
   /* size of lines */
-  int lineWidth = 40;
+  private int lineWidth = 40;
 
   private final ArrayDeque<String> commands = new ArrayDeque<>();
 
@@ -391,8 +391,8 @@ public class ConsoleUI extends JComponent {
    * the screen completely. It is possible to just scroll upwards if just adding
    * another "last" line.
    */
-  int scrCursorX;
-  int scrCursorY;
+  private int scrCursorX;
+  private int scrCursorY;
 
   private int layoutRows() {
 
@@ -457,9 +457,9 @@ public class ConsoleUI extends JComponent {
         charWidth, 2);
   }
 
-  final StringBuffer currentOutput = new StringBuffer();
+  private final StringBuffer currentOutput = new StringBuffer();
 
-  int oldBottomLine;
+  private int oldBottomLine;
   @Override
   protected void paintComponent(Graphics g) {
     int pos;
@@ -525,7 +525,7 @@ public class ConsoleUI extends JComponent {
     }
   }
 
-  final StringBuffer buffer = new StringBuffer();
+  private final StringBuffer buffer = new StringBuffer();
 
   /* add a line to the "visible" screen */
   private void addLine(String line) {
@@ -561,7 +561,7 @@ public class ConsoleUI extends JComponent {
   }
 
   /* just print space instead of tabs */
-  static final String tabs = "           ";
+  private static final String tabs = "           ";
 
   /* print char to the shell */
   public void output(int c) {

@@ -46,7 +46,7 @@ package se.sics.mspsim.ui;
  */
 public abstract class DoubleSerieChart extends AbstractChart {
 
-  protected double[] data;
+  double[] data;
 
   public void setData(double[] data) {
     this.data = data;
