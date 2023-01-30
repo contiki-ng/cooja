@@ -50,7 +50,7 @@ import java.util.Properties;
 
 public class ConfigManager {
 
-  protected Properties properties;
+  private Properties properties;
 
 
   // -------------------------------------------------------------------
