@@ -128,8 +128,8 @@ public class AreaViewer extends VisPlugin {
     }
   };
 
-  ChannelModel.TransmissionData dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH;
-  final ButtonGroup visTypeSelectionGroup;
+  private ChannelModel.TransmissionData dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH;
+  private final ButtonGroup visTypeSelectionGroup;
 
   // General drawing parameters
   private Point lastHandledPosition = new Point(0,0);
@@ -2262,19 +2262,19 @@ public class AreaViewer extends VisPlugin {
       setVisible(true);
     }
 
-    public boolean terminatedOK() {
+    boolean terminatedOK() {
       return terminatedOK;
     }
-    public double getVirtualStartX() {
+    double getVirtualStartX() {
       return virtualStartX;
     }
-    public double getVirtualStartY() {
+    double getVirtualStartY() {
       return virtualStartY;
     }
-    public double getVirtualWidth() {
+    double getVirtualWidth() {
       return virtualWidth;
     }
-    public double getVirtualHeight() {
+    double getVirtualHeight() {
       return virtualHeight;
     }
   }
