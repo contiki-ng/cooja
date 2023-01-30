@@ -12,12 +12,12 @@ import se.sics.mspsim.ui.SerialMon;
 
 public class CC430Node extends GenericNode implements PortListener, USARTListener {
 
-    final IOPort port1;
-    final IOPort port3;
-    final IOPort port4;
-    final IOPort port5;
-    final IOPort port7;
-    final IOPort port8;
+    private final IOPort port1;
+    private final IOPort port3;
+    private final IOPort port4;
+    private final IOPort port5;
+    private final IOPort port7;
+    private final IOPort port8;
 
     public static MSP430Config makeChipConfig() {
         // TODO: this should be a config for MSP430F5438.
