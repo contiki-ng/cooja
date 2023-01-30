@@ -64,17 +64,17 @@ public class DMA extends IOUnit {
         boolean dmaIE;
         boolean dmaIFG;
 
-        public Channel(int i) {
+        Channel(int i) {
             channelNo = i;
         }
 
-        public void setTrigger(DMATrigger t, int index) {
+        void setTrigger(DMATrigger t, int index) {
             if (DEBUG) log("Setting trigger to " + t);
             trigger = t;
             triggerIndex = index;
         }
 
-        public void write(int address, int data) {
+        void write(int address, int data) {
             switch (address) {
                 case 0 -> {
                     ctl = data;
@@ -110,7 +110,7 @@ public class DMA extends IOUnit {
             }
         }
 
-        public int read(int address) {
+        int read(int address) {
             switch (address) {
                 case 0 -> { // set the IFG.
                     ctl = (ctl & ~IFG_MASK) | (dmaIFG ? IFG_MASK : 0);
@@ -130,7 +130,7 @@ public class DMA extends IOUnit {
             return 0;
         }
 
-        public void trigger(DMATrigger trigger, int index) {
+        void trigger(DMATrigger trigger, int index) {
             /* perform memory move and possibly clear triggering flag!!! */
             /* NOTE: show config byte/word also !!! */
             if (enable) {
@@ -168,7 +168,7 @@ public class DMA extends IOUnit {
             return "DMA Channel " + channelNo;
         }
 
-        public String info() {
+        String info() {
             return getName() + (enable ? " Enabled " : " Disabled")
                     + "  Index: " + triggerIndex + "  Trigger: " + trigger
                     + "\n    current source: 0x"

@@ -349,7 +349,7 @@ public class Timer extends IOUnit {
           }
       }
 
-      public void update() {
+      void update() {
           /* schedule this capture register for update*/
           if (expCaptureTime != -1 && expCaptureTime != time) {
               if (DEBUG) log(cpu.cycles + ":" + ">> SCHEDULING " + getName() + " = " + tccr +
@@ -358,14 +358,14 @@ public class Timer extends IOUnit {
           }
       }
 
-      public void timerStarted(long cycles) {
+      void timerStarted(long cycles) {
           if (cyclesLeft != 0) {
               expCaptureTime = cycles + cyclesLeft;
               update();
           }
       }
 
-      public void timerStopped(long cycles) {
+      void timerStopped(long cycles) {
           if (expCaptureTime != -1) {
               cyclesLeft = cycles - expCaptureTime;
               if (cyclesLeft < 0) {
@@ -374,7 +374,7 @@ public class Timer extends IOUnit {
           }
       }
 
-      public String info() {
+      String info() {
           return "CCR" + index + ":" +
           "  CM: " + capNames[capMode] +
           "  CCIS:" + inputSel + "  Source: " +

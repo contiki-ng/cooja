@@ -162,46 +162,46 @@ public class AES128 extends IOUnit {
                 pos = 0;
             }
 
-            public int position() {
+            int position() {
                 return pos;
             }
 
-            public void position(int p) {
+            void position(int p) {
                 pos = p;
             }
 
-            public boolean hasRemaining() {
+            boolean hasRemaining() {
                 return pos < buffer.length;
             }
 
-            public void clear() {
+            void clear() {
                 pos = 0;
             }
 
-            public void resetPos() {
+            void resetPos() {
                 pos = 0;
             }
 
-            public byte[] array() {
+            byte[] array() {
                 return buffer;
             }
 
-            public void put(byte[] bytes) {
+            void put(byte[] bytes) {
               for (byte aByte : bytes) {
                 put(aByte);
               }
             }
 
-            public void put(byte data) {
+            void put(byte data) {
                 buffer[pos++] = data;
             }
 
             /* assume that calling code is ok... */
-            public byte get() {
+            byte get() {
                 return buffer[pos++];
             }
 
-            public int limit() {
+            int limit() {
                 return buffer.length;
             }
         }

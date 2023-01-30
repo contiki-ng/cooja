@@ -43,7 +43,7 @@ public class PortListenerProxy implements PortListener {
 
     private PortListener[] portListeners;
 
-    public PortListenerProxy(PortListener listen1, PortListener listen2) {
+    private PortListenerProxy(PortListener listen1, PortListener listen2) {
         portListeners = new PortListener[] { listen1, listen2 };
     }
 
