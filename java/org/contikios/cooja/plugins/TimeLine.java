@@ -808,14 +808,14 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       this.watchpointListener = listener;
     }
 
-    public Mote getMote() {
+    Mote getMote() {
       return mote;
     }
 
     /**
      * Disconnect observer from observable (stop observing) and clean up resources (remove pointers).
      */
-    public void dispose() {
+    void dispose() {
       if (moteEventTriggers != null) {
         moteEventTriggers.deleteTriggers(this);
       }
@@ -1540,7 +1540,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
     }
 
-    public String getMouseToolTipText(MouseEvent event) {
+    String getMouseToolTipText(MouseEvent event) {
       if (event.getPoint().y <= TIME_MARKER_PIXEL_HEIGHT) {
         return "<html>Click to display time marker</html>";
       }
@@ -1777,7 +1777,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public abstract Color getEventColor(TimeLine timeLine);
 
     /* Default paint method */
-    public void paintInterval(TimeLine timeLine, Graphics g, int x, int lineHeightOffset, int width) {
+    void paintInterval(TimeLine timeLine, Graphics g, int x, int lineHeightOffset, int width) {
       g.fillRect(x, lineHeightOffset, width, EVENT_PIXEL_HEIGHT);
     }
   }
