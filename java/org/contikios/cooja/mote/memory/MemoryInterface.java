@@ -76,8 +76,7 @@ public interface MemoryInterface {
    * Class represents memory access exceptions.
    */
   class MoteMemoryException extends RuntimeException {
-
-    public MoteMemoryException(String message, Object... args) {
+    MoteMemoryException(String message, Object... args) {
       super(String.format(message, args));
     }
   }
