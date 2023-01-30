@@ -83,7 +83,7 @@ public class Enc28J60 extends Chip {
         }
 
         @Override
-        public void log(String msg) {
+        protected void log(String msg) {
                 if (DEBUG) {
                         System.out.println(msg);
                 }
