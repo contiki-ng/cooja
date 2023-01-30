@@ -61,7 +61,7 @@ import org.contikios.cooja.motes.ImportAppMoteType;
  * @author Niclas Finne
  */
 public class ImportAppMoteDialog extends JDialog {
-  protected final static Dimension LABEL_DIMENSION = new Dimension(170, 25);
+  private final static Dimension LABEL_DIMENSION = new Dimension(170, 25);
 
   private static String lastPath;
   private static String lastFile;
