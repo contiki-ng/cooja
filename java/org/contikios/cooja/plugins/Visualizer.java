@@ -168,11 +168,11 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   /* All selected motes */
   public final Set<Mote> selectedMotes = new HashSet<>();
   /* Mote that was under curser while mouse press */
-  Mote cursorMote;
+  private Mote cursorMote;
 
-  MotesActionState mouseActionState = MotesActionState.NONE;
+  private MotesActionState mouseActionState = MotesActionState.NONE;
   /* Position where mouse button was pressed */
-  Position pressedPos;
+  private Position pressedPos;
 
   private static final Cursor MOVE_CURSOR = new Cursor(Cursor.MOVE_CURSOR);
   private final Selection selection;
@@ -957,7 +957,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     repaint();
   }
 
-  final Map<Mote, double[]> moveStartPositions = new HashMap<>();
+  private final Map<Mote, double[]> moveStartPositions = new HashMap<>();
 
   private void beginMoveRequest(Mote selectedMote) {
     /* Save start positions and set move-start position to clicked mote */
@@ -1616,18 +1616,18 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     private int height;
     private boolean enable;
 
-    public void setSelection(int x, int y, int width, int height) {
+    void setSelection(int x, int y, int width, int height) {
       this.x = x;
       this.y = y;
       this.width = width;
       this.height = height;
     }
 
-    public void setEnabled(boolean enable) {
+    void setEnabled(boolean enable) {
       this.enable = enable;
     }
 
-    public void drawSelection(Graphics g) {
+    void drawSelection(Graphics g) {
       /* only draw if enabled */
       if (!enable) {
         return;

@@ -771,19 +771,19 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   private enum FilterState { NONE, PASS, REJECTED }
 
   private class LogData {
-    public final LogOutputEvent ev;
-    public       FilterState    filtered;
+    final LogOutputEvent ev;
+    FilterState    filtered;
 
-    public LogData(LogOutputEvent ev) {
+    LogData(LogOutputEvent ev) {
       this.ev = ev;
       this.filtered = FilterState.NONE;
     }
 
-    public String getID() {
+    String getID() {
       return "ID:" + ev.getMote().getID();
     }
 
-    public String getTime() {
+    String getTime() {
       if (formatTimeString) {
         return getFormattedTime(ev.getTime());
       } else {
@@ -791,7 +791,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
     }
 
-    public void setFiltered(boolean pass) {
+    void setFiltered(boolean pass) {
         if (pass)
             filtered = FilterState.PASS;
         else

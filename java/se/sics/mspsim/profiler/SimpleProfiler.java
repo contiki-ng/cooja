@@ -388,7 +388,7 @@ public class SimpleProfiler implements Profiler, EventListener {
   private static class CallEntryComparator implements Comparator<CallEntry> {
     private final int mode;
 
-    public CallEntryComparator(String modeS) {
+    CallEntryComparator(String modeS) {
       if ("exclusive".equalsIgnoreCase(modeS)) {
         mode = 1;
       } else if ("calls".equalsIgnoreCase(modeS)) {
@@ -422,12 +422,12 @@ public class SimpleProfiler implements Profiler, EventListener {
 
 
   private static class TagEntry implements Comparable<TagEntry> {
-    public final String tag;
+    final String tag;
     long cycles;
     long lastCycles;
     int calls;
 
-    public TagEntry(String tag) {
+    TagEntry(String tag) {
         this.tag = tag;
     }
 

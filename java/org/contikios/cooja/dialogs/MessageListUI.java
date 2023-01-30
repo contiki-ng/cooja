@@ -94,7 +94,7 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
   /**
    * @param max Maximum number of messages
    */
-  public MessageListUI(int max) {
+  private MessageListUI(int max) {
     this();
     this.max = max;
   }
@@ -107,7 +107,7 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
     this.isAutoScrolling = isAutoScrolling;
   }
 
-  public Color getForeground(int type) {
+  private Color getForeground(int type) {
     Color c = type > 0 && type <= foregrounds.length
       ? foregrounds[type - 1] : null;
     return c == null ? getForeground() : c;
@@ -121,7 +121,7 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
     }
   }
 
-  public Color getBackground(int type) {
+  private Color getBackground(int type) {
     Color c = type > 0 && type <= backgrounds.length
       ? backgrounds[type - 1] : null;
     return c == null ? getBackground() : c;
@@ -311,7 +311,7 @@ public class MessageListUI extends JList<MessageContainer> implements MessageLis
   // -------------------------------------------------------------------
 
   private static class MessageModel extends DefaultListModel<MessageContainer> {
-    public void updateList() {
+    void updateList() {
       fireContentsChanged(this, 0, getSize());
     }
   }

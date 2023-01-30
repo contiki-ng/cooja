@@ -567,7 +567,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     public String toString() {
       return toString(true, true, true, true);
     }
-    public String toString(boolean logs, boolean leds, boolean radioHW, boolean radioRXTX) {
+    String toString(boolean logs, boolean leds, boolean radioHW, boolean radioRXTX) {
       long duration = simulation.getSimulationTime(); /* XXX */
       StringBuilder sb = new StringBuilder();
       String moteDesc = (mote!=null? String.valueOf(mote.getID()) :"AVERAGE") + " ";
@@ -1148,7 +1148,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   private int mousePixelPositionY = -1;
   private int mouseDownPixelPositionX = -1;
   class Timeline extends JComponent {
-    public Timeline() {
+    Timeline() {
       setLayout(null);
       setToolTipText(null);
       setBackground(COLOR_BACKGROUND);
@@ -1619,7 +1619,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
 
   class MoteRuler extends JPanel {
-    public MoteRuler() {
+    MoteRuler() {
       setPreferredSize(new Dimension(35, 1));
       setToolTipText(null);
       setBackground(COLOR_BACKGROUND);
@@ -1763,7 +1763,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     int fixedWidth;
     boolean collapseOverlapping;
     final long time;
-    public MoteEvent(long time) {
+    MoteEvent(long time) {
       this.time = time;
     }
 
@@ -1782,7 +1782,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
   }
   static class NoHistoryEvent extends MoteEvent {
-    public NoHistoryEvent(long time) {
+    NoHistoryEvent(long time) {
       super(time);
     }
     @Override
@@ -1799,7 +1799,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
   static class RadioRXTXEvent extends MoteEvent {
     final RXTXRadioEvent state;
-    public RadioRXTXEvent(long time, RXTXRadioEvent ev) {
+    RadioRXTXEvent(long time, RXTXRadioEvent ev) {
       super(time);
       this.state = ev;
     }
@@ -1850,7 +1850,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   static class RadioChannelEvent extends MoteEvent {
     final int channel;
     final boolean radioOn;
-    public RadioChannelEvent(long time, int channel, boolean radioOn) {
+    RadioChannelEvent(long time, int channel, boolean radioOn) {
       super(time);
       this.channel = channel;
       this.radioOn = radioOn;
@@ -1873,7 +1873,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
 
   static class RadioHWEvent extends MoteEvent {
     final boolean on;
-    public RadioHWEvent(long time, boolean on) {
+    RadioHWEvent(long time, boolean on) {
       super(time);
       this.on = on;
     }
@@ -1894,7 +1894,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     final boolean green;
     final boolean blue;
     final Color color;
-    public LEDEvent(long time, boolean red, boolean green, boolean blue) {
+    LEDEvent(long time, boolean red, boolean green, boolean blue) {
       super(time);
       this.red = red;
       this.green = green;
@@ -1946,7 +1946,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     private FilterState filtered;
     private Color logEventColor;
 
-    public LogEvent(LogOutputEvent ev) {
+    LogEvent(LogOutputEvent ev) {
       super(ev.getTime());
       this.logEvent = ev;
       this.filtered = FilterState.NONE;
@@ -1990,7 +1990,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
   }
   static class WatchpointEvent extends MoteEvent {
     final Watchpoint watchpoint;
-    public WatchpointEvent(long time, Watchpoint watchpoint) {
+    WatchpointEvent(long time, Watchpoint watchpoint) {
       super(time);
       this.watchpoint = watchpoint;
       this.fixedWidth = 2;
@@ -2023,12 +2023,12 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     final ArrayList<MoteEvent> logEvents = new ArrayList<>();
     final ArrayList<MoteEvent> watchpointEvents = new ArrayList<>();
 
-    public MoteEvents(Mote mote) {
+    MoteEvents(Mote mote) {
       this.mote = mote;
       clear();
     }
 
-    protected void clear() {
+    void clear() {
       this.radioRXTXEvents.clear();
       this.radioChannelEvents.clear();
       this.radioHWEvents.clear();
@@ -2047,22 +2047,22 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       }
     }
 
-    public void addRadioRXTX(RadioRXTXEvent ev) {
+    void addRadioRXTX(RadioRXTXEvent ev) {
       radioRXTXEvents.add(ev);
     }
-    public void addRadioChannel(RadioChannelEvent ev) {
+    void addRadioChannel(RadioChannelEvent ev) {
       radioChannelEvents.add(ev);
     }
-    public void addRadioHW(RadioHWEvent ev) {
+    void addRadioHW(RadioHWEvent ev) {
       radioHWEvents.add(ev);
     }
-    public void addLED(LEDEvent ev) {
+    void addLED(LEDEvent ev) {
       ledEvents.add(ev);
     }
-    public void addLog(LogEvent ev) {
+    void addLog(LogEvent ev) {
       logEvents.add(ev);
     }
-    public void addWatchpoint(WatchpointEvent ev) {
+    void addWatchpoint(WatchpointEvent ev) {
       watchpointEvents.add(ev);
     }
   }

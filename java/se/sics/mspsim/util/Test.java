@@ -57,7 +57,7 @@ public class Test implements USARTListener {
   private final StringBuilder lineBuffer = new StringBuilder();
   private final MSP430 cpu;
 
-  public Test(MSP430 cpu) {
+  private Test(MSP430 cpu) {
     this.cpu = cpu;
     IOUnit usart = cpu.getIOUnit("USART 1");
     if (usart instanceof USART) {

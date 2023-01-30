@@ -54,20 +54,20 @@ public class ELF {
   public static final boolean DEBUG = false;
 
 
-  boolean encMSB = true;
-  int type;
-  int machine;
-  int version;
-  int entry;
-  int phoff;
-  int shoff;
-  int flags;
-  int ehsize;
-  int phentsize;
-  int phnum;
-  int shentsize;
-  int shnum;
-  int shstrndx;
+  private boolean encMSB = true;
+  private int type;
+  private int machine;
+  private int version;
+  private int entry;
+  private int phoff;
+  private int shoff;
+  private int flags;
+  private int ehsize;
+  private int phentsize;
+  private int phnum;
+  private int shentsize;
+  private int shnum;
+  private int shstrndx;
 
   final byte[] elfData;
   private int pos;
@@ -77,11 +77,11 @@ public class ELF {
   private final ArrayList<FileInfo> files = new ArrayList<>();
 
   ELFSection strTable;
-  ELFSection symTable;
-  ELFSection dbgStab;
+  private ELFSection symTable;
+  private ELFSection dbgStab;
   public ELFSection dbgStabStr;
 
-  ELFDebug debug;
+  private ELFDebug debug;
 
   public ELF(byte[] data) throws ELFException {
     elfData = data;

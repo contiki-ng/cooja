@@ -29,18 +29,18 @@ public class TyndallNode extends GenericNode implements PortListener, USARTListe
     public static final int CC2420_CHIP_SELECT = 0x01;
 
 
-    final IOPort port1;
-    final IOPort port3;
-    final IOPort port4;
-    final IOPort port5;
-    final IOPort port7;
-    final IOPort port8;
+    private final IOPort port1;
+    private final IOPort port3;
+    private final IOPort port4;
+    private final IOPort port5;
+    private final IOPort port7;
+    private final IOPort port8;
 
     public static final int LEDS_CONF_RED    = 0x08;
     public static final int LEDS_CONF_GREEN  = 0x01;
     public static final int LEDS_CONF_YELLOW = 0x01;
 
-    public final CC2420 radio;
+    private final CC2420 radio;
 
     public static MSP430Config makeChipConfig() {
         return new MSP430f5437Config();

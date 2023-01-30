@@ -61,8 +61,8 @@ public class StabDebug implements ELFDebug {
 
   public static final boolean DEBUG = false;
 
-  final ELFSection dbgStab;
-  final ELFSection dbgStabStr;
+  private final ELFSection dbgStab;
+  private final ELFSection dbgStabStr;
 
   public StabDebug(ELF elf, ELFSection stab, ELFSection stabstr) {
     dbgStab = stab;
@@ -251,7 +251,7 @@ public class StabDebug implements ELFDebug {
     return sourceFilesArray;
   }
 
-  public record Stab(String data, int type, int other, int desc, int value) {
+  record Stab(String data, int type, int other, int desc, int value) {
    @Override
    public String toString() {
         return Integer.toHexString(type) + " " + data + "   [" + other + "," + desc + "," + value + "]";

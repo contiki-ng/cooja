@@ -10,11 +10,11 @@ public class TextScanner extends Scanner {
   // .........tn..................... !"#$%&'()*+,-./0123456789:;<=>?
   // @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~.
 
-  static final String cs =
+  private static final String cs =
       "1111111112211111111111111111111127777774777774675555555555777777"
           + "7333333333333333333333333337777473333333333333333333333333377771";
 
-  static final byte[] kinds = new byte[cs.length()];
+  private static final byte[] kinds = new byte[cs.length()];
   static {
     for (int i = 0; i < cs.length(); i++) {
       kinds[i] = (byte) (cs.charAt(i) - '0');
@@ -28,7 +28,7 @@ public class TextScanner extends Scanner {
   // token is recognized, as there could be with more sophisticated scanners.
   // The raw numbers +t must use or match the constants in TokenTypes.
 
-  final int[][] table = {
+  private final int[][] table = {
   // $ \0 \n z '-_ 9 . ( // $ = end of text, must be column 0
       { +1, -1, -2, -3, -4, -5, -4, -4 }, // s=0: start token
       { +1, +1, +1, +1, +1, +1, +1, +1 }, // s=1: illegal character (t=1)

@@ -139,7 +139,7 @@ public class OperatingModeStatistics {
     private long lastCycles;
     private long lastValue;
 
-    public StatDataSource(StatEntry entry, int mode, int operation) {
+    StatDataSource(StatEntry entry, int mode, int operation) {
       this.entry = entry;
       this.mode = mode;
       this.operation = operation;
@@ -174,7 +174,7 @@ public class OperatingModeStatistics {
     private final long[] lastValue;
     private final long[] lastCycles;
 
-    public StatMultiDataSource(StatEntry entry) {
+    StatMultiDataSource(StatEntry entry) {
       this.entry = entry;
       this.lastValue = new long[entry.elapsed.length];
       this.lastCycles = new long[entry.elapsed.length];

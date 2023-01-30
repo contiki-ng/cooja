@@ -189,7 +189,7 @@ public class MapTable {
     }
   }
 
-  public void loadMap(String file) throws IOException {
+  private void loadMap(String file) throws IOException {
     HashMap<String, MapEntry> moduleTable = new HashMap<>();
     try (var bInput = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8))) {
       String line;

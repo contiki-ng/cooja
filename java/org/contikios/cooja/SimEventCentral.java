@@ -91,13 +91,13 @@ public class SimEventCentral {
 
   /* GENERIC */
   private static class MoteEvent {
-    public static int _ID_COUNTER; /* Debugging */
-    public final int ID; /* Debugging */
+    static int _ID_COUNTER; /* Debugging */
+    final int ID; /* Debugging */
 
     private final Mote mote;
     private final long time;
 
-    public MoteEvent(Mote mote, long time) {
+    MoteEvent(Mote mote, long time) {
       ID = _ID_COUNTER++;
 
       this.mote = mote;
@@ -117,10 +117,10 @@ public class SimEventCentral {
   }
   /** Help class for maintaining mote-specific observations */
   private record MoteObservation(Mote mote, Log log, BiConsumer<EventTriggers.Update, Log.LogDataInfo> trigger) {
-    public MoteObservation {
+    MoteObservation {
       log.getLogDataTriggers().addTrigger(this, trigger);
     }
-    public void disconnect() {
+    void disconnect() {
       log.getLogDataTriggers().removeTrigger(this, trigger);
     }
   }

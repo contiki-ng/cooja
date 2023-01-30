@@ -110,7 +110,7 @@ public class LogScriptEngine {
   private long startRealTime;
   private final JTextArea textArea;
 
-  protected LogScriptEngine(Simulation simulation, int logNumber, JTextArea logTextArea) {
+  LogScriptEngine(Simulation simulation, int logNumber, JTextArea logTextArea) {
     this.simulation = simulation;
     textArea = logTextArea;
     simulation.getEventCentral().addLogOutputListener(logOutputListener);
@@ -168,7 +168,7 @@ public class LogScriptEngine {
     }
   }
 
-  protected void closeLog() {
+  void closeLog() {
     simulation.getEventCentral().removeLogOutputListener(logOutputListener);
     if (Cooja.isVisualized()) {
       return;

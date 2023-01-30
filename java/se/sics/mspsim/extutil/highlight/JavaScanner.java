@@ -321,7 +321,7 @@ public class JavaScanner extends Scanner {
   }
 
   // Read one line of a /*...*/ comment, given the expected type
-  int readComment(int type) {
+  private int readComment(int type) {
     if (start >= end)
       return type;
     char c = buffer[start];
@@ -478,7 +478,7 @@ public class JavaScanner extends Scanner {
     return NUMBER;
   }
 
-  boolean readDigits(int radix) {
+  private boolean readDigits(int radix) {
     if (start >= end)
       return false;
     char c = buffer[start];
@@ -498,7 +498,7 @@ public class JavaScanner extends Scanner {
     return true;
   }
 
-  void readSuffix() {
+  private void readSuffix() {
     if (start >= end)
       return;
     char c = buffer[start];
@@ -567,7 +567,7 @@ public class JavaScanner extends Scanner {
     }
   }
 
-  boolean readOctal(int maxlength) {
+  private boolean readOctal(int maxlength) {
     if (start >= end)
       return false;
     char c = buffer[start];

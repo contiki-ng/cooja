@@ -172,7 +172,7 @@ public class WindowUtils {
 
     private final String key;
 
-    public CloseListener(String key) {
+    CloseListener(String key) {
       this.key = key;
     }
 

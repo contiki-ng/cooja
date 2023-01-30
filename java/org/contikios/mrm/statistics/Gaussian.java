@@ -21,7 +21,7 @@ package org.contikios.mrm.statistics;
 *
 *************************************************************************/
 
-public class Gaussian {
+class Gaussian {
 
  // return phi(x) = standard Gaussian pdf
  public static double phi(double x) {

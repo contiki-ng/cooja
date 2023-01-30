@@ -37,7 +37,7 @@ import java.util.Vector;
 /**
  * @author Fredrik Osterlind
  */
-public class RayPath {
+class RayPath {
   private final Vector<Point2D> points = new Vector<>();
   private final Vector<RayData.RayType> types = new Vector<>();
   

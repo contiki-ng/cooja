@@ -44,14 +44,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NetworkPacket {
-  byte[] data;
-  final String description;
+  private byte[] data;
+  private final String description;
   public static final String IPv6 =
     "version:4=6|trafficClass:8|flowLabel:20" +
     "|payloadLength:16|nextHeader:8|hopLimit:8" +
     "|sourceAddress:128|destinationAddress:128";
 
-  Map<String,Field> fields = new HashMap<>();
+  private Map<String,Field> fields = new HashMap<>();
 
   private record Field(String name, int pos, int size, int mask, int value) {
     @Override

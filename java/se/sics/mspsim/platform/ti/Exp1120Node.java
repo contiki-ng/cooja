@@ -19,17 +19,17 @@ public class Exp1120Node extends GenericNode implements PortListener, USARTListe
 
         public static final int CC1120_CHIP_SELECT = (1); // 3.0
 
-        final IOPort port1;
-        final IOPort port3;
-        final IOPort port4;
-        final IOPort port5;
-        final IOPort port7;
-        final IOPort port8;
+        private final IOPort port1;
+        private final IOPort port3;
+        private final IOPort port4;
+        private final IOPort port5;
+        private final IOPort port7;
+        private final IOPort port8;
 
         public static final int LEDS_CONF_RED    = (1); // 1.0
         public static final int LEDS_CONF_YELLOW = (1 << 1); // 1.1
 
-        public final CC1120 radio;
+        private final CC1120 radio;
 
         public static MSP430Config makeChipConfig() {
                 return new MSP430f5437Config();

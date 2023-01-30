@@ -66,13 +66,13 @@ public class SHT11 extends Chip {
   /* Serial data pins */
   IOPort sclkPort;
   int sclkPin;
-  IOPort sdataPort;
-  int sdataPin;
+  private IOPort sdataPort;
+  private int sdataPin;
 
-  int state = IDLE;
+  private int state = IDLE;
 
-  boolean clockHi;
-  boolean dataHi;
+  private boolean clockHi;
+  private boolean dataHi;
   private int readData;
   private int bitCnt;
   private int temp = 3960 + 2400;

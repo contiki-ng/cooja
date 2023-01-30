@@ -121,7 +121,7 @@ public class LineChart extends JFreeWindowDataHandler {
     dataset.addSeries(dataSeries);
   }
 
-  int point;
+  private int point;
   @Override
   public void lineRead(String line) {
     String[] parts = line.trim().split(" ");

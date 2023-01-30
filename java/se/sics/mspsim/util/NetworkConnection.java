@@ -155,16 +155,16 @@ public class NetworkConnection implements Runnable {
 
     private final ArrayList<SendEvent> queue = new ArrayList<>();
 
-    public SendThread() {
+    SendThread() {
       new Thread(this, "NetworkConnection.SendThread").start();
     }
 
-    public synchronized void send(byte[] receivedData, ConnectionThread source) {
+    synchronized void send(byte[] receivedData, ConnectionThread source) {
       queue.add(new SendEvent(receivedData, source));
       notifyAll();
     }
 
-    public synchronized SendEvent getNext() throws InterruptedException {
+    synchronized SendEvent getNext() throws InterruptedException {
       while (queue.isEmpty()) {
         wait();
       }
@@ -216,14 +216,14 @@ public class NetworkConnection implements Runnable {
     DataInputStream input;
     OutputStream output;
 
-    public ConnectionThread(Socket socket) throws IOException {
+    ConnectionThread(Socket socket) throws IOException {
       this.socket = socket;
       input = new DataInputStream(socket.getInputStream());
       output = socket.getOutputStream();
       new Thread(this, "NetworkConnection.ConnectionThread").start();
     }
 
-    public void close() {
+    void close() {
       try {
         input.close();
         socket.close();
@@ -233,7 +233,7 @@ public class NetworkConnection implements Runnable {
       socket = null;
     }
 
-    public boolean isClosed() {
+    boolean isClosed() {
       return socket == null;
     }
 

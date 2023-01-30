@@ -86,7 +86,7 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
     private final static long DELAY = Simulation.MILLISECOND/5;
     private final static long DURATION = 10*Simulation.MILLISECOND;
     
-    public DisturberMote(MoteType moteType, Simulation simulation) throws MoteTypeCreationException {
+    DisturberMote(MoteType moteType, Simulation simulation) throws MoteTypeCreationException {
       super(moteType, simulation);
     }
     
