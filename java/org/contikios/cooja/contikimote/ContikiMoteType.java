@@ -137,7 +137,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
       return this == MANUAL ? manualHeader : null;
     }
 
-    public String getConfig() {
+    String getConfig() {
       if (this == DEFAULT) {
         return "DEFAULT";
       } else if (this == MANUAL) {
@@ -146,7 +146,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
       return "[unknown]";
     }
 
-    public static NetworkStack parseConfig(String config) {
+    static NetworkStack parseConfig(String config) {
       if (config.startsWith("MANUAL")) {
         NetworkStack st = MANUAL;
         st.manualHeader = config.split(":")[1];
@@ -385,12 +385,12 @@ public class ContikiMoteType extends BaseContikiMoteType {
   private static abstract class SectionParser {
     // CommandSectionParser (OS X) takes three passes over the data. All the addresses and sizes are identical.
     // MapSectionParser takes one pass over the data, and sets the data/bss variables to different values.
-    protected long dataStartAddr;
-    protected int dataSize;
-    protected long bssStartAddr;
-    protected int bssSize;
-    protected long commonStartAddr;
-    protected int commonSize;
+    long dataStartAddr;
+    int dataSize;
+    long bssStartAddr;
+    int bssSize;
+    long commonStartAddr;
+    int commonSize;
 
     long getDataStartAddr() {
       return dataStartAddr;
@@ -431,7 +431,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     private final String startBss;
     private final String sizeBss;
 
-    public MapSectionParser(String readelfData, String startData, String sizeData, String startBss, String sizeBss) {
+    MapSectionParser(String readelfData, String startData, String sizeData, String startBss, String sizeBss) {
       this.readelfData = readelfData;
       this.startData = startData;
       this.sizeData = sizeData;
@@ -509,14 +509,14 @@ public class ContikiMoteType extends BaseContikiMoteType {
      * @param sectionRegExp Regular expression describing symbol table section identifier (e.g. '[Rr]' for readonly)
      *        Will be used to replaced '<SECTION>'in 'COMMAND_VAR_NAME_ADDRESS_SIZE'
      */
-    public CommandSectionParser(String[] mapFileData, String startRegExp, String endRegExp, String sectionRegExp) {
+    CommandSectionParser(String[] mapFileData, String startRegExp, String endRegExp, String sectionRegExp) {
       this.mapFileData = mapFileData;
       this.startRegExp = startRegExp;
       this.endRegExp = endRegExp;
       this.sectionRegExp = sectionRegExp;
     }
 
-    public String[] getData() {
+    String[] getData() {
       return mapFileData;
     }
 
@@ -617,7 +617,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
    * Ticks the currently loaded mote. This should not be used directly, but
    * rather via {@link ContikiMote#execute(long)}.
    */
-  protected void tick() {
+  void tick() {
     myCoreComm.tick();
   }
 
@@ -628,7 +628,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
    *
    * @return Initial memory of a mote type
    */
-  protected SectionMoteMemory createInitialMemory() {
+  SectionMoteMemory createInitialMemory() {
     return initialMemory.clone();
   }
 
