@@ -137,13 +137,9 @@ public class ChannelModel {
         case tx_power -> 1.5;
         case tx_with_gain -> Boolean.TRUE;
         case rx_sensitivity -> -100.0;
-        case rx_with_gain -> Boolean.FALSE;
-        case rt_disallow_direct_path -> Boolean.FALSE;
-        case rt_ignore_non_direct -> Boolean.FALSE;
+        case rx_with_gain, rt_disallow_direct_path, rt_ignore_non_direct -> Boolean.FALSE;
         case rt_fspl_on_total_length -> Boolean.TRUE;
-        case rt_max_rays -> 1;
-        case rt_max_refractions -> 1;
-        case rt_max_reflections -> 1;
+        case rt_max_rays, rt_max_refractions, rt_max_reflections -> 1;
         case rt_max_diffractions -> 0;
         case rt_use_scattering -> Boolean.FALSE;
         case rt_refrac_coefficient -> -3.0;
