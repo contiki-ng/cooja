@@ -697,6 +697,59 @@ public final class Simulation {
     return config;
   }
 
+  Collection<Element> getPluginConfigXML() {
+    var config = new ArrayList<Element>();
+    for (var startedPlugin : startedPlugins) {
+      var pluginElement = new Element("plugin");
+      pluginElement.setText(startedPlugin.getClass().getName());
+
+      // Create mote argument config (if mote plugin).
+      if (startedPlugin instanceof MotePlugin motePlugin) {
+        Mote taggedMote = motePlugin.getMote();
+        for (int moteNr = 0; moteNr < getMotesCount(); moteNr++) {
+          if (getMote(moteNr) == taggedMote) {
+            var pluginSubElement = new Element("mote_arg");
+            pluginSubElement.setText(Integer.toString(moteNr));
+            pluginElement.addContent(pluginSubElement);
+            break;
+          }
+        }
+      }
+
+      // Create plugin specific configuration.
+      var pluginXML = startedPlugin.getConfigXML();
+      if (pluginXML != null) {
+        var pluginSubElement = new Element("plugin_config");
+        pluginSubElement.addContent(pluginXML);
+        pluginElement.addContent(pluginSubElement);
+      }
+
+      // If plugin is visualizer plugin, create visualization arguments
+      var pluginFrame = startedPlugin.getCooja();
+      if (pluginFrame != null) {
+        var pluginSubElement = new Element("bounds");
+        var bounds = pluginFrame.getBounds();
+        pluginSubElement.setAttribute("x", String.valueOf(bounds.x));
+        pluginSubElement.setAttribute("y", String.valueOf(bounds.y));
+        pluginSubElement.setAttribute("height", String.valueOf(bounds.height));
+        pluginSubElement.setAttribute("width", String.valueOf(bounds.width));
+
+        var z = Cooja.getDesktopPane().getComponentZOrder(pluginFrame);
+        if (z != 0) {
+          pluginSubElement.setAttribute("z", String.valueOf(z));
+        }
+
+        if (pluginFrame.isIcon()) {
+          pluginSubElement.setAttribute("minimized", String.valueOf(true));
+        }
+
+        pluginElement.addContent(pluginSubElement);
+      }
+      config.add(pluginElement);
+    }
+    return config;
+  }
+
   public boolean isQuickSetup() {
       return quick;
   }
