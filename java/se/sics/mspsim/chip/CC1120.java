@@ -649,8 +649,6 @@ public class CC1120 extends Radio802154 implements USARTListener {
         ret = ret << 1;
         if(currentRssi > CCA_THRESHOLD) {
           ret += 1; /* Carrier detected */
-        } else {
-          ret += 0; /* No carrier detected */
         }
 
         ret = ret << 1;
