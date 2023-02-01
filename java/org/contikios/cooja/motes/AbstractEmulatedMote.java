@@ -29,7 +29,6 @@
 package org.contikios.cooja.motes;
 
 import org.contikios.cooja.Breakpoint;
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.mote.memory.MemoryInterface;
