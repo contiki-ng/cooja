@@ -261,7 +261,7 @@ public class DotDiagram extends JComponent {
     int leftInset = 2;
     int topInset = 2;
     int yLabelSize = 0;
-    if (yLabel != null || xLabel != null) {
+    if (yLabel != null) {
       yLabelSize = fm.stringWidth(yLabel);
     }
     if(gridVisible) {
