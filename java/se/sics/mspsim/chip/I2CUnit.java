@@ -299,12 +299,6 @@ public abstract class I2CUnit implements USARTListener {
          * Schedule a transmission with the correct baud rate
          */
         private void scheduleTransmission() {
-                int baudRate = defaultBaudRate;
-
-                if (source instanceof GenericUSCI) {
-                        baudRate = ((GenericUSCI) source).getBaudRate();
-                }
-
                 if (!txScheduled && numBytesRxTx < numBytesTotal) {
                         cpu.scheduleCycleEvent(txTrigger, cpu.cpuCycles + 1);
                         txScheduled = true;
