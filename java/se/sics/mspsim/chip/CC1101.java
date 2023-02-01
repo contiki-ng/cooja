@@ -831,10 +831,6 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 if (!chipSelect) {
                         spiResetState();
                 }
-
-                if (DEBUG) {
-                        /*log("Chip select: " + chipSelect);*/
-                }
         }
 
         void setStateRX() {

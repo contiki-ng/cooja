@@ -108,8 +108,6 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
       // At least one element must exist since size > 0
       System.arraycopy(queueData, first, newData, 0, firstSize);
       System.arraycopy(queueData, 0, newData, firstSize, last);
-    } else {
-      // Empty queue i.e. do nothing
     }
   }
 
