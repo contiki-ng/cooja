@@ -330,11 +330,10 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
 
   @Override
   public void receiveCustomData(Object data) {
-    if (!(data instanceof Byte)) {
+    if (!(data instanceof Byte lastIncomingByte)) {
       logger.error("Bad custom data: " + data);
       return;
     }
-    lastIncomingByte = (Byte) data;
 
     final byte inputByte;
     if (isInterfered()) {

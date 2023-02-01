@@ -41,6 +41,7 @@ import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.mspmote.interfaces.CC1101Radio;
 import org.contikios.cooja.mspmote.interfaces.CC1120Radio;
 import org.contikios.cooja.mspmote.interfaces.Exp5438LED;
+import org.contikios.cooja.mspmote.interfaces.Msp802154BitErrorRadio;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
 import org.contikios.cooja.mspmote.interfaces.MspClock;
 import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
@@ -141,6 +142,7 @@ public class Exp5438MoteType extends MspMoteType {
         MspClock.class,
         MspMoteID.class,
         Msp802154Radio.class,
+        Msp802154BitErrorRadio.class,
         CC1101Radio.class,
         CC1120Radio.class,
         UsciA1Serial.class,

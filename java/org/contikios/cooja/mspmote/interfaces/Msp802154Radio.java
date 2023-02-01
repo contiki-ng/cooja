@@ -234,11 +234,10 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
 
   @Override
   public void receiveCustomData(Object data) {
-    if (!(data instanceof Byte)) {
+    if (!(data instanceof Byte lastIncomingByte)) {
       logger.error("Bad custom data: " + data);
       return;
     }
-    lastIncomingByte = (Byte) data;
 
     final byte inputByte;
     if (isInterfered()) {
@@ -419,6 +418,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
   
   @Override
   public boolean canReceiveFrom(CustomDataRadio radio) {
-    return radio.getClass().equals(this.getClass());
+    return radio instanceof Msp802154Radio;
   }
 }

@@ -73,6 +73,7 @@ import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.motes.AbstractApplicationMoteType;
+import org.contikios.cooja.mspmote.interfaces.Msp802154BitErrorRadio;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
 import org.contikios.cooja.mspmote.interfaces.MspClock;
 import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
@@ -123,6 +124,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
           entry("org.contikios.cooja.mspmote.interfaces.MspMoteID", MspMoteID.class),
           entry("org.contikios.cooja.mspmote.interfaces.MspSerial", MspSerial.class),
           entry("org.contikios.cooja.mspmote.interfaces.Msp802154Radio", Msp802154Radio.class),
+          entry("org.contikios.cooja.mspmote.interfaces.Msp802154BitErrorRadio", Msp802154BitErrorRadio.class),
           entry("org.contikios.cooja.mspmote.interfaces.SkyButton", SkyButton.class),
           entry("org.contikios.cooja.mspmote.interfaces.SkyByteRadio", Msp802154Radio.class), // Compatibility.
           entry("org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem", SkyCoffeeFilesystem.class),
