@@ -112,14 +112,13 @@ public class BaseRSSIconf extends VisPlugin {
                 column < 0 || column >= COLUMN_NAMES.length) {
           return;
         }
-        try {
-          if (column == IDX_BaseRSSI) {
+        if (column == IDX_BaseRSSI) {
+          if (value instanceof Number num) {
             var radio = radioMedium.getRegisteredRadios()[row];
-            radioMedium.setBaseRssi(radio,((Number) value).doubleValue());
-          } else {
-            super.setValueAt(value, row, column);
+            radioMedium.setBaseRssi(radio, num.doubleValue());
           }
-        } catch (ClassCastException e) {
+        } else {
+          super.setValueAt(value, row, column);
         }
       }
 
