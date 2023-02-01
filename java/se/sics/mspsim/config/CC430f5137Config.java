@@ -127,8 +127,8 @@ public class CC430f5137Config extends MSP430Config {
 //            System.out.println("Adding IOUnit USCI: " + usci.getName());
             ioUnits.add(usci);
         }
-        IOPort last = null;
-        ioUnits.add(last = IOPort.parseIOPort(cpu, 47, portConfig[0], last));
+        IOPort last;
+        ioUnits.add(last = IOPort.parseIOPort(cpu, 47, portConfig[0], null));
         ioUnits.add(last = IOPort.parseIOPort(cpu, 42, portConfig[1], last));
 
         for (int i = 2; i < portConfig.length; i++) {

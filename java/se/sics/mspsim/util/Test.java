@@ -103,7 +103,7 @@ public class Test implements USARTListener {
       index++;
     }
     try {
-      var cpu = CC2420Node.makeCPU(CC2420Node.makeChipConfig(), args[index++]);
+      var cpu = CC2420Node.makeCPU(CC2420Node.makeChipConfig(), args[index]);
       cpu.setDebug(debug);
       cpu.reset();
 

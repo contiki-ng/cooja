@@ -1919,7 +1919,7 @@ public class GUI {
           }
         }
         for (Mote m : newMotes) {
-          MoteID moteID = m.getInterfaces().getMoteID();
+          var moteID = m.getInterfaces().getMoteID();
           if (moteID != null) {
             moteID.setMoteID(nextMoteID++);
           } else {

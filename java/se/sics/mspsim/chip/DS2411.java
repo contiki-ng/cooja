@@ -100,11 +100,8 @@ public class DS2411 extends Chip {
         }
         break;
     case IDLE:
-        break;
     case RESETTING:
-        break;
     case WAIT_SENDING:
-        break;
     case SENDING:
         break;
       }

@@ -930,8 +930,7 @@ public class AreaViewer extends VisPlugin {
       // Zoom relative to mouse movement (keep XY-proportions)
       currentZoomY += 0.005 * currentZoomY * ((lastHandledPosition.y - e.getY()));
       currentZoomY = Math.max(0.05, currentZoomY);
-      currentZoomY = Math.min(1500, currentZoomY);
-      currentZoomX = currentZoomY;
+      currentZoomX = currentZoomY = Math.min(1500, currentZoomY);
 
       // We also need to update the current pan in order to zoom towards the mouse
       currentPanX =  zoomCenterPoint.x/currentZoomX - zoomCenterX;

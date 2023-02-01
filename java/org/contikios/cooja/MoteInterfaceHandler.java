@@ -66,7 +66,7 @@ public class MoteInterfaceHandler {
   private IPAddress myIPAddress;
   private LED myLED;
   private Log myLog;
-  private MoteID myMoteID;
+  private MoteID<?> myMoteID;
   private PIR myPIR;
   private Position myPosition;
   private Radio myRadio;
@@ -213,7 +213,7 @@ public class MoteInterfaceHandler {
    *
    * @return Mote ID interface
    */
-  public MoteID getMoteID() {
+  public MoteID<?> getMoteID() {
     if (myMoteID == null) {
       myMoteID = getInterfaceOfType(MoteID.class);
     }
