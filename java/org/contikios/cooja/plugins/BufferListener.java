@@ -1103,7 +1103,7 @@ public class BufferListener extends VisPlugin {
         Arrays.fill(accessedBitpattern, true);
       }
 
-      if (mote instanceof AbstractEmulatedMote<?, ?> emulatedMote) {
+      if (mote instanceof AbstractEmulatedMote<?, ?, ?> emulatedMote) {
         String s = emulatedMote.getPCString();
         sourceStr = s==null?"[unknown]":s;
         stackTrace = withStackTrace ? emulatedMote.getStackTrace() : null;
