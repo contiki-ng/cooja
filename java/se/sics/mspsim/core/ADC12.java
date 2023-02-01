@@ -219,9 +219,7 @@ public class ADC12 extends IOUnit {
       break;
     default:
       if (address >= ADC12MCTL0 && address <= ADC12MCTL15)  {
-        if (enableConversion) {
-          /* Ongoing conversion: not possible to modify */
-        } else {
+        if (!enableConversion) { // Cannot modify ongoing conversions.
           adc12mctl[address - ADC12MCTL0] = value & 0xff;
           if (DEBUG) log("ADC12MCTL" + (address - ADC12MCTL0)
               + " source = " + (value & 0xf)

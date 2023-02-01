@@ -77,7 +77,7 @@ public class StatCommands implements CommandBundle {
             } else {
               String id = unit.getID();
               String name = unit.getName();
-              if (id == name) {
+              if (id.equals(name)) {
                 context.out.println(unit.getName() + ": " + unit.getClass().getName());
               } else {
                 context.out.println(unit.getID() + " (" + unit.getName() + "): "
@@ -97,7 +97,7 @@ public class StatCommands implements CommandBundle {
             for (Loggable unit : units) {
               String id = unit.getID();
               String name = unit.getName();
-              if (id == name) {
+              if (id.equals(name)) {
                 context.out.println("  " + id);
               } else {
                 context.out.println("  " + id + " (" + name + ')');

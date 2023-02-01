@@ -320,9 +320,7 @@ public class TableColumnAdjuster implements PropertyChangeListener, TableModelLi
           return;
         }
         int viewColumn = table.convertColumnIndexToView(column);
-        if (viewColumn < 0) {
-          // Column is not visible
-        } else {
+        if (viewColumn >= 0) {
           TableColumn tableColumn = table.getColumnModel().getColumn(viewColumn);
           if (tableColumn.getResizable()) {
             int firstRow = e.getFirstRow();

@@ -249,10 +249,7 @@ public class ChartPanel extends JComponent {
           double minY = chart.getMinY();
           double minX = chart.getMinX();
           double maxX = chart.getMaxX();
-
-          if (maxY < minY || maxX <= minX) {
-            // No data in this chart
-          } else {
+          if (!(maxY < minY || maxX <= minX)) {
 //          double yfac = (1.0 * height) / (maxY - minY);
 //          double xfac = (1.0 * width) / (maxX - minX);
 

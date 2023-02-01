@@ -140,9 +140,7 @@ public class DataChart extends JPanel implements ServiceComponent {
   @Override
   public void stop() {
       jw.setVisible(false);
-      if (mode == Mode.STACK) {
-          // ?
-      } else {
+      if (mode != Mode.STACK) {
           dss.stop();
       }
       status = Status.STOPPED;

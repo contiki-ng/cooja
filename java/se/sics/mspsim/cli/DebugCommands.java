@@ -471,6 +471,7 @@ public class DebugCommands implements CommandBundle {
                 while (pos < acount) {
                     String tS = context.getArgument(pos++);
                     if ("ubyte".equals(tS)) {
+                        type = Utils.UBYTE;
                     } else if ("byte".equals(tS)) {
                         type = Utils.BYTE;
                     } else if ("word".equals(tS)) {
@@ -637,7 +638,7 @@ public class DebugCommands implements CommandBundle {
                     for (Loggable unit : loggable) {
                         String id = unit.getID();
                         String name = unit.getName();
-                        if (id == name) {
+                        if (id.equals(name)) {
                             context.out.println("  " + id);
                         } else {
                             context.out.println("  " + id + " (" + name + ')');

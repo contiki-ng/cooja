@@ -831,10 +831,6 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 if (!chipSelect) {
                         spiResetState();
                 }
-
-                if (DEBUG) {
-                        /*log("Chip select: " + chipSelect);*/
-                }
         }
 
         void setStateRX() {
@@ -868,28 +864,37 @@ public class CC1101 extends Radio802154 implements USARTListener {
 
     /* Bit 4-6: simplified state */
     status = status << 3;
-    if (state == CC1101RadioState.CC1101_STATE_IDLE) {
-      status += 0;
-    } else if (state == CC1101RadioState.CC1101_STATE_RX ||
-        state == CC1101RadioState.CC1101_STATE_RX_END ||
-        state == CC1101RadioState.CC1101_STATE_RX_RST) {
-      status += 1;
-    } else if (state == CC1101RadioState.CC1101_STATE_TX ||
-        state == CC1101RadioState.CC1101_STATE_TX_END) {
-      status += 2;
-    } else if (state == CC1101RadioState.CC1101_STATE_FSTXON) {
-      status += 3;
-    } else if (state == CC1101RadioState.CC1101_STATE_ENDCAL ||
-        state == CC1101RadioState.CC1101_STATE_MANCAL ||
-        state == CC1101RadioState.CC1101_STATE_STARTCAL) {
-      status += 4;
-    } else if (state == CC1101RadioState.CC1101_STATE_RXTX_SWITCH ||
-        state == CC1101RadioState.CC1101_STATE_TXRX_SWITCH) {
-      status += 5;
-    } else if (state == CC1101RadioState.CC1101_STATE_RXFIFO_OVERFLOW) {
-      status += 6;
-    } else if (state == CC1101RadioState.CC1101_STATE_TXFIFO_UNDERFLOW) {
-      status += 7;
+    switch (state) {
+      case CC1101_STATE_IDLE:
+        status += 0;
+        break;
+      case CC1101_STATE_RX:
+      case CC1101_STATE_RX_END:
+      case CC1101_STATE_RX_RST:
+        status += 1;
+        break;
+      case CC1101_STATE_TX:
+      case CC1101_STATE_TX_END:
+        status += 2;
+        break;
+      case CC1101_STATE_FSTXON:
+        status += 3;
+        break;
+      case CC1101_STATE_ENDCAL:
+      case CC1101_STATE_MANCAL:
+      case CC1101_STATE_STARTCAL:
+        status += 4;
+        break;
+      case CC1101_STATE_RXTX_SWITCH:
+      case CC1101_STATE_TXRX_SWITCH:
+        status += 5;
+        break;
+      case CC1101_STATE_RXFIFO_OVERFLOW:
+        status += 6;
+        break;
+      case CC1101_STATE_TXFIFO_UNDERFLOW:
+        status += 7;
+        break;
     }
 
     /* Bit 0-3 */
