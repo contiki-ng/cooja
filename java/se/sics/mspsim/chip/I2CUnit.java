@@ -33,7 +33,6 @@
 
 package se.sics.mspsim.chip;
 
-import se.sics.mspsim.core.GenericUSCI;
 import se.sics.mspsim.core.MSP430Core;
 import se.sics.mspsim.core.TimeEvent;
 import se.sics.mspsim.core.USARTListener;
