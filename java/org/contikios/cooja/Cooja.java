@@ -42,7 +42,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -1310,58 +1309,7 @@ public class Cooja {
     Element simulationElement = new Element("simulation");
     simulationElement.addContent(mySimulation.getConfigXML());
     root.addContent(simulationElement);
-
-    // Create started plugins config
-    ArrayList<Element> config = new ArrayList<>();
-    for (var startedPlugin : mySimulation.startedPlugins) {
-      var pluginElement = new Element("plugin");
-      pluginElement.setText(startedPlugin.getClass().getName());
-
-      // Create mote argument config (if mote plugin)
-      if (startedPlugin instanceof MotePlugin motePlugin) {
-        Mote taggedMote = motePlugin.getMote();
-        for (int moteNr = 0; moteNr < mySimulation.getMotesCount(); moteNr++) {
-          if (mySimulation.getMote(moteNr) == taggedMote) {
-            var pluginSubElement = new Element("mote_arg");
-            pluginSubElement.setText(Integer.toString(moteNr));
-            pluginElement.addContent(pluginSubElement);
-            break;
-          }
-        }
-      }
-
-      // Create plugin specific configuration
-      Collection<Element> pluginXML = startedPlugin.getConfigXML();
-      if (pluginXML != null) {
-        var pluginSubElement = new Element("plugin_config");
-        pluginSubElement.addContent(pluginXML);
-        pluginElement.addContent(pluginSubElement);
-      }
-
-      // If plugin is visualizer plugin, create visualization arguments
-      var pluginFrame = startedPlugin.getCooja();
-      if (pluginFrame != null) {
-        var pluginSubElement = new Element("bounds");
-        var bounds = pluginFrame.getBounds();
-        pluginSubElement.setAttribute("x", String.valueOf(bounds.x));
-        pluginSubElement.setAttribute("y", String.valueOf(bounds.y));
-        pluginSubElement.setAttribute("height", String.valueOf(bounds.height));
-        pluginSubElement.setAttribute("width", String.valueOf(bounds.width));
-
-        int z = getDesktopPane().getComponentZOrder(pluginFrame);
-        if (z != 0) {
-          pluginSubElement.setAttribute("z", String.valueOf(z));
-        }
-
-        if (pluginFrame.isIcon()) {
-          pluginSubElement.setAttribute("minimized", String.valueOf(true));
-        }
-
-        pluginElement.addContent(pluginSubElement);
-      }
-      config.add(pluginElement);
-    }
-    root.addContent(config);
+    root.addContent(mySimulation.getPluginConfigXML());
     return root;
   }
 
