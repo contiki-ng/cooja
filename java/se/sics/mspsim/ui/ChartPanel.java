@@ -264,8 +264,8 @@ public class ChartPanel extends JComponent {
     }
   }
 
-  private static double getGridValue(double totMinX, double totMaxX, int maxCount) {
-    double diff = totMaxX - totMinX;
+  private static double getGridValue(double totMin, double totMax, int maxCount) {
+    double diff = totMax - totMin;
     if (diff <= 0) {
       return 1;
     }
