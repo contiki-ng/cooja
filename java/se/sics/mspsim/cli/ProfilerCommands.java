@@ -175,7 +175,7 @@ public class ProfilerCommands implements CommandBundle {
                 for(Chip chip : cpu.getChips()) {
                     String id = chip.getID();
                     String name = chip.getName();
-                    if (id == name) {
+                    if (id.equals(name)) {
                         context.out.println("  " + id);
                     } else {
                         context.out.println("  " + id + " (" + name + ')');

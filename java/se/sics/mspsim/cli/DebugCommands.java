@@ -638,7 +638,7 @@ public class DebugCommands implements CommandBundle {
                     for (Loggable unit : loggable) {
                         String id = unit.getID();
                         String name = unit.getName();
-                        if (id == name) {
+                        if (id.equals(name)) {
                             context.out.println("  " + id);
                         } else {
                             context.out.println("  " + id + " (" + name + ')');
