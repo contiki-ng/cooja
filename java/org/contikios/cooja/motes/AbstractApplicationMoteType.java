@@ -34,10 +34,6 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -52,6 +48,7 @@ import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
+import org.jdom2.Element;
 
 @ClassDescription("Application Mote Type")
 public abstract class AbstractApplicationMoteType implements MoteType {
@@ -180,13 +177,6 @@ public abstract class AbstractApplicationMoteType implements MoteType {
   public static class SimpleMoteID extends MoteID<Mote> {
     public SimpleMoteID(Mote mote) {
       super(mote);
-    }
-    @Override
-    public JPanel getInterfaceVisualizer() {
-      return null;
-    }
-    @Override
-    public void releaseInterfaceVisualizer(JPanel panel) {
     }
   }
 }
