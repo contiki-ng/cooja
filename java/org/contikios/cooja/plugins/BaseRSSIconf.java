@@ -172,22 +172,22 @@ public class BaseRSSIconf extends VisPlugin {
 				.setCellRenderer(new DefaultTableCellRenderer() { // TODO ????
 							@Override
 							public void setValue(Object value) {
-								if (!(value instanceof Double)) {
+                if (!(value instanceof Double num)) {
 									setText(value.toString());
 									return;
 								}
-								setText(String.format("%1.1f", (Double) value));
+                setText(String.format("%1.1f", num));
 							}
 						});
 		motesTable.getColumnModel().getColumn(IDX_BaseRSSI)
 				.setCellRenderer(new DefaultTableCellRenderer() {
 					@Override
 					public void setValue(Object value) {
-						if (!(value instanceof Double)) {
+            if (!(value instanceof Double num)) {
 							setText(value.toString());
 							return;
 						}
-						setText(String.format("%1.1f dBm", (Double) value));
+            setText(String.format("%1.1f dBm", num));
 					}
 				});
 		motesTable.getColumnModel().getColumn(IDX_Mote)
