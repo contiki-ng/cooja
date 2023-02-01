@@ -471,6 +471,7 @@ public class DebugCommands implements CommandBundle {
                 while (pos < acount) {
                     String tS = context.getArgument(pos++);
                     if ("ubyte".equals(tS)) {
+                        type = Utils.UBYTE;
                     } else if ("byte".equals(tS)) {
                         type = Utils.BYTE;
                     } else if ("word".equals(tS)) {
