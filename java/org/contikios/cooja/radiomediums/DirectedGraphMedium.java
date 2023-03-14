@@ -291,6 +291,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
 
       if (dest.radio.isTransmitting()) {
         newConn.addInterfered(dest.radio);
+        dest.radio.interfereAnyReception();
         continue;
       }
 
