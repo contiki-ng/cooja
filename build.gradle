@@ -35,7 +35,7 @@ dependencies {
   // https://mvnrepository.com/artifact/org.openjdk.nashorn/nashorn-core
   implementation 'org.openjdk.nashorn:nashorn-core:15.4'
   // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-  implementation 'org.slf4j:slf4j-api:2.0.6'
+  implementation 'org.slf4j:slf4j-api:2.0.7'
   // https://mvnrepository.com/artifact/org.swinglabs.swingx/swingx-autocomplete
   implementation 'org.swinglabs.swingx:swingx-autocomplete:1.6.5-1'
 }
