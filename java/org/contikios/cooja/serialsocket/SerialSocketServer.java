@@ -318,31 +318,31 @@ public class SerialSocketServer implements Plugin, MotePlugin {
     listeners.add(listener);
   }
   
-  public void notifyServerStarted(int port) {
+  private void notifyServerStarted(int port) {
     for (ServerListener listener : listeners) {
       listener.onServerStarted(port);
     }
   }
   
-  public void notifyClientConnected(Socket client) {
+  private void notifyClientConnected(Socket client) {
     for (ServerListener listener : listeners) {
       listener.onClientConnected(client);
     }
   }
 
-  public void notifyClientDisconnected() {
+  private void notifyClientDisconnected() {
     for (ServerListener listener : listeners) {
       listener.onClientDisconnected();
     }
   }
   
-  public void notifyServerStopped() {
+  private void notifyServerStopped() {
     for (ServerListener listener : listeners) {
       listener.onServerStopped();
     }
   }
   
-  public void notifyServerError(String msg) {
+  private void notifyServerError(String msg) {
     for (ServerListener listener : listeners) {
       listener.onServerError(msg);
     }

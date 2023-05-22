@@ -43,7 +43,7 @@ package se.sics.mspsim.core;
 
 import java.io.PrintStream;
 
-public class EventQueue {
+class EventQueue {
 
   private TimeEvent first;
   public long nextTime;

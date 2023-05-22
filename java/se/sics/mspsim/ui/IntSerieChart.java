@@ -46,7 +46,7 @@ package se.sics.mspsim.ui;
  */
 public abstract class IntSerieChart extends AbstractChart {
 
-  protected int[] data;
+  int[] data;
 
   public void setData(int[] data) {
     this.data = data;

@@ -41,7 +41,7 @@
 
 package se.sics.mspsim.util;
 
-public class ELFProgram {
+class ELFProgram {
 
   int type;
   int offset;

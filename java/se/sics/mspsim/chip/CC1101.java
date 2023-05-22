@@ -687,7 +687,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
     receiverListener = listener;
   }
 
-  boolean receiverOn;
+  private boolean receiverOn;
         boolean setState(CC1101RadioState newState) {
                 if (newState != CC1101RadioState.CC1101_STATE_IDLE
                                 && newState != CC1101RadioState.CC1101_STATE_RX
@@ -708,7 +708,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
     return true;
         }
 
-        boolean rxGotSynchByte;
+        private boolean rxGotSynchByte;
         private int rxExpectedLen = -1;
         @Override
         public void receivedByte(byte data) {

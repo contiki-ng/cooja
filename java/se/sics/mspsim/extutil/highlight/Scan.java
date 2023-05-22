@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class Scan {
+class Scan {
   // Get the filename from the command line
   public static void main(String[] args) throws IOException {
     if (args.length != 1) {
@@ -19,7 +19,7 @@ public class Scan {
   }
 
   // Scan each line in turn
-  public static void scan(String filename) throws IOException {
+  private static void scan(String filename) throws IOException {
     File file = new File(filename);
     int len = (int) file.length();
     char[] buffer = new char[len];

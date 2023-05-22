@@ -43,7 +43,7 @@ package se.sics.json;
 /**
  *
  */
-public class ParseException extends Exception {
+class ParseException extends Exception {
     public ParseException(String message) {
         super(message);
     }

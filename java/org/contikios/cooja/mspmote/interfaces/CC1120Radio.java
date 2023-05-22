@@ -335,7 +335,7 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 	/**
 	 * Last 8 received signal strengths
 	 */
-	double currentSignalStrength;
+	private double currentSignalStrength;
 	private final double[] rssiLast = new double[8];
 	private int rssiLastCounter;
 

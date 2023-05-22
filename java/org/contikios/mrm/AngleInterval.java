@@ -47,7 +47,7 @@ class AngleInterval {
   private static final Logger logger = LoggerFactory.getLogger(AngleInterval.class);
   
   // Sub intervals all between 0 and 2*PI
-  final List<Interval> subIntervals = new ArrayList<>();
+  private final List<Interval> subIntervals = new ArrayList<>();
   
   /**
    * Creates a new angle interval.

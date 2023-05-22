@@ -44,8 +44,8 @@ public abstract class CC2420Node<FlashType extends ExternalFlash> extends Generi
     protected final IOPort port4;
     protected final IOPort port5;
 
-    public final CC2420 radio;
-    public final DS2411 ds2411;
+    protected final CC2420 radio;
+    private final DS2411 ds2411;
 
     public static MSP430Config makeChipConfig() {
         // FIXME: this should be a config for the MSP430x1611.

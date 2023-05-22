@@ -36,7 +36,7 @@ package org.contikios.cooja.util;
 
 /* basic CRC-CCITT code */
 public class CCITT_CRC {
-  int crc;
+  private int crc;
 
   public int getCRC() {
     return crc;

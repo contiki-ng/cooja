@@ -15,8 +15,8 @@ public class CommandHandler implements ActiveComponent, LineListener {
 
   private final HashMap<String, Command> commands = new HashMap<>();
 
-  protected final PrintStream out;
-  protected final PrintStream err;
+  final PrintStream out;
+  final PrintStream err;
   private MapTable mapTable;
   private ComponentRegistry registry;
   private final ArrayList<CommandContext[]> currentAsyncCommands = new ArrayList<>();

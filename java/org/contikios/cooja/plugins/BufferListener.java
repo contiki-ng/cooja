@@ -816,15 +816,15 @@ public class BufferListener extends VisPlugin {
   }
 
   static class SegmentMemoryMonitor implements SegmentMonitor {
-    protected final BufferListener bl;
-    protected final Mote mote;
+    final BufferListener bl;
+    final Mote mote;
 
     private final long address;
     private final int size;
 
     private byte[] oldData;
 
-    public SegmentMemoryMonitor(BufferListener bl, Mote mote, long address, int size)
+    SegmentMemoryMonitor(BufferListener bl, Mote mote, long address, int size)
     throws Exception {
       this.bl = bl;
       this.mote = mote;
@@ -838,20 +838,20 @@ public class BufferListener extends VisPlugin {
       }
     }
 
-    public Mote getMote() {
+    Mote getMote() {
       return mote;
     }
-    public long getAddress() {
+    long getAddress() {
       return address;
     }
-    public int getSize() {
+    int getSize() {
       return size;
     }
     public MemoryMonitorType getType() {
       return MemoryMonitorType.SEGMENT;
     }
 
-    public void dispose() {
+    void dispose() {
       if (address > 0) {
         mote.getMemory().removeSegmentMonitor(address, size, this);
       }
@@ -1008,11 +1008,11 @@ public class BufferListener extends VisPlugin {
     return true;
   }
 
-  public String getFilter() {
+  private String getFilter() {
     return filterTextField.getText();
   }
 
-  public void setFilter(String str) {
+  private void setFilter(String str) {
     filterTextField.setText(str);
 
     try {
