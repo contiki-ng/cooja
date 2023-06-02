@@ -1,5 +1,6 @@
 plugins {
-    id 'application'
+  id 'application'
+  id 'com.diffplug.spotless' version '6.22.0'
 }
 
 group = 'org.contikios.cooja'
@@ -9,6 +10,28 @@ def javaVersion = 21
 java {
   toolchain {
     languageVersion = JavaLanguageVersion.of(javaVersion)
+  }
+}
+
+spotless {
+  java {
+    toggleOffOn()
+    removeUnusedImports()
+    importOrder()
+    // trimTrailingWhitespace()
+    // cleanthat()
+    // formatAnnotations()
+
+    // Use a different clang-format binary with -PclangFormat=clang-format-15.
+    def clangFormatBinary = (String) project.findProperty('clangFormat') ?: 'clang-format'
+    def clangOutput = new ByteArrayOutputStream()
+    exec {
+      commandLine clangFormatBinary, '--version'
+      standardOutput = clangOutput
+    }
+    def clangVersion = (String) (clangOutput.toString() =~ /\d+\.\d+\.\d+/)[0]
+    // FIXME: enable clangFormat in the future.
+//    clangFormat(clangVersion).pathToExe(clangFormatBinary).style('file')
   }
 }
 
