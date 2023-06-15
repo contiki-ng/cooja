@@ -229,6 +229,9 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     /* Register external visualizers */
     registerVisualizerSkin(DGRMVisualizerSkin.class);
+    registerVisualizerSkin(LogisticLossVisualizerSkin.class);
+    registerVisualizerSkin(MRMVisualizerSkin.class);
+    registerVisualizerSkin(UDGMVisualizerSkin.class);
     String[] skins = gui.getProjectConfig().getStringArrayValue(Visualizer.class, "SKINS");
 
     for (String skinClass : skins) {

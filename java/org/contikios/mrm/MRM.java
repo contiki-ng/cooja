@@ -44,7 +44,6 @@ import org.contikios.cooja.interfaces.DirectionalAntennaRadio;
 import org.contikios.cooja.interfaces.NoiseSourceRadio;
 import org.contikios.cooja.interfaces.NoiseSourceRadio.NoiseLevelListener;
 import org.contikios.cooja.interfaces.Radio;
-import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 import org.contikios.mrm.ChannelModel.Parameter;
 import org.contikios.mrm.ChannelModel.RadioPair;
@@ -106,7 +105,6 @@ public class MRM extends AbstractRadioMedium {
     if (Cooja.isVisualized()) {
       simulation.getCooja().registerPlugin(AreaViewer.class);
       simulation.getCooja().registerPlugin(FormulaViewer.class);
-      Visualizer.registerVisualizerSkin(MRMVisualizerSkin.class);
     }
   }
 
@@ -117,7 +115,6 @@ public class MRM extends AbstractRadioMedium {
     if (Cooja.isVisualized()) {
       simulation.getCooja().unregisterPlugin(AreaViewer.class);
       simulation.getCooja().unregisterPlugin(FormulaViewer.class);
-      Visualizer.unregisterVisualizerSkin(MRMVisualizerSkin.class);
     }
     currentChannelModel.getSettingsTriggers().deleteTriggers(this);
   }
