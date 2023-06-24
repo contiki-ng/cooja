@@ -662,10 +662,7 @@ public class ChannelModel {
 
         if (!getParameterBooleanValue(Parameter.rt_disallow_direct_path)) {
           directPathExists = isDirectPath(justBeforeDestination, dest);
-        } else {
-          directPathExists = false;
         }
-
       } else if (type == RayData.RayType.REFRACTION && pseudoSourceToDest.intersectsLine(line)) {
 
         // Destination is inside refraction interval
@@ -1215,10 +1212,8 @@ public class ChannelModel {
                   if (interval != null && !interval.isEmpty()) {
                     //logger.info("> into: " + newIntervalsToAdd.get(k));
                     unhandledAngles.add(interval);
-                    unhandledAnglesChanged = true;
                   }
                 }
-
                 unshadowed = false;
                 break;
               }
