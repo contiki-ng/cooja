@@ -213,12 +213,12 @@ class AngleInterval {
    */
   public double getEndAngle() {
     if (subIntervals.isEmpty()) {
-      logger.warn("Getting start angle of null angle interval!");
+      logger.warn("Getting end angle of null angle interval!");
       return 0;
     }
     
     if (subIntervals.size() > 2) {
-      logger.warn("Getting start angle of malformed angle interval!");
+      logger.warn("Getting end angle of malformed angle interval!");
       return 0;
     }
     
