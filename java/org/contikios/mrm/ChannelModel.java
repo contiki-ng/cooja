@@ -1183,11 +1183,9 @@ public class ChannelModel {
                   visibleLineCandidateAngleInterval.intersectWith(shadowLineCandidateAngleInterval);
                 if (intersectedInterval != null) {
                   var tempVector1 = AngleInterval.intersect(unhandledAngles, intersectedInterval);
-                  if (tempVector1 != null) {
-                    for (var interval : tempVector1) {
-                      if (interval != null && !interval.isEmpty()) {
-                        newIntervalsToAdd.add(interval);
-                      }
+                  for (var interval : tempVector1) {
+                    if (interval != null && !interval.isEmpty()) {
+                      newIntervalsToAdd.add(interval);
                     }
                   }
                 }
