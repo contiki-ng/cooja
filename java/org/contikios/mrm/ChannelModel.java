@@ -1092,13 +1092,9 @@ public class ChannelModel {
               } else {
                 croppedVisibleLineCandidates.add(newCropped);
               }
-
             }
           }
-
           // Skip line completely if not in our visible angle interval
-          else {
-          }
         }
         //logger.info("Cropped line candidates count = " + croppedVisibleLineCandidates.size());
         if (croppedVisibleLineCandidates.isEmpty()) {
@@ -1225,9 +1221,8 @@ public class ChannelModel {
 
                 unshadowed = false;
                 break;
-              } else {
-                // Not intersecting after all, just ignore this
               }
+              // Ignore when not intersecting at all.
             }
 
             if (!unshadowed) {
