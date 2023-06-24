@@ -179,7 +179,7 @@ class AngleInterval {
    * @return Start angle
    */
   public double getStartAngle() {
-    if (subIntervals == null || subIntervals.isEmpty()) {
+    if (subIntervals.isEmpty()) {
       logger.warn("Getting start angle of null angle interval!");
       return 0;
     }
@@ -212,7 +212,7 @@ class AngleInterval {
    * @return End angle
    */
   public double getEndAngle() {
-    if (subIntervals == null || subIntervals.isEmpty()) {
+    if (subIntervals.isEmpty()) {
       logger.warn("Getting start angle of null angle interval!");
       return 0;
     }
