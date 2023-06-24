@@ -163,18 +163,10 @@ public class SimpleProfiler implements Profiler, EventListener {
   public void profileReturn(long cycles) {
     if (cSP <= 0) {
       /* the stack pointer might have been messed with? */
-      PrintStream logger = this.logger;
-      if (logger != null) {
-          // logger.println("SimpleProfiler: Too many returns?");
-      } else {
-        // System.err.println("SimpleProfiler: Too many returns?");
-      }
       return;
     }
     CallEntry cspEntry = callStack[--cSP];
     MapEntry fkn = cspEntry.function;
-//     System.out.println("Profiler: return / call stack: " + cSP + ", " + fkn);
-
     long elapsed = cycles - cspEntry.cycles;
     long exElapsed = cycles - cspEntry.exclusiveCycles;
     if (cSP != 0) {
