@@ -401,9 +401,6 @@ public class JavaScanner extends Scanner {
       case 'F':
       case 'd':
       case 'D':
-        start = start + charlength;
-        charlength = 1;
-        return NUMBER;
       case 'l':
       case 'L':
         start = start + charlength;
