@@ -272,8 +272,9 @@ public class ConsoleUI extends JComponent {
   public void setVisible(boolean visible) {
     super.setVisible(visible);
     if (timer == null) {
-      // Ignore
-    } else if (visible) {
+      return;
+    }
+    if (visible) {
       timer.start();
     } else {
       timer.stop();
