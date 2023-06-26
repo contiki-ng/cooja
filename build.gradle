@@ -81,6 +81,11 @@ tasks.withType(JavaCompile).configureEach {
                            "-Aproject=${project.group}/${project.name}"]
 }
 
+tasks.withType(AbstractArchiveTask).configureEach {
+  preserveFileTimestamps = false
+  reproducibleFileOrder = true
+}
+
 tasks.register('copyDependencies', Copy) {
   description = "Copy jar dependencies into ${buildDir}/libs/lib/."
   group = "Build"
@@ -91,7 +96,6 @@ tasks.register('copyDependencies', Copy) {
 // Run Cooja with: java <JVM parameters> -jar build/libs/cooja.jar <Cooja parameters>
 jar {
   dependsOn copyDependencies
-  reproducibleFileOrder = true
   manifest {
     attributes 'Main-Class': 'org.contikios.cooja.Main',
       'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' ')
@@ -102,7 +106,6 @@ tasks.register('fullJar', Jar) {
   description = "Assembles a jar that contains all dependencies."
   group = "Build"
   archiveClassifier.set('full')
-  reproducibleFileOrder = true
   manifest {
     attributes 'Main-Class': 'org.contikios.cooja.Main',
       'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' ')
