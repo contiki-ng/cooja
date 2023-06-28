@@ -83,12 +83,6 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
     boolean nhc = (packet.get(0) & SICSLOWPAN_IPHC_NH_C) > 0;
     int hlim = (packet.get(0) & 0x03);
     switch (hlim) {
-      case 0x00:
-        hlim = 0;
-        break;
-      case 0x01:
-        hlim = 1;
-        break;
       case 0x02:
         hlim = 64;
         break;

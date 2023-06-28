@@ -662,10 +662,7 @@ public class ChannelModel {
 
         if (!getParameterBooleanValue(Parameter.rt_disallow_direct_path)) {
           directPathExists = isDirectPath(justBeforeDestination, dest);
-        } else {
-          directPathExists = false;
         }
-
       } else if (type == RayData.RayType.REFRACTION && pseudoSourceToDest.intersectsLine(line)) {
 
         // Destination is inside refraction interval
@@ -1092,13 +1089,9 @@ public class ChannelModel {
               } else {
                 croppedVisibleLineCandidates.add(newCropped);
               }
-
             }
           }
-
           // Skip line completely if not in our visible angle interval
-          else {
-          }
         }
         //logger.info("Cropped line candidates count = " + croppedVisibleLineCandidates.size());
         if (croppedVisibleLineCandidates.isEmpty()) {
@@ -1190,11 +1183,9 @@ public class ChannelModel {
                   visibleLineCandidateAngleInterval.intersectWith(shadowLineCandidateAngleInterval);
                 if (intersectedInterval != null) {
                   var tempVector1 = AngleInterval.intersect(unhandledAngles, intersectedInterval);
-                  if (tempVector1 != null) {
-                    for (var interval : tempVector1) {
-                      if (interval != null && !interval.isEmpty()) {
-                        newIntervalsToAdd.add(interval);
-                      }
+                  for (var interval : tempVector1) {
+                    if (interval != null && !interval.isEmpty()) {
+                      newIntervalsToAdd.add(interval);
                     }
                   }
                 }
@@ -1219,15 +1210,12 @@ public class ChannelModel {
                   if (interval != null && !interval.isEmpty()) {
                     //logger.info("> into: " + newIntervalsToAdd.get(k));
                     unhandledAngles.add(interval);
-                    unhandledAnglesChanged = true;
                   }
                 }
-
                 unshadowed = false;
                 break;
-              } else {
-                // Not intersecting after all, just ignore this
               }
+              // Ignore when not intersecting at all.
             }
 
             if (!unshadowed) {

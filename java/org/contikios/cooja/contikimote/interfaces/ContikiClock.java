@@ -169,9 +169,4 @@ public class ContikiClock extends Clock implements PolledBeforeActiveTicks, Poll
   public JPanel getInterfaceVisualizer() {
     return null;
   }
-
-  @Override
-  public void releaseInterfaceVisualizer(JPanel panel) {
-  }
-
 }

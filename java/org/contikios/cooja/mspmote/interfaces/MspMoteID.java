@@ -154,9 +154,8 @@ public class MspMoteID extends MoteID<MspMote> {
 	private void addMonitor(String variable, MemoryMonitor monitor) {
 	    if (moteMem.variableExists(variable)) {
 	        int address = (int) moteMem.getVariableAddress(variable);
-	        if ((address & 1) != 0) {
-	            // Variable can not be a word - must be a byte
-	        } else {
+          // Variable must be aligned as a word.
+          if ((address & 1) == 0) {
 	            mote.getCPU().addWatchPoint(address, monitor);
 	            mote.getCPU().addWatchPoint(address + 1, monitor);
 	        }

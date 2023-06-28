@@ -136,7 +136,6 @@ public class Enc28J60 extends Chip {
 
                 if (writingToWBM) {
                         wbmData.add((byte) data);
-                        val = 0x00;
                         return val;
                 } else if (readingFromRBM) {
                         if (!rbmPackets.isEmpty()) {
@@ -148,7 +147,6 @@ public class Enc28J60 extends Chip {
                                 }
                         } else {
                                 log("Enc28j60: warning, no packet in rbm, returning 0");
-                                val = 0x00;
                         }
                         return val;
                 }
@@ -197,7 +195,6 @@ public class Enc28J60 extends Chip {
                                 }
                         } else {
                                 log("Enc28j60: warning, no packet in rbm, returning 0");
-                                val = 0x00;
                         }
                         readingFromRBM = true;
                 }

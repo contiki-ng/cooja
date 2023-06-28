@@ -572,10 +572,7 @@ public class DebugCommands implements CommandBundle {
             int size = 1; // unsigned byte
             if (context.getArgumentCount() > 2) {
               String tS = context.getArgument(2);
-              if ("byte".equals(tS)) {
-              } else if ("word".equals(tS)) {
-                size = 2;
-              } else if ("uword".equals(tS)) {
+              if ("word".equals(tS) || "uword".equals(tS)) {
                 size = 2;
               }
             }
