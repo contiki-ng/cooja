@@ -369,6 +369,13 @@ public class Cooja {
 
     // Register plugins.
     var pluginClassNames = projectConfig.getStringArrayValue(Cooja.class, "PLUGINS");
+    if (gui != null) {
+      for (var pluginClass : ExtensionManager.builtinPlugins.values()) {
+        if (pluginClass.getAnnotation(PluginType.class).value() == PluginType.PType.MOTE_PLUGIN) {
+          gui.menuMotePluginClasses.add(pluginClass);
+        }
+      }
+    }
     if (pluginClassNames != null) {
       pluginClasses = new ArrayList<>(ExtensionManager.builtinPlugins.values());
       for (var pluginClassName : pluginClassNames) {
