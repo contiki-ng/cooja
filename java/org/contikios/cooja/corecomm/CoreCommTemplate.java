@@ -30,12 +30,13 @@
 package org.contikios.cooja.corecomm;
 
 import java.io.File;
+import java.lang.foreign.Linker;
+import java.lang.foreign.FunctionDescriptor;
+import java.lang.foreign.MemoryLayout;
+import java.lang.foreign.SegmentScope;
+import java.lang.foreign.SymbolLookup;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
-import jdk.incubator.foreign.CLinker;
-import jdk.incubator.foreign.FunctionDescriptor;
-import jdk.incubator.foreign.MemoryLayout;
-import jdk.incubator.foreign.SymbolLookup;
 import org.contikios.cooja.CoreComm;
 
 /**
@@ -45,6 +46,8 @@ import org.contikios.cooja.CoreComm;
  * @see CoreComm
  * @author Fredrik Osterlind
  */
+// Do not bother end-user with warnings about internal Cooja details.
+@SuppressWarnings("preview")
 public class CoreCommTemplate implements CoreComm {
   private final SymbolLookup symbols;
   private final MethodHandle coojaTick;
@@ -57,11 +60,12 @@ public class CoreCommTemplate implements CoreComm {
   public CoreCommTemplate(File libFile) {
     System.load(libFile.getAbsolutePath());
     symbols = SymbolLookup.loaderLookup();
-    coojaTick = CLinker.getInstance().downcallHandle(symbols.lookup("cooja_tick").get(),
-            MethodType.methodType(void.class), FunctionDescriptor.ofVoid());
+    var linker = Linker.nativeLinker();
+    coojaTick = linker.downcallHandle(symbols.find("cooja_tick").get(),
+            FunctionDescriptor.ofVoid());
     // Call cooja_init() in Contiki-NG.
-    var coojaInit = CLinker.getInstance().downcallHandle(symbols.lookup("cooja_init").get(),
-            MethodType.methodType(void.class), FunctionDescriptor.ofVoid());
+    var coojaInit = linker.downcallHandle(symbols.find("cooja_init").get(),
+            FunctionDescriptor.ofVoid());
     try {
       coojaInit.invokeExact();
     } catch (Throwable e) {
@@ -80,6 +84,6 @@ public class CoreCommTemplate implements CoreComm {
 
   @Override
   public long getReferenceAddress() {
-    return symbols.lookup("referenceVar").get().address().toRawLongValue();
+    return symbols.find("referenceVar").get().address();
   }
 }

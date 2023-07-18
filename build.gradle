@@ -4,7 +4,7 @@ plugins {
 
 group = 'org.contikios.cooja'
 
-def javaVersion = 17
+def javaVersion = 20
 
 java {
   toolchain {
@@ -72,12 +72,12 @@ application {
     // 08-ipv6-unicast.csc is one example. Unclear why, the JVM should not
     // do anything with the pointers in C-land part of ContikiMoteType.
     '-XX:-UseCompressedOops', '-XX:-UseCompressedClassPointers',
-    // Enable the experimental foreign function interface in Java 17.
-    '--enable-native-access', 'ALL-UNNAMED', '--add-modules', 'jdk.incubator.foreign']
+    // Enable the preview foreign function interface.
+    '--enable-preview', '--enable-native-access', 'ALL-UNNAMED']
 }
 
 tasks.withType(JavaCompile).configureEach {
-  options.compilerArgs += ['--add-modules', 'jdk.incubator.foreign',
+  options.compilerArgs += ['--enable-preview',
                            "-Aproject=${project.group}/${project.name}"]
 }
 

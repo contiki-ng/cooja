@@ -35,6 +35,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.SegmentScope;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -49,8 +51,6 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jdk.incubator.foreign.MemoryAddress;
-import jdk.incubator.foreign.ResourceScope;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
@@ -110,6 +110,8 @@ import org.slf4j.LoggerFactory;
  */
 @ClassDescription("Cooja mote")
 @AbstractionLevelDescription("OS level")
+// Do not bother end-user with warnings about internal Cooja details.
+@SuppressWarnings("preview")
 public class ContikiMoteType extends BaseContikiMoteType {
 
   private static final Logger logger = LoggerFactory.getLogger(ContikiMoteType.class);
@@ -642,8 +644,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
   static void getCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
       int length = sec.getTotalSize();
-      final var addr = MemoryAddress.ofLong(sec.getStartAddr());
-      addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().get(0, sec.getMemory(), 0, length);
+      MemorySegment.ofAddress(sec.getStartAddr(), length, SegmentScope.global())
+              .asByteBuffer().get(0, sec.getMemory(), 0, length);
     }
   }
 
@@ -656,8 +658,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
   static void setCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
       int length = sec.getTotalSize();
-      final var addr = MemoryAddress.ofLong(sec.getStartAddr());
-      addr.asSegment(length, ResourceScope.globalScope()).asByteBuffer().put(0, sec.getMemory(), 0, length);
+      MemorySegment.ofAddress(sec.getStartAddr(), length, SegmentScope.global())
+              .asByteBuffer().put(0, sec.getMemory(), 0, length);
     }
   }
 
@@ -834,8 +836,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
   private static void compileSourceFile(Path tempDir, String className) throws MoteTypeCreationException {
     String[] cmd = {Cooja.configuration.javac(),
             "-cp", System.getProperty("java.class.path"), "--release", String.valueOf(Runtime.version().feature()),
-            // Disable warnings to avoid 3 lines of "warning: using incubating module(s): jdk.incubator.foreign".
-            "-nowarn", "--add-modules", "jdk.incubator.foreign",
+            "--enable-preview",
             tempDir + "/org/contikios/cooja/corecomm/" + className + ".java" };
     ProcessBuilder pb = new ProcessBuilder(cmd);
     Process p;
