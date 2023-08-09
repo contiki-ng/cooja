@@ -916,7 +916,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   /* returns true if any instruction was emulated - false if CpuOff */
   public int emulateOP(long maxCycles) throws EmulationException {
-    //System.out.println("CYCLES BEFORE: " + cycles);
     int pc = readRegister(PC);
     long startCycles = cycles;
 
@@ -1055,9 +1054,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
             /* read from address in register */
             src = readRegister(srcData);
           dst = currentSegment.read(src, mode, AccessType.READ);
-//            System.out.println("Reading from mem: $" + getAddressAsString(dst));
             writeRegister(srcData, src + 4);
-//            System.out.println("*** Writing $" + getAddressAsString(dst) + " to reg: " + dstData);
             writeRegister(dstData, dst);
             updateStatus = false;
             cycles += 3;
@@ -1066,9 +1063,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
             src = currentSegment.read(pc, AccessMode.WORD, AccessType.READ);
             writeRegister(PC, pc += 2);
             dst = src + (srcData << 16);
-            //System.out.println(Utils.hex20(pc) + " MOVA &ABS Reading from $" + getAddressAsString(dst) + " to reg: " + dstData);
             dst = currentSegment.read(dst, mode,  AccessType.READ);
-            //System.out.println("   => $" + getAddressAsString(dst));
             writeRegister(dstData, dst);
             updateStatus = false;
             cycles += 4;
@@ -1115,7 +1110,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
             src = currentSegment.read(pc, AccessMode.WORD, AccessType.READ);
             writeRegister(PC, pc += 2);
             dst = src + (srcData << 16);
-//            System.out.println("*** Writing $" + getAddressAsString(dst) + " to reg: " + dstData);
             dst &= 0xfffff;
             writeRegister(dstData, dst);
             updateStatus = false;
@@ -1277,7 +1271,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
                 }
                 break;
             case RRAM:
-//                System.out.println("RRAM executing");
                 /* roll in MSB from above */
                 /* 1 11 111 1111 needs to get in if MSB is 1 */
                 if ((dst & (rrword ? 0x8000 : 0x80000)) > 0) {
@@ -1289,14 +1282,12 @@ public class MSP430Core extends Chip implements MSP430Constants {
                 dst = dst >> 1;
                 break;
             case RLAM:
-                //                System.out.println("RLAM executing at " + pc);
                 /* just roll in "zeroes" from left */
                 dst = dst << (count - 1);
                 nxtCarry = (dst & (rrword ? 0x8000 : 0x80000)) > 0 ? CARRY : 0;
                 dst = dst << 1;
                 break;
             case RRUM:
-                //System.out.println("RRUM executing");
                 /* just roll in "zeroes" from right */
                 dst = dst >> (count - 1);
                 nxtCarry = (dst & 1) > 0 ? CARRY : 0;
@@ -1583,9 +1574,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
               if (repeats >= 0) {
                   if (zeroCarry) {
                       sr = sr & ~CARRY;
-                      //System.out.println("ZC => Cleared carry...");
                   }
-                  //System.out.println("*** Repeat: " + repeats);
               }
               switch(op) {
               case RRC:
@@ -1943,9 +1932,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
           if (repeats >= 0) {
               if (zeroCarry) {
                   sr = sr & ~CARRY;
-                  //System.out.println("ZC => Cleared carry...");
               }
-              //System.out.println("*** Repeat: " + repeats);
           }
 
           int tmp;
@@ -2096,8 +2083,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
         ((dst == 0) ? ZERO : 0) | ((dst & mode.msb) > 0 ? NEGATIVE : 0);
       writeRegister(SR, sr);
     }
-
-    //System.out.println("CYCLES AFTER: " + cycles);
 
     // -------------------------------------------------------------------
     // Event processing (when CPU is awake)
