@@ -90,18 +90,13 @@ public class StatCommands implements CommandBundle {
             }
           }
         } else {
-          Loggable[] units = cpu.getLoggables();
-          if (units == null) {
-            context.out.println("No loggables found.");
-          } else {
-            for (Loggable unit : units) {
-              String id = unit.getID();
-              String name = unit.getName();
-              if (id.equals(name)) {
-                context.out.println("  " + id);
-              } else {
-                context.out.println("  " + id + " (" + name + ')');
-              }
+          for (var unit : cpu.getLoggables()) {
+            String id = unit.getID();
+            String name = unit.getName();
+            if (id.equals(name)) {
+              context.out.println("  " + id);
+            } else {
+              context.out.println("  " + id + " (" + name + ')');
             }
           }
         }

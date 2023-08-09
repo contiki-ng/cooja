@@ -40,7 +40,7 @@ package se.sics.mspsim.core;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.Collection;
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.Memory.AccessMode;
 import se.sics.mspsim.core.Memory.AccessType;
@@ -363,14 +363,9 @@ public class MSP430Core extends Chip implements MSP430Constants {
       return list.toArray(tmp);
   }
 
-  public Loggable[] getLoggables() {
-      Loggable[] ls = new Loggable[ioUnits.size() + chips.size()];
-      for (int i = 0; i < ioUnits.size(); i++) {
-          ls[i] = ioUnits.get(i);
-      }
-      for (int i = 0; i < chips.size(); i++) {
-          ls[i + ioUnits.size()] = chips.get(i);
-      }
+  public Collection<Loggable> getLoggables() {
+      var ls = new ArrayList<Loggable>(ioUnits);
+      ls.addAll(chips);
       return ls;
   }
 

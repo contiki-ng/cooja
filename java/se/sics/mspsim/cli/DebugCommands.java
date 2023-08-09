@@ -631,8 +631,7 @@ public class DebugCommands implements CommandBundle {
             @Override
             public int executeCommand(final CommandContext context) {
                 if (context.getArgumentCount() == 0) {
-                    Loggable[] loggable = cpu.getLoggables();
-                    for (Loggable unit : loggable) {
+                    for (var unit : cpu.getLoggables()) {
                         String id = unit.getID();
                         String name = unit.getName();
                         if (id.equals(name)) {
