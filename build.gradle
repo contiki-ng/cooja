@@ -87,10 +87,11 @@ tasks.withType(AbstractArchiveTask).configureEach {
 }
 
 tasks.register('copyDependencies', Copy) {
-  description = "Copy jar dependencies into ${buildDir}/libs/lib/."
+  def dir = layout.buildDirectory.dir("libs/lib")
+  description = "Copy jar dependencies into ${dir.get()}"
   group = "Build"
   from configurations.runtimeClasspath.files
-  into "build/libs/lib"
+  into dir
 }
 
 // Run Cooja with: java <JVM parameters> -jar build/libs/cooja.jar <Cooja parameters>
