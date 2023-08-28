@@ -27,7 +27,7 @@ dependencies {
   // https://mvnrepository.com/artifact/info.picocli/picocli
   implementation 'info.picocli:picocli:4.7.4'
   // https://mvnrepository.com/artifact/info.picocli/picocli-codegen
-  annotationProcessor 'info.picocli:picocli-codegen:4.7.4'
+  annotationProcessor 'info.picocli:picocli-codegen:4.7.5'
   // https://mvnrepository.com/artifact/org.jdom/jdom2
   implementation 'org.jdom:jdom2:2.0.6.1'
   // https://mvnrepository.com/artifact/org.jfree/jfreechart
