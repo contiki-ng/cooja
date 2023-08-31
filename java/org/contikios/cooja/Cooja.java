@@ -1686,7 +1686,7 @@ public class Cooja {
    * values when creating a new simulation in the File menu.
    */
   public record Config(LogbackColors logColors, boolean vis, String externalToolsConfig,
-                       String logDir, String contikiPath, String coojaPath, String javac) {}
+                       String logDir, String contikiPath, String coojaPath) {}
 
   public record LogbackColors(String error, String warn, String info, String fallback) {}
   private record PathIdentifier(String id, String path) {}
