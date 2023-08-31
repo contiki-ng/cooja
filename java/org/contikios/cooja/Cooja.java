@@ -1687,7 +1687,7 @@ public class Cooja {
    */
   public record Config(LogbackColors logColors, boolean vis, String externalToolsConfig,
                        String nashornArgs, String logDir,
-                       String contikiPath, String coojaPath, String javac) {}
+                       String contikiPath, String coojaPath) {}
 
   public record LogbackColors(String error, String warn, String info, String fallback) {}
   private record PathIdentifier(String id, String path) {}
