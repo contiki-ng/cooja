@@ -283,9 +283,9 @@ public class MRM extends AbstractRadioMedium {
     /* Active radio connections */
     RadioConnection[] conns = getActiveConnections();
     for (RadioConnection conn : conns) {
+      var srcChannel = conn.getSource().getChannel();
       for (Radio dstRadio : conn.getDestinations()) {
         double signalStrength = ((MRMRadioConnection) conn).getDestinationSignalStrength(dstRadio);
-        var srcChannel = conn.getSource().getChannel();
         var dstChannel = dstRadio.getChannel();
         if (srcChannel >= 0 && dstChannel >= 0 && srcChannel != dstChannel) {
           continue;
@@ -298,8 +298,8 @@ public class MRM extends AbstractRadioMedium {
 
     /* Interfering/colliding radio connections */
     for (RadioConnection conn : conns) {
+      var srcChannel = conn.getSource().getChannel();
       for (Radio intfRadio : conn.getInterfered()) {
-        var srcChannel = conn.getSource().getChannel();
         var intfChannel = intfRadio.getChannel();
         if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
           continue;

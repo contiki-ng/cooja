@@ -159,10 +159,9 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
       }
       //Maximum reception signal of all possible radios received
       DGRMDestinationRadio[] dstRadios =  getPotentialDestinations(conn.getSource());
-      if (dstRadios == null) continue; 
+      if (dstRadios == null) continue;
+      var activeSourceChannel = conn.getSource().getChannel();
       for (DGRMDestinationRadio dstRadio : dstRadios) {
-
-        int activeSourceChannel = conn.getSource().getChannel();
         int edgeChannel = dstRadio.channel;
         int activeDstChannel = dstRadio.radio.getChannel();
         if (activeSourceChannel != -1) {
