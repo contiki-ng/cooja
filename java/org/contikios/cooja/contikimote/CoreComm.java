@@ -26,7 +26,7 @@
  *
  */
 
-package org.contikios.cooja;
+package org.contikios.cooja.contikimote;
 
 import java.io.File;
 import java.lang.foreign.FunctionDescriptor;
@@ -41,7 +41,7 @@ import java.lang.invoke.MethodHandle;
  */
 // Do not bother end-user with warnings about internal Cooja details.
 @SuppressWarnings("preview")
-public class CoreComm {
+class CoreComm {
   private final SymbolLookup symbols;
   private final MethodHandle coojaTick;
   /**
@@ -50,7 +50,7 @@ public class CoreComm {
    * @param scope Scope to load the library file in
    * @param libFile Library file
    */
-  public CoreComm(SegmentScope scope, File libFile) {
+  CoreComm(SegmentScope scope, File libFile) {
     symbols = SymbolLookup.libraryLookup(libFile.getAbsolutePath(), scope);
     var linker = Linker.nativeLinker();
     coojaTick = linker.downcallHandle(symbols.find("cooja_tick").get(),
@@ -68,7 +68,7 @@ public class CoreComm {
   /**
    * Ticks a mote once.
    */
-  public void tick() {
+  void tick() {
     try {
       coojaTick.invokeExact();
     } catch (Throwable e) {
@@ -79,7 +79,7 @@ public class CoreComm {
   /**
    * Returns the absolute memory address of the reference variable.
    */
-  public long getReferenceAddress() {
+  long getReferenceAddress() {
     return symbols.find("referenceVar").get().address();
   }
 }
