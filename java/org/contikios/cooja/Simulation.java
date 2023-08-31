@@ -883,6 +883,7 @@ public final class Simulation {
   public void addMoteType(MoteType newMoteType) {
     Cooja.usedMoteTypeIDs.add(newMoteType.getIdentifier());
     moteTypes.add(newMoteType);
+    newMoteType.added();
     moteTypeTriggers.trigger(AddRemove.ADD, newMoteType);
   }
 
@@ -897,14 +898,10 @@ public final class Simulation {
         removeMote(m);
       }
     }
-
-    // FIXME: call type.removed(), so ContikiMoteType can call arena.close()
-    //        to unload the shared library.
-    //        For more details, see "Obtaining a symbol lookup" at:
-    // https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/lang/foreign/SymbolLookup.html
     if (moteTypes.remove(type)) {
       moteTypeTriggers.trigger(AddRemove.REMOVE, type);
     }
+    type.removed();
   }
 
   /**
