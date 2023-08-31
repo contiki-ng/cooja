@@ -28,48 +28,58 @@
 
 package org.contikios.cooja;
 
+import java.io.File;
+import java.lang.foreign.FunctionDescriptor;
+import java.lang.foreign.Linker;
+import java.lang.foreign.SegmentScope;
+import java.lang.foreign.SymbolLookup;
+import java.lang.invoke.MethodHandle;
 
 /**
- * The purpose of CoreComm is to communicate with a compiled Contiki system
- * using Java Native Interface (JNI). Each implemented class (named
- * Lib[number]), loads a shared library which belongs to one mote type. The
- * reason for this somewhat strange design is that once loaded, a native library
- * cannot be unloaded in Java (in the current versions available). Therefore, if
- * we wish to load several libraries, the names and associated native functions
- * must have unique names. And those names are defined via the calling class in
- * JNI. For example, the corresponding function for a native tick method in
- * class Lib1 will be named Java_org_contikios_cooja_corecomm_Lib1_tick. When creating
- * a new mote type, the main Contiki source file is built with function
- * names compatible with the next available corecomm class. This also implies
- * that even if a mote type is deleted, a new one cannot be created using the
- * same corecomm class without restarting the JVM and thus the entire
- * simulation.
- * <p>
- * Each implemented CoreComm class needs read-access to the following core
- * variables:
- * <ul>
- * <li>referenceVar
- * </ul>
- * and the following native functions:
- * <ul>
- * <li>tick()
- * <li>init()
- * <li>getReferenceAbsAddr()
- * <li>getMemory(int start, int length, byte[] mem)
- * <li>setMemory(int start, int length, byte[] mem)
- * </ul>
- *
- * @author Fredrik Osterlind
+ * CoreComm loads a library file and keeps track of the method handles
+ * to the tick and getReferenceAddress methods.
  */
-public interface CoreComm {
+// Do not bother end-user with warnings about internal Cooja details.
+@SuppressWarnings("preview")
+public class CoreComm {
+  private final SymbolLookup symbols;
+  private final MethodHandle coojaTick;
+  /**
+   * Loads library libFile with a scope.
+   *
+   * @param scope Scope to load the library file in
+   * @param libFile Library file
+   */
+  public CoreComm(SegmentScope scope, File libFile) {
+    symbols = SymbolLookup.libraryLookup(libFile.getAbsolutePath(), scope);
+    var linker = Linker.nativeLinker();
+    coojaTick = linker.downcallHandle(symbols.find("cooja_tick").get(),
+            FunctionDescriptor.ofVoid());
+    // Call cooja_init() in Contiki-NG.
+    var coojaInit = linker.downcallHandle(symbols.find("cooja_init").get(),
+            FunctionDescriptor.ofVoid());
+    try {
+      coojaInit.invokeExact();
+    } catch (Throwable e) {
+      throw new RuntimeException("Calling cooja_init failed: " + e.getMessage(), e);
+    }
+  }
 
   /**
    * Ticks a mote once.
    */
-  void tick();
+  public void tick() {
+    try {
+      coojaTick.invokeExact();
+    } catch (Throwable e) {
+      throw new RuntimeException("Calling cooja_tick failed: " + e.getMessage(), e);
+    }
+  }
 
   /**
    * Returns the absolute memory address of the reference variable.
    */
-  long getReferenceAddress();
+  public long getReferenceAddress() {
+    return symbols.find("referenceVar").get().address();
+  }
 }
