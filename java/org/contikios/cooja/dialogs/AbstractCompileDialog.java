@@ -247,11 +247,11 @@ public abstract class AbstractCompileDialog extends JDialog {
         nextCommandAction.actionPerformed(null); /* Recursive calls for all commands */
       }
     };
-    cleanButton.setToolTipText("make clean TARGET=" + targetName);
+    cleanButton.setToolTipText("$(MAKE) clean TARGET=" + targetName);
     cleanButton.addActionListener(e -> {
       createButton.setEnabled(false);
       try {
-        currentCompilationProcess = BaseContikiMoteType.compile("make clean TARGET=" + targetName,
+        currentCompilationProcess = BaseContikiMoteType.compile("$(MAKE) clean TARGET=" + targetName,
             moteType.getCompilationEnvironment(), new File(contikiField.getText()).getParentFile(),
             null, null, new MessageListUI(), true);
       } catch (Exception e1) {
@@ -545,7 +545,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    */
   protected String getDefaultCompileCommands(String name) {
     String sourceNoExtension = new File(name.substring(0, name.length() - 2)).getName();
-    return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
+    return "$(MAKE) -j$(CPUS) " +
             sourceNoExtension + "." + targetName + " TARGET=" + targetName;
   }
 
