@@ -1,3 +1,13 @@
+# Cooja v5.0
+
+## Cooja User Interface Changes
+
+## Cooja Simulation File Changes
+
+### Expand $(MAKE) in csc files
+
+Simulation file version 2023090101 introduces expansion of $(MAKE).
+
 # Cooja v4.9
 
 ## Cooja User Interface Changes

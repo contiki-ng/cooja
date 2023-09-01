@@ -99,7 +99,7 @@ public class Cooja {
    *  Version used to detect incompatibility with the Cooja simulation config files.
    *  The format is &lt;YYYY&gt;&lt;MM&gt;&lt;DD&gt;&lt;2 digit sequence number&gt;.
    */
-  public static final String SIMULATION_CONFIG_VERSION = "2022112801";
+  public static final String SIMULATION_CONFIG_VERSION = "2023090101";
 
   /**
    *  Version used to detect incompatibility with the Contiki-NG

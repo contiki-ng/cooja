@@ -373,7 +373,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
             "<br>This plugin shows the source code for MSP430 based motes and can set or remove breakpoints." +
             "<br><br>" +
             "<b>Note:</b> You must compile the code with <i>DEBUG=1</i> to include information about the source code in the build." +
-            "<br><br>Example: make TARGET=sky DEBUG=1 hello-world";
+            "<br><br>Example: $(MAKE) -j$(CPUS) TARGET=sky DEBUG=1 hello-world";
   }
 
   private class Rule {

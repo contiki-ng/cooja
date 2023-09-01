@@ -420,8 +420,9 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
           throws MoteTypeCreationException {
     Pattern p = Pattern.compile("([^\\s\"']+|\"[^\"]*\"|'[^']*')");
     // Perform compile command variable expansions.
+    String make = Cooja.getExternalToolsSetting("PATH_MAKE");
     String cpus = Integer.toString(Runtime.getRuntime().availableProcessors());
-    Matcher m = p.matcher(commandIn.replace("$(CPUS)", cpus));
+    Matcher m = p.matcher(commandIn.replace("$(MAKE)", make).replace("$(CPUS)", cpus));
     ArrayList<String> commandList = new ArrayList<>();
     while (m.find()) {
       String arg = m.group();
