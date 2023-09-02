@@ -281,8 +281,9 @@ public class ContikiMoteType extends BaseContikiMoteType {
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
     } else {
       var symbols = String.join("\n", loadCommandData(command, firmwareFile, vis));
-      dataSecParser = new MapSectionParser(symbols, "cooja_dataStart", "cooja_dataSize",
-              "cooja_bssStart", "cooja_bssSize");
+      dataSecParser = new MapSectionParser(symbols,
+              myCoreComm.getDataStartAddress(), myCoreComm.getDataSize(),
+              myCoreComm.getBssStartAddress(), myCoreComm.getBssSize());
     }
 
     /* We first need the value of Contiki's referenceVar, which tells us the
@@ -318,15 +319,16 @@ public class ContikiMoteType extends BaseContikiMoteType {
       var old = entry.getValue();
       offsetVariables.put(entry.getKey(), new Symbol(old.type, old.name, old.addr + offset, old.size));
     }
+    var secOffset = useCommand ? offset : 0;
     initialMemory = new SectionMoteMemory(offsetVariables);
     initialMemory.addMemorySection("data",
-            getMemory(dataSecParser.getDataStartAddr() + offset, dataSecParser.getDataSize(), offsetVariables));
+            getMemory(dataSecParser.getDataStartAddr() + secOffset, dataSecParser.getDataSize(), offsetVariables));
     var parser = bssSecParser == null ? dataSecParser : bssSecParser;
     initialMemory.addMemorySection("bss",
-            getMemory(parser.getBssStartAddr() + offset, parser.getBssSize(), offsetVariables));
+            getMemory(parser.getBssStartAddr() + secOffset, parser.getBssSize(), offsetVariables));
     if (commonSecParser != null) {
       initialMemory.addMemorySection("common",
-              getMemory(commonSecParser.getCommonStartAddr() + offset, commonSecParser.getCommonSize(), offsetVariables));
+              getMemory(commonSecParser.getCommonStartAddr() + secOffset, commonSecParser.getCommonSize(), offsetVariables));
     }
     getCoreMemory(initialMemory);
     return true;
@@ -409,17 +411,13 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   private static class MapSectionParser extends SectionParser {
     private final String readelfData;
-    private final String startData;
-    private final String sizeData;
-    private final String startBss;
-    private final String sizeBss;
 
-    MapSectionParser(String readelfData, String startData, String sizeData, String startBss, String sizeBss) {
+    MapSectionParser(String readelfData, long startData, int sizeData, long startBss, int sizeBss) {
       this.readelfData = readelfData;
-      this.startData = startData;
-      this.sizeData = sizeData;
-      this.startBss = startBss;
-      this.sizeBss = sizeBss;
+      dataStartAddr = startData;
+      dataSize = sizeData;
+      bssStartAddr = startBss;
+      bssSize = sizeBss;
     }
 
     @Override
@@ -446,7 +444,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
           var hex = sizeString.startsWith("0x");
           var size = Integer.parseInt(hex ? sizeString.substring(2) : sizeString, hex ? 16 : 10);
           var type = s.next();
-          if (!"OBJECT".equals(type) && !"NOTYPE".equals(type)) {
+          if (!"OBJECT".equals(type)) {
             s.nextLine(); // Skip lines that do not define variables.
             continue;
           }
@@ -455,17 +453,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
           s.next();
           s.next();
           var name = s.next();
-          if ("OBJECT".equals(type)) {
-            varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr, size));
-          } else if (startData.equals(name)) {
-            dataStartAddr = addr;
-          } else if (sizeData.equals(name)) {
-            dataSize = (int) addr;
-          } else if (startBss.equals(name)) {
-            bssStartAddr = addr;
-          } else if (sizeBss.equals(name)) {
-            bssSize = (int) addr;
-          }
+          varNames.put(name, new Symbol(Symbol.Type.VARIABLE, name, addr, size));
         }
       }
       return varNames;
