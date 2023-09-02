@@ -2,9 +2,18 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+  HOMEBREW_NO_ANALYTICS: 1
+
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    strategy:
+      # Do not cancel other jobs on first failure.
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout Contiki-NG repo
@@ -42,9 +51,18 @@ jobs:
         with:
           key: compilation-${{ runner.os }}
           max-size: 160M
-
+      - name: install macOS software
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install gawk make
+          # Homebrew prefix is different for x86-64 and aarch64.
+          export HOMEBREW_PREFIX=/usr/local
+          # Put Homebrew installed make first in PATH so "make" is version 4.x.
+          echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.profile
+          echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.bashrc
       - name: Run Contiki-NG simulation tests
         run: |
+          [ "$(uname)" = "Linux" ] || source ~/.bashrc
           cd contiki-ng/tests/07-simulation-base
           # Skip MSP430 tests, no compiler installed.
           rm ??-*sky*.csc ??-*z1*.csc
