@@ -37,6 +37,12 @@ jobs:
           arguments: test
           build-root-directory: contiki-ng/tools/cooja
 
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2.10
+        with:
+          key: compilation-${{ runner.os }}
+          max-size: 160M
+
       - name: Run Contiki-NG simulation tests
         run: |
           cd contiki-ng/tests/07-simulation-base
