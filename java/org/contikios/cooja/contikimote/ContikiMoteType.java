@@ -334,9 +334,9 @@ public class ContikiMoteType extends BaseContikiMoteType {
       logger.info("common1: " + Long.toHexString(commonSecParser.getCommonStartAddr() + secOffset) + " size: " + Integer.toHexString(commonSecParser.getCommonSize()));
       initialMemory.addMemorySection("common",
               getMemory(commonSecParser.getCommonStartAddr() + secOffset, commonSecParser.getCommonSize(), offsetVariables));
-      logger.info("common2: " + Long.toHexString(myCoreComm.getCommonStartAddress() + secOffset) + " size: " + Integer.toHexString(myCoreComm.getMacCommonSize()));
-      logger.info("bss2: " + Long.toHexString(myCoreComm.getBssStartAddress()) + " size: " + Integer.toHexString(myCoreComm.getMacBssSize()));
-      logger.info("data1: " + Long.toHexString(myCoreComm.getDataStartAddress()) + " size: " + Integer.toHexString(myCoreComm.getMacDataSize()));
+      logger.info("common2: " + Long.toHexString(myCoreComm.getMacCommonStartAddress()) + " size: " + Integer.toHexString(myCoreComm.getMacCommonSize()));
+      logger.info("bss2: " + Long.toHexString(myCoreComm.getMacBssStartAddress()) + " size: " + Integer.toHexString(myCoreComm.getMacBssSize()));
+      logger.info("data1: " + Long.toHexString(myCoreComm.getMacDataStartAddress()) + " size: " + Integer.toHexString(myCoreComm.getMacDataSize()));
     }
     getCoreMemory(initialMemory);
     return true;
