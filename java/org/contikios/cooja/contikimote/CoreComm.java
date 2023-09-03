@@ -47,11 +47,11 @@ class CoreComm {
   private final MethodHandle coojaTick;
 
   private long dataStart;
-  private long dataEnd;
+  private int dataSize;
   private long bssStart;
-  private long bssEnd;
+  private int bssSize;
   private long commonStart;
-  private long commonEnd;
+  private int commonSize;
   /**
    * Loads library libFile with a scope.
    *
@@ -71,25 +71,25 @@ class CoreComm {
     } catch (Throwable e) {
       throw new RuntimeException("Calling cooja_init failed: " + e.getMessage(), e);
     }
-    var mtype_bssStart = linker.downcallHandle(symbols.find("mtype_bssStart").get(),
+    var mtype_bssStart = linker.downcallHandle(symbols.find("cooja_bss_start").get(),
             FunctionDescriptor.of(ValueLayout.JAVA_LONG));
-    var mtype_bssEnd = linker.downcallHandle(symbols.find("mtype_bssEnd").get(),
+    var mtype_bssEnd = linker.downcallHandle(symbols.find("cooja_bss_size").get(),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT));
+    var mtype_dataStart = linker.downcallHandle(symbols.find("cooja_data_start").get(),
             FunctionDescriptor.of(ValueLayout.JAVA_LONG));
-    var mtype_dataStart = linker.downcallHandle(symbols.find("mtype_dataStart").get(),
+    var mtype_dataEnd = linker.downcallHandle(symbols.find("cooja_data_size").get(),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT));
+    var mtype_commonStart = linker.downcallHandle(symbols.find("cooja_common_start").get(),
             FunctionDescriptor.of(ValueLayout.JAVA_LONG));
-    var mtype_dataEnd = linker.downcallHandle(symbols.find("mtype_dataEnd").get(),
-            FunctionDescriptor.of(ValueLayout.JAVA_LONG));
-    var mtype_commonStart = linker.downcallHandle(symbols.find("mtype_commonStart").get(),
-            FunctionDescriptor.of(ValueLayout.JAVA_LONG));
-    var mtype_commonEnd = linker.downcallHandle(symbols.find("mtype_commonEnd").get(),
-            FunctionDescriptor.of(ValueLayout.JAVA_LONG));
+    var mtype_commonEnd = linker.downcallHandle(symbols.find("cooja_common_size").get(),
+            FunctionDescriptor.of(ValueLayout.JAVA_INT));
     try {
       bssStart = (long)mtype_bssStart.invokeExact();
     } catch (Throwable e) {
       throw new RuntimeException("Calling mtype_bssStart failed: " + e.getMessage(), e);
     }
     try {
-      bssEnd = (long)mtype_bssEnd.invokeExact();
+      bssSize = (int)mtype_bssEnd.invokeExact();
     } catch (Throwable e) {
       throw new RuntimeException("Calling mtype_bssEnd failed: " + e.getMessage(), e);
     }
@@ -99,7 +99,7 @@ class CoreComm {
       throw new RuntimeException("Calling mtype_dataStart failed: " + e.getMessage(), e);
     }
     try {
-      dataEnd = (long)mtype_dataEnd.invokeExact();
+      dataSize = (int)mtype_dataEnd.invokeExact();
     } catch (Throwable e) {
       throw new RuntimeException("Calling mtype_dataEnd failed: " + e.getMessage(), e);
     }
@@ -109,7 +109,7 @@ class CoreComm {
       throw new RuntimeException("Calling mtype_commonStart failed: " + e.getMessage(), e);
     }
     try {
-      commonEnd = (long)mtype_commonEnd.invokeExact();
+      commonSize = (int)mtype_commonEnd.invokeExact();
     } catch (Throwable e) {
       throw new RuntimeException("Calling mtype_commonEnd failed: " + e.getMessage(), e);
     }
@@ -163,47 +163,25 @@ class CoreComm {
     return (int)bssSize.address();
   }
 
-  /**
-   * Returns the absolute address of the start of the bss section.
-   */
-  long getCommonStartAddress() {
-    return symbols.find("cooja_commonStart").get().address();
-  }
-
   long getMacDataStartAddress() {
     return dataStart;
-  }
-  long getMacDataEnd() {
-    return dataEnd;
   }
   long getMacBssStartAddress() {
     return bssStart;
   }
-  long getMacBssEnd() {
-    return bssEnd;
-  }
   long getMacCommonStartAddress() {
     return commonStart;
   }
-  long getMacCommonEnd() {
-    return commonEnd;
-  }
 
   int getMacDataSize() {
-    var start = getMacDataStartAddress();
-    var end = getMacDataEnd();
-    return (int)(end - start);
+    return dataSize;
   }
 
   int getMacBssSize() {
-    var start = getMacBssStartAddress();
-    var end = getMacBssEnd();
-    return (int)(end - start);
+    return bssSize;
   }
 
   int getMacCommonSize() {
-    var start = getMacCommonStartAddress();
-    var end = getMacCommonEnd();
-    return (int)(end - start);
+    return commonSize;
   }
 }

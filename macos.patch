@@ -1,63 +1,56 @@
-diff --git a/Makefile.include b/Makefile.include
-index 37a6d965a..139140b04 100644
---- a/Makefile.include
-+++ b/Makefile.include
-@@ -574,6 +574,8 @@ $(BUILD_DIR_BOARD)/%.$(TARGET): LIBNAME ?= $@
- $(BUILD_DIR_BOARD)/%.$(TARGET): $(OBJECTDIR)/%.o $(LDSCRIPT) $(PROJECT_OBJECTFILES) $(PROJECT_LIBRARIES) $(CONTIKI_OBJECTFILES)
- 	$(TRACE_LD)
- 	$(Q)$(LD) $(LDFLAGS) $(TARGET_STARTFILES) $(sort ${filter-out $(LDSCRIPT) %.a,$^}) ${filter %.a,$^} $(TARGET_LIBEXTRAS) -o $(LIBNAME)
-+	$(Q)size -x -m -l $(LIBNAME)
-+	$(Q)nm -aP $(LIBNAME)
- ifdef BINARY_SIZE_LOGFILE
- 	$(Q)$(SIZE) $(LIBNAME) | grep $(BUILD_DIR_BOARD) >> $(BINARY_SIZE_LOGFILE)
- endif
 diff --git a/arch/platform/cooja/mtype.c b/arch/platform/cooja/mtype.c
-index 137fa043f..b06953098 100644
+index 137fa043f..990ab9d5b 100644
 --- a/arch/platform/cooja/mtype.c
 +++ b/arch/platform/cooja/mtype.c
-@@ -51,6 +51,17 @@ int main(void);
-  */
- intptr_t referenceVar;
- 
-+#ifdef __APPLE__
-+extern int cooja_DATAStart __asm("segment$start$__DATA");
-+extern int cooja_DATAEnd __asm("segment$end$__DATA");
-+extern int cooja_dataStart __asm("section$start$__DATA$__data");
-+extern int cooja_dataEnd __asm("section$end$__DATA$__data");
-+extern int cooja_bssStart __asm("section$start$__DATA$__bss");
-+extern int cooja_bssEnd __asm("section$end$__DATA$__bss");
-+extern int cooja_commonStart __asm("section$start$__DATA$__common");
-+extern int cooja_commonEnd __asm("section$end$__DATA$__common");
-+#endif /* __APPLE__ */
-+
- /*
-  * Contiki and rtimer threads.
-  */
-@@ -78,6 +89,27 @@ process_run_thread_loop(void)
-   /* Then call common Contiki-NG main function */
-   main();
- }
-+#ifdef __APPLE__
-+uintptr_t mtype_dataStart(void) {
-+  (void)cooja_DATAStart; (void)cooja_DATAEnd;
-+  return (uintptr_t)&cooja_dataStart;
-+}
-+uintptr_t mtype_dataEnd(void) {
-+  return (uintptr_t)&cooja_dataEnd;
-+}
-+uintptr_t mtype_bssStart(void) {
-+  return (uintptr_t)&cooja_bssStart;
-+}
-+uintptr_t mtype_bssEnd(void) {
-+  return (uintptr_t)&cooja_bssEnd;
-+}
-+uintptr_t mtype_commonStart(void) {
-+  return (uintptr_t)&cooja_commonStart;
-+}
-+uintptr_t mtype_commonEnd(void) {
-+  return (uintptr_t)&cooja_commonEnd;
-+}
-+#endif
+@@ -58,6 +58,51 @@ static struct cooja_mt_thread cooja_thread;
+ static struct cooja_mt_thread rtimer_thread;
+ static struct cooja_mt_thread process_run_thread;
  /*---------------------------------------------------------------------------*/
- int
- cooja_init(void)
++#ifdef __APPLE__
++extern int macos_data_start __asm("section$start$__DATA$__data");
++extern int macos_data_end __asm("section$end$__DATA$__data");
++extern int macos_bss_start __asm("section$start$__DATA$__bss");
++extern int macos_bss_end __asm("section$end$__DATA$__bss");
++extern int macos_common_start __asm("section$start$__DATA$__common");
++extern int macos_common_end __asm("section$end$__DATA$__common");
++
++uintptr_t
++cooja_data_start(void)
++{
++  return (uintptr_t)&macos_data_start;
++}
++
++int
++cooja_data_size(void)
++{
++  return (int)((uintptr_t)&macos_data_end - (uintptr_t)&macos_data_start);
++}
++
++uintptr_t
++cooja_bss_start(void)
++{
++  return (uintptr_t)&macos_bss_start;
++}
++
++int
++cooja_bss_size(void)
++{
++  return (int)((uintptr_t)&macos_bss_end - (uintptr_t)&macos_bss_start);
++}
++
++uintptr_t
++cooja_common_start(void)
++{
++  return (uintptr_t)&macos_common_start;
++}
++
++int
++cooja_common_size(void)
++{
++  return (int)((uintptr_t)&macos_common_end - (uintptr_t)&macos_common_start);
++}
++#endif /* __APPLE__ */
++/*---------------------------------------------------------------------------*/
+ static void
+ rtimer_thread_loop(void)
+ {
