@@ -316,8 +316,8 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 			if (conn.getSource().getCurrentSignalStrength() < SS_STRONG) {
 				conn.getSource().setCurrentSignalStrength(SS_STRONG);
 			}
+      var sourceChannel = conn.getSource().getChannel();
 			for (Radio dstRadio : conn.getDestinations()) {
-        var sourceChannel = conn.getSource().getChannel();
         var dstChannel = dstRadio.getChannel();
         if (sourceChannel >= 0 && dstChannel >= 0 && sourceChannel != dstChannel) {
 					continue;
@@ -330,11 +330,11 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 		
 		/* Set signal strength to weak on interfered */
 		for (RadioConnection conn : conns) {
+      var srcChannel = conn.getSource().getChannel();
 			for (Radio intfRadio : conn.getInterfered()) {
 				if (intfRadio.getCurrentSignalStrength() < SS_STRONG) {
 					intfRadio.setCurrentSignalStrength(SS_STRONG);
 				}
-        var srcChannel = conn.getSource().getChannel();
         var intfChannel = intfRadio.getChannel();
         if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
 					continue;

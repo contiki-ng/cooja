@@ -395,8 +395,8 @@ public class LogisticLoss extends AbstractRadioMedium {
             if (conn.getSource().getCurrentSignalStrength() < SS_STRONG) {
                 conn.getSource().setCurrentSignalStrength(SS_STRONG);
             }
+            var srcChannel = conn.getSource().getChannel();
             for (Radio dstRadio : conn.getDestinations()) {
-                var srcChannel = conn.getSource().getChannel();
                 var dstChannel = dstRadio.getChannel();
                 if (srcChannel >= 0 && dstChannel >= 0 && srcChannel != dstChannel) {
                     continue;
@@ -411,8 +411,8 @@ public class LogisticLoss extends AbstractRadioMedium {
 
         /* Set signal strength to below weak on interfered */
         for (RadioConnection conn : conns) {
+            var srcChannel = conn.getSource().getChannel();
             for (Radio intfRadio : conn.getInterfered()) {
-                var srcChannel = conn.getSource().getChannel();
                 var intfChannel = intfRadio.getChannel();
                 if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
                     continue;
