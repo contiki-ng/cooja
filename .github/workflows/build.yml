@@ -66,6 +66,7 @@ jobs:
           # Put Homebrew installed make first in PATH so "make" is version 4.x.
           echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.profile
           echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.bashrc
+          (cd contiki-ng && patch -p1 < tools/cooja/macos.patch)
       - name: Run Contiki-NG simulation tests
         run: |
           [ "$(uname)" = "Linux" ] || source ~/.bashrc
