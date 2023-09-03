@@ -11,7 +11,7 @@ index 37a6d965a..144e74b96 100644
  	$(Q)$(SIZE) $(LIBNAME) | grep $(BUILD_DIR_BOARD) >> $(BINARY_SIZE_LOGFILE)
  endif
 diff --git a/arch/platform/cooja/mtype.c b/arch/platform/cooja/mtype.c
-index 137fa043f..f205549fc 100644
+index 137fa043f..e4d1ed68a 100644
 --- a/arch/platform/cooja/mtype.c
 +++ b/arch/platform/cooja/mtype.c
 @@ -51,6 +51,17 @@ int main(void);
@@ -38,9 +38,9 @@ index 137fa043f..f205549fc 100644
    }
 +#ifdef __APPLE__
 +  (void)cooja_DATAStart; (void)cooja_DATAEnd;
-+  (void)cooja_dataStart; (void)cooja_dataEnd;
-+  (void)cooja_bssStart; (void)cooja_bssEnd;
-+  (void)cooja_commonStart; (void)cooja_commonEnd;
++  printf("%p:%p\n", cooja_dataStart, cooja_dataEnd);
++  printf("%p:%p\n", cooja_bssStart, cooja_bssEnd);
++  printf("%p:%p\n", cooja_commonStart, cooja_commonEnd);
 +#endif
    cooja_mt_start(&cooja_thread, &rtimer_thread, rtimer_thread_loop);
    cooja_mt_start(&cooja_thread, &process_run_thread, process_run_thread_loop);
