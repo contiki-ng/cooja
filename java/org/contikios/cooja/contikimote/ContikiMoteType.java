@@ -319,16 +319,24 @@ public class ContikiMoteType extends BaseContikiMoteType {
       var old = entry.getValue();
       offsetVariables.put(entry.getKey(), new Symbol(old.type, old.name, old.addr + offset, old.size));
     }
+    logger.info("data1: " + Long.toHexString(dataSecParser.getDataStartAddr()) + " size: " + Integer.toHexString(dataSecParser.getDataSize()));
     var secOffset = useCommand ? offset : 0;
     initialMemory = new SectionMoteMemory(offsetVariables);
     initialMemory.addMemorySection("data",
             getMemory(dataSecParser.getDataStartAddr() + secOffset, dataSecParser.getDataSize(), offsetVariables));
+    if (bssSecParser != null) {
+      logger.info("bss1: " + Long.toHexString(bssSecParser.getBssStartAddr()) + " size: " + Integer.toHexString(bssSecParser.getBssSize()));
+    }
     var parser = bssSecParser == null ? dataSecParser : bssSecParser;
     initialMemory.addMemorySection("bss",
             getMemory(parser.getBssStartAddr() + secOffset, parser.getBssSize(), offsetVariables));
     if (commonSecParser != null) {
+      logger.info("common1: " + Long.toHexString(commonSecParser.getCommonStartAddr()) + " size: " + Integer.toHexString(commonSecParser.getCommonSize()));
       initialMemory.addMemorySection("common",
               getMemory(commonSecParser.getCommonStartAddr() + secOffset, commonSecParser.getCommonSize(), offsetVariables));
+      logger.info("common2: " + Long.toHexString(myCoreComm.getCommonStartAddress()) + " size: " + Integer.toHexString(myCoreComm.getMacCommonSize()));
+      logger.info("bss2: " + Long.toHexString(myCoreComm.getBssStartAddress()) + " size: " + Integer.toHexString(myCoreComm.getMacBssSize()));
+      logger.info("data1: " + Long.toHexString(myCoreComm.getDataStartAddress()) + " size: " + Integer.toHexString(myCoreComm.getMacDataSize()));
     }
     getCoreMemory(initialMemory);
     return true;

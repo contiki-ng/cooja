@@ -112,4 +112,29 @@ class CoreComm {
     var bssSize = symbols.find("cooja_bssSize").get();
     return (int)bssSize.address();
   }
+
+  /**
+   * Returns the absolute address of the start of the bss section.
+   */
+  long getCommonStartAddress() {
+    return symbols.find("cooja_commonStart").get().address();
+  }
+
+  int getMacDataSize() {
+    var start = getDataStartAddress();
+    var end = symbols.find("cooja_dataEnd").get().address();
+    return (int)(end - start);
+  }
+
+  int getMacBssSize() {
+    var start = getBssStartAddress();
+    var end = symbols.find("cooja_bssEnd").get().address();
+    return (int)(end - start);
+  }
+
+  int getMacCommonSize() {
+    var start = getCommonStartAddress();
+    var end = symbols.find("cooja_commonEnd").get().address();
+    return (int)(end - start);
+  }
 }
