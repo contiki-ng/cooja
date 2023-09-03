@@ -967,13 +967,10 @@ public class Cooja {
     settings.put("COMMAND_VAR_SEC_DATA", "[DdGg]");
     settings.put("COMMAND_VAR_SEC_BSS", "[Bb]");
     settings.put("COMMAND_VAR_SEC_COMMON", "[C]");
-    settings.put("COMMAND_VAR_SEC_READONLY", "[Rr]");
     settings.put("COMMAND_DATA_START", "^.data[ \t]d[ \t]([0-9A-Fa-f]*)[ \t]*$");
     settings.put("COMMAND_DATA_END", "^_edata[ \t]D[ \t]([0-9A-Fa-f]*)[ \t]*$");
     settings.put("COMMAND_BSS_START", "^__bss_start[ \t]B[ \t]([0-9A-Fa-f]*)[ \t]*$");
     settings.put("COMMAND_BSS_END", "^_end[ \t]B[ \t]([0-9A-Fa-f]*)[ \t]*$");
-    settings.put("COMMAND_READONLY_START", "^.rodata[ \t]r[ \t]([0-9A-Fa-f]*)[ \t]*$");
-    settings.put("COMMAND_READONLY_END", "^.eh_frame_hdr[ \t]r[ \t]([0-9A-Fa-f]*)[ \t]*$");
 
     String osName = System.getProperty("os.name").toLowerCase();
     if (osName.startsWith("win")) {
@@ -988,8 +985,6 @@ public class Cooja {
       settings.put("COMMAND_DATA_END", "^__data_end__[ \t]D[ \t]([0-9A-Fa-f]*)");
       settings.put("COMMAND_BSS_START", "^__bss_start__[ \t]B[ \t]([0-9A-Fa-f]*)");
       settings.put("COMMAND_BSS_END", "^__bss_end__[ \t]B[ \t]([0-9A-Fa-f]*)");
-      settings.put("COMMAND_READONLY_START", "^.rodata[ \t]r[ \t]([0-9A-Fa-f]*)");
-      settings.put("COMMAND_READONLY_END", "^.eh_frame_hdr[ \t]r[ \t]([0-9A-Fa-f]*)");
     } else if (osName.startsWith("mac os x")) {
       settings.put("PARSE_WITH_COMMAND", "true");
       settings.put("PARSE_COMMAND", "[COOJA_DIR]/tools/macos/nmandsize $(LIBFILE)");
