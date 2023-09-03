@@ -68,7 +68,7 @@ public class LogScriptEngine {
   private static final Logger logger = LoggerFactory.getLogger(LogScriptEngine.class);
   private static final long DEFAULT_TIMEOUT = 20*60*1000*Simulation.MILLISECOND; /* 1200s = 20 minutes */
 
-  private final NashornScriptEngine engine = (NashornScriptEngine) new NashornScriptEngineFactory().getScriptEngine();
+  private final NashornScriptEngine engine;
 
   private final BufferedWriter logWriter; // For non-GUI tests.
 
@@ -110,7 +110,8 @@ public class LogScriptEngine {
   private long startRealTime;
   private final JTextArea textArea;
 
-  LogScriptEngine(Simulation simulation, int logNumber, JTextArea logTextArea) {
+  LogScriptEngine(Simulation simulation, String nashornArgs, int logNumber, JTextArea logTextArea) {
+    engine = (NashornScriptEngine) new NashornScriptEngineFactory().getScriptEngine(nashornArgs);
     this.simulation = simulation;
     textArea = logTextArea;
     simulation.getEventCentral().addLogOutputListener(logOutputListener);

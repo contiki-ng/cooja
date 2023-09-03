@@ -79,6 +79,12 @@ class Main {
   String logDir = ".";
 
   /**
+   * Option for specifying Nashorn arguments.
+   */
+  @Option(names = "--nashorn-args", paramLabel = "ARGS", description = "the Nashorn arguments")
+  String nashornArgs = "--language=es6";
+
+  /**
    * Option for specifying Contiki-NG path.
    */
   @Option(names = "--contiki", paramLabel = "DIR", description = "the Contiki-NG directory")
@@ -310,6 +316,7 @@ class Main {
       var colors = new LogbackColors(ANSIConstants.BOLD + "91", "96",
               ANSIConstants.GREEN_FG, ANSIConstants.DEFAULT_FG);
       var cfg = new Config(colors, options.gui, options.externalUserConfig,
+                options.nashornArgs,
                 options.logDir, options.contikiPath, options.coojaPath, options.javac);
       Cooja.go(cfg, simConfigs);
     } else { // Start MSPSim.

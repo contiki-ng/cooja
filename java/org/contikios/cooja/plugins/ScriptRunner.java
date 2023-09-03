@@ -104,7 +104,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
       frame = null;
       editorTabs = null;
       logTextArea = null;
-      engine = simulation.newScriptEngine(null);
+      engine = simulation.newScriptEngine(null, Cooja.configuration.nashornArgs());
       return;
     }
 
@@ -130,7 +130,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
     logTextArea.setMargin(new Insets(5,5,5,5));
     logTextArea.setEditable(false);
     logTextArea.setCursor(null);
-    engine = simulation.newScriptEngine(logTextArea);
+    engine = simulation.newScriptEngine(logTextArea, Cooja.configuration.nashornArgs());
 
     var newScript = new JMenuItem("New");
     newScript.addActionListener(l -> {

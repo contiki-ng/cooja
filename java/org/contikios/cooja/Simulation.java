@@ -498,8 +498,8 @@ public final class Simulation {
 
   /** Create a new script engine that logs to the logTextArea and add it to the list
    *  of active script engines. */
-  public LogScriptEngine newScriptEngine(JTextArea logTextArea) {
-    var engine = new LogScriptEngine(this, scriptEngines.size(), logTextArea);
+  public LogScriptEngine newScriptEngine(JTextArea logTextArea, String nashornArgs) {
+    var engine = new LogScriptEngine(this, nashornArgs, scriptEngines.size(), logTextArea);
     scriptEngines.add(engine);
     return engine;
   }
