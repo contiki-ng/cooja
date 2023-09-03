@@ -43,11 +43,6 @@ dependencies {
 
 // FIXME: add test resources.
 sourceSets {
-  corecomm {
-    resources {
-      srcDirs = ['java/org/contikios/cooja/corecomm']
-    }
-  }
   data {
     resources {
       srcDirs = ['tools/coffee-manager']
@@ -57,10 +52,9 @@ sourceSets {
   main {
     java {
       srcDirs = ['java', 'tools/coffee-manager']
-      exclude 'org/contikios/cooja/corecomm/CoreCommTemplate.java'
     }
     resources {
-      srcDirs = [corecomm.resources, data.resources, 'config']
+      srcDirs = [data.resources, 'config']
     }
   }
 }
@@ -124,10 +118,7 @@ tasks.register('fullJar', Jar) {
 run {
   // Bad Cooja location detected with gradle run, explicitly pass -cooja.
   doFirst {
-    args += ['--cooja', "$projectDir",
-             '--javac', javaToolchains.compilerFor {
-                         languageVersion = JavaLanguageVersion.of(javaVersion)
-                       }.get().executablePath]
+    args += ['--cooja', "$projectDir"]
   }
   // Connect stdin to make the MSPSim CLI work, except when running in CI.
   if (System.getenv('CI') == null) {

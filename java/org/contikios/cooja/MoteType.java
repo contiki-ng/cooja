@@ -157,6 +157,12 @@ public interface MoteType {
     return -1;
   }
 
+  /** Called when the mote type is added to the simulation. */
+  default void added() { }
+
+  /** Called when the mote type is removed from the simulation. */
+  default void removed() { }
+
   class MoteTypeCreationException extends Exception {
     private MessageList compilationOutput;
 

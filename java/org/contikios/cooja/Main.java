@@ -97,12 +97,6 @@ class Main {
   String coojaPath;
 
   /**
-   * Option for specifying javac path.
-   */
-  @Option(names = "--javac", paramLabel = "FILE", description = "the javac binary")
-  String javac;
-
-  /**
    * Option for specifying external user config file.
    */
   @Option(names = "--config", paramLabel = "FILE", description = "the filename for external user config")
@@ -301,23 +295,13 @@ class Main {
       System.exit(1);
     }
 
-    if (options.mspSimPlatform == null && options.javac == null) {
-      System.err.println("Missing required option: '--javac=FILE'");
-      System.exit(1);
-    }
-
-    if (options.mspSimPlatform == null && !Files.exists(Path.of(options.javac))) {
-      System.err.println("Java compiler '" + options.javac + "' does not exist");
-      System.exit(1);
-    }
-
     if (options.mspSimPlatform == null) { // Start Cooja.
       // Use colors that are good on a dark background and readable on a white background.
       var colors = new LogbackColors(ANSIConstants.BOLD + "91", "96",
               ANSIConstants.GREEN_FG, ANSIConstants.DEFAULT_FG);
       var cfg = new Config(colors, options.gui, options.externalUserConfig,
                 options.nashornArgs,
-                options.logDir, options.contikiPath, options.coojaPath, options.javac);
+                options.logDir, options.contikiPath, options.coojaPath);
       Cooja.go(cfg, simConfigs);
     } else { // Start MSPSim.
       var config = new ArgumentManager(options.simulationFiles.toArray(new String[0]));
