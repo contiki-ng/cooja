@@ -93,7 +93,7 @@ public class Cooja {
   /**
    * Version of Cooja.
    */
-  public static final String VERSION = "4.8";
+  public static final String VERSION = "4.9";
 
   /**
    *  Version used to detect incompatibility with the Cooja simulation config files.
