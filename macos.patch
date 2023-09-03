@@ -12,7 +12,7 @@ index 37a6d965a..139140b04 100644
  	$(Q)$(SIZE) $(LIBNAME) | grep $(BUILD_DIR_BOARD) >> $(BINARY_SIZE_LOGFILE)
  endif
 diff --git a/arch/platform/cooja/mtype.c b/arch/platform/cooja/mtype.c
-index 137fa043f..e4d1ed68a 100644
+index 137fa043f..b06953098 100644
 --- a/arch/platform/cooja/mtype.c
 +++ b/arch/platform/cooja/mtype.c
 @@ -51,6 +51,17 @@ int main(void);
@@ -20,29 +20,44 @@ index 137fa043f..e4d1ed68a 100644
  intptr_t referenceVar;
  
 +#ifdef __APPLE__
-+extern void* cooja_DATAStart __asm("segment$start$__DATA");
-+extern void* cooja_DATAEnd __asm("segment$end$__DATA");
-+extern void* cooja_dataStart __asm("section$start$__DATA$__data");
-+extern void* cooja_dataEnd __asm("section$end$__DATA$__data");
-+extern void* cooja_bssStart __asm("section$start$__DATA$__bss");
-+extern void* cooja_bssEnd __asm("section$end$__DATA$__bss");
-+extern void* cooja_commonStart __asm("section$start$__DATA$__common");
-+extern void* cooja_commonEnd __asm("section$end$__DATA$__common");
++extern int cooja_DATAStart __asm("segment$start$__DATA");
++extern int cooja_DATAEnd __asm("segment$end$__DATA");
++extern int cooja_dataStart __asm("section$start$__DATA$__data");
++extern int cooja_dataEnd __asm("section$end$__DATA$__data");
++extern int cooja_bssStart __asm("section$start$__DATA$__bss");
++extern int cooja_bssEnd __asm("section$end$__DATA$__bss");
++extern int cooja_commonStart __asm("section$start$__DATA$__common");
++extern int cooja_commonEnd __asm("section$end$__DATA$__common");
 +#endif /* __APPLE__ */
 +
  /*
   * Contiki and rtimer threads.
   */
-@@ -87,6 +98,12 @@ cooja_init(void)
-   if((rv = cooja_mt_init(&cooja_thread))) {
-     return rv;
-   }
+@@ -78,6 +89,27 @@ process_run_thread_loop(void)
+   /* Then call common Contiki-NG main function */
+   main();
+ }
 +#ifdef __APPLE__
++uintptr_t mtype_dataStart(void) {
 +  (void)cooja_DATAStart; (void)cooja_DATAEnd;
-+  printf("%p:%p\n", cooja_dataStart, cooja_dataEnd);
-+  printf("%p:%p\n", cooja_bssStart, cooja_bssEnd);
-+  printf("%p:%p\n", cooja_commonStart, cooja_commonEnd);
++  return (uintptr_t)&cooja_dataStart;
++}
++uintptr_t mtype_dataEnd(void) {
++  return (uintptr_t)&cooja_dataEnd;
++}
++uintptr_t mtype_bssStart(void) {
++  return (uintptr_t)&cooja_bssStart;
++}
++uintptr_t mtype_bssEnd(void) {
++  return (uintptr_t)&cooja_bssEnd;
++}
++uintptr_t mtype_commonStart(void) {
++  return (uintptr_t)&cooja_commonStart;
++}
++uintptr_t mtype_commonEnd(void) {
++  return (uintptr_t)&cooja_commonEnd;
++}
 +#endif
-   cooja_mt_start(&cooja_thread, &rtimer_thread, rtimer_thread_loop);
-   cooja_mt_start(&cooja_thread, &process_run_thread, process_run_thread_loop);
-   return 0;
+ /*---------------------------------------------------------------------------*/
+ int
+ cooja_init(void)
