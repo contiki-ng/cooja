@@ -1,0 +1,47 @@
+diff --git a/Makefile.include b/Makefile.include
+index 37a6d965a..144e74b96 100644
+--- a/Makefile.include
++++ b/Makefile.include
+@@ -574,6 +574,7 @@ $(BUILD_DIR_BOARD)/%.$(TARGET): LIBNAME ?= $@
+ $(BUILD_DIR_BOARD)/%.$(TARGET): $(OBJECTDIR)/%.o $(LDSCRIPT) $(PROJECT_OBJECTFILES) $(PROJECT_LIBRARIES) $(CONTIKI_OBJECTFILES)
+ 	$(TRACE_LD)
+ 	$(Q)$(LD) $(LDFLAGS) $(TARGET_STARTFILES) $(sort ${filter-out $(LDSCRIPT) %.a,$^}) ${filter %.a,$^} $(TARGET_LIBEXTRAS) -o $(LIBNAME)
++	$(Q)size -x -m -l $(LIBNAME)
+ ifdef BINARY_SIZE_LOGFILE
+ 	$(Q)$(SIZE) $(LIBNAME) | grep $(BUILD_DIR_BOARD) >> $(BINARY_SIZE_LOGFILE)
+ endif
+diff --git a/arch/platform/cooja/mtype.c b/arch/platform/cooja/mtype.c
+index 137fa043f..f205549fc 100644
+--- a/arch/platform/cooja/mtype.c
++++ b/arch/platform/cooja/mtype.c
+@@ -51,6 +51,17 @@ int main(void);
+  */
+ intptr_t referenceVar;
+ 
++#ifdef __APPLE__
++extern void* cooja_DATAStart __asm("segment$start$__DATA");
++extern void* cooja_DATAEnd __asm("segment$end$__DATA");
++extern void* cooja_dataStart __asm("section$start$__DATA$__data");
++extern void* cooja_dataEnd __asm("section$end$__DATA$__data");
++extern void* cooja_bssStart __asm("section$start$__DATA$__bss");
++extern void* cooja_bssEnd __asm("section$end$__DATA$__bss");
++extern void* cooja_commonStart __asm("section$start$__DATA$__common");
++extern void* cooja_commonEnd __asm("section$end$__DATA$__common");
++#endif /* __APPLE__ */
++
+ /*
+  * Contiki and rtimer threads.
+  */
+@@ -87,6 +98,12 @@ cooja_init(void)
+   if((rv = cooja_mt_init(&cooja_thread))) {
+     return rv;
+   }
++#ifdef __APPLE__
++  (void)cooja_DATAStart; (void)cooja_DATAEnd;
++  (void)cooja_dataStart; (void)cooja_dataEnd;
++  (void)cooja_bssStart; (void)cooja_bssEnd;
++  (void)cooja_commonStart; (void)cooja_commonEnd;
++#endif
+   cooja_mt_start(&cooja_thread, &rtimer_thread, rtimer_thread_loop);
+   cooja_mt_start(&cooja_thread, &process_run_thread, process_run_thread_loop);
+   return 0;
