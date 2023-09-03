@@ -1,12 +1,13 @@
 diff --git a/Makefile.include b/Makefile.include
-index 37a6d965a..144e74b96 100644
+index 37a6d965a..139140b04 100644
 --- a/Makefile.include
 +++ b/Makefile.include
-@@ -574,6 +574,7 @@ $(BUILD_DIR_BOARD)/%.$(TARGET): LIBNAME ?= $@
+@@ -574,6 +574,8 @@ $(BUILD_DIR_BOARD)/%.$(TARGET): LIBNAME ?= $@
  $(BUILD_DIR_BOARD)/%.$(TARGET): $(OBJECTDIR)/%.o $(LDSCRIPT) $(PROJECT_OBJECTFILES) $(PROJECT_LIBRARIES) $(CONTIKI_OBJECTFILES)
  	$(TRACE_LD)
  	$(Q)$(LD) $(LDFLAGS) $(TARGET_STARTFILES) $(sort ${filter-out $(LDSCRIPT) %.a,$^}) ${filter %.a,$^} $(TARGET_LIBEXTRAS) -o $(LIBNAME)
 +	$(Q)size -x -m -l $(LIBNAME)
++	$(Q)nm -aP $(LIBNAME)
  ifdef BINARY_SIZE_LOGFILE
  	$(Q)$(SIZE) $(LIBNAME) | grep $(BUILD_DIR_BOARD) >> $(BINARY_SIZE_LOGFILE)
  endif
