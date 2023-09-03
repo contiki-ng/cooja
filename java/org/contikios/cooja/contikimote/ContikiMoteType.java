@@ -319,8 +319,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
       var old = entry.getValue();
       offsetVariables.put(entry.getKey(), new Symbol(old.type, old.name, old.addr + offset, old.size));
     }
-    logger.info("data1: " + Long.toHexString(dataSecParser.getDataStartAddr()) + " size: " + Integer.toHexString(dataSecParser.getDataSize()));
     var secOffset = useCommand ? offset : 0;
+    logger.info("data1: " + Long.toHexString(dataSecParser.getDataStartAddr() + secOffset) + " size: " + Integer.toHexString(dataSecParser.getDataSize()));
     initialMemory = new SectionMoteMemory(offsetVariables);
     initialMemory.addMemorySection("data",
             getMemory(dataSecParser.getDataStartAddr() + secOffset, dataSecParser.getDataSize(), offsetVariables));
