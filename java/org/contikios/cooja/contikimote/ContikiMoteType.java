@@ -266,18 +266,18 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
       dataSecParser = new CommandSectionParser(
               output,
-              Cooja.getExternalToolsSetting("COMMAND_DATA_START"),
-              Cooja.getExternalToolsSetting("COMMAND_DATA_END"),
+              myCoreComm.getMacDataStartAddress(),
+              myCoreComm.getMacDataSize(),
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_DATA"));
       bssSecParser = new CommandSectionParser(
               output,
-              Cooja.getExternalToolsSetting("COMMAND_BSS_START"),
-              Cooja.getExternalToolsSetting("COMMAND_BSS_END"),
+              myCoreComm.getMacBssStartAddress(),
+              myCoreComm.getMacBssSize(),
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_BSS"));
       commonSecParser = new CommandSectionParser(
               output,
-              Cooja.getExternalToolsSetting("COMMAND_COMMON_START"),
-              Cooja.getExternalToolsSetting("COMMAND_COMMON_END"),
+              myCoreComm.getMacCommonStartAddress(),
+              myCoreComm.getMacCommonSize(),
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
     } else {
       var symbols = String.join("\n", loadCommandData(command, firmwareFile, vis));
@@ -292,18 +292,12 @@ public class ContikiMoteType extends BaseContikiMoteType {
      *
      * This offset will be used in Cooja in the memory abstraction to match
      * Contiki's and Cooja's address spaces */
-    Map<String, Symbol> variables = null;
-    if (dataSecParser.parseStartAddrAndSize()) {
-      variables = dataSecParser.parseSymbols(null);
-    }
-    if (bssSecParser != null && bssSecParser.parseStartAddrAndSize()) {
+    Map<String, Symbol> variables = dataSecParser.parseSymbols(null);
+    if (bssSecParser != null) {
       variables = bssSecParser.parseSymbols(variables);
     }
-    if (commonSecParser != null && commonSecParser.parseStartAddrAndSize()) {
+    if (commonSecParser != null) {
       variables = commonSecParser.parseSymbols(variables);
-    }
-    if (variables == null) {
-      throw new MoteTypeCreationException("Could not parse symbols in library");
     }
     long offset;
     try {
@@ -319,24 +313,15 @@ public class ContikiMoteType extends BaseContikiMoteType {
       var old = entry.getValue();
       offsetVariables.put(entry.getKey(), new Symbol(old.type, old.name, old.addr + offset, old.size));
     }
-    var secOffset = useCommand ? offset : 0;
-    logger.info("data1: " + Long.toHexString(dataSecParser.getDataStartAddr() + secOffset) + " size: " + Integer.toHexString(dataSecParser.getDataSize()));
     initialMemory = new SectionMoteMemory(offsetVariables);
     initialMemory.addMemorySection("data",
-            getMemory(dataSecParser.getDataStartAddr() + secOffset, dataSecParser.getDataSize(), offsetVariables));
-    if (bssSecParser != null) {
-      logger.info("bss1: " + Long.toHexString(bssSecParser.getBssStartAddr() + secOffset) + " size: " + Integer.toHexString(bssSecParser.getBssSize()));
-    }
+            getMemory(dataSecParser.getDataStartAddr(), dataSecParser.getDataSize(), offsetVariables));
     var parser = bssSecParser == null ? dataSecParser : bssSecParser;
     initialMemory.addMemorySection("bss",
-            getMemory(parser.getBssStartAddr() + secOffset, parser.getBssSize(), offsetVariables));
+            getMemory(parser.getBssStartAddr(), parser.getBssSize(), offsetVariables));
     if (commonSecParser != null) {
-      logger.info("common1: " + Long.toHexString(commonSecParser.getCommonStartAddr() + secOffset) + " size: " + Integer.toHexString(commonSecParser.getCommonSize()));
       initialMemory.addMemorySection("common",
-              getMemory(commonSecParser.getCommonStartAddr() + secOffset, commonSecParser.getCommonSize(), offsetVariables));
-      logger.info("common2: " + Long.toHexString(myCoreComm.getMacCommonStartAddress()) + " size: " + Integer.toHexString(myCoreComm.getMacCommonSize()));
-      logger.info("bss2: " + Long.toHexString(myCoreComm.getMacBssStartAddress()) + " size: " + Integer.toHexString(myCoreComm.getMacBssSize()));
-      logger.info("data1: " + Long.toHexString(myCoreComm.getMacDataStartAddress()) + " size: " + Integer.toHexString(myCoreComm.getMacDataSize()));
+              getMemory(commonSecParser.getCommonStartAddr(), commonSecParser.getCommonSize(), offsetVariables));
     }
     getCoreMemory(initialMemory);
     return true;
@@ -409,8 +394,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
       return commonSize;
     }
 
-    abstract boolean parseStartAddrAndSize();
-
     abstract Map<String, Symbol> parseSymbols(Map<String, Symbol> inVars);
   }
 
@@ -426,11 +409,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
       dataSize = sizeData;
       bssStartAddr = startBss;
       bssSize = sizeBss;
-    }
-
-    @Override
-    boolean parseStartAddrAndSize() {
-      return true; // Both startAddr and size are updated in parseSymbols() instead.
     }
 
     @Override
@@ -474,85 +452,26 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   private static class CommandSectionParser extends SectionParser {
     private final String[] mapFileData;
-
-    private final String startRegExp;
-    private final String endRegExp;
     private final String sectionRegExp;
 
     /**
      * Creates SectionParser based on output of configurable command.
      *
      * @param mapFileData Map file lines as array of String
-     * @param startRegExp Regular expression for parsing start of section
-     * @param endRegExp Regular expression for parsing end of section
+     * @param start Start address for the section
+     * @param size Size of the section
      * @param sectionRegExp Regular expression describing symbol table section identifier (e.g. '[Rr]' for readonly)
      *        Will be used to replaced '<SECTION>'in 'COMMAND_VAR_NAME_ADDRESS_SIZE'
      */
-    CommandSectionParser(String[] mapFileData, String startRegExp, String endRegExp, String sectionRegExp) {
+    CommandSectionParser(String[] mapFileData, long start, int size, String sectionRegExp) {
       this.mapFileData = mapFileData;
-      this.startRegExp = startRegExp;
-      this.endRegExp = endRegExp;
+      dataStartAddr = bssStartAddr = commonStartAddr = start;
+      dataSize = bssSize = commonSize = size;
       this.sectionRegExp = sectionRegExp;
     }
 
     String[] getData() {
       return mapFileData;
-    }
-
-    @Override
-    boolean parseStartAddrAndSize() {
-      // FIXME: Adjust this code to mirror the optimized method in MapSectionParser.
-      if (startRegExp == null || startRegExp.isEmpty()) {
-        dataStartAddr = bssStartAddr = commonStartAddr = -1;
-      } else {
-        long result;
-        String retString = null;
-        Pattern pattern = Pattern.compile(startRegExp);
-        for (String line : getData()) {
-          Matcher matcher = pattern.matcher(line);
-          if (matcher.find()) {
-            retString = matcher.group(1);
-            break;
-          }
-        }
-
-        if (retString == null || retString.isEmpty()) {
-          result = -1;
-        } else {
-          result = Long.parseUnsignedLong(retString.trim(), 16);
-        }
-
-        dataStartAddr = bssStartAddr = commonStartAddr = result;
-      }
-
-      if (dataStartAddr < 0 || endRegExp == null || endRegExp.isEmpty()) {
-        dataSize = bssSize = commonSize = -1;
-        return false;
-      }
-
-      long end;
-      String retString = null;
-      Pattern pattern = Pattern.compile(endRegExp);
-      for (String line : getData()) {
-        Matcher matcher = pattern.matcher(line);
-        if (matcher.find()) {
-          retString = matcher.group(1);
-          break;
-        }
-      }
-
-      if (retString == null || retString.isEmpty()) {
-        end = -1;
-      } else {
-        end = Long.parseUnsignedLong(retString.trim(), 16);
-      }
-
-      if (end < 0) {
-        dataSize = bssSize = commonSize = -1;
-        return false;
-      }
-      dataSize = bssSize = commonSize = (int) (end - getDataStartAddr());
-      return dataStartAddr >= 0 && dataSize > 0;
     }
 
     @Override

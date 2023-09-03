@@ -992,7 +992,7 @@ public class Cooja {
       settings.put("COMMAND_READONLY_END", "^.eh_frame_hdr[ \t]r[ \t]([0-9A-Fa-f]*)");
     } else if (osName.startsWith("mac os x")) {
       settings.put("PARSE_WITH_COMMAND", "true");
-      settings.put("PARSE_COMMAND", "[COOJA_DIR]/tools/macos/nmandsize $(LIBFILE)");
+      settings.put("PARSE_COMMAND", "symbols $(LIBFILE)");
       settings.put("COMMAND_VAR_NAME_ADDRESS", "^[ \t]*([0-9A-Fa-f][0-9A-Fa-f]*)[ \t]\\(__DATA,__[^ ]*\\) external _([^ ]*)$");
       settings.put("COMMAND_DATA_START", "^DATA SECTION START: 0x([0-9A-Fa-f]+)$");
       settings.put("COMMAND_DATA_END", "^DATA SECTION END: 0x([0-9A-Fa-f]+)$");
