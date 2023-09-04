@@ -105,7 +105,7 @@ public class Cooja {
    *  Version used to detect incompatibility with the Contiki-NG
    *  build system. The format is &lt;YYYY&gt;&lt;MM&gt;&lt;DD&gt;&lt;2 digit sequence number&gt;.
    */
-  public static final String CONTIKI_NG_BUILD_VERSION = "2022071901";
+  public static final String CONTIKI_NG_BUILD_VERSION = "2023090701";
 
   private static final Logger logger = LoggerFactory.getLogger(Cooja.class);
 
@@ -967,11 +967,6 @@ public class Cooja {
     settings.put("COMMAND_VAR_SEC_DATA", "[DdGg]");
     settings.put("COMMAND_VAR_SEC_BSS", "[Bb]");
     settings.put("COMMAND_VAR_SEC_COMMON", "[C]");
-    settings.put("COMMAND_DATA_START", "^.data[ \t]d[ \t]([0-9A-Fa-f]*)[ \t]*$");
-    settings.put("COMMAND_DATA_END", "^_edata[ \t]D[ \t]([0-9A-Fa-f]*)[ \t]*$");
-    settings.put("COMMAND_BSS_START", "^__bss_start[ \t]B[ \t]([0-9A-Fa-f]*)[ \t]*$");
-    settings.put("COMMAND_BSS_END", "^_end[ \t]B[ \t]([0-9A-Fa-f]*)[ \t]*$");
-
     String osName = System.getProperty("os.name").toLowerCase();
     if (osName.startsWith("win")) {
       settings.put("PATH_C_COMPILER", "mingw32-gcc");
@@ -981,21 +976,10 @@ public class Cooja {
       settings.put("PARSE_COMMAND", "/bin/nm -aP --size-sort -S $(LIBFILE) && /bin/nm -aP $(LIBFILE)");
 
       settings.put("COMMAND_VAR_NAME_ADDRESS_SIZE", "^[_](?<symbol>[^.].*?)[ \t]<SECTION>[ \t](?<address>[0-9a-fA-F]+)[ \t](?<size>[0-9a-fA-F]+)");
-      settings.put("COMMAND_DATA_START", "^__data_start__[ \t]D[ \t]([0-9A-Fa-f]*)");
-      settings.put("COMMAND_DATA_END", "^__data_end__[ \t]D[ \t]([0-9A-Fa-f]*)");
-      settings.put("COMMAND_BSS_START", "^__bss_start__[ \t]B[ \t]([0-9A-Fa-f]*)");
-      settings.put("COMMAND_BSS_END", "^__bss_end__[ \t]B[ \t]([0-9A-Fa-f]*)");
     } else if (osName.startsWith("mac os x")) {
       settings.put("PARSE_WITH_COMMAND", "true");
-      settings.put("PARSE_COMMAND", "[COOJA_DIR]/tools/macos/nmandsize $(LIBFILE)");
+      settings.put("PARSE_COMMAND", "symbols $(LIBFILE)");
       settings.put("COMMAND_VAR_NAME_ADDRESS", "^[ \t]*([0-9A-Fa-f][0-9A-Fa-f]*)[ \t]\\(__DATA,__[^ ]*\\) external _([^ ]*)$");
-      settings.put("COMMAND_DATA_START", "^DATA SECTION START: 0x([0-9A-Fa-f]+)$");
-      settings.put("COMMAND_DATA_END", "^DATA SECTION END: 0x([0-9A-Fa-f]+)$");
-      settings.put("COMMAND_BSS_START", "^COMMON SECTION START: 0x([0-9A-Fa-f]+)$");
-      settings.put("COMMAND_BSS_END", "^COMMON SECTION END: 0x([0-9A-Fa-f]+)$");
-      settings.put("COMMAND_COMMON_START", "^BSS SECTION START: 0x([0-9A-Fa-f]+)$");
-      settings.put("COMMAND_COMMON_END", "^BSS SECTION END: 0x([0-9A-Fa-f]+)$");
-
       settings.put("COMMAND_VAR_NAME_ADDRESS_SIZE", "^\\s*0x(?<address>[a-fA-F0-9]+) \\(\\s*0x(?<size>[a-fA-F0-9]+)\\) (?<symbol>[A-Za-z0-9_]+) \\[.*EXT.*\\]");
       settings.put("COMMAND_VAR_SEC_DATA", "(__DATA,__data)");
       settings.put("COMMAND_VAR_SEC_BSS", "(__DATA,__bss)");

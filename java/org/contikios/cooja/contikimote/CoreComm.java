@@ -33,6 +33,7 @@ import java.lang.foreign.FunctionDescriptor;
 import java.lang.foreign.Linker;
 import java.lang.foreign.SegmentScope;
 import java.lang.foreign.SymbolLookup;
+import java.lang.foreign.ValueLayout;
 import java.lang.invoke.MethodHandle;
 
 /**
@@ -44,13 +45,21 @@ import java.lang.invoke.MethodHandle;
 class CoreComm {
   private final SymbolLookup symbols;
   private final MethodHandle coojaTick;
+
+  private final long dataStart;
+  private final int dataSize;
+  private final long bssStart;
+  private final int bssSize;
+  private final long commonStart;
+  private final int commonSize;
   /**
    * Loads library libFile with a scope.
    *
    * @param scope Scope to load the library file in
    * @param libFile Library file
+   * @param queryContiki Call helper functions in Contiki-NG (macOS)
    */
-  CoreComm(SegmentScope scope, File libFile) {
+  CoreComm(SegmentScope scope, File libFile, boolean queryContiki) {
     symbols = SymbolLookup.libraryLookup(libFile.getAbsolutePath(), scope);
     var linker = Linker.nativeLinker();
     coojaTick = linker.downcallHandle(symbols.find("cooja_tick").get(),
@@ -62,6 +71,56 @@ class CoreComm {
       coojaInit.invokeExact();
     } catch (Throwable e) {
       throw new RuntimeException("Calling cooja_init failed: " + e.getMessage(), e);
+    }
+    if (queryContiki) {
+      var getBssStart = linker.downcallHandle(symbols.find("cooja_bss_start").get(),
+              FunctionDescriptor.of(ValueLayout.JAVA_LONG));
+      try {
+        bssStart = (long)getBssStart.invokeExact();
+      } catch (Throwable e) {
+        throw new RuntimeException("Calling cooja_bss_start failed: " + e.getMessage(), e);
+      }
+      var getBssSize = linker.downcallHandle(symbols.find("cooja_bss_size").get(),
+              FunctionDescriptor.of(ValueLayout.JAVA_INT));
+      try {
+        bssSize = (int)getBssSize.invokeExact();
+      } catch (Throwable e) {
+        throw new RuntimeException("Calling cooja_bss_size failed: " + e.getMessage(), e);
+      }
+      var getDataStart = linker.downcallHandle(symbols.find("cooja_data_start").get(),
+              FunctionDescriptor.of(ValueLayout.JAVA_LONG));
+      try {
+        dataStart = (long)getDataStart.invokeExact();
+      } catch (Throwable e) {
+        throw new RuntimeException("Calling cooja_data_start failed: " + e.getMessage(), e);
+      }
+      var getDataSize = linker.downcallHandle(symbols.find("cooja_data_size").get(),
+              FunctionDescriptor.of(ValueLayout.JAVA_INT));
+      try {
+        dataSize = (int)getDataSize.invokeExact();
+      } catch (Throwable e) {
+        throw new RuntimeException("Calling cooja_data_size failed: " + e.getMessage(), e);
+      }
+      var getCommonStart = linker.downcallHandle(symbols.find("cooja_common_start").get(),
+              FunctionDescriptor.of(ValueLayout.JAVA_LONG));
+      try {
+        commonStart = (long)getCommonStart.invokeExact();
+      } catch (Throwable e) {
+        throw new RuntimeException("Calling cooja_common_start failed: " + e.getMessage(), e);
+      }
+      var getCommonSize = linker.downcallHandle(symbols.find("cooja_common_size").get(),
+              FunctionDescriptor.of(ValueLayout.JAVA_INT));
+      try {
+        commonSize = (int)getCommonSize.invokeExact();
+      } catch (Throwable e) {
+        throw new RuntimeException("Calling cooja_common_size failed: " + e.getMessage(), e);
+      }
+    } else {
+      dataStart = symbols.find("cooja_dataStart").get().address();
+      dataSize = (int)symbols.find("cooja_dataSize").get().address();
+      bssStart = symbols.find("cooja_bssStart").get().address();
+      bssSize = (int)symbols.find("cooja_bssSize").get().address();
+      commonStart = commonSize = 0;
     }
   }
 
@@ -87,29 +146,41 @@ class CoreComm {
    * Returns the absolute address of the start of the data section.
    */
   long getDataStartAddress() {
-    return symbols.find("cooja_dataStart").get().address();
+    return dataStart;
   }
 
   /**
    * Returns the size of the data section.
    */
   int getDataSize() {
-    var dataSize = symbols.find("cooja_dataSize").get();
-    return (int)dataSize.address();
+    return dataSize;
   }
 
   /**
    * Returns the absolute address of the start of the bss section.
    */
   long getBssStartAddress() {
-    return symbols.find("cooja_bssStart").get().address();
+    return bssStart;
   }
 
   /**
    * Returns the size of the bss section.
    */
   int getBssSize() {
-    var bssSize = symbols.find("cooja_bssSize").get();
-    return (int)bssSize.address();
+    return bssSize;
+  }
+
+  /**
+   * Returns the absolute address of the start of the common section.
+   */
+  long getCommonStartAddress() {
+    return commonStart;
+  }
+
+  /**
+   * Returns the size of the common section.
+   */
+  int getCommonSize() {
+    return commonSize;
   }
 }
