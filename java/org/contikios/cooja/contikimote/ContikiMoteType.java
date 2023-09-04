@@ -264,26 +264,15 @@ public class ContikiMoteType extends BaseContikiMoteType {
       String[] output = loadCommandData(command, firmwareFile, vis);
       // FIXME: COMMAND_VAR_SEC_DATA & friends cannot be configured by
       //         the user, hardcode the values here instead.
-      dataSecParser = new CommandSectionParser(
-              output,
-              myCoreComm.getDataStartAddress(),
-              myCoreComm.getDataSize(),
+      dataSecParser = new CommandSectionParser(output,
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_DATA"));
-      bssSecParser = new CommandSectionParser(
-              output,
-              myCoreComm.getBssStartAddress(),
-              myCoreComm.getBssSize(),
+      bssSecParser = new CommandSectionParser(output,
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_BSS"));
-      commonSecParser = new CommandSectionParser(
-              output,
-              myCoreComm.getCommonStartAddress(),
-              myCoreComm.getCommonSize(),
+      commonSecParser = new CommandSectionParser(output,
               Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
     } else {
       var symbols = String.join("\n", loadCommandData(command, firmwareFile, vis));
-      dataSecParser = new MapSectionParser(symbols,
-              myCoreComm.getDataStartAddress(), myCoreComm.getDataSize(),
-              myCoreComm.getBssStartAddress(), myCoreComm.getBssSize());
+      dataSecParser = new MapSectionParser(symbols);
     }
 
     /* We first need the value of Contiki's referenceVar, which tells us the
@@ -315,13 +304,12 @@ public class ContikiMoteType extends BaseContikiMoteType {
     }
     initialMemory = new SectionMoteMemory(offsetVariables);
     initialMemory.addMemorySection("data",
-            getMemory(dataSecParser.getDataStartAddr(), dataSecParser.getDataSize(), offsetVariables));
-    var parser = bssSecParser == null ? dataSecParser : bssSecParser;
+            getMemory(myCoreComm.getDataStartAddress(), myCoreComm.getDataSize(), offsetVariables));
     initialMemory.addMemorySection("bss",
-            getMemory(parser.getBssStartAddr(), parser.getBssSize(), offsetVariables));
+            getMemory(myCoreComm.getBssStartAddress(), myCoreComm.getBssSize(), offsetVariables));
     if (commonSecParser != null) {
       initialMemory.addMemorySection("common",
-              getMemory(commonSecParser.getCommonStartAddr(), commonSecParser.getCommonSize(), offsetVariables));
+              getMemory(myCoreComm.getCommonStartAddress(), myCoreComm.getCommonSize(), offsetVariables));
     }
     getCoreMemory(initialMemory);
     return true;
@@ -360,59 +348,22 @@ public class ContikiMoteType extends BaseContikiMoteType {
   /**
    * Abstract base class for concrete section parser class.
    */
-  private static abstract class SectionParser {
-    // CommandSectionParser (OS X) takes three passes over the data. All the addresses and sizes are identical.
-    // MapSectionParser takes one pass over the data, and sets the data/bss variables to different values.
-    long dataStartAddr;
-    int dataSize;
-    long bssStartAddr;
-    int bssSize;
-    long commonStartAddr;
-    int commonSize;
-
-    long getDataStartAddr() {
-      return dataStartAddr;
-    }
-
-    int getDataSize() {
-      return dataSize;
-    }
-
-    long getBssStartAddr() {
-      return bssStartAddr;
-    }
-
-    int getBssSize() {
-      return bssSize;
-    }
-
-    long getCommonStartAddr() {
-      return commonStartAddr;
-    }
-
-    int getCommonSize() {
-      return commonSize;
-    }
-
-    abstract Map<String, Symbol> parseSymbols(Map<String, Symbol> inVars);
+  interface SectionParser {
+    Map<String, Symbol> parseSymbols(Map<String, Symbol> inVars);
   }
 
   /**
    * Parses Map file for section data.
    */
-  private static class MapSectionParser extends SectionParser {
+  private static class MapSectionParser implements SectionParser {
     private final String readelfData;
 
-    MapSectionParser(String readelfData, long startData, int sizeData, long startBss, int sizeBss) {
+    MapSectionParser(String readelfData) {
       this.readelfData = readelfData;
-      dataStartAddr = startData;
-      dataSize = sizeData;
-      bssStartAddr = startBss;
-      bssSize = sizeBss;
     }
 
     @Override
-    Map<String, Symbol> parseSymbols(Map<String, Symbol> inVars) {
+    public Map<String, Symbol> parseSymbols(Map<String, Symbol> inVars) {
       Map<String, Symbol> varNames = new HashMap<>();
       try (var s = new Scanner(readelfData)) {
         s.nextLine(); // Skip first blank line.
@@ -450,7 +401,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
   /**
    * Parses command output for section data.
    */
-  private static class CommandSectionParser extends SectionParser {
+  private static class CommandSectionParser implements SectionParser {
     private final String[] mapFileData;
     private final String sectionRegExp;
 
@@ -458,24 +409,16 @@ public class ContikiMoteType extends BaseContikiMoteType {
      * Creates SectionParser based on output of configurable command.
      *
      * @param mapFileData Map file lines as array of String
-     * @param start Start address for the section
-     * @param size Size of the section
      * @param sectionRegExp Regular expression describing symbol table section identifier (e.g. '[Rr]' for readonly)
      *        Will be used to replaced '<SECTION>'in 'COMMAND_VAR_NAME_ADDRESS_SIZE'
      */
-    CommandSectionParser(String[] mapFileData, long start, int size, String sectionRegExp) {
+    CommandSectionParser(String[] mapFileData, String sectionRegExp) {
       this.mapFileData = mapFileData;
-      dataStartAddr = bssStartAddr = commonStartAddr = start;
-      dataSize = bssSize = commonSize = size;
       this.sectionRegExp = sectionRegExp;
     }
 
-    String[] getData() {
-      return mapFileData;
-    }
-
     @Override
-    Map<String, Symbol> parseSymbols(Map<String, Symbol> inVars) {
+    public Map<String, Symbol> parseSymbols(Map<String, Symbol> inVars) {
       if (inVars != null) {
         return inVars;
       }
@@ -484,7 +427,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
       Pattern pattern = Pattern.compile(
               Cooja.getExternalToolsSetting("COMMAND_VAR_NAME_ADDRESS_SIZE")
                       .replace("<SECTION>", Pattern.quote(sectionRegExp)));
-      for (String line : getData()) {
+      for (String line : mapFileData) {
         Matcher matcher = pattern.matcher(line);
 
         if (matcher.find()) {
