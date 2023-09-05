@@ -471,41 +471,34 @@ public class SerialSocketServer implements Plugin, MotePlugin {
 
   /* Forward data: virtual port -> mote */
   private class IncomingDataHandler implements Runnable {
-
-    DataInputStream in;
-
     @Override
     public void run() {
       int numRead = 0;
       byte[] data = new byte[16*1024];
-      try {
-        in = new DataInputStream(clientSocket.getInputStream());
+      try (var in = new DataInputStream(clientSocket.getInputStream())) {
+        logger.info("Forwarder: socket -> serial port");
+        while (numRead >= 0) {
+          final int finalNumRead = numRead;
+          final byte[] finalData = data;
+          /* We are not on the simulation thread */
+          simulation.invokeSimulationThread(() -> {
+            for (int i = 0; i < finalNumRead; i++) {
+              serialPort.writeByte(finalData[i]);
+            }
+            inBytes += finalNumRead;
+          });
+          try {
+            numRead = in.read(data);
+          } catch (IOException e) {
+            logger.info(e.getMessage());
+            numRead = -1;
+          }
+        }
+        logger.info("End of Stream");
+        cleanupClient();
       } catch (IOException ex) {
         logger.error("Failed opening input stream from client socket:", ex);
-        return;
       }
-
-      logger.info("Forwarder: socket -> serial port");
-      while (numRead >= 0) {
-        final int finalNumRead = numRead;
-        final byte[] finalData = data;
-        /* We are not on the simulation thread */
-        simulation.invokeSimulationThread(() -> {
-          for (int i = 0; i < finalNumRead; i++) {
-            serialPort.writeByte(finalData[i]);
-          }
-          inBytes += finalNumRead;
-        });
-
-        try {
-          numRead = in.read(data);
-        } catch (IOException e) {
-          logger.info(e.getMessage());
-          numRead = -1;
-        }
-      }
-      logger.info("End of Stream");
-      cleanupClient();
     }
   }
 
