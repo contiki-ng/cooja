@@ -82,4 +82,34 @@ class CoreComm {
   long getReferenceAddress() {
     return symbols.find("referenceVar").get().address();
   }
+
+  /**
+   * Returns the absolute address of the start of the data section.
+   */
+  long getDataStartAddress() {
+    return symbols.find("cooja_dataStart").get().address();
+  }
+
+  /**
+   * Returns the size of the data section.
+   */
+  int getDataSize() {
+    var dataSize = symbols.find("cooja_dataSize").get();
+    return (int)dataSize.address();
+  }
+
+  /**
+   * Returns the absolute address of the start of the bss section.
+   */
+  long getBssStartAddress() {
+    return symbols.find("cooja_bssStart").get().address();
+  }
+
+  /**
+   * Returns the size of the bss section.
+   */
+  int getBssSize() {
+    var bssSize = symbols.find("cooja_bssSize").get();
+    return (int)bssSize.address();
+  }
 }
