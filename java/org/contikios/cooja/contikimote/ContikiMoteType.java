@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
-import java.lang.foreign.SegmentScope;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -108,7 +107,7 @@ import org.slf4j.LoggerFactory;
 public class ContikiMoteType extends BaseContikiMoteType {
   private static final Logger logger = LoggerFactory.getLogger(ContikiMoteType.class);
   // Shared Arena since MoteTypes are allocated/removed in different threads.
-  private final Arena arena = Arena.openShared();
+  private final Arena arena = Arena.ofShared();
   /**
    * Communication stacks in Contiki.
    */
@@ -245,7 +244,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     boolean useCommand = Boolean.parseBoolean(Cooja.getExternalToolsSetting("PARSE_WITH_COMMAND", "false"));
     // Allocate core communicator class
     final var firmwareFile = getContikiFirmwareFile();
-    myCoreComm = new CoreComm(arena.scope(), firmwareFile, useCommand);
+    myCoreComm = new CoreComm(arena, firmwareFile, useCommand);
 
     var command = Cooja.getExternalToolsSetting(useCommand ? "PARSE_COMMAND" : "READELF_COMMAND");
     if (command != null) {
@@ -482,9 +481,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   static void getCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
-      int length = sec.getTotalSize();
-      MemorySegment.ofAddress(sec.getStartAddr(), length, SegmentScope.global())
-              .asByteBuffer().get(0, sec.getMemory(), 0, length);
+      MemorySegment.ofArray(sec.getMemory())
+              .copyFrom(MemorySegment.ofAddress(sec.getStartAddr()).reinterpret(sec.getTotalSize()));
     }
   }
 
@@ -496,10 +494,9 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   static void setCoreMemory(SectionMoteMemory mem) {
     for (var sec : mem.getSections().values()) {
-      int length = sec.getTotalSize();
-      MemorySegment.ofAddress(sec.getStartAddr(), length, SegmentScope.global())
-              .asByteBuffer().put(0, sec.getMemory(), 0, length);
-    }
+      MemorySegment.ofAddress(sec.getStartAddr()).reinterpret(sec.getTotalSize())
+              .copyFrom(MemorySegment.ofArray(sec.getMemory()));
+   }
   }
 
   /**

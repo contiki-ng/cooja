@@ -31,10 +31,10 @@ jobs:
         with:
           repository: contiki-ng/cooja
           path: contiki-ng/tools/cooja
-      - name: Setup Java 20
+      - name: Setup Java 21
         uses: actions/setup-java@v3
         with:
-          java-version: 20
+          java-version: 21
           distribution: 'zulu'
       - name: Verify gradle-wrapper checksum
         uses: gradle/wrapper-validation-action@v1
