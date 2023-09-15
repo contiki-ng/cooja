@@ -68,6 +68,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
+import org.contikios.cooja.interfaces.Clock;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.mote.BaseContikiMoteType;
@@ -530,8 +531,10 @@ public abstract class AbstractCompileDialog extends JDialog {
       }
     });
 
-    /* Always select position and ID interface */
-    if (Position.class.isAssignableFrom(intfClass) || MoteID.class.isAssignableFrom(intfClass)) {
+    // Always select clock, ID, and position interfaces.
+    if (Clock.class.isAssignableFrom(intfClass) ||
+            MoteID.class.isAssignableFrom(intfClass) ||
+            Position.class.isAssignableFrom(intfClass)) {
       intfCheckBox.setEnabled(false);
       intfCheckBox.setSelected(true);
     }
