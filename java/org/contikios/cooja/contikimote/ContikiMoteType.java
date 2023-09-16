@@ -213,6 +213,10 @@ public class ContikiMoteType extends BaseContikiMoteType {
     if (ci != null) {
       env.put("CI", ci);
     }
+    String coojaCi = System.getenv("COOJA_CI");
+    if (coojaCi != null) {
+      env.put("COOJA_CI", coojaCi);
+    }
     String relstr = System.getenv("RELSTR");
     if (relstr != null) {
       env.put("RELSTR", relstr);
