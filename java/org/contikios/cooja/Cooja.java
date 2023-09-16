@@ -964,9 +964,6 @@ public class Cooja {
 
     settings.put("PARSE_COMMAND", "nm -aP $(LIBFILE)");
     settings.put("COMMAND_VAR_NAME_ADDRESS_SIZE", "^(?<symbol>[^.].*?) <SECTION> (?<address>[0-9a-fA-F]+) (?<size>[0-9a-fA-F])*");
-    settings.put("COMMAND_VAR_SEC_DATA", "[DdGg]");
-    settings.put("COMMAND_VAR_SEC_BSS", "[Bb]");
-    settings.put("COMMAND_VAR_SEC_COMMON", "[C]");
     String osName = System.getProperty("os.name").toLowerCase();
     if (osName.startsWith("win")) {
       settings.put("PATH_C_COMPILER", "mingw32-gcc");
@@ -981,9 +978,6 @@ public class Cooja {
       settings.put("PARSE_COMMAND", "symbols $(LIBFILE)");
       settings.put("COMMAND_VAR_NAME_ADDRESS", "^[ \t]*([0-9A-Fa-f][0-9A-Fa-f]*)[ \t]\\(__DATA,__[^ ]*\\) external _([^ ]*)$");
       settings.put("COMMAND_VAR_NAME_ADDRESS_SIZE", "^\\s*0x(?<address>[a-fA-F0-9]+) \\(\\s*0x(?<size>[a-fA-F0-9]+)\\) (?<symbol>[A-Za-z0-9_]+) \\[.*EXT.*\\]");
-      settings.put("COMMAND_VAR_SEC_DATA", "(__DATA,__data)");
-      settings.put("COMMAND_VAR_SEC_BSS", "(__DATA,__bss)");
-      settings.put("COMMAND_VAR_SEC_COMMON", "(__DATA,__common)");
     } else if (osName.startsWith("freebsd")) {
       settings.put("PATH_MAKE", "gmake");
     } else {

@@ -262,14 +262,9 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     if (useCommand) {
       String[] output = loadCommandData(command, firmwareFile, vis);
-      // FIXME: COMMAND_VAR_SEC_DATA & friends cannot be configured by
-      //         the user, hardcode the values here instead.
-      dataSecParser = new CommandSectionParser(output,
-              Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_DATA"));
-      bssSecParser = new CommandSectionParser(output,
-              Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_BSS"));
-      commonSecParser = new CommandSectionParser(output,
-              Cooja.getExternalToolsSetting("COMMAND_VAR_SEC_COMMON"));
+      dataSecParser = new CommandSectionParser(output, "(__DATA,__data)");
+      bssSecParser = new CommandSectionParser(output, "(__DATA,__bss)");
+      commonSecParser = new CommandSectionParser(output, "(__DATA,__common)");
     } else {
       var symbols = String.join("\n", loadCommandData(command, firmwareFile, vis));
       dataSecParser = new MapSectionParser(symbols);
