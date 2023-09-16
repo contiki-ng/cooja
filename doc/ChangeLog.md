@@ -2,6 +2,10 @@
 
 ## Cooja User Interface Changes
 
+### Removed the EventListener plugin
+
+This plugin used the deprecated observable pattern.
+
 ## Cooja Simulation File Changes
 
 ### Expand $(MAKE) in csc files
