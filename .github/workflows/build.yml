@@ -60,7 +60,7 @@ jobs:
       - name: install macOS software
         if: matrix.os == 'macos-latest'
         run: |
-          brew install gawk make
+          brew install make
           # Homebrew prefix is different for x86-64 and aarch64.
           export HOMEBREW_PREFIX=/usr/local
           # Put Homebrew installed make first in PATH so "make" is version 4.x.
