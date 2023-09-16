@@ -262,9 +262,9 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     if (useCommand) {
       String[] output = loadCommandData(command, firmwareFile, vis);
-      dataSecParser = new CommandSectionParser(output, "(__DATA,__data)");
-      bssSecParser = new CommandSectionParser(output, "(__DATA,__bss)");
-      commonSecParser = new CommandSectionParser(output, "(__DATA,__common)");
+      dataSecParser = new CommandSectionParser(output);
+      bssSecParser = new CommandSectionParser(output);
+      commonSecParser = new CommandSectionParser(output);
     } else {
       var symbols = String.join("\n", loadCommandData(command, firmwareFile, vis));
       dataSecParser = new MapSectionParser(symbols);
@@ -398,18 +398,14 @@ public class ContikiMoteType extends BaseContikiMoteType {
    */
   private static class CommandSectionParser implements SectionParser {
     private final String[] mapFileData;
-    private final String sectionRegExp;
 
     /**
      * Creates SectionParser based on output of configurable command.
      *
      * @param mapFileData Map file lines as array of String
-     * @param sectionRegExp Regular expression describing symbol table section identifier (e.g. '[Rr]' for readonly)
-     *        Will be used to replaced '<SECTION>'in 'COMMAND_VAR_NAME_ADDRESS_SIZE'
      */
-    CommandSectionParser(String[] mapFileData, String sectionRegExp) {
+    CommandSectionParser(String[] mapFileData) {
       this.mapFileData = mapFileData;
-      this.sectionRegExp = sectionRegExp;
     }
 
     @Override
@@ -421,7 +417,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
       /* Replace "<SECTION>" in regex by section specific regex */
       Pattern pattern = Pattern.compile(
               Cooja.getExternalToolsSetting("COMMAND_VAR_NAME_ADDRESS_SIZE")
-                      .replace("<SECTION>", Pattern.quote(sectionRegExp)));
+                      .replace("<SECTION>", "\\(__DATA,__(data|bss|common)\\)"));
       for (String line : mapFileData) {
         Matcher matcher = pattern.matcher(line);
 
