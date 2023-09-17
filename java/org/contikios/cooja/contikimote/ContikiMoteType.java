@@ -107,6 +107,18 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("preview")
 public class ContikiMoteType extends BaseContikiMoteType {
   private static final Logger logger = LoggerFactory.getLogger(ContikiMoteType.class);
+  private static final Map<Class<? extends MoteInterface>, String> compilationFlags =
+          Map.of(ContikiBeeper.class, "COOJA_BEEP=0",
+                 ContikiButton.class, "COOJA_BUTTON=0",
+                 ContikiCFS.class, "COOJA_CFS=0",
+                 ContikiEEPROM.class, "COOJA_EEPROM=0",
+                 ContikiLED.class, "COOJA_LED=0",
+                 ContikiRadio.class, "COOJA_RADIO=0",
+                 ContikiRS232.class, "COOJA_SERIAL=0",
+                 ContikiPIR.class, "COOJA_PIR_SENSOR=0",
+                 ContikiVib.class, "COOJA_VIB_SENSOR=0",
+                 IPAddress.class, "COOJA_IP=0");
+
   // Shared Arena since MoteTypes are allocated/removed in different threads.
   private final Arena arena = Arena.openShared();
   /**
@@ -222,6 +234,11 @@ public class ContikiMoteType extends BaseContikiMoteType {
       env.put("QUIET", quiet);
     }
     return env;
+  }
+
+  @Override
+  protected String getMakeFlags(Class<? extends MoteInterface> clazz) {
+    return compilationFlags.get(clazz);
   }
 
   @Override
