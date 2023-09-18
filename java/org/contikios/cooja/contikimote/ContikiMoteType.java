@@ -278,11 +278,16 @@ public class ContikiMoteType extends BaseContikiMoteType {
 
     Map<String, Symbol> variables;
     if (useCommand) {
-      String[] output = loadCommandData(command, firmwareFile, vis);
+      var output = loadCommandData(command, firmwareFile, vis);
       variables = CommandSectionParser.parseSymbols(output);
     } else {
-      var symbols = String.join("\n", loadCommandData(command, firmwareFile, vis));
-      variables = MapSectionParser.parseSymbols(symbols);
+      var sb = new StringBuilder();
+      for (var s : loadCommandData(command, firmwareFile, vis)) {
+        if (s.contains("OBJECT")) { // Lines that define variables.
+          sb.append(s).append("\n");
+        }
+      }
+      variables = MapSectionParser.parseSymbols(sb.toString());
     }
 
     /* We first need the value of Contiki's referenceVar, which tells us the
@@ -355,13 +360,8 @@ public class ContikiMoteType extends BaseContikiMoteType {
     static Map<String, Symbol> parseSymbols(String readelfData) {
       Map<String, Symbol> varNames = new HashMap<>();
       try (var s = new Scanner(readelfData)) {
-        s.nextLine(); // Skip first blank line.
         while (s.hasNext()) {
-          var symbolNum = s.next();
-          if (!symbolNum.endsWith(":") || "Num:".equals(symbolNum)) {
-            s.nextLine(); // Skip until line starts with "1:" token.
-            continue;
-          }
+          s.next();
           // Scanner.nextLong() is really slow, get the next token and parse it.
           var addr = Long.parseLong(s.next(), 16);
           // Size is output in decimal if below 100000, hex otherwise. The command line option --sym-base=10 gives
@@ -370,10 +370,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
           var hex = sizeString.startsWith("0x");
           var size = Integer.parseInt(hex ? sizeString.substring(2) : sizeString, hex ? 16 : 10);
           var type = s.next();
-          if (!"OBJECT".equals(type)) {
-            s.nextLine(); // Skip lines that do not define variables.
-            continue;
-          }
           // Skip 3 tokens that are not required.
           s.next();
           s.next();
