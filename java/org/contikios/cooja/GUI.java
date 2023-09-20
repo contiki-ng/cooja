@@ -27,6 +27,7 @@
 
 package org.contikios.cooja;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -115,6 +116,9 @@ import org.slf4j.LoggerFactory;
 
 /** The graphical user interface for Cooja. */
 public class GUI {
+  /** The look and feel of Cooja. */
+  enum LookAndFeel { CrossPlatform, FlatLaf, Nimbus, System }
+
   private static final Logger logger = LoggerFactory.getLogger(GUI.class);
   static final String WINDOW_TITLE = "Cooja: The Contiki Network Simulator";
 
@@ -168,7 +172,10 @@ public class GUI {
         updateDesktopSize();
       }
     });
-    myDesktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+    // Dragging windows on OS X leaves residue from the borders with FlatLaf, so avoid setting dragMode.
+    if (cooja.configuration.lookAndFeel() != LookAndFeel.FlatLaf) {
+      myDesktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+    }
     frame = new JFrame(WINDOW_TITLE);
 
     // Help panel.
@@ -1789,34 +1796,19 @@ public class GUI {
     return n != JOptionPane.YES_OPTION;
   }
 
-  static void setLookAndFeel() {
+  static void setLookAndFeel(LookAndFeel lookAndFeel) {
     JFrame.setDefaultLookAndFeelDecorated(true);
     JDialog.setDefaultLookAndFeelDecorated(true);
     ToolTipManager.sharedInstance().setDismissDelay(60000);
-    // Nimbus.
     try {
-      String osName = System.getProperty("os.name").toLowerCase();
-      if (osName.startsWith("linux")) {
-        try {
-          for (var info : UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-              UIManager.setLookAndFeel(info.getClassName());
-              break;
-            }
-          }
-        } catch (UnsupportedLookAndFeelException e) {
-          UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        }
-      } else {
-        UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+      switch (lookAndFeel) {
+        case CrossPlatform -> UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        case FlatLaf -> UIManager.setLookAndFeel(new FlatLightLaf());
+        case Nimbus -> UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        case System -> UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       }
-    } catch (Exception e) {
-      // System.
-      try {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      } catch (Exception e2) {
-        throw new RuntimeException("Failed to set look and feel", e2);
-      }
+    } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+      throw new RuntimeException("Failed to set look and feel", e);
     }
   }
 
