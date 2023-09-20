@@ -968,15 +968,7 @@ public class Cooja {
     settings.put("COMMAND_VAR_SEC_BSS", "[Bb]");
     settings.put("COMMAND_VAR_SEC_COMMON", "[C]");
     String osName = System.getProperty("os.name").toLowerCase();
-    if (osName.startsWith("win")) {
-      settings.put("PATH_C_COMPILER", "mingw32-gcc");
-      settings.put("PARSE_WITH_COMMAND", "true");
-
-      // Hack: nm with arguments -S --size-sort does not display __data_start symbols
-      settings.put("PARSE_COMMAND", "/bin/nm -aP --size-sort -S $(LIBFILE) && /bin/nm -aP $(LIBFILE)");
-
-      settings.put("COMMAND_VAR_NAME_ADDRESS_SIZE", "^[_](?<symbol>[^.].*?)[ \t]<SECTION>[ \t](?<address>[0-9a-fA-F]+)[ \t](?<size>[0-9a-fA-F]+)");
-    } else if (osName.startsWith("mac os x")) {
+    if (osName.startsWith("mac os x")) {
       settings.put("PARSE_WITH_COMMAND", "true");
       settings.put("PARSE_COMMAND", "symbols $(LIBFILE)");
       settings.put("COMMAND_VAR_NAME_ADDRESS", "^[ \t]*([0-9A-Fa-f][0-9A-Fa-f]*)[ \t]\\(__DATA,__[^ ]*\\) external _([^ ]*)$");
