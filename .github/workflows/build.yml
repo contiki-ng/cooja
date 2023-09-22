@@ -69,8 +69,7 @@ jobs:
       - name: Run Contiki-NG simulation tests
         run: |
           [ "$(uname)" = "Linux" ] || source ~/.bashrc
-          # Update Contiki-NG for current build version.
-          perl -pi -e 's#^EXPECTED_COOJA_VERSION =(.*)$#EXPECTED_COOJA_VERSION = 2023090701#g' contiki-ng/arch/platform/cooja/Makefile.cooja
+          export COOJA_CI=true
           cd contiki-ng/tests/07-simulation-base
           # Skip MSP430 tests, no compiler installed.
           rm ??-*sky*.csc ??-*z1*.csc
