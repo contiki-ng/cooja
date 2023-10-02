@@ -29,9 +29,9 @@
 package org.contikios.cooja.contikimote;
 
 import java.io.File;
+import java.lang.foreign.Arena;
 import java.lang.foreign.FunctionDescriptor;
 import java.lang.foreign.Linker;
-import java.lang.foreign.SegmentScope;
 import java.lang.foreign.SymbolLookup;
 import java.lang.foreign.ValueLayout;
 import java.lang.invoke.MethodHandle;
@@ -55,12 +55,12 @@ class CoreComm {
   /**
    * Loads library libFile with a scope.
    *
-   * @param scope Scope to load the library file in
+   * @param arena Arena to load the library file in
    * @param libFile Library file
    * @param queryContiki Call helper functions in Contiki-NG (macOS)
    */
-  CoreComm(SegmentScope scope, File libFile, boolean queryContiki) {
-    symbols = SymbolLookup.libraryLookup(libFile.getAbsolutePath(), scope);
+  CoreComm(Arena arena, File libFile, boolean queryContiki) {
+    symbols = SymbolLookup.libraryLookup(libFile.getAbsolutePath(), arena);
     var linker = Linker.nativeLinker();
     coojaTick = linker.downcallHandle(symbols.find("cooja_tick").get(),
             FunctionDescriptor.ofVoid());
