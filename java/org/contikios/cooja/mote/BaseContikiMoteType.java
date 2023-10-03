@@ -391,6 +391,11 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
     }.invokeAndWait();
   }
 
+  /** Return make flags if class is not part of the mote. */
+  protected String getMakeFlags(Class<? extends MoteInterface> clazz) {
+    return null;
+  }
+
   /** Return a compilation environment. */
   public LinkedHashMap<String, String> getCompilationEnvironment() {
     return null;
@@ -409,7 +414,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
    * @return Sub-process if called asynchronously
    * @throws MoteTypeCreationException If process returns error, or outputFile does not exist
    */
-  public static Process compile(
+  public Process compile(
           final String commandIn,
           final Map<String, String> env,
           final File directory,
@@ -418,11 +423,20 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
           final MessageList messageDialog,
           boolean synchronous)
           throws MoteTypeCreationException {
-    Pattern p = Pattern.compile("([^\\s\"']+|\"[^\"]*\"|'[^']*')");
     // Perform compile command variable expansions.
-    String make = Cooja.getExternalToolsSetting("PATH_MAKE");
+    var make = new StringBuilder(Cooja.getExternalToolsSetting("PATH_MAKE"));
+    for (var interfaceClass : getAllMoteInterfaceClasses()) {
+      if (moteInterfaceClasses.contains(interfaceClass)) {
+        continue;
+      }
+      var flags = getMakeFlags(interfaceClass);
+      if (flags != null) {
+        make.append(" ").append(flags);
+      }
+    }
     String cpus = Integer.toString(Runtime.getRuntime().availableProcessors());
-    Matcher m = p.matcher(commandIn.replace("$(MAKE)", make).replace("$(CPUS)", cpus));
+    Pattern p = Pattern.compile("([^\\s\"']+|\"[^\"]*\"|'[^']*')");
+    Matcher m = p.matcher(commandIn.replace("$(MAKE)", make.toString()).replace("$(CPUS)", cpus));
     ArrayList<String> commandList = new ArrayList<>();
     while (m.find()) {
       String arg = m.group();

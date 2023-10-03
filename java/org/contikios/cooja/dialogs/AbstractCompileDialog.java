@@ -229,7 +229,7 @@ public abstract class AbstractCompileDialog extends JDialog {
           public void actionPerformed(ActionEvent e1) {
             String command = commands.remove(0);
             try {
-              currentCompilationProcess = BaseContikiMoteType.compile(
+              currentCompilationProcess = moteType.compile(
                   command,
                   moteType.getCompilationEnvironment(),
                   new File(contikiField.getText()).getParentFile(),
@@ -252,7 +252,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     cleanButton.addActionListener(e -> {
       createButton.setEnabled(false);
       try {
-        currentCompilationProcess = BaseContikiMoteType.compile("$(MAKE) clean TARGET=" + targetName,
+        currentCompilationProcess = moteType.compile("$(MAKE) clean TARGET=" + targetName,
             moteType.getCompilationEnvironment(), new File(contikiField.getText()).getParentFile(),
             null, null, new MessageListUI(), true);
       } catch (Exception e1) {
