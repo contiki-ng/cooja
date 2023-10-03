@@ -628,7 +628,6 @@ public class Cooja {
     // Add to active plugins list
     var coojaPlugin = pluginType == PluginType.PType.COOJA_PLUGIN || pluginType == PluginType.PType.COOJA_STANDARD_PLUGIN;
     (coojaPlugin ? startedPlugins : sim.startedPlugins).add(plugin);
-    updateGUIComponentState();
 
     // Show plugin if visualizer type
     final var pluginFrame = plugin.getCooja();
@@ -704,6 +703,7 @@ public class Cooja {
           } catch (Exception e) {
             // Could not minimize/select.
           }
+          gui.updateGUIComponentState();
           return true;
         }
       }.invokeAndWait();
