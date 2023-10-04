@@ -395,7 +395,6 @@ public class ContikiMoteType extends BaseContikiMoteType {
                       .replace("<SECTION>", "\\(__DATA,__(data|bss|common)\\)"));
       for (String line : mapFileData) {
         Matcher matcher = pattern.matcher(line);
-
         if (matcher.find()) {
           /* Line matched variable address */
           String symbol = matcher.group("symbol");
@@ -407,15 +406,9 @@ public class ContikiMoteType extends BaseContikiMoteType {
           } else {
             varSize = -1;
           }
-
-          /* XXX needs to be checked */
-          if (!addresses.containsKey(symbol)) {
-	    logger.debug("Put symbol " + symbol + " with address " + varAddr + " and size " + varSize);
-            addresses.put(symbol, new Symbol(Symbol.Type.VARIABLE, symbol, varAddr, varSize));
-          }
+          addresses.put(symbol, new Symbol(Symbol.Type.VARIABLE, symbol, varAddr, varSize));
         }
       }
-
       return addresses;
     }
   }
