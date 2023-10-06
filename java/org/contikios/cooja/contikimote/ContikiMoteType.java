@@ -283,7 +283,7 @@ public class ContikiMoteType extends BaseContikiMoteType {
     } else {
       var sb = new StringBuilder();
       for (var s : loadCommandData(command, firmwareFile, vis)) {
-        if (s.contains("OBJECT")) { // Lines that define variables.
+        if (s.contains("OBJECT") && !s.contains("UND")) { // Lines that define variables.
           sb.append(s).append("\n");
         }
       }
