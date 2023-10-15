@@ -42,6 +42,8 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           brew install make clang-format
+          # Prevent Gradle from picking up Java 8 on Github CI runner.
+          echo "org.gradle.java.home=$JAVA_HOME_17_X64" > contiki-ng/tools/cooja/gradle.properties
           # Homebrew prefix is different for x86-64 and aarch64.
           export HOMEBREW_PREFIX=/usr/local
           # Put Homebrew installed make first in PATH so "make" is version 4.x.
