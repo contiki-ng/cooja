@@ -31,7 +31,6 @@
 package org.contikios.cooja.mspmote.interfaces;
 
 import java.util.Arrays;
-
 import org.contikios.coffee.CoffeeConfiguration;
 import org.contikios.coffee.CoffeeImage;
 import se.sics.mspsim.chip.M25P80;

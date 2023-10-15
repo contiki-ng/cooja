@@ -45,8 +45,8 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.plugins.Visualizer;
-import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
+import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.util.AnyMoteEventTriggers;
 import org.contikios.cooja.util.EventTriggers;
 

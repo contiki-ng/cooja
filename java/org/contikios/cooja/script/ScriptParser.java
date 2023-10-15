@@ -32,9 +32,7 @@ package org.contikios.cooja.script;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.script.ScriptException;
-
 import org.contikios.cooja.Simulation;
 
 public class ScriptParser {

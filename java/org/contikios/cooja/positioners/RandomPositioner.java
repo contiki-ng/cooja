@@ -30,7 +30,6 @@
 
 package org.contikios.cooja.positioners;
 import java.util.Random;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Positioner;
 

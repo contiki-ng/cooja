@@ -40,7 +40,6 @@
 
 package se.sics.mspsim.cli;
 import java.util.Properties;
-
 import se.sics.mspsim.core.Chip;
 import se.sics.mspsim.core.EventListener;
 import se.sics.mspsim.core.MSP430;

@@ -42,7 +42,6 @@
 package se.sics.mspsim.chip;
 import java.io.IOException;
 import java.util.Arrays;
-
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.MSP430Core;

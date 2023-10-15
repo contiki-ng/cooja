@@ -41,7 +41,6 @@
 package se.sics.mspsim.net;
 
 import java.io.PrintStream;
-
 import se.sics.jipv6.core.AbstractPacketHandler;
 import se.sics.jipv6.core.Packet;
 import se.sics.mspsim.chip.RFListener;

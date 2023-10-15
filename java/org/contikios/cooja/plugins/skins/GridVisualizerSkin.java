@@ -32,7 +32,6 @@ package org.contikios.cooja.plugins.skins;
 
 import java.awt.Color;
 import java.awt.Graphics;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;

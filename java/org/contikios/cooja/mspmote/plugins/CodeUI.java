@@ -30,6 +30,8 @@
 
 package org.contikios.cooja.mspmote.plugins;
 
+import de.sciss.syntaxpane.DefaultSyntaxKit;
+import de.sciss.syntaxpane.components.Markers;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -38,7 +40,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import javax.swing.JEditorPane;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -49,10 +50,6 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
-
-import de.sciss.syntaxpane.DefaultSyntaxKit;
-import de.sciss.syntaxpane.components.Markers;
-
 import org.contikios.cooja.Watchpoint;
 import org.contikios.cooja.WatchpointMote;
 import org.contikios.cooja.util.JSyntaxAddBreakpoint;

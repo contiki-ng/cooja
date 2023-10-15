@@ -31,13 +31,10 @@
 package org.contikios.cooja.mspmote.interfaces;
 
 import java.util.Random;
-
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.radiomediums.AbstractRadioMedium;
-
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
+import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

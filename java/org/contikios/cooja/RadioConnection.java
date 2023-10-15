@@ -31,8 +31,6 @@
 package org.contikios.cooja;
 
 import java.util.ArrayList;
-
-
 import org.contikios.cooja.interfaces.Radio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

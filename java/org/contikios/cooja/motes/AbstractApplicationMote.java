@@ -31,10 +31,10 @@ package org.contikios.cooja.motes;
 import java.util.HashMap;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.RadioPacket;
-import org.contikios.cooja.mote.memory.SectionMoteMemory;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.ApplicationSerialPort;
 import org.contikios.cooja.interfaces.Radio;
+import org.contikios.cooja.mote.memory.SectionMoteMemory;
 
 /**
  * Abstract application mote.

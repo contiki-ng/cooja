@@ -77,7 +77,6 @@
 package se.sics.mspsim.core;
 
 import java.util.Arrays;
-
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 
 

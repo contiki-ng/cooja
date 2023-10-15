@@ -1,7 +1,6 @@
 package se.sics.mspsim.util;
 
 import java.io.PrintStream;
-
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.EmulationLogger;
 import se.sics.mspsim.core.LogListener;

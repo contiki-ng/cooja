@@ -632,4 +632,3 @@ class ObstacleWorld {
   }
 
 }
-

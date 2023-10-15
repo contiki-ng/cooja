@@ -30,15 +30,11 @@
 
 package org.contikios.cooja.util;
 
+import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
 import java.awt.event.ActionEvent;
 import java.io.File;
-
 import javax.swing.Action;
 import javax.swing.JMenuItem;
-
-import de.sciss.syntaxpane.actions.DefaultSyntaxAction;
-
-
 import org.contikios.cooja.WatchpointMote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

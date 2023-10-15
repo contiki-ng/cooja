@@ -1,8 +1,7 @@
 package org.contikios.cooja.plugins.analyzers;
 
-import java.io.IOException;
 import java.io.File;
-
+import java.io.IOException;
 import org.contikios.cooja.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

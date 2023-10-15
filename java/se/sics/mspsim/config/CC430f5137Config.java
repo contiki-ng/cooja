@@ -36,7 +36,6 @@
 package se.sics.mspsim.config;
 
 import java.util.ArrayList;
-
 import se.sics.mspsim.core.ClockSystem;
 import se.sics.mspsim.core.GenericUSCI;
 import se.sics.mspsim.core.IOPort;
@@ -46,11 +45,11 @@ import se.sics.mspsim.core.MSP430Core;
 import se.sics.mspsim.core.Multiplier32;
 import se.sics.mspsim.core.PMM;
 import se.sics.mspsim.core.PMMDummy;
+import se.sics.mspsim.core.RF1A;
 import se.sics.mspsim.core.SysReg;
 import se.sics.mspsim.core.Timer;
 import se.sics.mspsim.core.UnifiedClockSystem;
 import se.sics.mspsim.util.Utils;
-import se.sics.mspsim.core.RF1A;
 
 public class CC430f5137Config extends MSP430Config {
 

@@ -34,7 +34,6 @@
 package se.sics.mspsim.chip;
 
 import java.util.ArrayList;
-
 import se.sics.mspsim.core.Chip;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOPort.PinState;

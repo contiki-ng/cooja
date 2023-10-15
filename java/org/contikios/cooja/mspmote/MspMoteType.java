@@ -35,19 +35,19 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.contikios.cooja.dialogs.AbstractCompileDialog;
-import org.contikios.cooja.mote.BaseContikiMoteType;
-import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Simulation;
+import org.contikios.cooja.dialogs.AbstractCompileDialog;
+import org.contikios.cooja.mote.BaseContikiMoteType;
+import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.MapEntry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * MSP430-based mote types emulated in MSPSim.

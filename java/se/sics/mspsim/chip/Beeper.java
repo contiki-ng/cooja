@@ -45,7 +45,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
-
 import se.sics.mspsim.core.Chip;
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.MSP430Core;

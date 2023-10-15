@@ -35,7 +35,6 @@ package se.sics.mspsim.core;
 import java.util.Arrays;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 
 

@@ -1,7 +1,6 @@
 package se.sics.mspsim.core;
 
 import java.util.ArrayDeque;
-
 import se.sics.mspsim.chip.I2CUnit.I2CData;
 
 

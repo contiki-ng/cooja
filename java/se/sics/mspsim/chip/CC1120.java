@@ -31,7 +31,6 @@ package se.sics.mspsim.chip;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.MSP430Core;
 import se.sics.mspsim.core.TimeEvent;

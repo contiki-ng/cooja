@@ -31,9 +31,7 @@
 package org.contikios.cooja;
 
 import java.util.Collection;
-
 import javax.swing.JInternalFrame;
-
 import org.jdom2.Element;
 
 /**

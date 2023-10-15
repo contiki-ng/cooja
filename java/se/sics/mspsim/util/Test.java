@@ -39,8 +39,8 @@
  *           $Revision$
  */
 package se.sics.mspsim.util;
-import java.io.IOException;
 
+import java.io.IOException;
 import se.sics.mspsim.core.IOUnit;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.USART;

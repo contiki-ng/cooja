@@ -41,7 +41,6 @@ package se.sics.mspsim.debug;
 
 import java.io.File;
 import java.util.ArrayList;
-
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.ELFDebug;

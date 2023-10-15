@@ -4,12 +4,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
-
 import javax.swing.Timer;
-
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
-
 import se.sics.mspsim.core.MSP430Core;
 import se.sics.mspsim.util.DataSource;
 

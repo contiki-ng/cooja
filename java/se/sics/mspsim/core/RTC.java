@@ -34,7 +34,6 @@ package se.sics.mspsim.core;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 
 

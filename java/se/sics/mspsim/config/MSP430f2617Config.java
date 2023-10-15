@@ -36,7 +36,6 @@
 package se.sics.mspsim.config;
 
 import java.util.ArrayList;
-
 import se.sics.mspsim.core.ADC12;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;

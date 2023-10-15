@@ -86,8 +86,6 @@ import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.ProgressMonitor;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.PluginType;
@@ -98,6 +96,7 @@ import org.contikios.cooja.interfaces.DirectionalAntennaRadio;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.mrm.ChannelModel.TxPair;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

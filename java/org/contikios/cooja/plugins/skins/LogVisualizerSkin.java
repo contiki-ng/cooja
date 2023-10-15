@@ -34,12 +34,11 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.Simulation;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
+import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.plugins.Visualizer;

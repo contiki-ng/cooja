@@ -1,7 +1,6 @@
 package se.sics.mspsim.ui;
 
 import java.awt.Component;
-
 import javax.swing.JFrame;
 
 public class JFrameWindowManager implements WindowManager {

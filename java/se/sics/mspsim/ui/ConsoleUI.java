@@ -54,10 +54,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.OutputStream;
 import java.util.ArrayDeque;
-
 import javax.swing.JComponent;
 import javax.swing.Timer;
-
 import se.sics.mspsim.cli.CommandHandler;
 
 /* Console UI for command line interfaces
