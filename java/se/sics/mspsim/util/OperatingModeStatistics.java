@@ -41,7 +41,6 @@
 package se.sics.mspsim.util;
 
 import java.util.ArrayList;
-
 import se.sics.mspsim.core.Chip;
 import se.sics.mspsim.core.MSP430Core;
 import se.sics.mspsim.core.OperatingModeListener;

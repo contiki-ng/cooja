@@ -1,7 +1,6 @@
 package se.sics.mspsim.core;
 
 import java.util.ArrayList;
-
 import se.sics.mspsim.util.Utils;
 
 public abstract class MSP430Config {

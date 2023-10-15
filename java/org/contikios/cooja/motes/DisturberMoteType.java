@@ -32,7 +32,6 @@
 package org.contikios.cooja.motes;
 
 import java.awt.Container;
-
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.COOJARadioPacket;
 import org.contikios.cooja.ClassDescription;

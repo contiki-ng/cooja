@@ -626,4 +626,3 @@ public class SerialSocketServer implements Plugin, MotePlugin {
     }
   });
 }
-

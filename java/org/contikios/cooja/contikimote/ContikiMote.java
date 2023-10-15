@@ -31,13 +31,13 @@
 package org.contikios.cooja.contikimote;
 
 import java.util.ArrayList;
+import org.contikios.cooja.MoteType;
+import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
-import org.contikios.cooja.MoteType;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
-import org.contikios.cooja.Simulation;
 import org.contikios.cooja.motes.AbstractWakeupMote;
 
 /**

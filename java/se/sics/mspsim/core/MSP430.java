@@ -37,7 +37,6 @@
 
 package se.sics.mspsim.core;
 import java.io.PrintStream;
-
 import se.sics.mspsim.profiler.SimpleProfiler;
 import se.sics.mspsim.util.ArrayUtils;
 import se.sics.mspsim.util.ELF;

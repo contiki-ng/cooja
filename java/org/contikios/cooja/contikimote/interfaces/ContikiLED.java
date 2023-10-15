@@ -36,7 +36,6 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import javax.swing.JPanel;
 import org.contikios.cooja.Mote;
-
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;

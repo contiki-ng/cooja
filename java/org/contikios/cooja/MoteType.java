@@ -32,11 +32,9 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import javax.swing.JComponent;
-
-import org.jdom2.Element;
-
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageList;
+import org.jdom2.Element;
 
 /**
  * The mote type defines properties common for several motes. These properties

@@ -29,12 +29,11 @@
  */
 
 package org.contikios.cooja.util;
-import org.contikios.cooja.Mote;
-import org.contikios.cooja.Simulation;
-
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import org.contikios.cooja.Mote;
+import org.contikios.cooja.Simulation;
 
 public class AnyMoteEventTriggers<K> extends EventTriggers<K, Mote> {
   private final Simulation simulation;

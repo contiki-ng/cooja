@@ -33,7 +33,6 @@ package org.contikios.cooja.plugins;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;

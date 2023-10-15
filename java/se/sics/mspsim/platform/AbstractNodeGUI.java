@@ -46,10 +46,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.File;
 import java.net.URL;
-
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-
 import se.sics.mspsim.ui.ManagedWindow;
 import se.sics.mspsim.ui.WindowManager;
 import se.sics.mspsim.util.ComponentRegistry;

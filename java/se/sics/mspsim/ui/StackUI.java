@@ -40,12 +40,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-
 import javax.swing.JPanel;
-
 import se.sics.mspsim.core.MSP430;
-import se.sics.mspsim.core.RegisterMonitor;
 import se.sics.mspsim.core.Memory.AccessMode;
+import se.sics.mspsim.core.RegisterMonitor;
 import se.sics.mspsim.util.ComponentRegistry;
 import se.sics.mspsim.util.MapTable;
 import se.sics.mspsim.util.ServiceComponent;

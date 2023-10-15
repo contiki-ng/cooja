@@ -3,12 +3,12 @@
  */
 package se.sics.mspsim.cli;
 
-import se.sics.mspsim.core.MSP430;
-import se.sics.mspsim.net.CC2420PacketHandler;
+import se.sics.jipv6.core.IPStack;
 import se.sics.jipv6.mac.IEEE802154Handler;
 import se.sics.jipv6.mac.LoWPANHandler;
-import se.sics.jipv6.core.IPStack;
 import se.sics.jipv6.tunnel.TSPClient;
+import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.net.CC2420PacketHandler;
 import se.sics.mspsim.util.ComponentRegistry;
 import se.sics.mspsim.util.Utils;
 

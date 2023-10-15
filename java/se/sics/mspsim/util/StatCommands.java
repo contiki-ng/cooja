@@ -39,8 +39,8 @@
  *           $Rev$
  */
 package se.sics.mspsim.util;
-import java.io.PrintStream;
 
+import java.io.PrintStream;
 import se.sics.mspsim.cli.BasicAsyncCommand;
 import se.sics.mspsim.cli.BasicCommand;
 import se.sics.mspsim.cli.BasicLineCommand;

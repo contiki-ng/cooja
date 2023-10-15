@@ -33,11 +33,8 @@ package org.contikios.mrm;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
-import org.contikios.cooja.Cooja;
-import org.contikios.cooja.util.EventTriggers;
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.DirectionalAntennaRadio;
@@ -45,9 +42,11 @@ import org.contikios.cooja.interfaces.NoiseSourceRadio;
 import org.contikios.cooja.interfaces.NoiseSourceRadio.NoiseLevelListener;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
+import org.contikios.cooja.util.EventTriggers;
 import org.contikios.mrm.ChannelModel.Parameter;
 import org.contikios.mrm.ChannelModel.RadioPair;
 import org.contikios.mrm.ChannelModel.TxPair;
+import org.jdom2.Element;
 
 /**
  * Multi-path Ray-tracing radio medium (MRM).

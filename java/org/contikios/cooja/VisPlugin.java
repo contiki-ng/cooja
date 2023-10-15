@@ -31,11 +31,9 @@
 package org.contikios.cooja;
 
 import java.util.Collection;
-
 import javax.swing.JInternalFrame;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-
 import org.jdom2.Element;
 
 /**

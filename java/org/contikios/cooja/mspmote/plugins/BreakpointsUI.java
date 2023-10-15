@@ -37,7 +37,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-
 import javax.swing.AbstractAction;
 import javax.swing.JColorChooser;
 import javax.swing.JMenuItem;
@@ -49,7 +48,6 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Watchpoint;
 import org.contikios.cooja.WatchpointMote;

@@ -50,7 +50,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.border.Border;
-
 import se.sics.mspsim.util.ArrayUtils;
 
 /**

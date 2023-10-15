@@ -33,11 +33,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.util.AnyMoteEventTriggers;
+import org.contikios.cooja.util.ArrayUtils;
 import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
-import org.contikios.cooja.interfaces.Log;
-import org.contikios.cooja.util.ArrayUtils;
 
 /**
  * Simulation event central. Simplifies implementations of plugins that observe

@@ -32,9 +32,6 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.jdom2.Element;
-
 import org.contikios.cooja.COOJARadioPacket;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioPacket;
@@ -46,6 +43,7 @@ import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.contikios.cooja.radiomediums.UDGM;
 import org.contikios.cooja.util.CCITT_CRC;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

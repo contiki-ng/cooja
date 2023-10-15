@@ -39,7 +39,6 @@
 package se.sics.mspsim;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import se.sics.mspsim.chip.AT45DB;

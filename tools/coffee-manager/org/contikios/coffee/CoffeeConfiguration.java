@@ -34,7 +34,6 @@ package org.contikios.coffee;
 
 import java.io.IOException;
 import java.util.Properties;
-
 import org.contikios.coffee.CoffeeFS.CoffeeException;
 
 public class CoffeeConfiguration {

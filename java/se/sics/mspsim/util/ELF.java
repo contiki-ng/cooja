@@ -41,7 +41,6 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import se.sics.mspsim.debug.DwarfReader;
 import se.sics.mspsim.debug.StabDebug;
 

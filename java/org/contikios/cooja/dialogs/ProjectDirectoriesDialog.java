@@ -57,7 +57,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-
 import org.contikios.cooja.COOJAProject;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.ProjectConfig;

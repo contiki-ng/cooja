@@ -30,8 +30,6 @@
 package org.contikios.cooja.contikimote.interfaces;
 
 import javax.swing.JPanel;
-
-
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMote;

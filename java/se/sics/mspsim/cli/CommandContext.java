@@ -1,6 +1,5 @@
 package se.sics.mspsim.cli;
 import java.io.PrintStream;
-
 import se.sics.mspsim.core.MSP430Constants;
 import se.sics.mspsim.util.MapTable;
 import se.sics.mspsim.util.Utils;

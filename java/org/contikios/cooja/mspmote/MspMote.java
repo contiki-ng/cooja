@@ -33,13 +33,13 @@ package org.contikios.cooja.mspmote;
 import java.awt.Component;
 import java.io.File;
 import java.io.PrintStream;
-import org.contikios.cooja.Simulation.SimulationStop;
-import org.contikios.cooja.WatchpointMote;
 import org.contikios.cooja.ContikiError;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
+import org.contikios.cooja.Simulation.SimulationStop;
 import org.contikios.cooja.Watchpoint;
+import org.contikios.cooja.WatchpointMote;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.mspmote.plugins.CodeVisualizerSkin;
 import org.contikios.cooja.mspmote.plugins.MspBreakpoint;
@@ -51,11 +51,12 @@ import se.sics.mspsim.cli.CommandHandler;
 import se.sics.mspsim.cli.LineListener;
 import se.sics.mspsim.cli.LineOutputStream;
 import se.sics.mspsim.core.EmulationException;
+import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.LogListener;
 import se.sics.mspsim.core.Loggable;
 import se.sics.mspsim.core.MSP430;
-import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.platform.GenericNode;
+import se.sics.mspsim.profiler.SimpleProfiler;
 import se.sics.mspsim.ui.ManagedWindow;
 import se.sics.mspsim.ui.WindowManager;
 import se.sics.mspsim.util.ComponentRegistry;
@@ -63,7 +64,6 @@ import se.sics.mspsim.util.ConfigManager;
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.MapEntry;
-import se.sics.mspsim.profiler.SimpleProfiler;
 
 /**
  * @author Fredrik Osterlind
