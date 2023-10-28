@@ -93,7 +93,7 @@ public class DMA extends IOUnit {
                             " transferMode: " + transferMode + " ie:" + dmaIE);
                     /* this might be wrong ? */
                     /*if (enabling) trigger(trigger, triggerIndex);*/
-                    interruptMultiplexer.updateInterrupt(dmaIFG & dmaIE, channelNo);
+                    interruptMultiplexer.updateInterrupt(dmaIFG && dmaIE, channelNo);
                 }
                 case 2 -> {
                     sourceAddress = data;
@@ -154,7 +154,7 @@ public class DMA extends IOUnit {
                     }
                     /* flag interrupt and update interrupt vector */
                     dmaIFG = true;
-                    interruptMultiplexer.updateInterrupt(dmaIFG & dmaIE, channelNo);
+                    interruptMultiplexer.updateInterrupt(dmaIFG && dmaIE, channelNo);
                 }
             }
         }
