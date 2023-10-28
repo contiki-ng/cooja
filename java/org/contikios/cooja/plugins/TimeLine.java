@@ -1978,6 +1978,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
       return Color.green;
     }
     /* Default paint method */
+    @Override
     public void paintInterval(TimeLine timeLine, Graphics g, int x, int lineHeightOffset, int width) {
       g.fillRect(x, lineHeightOffset, width, EVENT_PIXEL_HEIGHT);
       g.setColor(Color.BLUE);
