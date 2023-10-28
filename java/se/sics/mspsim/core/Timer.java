@@ -589,7 +589,7 @@ public class Timer extends IOUnit {
         ccr[i].triggerInterrupt(cycles);
     }
     /* if the timer overflow interrupt is triggering - lowest priority => signal! */
-    if (lastTIV == 0 && interruptEnable & interruptPending) {
+    if (lastTIV == 0 && interruptEnable && interruptPending) {
         lastTIV = timerOverflow;
         cpu.flagInterrupt(ccr1Vector, this, true);
     }
