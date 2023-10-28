@@ -246,7 +246,7 @@ public class Multiplier32 extends IOUnit {
                 accumulating = false;
             }
             case MPYS32H -> {
-                if (!word & data > 0x80) {
+                if (!word && data > 0x80) {
                     data -= 0x100;
                 }
                 mpys32H = data;
@@ -262,7 +262,7 @@ public class Multiplier32 extends IOUnit {
                 op1 = (op1 & 0xffff) | (data << 16);
             }
             case MACS32L -> {
-                if (!word & data > 0x80) {
+                if (!word && data > 0x80) {
                     data -= 0x100;
                 }
                 op1 = macs32L = data;
@@ -270,7 +270,7 @@ public class Multiplier32 extends IOUnit {
                 accumulating = true;
             }
             case MACS32H -> {
-                if (!word & data > 0x80) {
+                if (!word && data > 0x80) {
                     data -= 0x100;
                 }
                 macs32H = data;
