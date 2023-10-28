@@ -16,7 +16,8 @@ java {
 spotless {
   java {
     toggleOffOn()
-    removeUnusedImports()
+    // FIXME: gives unclosed string literal in GUI.java with spotless 6.22.0.
+    // removeUnusedImports()
     importOrder()
     // trimTrailingWhitespace()
     // cleanthat()
@@ -30,8 +31,7 @@ spotless {
       standardOutput = clangOutput
     }
     def clangVersion = (String) (clangOutput.toString() =~ /\d+\.\d+\.\d+/)[0]
-    // FIXME: enable clangFormat in the future.
-//    clangFormat(clangVersion).pathToExe(clangFormatBinary).style('file')
+    clangFormat(clangVersion).pathToExe(clangFormatBinary).style('file')
   }
 }
 
