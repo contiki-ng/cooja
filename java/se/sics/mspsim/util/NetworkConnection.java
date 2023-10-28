@@ -39,6 +39,7 @@ package se.sics.mspsim.util;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -140,7 +141,7 @@ public class NetworkConnection implements Runnable {
 
   private boolean connect(int port) {
     try {
-      Socket socket = new Socket("127.0.0.1", port);
+      Socket socket = new Socket(InetAddress.getLoopbackAddress(), port);
       connections = ArrayUtils.add(ConnectionThread.class, connections, new ConnectionThread(socket));
     } catch (IOException e) {
       return false;
