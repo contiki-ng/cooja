@@ -869,7 +869,7 @@ public class Timer extends IOUnit {
       if (ccr[0].tccr == 0) {
         counter = 0;
       } else {
-        counter = (int) (bigCounter % (ccr[0].tccr * 2));
+        counter = (int) (bigCounter % (ccr[0].tccr * 2L));
         if (counter > ccr[0].tccr) {
           // Should back down to start again!
           counter = 2 * ccr[0].tccr - counter;

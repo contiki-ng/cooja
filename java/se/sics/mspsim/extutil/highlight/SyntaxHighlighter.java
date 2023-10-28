@@ -298,7 +298,7 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
         Rectangle2D r = getUI().modelToView2D(this, pos, Position.Bias.Forward);
         if (r != null && r.getHeight() > 0) {
           Rectangle vr = getVisibleRect();
-          vr.y = (int) (r.getY() - vr.height / 2);
+          vr.y = (int) (r.getY() - vr.height / 2.0);
           if (vr.y < 0) {
             vr.y = 0;
           }
