@@ -701,7 +701,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     /* variables for the address recognition */
     private int destinationAddressMode;
     private boolean decodeAddress;
-    /* Receive a byte from the radio medium
+    /** Receive a byte from the radio medium
      * @see se.sics.mspsim.chip.RFListener#receivedByte(byte)
      */
     @Override
