@@ -187,6 +187,7 @@ public class GUI {
     // Print a warning when repainting outside EDT with: gradlew run -Dcooja.debug.repaint=true
     if (System.getProperty("debug.repaint") != null) {
       RepaintManager.setCurrentManager(new RepaintManager() {
+        @Override
         public void addDirtyRegion(JComponent comp, int a, int b, int c, int d) {
           if (!java.awt.EventQueue.isDispatchThread()) {
             // Log to console so the thread name is printed along with the complete backtrace.

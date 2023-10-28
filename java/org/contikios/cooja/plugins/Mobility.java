@@ -181,6 +181,7 @@ public class Mobility implements Plugin {
   }
 
   record Move(long time, int moteIndex, double posX, double posY) {
+    @Override
     public String toString() {
       return "MOVE: mote " + moteIndex + " -> [" + posX + "," + posY + "] @ " + time/Simulation.MILLISECOND;
     }
