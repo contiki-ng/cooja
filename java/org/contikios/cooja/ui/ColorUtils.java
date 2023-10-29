@@ -30,6 +30,7 @@
 
 package org.contikios.cooja.ui;
 import java.awt.Color;
+import java.util.Locale;
 
 /**
  * Utility methods for managing colors.
@@ -50,7 +51,7 @@ public class ColorUtils {
      * @see java.awt.Color#decode(String)
      */
     public static Color decodeColor(String colorString) {
-        return colorString == null ? null : switch (colorString.toLowerCase()) {
+        return colorString == null ? null : switch (colorString.toLowerCase(Locale.ROOT)) {
             case "black" -> Color.black;
             case "blue" -> Color.blue;
             case "cyan" -> Color.cyan;

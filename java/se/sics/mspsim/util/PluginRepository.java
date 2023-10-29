@@ -45,6 +45,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Locale;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -111,7 +112,7 @@ public class PluginRepository implements ActiveComponent {
     @Override
     public boolean accept(File f) {
       if (f.isFile() && f.canRead()) {
-        String name = f.getName().toLowerCase();
+        String name = f.getName().toLowerCase(Locale.ROOT);
         return name.endsWith(".jar");
       }
       return false;
