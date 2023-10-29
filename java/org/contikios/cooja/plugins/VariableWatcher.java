@@ -676,8 +676,8 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
 
   /**
    * Updates all value fields based on buffered data.
-   *
-   * @note Does not read memory. Leaves number of fields unchanged.
+   * <p>
+   * NOTE: Does not read memory. Leaves number of fields unchanged.
    */
   private void refreshValues() {
 
