@@ -164,7 +164,7 @@ public class ContikiEEPROM implements MoteInterface, PolledAfterActiveTicks {
   static String byteArrayToPrintableCharacters(byte[] data, int offset, int length) {
       StringBuilder sb = new StringBuilder();
       for (int i = offset; i < offset + length; i++) {
-        sb.append(data[i] > 31 && data[i] < 128 ? (char) data[i] : '.');
+        sb.append(data[i] > 31 ? (char) data[i] : '.');
       }
       return sb.toString();
   }
