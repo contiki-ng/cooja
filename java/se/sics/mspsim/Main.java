@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import se.sics.mspsim.chip.AT45DB;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.platform.GenericNode;
@@ -156,7 +157,7 @@ public class Main {
       // Try to guess the node type.
       default -> "se.sics.mspsim.platform." + platform + '.'
               + Character.toUpperCase(platform.charAt(0))
-              + platform.substring(1).toLowerCase() + "Node";
+              + platform.substring(1).toLowerCase(Locale.ROOT) + "Node";
     };
   }
 

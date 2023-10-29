@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
@@ -964,7 +965,7 @@ public class Cooja {
 
     settings.put("PARSE_COMMAND", "nm -aP $(LIBFILE)");
     settings.put("COMMAND_VAR_NAME_ADDRESS_SIZE", "^(?<symbol>[^.].*?) <SECTION> (?<address>[0-9a-fA-F]+) (?<size>[0-9a-fA-F])*");
-    String osName = System.getProperty("os.name").toLowerCase();
+    String osName = System.getProperty("os.name").toLowerCase(Locale.ROOT);
     if (osName.startsWith("mac os x")) {
       settings.put("PARSE_WITH_COMMAND", "true");
       settings.put("PARSE_COMMAND", "symbols $(LIBFILE)");
