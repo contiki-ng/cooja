@@ -368,7 +368,7 @@ public class UnifiedClockSystem extends ClockSystem {
     int dcoTap = ((read(UCSCTL0, true, cycles) >> DCO_BITPOS) & ((1 << DCO_BITWIDTH) - 1));
 
     // Read modulation disable bit (currently unused)
-    int disableModulation = ((read(UCSCTL1, true, cycles) & DISMOD));
+    int disableModulation = read(UCSCTL1, true, cycles) & DISMOD;
 
     // Read DCO range selection from UCSCTL1 register
     int dcoRange = ((read(UCSCTL1, true, cycles) >> DCORSEL_BITPOS) & ((1 << DCORSEL_BITWIDTH) - 1));

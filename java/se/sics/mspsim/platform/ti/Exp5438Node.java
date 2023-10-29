@@ -22,7 +22,7 @@ public class Exp5438Node extends GenericNode implements PortListener, USARTListe
     /* Output: VREG_EN to CC2420 */
     public static final int CC2420_VREG = (1 << 4); // 1.4
     /* Output: SPI Chip Select (CS_N) */
-    public static final int CC2420_CHIP_SELECT = (1); // 3.0
+    public static final int CC2420_CHIP_SELECT = 1; // 3.0
     public static final int CC2420_RESET = (1 << 2); // 1.2
 
     private final IOPort port1;
@@ -32,7 +32,7 @@ public class Exp5438Node extends GenericNode implements PortListener, USARTListe
     private final IOPort port7;
     private final IOPort port8;
 
-    public static final int LEDS_CONF_RED    = (1); // 1.0
+    public static final int LEDS_CONF_RED    = 1; // 1.0
     public static final int LEDS_CONF_YELLOW = (1 << 1); // 1.1
 
     private final CC2420 radio;

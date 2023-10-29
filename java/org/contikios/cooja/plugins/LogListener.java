@@ -839,7 +839,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     /* Append to file */
     if (!appendToFileWroteHeader) {
       appendStream.println("-- Log Listener [" + simulation.getTitle() + "]: Started at " +
-              (ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.RFC_1123_DATE_TIME)));
+              ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.RFC_1123_DATE_TIME));
       appendToFileWroteHeader = true;
     }
     appendStream.print(text);

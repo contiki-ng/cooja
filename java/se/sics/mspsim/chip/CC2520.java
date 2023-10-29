@@ -265,7 +265,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
 //    public static final int CCAMUX_XOSC16M_STABLE = 24;
 
     // FRMFILT0/FRMCTRL0 values
-    public static final int FRAME_FILTER = (1);
+    public static final int FRAME_FILTER = 1;
     public static final int AUTOCRC      = (1 << 6);
     public static final int AUTOACK      = (1 << 5);
 

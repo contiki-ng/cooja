@@ -211,7 +211,7 @@ public class CRC16 extends IOUnit {
                 case CRC16.CRCDI:
                         if (word) {
                                 int hi = (value >> 8) & 0x00ff;
-                                int lo = (value) & 0x00ff;
+                                int lo = value & 0x00ff;
                                 crc.processRb((byte) lo);
                                 crc.processRb((byte) hi);
                         } else {
@@ -221,7 +221,7 @@ public class CRC16 extends IOUnit {
                 case CRC16.CRCDIRB:
                         if (word) {
                                 int hi = (value >> 8) & 0x00ff;
-                                int lo = (value) & 0x00ff;
+                                int lo = value & 0x00ff;
                                 crc.process((byte) hi);
                                 crc.process((byte) lo);
                         } else {

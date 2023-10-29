@@ -727,7 +727,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                         if (txSendSynchByteCnt < NUM_PREAMBLE) {
                                 txSendSynchByteCnt++;
                                 if (rfListener != null) {
-                                        rfListener.receivedByte((byte) (0xaa));
+                                        rfListener.receivedByte((byte) 0xaa);
                                 }
                                 cpu.scheduleTimeEventMillis(sendEvent, BITRATE_BYTE_DURATION);
                                 return;
@@ -759,7 +759,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 if (txSentFirstCRC) {
                         /* send second CRC byte */
                         if (rfListener != null) {
-                                rfListener.receivedByte((byte) (0xef));
+                                rfListener.receivedByte((byte) 0xef);
                         }
                         if (!txfifo.isEmpty()) {
                                 System.out.println("Warning: TXFIFO not empty after sending CRC bytes");
@@ -777,7 +777,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 if (txFooterCountdown == 0) {
                         /* countdown is zero, send first CRC byte */
                         if (rfListener != null) {
-                                rfListener.receivedByte((byte) (0xee));
+                                rfListener.receivedByte((byte) 0xee);
                         }
                         txSentFirstCRC = true;
                         cpu.scheduleTimeEventMillis(sendEvent, BITRATE_BYTE_DURATION);
@@ -795,7 +795,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 }
 
                 if (rfListener != null) {
-                        rfListener.receivedByte((byte) (txfifo.get(0).intValue()));
+                        rfListener.receivedByte((byte) txfifo.get(0).intValue());
                 }
                 txfifo.remove(0);
                 cpu.scheduleTimeEventMillis(sendEvent, BITRATE_BYTE_DURATION);
@@ -869,7 +869,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                                 && newState == CC1120RadioState.CC1120_STATE_RX
                                 || newState == CC1120RadioState.CC1120_STATE_TX) {
                         changeFrequencyNextState = false;
-                        frequency = ((0xff & nextFreq0)) + ((0xff & nextFreq1) << 8)
+                        frequency = (0xff & nextFreq0) + ((0xff & nextFreq1) << 8)
                                         + ((0xff & nextFreq2) << 16);
 
                         frequency *= 32; /* frequency oscillator */

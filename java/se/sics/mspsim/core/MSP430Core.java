@@ -1261,7 +1261,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
                 nxtCarry = (dst & (1 << (count + 1))) > 0? CARRY: 0;
 
                 /* Rotate dst. */
-                dst = dst >> (count);
+                dst = dst >> count;
 
                 /* Rotate the high bits, insert into dst. */
                 if (rrword) {
@@ -2013,7 +2013,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
               break;
           case BIC: // BIC
               // No status reg change
-            dst = (~src) & dst;
+              dst = ~src & dst;
 
               write = true;
               updateStatus = false;

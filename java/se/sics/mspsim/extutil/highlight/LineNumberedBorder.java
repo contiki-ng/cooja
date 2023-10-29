@@ -217,7 +217,7 @@ public class LineNumberedBorder extends AbstractBorder {
     // loop until out of the "visible" region...
     //
     int length =
-        (String.valueOf(Math.max(jta.getRows(), jta.getLineCount() + 1))).length();
+        String.valueOf(Math.max(jta.getRows(), jta.getLineCount() + 1)).length();
     while (ybaseline < yend) {
       //
       // options:

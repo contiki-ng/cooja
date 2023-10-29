@@ -532,7 +532,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
             if (txSendSynchByteCnt < NUM_PREAMBLE) {
                 txSendSynchByteCnt++;
                 if (rfListener != null) {
-                    rfListener.receivedByte((byte) (0xaa));
+                    rfListener.receivedByte((byte) 0xaa);
                 }
                 cpu.scheduleTimeEventMillis(sendEvent, getInterByteDelayMs());
                 return;
@@ -564,7 +564,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
         if (txSentFirstCRC) {
             /* send second CRC byte */
             if (rfListener != null) {
-                rfListener.receivedByte((byte) (0xef));
+                rfListener.receivedByte((byte) 0xef);
             }
             if (!txfifo.isEmpty()) {
                 System.out.println("Warning: TXFIFO not empty after sending CRC bytes");
@@ -581,7 +581,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
         if (txFooterCountdown == 0) {
             /* countdown is zero, send first CRC byte */
             if (rfListener != null) {
-                rfListener.receivedByte((byte) (0xee));
+                rfListener.receivedByte((byte) 0xee);
             }
             txSentFirstCRC = true;
             cpu.scheduleTimeEventMillis(sendEvent, getInterByteDelayMs());
@@ -601,7 +601,7 @@ public class CC1101 extends Radio802154 implements USARTListener {
         }
 
         if (rfListener != null) {
-            rfListener.receivedByte((byte) (txfifo.get(0).intValue()));
+            rfListener.receivedByte((byte) txfifo.get(0).intValue());
         }
         txfifo.remove(0);
         cpu.scheduleTimeEventMillis(sendEvent, getInterByteDelayMs());

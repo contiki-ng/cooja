@@ -256,7 +256,7 @@ public class IOPort extends IOUnit {
             out = data;
             PortListener listener = portListener;
             if (listener != null) {
-                listener.portWrite(this, out | (~dir) & 0xff);
+                listener.portWrite(this, out | ~dir & 0xff);
             }
             break;
         }
@@ -269,7 +269,7 @@ public class IOPort extends IOUnit {
             PortListener listener = portListener;
             if (listener != null) {
                 // Any output configured pin (pin-bit = 0) should have 1 here?!
-                listener.portWrite(this, out | (~dir) & 0xff);
+                listener.portWrite(this, out | ~dir & 0xff);
             }
             break;
         }
@@ -404,7 +404,7 @@ public class IOPort extends IOUnit {
 
     @Override
     public void reset(int type) {
-        int oldValue = out | (~dir) & 0xff;
+        int oldValue = out | ~dir & 0xff;
 
         Arrays.fill(pinState, PinState.LOW);
         in = 0;
@@ -416,7 +416,7 @@ public class IOPort extends IOUnit {
         cpu.flagInterrupt(interrupt, this, (ifg & ie) > 0);
 
         PortListener listener = portListener;
-        int newValue = out | (~dir) & 0xff;
+        int newValue = out | ~dir & 0xff;
         if (oldValue != newValue && listener != null) {
             listener.portWrite(this, newValue);
         }

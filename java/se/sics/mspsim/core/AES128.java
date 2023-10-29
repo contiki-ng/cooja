@@ -349,7 +349,7 @@ public class AES128 extends IOUnit {
         @Override
         public void write(int address, int value, boolean word, long cycles) {
                 log("write @ %x <-- %x (word=%b)\n", address, value, word);
-                int lo = (value) & 0xff; // low byte
+                int lo = value & 0xff; // low byte
                 int hi = (value >> 8) & 0xff; // high byte
 
                 switch (address - offset) {

@@ -107,7 +107,7 @@ public class GCRCoder {
     if (gcr_bits >= 10) {
       int val = gcr_val & 0x3ff;
       return (GCR_decode[val >> 5] << 4) != 0xff
-              && (GCR_decode[val & 0x1f]) != 0xff;
+              && GCR_decode[val & 0x1f] != 0xff;
     }
     return true;
   }
@@ -116,7 +116,7 @@ public class GCRCoder {
   boolean gcr_get_decoded(int[] raw_data, int current_pos) {
     if (gcr_bits >= 10) {
       int val = gcr_val & 0x3ff;
-      raw_data[current_pos] = ((GCR_decode[val >> 5] << 4) | (GCR_decode[val & 0x1f]));
+      raw_data[current_pos] = ((GCR_decode[val >> 5] << 4) | GCR_decode[val & 0x1f]);
       gcr_val = gcr_val >> 10;
       gcr_bits = gcr_bits - 10;
       return true;

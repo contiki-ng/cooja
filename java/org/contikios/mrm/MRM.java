@@ -274,7 +274,7 @@ public class MRM extends AbstractRadioMedium {
 
     /* Reset: Background noise */
         double background = 
-                currentChannelModel.getParameterDoubleValue((Parameter.bg_noise_mean));
+                currentChannelModel.getParameterDoubleValue(Parameter.bg_noise_mean);
     for (Radio radio : getRegisteredRadios()) {
       radio.setCurrentSignalStrength(background);
     }

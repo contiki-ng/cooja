@@ -23,8 +23,8 @@ public class Trxeb2520Node extends GenericNode implements PortListener, USARTLis
     /* Output: VREG_EN to CC2520 */
     public static final int CC2520_VREG = (1 << 7); /* 1.7 */
     /* Output: SPI Chip Select (CS_N) */
-    public static final int CC2520_CHIP_SELECT = (1); /* 3.0 */
-    public static final int CC2520_RESET = (1); /* 8.0 */
+    public static final int CC2520_CHIP_SELECT = 1; /* 3.0 */
+    public static final int CC2520_RESET = 1; /* 8.0 */
 
         private final IOPort port1;
         private final IOPort port3;
