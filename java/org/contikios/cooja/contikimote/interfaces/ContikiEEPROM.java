@@ -161,15 +161,15 @@ public class ContikiEEPROM implements MoteInterface, PolledAfterActiveTicks {
     return lastWritten;
   }
 
-  static String byteArrayToPrintableCharacters(byte[] data, int offset, int length) {
+  private static String byteArrayToPrintableCharacters(byte[] data, int offset, int length) {
       StringBuilder sb = new StringBuilder();
       for (int i = offset; i < offset + length; i++) {
-        sb.append(data[i] > 31 && data[i] < 128 ? (char) data[i] : '.');
+        sb.append(data[i] > 31 ? (char) data[i] : '.');
       }
       return sb.toString();
   }
   
-  static String byteArrayToHexList(byte[] data, int offset, int length) {
+  private static String byteArrayToHexList(byte[] data, int offset, int length) {
       StringBuilder sb = new StringBuilder();
             
       for (int i = 0; i < length; i++) {
@@ -186,7 +186,7 @@ public class ContikiEEPROM implements MoteInterface, PolledAfterActiveTicks {
       return sb.toString();
   }
   
-  void redrawDataView(JTextArea textArea) {
+  private void redrawDataView(JTextArea textArea) {
       StringBuilder sb = new StringBuilder();
       Formatter fmt = new Formatter(sb);
       byte[] data = getEEPROMData();
