@@ -298,7 +298,7 @@ public class ChartPanel extends JComponent {
 
     int[] data = new int[40];
     for (int i = 0, n = data.length; i < n; i++) {
-      data[i] = (int) ((Math.random() * 300));
+      data[i] = (int) (Math.random() * 300);
     }
     bc.setConfig("color", new Color(0xffb0b0b0));
     bc.setData(data);

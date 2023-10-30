@@ -90,7 +90,7 @@ public class Beeper extends Chip {
             for (int i = 0; i < WAVE_LEN; i++) {
                 double f1 = Math.sin(i * 3.141592 * 2 / WAVE_LEN) * 40;
                 f1 += Math.sin(i * 3.141592 * 4 / WAVE_LEN) * 30;
-                buf[i] = (byte) (f1);
+                buf[i] = (byte) f1;
             }
             buffer = buf;
         }

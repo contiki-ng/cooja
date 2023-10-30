@@ -193,7 +193,7 @@ public class M25P80 extends ExternalFlash implements USARTListener, PortListener
           } else {
             // Do the programming!!!
             source.byteReceived(0);
-            writeBuffer((readAddress++) & 0xff, data);
+            writeBuffer(readAddress++ & 0xff, data);
           }
           return;
         }

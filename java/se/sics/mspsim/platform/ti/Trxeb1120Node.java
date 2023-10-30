@@ -16,7 +16,7 @@ public class Trxeb1120Node extends GenericNode implements PortListener, USARTLis
 
         public static final int CC1120_GDO0 = 7; /* 1.7 */
         public static final int CC1120_GDO2 = 3; /* 1.3 */
-        public static final int CC1120_CHIP_SELECT = (1); // 3.0
+        public static final int CC1120_CHIP_SELECT = 1; // 3.0
 
         public static final int ENC28J60_CLK = 2; /* 10.2 */
         public static final int ENC28J60_MOSI = 1; /* 10.1 */

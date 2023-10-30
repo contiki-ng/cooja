@@ -1213,13 +1213,13 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       scaleX = 1;
     }
     else {
-      scaleX = (bigX - smallX) / (canvas.getWidth());
+      scaleX = (bigX - smallX) / canvas.getWidth();
     }
     if (smallY == bigY) {
       scaleY = 1;
     }
     else {
-      scaleY = (bigY - smallY) / (canvas.getHeight());
+      scaleY = (bigY - smallY) / canvas.getHeight();
     }
 
     viewportTransform.setToIdentity();

@@ -614,7 +614,7 @@ public class AreaViewer extends VisPlugin {
 
             int foundObstacles = 0;
             for (int x = 0; x < obstacleArray.length; x++) {
-              for (int y = 0; y < (obstacleArray[0]).length; y++) {
+              for (int y = 0; y < obstacleArray[0].length; y++) {
                 if (obstacleArray[x][y]) { // Register obstacle.
                   double realWidth = (boxSize * backgroundWidth) / backgroundImage.getWidth(null);
                   double realHeight = (boxSize * backgroundHeight) / backgroundImage.getHeight(null);
@@ -904,8 +904,8 @@ public class AreaViewer extends VisPlugin {
 
       // Pan relative to mouse movement and current zoom
       // This way the mouse "lock" to the canvas
-      currentPanX += ((e.getX() - lastHandledPosition.x)) / currentZoomX;
-      currentPanY += ((e.getY() - lastHandledPosition.y)) / currentZoomY;
+      currentPanX += (e.getX() - lastHandledPosition.x) / currentZoomX;
+      currentPanY += (e.getY() - lastHandledPosition.y) / currentZoomY;
       lastHandledPosition = e.getPoint();
 
       canvas.repaint();
@@ -927,7 +927,7 @@ public class AreaViewer extends VisPlugin {
       }
 
       // Zoom relative to mouse movement (keep XY-proportions)
-      currentZoomY += 0.005 * currentZoomY * ((lastHandledPosition.y - e.getY()));
+      currentZoomY += 0.005 * currentZoomY * (lastHandledPosition.y - e.getY());
       currentZoomY = Math.max(0.05, currentZoomY);
       currentZoomX = currentZoomY = Math.min(1500, currentZoomY);
 

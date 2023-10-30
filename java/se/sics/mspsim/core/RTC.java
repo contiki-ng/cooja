@@ -302,7 +302,7 @@ public class RTC extends IOUnit {
 
                         } else {
                                 rtcCount += 1;
-                                long overflow = ((1L << ((rtcEvent + 1) * 8)));
+                                long overflow = (1L << ((rtcEvent + 1) * 8));
                                 overflow -= 1;
                                 if ((rtcCount & overflow) == 0) {
                                         generateInterrupt();
@@ -486,7 +486,7 @@ public class RTC extends IOUnit {
                         logw(WarningType.MISALIGNED_WRITE, "byte access not implemented");
                 }
 
-                int lo = (value) & 0xff; // low byte
+                int lo = value & 0xff; // low byte
                 int hi = (value >> 8) & 0xff; // high byte
 
                 switch (address - offset) {

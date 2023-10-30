@@ -17,7 +17,7 @@ public class Exp1120Node extends GenericNode implements PortListener, USARTListe
         public static final int CC1120_GDO0 = 7; /* 1.7 */
         public static final int CC1120_GDO2 = 3; /* 1.3 */
 
-        public static final int CC1120_CHIP_SELECT = (1); // 3.0
+        public static final int CC1120_CHIP_SELECT = 1; // 3.0
 
         private final IOPort port1;
         private final IOPort port3;
@@ -26,7 +26,7 @@ public class Exp1120Node extends GenericNode implements PortListener, USARTListe
         private final IOPort port7;
         private final IOPort port8;
 
-        public static final int LEDS_CONF_RED    = (1); // 1.0
+        public static final int LEDS_CONF_RED    = 1; // 1.0
         public static final int LEDS_CONF_YELLOW = (1 << 1); // 1.1
 
         private final CC1120 radio;

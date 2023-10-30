@@ -813,7 +813,7 @@ public class Timer extends IOUnit {
       // counterAcc - represent the value of the counter at the last reset.
       long cycctr = cycles - counterStart;
       double tick = cycctr / divider;
-      counterPassed = (int) (divider * (tick - (long) (tick)));
+      counterPassed = (int) (divider * (tick - (long) tick));
 
     counterStart = cycles - counterPassed;
     // set counterACC to the last returned value (which is the same
@@ -851,7 +851,7 @@ public class Timer extends IOUnit {
     // counterAcc - represent the value of the counter at the last reset.
     long cycctr = cycles - counterStart;
     double tick = cycctr / divider;
-    counterPassed = (int) (divider * (tick - (long) (tick)));
+    counterPassed = (int) (divider * (tick - (long) tick));
     long bigCounter = (long) (tick + counterAcc);
 
     switch (mode) {

@@ -143,13 +143,13 @@ public class RF1A extends IOUnit {
               ioRead = false;
               ioWrite = false;
               expectingDummyWrite = true;
-              cc1101.strobe(value & (~CC1101.SPI_READ_BIT) & (~CC1101.SPI_BURST_BIT));
+              cc1101.strobe(value & ~CC1101.SPI_READ_BIT & ~CC1101.SPI_BURST_BIT);
             } else {
               /* Store address */
               ioRead = CC1101.spiIsRead(value);
               ioWrite = !ioRead;
               cc1101.setLastInstructionWasRead(ioRead);
-              ioAddress = value & (~CC1101.SPI_READ_BIT) & (~CC1101.SPI_BURST_BIT);
+              ioAddress = value & ~CC1101.SPI_READ_BIT & ~CC1101.SPI_BURST_BIT;
               if (DEBUG) {
                 if (ioAddress == CC1101.CC1101_RXFIFO) {
                 } else if (ioAddress == CC1101.CC1101_MARCSTATE) {
