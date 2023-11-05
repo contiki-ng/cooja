@@ -132,7 +132,6 @@ tasks.withType(JavaCompile).configureEach {
   options.errorprone.disable('StaticAssignmentInConstructor')
   options.errorprone.disable('StringSplitter')
   options.errorprone.disable('ThreadPriorityCheck')
-  options.errorprone.disable('UnnecessaryLambda')
   options.errorprone.disable('UnusedMethod')
   options.errorprone.disable('UnusedVariable')
   options.compilerArgs += ['-Werror', '--enable-preview',

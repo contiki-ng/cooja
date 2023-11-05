@@ -40,7 +40,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.BiConsumer;
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -306,7 +305,6 @@ public class PowerTracker implements Plugin {
     private Mote mote;
     private Radio radio;
 
-    private final BiConsumer<Radio.RadioEvent, Radio> trigger = (event, radio) -> update();
     MoteTracker(Mote mote) {
       this.simulation = mote.getSimulation();
       this.mote = mote;
@@ -323,7 +321,11 @@ public class PowerTracker implements Plugin {
         lastRadioState = RadioState.IDLE;
       }
       lastUpdateTime = simulation.getSimulationTime();
-      radio.getRadioEventTriggers().addTrigger(this, trigger);
+      radio.getRadioEventTriggers().addTrigger(this, this::trigger);
+    }
+
+    private void trigger(Radio.RadioEvent event, Radio radio) {
+      update();
     }
 
     void update() {
@@ -398,7 +400,7 @@ public class PowerTracker implements Plugin {
     }
 
     void dispose() {
-      radio.getRadioEventTriggers().removeTrigger(this, trigger);
+      radio.getRadioEventTriggers().removeTrigger(this, this::trigger);
       radio = null;
       mote = null;
     }
