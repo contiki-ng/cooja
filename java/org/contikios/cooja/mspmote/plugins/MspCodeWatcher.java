@@ -268,7 +268,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     fileComboBox.setSelectedIndex(0);
   }
 
-  public void displaySourceFile(final File file, final int line, final boolean markCurrent) {
+  void displaySourceFile(final File file, final int line, final boolean markCurrent) {
     SwingUtilities.invokeLater(() -> {
       mainPane.setSelectedIndex(SOURCECODE); /* code */
       sourceCodeUI.displayNewCode(file, line, markCurrent);
