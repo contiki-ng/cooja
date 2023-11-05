@@ -351,10 +351,8 @@ class AngleInterval {
   
   @Override
   public boolean equals(Object object) {
-    if (object == null)
+    if (!(object instanceof AngleInterval interval))
       return false;
-    
-    AngleInterval interval = (AngleInterval) object;
     return (interval.getStartAngle() == this.getStartAngle() && interval.getEndAngle() == this.getEndAngle());
   }
   
