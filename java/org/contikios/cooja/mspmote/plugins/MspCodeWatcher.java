@@ -268,7 +268,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     fileComboBox.setSelectedIndex(0);
   }
 
-  public void displaySourceFile(final File file, final int line, final boolean markCurrent) {
+  void displaySourceFile(final File file, final int line, final boolean markCurrent) {
     SwingUtilities.invokeLater(() -> {
       mainPane.setSelectedIndex(SOURCECODE); /* code */
       sourceCodeUI.displayNewCode(file, line, markCurrent);
@@ -633,11 +633,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
           sb.append(r1.to);
         }
       }
-      if (sb.length() >= 1) {
-        Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", sb.substring(1));
-      } else {
-        Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", "");
-      }
+      Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", sb.isEmpty() ? "" : sb.substring(1));
     });
 
     JButton closeButton = new JButton("Close");
