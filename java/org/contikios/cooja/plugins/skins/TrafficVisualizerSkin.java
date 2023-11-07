@@ -35,7 +35,6 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
@@ -67,7 +66,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
 
   private final List<RadioConnectionArrow> historyList = new ArrayList<>();
 
-  private final BiConsumer<Radio.RadioEvent, Object> radioMediumObserver = (event, obj) -> {
+  private void radioMediumObserver(Radio.RadioEvent event, Object obj) {
     RadioConnection last = radioMedium.getLastConnection();
     if (last != null && historyList.size() < MAX_HISTORY_SIZE) {
       synchronized(historyList) {
@@ -109,7 +108,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
     simulation.invokeSimulationThread(() -> {
       historyList.clear();
       /* Start observing radio medium for transmissions */
-      radioMedium.getRadioTransmissionTriggers().addTrigger(this, radioMediumObserver);
+      radioMedium.getRadioTransmissionTriggers().addTrigger(this, this::radioMediumObserver);
       /* Fade away arrows */
       simulation.scheduleEvent(ageArrowsTimeEvent, simulation.getSimulationTime() + 100*Simulation.MILLISECOND);
     });
@@ -124,7 +123,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
     }
 
     /* Stop observing radio medium */
-    radioMedium.getRadioTransmissionTriggers().removeTrigger(this, radioMediumObserver);
+    radioMedium.getRadioTransmissionTriggers().removeTrigger(this, this::radioMediumObserver);
   }
 
   @Override

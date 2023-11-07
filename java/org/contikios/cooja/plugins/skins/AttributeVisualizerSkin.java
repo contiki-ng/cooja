@@ -34,7 +34,6 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.util.function.BiConsumer;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -60,34 +59,37 @@ public class AttributeVisualizerSkin implements VisualizerSkin {
   private Simulation simulation;
   private Visualizer visualizer;
 
-  private final BiConsumer<EventTriggers.AddRemoveUpdate, MoteAttributes.MoteAttributeUpdateData> attributesTrigger = (obs, obj) -> visualizer.repaint();
-  private final BiConsumer<EventTriggers.AddRemove, Mote> newMotesListener = (event, mote) -> {
+  private void newMotesListener(EventTriggers.AddRemove event, Mote mote) {
     var intf = mote.getInterfaces().getInterfaceOfType(MoteAttributes.class);
     if (intf != null) {
       if (event == EventTriggers.AddRemove.ADD) {
-        intf.getAttributesTriggers().addTrigger(this, attributesTrigger);
+        intf.getAttributesTriggers().addTrigger(this, this::attributesTrigger);
       } else {
-        intf.getAttributesTriggers().removeTrigger(this, attributesTrigger);
+        intf.getAttributesTriggers().removeTrigger(this, this::attributesTrigger);
       }
     }
   };
+
+  private void attributesTrigger(EventTriggers.AddRemoveUpdate obs, MoteAttributes.MoteAttributeUpdateData obj) {
+    visualizer.repaint();
+  }
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
     this.simulation = simulation;
     this.visualizer = vis;
 
-    simulation.getMoteTriggers().addTrigger(this, newMotesListener);
+    simulation.getMoteTriggers().addTrigger(this, this::newMotesListener);
     for (Mote m: simulation.getMotes()) {
-      newMotesListener.accept(EventTriggers.AddRemove.ADD, m);
+      newMotesListener(EventTriggers.AddRemove.ADD, m);
     }
   }
 
   @Override
   public void setInactive() {
-    simulation.getMoteTriggers().removeTrigger(this, newMotesListener);
+    simulation.getMoteTriggers().removeTrigger(this, this::newMotesListener);
     for (Mote m: simulation.getMotes()) {
-      newMotesListener.accept(EventTriggers.AddRemove.REMOVE, m);
+      newMotesListener(EventTriggers.AddRemove.REMOVE, m);
     }
   }
 
