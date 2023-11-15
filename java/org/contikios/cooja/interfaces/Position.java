@@ -63,8 +63,7 @@ public class Position implements MoteInterface {
   /**
    * Creates a position for given mote with coordinates (x=0, y=0, z=0).
    *
-   * @param mote
-   *          Led's mote.
+   * @param mote Mote the position belongs to.
    * @see Mote
    * @see org.contikios.cooja.MoteInterfaceHandler
    */
