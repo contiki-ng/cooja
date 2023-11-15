@@ -32,6 +32,7 @@
 package org.contikios.cooja.motes;
 
 import java.awt.Container;
+import java.util.Random;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.COOJARadioPacket;
 import org.contikios.cooja.ClassDescription;
@@ -42,7 +43,6 @@ import org.contikios.cooja.MoteType;
 import org.contikios.cooja.RadioPacket;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.ApplicationRadio;
-import java.util.Random;
 
 /**
  * Simple application-level mote that transmits dummy radio packets
