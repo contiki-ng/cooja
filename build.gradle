@@ -23,16 +23,12 @@ spotless {
     // cleanthat()
     // formatAnnotations()
 
-    // Use a different clang-format binary with -PclangFormat=clang-format-15.
-    def clangFormatBinary = (String) project.findProperty('clangFormat') ?: 'clang-format'
-    def clangOutput = new ByteArrayOutputStream()
-    exec {
-      commandLine clangFormatBinary, '--version'
-      standardOutput = clangOutput
+    if (clangVersionCheck.enabled) {
+      def clangVersion = (String) getProject().ext.get("clangVersion")
+      def clangFormatBinary = (String) getProject().ext.get("clangFormatBinary")
+      // FIXME: enable clangFormat in the future.
+      // clangFormat(clangVersion).pathToExe(clangFormatBinary).style('file')
     }
-    def clangVersion = (String) (clangOutput.toString() =~ /\d+\.\d+\.\d+/)[0]
-    // FIXME: enable clangFormat in the future.
-//    clangFormat(clangVersion).pathToExe(clangFormatBinary).style('file')
   }
 }
 
@@ -95,6 +91,38 @@ application {
     '-XX:-UseCompressedOops', '-XX:-UseCompressedClassPointers',
     // Enable the preview foreign function interface.
     '--enable-preview', '--enable-native-access', 'ALL-UNNAMED']
+}
+
+tasks.register('clangVersionCheck', Exec) {
+  description = "Detect the version of clang-format"
+  group = "Help"
+  // Use a different clang-format binary with -PclangFormat=clang-format-15.
+  def bin = (String) project.findProperty('clangFormat') ?: 'clang-format'
+  def clangOutput = new ByteArrayOutputStream()
+  exec {
+    commandLine bin, '--version'
+    standardOutput = clangOutput
+  }
+  // Tasks do not have return values, write info to project.ext properties instead.
+  project.ext.set("clangFormatBinary", bin)
+  def ver = (String) (clangOutput.toString() =~ /\d+\.\d+\.\d+/)[0]
+  project.ext.set("clangVersion", ver)
+}
+
+tasks.withType(com.diffplug.gradle.spotless.SpotlessTask).configureEach {
+  dependsOn clangVersionCheck
+}
+
+clangVersionCheck.configure {
+  onlyIf("Task should only run once") { !project.ext.has("clangFormatBinary") }
+  enabled = false
+  // Check the argument to gradle, enable task for build and spotless targets.
+  getGradle().getStartParameter().getTaskNames().each {
+    def taskName = it.toString()
+    if (taskName.equals("build") || taskName.startsWith("spotless") || taskName.startsWith(":spotless")) {
+      enabled = true
+    }
+  }
 }
 
 tasks.withType(JavaCompile).configureEach {
