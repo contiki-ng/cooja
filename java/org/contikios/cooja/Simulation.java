@@ -352,7 +352,8 @@ public final class Simulation {
         // Skip plugins that have been removed or merged into other classes.
         if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName) ||
                 "org.contikios.cooja.plugins.SimInformation".equals(pluginClassName) ||
-                "org.contikios.cooja.plugins.MoteTypeInformation".equals(pluginClassName)) {
+                "org.contikios.cooja.plugins.MoteTypeInformation".equals(pluginClassName) ||
+                "org.contikios.cooja.plugins.EventListener".equals(pluginClassName)) {
           continue;
         }
         // Backwards compatibility: old visualizers were replaced.

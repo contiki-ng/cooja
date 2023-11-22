@@ -44,7 +44,6 @@ import org.contikios.cooja.mspmote.plugins.MspStackWatcher;
 import org.contikios.cooja.plugins.BaseRSSIconf;
 import org.contikios.cooja.plugins.BufferListener;
 import org.contikios.cooja.plugins.DGRMConfigurator;
-import org.contikios.cooja.plugins.EventListener;
 import org.contikios.cooja.plugins.LogListener;
 import org.contikios.cooja.plugins.Mobility;
 import org.contikios.cooja.plugins.MoteInformation;
@@ -79,7 +78,6 @@ public class ExtensionManager {
     registerBuiltinPlugin(MoteInformation.class);
     registerBuiltinPlugin(MoteInterfaceViewer.class);
     registerBuiltinPlugin(VariableWatcher.class);
-    registerBuiltinPlugin(EventListener.class);
     registerBuiltinPlugin(RadioLogger.class);
     registerBuiltinPlugin(ScriptRunner.class);
     registerBuiltinPlugin(Notes.class);
