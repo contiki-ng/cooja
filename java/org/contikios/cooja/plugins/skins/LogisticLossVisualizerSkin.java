@@ -123,10 +123,15 @@ public class LogisticLossVisualizerSkin implements VisualizerSkin {
       int y = pixelCoord.y;
 
       // Fetch current output power indicator (scale with as percent)
+      Radio selectedRadio = selectedMote.getInterfaces().getRadio();
       double moteInterferenceRange
-              = radioMedium.INTERFERENCE_RANGE;
+              = radioMedium.INTERFERENCE_RANGE
+              * ((double) selectedRadio.getCurrentOutputPowerIndicator()
+              / (double) selectedRadio.getOutputPowerIndicatorMax());
       double moteTransmissionRange
-              = radioMedium.TRANSMITTING_RANGE;
+              = radioMedium.TRANSMITTING_RANGE
+              * ((double) selectedRadio.getCurrentOutputPowerIndicator()
+              / (double) selectedRadio.getOutputPowerIndicatorMax());
 
       Point translatedZero = visualizer.transformPositionToPixel(0.0, 0.0, 0.0);
       Point translatedInterference
