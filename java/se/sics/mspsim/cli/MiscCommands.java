@@ -332,8 +332,8 @@ public class MiscCommands implements CommandBundle {
           verbose = false;
         }
         if (context.getArgumentCount() == index) {
-          ServiceComponent[] sc = registry.getAllComponents(ServiceComponent.class);
-          if (sc.length == 0) {
+          var sc = registry.getAllComponents(ServiceComponent.class);
+          if (sc.isEmpty()) {
             context.out.println("No services found.");
           } else {
             for (ServiceComponent service : sc) {
