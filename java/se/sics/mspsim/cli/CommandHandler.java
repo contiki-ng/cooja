@@ -182,11 +182,8 @@ public class CommandHandler implements ActiveComponent, LineListener {
 
   @Override
   public void start() {
-    Object[] commandBundles = registry.getAllComponents(CommandBundle.class);
-    if (commandBundles != null) {
-      for (Object commandBundle : commandBundles) {
-        ((CommandBundle) commandBundle).setupCommands(registry, this);
-      }
+    for (var commandBundle: registry.getAllComponents(CommandBundle.class)) {
+      commandBundle.setupCommands(registry, this);
     }
   }
 

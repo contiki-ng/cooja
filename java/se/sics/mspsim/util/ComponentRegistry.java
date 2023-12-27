@@ -35,6 +35,7 @@
 package se.sics.mspsim.util;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ComponentRegistry {
 
@@ -111,15 +112,14 @@ public class ComponentRegistry {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public synchronized <T> T[] getAllComponents(Class<T> type, String name) {
+    public synchronized <T> List<T> getAllComponents(Class<T> type, String name) {
         ArrayList<T> list = new ArrayList<>();
         for (ComponentEntry entry : components) {
             if (type.isInstance(entry.component) && name.equals(entry.name)) {
                 list.add(type.cast(entry.component));
             }
         }
-        return list.toArray((T[]) java.lang.reflect.Array.newInstance(type, list.size()));
+        return list;
     }
 
     public synchronized <T> T getComponent(Class<T> type) {
@@ -131,15 +131,14 @@ public class ComponentRegistry {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public synchronized <T> T[] getAllComponents(Class<T> type) {
+    public synchronized <T> List<T> getAllComponents(Class<T> type) {
         ArrayList<T> list = new ArrayList<>();
         for (ComponentEntry entry : components) {
             if (type.isInstance(entry.component)) {
                 list.add(type.cast(entry.component));
             }
         }
-        return list.toArray((T[]) java.lang.reflect.Array.newInstance(type, list.size()));
+        return list;
     }
 
     public void start() {
