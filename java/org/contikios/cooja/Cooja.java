@@ -1399,7 +1399,7 @@ public class Cooja {
       } catch (InterruptedException e) {
         logger.warn("Thread interrupted" + (e.getMessage() != null ? " " + e.getMessage() : ""));
       } catch (InvocationTargetException e) {
-        logger.info("EDT thread call failed", e);
+        logger.error("EDT thread call failed", e);
       }
 
       return val;
