@@ -108,9 +108,19 @@ public abstract class AbstractRadioMedium implements RadioMedium {
       switch (event) {
         case RECEPTION_STARTED:
         case RECEPTION_INTERFERED:
-        case RECEPTION_FINISHED:
           break;
-
+        case RECEPTION_FINISHED:
+        case CHANNEL_HOP: {
+          /* in such cases the radio reverts to "not interfered */
+          for (RadioConnection conn : getActiveConnections()) {
+            if (conn.isInterfered(radio)
+                && (conn.getSource().getChannel() == radio.getChannel())) {
+              /* continue interfering due to transmission on radio's channel */
+              radio.interfereAnyReception();
+            }
+          }
+        }
+        break;
         case UNKNOWN:
         case HW_ON: {
           updateSignalStrengths();
