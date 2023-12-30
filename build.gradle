@@ -1,5 +1,6 @@
 plugins {
   id 'application'
+  id 'jvm-test-suite'
   id 'com.diffplug.spotless' version '6.23.3'
   id 'net.ltgt.errorprone' version '3.1.0'
 }
@@ -95,6 +96,35 @@ application {
     '-XX:-UseCompressedOops', '-XX:-UseCompressedClassPointers',
     // Enable the preview foreign function interface.
     '--enable-preview', '--enable-native-access', 'ALL-UNNAMED']
+}
+
+testing {
+  suites {
+    configureEach {
+      dependencies {
+        implementation project()
+        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+        implementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+        runtimeOnly 'org.junit.platform:junit-platform-launcher'
+      }
+    }
+    test(JvmTestSuite) {
+      useJUnitJupiter()
+      testType = TestSuiteType.INTEGRATION_TEST
+    }
+  }
+}
+
+test {
+  reports {
+    junitXml {
+      outputPerTestCase = true
+      mergeReruns = true
+    }
+  }
+  testLogging {
+    events "failed", "passed", "skipped"
+  }
 }
 
 tasks.withType(JavaCompile).configureEach {
