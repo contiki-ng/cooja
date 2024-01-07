@@ -1,7 +1,9 @@
+// sudo apt install libfreetype-dev
 plugins {
   id 'application'
   id 'com.diffplug.spotless' version '6.23.3'
   id 'net.ltgt.errorprone' version '3.1.0'
+  id 'org.graalvm.buildtools.native' version '0.9.28'
 }
 
 group = 'org.contikios.cooja'
@@ -89,12 +91,58 @@ sourceSets {
 application {
   mainClass = 'org.contikios.cooja.Main'
   applicationDefaultJvmArgs = ['-Xms400M', '-Xmx2048M',
+//  '-agentlib:native-image-agent=config-output-dir=' + buildscript.sourceFile.getParent() + "/trace",
     // Several Contiki-NG tests crash the JVM without these flags with Java 17,
     // 08-ipv6-unicast.csc is one example. Unclear why, the JVM should not
     // do anything with the pointers in C-land part of ContikiMoteType.
     '-XX:-UseCompressedOops', '-XX:-UseCompressedClassPointers',
     // Enable the preview foreign function interface.
     '--enable-preview', '--enable-native-access', 'ALL-UNNAMED']
+}
+
+graalvmNative {
+  metadataRepository {
+    enabled = true
+  }
+  binaries {
+    main {
+      // resources.autodetect()
+      javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(javaVersion)
+        vendor = JvmVendorSpec.matching("Oracle Corporation")
+      }
+      fallback = true
+      useFatJar = true
+      configurationFileDirectories.from(file('java'))
+      buildArgs.add('--enable-preview')
+      buildArgs.add('--strict-image-heap')
+      buildArgs.add('--report-unsupported-elements-at-runtime')
+      buildArgs.add('--initialize-at-build-time=org.slf4j.LoggerFactory,ch.qos.logback')
+      // buildArgs.add('--verbose')
+      buildArgs.add('--trace-class-initialization=ch.qos.logback.classic.Logger')
+      buildArgs.add('--trace-object-instantiation=ch.qos.logback.core.AsyncAppenderBase$Worker')
+      // Permit java.lang.foreign.SymbolLookup::libraryLookup.
+      buildArgs.add('--enable-native-access=ALL-UNNAMED')
+      // native-image will use 32 cores on a 48 core machine by default,
+      // and all cores on a 20 core machine.
+      // buildArgs.add('--parallelism=11')
+      // native-image will use 24G ram on a 128G machine by default, and
+      // 10G on a 24G machine.
+      buildArgs.add('-J-Xmx10G')
+      // FIXME: no support for nativeRun --args?
+      // FIXME: unclear status of AWT support in native-image.
+      //runtimeArgs.add("--no-gui")
+      // FIXME: no support for symbol lookup in native-image 21.0.1.
+      // runtimeArgs.add("../../tests/07-simulation-base/02-ringbufindex.csc")
+      //runtimeArgs.add("/home/user/contiki-ng/tests/07-simulation-base/01-hello-world-sky.csc")
+      runtimeArgs.add("/home/user/contiki-ng/tests/07-simulation-base/23-rpl-tsch-z1.csc")
+    }
+  }
+}
+
+tasks.named("nativeCompile") {
+  dependsOn fullJar
+  classpathJar = layout.buildDirectory.file("libs/cooja-full.jar")
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -135,7 +183,8 @@ tasks.withType(JavaCompile).configureEach {
   options.errorprone.disable('UnusedMethod')
   options.errorprone.disable('UnusedVariable')
   options.compilerArgs += ['-Werror', '--enable-preview',
-                           "-Aproject=${project.group}/${project.name}"]
+                           "-Aproject=${project.group}/${project.name}",
+                           "-Aother.resource.patterns=.*"]
 }
 
 tasks.withType(AbstractArchiveTask).configureEach {
