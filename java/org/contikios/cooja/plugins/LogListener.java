@@ -538,7 +538,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     adjuster.packColumns();
 
     /* Popup menu */
-
     JPopupMenu popupMenu = new JPopupMenu();
     JMenu focusMenu = new JMenu("Show in");
     focusMenu.add(new JMenuItem(showInAllAction));
@@ -546,6 +545,12 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     focusMenu.add(new JMenuItem(timeLineAction));
     focusMenu.add(new JMenuItem(radioLoggerAction));
     popupMenu.add(focusMenu);
+    popupMenu.add(new JMenuItem(copyAllAction));
+    popupMenu.add(new JMenuItem(copyAllMessagesAction));
+    popupMenu.add(new JMenuItem(copyAction));
+    popupMenu.addSeparator();
+    popupMenu.add(new JMenuItem(clearAction));
+    logTable.setComponentPopupMenu(popupMenu);
     /* Fetch log output history */
     LogOutputEvent[] history = simulation.getEventCentral().getLogOutputHistory();
     if (history.length > 0) {
