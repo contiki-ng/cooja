@@ -26,15 +26,24 @@ spotless {
     // formatAnnotations()
 
     // Use a different clang-format binary with -PclangFormat=clang-format-15.
-    def clangFormatBinary = (String) project.findProperty('clangFormat') ?: 'clang-format'
-    def clangOutput = new ByteArrayOutputStream()
-    exec {
-      commandLine clangFormatBinary, '--version'
-      standardOutput = clangOutput
+    // FIXME: make clang-format default in the future
+    // def clangFormatBinary = (String) project.findProperty('clangFormat') ?: 'clang-format'
+    def clangFormatBinary = (String) project.findProperty('clangFormat')
+    if (clangFormatBinary) {
+      try {
+        def clangOutput = new ByteArrayOutputStream()
+        exec {
+          commandLine clangFormatBinary, '--version'
+          standardOutput = clangOutput
+        }
+        def clangVersion = (String) (clangOutput.toString() =~ /\d+\.\d+\.\d+/)[0]
+        clangFormat(clangVersion).pathToExe(clangFormatBinary).style('file')
+      } catch (IndexOutOfBoundsException ignored) {
+        logger.warn("Failed to parse version when running '{} --version'", clangFormatBinary)
+      } catch (Exception e) {
+        logger.warn("Failed to run '{} --version': {}", clangFormatBinary, e.getMessage())
+      }
     }
-    def clangVersion = (String) (clangOutput.toString() =~ /\d+\.\d+\.\d+/)[0]
-    // FIXME: enable clangFormat in the future.
-//    clangFormat(clangVersion).pathToExe(clangFormatBinary).style('file')
   }
 }
 
