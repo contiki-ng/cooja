@@ -208,6 +208,30 @@ tasks.register('fullJar', Jar) {
   }
 }
 
+// Make startScripts use the fullJar and application settings.
+tasks.named("startScripts") {
+  mainClass = application.mainClass
+  defaultJvmOpts = application.applicationDefaultJvmArgs
+  classpath = fullJar.outputs.files
+  doLast {
+    delete windowsScript
+  }
+}
+
+distributions {
+  main {
+    // Exclude default libraries and include fullJar instead.
+    contents {
+      exclude { FileTreeElement details ->
+        details.file.name.endsWith('.jar') && !details.file.name.contains('cooja-full')
+      }
+      into('lib') {
+        from fullJar
+      }
+    }
+  }
+}
+
 run {
   // Bad Cooja location detected with gradle run, explicitly pass -cooja.
   doFirst {
