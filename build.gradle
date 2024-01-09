@@ -18,7 +18,8 @@ java {
 spotless {
   java {
     toggleOffOn()
-    removeUnusedImports()
+    // FIXME: gives unclosed string literal in ScriptRunner.java with spotless 6.23.3.
+    // removeUnusedImports()
     importOrder()
     // trimTrailingWhitespace()
     // cleanthat()
