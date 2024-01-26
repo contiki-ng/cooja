@@ -74,7 +74,7 @@ jobs:
           build-root-directory: contiki-ng/tools/cooja
 
       - name: ccache
-        uses: hendrikmuhs/ccache-action@v1.2.11
+        uses: hendrikmuhs/ccache-action@v1.2.12
         with:
           key: compilation-${{ runner.os }}
           max-size: 160M
