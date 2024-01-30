@@ -37,7 +37,7 @@ jobs:
           java-version: 21
           distribution: 'zulu'
       - name: Verify gradle-wrapper checksum
-        uses: gradle/wrapper-validation-action@v1
+        uses: gradle/wrapper-validation-action@v2
       - name: install macOS software
         if: matrix.os == 'macos-latest'
         run: |
