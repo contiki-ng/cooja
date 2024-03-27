@@ -61,7 +61,6 @@ public class Flash extends IOUnit {
   private static final int ERASE_SHIFT = 1;
   private static final int ERASE_MASK = 0x06;
 
-  /* Erase modes needs to be first due to usage of ordinality */
   private enum WriteMode {
     NONE,
     ERASE_SEGMENT,
@@ -438,13 +437,14 @@ public class Flash extends IOUnit {
   }
 
   private static WriteMode getEraseMode(int regdata) {
-    int idx = (regdata & ERASE_MASK) >> ERASE_SHIFT;
-
-    for (WriteMode em : WriteMode.values()) {
-      if (em.ordinal() == idx)
-        return em;
-    }
-    throw new IllegalArgumentException("Invalid erase mode: " + regdata);
+    return switch ((regdata & ERASE_MASK) >> ERASE_SHIFT) {
+      case 0 -> WriteMode.NONE;
+      case 1 -> WriteMode.ERASE_SEGMENT;
+      case 2 -> WriteMode.ERASE_MAIN;
+      case 3 -> WriteMode.ERASE_ALL;
+      default ->
+        throw new IllegalArgumentException("invalid erase mode: " + (regdata & ERASE_MASK));
+    };
   }
 
   private void triggerErase(int newmode) {

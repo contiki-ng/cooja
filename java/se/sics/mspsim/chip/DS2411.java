@@ -45,7 +45,19 @@ import se.sics.mspsim.util.Utils;
 public class DS2411 extends Chip {
 
   private enum STATE {
-    IDLE, WAIT_FOR_RESET, RESETTING, SIGNAL_READY, READY, WAIT_SENDING, SENDING
+    IDLE(0),
+    WAIT_FOR_RESET(1),
+    RESETTING(2),
+    SIGNAL_READY(3),
+    READY(4),
+    WAIT_SENDING(5),
+    SENDING(6);
+
+    public final int value;
+
+    STATE(int value) {
+      this.value = value;
+    }
   }
 
   private static final int CMD_READ_ROM = 0x33;
@@ -72,7 +84,7 @@ public class DS2411 extends Chip {
       case WAIT_FOR_RESET:
         if (!lastPin) {
           state = STATE.RESETTING;
-          stateChanged(state.ordinal());
+          stateChanged(state.value);
           if (DEBUG) log("Resetting...");
         }
         break;
@@ -80,7 +92,7 @@ public class DS2411 extends Chip {
         /* ready! release bus */
         sdataPort.setPinState(sdataPin, IOPort.PinState.HI);
         state = STATE.READY;
-        stateChanged(state.ordinal());
+        stateChanged(state.value);
         if (DEBUG) log("Ready!");
         readByte = 0;
         pos = 0;
@@ -93,7 +105,7 @@ public class DS2411 extends Chip {
           if (DEBUG) log("Command: " + Utils.hex8(readByte));
           handleCommand(readByte);
           state = STATE.WAIT_SENDING;
-          stateChanged(state.ordinal());
+          stateChanged(state.value);
           pos = 0;
           writePos = 0;
           writeByte = writeBuf[writePos];
@@ -170,7 +182,7 @@ public class DS2411 extends Chip {
       sdataPort.setPinState(sdataPin, IOPort.PinState.HI);
       if (!high) {
         state = STATE.WAIT_FOR_RESET;
-        stateChanged(state.ordinal());
+        stateChanged(state.value);
         /* reset if low for at least 480uS - we check after 400uS and resets
          * then */
         if (DEBUG) log("Wait for reset...");
@@ -182,7 +194,7 @@ public class DS2411 extends Chip {
     case RESETTING:
       if (high) {
         state = STATE.SIGNAL_READY;
-        stateChanged(state.ordinal());
+        stateChanged(state.value);
         if (DEBUG) log("Signal ready");
         /* reset done - signal with LOW for a while! */
         sdataPort.setPinState(sdataPin, IOPort.PinState.LOW);
@@ -202,7 +214,7 @@ public class DS2411 extends Chip {
     case WAIT_SENDING:
       if (!high) {
         state = STATE.SENDING;
-        stateChanged(state.ordinal());
+        stateChanged(state.value);
       }
       break;
     case SENDING:
@@ -219,7 +231,7 @@ public class DS2411 extends Chip {
           if (writePos == writeLen) {
             if (DEBUG) log("write is over => IDLE!!!!");
             state = STATE.IDLE;
-            stateChanged(state.ordinal());
+            stateChanged(state.value);
           } else {
             pos = 0;
             writeByte = writeBuf[writePos];
