@@ -18,7 +18,7 @@ jobs:
       # Do not cancel other jobs on first failure.
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ ubuntu-latest, macos-13, macos-14 ]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -38,10 +38,9 @@ jobs:
           distribution: 'zulu'
       - name: Verify gradle-wrapper checksum
         uses: gradle/wrapper-validation-action@v3
-      - name: install macOS software
-        if: matrix.os == 'macos-latest'
+      - name: configure macOS/Intel Gradle
+        if: matrix.os == 'macos-13'
         run: |
-          brew install make clang-format
           # Prevent Gradle from picking up Java 8 on Github CI runner.
           mkdir -p $HOME/.gradle
           echo "org.gradle.java.home=$JAVA_HOME_17_X64" > $HOME/.gradle/gradle.properties
@@ -50,6 +49,21 @@ jobs:
           # Put Homebrew installed make first in PATH so "make" is version 4.x.
           echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.profile
           echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.bashrc
+      - name: configure macOS/arm64 Gradle
+        if: matrix.os == 'macos-14'
+        run: |
+          # Prevent Gradle from picking up Java 8 on Github CI runner.
+          mkdir -p $HOME/.gradle
+          echo "org.gradle.java.home=$JAVA_HOME_17_arm64" > $HOME/.gradle/gradle.properties
+          # Homebrew prefix is different for x86-64 and aarch64.
+          export HOMEBREW_PREFIX=/opt/homebrew
+          # Put Homebrew installed make first in PATH so "make" is version 4.x.
+          echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.profile
+          echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.bashrc
+      - name: install macOS software
+        if: matrix.os == 'macos-13' || matrix.os == 'macos-14'
+        run: |
+          brew install make clang-format
       # The build step includes :spotlessJavaBuild.
       - name: Build Cooja and Documentation
         uses: gradle/gradle-build-action@v3
