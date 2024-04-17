@@ -43,7 +43,7 @@ jobs:
         run: |
           # Prevent Gradle from picking up Java 8 on Github CI runner.
           mkdir -p $HOME/.gradle
-          echo "org.gradle.java.home=$JAVA_HOME_17_X64" > $HOME/.gradle/gradle.properties
+          echo "org.gradle.java.home=$JAVA_HOME_21_X64" > $HOME/.gradle/gradle.properties
           # Homebrew prefix is different for x86-64 and aarch64.
           export HOMEBREW_PREFIX=/usr/local
           # Put Homebrew installed make first in PATH so "make" is version 4.x.
@@ -54,7 +54,7 @@ jobs:
         run: |
           # Prevent Gradle from picking up Java 8 on Github CI runner.
           mkdir -p $HOME/.gradle
-          echo "org.gradle.java.home=$JAVA_HOME_17_arm64" > $HOME/.gradle/gradle.properties
+          echo "org.gradle.java.home=$JAVA_HOME_21_arm64" > $HOME/.gradle/gradle.properties
           # Homebrew prefix is different for x86-64 and aarch64.
           export HOMEBREW_PREFIX=/opt/homebrew
           # Put Homebrew installed make first in PATH so "make" is version 4.x.
