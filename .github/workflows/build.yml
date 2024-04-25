@@ -66,7 +66,7 @@ jobs:
           brew install make clang-format
       # The build step includes :spotlessJavaBuild.
       - name: Build Cooja and Documentation
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.7
           cache-read-only: false
@@ -74,14 +74,14 @@ jobs:
           build-root-directory: contiki-ng/tools/cooja
       # The Jar is important for MSPSim in Contiki-NG.
       - name: Build Jar
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.7
           cache-read-only: false
           arguments: jar
           build-root-directory: contiki-ng/tools/cooja
       - name: Test MSPSim
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.7
           arguments: test
