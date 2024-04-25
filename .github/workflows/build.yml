@@ -68,24 +68,17 @@ jobs:
       - name: Build Cooja and Documentation
         uses: gradle/actions/setup-gradle@v3
         with:
-          gradle-version: 8.7
           cache-read-only: false
-          arguments: build -Perrorprone
-          build-root-directory: contiki-ng/tools/cooja
+      - name: Assemble and test
+        working-directory: contiki-ng/tools/cooja
+        run: ./gradlew build -Perrorprone
       # The Jar is important for MSPSim in Contiki-NG.
       - name: Build Jar
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: 8.7
-          cache-read-only: false
-          arguments: jar
-          build-root-directory: contiki-ng/tools/cooja
+        working-directory: contiki-ng/tools/cooja
+        run: ./gradlew jar
       - name: Test MSPSim
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: 8.7
-          arguments: test
-          build-root-directory: contiki-ng/tools/cooja
+        working-directory: contiki-ng/tools/cooja
+        run: ./gradlew test
 
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2.12
