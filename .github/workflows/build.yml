@@ -37,7 +37,7 @@ jobs:
           java-version: 21
           distribution: 'zulu'
       - name: Verify gradle-wrapper checksum
-        uses: gradle/wrapper-validation-action@v3
+        uses: gradle/actions/wrapper-validation@v3
       - name: configure macOS/Intel Gradle
         if: matrix.os == 'macos-13'
         run: |
@@ -64,28 +64,14 @@ jobs:
         if: matrix.os == 'macos-13' || matrix.os == 'macos-14'
         run: |
           brew install make clang-format
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-read-only: false
       # The build step includes :spotlessJavaBuild.
-      - name: Build Cooja and Documentation
-        uses: gradle/gradle-build-action@v3
-        with:
-          gradle-version: 8.7
-          cache-read-only: false
-          arguments: build -Perrorprone
-          build-root-directory: contiki-ng/tools/cooja
-      # The Jar is important for MSPSim in Contiki-NG.
-      - name: Build Jar
-        uses: gradle/gradle-build-action@v3
-        with:
-          gradle-version: 8.7
-          cache-read-only: false
-          arguments: jar
-          build-root-directory: contiki-ng/tools/cooja
-      - name: Test MSPSim
-        uses: gradle/gradle-build-action@v3
-        with:
-          gradle-version: 8.7
-          arguments: test
-          build-root-directory: contiki-ng/tools/cooja
+      - name: Build and test
+        working-directory: contiki-ng/tools/cooja
+        run: ./gradlew build jar -Perrorprone
 
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2.13
