@@ -56,8 +56,8 @@ public abstract class ProxySupport<T> implements Cloneable {
         if (oldListener == null) {
             return newListener;
         }
-        if (oldListener instanceof ProxySupport<?>) {
-            ProxySupport<T> proxy = (ProxySupport<T>) oldListener;
+        if (oldListener instanceof ProxySupport<?> proxySupport) {
+            ProxySupport<T> proxy = (ProxySupport<T>) proxySupport;
             proxy.listeners = ArrayUtils.add(type, proxy.listeners, newListener);
             return oldListener;
         }
@@ -80,9 +80,9 @@ public abstract class ProxySupport<T> implements Cloneable {
         if (oldListener == listener) {
             return null;
         }
-        if (oldListener instanceof ProxySupport<?>) {
+        if (oldListener instanceof ProxySupport<?> proxySupport) {
             @SuppressWarnings("unchecked")
-            ProxySupport<T> proxy = (ProxySupport<T>) oldListener;
+            ProxySupport<T> proxy = (ProxySupport<T>) proxySupport;
             T[] l = ArrayUtils.remove(proxy.listeners, listener);
             if (l == null) {
                 return null;
