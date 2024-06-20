@@ -200,6 +200,7 @@ public class MRM extends AbstractRadioMedium {
           }
         } else if (recv.isTransmitting()) {
           newConnection.addInterfered(recv, recvSignalStrength);
+          recv.interfereAnyReception();
         } else if (recv.isReceiving()) {
           /* Was already receiving: start interfering.
            * Assuming no continuous preambles checking */
