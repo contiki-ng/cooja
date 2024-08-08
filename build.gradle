@@ -72,7 +72,7 @@ dependencies {
   // https://mvnrepository.com/artifact/org.openjdk.nashorn/nashorn-core
   implementation 'org.openjdk.nashorn:nashorn-core:15.4'
   // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-  implementation 'org.slf4j:slf4j-api:2.0.13'
+  implementation 'org.slf4j:slf4j-api:2.0.15'
   // https://mvnrepository.com/artifact/org.swinglabs.swingx/swingx-autocomplete
   implementation 'org.swinglabs.swingx:swingx-autocomplete:1.6.5-1'
   errorprone("com.google.errorprone:error_prone_core:2.29.2")
