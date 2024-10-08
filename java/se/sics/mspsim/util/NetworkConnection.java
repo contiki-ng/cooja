@@ -149,6 +149,9 @@ public class NetworkConnection implements Runnable {
     return true;
   }
 
+  // Records in Java should normally not contain arrays, but the code uses SendEvent solely as an internal container
+  // without comparing it to other objects.
+  @SuppressWarnings("ArrayRecordComponent")
   private record SendEvent(byte[] data, ConnectionThread source) {}
 
   final class SendThread implements Runnable {
