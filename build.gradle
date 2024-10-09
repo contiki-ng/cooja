@@ -176,6 +176,13 @@ tasks.withType(JavaCompile).configureEach {
   options.errorprone.disable('UnusedVariable')
   options.compilerArgs += ['-Werror', '--enable-preview',
                            "-Aproject=${project.group}/${project.name}"]
+
+  String compilerArgs = project.findProperty('compilerArgs') as String
+  if (compilerArgs) {
+    compilerArgs.split().each { arg ->
+      options.compilerArgs << arg
+    }
+  }
 }
 
 tasks.withType(AbstractArchiveTask).configureEach {
