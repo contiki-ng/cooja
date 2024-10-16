@@ -1,6 +1,7 @@
 package se.sics.mspsim.cli;
 import java.io.File;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -128,6 +129,36 @@ public class CommandHandler implements ActiveComponent, LineListener {
     return -1;
   }
 
+  private File resolveScript(String script) {
+    // Only search for script files
+    if (!script.endsWith(".sc")) {
+      return null;
+    }
+    var scriptFile = new File(scriptDirectory, script);
+    if (scriptFile.exists()) {
+      return scriptFile;
+    }
+    scriptFile = new File("config/scripts", script);
+    if (scriptFile.exists()) {
+      return scriptFile;
+    }
+    File parent;
+    try {
+      parent = new File(CommandHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+              .getParentFile().getParentFile();
+    } catch (URISyntaxException e) {
+      parent = null;
+    }
+    if (parent != null) {
+      var scriptPath = "resources/main/scripts/" + script;
+      scriptFile = new File(parent, scriptPath);
+      if (!scriptFile.exists()) { // Running from gradle
+        scriptFile= new File(parent.getParentFile(), scriptPath);
+      }
+    }
+    return scriptFile.exists() ? scriptFile : null;
+  }
+
   // This will return an instance that can be configured -
   // which is basically not OK... TODO - fix this!!!
   private Command getCommand(String cmd)  {
@@ -135,8 +166,8 @@ public class CommandHandler implements ActiveComponent, LineListener {
     if (command != null) {
         return (Command) command.getInstance();
     }
-    File scriptFile = new File(scriptDirectory, cmd);
-    if (scriptFile.isFile() && scriptFile.canRead()) {
+    File scriptFile = resolveScript(cmd);
+    if (scriptFile != null && scriptFile.isFile() && scriptFile.canRead()) {
       return new ScriptCommand(scriptFile);
     }
     return null;
