@@ -23,7 +23,7 @@ public abstract class Command {
   public abstract int executeCommand(CommandContext context);
 
   /* default behavior is that it returns *this* instance (which might be bad in some cases) */
-  public Object getInstance() {
+  public Command getInstance() {
       return this;
   }
 }

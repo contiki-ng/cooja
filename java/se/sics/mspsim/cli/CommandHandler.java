@@ -164,7 +164,7 @@ public class CommandHandler implements ActiveComponent, LineListener {
   private Command getCommand(String cmd)  {
     Command command = commands.get(cmd);
     if (command != null) {
-        return (Command) command.getInstance();
+        return command.getInstance();
     }
     File scriptFile = resolveScript(cmd);
     if (scriptFile != null && scriptFile.isFile() && scriptFile.canRead()) {
