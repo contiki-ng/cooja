@@ -28,16 +28,17 @@ public class JFrameWindowManager implements WindowManager {
 
             @Override
             public void add(Component component) {
-                window.add(component);
+                window.getContentPane().add(component);
                 if (!restored) {
                     restored = true;
                     WindowUtils.restoreWindowBounds(name, window);
                 }
+                window.revalidate();
             }
 
             @Override
             public void removeAll() {
-                window.removeAll();
+                window.getContentPane().removeAll();
             }
 
             @Override

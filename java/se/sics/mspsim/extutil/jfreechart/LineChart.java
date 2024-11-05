@@ -114,10 +114,11 @@ public class LineChart extends JFreeWindowDataHandler {
   }
 
   private void addSeries() {
-    XYSeries dataSeries = new XYSeries("series " + (getDataSeriesCount() + 1));
+    int index = getDataSeriesCount();
+    XYSeries dataSeries = new XYSeries(getDataSeriesLabel(index, "series " + (index + 1)));
     dataSeries.setMaximumItemCount(200);
 //    renderer.setSeriesPaint(0, Color.black);
-    renderer.setSeriesShapesVisible(getDataSeriesCount(), false);
+    renderer.setSeriesShapesVisible(index, false);
     dataset.addSeries(dataSeries);
   }
 
