@@ -737,6 +737,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 
         try {
+          @SuppressWarnings("unchecked")
           List<File> list = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
           if (list.size() != 1) {
             return;
@@ -769,6 +770,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           return false;
         }
         try {
+          @SuppressWarnings("unchecked")
           List<File> list = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
           if (list.size() != 1) {
             return false;
