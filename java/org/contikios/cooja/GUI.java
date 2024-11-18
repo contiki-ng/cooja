@@ -806,7 +806,7 @@ public class GUI {
           String description = Cooja.getDescriptionOf(moteTypeClass);
           var menuItem = new JMenuItem(description + "...");
           menuItem.setActionCommand("create mote type");
-          menuItem.putClientProperty("class", moteTypeClass);
+          menuItem.putClientProperty("moteTypeInfo", new MoteTypeContainer(moteTypeClass));
           menuItem.addActionListener(guiEventHandler);
 
           // Add new item directly after cross level separator.
@@ -910,14 +910,13 @@ public class GUI {
     // Tools menu.
     toolsMenu.addMenuListener(new MenuListener() {
       private final ActionListener menuItemListener = e -> {
-        Object pluginClass = ((JMenuItem)e.getSource()).getClientProperty("class");
-        Object mote = ((JMenuItem)e.getSource()).getClientProperty("mote");
-        cooja.tryStartPlugin((Class<? extends Plugin>) pluginClass, cooja.getSimulation(), (Mote)mote);
+        var pluginInfo = (PluginInfoContainer)((JMenuItem)e.getSource()).getClientProperty("pluginInfo");
+        cooja.tryStartPlugin(pluginInfo.pluginType(), cooja.getSimulation(), pluginInfo.mote());
       };
       private JMenuItem createMenuItem(Class<? extends Plugin> newPluginClass) {
         String description = Cooja.getDescriptionOf(newPluginClass);
         JMenuItem menuItem = new JMenuItem(description + "...");
-        menuItem.putClientProperty("class", newPluginClass);
+        menuItem.putClientProperty("pluginInfo", new PluginInfoContainer(newPluginClass, null));
         menuItem.addActionListener(menuItemListener);
         // Only enable items when there is a simulation, otherwise the user gets a dialog with a backtrace.
         menuItem.setEnabled(cooja.getSimulation() != null);
@@ -1192,9 +1191,8 @@ public class GUI {
     }
 
     ActionListener menuItemListener = e -> {
-      Object pluginClass1 = ((JMenuItem)e.getSource()).getClientProperty("class");
-      Object mote = ((JMenuItem)e.getSource()).getClientProperty("mote");
-      cooja.tryStartPlugin((Class<? extends Plugin>) pluginClass1, cooja.getSimulation(), (Mote)mote);
+      var pluginInfo = (PluginInfoContainer)((JMenuItem)e.getSource()).getClientProperty("pluginInfo");
+      cooja.tryStartPlugin(pluginInfo.pluginType(), cooja.getSimulation(), pluginInfo.mote());
     };
 
     final int MAX_PER_ROW = 30;
@@ -1206,8 +1204,7 @@ public class GUI {
         continue;
       }
       JMenuItem menuItem = new JMenuItem(mote.toString() + "...");
-      menuItem.putClientProperty("class", pluginClass);
-      menuItem.putClientProperty("mote", mote);
+      menuItem.putClientProperty("pluginInfo", new PluginInfoContainer(pluginClass, mote));
       menuItem.addActionListener(menuItemListener);
       menu.add(menuItem);
       added++;
@@ -1231,8 +1228,7 @@ public class GUI {
         continue;
       }
       var menuItem = new JMenuItem(new StartPluginGUIAction(Cooja.getDescriptionOf(motePluginClass) + "..."));
-      menuItem.putClientProperty("class", motePluginClass);
-      menuItem.putClientProperty("mote", mote);
+      menuItem.putClientProperty("pluginInfo", new PluginInfoContainer(motePluginClass, mote));
       menuMotePlugins.add(menuItem);
     }
     return menuMotePlugins;
@@ -1823,7 +1819,7 @@ public class GUI {
         case "create mote type" -> {
           cooja.getSimulation().stopSimulation();
           // Create mote type
-          var clazz = (Class<? extends MoteType>) ((JMenuItem) e.getSource()).getClientProperty("class");
+          var clazz = ((MoteTypeContainer)((JMenuItem) e.getSource()).getClientProperty("moteTypeInfo")).moteTypeClass();
           try {
             newMoteType = ExtensionManager.createMoteType(cooja, clazz.getName());
             if (newMoteType == null || !newMoteType.configureAndInit(frame, cooja.getSimulation(), true)) {
@@ -1955,13 +1951,19 @@ public class GUI {
     }
     @Override
     public void actionPerformed(final ActionEvent e) {
-      var pluginClass = (Class<Plugin>) ((JMenuItem) e.getSource()).getClientProperty("class");
-      Mote mote = (Mote) ((JMenuItem) e.getSource()).getClientProperty("mote");
-      cooja.tryStartPlugin(pluginClass, cooja.getSimulation(), mote);
+      var pluginInfo = (PluginInfoContainer)((JMenuItem) e.getSource()).getClientProperty("pluginInfo");
+      cooja.tryStartPlugin(pluginInfo.pluginType(), cooja.getSimulation(), pluginInfo.mote());
     }
     @Override
     public boolean shouldBeEnabled() {
       return cooja.getSimulation() != null;
     }
   }
+
+  private record PluginInfoContainer(Class<? extends Plugin> pluginType, Mote mote) {
+  }
+
+  private record MoteTypeContainer(Class<? extends MoteType> moteTypeClass) {
+  }
+
 }
