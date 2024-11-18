@@ -173,7 +173,7 @@ public class GUI {
       }
     });
     // Dragging windows on OS X leaves residue from the borders with FlatLaf, so avoid setting dragMode.
-    if (cooja.configuration.lookAndFeel() != LookAndFeel.FlatLaf) {
+    if (Cooja.configuration.lookAndFeel() != LookAndFeel.FlatLaf) {
       myDesktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
     }
     frame = new JFrame(WINDOW_TITLE);
