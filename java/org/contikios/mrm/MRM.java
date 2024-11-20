@@ -191,13 +191,9 @@ public class MRM extends AbstractRadioMedium {
              * When this is implemented, also implement
              * RadioConnection.java:getReceptionStartTime()
              */
-
-            /* Was interfered: keep interfering */
-            newConnection.addInterfered(recv, recvSignalStrength);
-          } else {
-            /* Was interfered: keep interfering */
-            newConnection.addInterfered(recv, recvSignalStrength);
           }
+          /* Was interfered: keep interfering */
+          newConnection.addInterfered(recv, recvSignalStrength);
         } else if (recv.isTransmitting()) {
           newConnection.addInterfered(recv, recvSignalStrength);
         } else if (recv.isReceiving()) {
