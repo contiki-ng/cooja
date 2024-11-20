@@ -383,10 +383,8 @@ public class CC1120 extends Radio802154 implements USARTListener {
                                 settling = (settling >> 3) & 0b11; /* bit 4:3 */
                                 if (settling == 0) {
                                         stateDelay = 0.20;
-                                } else if (settling == 1) {
-                                        stateDelay = 0.50;
                                 } else {
-                                        /* not implemented: assuming calibration */
+                                        /* Only settling = 1 is implemented. Assume calibration otherwise. */
                                         stateDelay = 0.50;
                                 }
                                 cpu.scheduleTimeEventMillis(goToRX, stateDelay);
