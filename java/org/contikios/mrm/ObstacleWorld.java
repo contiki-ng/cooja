@@ -55,6 +55,7 @@ class ObstacleWorld {
   
   // All registered obstacles, with spatial information
   private static final int spatialResolution = 10;
+  @SuppressWarnings("unchecked")
   private final ArrayList<Rectangle2D>[][] allObstaclesSpatial = new ArrayList[spatialResolution][spatialResolution];
   private boolean obstaclesOrganized;
   

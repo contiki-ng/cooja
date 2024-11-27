@@ -420,10 +420,9 @@ public abstract class AbstractCompileDialog extends JDialog {
     }
     ArrayList<Class<? extends MoteInterface>> selected = new ArrayList<>();
     for (var c : moteIntfBox.getComponents()) {
-      if (c instanceof JCheckBox checkbox) {
-        if (checkbox.isSelected()) {
-          selected.add((Class<? extends MoteInterface>) checkbox.getClientProperty("class"));
-        }
+      if (c instanceof JCheckBox checkbox && checkbox.isSelected()
+              && checkbox.getClientProperty("interfaceType") instanceof InterfaceContainer interfaceClass) {
+        selected.add(interfaceClass.interfaceClass());
       }
     }
     return new BaseContikiMoteType.MoteTypeConfig(descriptionField.getText(), null, contikiField.getText(),
@@ -507,7 +506,8 @@ public abstract class AbstractCompileDialog extends JDialog {
       if (!(c instanceof JCheckBox checkBox)) {
         continue;
       }
-      if (checkBox.getClientProperty("class") == intfClass) {
+      if (checkBox.getClientProperty("interfaceType") instanceof InterfaceContainer interfaceClass
+              && interfaceClass.interfaceClass() == intfClass) {
         checkBox.setSelected(selected);
         return;
       }
@@ -516,7 +516,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     /* Create new mote interface checkbox */
     JCheckBox intfCheckBox = new JCheckBox(Cooja.getDescriptionOf(intfClass));
     intfCheckBox.setSelected(selected);
-    intfCheckBox.putClientProperty("class", intfClass);
+    intfCheckBox.putClientProperty("interfaceType", new InterfaceContainer(intfClass));
     intfCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
     intfCheckBox.setToolTipText(intfClass.getName());
     intfCheckBox.addActionListener(e -> {
@@ -556,6 +556,9 @@ public abstract class AbstractCompileDialog extends JDialog {
     }
     currentCompilationProcess.destroy();
     currentCompilationProcess = null;
+  }
+
+  private record InterfaceContainer(Class<? extends MoteInterface> interfaceClass) {
   }
 
 }
