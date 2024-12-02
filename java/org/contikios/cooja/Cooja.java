@@ -1153,6 +1153,7 @@ public class Cooja {
       } catch (Exception e) {
         logger.error("Exception when loading simulation: ", e);
       }
+      gui.setSimulation(sim);
       if (sim == null) {
         autoQuit = true;
         logger.error("TEST {} FAILED\n", simConfig.file());
@@ -1238,9 +1239,7 @@ public class Cooja {
             ? Integer.parseInt(simCfg.getChild("motedelay_us").getText())
             : Integer.parseInt(cfgDelay.getText()) * Simulation.MILLISECOND;
     doRemoveSimulation();
-    var sim = new Simulation(cfg, this, title, generatedSeed, seed, medium, delay, quick, root);
-    setSimulation(sim);
-    return sim;
+    return new Simulation(cfg, this, title, generatedSeed, seed, medium, delay, quick, root);
   }
 
   /**
@@ -1630,6 +1629,18 @@ public class Cooja {
   public static void setProgressMessage(String msg, int type) {
     if (gui != null) {
       gui.setProgressMessage(msg, type);
+    }
+  }
+
+  public static void tickProgress() {
+    if (gui != null) {
+      gui.tickProgress();
+    }
+  }
+
+  public static void setMaxProgress(int max) {
+    if (gui != null) {
+      gui.setMaxProgress(max);
     }
   }
 
