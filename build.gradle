@@ -70,7 +70,7 @@ dependencies {
   // https://mvnrepository.com/artifact/org.jfree/jfreechart
   implementation 'org.jfree:jfreechart:1.5.5'
   // https://mvnrepository.com/artifact/org.openjdk.nashorn/nashorn-core
-  implementation 'org.openjdk.nashorn:nashorn-core:15.4'
+  implementation 'org.openjdk.nashorn:nashorn-core:15.5'
   // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
   implementation 'org.slf4j:slf4j-api:2.0.16'
   // https://mvnrepository.com/artifact/org.swinglabs.swingx/swingx-autocomplete
