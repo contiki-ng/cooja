@@ -323,8 +323,9 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     var currentChannel = getChannel();
     if (currentChannel != oldRadioChannel) {
       oldRadioChannel = currentChannel;
-      lastEvent = RadioEvent.UNKNOWN;
-      radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
+      isInterfered = false;
+      lastEvent = RadioEvent.CHANNEL_HOP;
+      radioEventTriggers.trigger(RadioEvent.CHANNEL_HOP, this);
     }
 
     /* Ongoing transmission */
