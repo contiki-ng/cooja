@@ -288,7 +288,13 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
         newConn.addInterfered(dest.radio);
         continue;
       }
-     
+
+      if (dest.radio.isTransmitting()) {
+        newConn.addInterfered(dest.radio);
+        dest.radio.interfereAnyReception();
+        continue;
+      }
+
       if (dest.radio.isReceiving()) {
          /* Fail: radio is already actively receiving */
          /*logger.info(source + ": Fail, receiving");*/
