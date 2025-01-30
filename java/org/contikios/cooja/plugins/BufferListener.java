@@ -28,7 +28,6 @@
  */
 
 package org.contikios.cooja.plugins;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.awt.BorderLayout;
@@ -44,7 +43,6 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -496,8 +494,14 @@ public class BufferListener extends VisPlugin {
             bufferMenu.addSeparator();
           }
           JCheckBoxMenuItem mi = new JCheckBoxMenuItem(Cooja.getDescriptionOf(btClass), btClass == buffer.getClass());
-          mi.putClientProperty("CLASS", btClass);
-          mi.addActionListener(bufferSelectedListener);
+          mi.addActionListener(bufferSelectedEvent -> {
+                                 var b = createBufferInstance(btClass);
+                                 if (b != null) {
+                                   if (b.configure(BufferListener.this)) {
+                                     setBuffer(b);
+                                   }
+                                 }
+                               });
           bufferMenu.add(mi);
         }
       }
@@ -515,8 +519,7 @@ public class BufferListener extends VisPlugin {
         parserMenu.removeAll();
         for (var bpClass: bufferParsers) {
           JCheckBoxMenuItem mi = new JCheckBoxMenuItem(Cooja.getDescriptionOf(bpClass), bpClass == parser.getClass());
-          mi.putClientProperty("CLASS", bpClass);
-          mi.addActionListener(parserSelectedListener);
+          mi.addActionListener(parserSelectedEvent -> setParser(bpClass));
           parserMenu.add(mi);
         }
       }
@@ -1201,18 +1204,6 @@ public class BufferListener extends VisPlugin {
       if (size > 0) {
         logs.clear();
         model.fireTableRowsDeleted(0, size - 1);
-      }
-    }
-  };
-
-  private final ActionListener parserSelectedListener =
-          e -> setParser((Class<? extends Parser>) ((JMenuItem) e.getSource()).getClientProperty("CLASS"));
-
-  private final ActionListener bufferSelectedListener = e -> {
-    var b = createBufferInstance((Class<? extends Buffer>) ((JMenuItem) e.getSource()).getClientProperty("CLASS"));
-    if (b != null) {
-      if (b.configure(BufferListener.this)) {
-        setBuffer(b);
       }
     }
   };
@@ -1921,4 +1912,5 @@ public class BufferListener extends VisPlugin {
       return true;
     }
   }
+
 }

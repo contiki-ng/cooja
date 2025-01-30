@@ -269,35 +269,22 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
               break;
             }
           }
-          var item = new JCheckBoxMenuItem(Cooja.getDescriptionOf(skinClass), activated);
-          item.putClientProperty("skinclass", skinClass);
-          item.addItemListener(e1 -> {
-            var menuItem = ((JCheckBoxMenuItem) e1.getItem());
-            if (menuItem == null) {
-              logger.error("No menu item");
-              return;
-            }
-
-            var skinClass1 = (Class<VisualizerSkin>) menuItem.getClientProperty("skinclass");
-            if (skinClass1 == null) {
-              logger.error("Unknown visualizer skin class");
-              return;
-            }
-
+          var menuItem = new JCheckBoxMenuItem(Cooja.getDescriptionOf(skinClass), activated);
+          menuItem.addItemListener(e1 -> {
             if (menuItem.isSelected()) {
               // Create and activate new skin.
-              generateAndActivateSkin(skinClass1);
+              generateAndActivateSkin(skinClass);
             } else {
               // Deactivate skin.
               VisualizerSkin skinToDeactivate = null;
               for (var skin : currentSkins) {
-                if (skin.getClass() == skinClass1) {
+                if (skin.getClass() == skinClass) {
                   skinToDeactivate = skin;
                   break;
                 }
               }
               if (skinToDeactivate == null) {
-                logger.error("Unknown visualizer to deactivate: " + skinClass1);
+                logger.error("Unknown visualizer to deactivate: " + skinClass);
                 return;
               }
               skinToDeactivate.setInactive();
@@ -305,7 +292,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
               currentSkins.remove(skinToDeactivate);
             }
           });
-          viewMenu.add(item);
+          viewMenu.add(menuItem);
         }
       }
 
@@ -750,6 +737,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 
         try {
+          @SuppressWarnings("unchecked")
           List<File> list = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
           if (list.size() != 1) {
             return;
@@ -782,6 +770,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           return false;
         }
         try {
+          @SuppressWarnings("unchecked")
           List<File> list = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
           if (list.size() != 1) {
             return false;
