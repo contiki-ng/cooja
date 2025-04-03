@@ -814,30 +814,19 @@ public class MSP430Core extends Chip implements MSP430Constants {
   }
 
   void printWarning(EmulationLogger.WarningType type, int address) throws EmulationException {
-      String message;
-      switch(type) {
-      case MISALIGNED_READ:
-          message = "**** Illegal read - misaligned word from $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      case MISALIGNED_WRITE:
-          message = "**** Illegal write - misaligned word to $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      case ADDRESS_OUT_OF_BOUNDS_READ:
-          message = "**** Illegal read - out of bounds from $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      case ADDRESS_OUT_OF_BOUNDS_WRITE:
-          message = "**** Illegal write -  out of bounds from $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      default:
-          message = "**** " + type + " address $" + getAddressAsString(address) +
-          " at $" + getAddressAsString(reg[PC]);
-          break;
-      }
-      logger.logw(this, type, message);
+    String message = switch (type) {
+      case MISALIGNED_READ -> "**** Illegal read - misaligned word from $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      case MISALIGNED_WRITE -> "**** Illegal write - misaligned word to $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      case ADDRESS_OUT_OF_BOUNDS_READ -> "**** Illegal read - out of bounds from $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      case ADDRESS_OUT_OF_BOUNDS_WRITE -> "**** Illegal write -  out of bounds from $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      default -> "**** " + type + " address $" + getAddressAsString(address) +
+              " at $" + getAddressAsString(reg[PC]);
+    };
+    logger.logw(this, type, message);
   }
 
   public void generateTrace(PrintStream out) {
