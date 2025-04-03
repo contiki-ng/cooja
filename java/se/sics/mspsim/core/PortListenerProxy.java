@@ -87,7 +87,7 @@ public class PortListenerProxy implements PortListener {
     @Override
     public void portWrite(IOPort source, int data) {
         PortListener[] listeners = this.portListeners;
-        for(PortListener l : listeners) {
+        for (PortListener l : listeners) {
             l.portWrite(source, data);
         }
     }

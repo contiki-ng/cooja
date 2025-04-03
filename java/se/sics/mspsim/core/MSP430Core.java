@@ -855,10 +855,12 @@ public class MSP430Core extends Chip implements MSP430Constants {
     if (interruptMax < MAX_INTERRUPT) {
       // Push PC and SR to stack
       // store on stack - always move 2 steps (W) even if B.
-      writeRegister(SP, sp = spBefore - 2);
+      sp = spBefore - 2;
+      writeRegister(SP, sp);
       currentSegment.write(sp, pc, AccessMode.WORD);
 
-      writeRegister(SP, sp = sp - 2);
+      sp -= 2;
+      writeRegister(SP, sp);
       currentSegment.write(sp, (sr & 0x0fff) | ((pc & 0xf0000) >> 4), AccessMode.WORD);
     }
     // Clear SR

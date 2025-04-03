@@ -284,7 +284,13 @@ public abstract class SerialUI extends Log implements SerialPort {
   }
 
   private static String trim(String text) {
-    return (text != null) && !(text = text.trim()).isEmpty() ? text : null;
+    if (text != null) {
+      text = text.trim();
+      if (!text.isEmpty()) {
+        return text;
+      }
+    }
+    return null;
   }
 
   @Override

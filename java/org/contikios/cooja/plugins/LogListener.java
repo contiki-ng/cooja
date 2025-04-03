@@ -576,7 +576,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     /* Start observing motes for new log output */
     logUpdateAggregator.start();
-    simulation.getEventCentral().addLogOutputListener(logOutputListener = ev -> {
+    logOutputListener = ev -> {
       if (!hasHours && ev.getTime() > TIME_HOUR) {
         hasHours = true;
         repaintTimeColumn();
@@ -586,7 +586,8 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       if (appendToFile) {
         appendToFile(appendStreamFile, data.getTime() + "\t" + data.getID() + "\t" + data.ev.getMessage() + "\n");
       }
-    });
+    };
+    simulation.getEventCentral().addLogOutputListener(logOutputListener);
 
     /* UI components */
     JPanel filterPanel = new JPanel();

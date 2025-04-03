@@ -100,7 +100,8 @@ public class ControlUI extends JPanel implements ActionListener, SimEventListene
     jp.setLayout(new BorderLayout());
 
     jp.add(this, BorderLayout.WEST);
-    jp.add(dui = new DebugUI(cpu), BorderLayout.CENTER);
+    dui = new DebugUI(cpu);
+    jp.add(dui, BorderLayout.CENTER);
     window.add(jp);
 
     createButton("Debug On");
