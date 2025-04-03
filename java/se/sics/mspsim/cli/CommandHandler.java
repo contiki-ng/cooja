@@ -96,8 +96,8 @@ public class CommandHandler implements ActiveComponent, LineListener {
         cErr.println("Error: Command failed: " + e.getMessage());
         e.printStackTrace(cErr);
         error = true;
-        if (e instanceof EmulationException) {
-            throw (EmulationException) e;
+        if (e instanceof EmulationException emulationException) {
+            throw emulationException;
         }
       }
       if (error) {

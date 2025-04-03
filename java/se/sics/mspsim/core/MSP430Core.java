@@ -367,8 +367,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   public boolean hasWatchPoint(int address) {
       Memory mem = memorySegments[address >> 8];
-      if (mem instanceof WatchedMemory) {
-          return ((WatchedMemory)mem).hasWatchPoint(address);
+      if (mem instanceof WatchedMemory watchedMemory) {
+          return watchedMemory.hasWatchPoint(address);
       }
       return false;
   }
@@ -376,8 +376,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
   public synchronized void addWatchPoint(int address, MemoryMonitor mon) {
       int seg = address >> 8;
       WatchedMemory wm;
-      if (memorySegments[seg] instanceof WatchedMemory) {
-          wm = (WatchedMemory) memorySegments[seg];
+      if (memorySegments[seg] instanceof WatchedMemory watchedMemory) {
+          wm = watchedMemory;
       } else {
           wm = new WatchedMemory(address & 0xfff00, memorySegments[seg]);
           memorySegments[seg] = wm;

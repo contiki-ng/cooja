@@ -78,12 +78,12 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 	public CC1101Radio(Mote m) {
 		this.mote = (MspMote)m;
     Radio802154 r = this.mote.getCPU().getChip(Radio802154.class);
-    if (!(r instanceof CC1101)) {
+    if (!(r instanceof CC1101 cc1101Radio)) {
       throw new IllegalStateException("Mote is not equipped with an CC1101 radio");
     }
-    this.cc1101 = (CC1101) r;
+    this.cc1101 = cc1101Radio;
 
-		cc1101.addRFListener(new RFListener() {
+		this.cc1101.addRFListener(new RFListener() {
 			int len;
 			int expLen;
 			final byte[] buffer = new byte[256 + 15];
@@ -139,8 +139,8 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 			}
 		});
 
-    cc1101.setReceiverListener(on -> {
-      if (cc1101.isReadyToReceive()) {
+    this.cc1101.setReceiverListener(on -> {
+      if (this.cc1101.isReadyToReceive()) {
         lastEvent = RadioEvent.HW_ON;
         radioEventTriggers.trigger(RadioEvent.HW_ON, this);
       } else {
@@ -148,7 +148,7 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
       }
     });
 
-    cc1101.addChannelListener(channel -> {
+    this.cc1101.addChannelListener(channel -> {
       /* XXX Currently assumes zero channel switch time */
       lastEvent = RadioEvent.UNKNOWN;
       radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
@@ -232,11 +232,11 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 
 	@Override
 	public void receiveCustomData(Object data) {
-		if (!(data instanceof Byte)) {
+		if (!(data instanceof Byte byteData)) {
 			logger.error("Bad custom data: " + data);
 			return;
 		}
-		lastIncomingByte = (Byte) data;
+		lastIncomingByte = byteData;
 
 		final byte inputByte;
 		if (isInterfered()) {

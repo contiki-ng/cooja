@@ -51,8 +51,8 @@ public class PortListenerProxy implements PortListener {
         if (portListener == null) {
             return listener;
         }
-        if (portListener instanceof PortListenerProxy) {
-            return ((PortListenerProxy)portListener).add(listener);
+        if (portListener instanceof PortListenerProxy portListenerProxy) {
+            return portListenerProxy.add(listener);
         }
         return new PortListenerProxy(portListener, listener);
     }
@@ -61,8 +61,8 @@ public class PortListenerProxy implements PortListener {
         if (portListener == listener) {
             return null;
         }
-        if (portListener instanceof PortListenerProxy) {
-            return ((PortListenerProxy)portListener).remove(listener);
+        if (portListener instanceof PortListenerProxy portListenerProxy) {
+            return portListenerProxy.remove(listener);
         }
         return portListener;
     }

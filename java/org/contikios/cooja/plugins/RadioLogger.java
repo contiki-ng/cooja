@@ -777,8 +777,8 @@ public class RadioLogger extends VisPlugin {
     byte[] data;
     if (conn.packet == null) {
       data = null;
-    } else if (conn.packet instanceof ConvertedRadioPacket) {
-      data = ((ConvertedRadioPacket) conn.packet).getOriginalPacketData();
+    } else if (conn.packet instanceof ConvertedRadioPacket convertedRadioPacket) {
+      data = convertedRadioPacket.getOriginalPacketData();
     } else {
       data = conn.packet.getPacketData();
     }
@@ -852,8 +852,8 @@ public class RadioLogger extends VisPlugin {
       return;
     }
 
-    if (packet instanceof ConvertedRadioPacket && packet.getPacketData().length > 0) {
-      byte[] original = ((ConvertedRadioPacket) packet).getOriginalPacketData();
+    if (packet instanceof ConvertedRadioPacket convertedRadioPacket && packet.getPacketData().length > 0) {
+      byte[] original = convertedRadioPacket.getOriginalPacketData();
       byte[] converted = packet.getPacketData();
       conn.tooltip = "<html><font face=\"Monospaced\">"
               + "<b>Packet data (" + original.length + " bytes)</b><br>"
@@ -862,8 +862,8 @@ public class RadioLogger extends VisPlugin {
               + "<b>Cross-level packet data (" + converted.length + " bytes)</b><br>"
               + "<pre>" + StringUtils.hexDump(converted) + "</pre>"
               + "</font></html>";
-    } else if (packet instanceof ConvertedRadioPacket) {
-      byte[] original = ((ConvertedRadioPacket) packet).getOriginalPacketData();
+    } else if (packet instanceof ConvertedRadioPacket convertedRadioPacket) {
+      byte[] original = convertedRadioPacket.getOriginalPacketData();
       conn.tooltip = "<html><font face=\"Monospaced\">"
               + "<b>Packet data (" + original.length + " bytes)</b><br>"
               + "<pre>" + StringUtils.hexDump(original) + "</pre>"
