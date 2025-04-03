@@ -519,31 +519,16 @@ public class CScanner extends Scanner {
     if (c2 == '\\')
       c2 = next();
 
-    switch (c2) {
-    case 'b':
-    case 't':
-    case 'n':
-    case 'f':
-    case 'r':
-    case '\"':
-    case '\'':
-    case '\\':
-      start = start + charlength;
-      charlength = 1;
-      return true;
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-      return readOctal(3);
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-      return readOctal(2);
-    default:
-      return false;
-    }
+    return switch (c2) {
+      case 'b', 't', 'n', 'f', 'r', '\"', '\'', '\\' -> {
+        start = start + charlength;
+        charlength = 1;
+        yield true;
+      }
+      case '0', '1', '2', '3' -> readOctal(3);
+      case '4', '5', '6', '7' -> readOctal(2);
+      default -> false;
+    };
   }
 
   private boolean readOctal(int maxlength) {
