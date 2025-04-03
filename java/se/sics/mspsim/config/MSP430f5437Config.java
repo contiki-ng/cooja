@@ -118,12 +118,14 @@ public class MSP430f5437Config extends MSP430Config {
 //            System.out.println("Adding IOUnit USCI: " + usci.getName());
             ioUnits.add(usci);
         }
-        IOPort last = null;
-        ioUnits.add(last = IOPort.parseIOPort(cpu, 47, portConfig[0], last));
-        ioUnits.add(last = IOPort.parseIOPort(cpu, 42, portConfig[1], last));
+        IOPort last = IOPort.parseIOPort(cpu, 47, portConfig[0], null);
+        ioUnits.add(last);
+        last = IOPort.parseIOPort(cpu, 42, portConfig[1], last);
+        ioUnits.add(last);
 
         for (int i = 2; i < portConfig.length; i++) {
-            ioUnits.add(last = IOPort.parseIOPort(cpu, 0, portConfig[i], last));
+          last = IOPort.parseIOPort(cpu, 0, portConfig[i], last);
+          ioUnits.add(last);
         }
 
                 /* XXX: Stub IO units: Sysreg and PMM */

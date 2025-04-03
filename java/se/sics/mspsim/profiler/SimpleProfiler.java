@@ -176,8 +176,9 @@ public class SimpleProfiler implements Profiler, EventListener {
     if (cspEntry.calls >= 0) {
       CallEntry ce = profileData.get(fkn);
       if (ce == null) {
-        profileData.put(fkn, ce = new CallEntry());
+        ce = new CallEntry();
         ce.function = fkn;
+        profileData.put(fkn, ce);
       }
       ce.cycles += elapsed;
       ce.exclusiveCycles += exElapsed;

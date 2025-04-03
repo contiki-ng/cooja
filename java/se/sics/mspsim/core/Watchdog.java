@@ -159,7 +159,8 @@ public class Watchdog extends IOUnit implements SFRModule {
           targetTime = cpu.scheduleTimeEventMillis(wdtTrigger, 1000.0 * delay / cpu.aclkFrq);
       } else {
           if (DEBUG) log("setting delay in cycles");
-          cpu.scheduleCycleEvent(wdtTrigger, targetTime = cpu.cycles + delay);
+          targetTime = cpu.cycles + delay;
+          cpu.scheduleCycleEvent(wdtTrigger, targetTime);
       }
   }
 

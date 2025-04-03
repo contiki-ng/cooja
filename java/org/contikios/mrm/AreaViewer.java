@@ -1137,7 +1137,8 @@ public class AreaViewer extends VisPlugin {
 
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Red"));
+        tempLabel = new JLabel("Red");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         var tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0);
@@ -1150,10 +1151,12 @@ public class AreaViewer extends VisPlugin {
 
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Green"));
+        tempLabel = new JLabel("Green");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        tempPanel.add(tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0));
+        tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0);
+        tempPanel.add(tempSlider);
         tempSlider.setMajorTickSpacing(50);
         tempSlider.setPaintTicks(true);
         tempSlider.setPaintLabels(true);
@@ -1162,10 +1165,12 @@ public class AreaViewer extends VisPlugin {
 
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Blue"));
+        tempLabel = new JLabel("Blue");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        tempPanel.add(tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0));
+        tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0);
+        tempPanel.add(tempSlider);
         tempSlider.setMajorTickSpacing(50);
         tempSlider.setPaintTicks(true);
         tempSlider.setPaintLabels(true);
@@ -1175,10 +1180,12 @@ public class AreaViewer extends VisPlugin {
         // Tolerance
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Tolerance"));
+        tempLabel = new JLabel("Tolerance");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        tempPanel.add(tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 128, 0));
+        tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 128, 0);
+        tempPanel.add(tempSlider);
         tempSlider.setMajorTickSpacing(25);
         tempSlider.setPaintTicks(true);
         tempSlider.setPaintLabels(true);
@@ -1188,10 +1195,12 @@ public class AreaViewer extends VisPlugin {
         // Obstacle size
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Obstacle size"));
+        tempLabel = new JLabel("Obstacle size");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        tempPanel.add(tempSlider = new JSlider(JSlider.HORIZONTAL, 1, 40, 40));
+        tempSlider = new JSlider(JSlider.HORIZONTAL, 1, 40, 40);
+        tempPanel.add(tempSlider);
         tempSlider.setInverted(true);
         tempSlider.setMajorTickSpacing(5);
         tempSlider.setPaintTicks(true);
@@ -1214,7 +1223,8 @@ public class AreaViewer extends VisPlugin {
           }
         });
         tempPanel.add(Box.createHorizontalStrut(5));
-        tempPanel.add(tempButton = new JButton("Preview obstacles"));
+        tempButton = new JButton("Preview obstacles");
+        tempPanel.add(tempButton);
         tempButton.addActionListener(e -> {
           obstacleImage = createObstacleImage();
           canvasPanel.repaint();
@@ -1244,10 +1254,12 @@ public class AreaViewer extends VisPlugin {
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
         tempPanel.add(Box.createHorizontalGlue());
-        tempPanel.add(tempButton = new JButton("Cancel"));
+        tempButton = new JButton("Cancel");
+        tempPanel.add(tempButton);
         tempButton.addActionListener(e -> dispose());
         tempPanel.add(Box.createHorizontalStrut(5));
-        tempPanel.add(tempButton = new JButton("OK"));
+        tempButton = new JButton("OK");
+        tempPanel.add(tempButton);
         tempButton.addActionListener(e -> {
           obstacleImage = createObstacleImage();
           exitedOK = true;

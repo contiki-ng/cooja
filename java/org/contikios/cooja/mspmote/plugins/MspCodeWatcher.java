@@ -218,7 +218,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     add(BorderLayout.SOUTH, sourceCodeControl);
 
     /* Listen for breakpoint changes */
-    watchpointMote.addWatchpointListener(watchpointListener = new WatchpointListener() {
+    watchpointListener = new WatchpointListener() {
       @Override
       public void watchpointTriggered(final Watchpoint watchpoint) {
         SwingUtilities.invokeLater(() -> {
@@ -235,7 +235,8 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
       public void watchpointsChanged() {
         sourceCodeUI.updateBreakpoints();
       }
-    });
+    };
+    watchpointMote.addWatchpointListener(watchpointListener);
 
     /* Observe when simulation starts/stops */
     simulation.getSimulationStateTriggers().addTrigger(this, (state, simulation) -> EventQueue.invokeLater(() -> {

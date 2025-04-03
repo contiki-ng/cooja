@@ -1527,8 +1527,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       Simulation simulation = mote.getSimulation();
       SerialPort serialPort = null;
       for (MoteInterface intf : mote.getInterfaces().getInterfaces()) {
-        if (intf instanceof SerialPort) {
-          serialPort = (SerialPort) intf;
+        if (intf instanceof SerialPort port) {
+          serialPort = port;
           break;
         }
       }

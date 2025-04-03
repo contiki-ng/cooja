@@ -100,7 +100,8 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
   private void initGUI() {
     window = new JFrame(title);
 //     window.setBounds(100, 100, 400,340);
-    window.add(new JScrollPane(textArea = new JTextArea(20, 40),
+    textArea = new JTextArea(20, 40);
+    window.add(new JScrollPane(textArea,
                                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),
                BorderLayout.CENTER);

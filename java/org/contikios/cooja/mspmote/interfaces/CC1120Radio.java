@@ -79,10 +79,10 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 	public CC1120Radio(Mote m) {
 		this.mote = (MspMote)m;
 		Radio802154 r = this.mote.getCPU().getChip(Radio802154.class);
-		if (!(r instanceof CC1120)) {
+		if (!(r instanceof CC1120 cc1120Radio)) {
 			throw new IllegalStateException("Mote is not equipped with an CC1120 radio");
 		}
-		this.cc1120 = (CC1120) r;
+		this.cc1120 = cc1120Radio;
 
 		cc1120.addRFListener(new RFListener() {
 			int len;
@@ -234,11 +234,11 @@ public class CC1120Radio extends Radio implements CustomDataRadio {
 
 	@Override
 	public void receiveCustomData(Object data) {
-		if (!(data instanceof Byte)) {
+		if (!(data instanceof Byte byteData)) {
 			logger.error("Bad custom data: " + data);
 			return;
 		}
-		lastIncomingByte = (Byte) data;
+		lastIncomingByte = byteData;
 
 		final byte inputByte;
 		if (isInterfered()) {

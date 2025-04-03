@@ -133,11 +133,11 @@ public class DGRMConfigurator extends VisPlugin {
     graphTable.getColumnModel().getColumn(IDX_RATIO).setCellRenderer(new DefaultTableCellRenderer() {
       @Override
       public void setValue(Object value) {
-        if (!(value instanceof Double)) {
+        if (value instanceof Double valueAsDouble) {
+          setText(String.format("%1.1f%%", 100 * valueAsDouble));
+        } else {
           setText(value.toString());
-          return;
         }
-        setText(String.format("%1.1f%%", 100* (Double) value));
       }
     });
     graphTable.getColumnModel().getColumn(IDX_SIGNAL).setCellRenderer(new DefaultTableCellRenderer() {

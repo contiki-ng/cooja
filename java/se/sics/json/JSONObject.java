@@ -115,59 +115,31 @@ public class JSONObject extends HashMap<String,Object> implements Jsonable {
     }
 
     public int getAsInt(String key, int defaultValue) {
-        Object v = get(key);
-        if (v instanceof Number) {
-            return ((Number) v).intValue();
-        }
-        return defaultValue;
+        return get(key) instanceof Number number ? number.intValue() : defaultValue;
     }
 
     public long getAsLong(String key, long defaultValue) {
-        Object v = get(key);
-        if (v instanceof Number) {
-            return ((Number) v).longValue();
-        }
-        return defaultValue;
+        return get(key) instanceof Number number ? number.longValue() : defaultValue;
     }
 
     public float getAsFloat(String key, float defaultValue) {
-        Object v = get(key);
-        if (v instanceof Number) {
-            return ((Number) v).floatValue();
-        }
-        return defaultValue;
+        return get(key) instanceof Number number ? number.floatValue() : defaultValue;
     }
 
     public double getAsDouble(String key, double defaultValue) {
-        Object v = get(key);
-        if (v instanceof Number) {
-            return ((Number) v).doubleValue();
-        }
-        return defaultValue;
+        return get(key) instanceof Number number ? number.doubleValue() : defaultValue;
     }
 
     public boolean getAsBoolean(String key, boolean defaultValue) {
-        Object v = get(key);
-        if (v instanceof Boolean) {
-            return (Boolean) v;
-        }
-        return defaultValue;
+        return get(key) instanceof Boolean b ? b : defaultValue;
     }
 
     public JSONObject getJSONObject(String key) {
-        Object v = get(key);
-        if (v instanceof JSONObject) {
-            return (JSONObject) v;
-        }
-        return null;
+        return get(key) instanceof JSONObject jsonObject ? jsonObject : null;
     }
 
     public JSONArray getJSONArray(String key) {
-        Object v = get(key);
-        if (v instanceof JSONArray) {
-            return (JSONArray) v;
-        }
-        return null;
+        return get(key) instanceof JSONArray objects ? objects : null;
     }
 
     public void update(JSONObject source) {
@@ -175,13 +147,13 @@ public class JSONObject extends HashMap<String,Object> implements Jsonable {
             if (containsKey(entry.getKey())) {
                 Object target = get(entry.getKey());
                 Object v = entry.getValue();
-                if (v instanceof JSONObject) {
-                    if (target instanceof JSONObject) {
-                        ((JSONObject) target).update((JSONObject) v);
+                if (v instanceof JSONObject valueObject) {
+                    if (target instanceof JSONObject jsonObject) {
+                        jsonObject.update(valueObject);
                     }
-                } else if (v instanceof JSONArray) {
-                    if (target instanceof JSONArray) {
-                        ((JSONArray) target).update((JSONArray) v);
+                } else if (v instanceof JSONArray jsonArray) {
+                    if (target instanceof JSONArray objects) {
+                        objects.update(jsonArray);
                     }
                 } else if (target instanceof JSONObject || target instanceof JSONArray) {
                     // Compound values can not be replaced by primitive values
@@ -197,13 +169,13 @@ public class JSONObject extends HashMap<String,Object> implements Jsonable {
             Object target = get(entry.getKey());
             Object v = entry.getValue();
             if (target != null) {
-                if (v instanceof JSONObject) {
-                    if (target instanceof JSONObject) {
-                        ((JSONObject) target).merge((JSONObject) v);
+                if (v instanceof JSONObject valueObject) {
+                    if (target instanceof JSONObject jsonObject) {
+                        jsonObject.merge(valueObject);
                     }
-                } else if (v instanceof JSONArray) {
-                    if (target instanceof JSONArray) {
-                        ((JSONArray) target).merge((JSONArray) v);
+                } else if (v instanceof JSONArray valueArray) {
+                    if (target instanceof JSONArray objects) {
+                        objects.merge(valueArray);
                     }
                 } else if (target instanceof JSONObject || target instanceof JSONArray) {
                     // Compound values can not be replaced by primitive values
@@ -212,10 +184,10 @@ public class JSONObject extends HashMap<String,Object> implements Jsonable {
                 }
             } else {
                 /* New value */
-                if (v instanceof JSONObject) {
-                    v = ((JSONObject) v).clone();
-                } else if (v instanceof JSONArray) {
-                    v = ((JSONArray) v).clone();
+                if (v instanceof JSONObject jsonObject) {
+                    v = jsonObject.clone();
+                } else if (v instanceof JSONArray objects) {
+                    v = objects.clone();
                 }
                 put(entry.getKey(), v);
             }
@@ -228,10 +200,10 @@ public class JSONObject extends HashMap<String,Object> implements Jsonable {
         // Create deep copy
         for (String key : clone.getKeys()) {
             Object value = clone.get(key);
-            if (value instanceof JSONObject) {
-                clone.put(key, ((JSONObject) value).clone());
-            } else if (value instanceof JSONArray) {
-                clone.put(key, ((JSONArray) value).clone());
+            if (value instanceof JSONObject jsonObject) {
+                clone.put(key, jsonObject.clone());
+            } else if (value instanceof JSONArray objects) {
+                clone.put(key, objects.clone());
             }
         }
         return clone;
@@ -269,17 +241,15 @@ public class JSONObject extends HashMap<String,Object> implements Jsonable {
     }
 
     public static JSONObject parseJSONObject(String input) throws ParseException {
-        Object value = parseJSON(input);
-        if (value instanceof JSONObject) {
-            return (JSONObject) value;
+        if (parseJSON(input) instanceof JSONObject jsonObject) {
+            return jsonObject;
         }
         throw new ParseException("not a JSON object: " + input);
     }
 
     public static JSONObject parseJSONObject(Reader input) throws ParseException {
-        Object value = parseJSON(input);
-        if (value instanceof JSONObject) {
-            return (JSONObject) value;
+        if (parseJSON(input) instanceof JSONObject jsonObject) {
+            return jsonObject;
         }
         throw new ParseException("not a JSON object: " + input);
     }

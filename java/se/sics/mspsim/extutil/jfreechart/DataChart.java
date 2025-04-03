@@ -38,7 +38,8 @@ public class DataChart extends JPanel implements ServiceComponent {
     xyplot.setDomainAxis(domain);
     xyplot.setRangeAxis(range);
  // xyplot.setBackgroundPaint(Color.black);
-    xyplot.setDataset(dataset = new TimeSeriesCollection());
+    dataset = new TimeSeriesCollection();
+    xyplot.setDataset(dataset);
 
     DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
     renderer.setSeriesPaint(0, Color.red);

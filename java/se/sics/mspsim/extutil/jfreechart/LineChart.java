@@ -71,7 +71,8 @@ public class LineChart extends JFreeWindowDataHandler {
     XYPlot xyplot = new XYPlot();
     xyplot.setDomainAxis(domain);
     xyplot.setRangeAxis(range);
-    xyplot.setDataset(dataset = new XYSeriesCollection());
+    dataset = new XYSeriesCollection();
+    xyplot.setDataset(dataset);
     xyplot.setRenderer(renderer);
 
     domain.setAutoRange(true);

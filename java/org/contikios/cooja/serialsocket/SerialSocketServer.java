@@ -395,7 +395,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
           }
           final var out = outStream;
           // FIXME: update code to use data directly.
-          serialPort.getSerialDataTriggers().addTrigger(this, serialDataObserver = (event, data) -> {
+          serialDataObserver = (event, data) -> {
             if (out == null) {
               return;
             }
@@ -407,9 +407,10 @@ public class SerialSocketServer implements Plugin, MotePlugin {
               logger.error("Failed writing:", ex);
               cleanupClient();
             }
-          });
-
-          inBytes = outBytes = 0;
+          };
+          serialPort.getSerialDataTriggers().addTrigger(this, serialDataObserver);
+          outBytes = 0;
+          inBytes = 0;
 
           logger.info("Client connected: " + clientSocket.getInetAddress());
           notifyClientConnected(clientSocket);

@@ -71,17 +71,17 @@ public class MspDebugOutput extends Log {
       /* Disabled */
       return;
     }
-    this.mote.getCPU().addWatchPoint((int) mem.getVariableAddress(CONTIKI_POINTER),
-        memoryMonitor = new MemoryMonitor.Adapter() {
-        @Override
-        public void notifyWriteAfter(int adr, int data, Memory.AccessMode mode) {
-          String msg = extractString(MspDebugOutput.this.mote.getMemory(), data);
-          if (!msg.isEmpty()) {
-            lastLog = "DEBUG: " + msg;
-            getLogDataTriggers().trigger(EventTriggers.Update.UPDATE, new LogDataInfo(mote, lastLog));
-          }
+    memoryMonitor = new MemoryMonitor.Adapter() {
+      @Override
+      public void notifyWriteAfter(int adr, int data, Memory.AccessMode mode) {
+        String msg = extractString(MspDebugOutput.this.mote.getMemory(), data);
+        if (!msg.isEmpty()) {
+          lastLog = "DEBUG: " + msg;
+          getLogDataTriggers().trigger(EventTriggers.Update.UPDATE, new LogDataInfo(mote, lastLog));
+        }
       }
-    });
+    };
+    this.mote.getCPU().addWatchPoint((int) mem.getVariableAddress(CONTIKI_POINTER), memoryMonitor);
   }
 
   private static String extractString(MemoryInterface mem, int address) {

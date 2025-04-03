@@ -200,20 +200,21 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
 
   @Override
   public String getQuickHelp() {
-    String help = "<b>" + Cooja.getDescriptionOf(this) + "</b>";
-    help += "<p>Lists mote interfaces, and allows mote inspection and interaction via mote interface visualizers.";
+    StringBuilder help = new StringBuilder();
+    help.append("<b>").append(Cooja.getDescriptionOf(this)).append("</b>");
+    help.append("<p>Lists mote interfaces, and allows mote inspection and interaction via mote interface visualizers.");
 
     MoteInterface intf = selectedMoteInterface;
     if (intf != null) {
-      if (intf instanceof HasQuickHelp) {
-        help += "<p>" + ((HasQuickHelp)intf).getQuickHelp();
+      if (intf instanceof HasQuickHelp hasQuickHelp) {
+        help.append("<p>").append(hasQuickHelp.getQuickHelp());
       } else {
-        help += "<p><b>" + Cooja.getDescriptionOf(intf) + "</b>";
-        help += "<p>No help available";
+        help.append("<p><b>").append(Cooja.getDescriptionOf(intf)).append("</b>");
+        help.append("<p>No help available");
       }
     }
 
-    return help;
+    return help.toString();
   }
 
   @Override

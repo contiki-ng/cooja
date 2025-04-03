@@ -362,8 +362,8 @@ public class BufferListener extends VisPlugin {
           Object value, boolean isSelected, boolean hasFocus, int row,
           int column) {
         if (row >= logTable.getRowCount()) {
-          if (value instanceof BufferAccess && parser instanceof GraphicalParser) {
-            graphicalParserPanel.update((BufferAccess) value, (GraphicalParser)parser);
+          if (value instanceof BufferAccess bufferAccess && parser instanceof GraphicalParser graphicalParser) {
+            graphicalParserPanel.update(bufferAccess, graphicalParser);
             return graphicalParserPanel;
           }
           return super.getTableCellRendererComponent(
@@ -382,8 +382,8 @@ public class BufferListener extends VisPlugin {
           bgColor = table.getSelectionBackground();
         }
 
-        if (value instanceof BufferAccess && parser instanceof GraphicalParser) {
-          graphicalParserPanel.update((BufferAccess) value, (GraphicalParser)parser);
+        if (value instanceof BufferAccess bufferAccess && parser instanceof GraphicalParser graphicalParser) {
+          graphicalParserPanel.update(bufferAccess, graphicalParser);
           graphicalParserPanel.setBackground(bgColor);
           return graphicalParserPanel;
         } else {

@@ -170,11 +170,11 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
 
   @Override
   public void receiveCustomData(Object data) {
-    if (!(data instanceof Byte)) {
+    if (!(data instanceof Byte byteData)) {
       logger.error("Bad custom data: " + data);
       return;
     }
-    lastIncomingByte = (Byte) data;
+    lastIncomingByte = byteData;
 
     final byte inputByte;
     if (isInterfered()) {

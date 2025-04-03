@@ -59,8 +59,8 @@ public class Exp5438LED extends LED {
   public Exp5438LED(Mote mote) {
     var mspMote = (Exp5438Mote) mote;
     IOUnit unit = mspMote.getCPU().getIOUnit("P1");
-    if (unit instanceof IOPort) {
-      ((IOPort) unit).addPortListener((source, data) -> {
+    if (unit instanceof IOPort ioPort) {
+      ioPort.addPortListener((source, data) -> {
         boolean oldRedOn = redOn;
         boolean oldYellowOn = yellowOn;
         redOn = (data & Exp5438Node.LEDS_CONF_RED) != 0;

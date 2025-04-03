@@ -59,9 +59,9 @@ public class Test implements USARTListener {
 
   private Test(MSP430 cpu) {
     this.cpu = cpu;
-    IOUnit usart = cpu.getIOUnit("USART 1");
-    if (usart instanceof USART) {
-      ((USART) usart).addUSARTListener(this);
+    IOUnit ioUnit = cpu.getIOUnit("USART 1");
+    if (ioUnit instanceof USART usart) {
+      usart.addUSARTListener(this);
     }
   }
 

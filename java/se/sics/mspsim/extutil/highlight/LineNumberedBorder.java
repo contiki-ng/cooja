@@ -70,8 +70,8 @@ public class LineNumberedBorder extends AbstractBorder {
   @Override
   public Insets getBorderInsets(Component c, Insets insets) {
     // if c is not a SyntaxHighlighter...nothing is done...
-    if (c instanceof SyntaxHighlighter) {
-      int width = lineNumberWidth((SyntaxHighlighter) c);
+    if (c instanceof SyntaxHighlighter syntaxHighlighter) {
+      int width = lineNumberWidth(syntaxHighlighter);
       if (location == LEFT_SIDE) {
         insets.left = width;
       } else {

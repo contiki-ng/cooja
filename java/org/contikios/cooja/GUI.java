@@ -1150,15 +1150,10 @@ public class GUI {
 
   public void loadQuickHelp(final Object obj) {
     String help;
-    if (obj instanceof HasQuickHelp) {
-      help = ((HasQuickHelp) obj).getQuickHelp();
+    if (obj instanceof HasQuickHelp hasQuickHelp) {
+      help = hasQuickHelp.getQuickHelp();
     } else {
-      String key;
-      if (obj instanceof String) {
-        key = (String) obj;
-      } else {
-        key = obj.getClass().getName();
-      }
+      String key = obj instanceof String text ? text : obj.getClass().getName();
       help = switch (key) {
         case "KEYBOARD_SHORTCUTS" -> "<b>Keyboard shortcuts</b><br>" +
                 "<br><i>Ctrl+N:</i> New simulation" +
