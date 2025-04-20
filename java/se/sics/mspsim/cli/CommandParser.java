@@ -92,113 +92,112 @@ public class CommandParser {
 
       } else {
         switch (c) {
-        case '\\':
-          i++;
-          if (i >= n) {
-            throw new IllegalArgumentException("unexpected end of line");
-          }
-          if (state == TEXT) {
-            state = ARG;
-          } else {
-            if (sb == null) {
-              sb = new StringBuilder();
+          case '\\' -> {
+            i++;
+            if (i >= n) {
+              throw new IllegalArgumentException("unexpected end of line");
             }
-            sb.append(line, index, i - 1);
-          }
-          index = i;
-          break;
-        case '"':
-        case '\'':
-          if (state == QUOTE) {
-            if (c == quote) {
-              // End of quote
-              if (sb == null) {
-                args.add(line.substring(index, i));
-              } else {
-                args.add(sb.append(line, index, i).toString());
-                sb = null;
-              }
-              state = TEXT;
-            }
-          } else {
-            // Start new quote
-            if (state == ARG) {
-              if (sb == null) {
-                args.add(line.substring(index, i));
-              } else {
-                args.add(sb.append(line, index, i).toString());
-                sb = null;
-              }
-            }
-            index = i + 1;
-            state = QUOTE;
-            quote = c;
-          }
-          break;
-          case '>':
-          if (!handleRedirect) {
-            // No redirect handling. Process as normal character.
             if (state == TEXT) {
-              index = i;
               state = ARG;
-            }
-          } else if (state != QUOTE) {
-            // Redirection
-            if (state == ARG) {
-              if (sb == null) {
-                args.add(line.substring(index, i));
-              } else {
-                args.add(sb.append(line, index, i).toString());
-                sb = null;
-              }
-              state = TEXT;
-            }
-
-            if (redirectCommand == null) {
-              redirectCommand = ">";
-              redirectFile = args.size();
-            } else if (state == TEXT && redirectFile == args.size()) {
-              redirectCommand += '>';
             } else {
-              // Double redirect
-              throw new IllegalArgumentException("redirected twice");
+              if (sb == null) {
+                sb = new StringBuilder();
+              }
+              sb.append(line, index, i - 1);
+            }
+            index = i;
+          }
+          case '"', '\'' -> {
+            if (state == QUOTE) {
+              if (c == quote) {
+                // End of quote
+                if (sb == null) {
+                  args.add(line.substring(index, i));
+                } else {
+                  args.add(sb.append(line, index, i).toString());
+                  sb = null;
+                }
+                state = TEXT;
+              }
+            } else {
+              // Start new quote
+              if (state == ARG) {
+                if (sb == null) {
+                  args.add(line.substring(index, i));
+                } else {
+                  args.add(sb.append(line, index, i).toString());
+                  sb = null;
+                }
+              }
+              index = i + 1;
+              state = QUOTE;
+              quote = c;
             }
           }
-          break;
-        case '|':
-          if (!handlePipes) {
-            // No pipe handling. Process as normal character.
+          case '>' -> {
+            if (!handleRedirect) {
+              // No redirect handling. Process as normal character.
+              if (state == TEXT) {
+                index = i;
+                state = ARG;
+              }
+            } else if (state != QUOTE) {
+              // Redirection
+              if (state == ARG) {
+                if (sb == null) {
+                  args.add(line.substring(index, i));
+                } else {
+                  args.add(sb.append(line, index, i).toString());
+                  sb = null;
+                }
+                state = TEXT;
+              }
+
+              if (redirectCommand == null) {
+                redirectCommand = ">";
+                redirectFile = args.size();
+              } else if (state == TEXT && redirectFile == args.size()) {
+                redirectCommand += '>';
+              } else {
+                // Double redirect
+                throw new IllegalArgumentException("redirected twice");
+              }
+            }
+          }
+          case '|' -> {
+            if (!handlePipes) {
+              // No pipe handling. Process as normal character.
+              if (state == TEXT) {
+                index = i;
+                state = ARG;
+              }
+            } else if (state != QUOTE) {
+              // PIPE
+              if (state == ARG) {
+                if (sb == null) {
+                  args.add(line.substring(index, i));
+                } else {
+                  args.add(sb.append(line, index, i).toString());
+                  sb = null;
+                }
+              }
+              state = TEXT;
+              if (args.isEmpty()) {
+                throw new IllegalArgumentException("empty command");
+              }
+              if (redirectCommand != null) {
+                throw new IllegalArgumentException("pipe can not follow redirection");
+              }
+              list.add(args.toArray(new String[0]));
+              args.clear();
+            }
+          }
+          default -> {
             if (state == TEXT) {
               index = i;
               state = ARG;
             }
-          } else if (state != QUOTE) {
-            // PIPE
-            if (state == ARG) {
-              if (sb == null) {
-                args.add(line.substring(index, i));
-              } else {
-                args.add(sb.append(line, index, i).toString());
-                sb = null;
-              }
-            }
-            state = TEXT;
-            if (args.isEmpty()) {
-              throw new IllegalArgumentException("empty command");
-            }
-            if (redirectCommand != null) {
-              throw new IllegalArgumentException("pipe can not follow redirection");
-            }
-            list.add(args.toArray(new String[0]));
-            args.clear();
           }
-          break;
-        default:
-          if (state == TEXT) {
-            index = i;
-            state = ARG;
-          }
-          break;
         }
       }
     }

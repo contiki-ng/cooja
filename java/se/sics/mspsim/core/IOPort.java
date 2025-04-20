@@ -210,112 +210,86 @@ public class IOPort extends IOUnit {
 
     /* only byte access!!! */
     private int readPort(PortReg function, long cycles) {
-        switch(function) {
-        case OUT:
-            return out;
-        case IN:
-            return in;
-        case DIR:
-            return dir;
-        case REN:
-            return ren;
-        case IFG:
-            return ifg;
-        case IE:
-            return ie;
-        case IES:
-            return ies;
-        case SEL:
-            return sel;
-        case SEL2:
-            return sel2;
-        case DS:
-            return ds;
-        case IV_L: {
-            int v = iv & 0xff;
-            // Clear highest interrupt
-            if (iv != 0) {
-                if (iv > 1 && iv < 17) {
-                    ifg &= ~(1 << ((iv - 2) / 2));
-                }
-                updateIV();
+      return switch (function) {
+        case OUT -> out;
+        case IN -> in;
+        case DIR -> dir;
+        case REN -> ren;
+        case IFG -> ifg;
+        case IE -> ie;
+        case IES -> ies;
+        case SEL -> sel;
+        case SEL2 -> sel2;
+        case DS -> ds;
+        case IV_L -> {
+          int v = iv & 0xff;
+          // Clear highest interrupt
+          if (iv != 0) {
+            if (iv > 1 && iv < 17) {
+              ifg &= ~(1 << ((iv - 2) / 2));
             }
-            return v;
+            updateIV();
+          }
+          yield v;
         }
-        case IV_H: {
-            return iv >> 8;
-        }
-        }
-        /* default is zero ??? */
-        return 0;
+        case IV_H -> iv >> 8;
+      };
     }
 
     private void writePort(PortReg function, int data, long cycles) {
-        switch(function) {
-        case OUT: {
-            out = data;
-            PortListener listener = portListener;
-            if (listener != null) {
-                listener.portWrite(this, out | ~dir & 0xff);
-            }
-            break;
+      switch (function) {
+        case OUT -> {
+          out = data;
+          PortListener listener = portListener;
+          if (listener != null) {
+            listener.portWrite(this, out | ~dir & 0xff);
+          }
         }
-        case IN:
-            logw(WarningType.ILLEGAL_IO_WRITE, "WARNING: writing to read-only " + getID() + "IN");
-            throw new EmulationException("Writing to read-only " + getID() + "IN");
-            //          in = data;
-        case DIR: {
-            dir = data;
-            PortListener listener = portListener;
-            if (listener != null) {
-                // Any output configured pin (pin-bit = 0) should have 1 here?!
-                listener.portWrite(this, out | ~dir & 0xff);
-            }
-            break;
+        case IN -> {
+          logw(WarningType.ILLEGAL_IO_WRITE, "WARNING: writing to read-only " + getID() + "IN");
+          throw new EmulationException("Writing to read-only " + getID() + "IN");
         }
-        case REN:
-            ren = data;
-            break;
-        case IFG:
-            if (DEBUG) {
-                log("Setting IFlag: " + data);
+        //          in = data;
+        case DIR -> {
+          dir = data;
+          PortListener listener = portListener;
+          if (listener != null) {
+            // Any output configured pin (pin-bit = 0) should have 1 here?!
+            listener.portWrite(this, out | ~dir & 0xff);
+          }
+        }
+        case REN -> ren = data;
+        case IFG -> {
+          if (DEBUG) {
+            log("Setting IFlag: " + data);
+          }
+          ifg = data;
+          updateIV();
+        }
+        case IE -> {
+          ie = data;
+          if (DEBUG) {
+            log("Setting IE: " + data);
+          }
+          cpu.flagInterrupt(interrupt, this, (ifg & ie) > 0);
+        }
+        case IES -> ies = data;
+        case SEL -> sel = data;
+        case SEL2 -> sel2 = data;
+        case DS -> ds = data;
+        case IV_L -> {
+          // on access.
+          if (iv != 0) {
+            if (iv > 1 && iv < 17) {
+              ifg &= ~(1 << ((iv - 2) / 2));
             }
-            ifg = data;
             updateIV();
-            break;
-        case IE:
-            ie = data;
-            if (DEBUG) {
-                log("Setting IE: " + data);
-            }
-            cpu.flagInterrupt(interrupt, this, (ifg & ie) > 0);
-            break;
-        case IES:
-            ies = data;
-            break;
-        case SEL:
-            sel = data;
-            break;
-        case SEL2:
-            sel2 = data;
-            break;
-        case DS:
-            ds = data;
-            break;
-        case IV_L:
-            // IV can not be written but highest interrupt should be cleared
-            // on access.
-            if (iv != 0) {
-                if (iv > 1 && iv < 17) {
-                    ifg &= ~(1 << ((iv - 2) / 2));
-                }
-                updateIV();
-            }
-            break;
-        case IV_H:
-            // IV_H can not be written
-            break;
+          }
         }
+        case IV_H -> {
+          // IV_H can not be written
+        }
+      }
     }
 
 

@@ -81,41 +81,38 @@ public class DS2411 extends Chip {
     @Override
     public void execute(long t) {
       switch (state) {
-      case WAIT_FOR_RESET:
-        if (!lastPin) {
-          state = STATE.RESETTING;
-          stateChanged(state.value);
-          if (DEBUG) log("Resetting...");
+        case WAIT_FOR_RESET -> {
+          if (!lastPin) {
+            state = STATE.RESETTING;
+            stateChanged(state.value);
+            if (DEBUG) log("Resetting...");
+          }
         }
-        break;
-      case SIGNAL_READY:
-        /* ready! release bus */
-        sdataPort.setPinState(sdataPin, IOPort.PinState.HI);
-        state = STATE.READY;
-        stateChanged(state.value);
-        if (DEBUG) log("Ready!");
-        readByte = 0;
-        pos = 0;
-        break;
-      case READY:
-        if (DEBUG) log("Reading: " + (lastPin ? 1 : 0));
-        readByte = readByte + (lastPin ? (1 << pos) : 0);
-        pos++;
-        if (pos == 8) {
-          if (DEBUG) log("Command: " + Utils.hex8(readByte));
-          handleCommand(readByte);
-          state = STATE.WAIT_SENDING;
+        case SIGNAL_READY -> {
+          /* ready! release bus */
+          sdataPort.setPinState(sdataPin, IOPort.PinState.HI);
+          state = STATE.READY;
           stateChanged(state.value);
+          if (DEBUG) log("Ready!");
+          readByte = 0;
           pos = 0;
-          writePos = 0;
-          writeByte = writeBuf[writePos];
         }
-        break;
-    case IDLE:
-    case RESETTING:
-    case WAIT_SENDING:
-    case SENDING:
-        break;
+        case READY -> {
+          if (DEBUG) log("Reading: " + (lastPin ? 1 : 0));
+          readByte = readByte + (lastPin ? (1 << pos) : 0);
+          pos++;
+          if (pos == 8) {
+            if (DEBUG) log("Command: " + Utils.hex8(readByte));
+            handleCommand(readByte);
+            state = STATE.WAIT_SENDING;
+            stateChanged(state.value);
+            pos = 0;
+            writePos = 0;
+            writeByte = writeBuf[writePos];
+          }
+        }
+        case IDLE, RESETTING, WAIT_SENDING, SENDING -> {
+        }
       }
     }
   };
@@ -177,64 +174,65 @@ public class DS2411 extends Chip {
     if (DEBUG) log("Data pin high: " + high + " " + cpu.cycles);
     if (lastPin == high) return;
     lastPin = high;
-    switch(state) {
-    case IDLE:
-      sdataPort.setPinState(sdataPin, IOPort.PinState.HI);
-      if (!high) {
-        state = STATE.WAIT_FOR_RESET;
-        stateChanged(state.value);
-        /* reset if low for at least 480uS - we check after 400uS and resets
-         * then */
-        if (DEBUG) log("Wait for reset...");
-        cpu.scheduleTimeEventMillis(stateEvent, 0.400);
+    switch (state) {
+      case IDLE -> {
+        sdataPort.setPinState(sdataPin, IOPort.PinState.HI);
+        if (!high) {
+          state = STATE.WAIT_FOR_RESET;
+          stateChanged(state.value);
+          /* reset if low for at least 480uS - we check after 400uS and resets
+           * then */
+          if (DEBUG) log("Wait for reset...");
+          cpu.scheduleTimeEventMillis(stateEvent, 0.400);
+        }
       }
-      break;
-    case WAIT_FOR_RESET:
-        break;
-    case RESETTING:
-      if (high) {
-        state = STATE.SIGNAL_READY;
-        stateChanged(state.value);
-        if (DEBUG) log("Signal ready");
-        /* reset done - signal with LOW for a while! */
-        sdataPort.setPinState(sdataPin, IOPort.PinState.LOW);
-        cpu.scheduleTimeEventMillis(stateEvent, 0.480);
-        pos = 0;
+      case WAIT_FOR_RESET -> {
       }
-      break;
-    case SIGNAL_READY:
-        break;
-    case READY:
-      /* we should read a byte during the READY - 60us - 120us time slot*/
-      if (!high) {
-        /* schedule a read after 40us */
-        cpu.scheduleTimeEventMillis(stateEvent, 0.040);
+      case RESETTING -> {
+        if (high) {
+          state = STATE.SIGNAL_READY;
+          stateChanged(state.value);
+          if (DEBUG) log("Signal ready");
+          /* reset done - signal with LOW for a while! */
+          sdataPort.setPinState(sdataPin, IOPort.PinState.LOW);
+          cpu.scheduleTimeEventMillis(stateEvent, 0.480);
+          pos = 0;
+        }
       }
-      break;
-    case WAIT_SENDING:
-      if (!high) {
-        state = STATE.SENDING;
-        stateChanged(state.value);
+      case SIGNAL_READY -> {
       }
-      break;
-    case SENDING:
-      if (high) {
-        if (pos == 0 && DEBUG) log("should write next byte: " + writeByte);
+      case READY -> {
+        /* we should read a byte during the READY - 60us - 120us time slot*/
+        if (!high) {
+          /* schedule a read after 40us */
+          cpu.scheduleTimeEventMillis(stateEvent, 0.040);
+        }
+      }
+      case WAIT_SENDING -> {
+        if (!high) {
+          state = STATE.SENDING;
+          stateChanged(state.value);
+        }
+      }
+      case SENDING -> {
+        if (high) {
+          if (pos == 0 && DEBUG) log("should write next byte: " + writeByte);
 
-        /* went high => we should send another bit */
-        sdataPort.setPinState(sdataPin,
-            ((writeByte & (1 << pos)) > 0) ? IOPort.PinState.HI : IOPort.PinState.LOW);
-        if (DEBUG) log("wrote bit: " + (((writeByte & (1 << pos)) > 0) ? 1 : 0));
-        pos++;
-        if (pos == 8) {
-          writePos++;
-          if (writePos == writeLen) {
-            if (DEBUG) log("write is over => IDLE!!!!");
-            state = STATE.IDLE;
-            stateChanged(state.value);
-          } else {
-            pos = 0;
-            writeByte = writeBuf[writePos];
+          /* went high => we should send another bit */
+          sdataPort.setPinState(sdataPin,
+                  ((writeByte & (1 << pos)) > 0) ? IOPort.PinState.HI : IOPort.PinState.LOW);
+          if (DEBUG) log("wrote bit: " + (((writeByte & (1 << pos)) > 0) ? 1 : 0));
+          pos++;
+          if (pos == 8) {
+            writePos++;
+            if (writePos == writeLen) {
+              if (DEBUG) log("write is over => IDLE!!!!");
+              state = STATE.IDLE;
+              stateChanged(state.value);
+            } else {
+              pos = 0;
+              writeByte = writeBuf[writePos];
+            }
           }
         }
       }
