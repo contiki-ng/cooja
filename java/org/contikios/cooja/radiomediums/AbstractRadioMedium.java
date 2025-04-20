@@ -201,20 +201,21 @@ public abstract class AbstractRadioMedium implements RadioMedium {
             return;
           }
 
-          var data = ((CustomDataRadio) radio).getLastCustomDataTransmitted();
+          var customRadio = (CustomDataRadio) radio;
+          var data = customRadio.getLastCustomDataTransmitted();
           if (data == null) {
             logger.error("No custom data objectTransmission to forward");
             return;
           }
 
           for (var dstRadio : connection.getAllDestinations()) {
-            if (!(dstRadio instanceof CustomDataRadio) ||
-                    !((CustomDataRadio) dstRadio).canReceiveFrom((CustomDataRadio) radio)) {
+            if (!(dstRadio instanceof CustomDataRadio customDstRadio) ||
+                    !customDstRadio.canReceiveFrom(customRadio)) {
               continue; // Radios communicate via radio packets.
             }
 
             if (connection.getDestinationDelay(dstRadio) == 0) {
-              ((CustomDataRadio) dstRadio).receiveCustomData(data);
+              customDstRadio.receiveCustomData(data);
             } else {
               /* EXPERIMENTAL: Simulating propagation delay */
               final var delayedRadio = (CustomDataRadio) dstRadio;
@@ -245,8 +246,8 @@ public abstract class AbstractRadioMedium implements RadioMedium {
           }
 
           for (var dstRadio : connection.getAllDestinations()) {
-            if (radio instanceof CustomDataRadio && dstRadio instanceof CustomDataRadio &&
-                    ((CustomDataRadio) dstRadio).canReceiveFrom((CustomDataRadio) radio)) {
+            if (radio instanceof CustomDataRadio customDataRadio && dstRadio instanceof CustomDataRadio customDstRadio &&
+                    customDstRadio.canReceiveFrom(customDataRadio)) {
               continue; // Radios instead communicate via custom data objects.
             }
             // Forward radio packet.

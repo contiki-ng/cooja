@@ -136,8 +136,8 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
 
     @Override
     public void receiveCustomData(Object data) {
-        if (data instanceof RadioByte) {
-            lastIncomingByte = (RadioByte) data;
+        if (data instanceof RadioByte radioByte) {
+            lastIncomingByte = radioByte;
             handleReceive(lastIncomingByte.getPacketData()[0]);
         }
     }

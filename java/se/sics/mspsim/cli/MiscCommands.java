@@ -394,8 +394,8 @@ public class MiscCommands implements CommandBundle {
           return 1;
         }
         if ("output".equals(inout)) {
-          if (chip instanceof RFSource) {
-            source = (RFSource) chip;
+          if (chip instanceof RFSource rfSource) {
+            source = rfSource;
             listener = data -> context.out.println(Utils.hex8(data));
             source.addRFListener(listener);
           } else {
@@ -490,10 +490,6 @@ public class MiscCommands implements CommandBundle {
   }
 
   private static ServiceComponent getServiceForName(ComponentRegistry registry, String name) {
-    Object o = registry.getComponent(name);
-    if (o instanceof ServiceComponent) {
-      return (ServiceComponent) o;
-    }
-    return null;
+    return registry.getComponent(name) instanceof ServiceComponent serviceComponent ? serviceComponent : null;
   }
 }

@@ -428,7 +428,7 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     numberMotesWasUpdated();
 
     // Automatically add/delete motes. This listener also observes mote log outputs.
-    simulation.getEventCentral().addLogOutputListener(newMotesListener = ev -> {
+    newMotesListener = ev -> {
       var mote = ev.getMote();
       var logEvent = new LogEvent(ev);
       // TODO: Optimize.
@@ -438,7 +438,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
           break;
         }
       }
-    });
+    };
+    simulation.getEventCentral().addLogOutputListener(newMotesListener);
     simulation.getMoteTriggers().addTrigger(this, (event, m) -> {
       if (event == EventTriggers.AddRemove.ADD) {
         addMote(m);
@@ -1972,7 +1973,8 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
             return logEventColor;
           }
           /* Ask log listener for event color to use */
-          return logEventColor = timeline.logEventFilterPlugin.getColorOfEntry(logEvent);
+          logEventColor = timeline.logEventFilterPlugin.getColorOfEntry(logEvent);
+          return logEventColor;
         }
       }
       return Color.green;

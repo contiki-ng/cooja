@@ -185,7 +185,13 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   }
 
   private static String trim(String text) {
-    return (text != null) && !(text = text.trim()).isEmpty() ? text : null;
+    if (text != null) {
+      text = text.trim();
+      if (!text.isEmpty()) {
+        return text;
+      }
+    }
+    return null;
   }
 
   @Override

@@ -367,8 +367,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   public boolean hasWatchPoint(int address) {
       Memory mem = memorySegments[address >> 8];
-      if (mem instanceof WatchedMemory) {
-          return ((WatchedMemory)mem).hasWatchPoint(address);
+      if (mem instanceof WatchedMemory watchedMemory) {
+          return watchedMemory.hasWatchPoint(address);
       }
       return false;
   }
@@ -376,8 +376,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
   public synchronized void addWatchPoint(int address, MemoryMonitor mon) {
       int seg = address >> 8;
       WatchedMemory wm;
-      if (memorySegments[seg] instanceof WatchedMemory) {
-          wm = (WatchedMemory) memorySegments[seg];
+      if (memorySegments[seg] instanceof WatchedMemory watchedMemory) {
+          wm = watchedMemory;
       } else {
           wm = new WatchedMemory(address & 0xfff00, memorySegments[seg]);
           memorySegments[seg] = wm;
@@ -814,30 +814,19 @@ public class MSP430Core extends Chip implements MSP430Constants {
   }
 
   void printWarning(EmulationLogger.WarningType type, int address) throws EmulationException {
-      String message;
-      switch(type) {
-      case MISALIGNED_READ:
-          message = "**** Illegal read - misaligned word from $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      case MISALIGNED_WRITE:
-          message = "**** Illegal write - misaligned word to $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      case ADDRESS_OUT_OF_BOUNDS_READ:
-          message = "**** Illegal read - out of bounds from $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      case ADDRESS_OUT_OF_BOUNDS_WRITE:
-          message = "**** Illegal write -  out of bounds from $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      default:
-          message = "**** " + type + " address $" + getAddressAsString(address) +
-          " at $" + getAddressAsString(reg[PC]);
-          break;
-      }
-      logger.logw(this, type, message);
+    String message = switch (type) {
+      case MISALIGNED_READ -> "**** Illegal read - misaligned word from $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      case MISALIGNED_WRITE -> "**** Illegal write - misaligned word to $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      case ADDRESS_OUT_OF_BOUNDS_READ -> "**** Illegal read - out of bounds from $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      case ADDRESS_OUT_OF_BOUNDS_WRITE -> "**** Illegal write -  out of bounds from $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      default -> "**** " + type + " address $" + getAddressAsString(address) +
+              " at $" + getAddressAsString(reg[PC]);
+    };
+    logger.logw(this, type, message);
   }
 
   public void generateTrace(PrintStream out) {
@@ -866,10 +855,12 @@ public class MSP430Core extends Chip implements MSP430Constants {
     if (interruptMax < MAX_INTERRUPT) {
       // Push PC and SR to stack
       // store on stack - always move 2 steps (W) even if B.
-      writeRegister(SP, sp = spBefore - 2);
+      sp = spBefore - 2;
+      writeRegister(SP, sp);
       currentSegment.write(sp, pc, AccessMode.WORD);
 
-      writeRegister(SP, sp = sp - 2);
+      sp -= 2;
+      writeRegister(SP, sp);
       currentSegment.write(sp, (sr & 0x0fff) | ((pc & 0xf0000) >> 4), AccessMode.WORD);
     }
     // Clear SR

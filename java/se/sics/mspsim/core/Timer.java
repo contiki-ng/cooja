@@ -709,7 +709,8 @@ public class Timer extends IOUnit {
       reg.captureOn = (data & 0x100) > 0;
       reg.sync = (data & 0x800) > 0;
       reg.inputSel = (data >> 12) & 3;
-      int src = reg.inputSrc = srcMap[4 + index * 4 + reg.inputSel];
+      int src = srcMap[4 + index * 4 + reg.inputSel];
+      reg.inputSrc = src;
       reg.capMode = (data >> 14) & 3;
 
       /* capture a port state? */
