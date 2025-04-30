@@ -130,8 +130,7 @@ public class DisAsm implements MSP430Constants {
     size += 2;
 
     switch (op) {
-    case 0: // MSP430X instructions
-    {
+      case 0 -> {  // MSP430X instructions
         // MSP430X - additional instructions
         String opstr = "";
         op = instruction & 0xf0f0;
@@ -140,69 +139,69 @@ public class DisAsm implements MSP430Constants {
         int nextData = memory[pc] + (memory[pc + 1] << 8);
         boolean rrword = true;
 
-        switch(op) {
-        case MOVA_IND:
-            opstr = "MOVA @R" + srcdata +  ",R" + dst;
+        switch (op) {
+          case MOVA_IND:
+            opstr = "MOVA @R" + srcdata + ",R" + dst;
             break;
-        case MOVA_IND_AUTOINC:
-            opstr = "MOVA @R" + srcdata +  "+,R" + dst;
+          case MOVA_IND_AUTOINC:
+            opstr = "MOVA @R" + srcdata + "+,R" + dst;
             break;
-        case MOVA_ABS2REG:
-            opstr = "MOVA &$" + Utils.hex20(((srcdata << 16) | nextData)) +  ",R" + dst;
+          case MOVA_ABS2REG:
+            opstr = "MOVA &$" + Utils.hex20(((srcdata << 16) | nextData)) + ",R" + dst;
             size += 2;
             break;
-        case MOVA_INDX2REG:
-            opstr = "MOVA $" + Utils.hex16(nextData) +  "(R" + srcdata + "),R" + dst;
+          case MOVA_INDX2REG:
+            opstr = "MOVA $" + Utils.hex16(nextData) + "(R" + srcdata + "),R" + dst;
             size += 2;
             break;
-        case MOVA_REG2ABS:
+          case MOVA_REG2ABS:
             opstr = "MOVA R" + srcdata + ",&$" + Utils.hex20(((dst << 16) | nextData));
             size += 2;
             break;
-        case MOVA_REG2INDX:
+          case MOVA_REG2INDX:
             opstr = "MOVA R" + srcdata + ",$" + Utils.hex16(nextData) + "(R" + dst + ")";
             size += 2;
             break;
-        case MOVA_IMM2REG:
-            opstr = "MOVA #$" + Utils.hex20(((srcdata << 16) | nextData)) +  ",R" + dst;
+          case MOVA_IMM2REG:
+            opstr = "MOVA #$" + Utils.hex20(((srcdata << 16) | nextData)) + ",R" + dst;
             size += 2;
             break;
-        case CMPA_IMM:
-            opstr = "CMPA #$" + Utils.hex20(((srcdata << 16) | nextData)) +  ",R" + dst;
+          case CMPA_IMM:
+            opstr = "CMPA #$" + Utils.hex20(((srcdata << 16) | nextData)) + ",R" + dst;
             size += 2;
             break;
-        case ADDA_IMM:
-            opstr = "ADDA #$" + Utils.hex20(((srcdata << 16) | nextData)) +  ",R" + dst;
+          case ADDA_IMM:
+            opstr = "ADDA #$" + Utils.hex20(((srcdata << 16) | nextData)) + ",R" + dst;
             size += 2;
             break;
-        case SUBA_IMM:
-            opstr = "SUBA #$" + Utils.hex20(((srcdata << 16) | nextData)) +  ",R" + dst;
+          case SUBA_IMM:
+            opstr = "SUBA #$" + Utils.hex20(((srcdata << 16) | nextData)) + ",R" + dst;
             size += 2;
             break;
-        case MOVA_REG:
-            opstr = "MOVA R" + srcdata +  ",R" + dst;
+          case MOVA_REG:
+            opstr = "MOVA R" + srcdata + ",R" + dst;
             break;
-        case CMPA_REG:
-            opstr = "CMPA R" + srcdata +  ",R" + dst;
+          case CMPA_REG:
+            opstr = "CMPA R" + srcdata + ",R" + dst;
             break;
-        case ADDA_REG:
-            opstr = "ADDA R" + srcdata +  ",R" + dst;
+          case ADDA_REG:
+            opstr = "ADDA R" + srcdata + ",R" + dst;
             break;
-        case SUBA_REG:
-            opstr = "SUBA R" + srcdata +  ",R" + dst;
+          case SUBA_REG:
+            opstr = "SUBA R" + srcdata + ",R" + dst;
             break;
-        case RRXX_ADDR:
+          case RRXX_ADDR:
             rrword = false;
-        case RRXX_WORD:
+          case RRXX_WORD:
             String rrwordStr = rrword ? ".W" : ".A";
             int count = ((instruction >> 10) & 0x03) + 1; // shift amount
-          opstr = switch (instruction & RRMASK) {
-            case RRCM -> "RRCM" + rrwordStr + " #" + count + ",R" + dst;
-            case RRAM -> "RRAM" + rrwordStr + " #" + count + ",R" + dst;
-            case RLAM -> "RLAM" + rrwordStr + " #" + count + ",R" + dst;
-            case RRUM -> "RRUM" + rrwordStr + " #" + count + ",R" + dst;
-            default -> opstr;
-          };
+            opstr = switch (instruction & RRMASK) {
+              case RRCM -> "RRCM" + rrwordStr + " #" + count + ",R" + dst;
+              case RRAM -> "RRAM" + rrwordStr + " #" + count + ",R" + dst;
+              case RLAM -> "RLAM" + rrwordStr + " #" + count + ",R" + dst;
+              case RRUM -> "RRUM" + rrwordStr + " #" + count + ",R" + dst;
+              default -> opstr;
+            };
             break;
         }
 
@@ -210,38 +209,30 @@ public class DisAsm implements MSP430Constants {
         output += opstr + " ";
         regs = "R" + srcdata + "=" + Utils.hex16(reg[srcdata]);
         regs += " SP=" + Utils.hex16(reg[SP]);
-    }
-    break;
-    case 1: // Single operand instructions
-    {
+      }
+      case 1 -> // Single operand instructions
+      {
         /* check CALLA first */
         int dst = instruction & 0x000f;
         int nextData = memory[pc] + (memory[pc + 1] << 8);
         String opstr = null;
-        switch(instruction & 0xfff0) {
-        case CALLA_REG:
-            opstr = "CALLA R" + dst;
-            break;
-        case CALLA_IND:
-            opstr = "CALLA @R" + dst;
-            break;
-        case CALLA_IND_AUTOINC:
-            opstr = "CALLA @R" + dst + "+";
-            break;
-        case CALLA_ABS:
+        switch (instruction & 0xfff0) {
+          case CALLA_REG -> opstr = "CALLA R" + dst;
+          case CALLA_IND -> opstr = "CALLA @R" + dst;
+          case CALLA_IND_AUTOINC -> opstr = "CALLA @R" + dst + "+";
+          case CALLA_ABS -> {
             opstr = "CALLA &" + Utils.hex20(((dst << 16) | nextData));
             size += 2;
-            break;
-        case CALLA_EDE:
+          }
+          case CALLA_EDE -> {
             opstr = "CALLA " + Utils.hex20(((dst << 16) | nextData)) + "(PC)";
             size += 2;
-            break;
-        case CALLA_IMM:
+          }
+          case CALLA_IMM -> {
             opstr = "CALLA #" + Utils.hex20(((dst << 16) | nextData));
             size += 2;
-            break;
-        default:
-          opstr = switch (instruction & 0xff00) {
+          }
+          default -> opstr = switch (instruction & 0xff00) {
             case PUSHM_A -> "PUSHM.A #" + (1 + ((instruction >> 4) & 0x0f)) + ", R" + (instruction & 0x0f);
             case PUSHM_W -> "PUSHM.W #" + (1 + ((instruction >> 4) & 0x0f)) + ", R" + (instruction & 0x0f);
             case POPM_A -> "POPM.A #" + (1 + ((instruction >> 4) & 0x0f)) + ", R" + (instruction & 0x0f);
@@ -250,288 +241,245 @@ public class DisAsm implements MSP430Constants {
           };
         }
         if (opstr != null) {
-            output += dumpMem(startPC, size, memory);
-            output += opstr + " ";
-            regs = "R" + dst + "=" + Utils.hex16(reg[dst]);
+          output += dumpMem(startPC, size, memory);
+          output += opstr + " ";
+          regs = "R" + dst + "=" + Utils.hex16(reg[dst]);
         } else {
-            // Register
-            int register = instruction & 0xf;
-            // Adress mode of destination...
-            int ad = (instruction >> 4) & 3;
-            // Pick up the destination address based on ad more and regs...
-            int dstAddress;
-            String adr = "";
-            switch(ad) {
+          // Register
+          int register = instruction & 0xf;
+          // Adress mode of destination...
+          int ad = (instruction >> 4) & 3;
+          // Pick up the destination address based on ad more and regs...
+          int dstAddress;
+          String adr = "";
+          switch (ad) {
             // Operand in register!
-            case AM_REG:
-                adr = "R" + register;
-                break;
-            case AM_INDEX:
-                dstAddress = memory[pc] + (memory[pc + 1] << 8);
-                adr = "R" + register + "(" + dstAddress + ")";
-                dstAddress = (register == CG1 ? 0 : reg[register]) + dstAddress;
-                pc += 2;
+            case AM_REG -> adr = "R" + register;
+            case AM_INDEX -> {
+              dstAddress = memory[pc] + (memory[pc + 1] << 8);
+              adr = "R" + register + "(" + dstAddress + ")";
+              dstAddress = (register == CG1 ? 0 : reg[register]) + dstAddress;
+              pc += 2;
+              size += 2;
+            }
+            // Indirect register
+            case AM_IND_REG -> {
+              adr = "@(R" + register + ")";
+              dstAddress = reg[register];
+            }
+            case AM_IND_AUTOINC -> {
+              if (register == 0) {
+                // Can this be PC and be incremented only one byte?
+                int tmp = memory[pc] + (memory[pc + 1] << 8);
+                MapEntry me;
+                if (map != null && (me = map.getEntry(tmp)) != null) {
+                  adr = me.getName(); // + " = $" + Utils.hex16(tmp);
+                } else {
+                  adr = "#$" + Utils.hex16(tmp);
+                }
                 size += 2;
-                break;
-                // Indirect register
-            case AM_IND_REG:
-                adr = "@(R" + register + ")";
+              } else {
+                adr = "@(R" + register + "+)";
                 dstAddress = reg[register];
-                break;
-            case AM_IND_AUTOINC:
-                if (register == 0) {
-                    // Can this be PC and be incremented only one byte?
-                    int tmp = memory[pc] + (memory[pc + 1] << 8);
-                    MapEntry me;
-                    if (map != null && (me = map.getEntry(tmp)) != null) {
-                        adr = me.getName(); // + " = $" + Utils.hex16(tmp);
-                    } else {
-                        adr = "#$" + Utils.hex16(tmp);
-                    }
-                    size += 2;
-                } else {
-                    adr = "@(R" + register + "+)";
-                    dstAddress = reg[register];
-                }
-                break;
+              }
             }
-
-            switch(instruction & 0xff80) {
-            case RRC:
-                opstr = "RRC" + (word ? ".W" : ".B");
-                break;
-            case SWPB:
-                opstr = "SWPB" + (word ? ".W" : ".B");
-                break;
-            case RRA:
-                opstr = "RRA" + (word ? ".W" : ".B");
-                break;
-            case SXT:
-                opstr = "SXT" + (word ? ".W" : ".B");
-                break;
-            case PUSH:
-                opstr = "PUSH" + (word ? ".W" : ".B");
-                break;
-            case CALL:
-                opstr = "CALL";
-                break;
-            case RETI:
-                opstr = "RETI";
-                break;
-            default:
-                if ((instruction & 0xf800) == 0x1800) {
-                    int zc = (instruction & EXTWORD_ZC) > 0 ? 1 : 0;
-                    int al = (instruction & EXTWORD_AL) > 0 ? 1 : 0;
-                    int rp = (instruction & EXTWORD_REPEAT) > 0 ? 1 : 0;
-                    int shi = (instruction & EXTWORD_SRC) >> 7;
-                    int dhi = (instruction & EXTWORD_DST);
-                    opstr = "ExtWord " + Utils.hex16(instruction) + ":ZC:" + zc + " #:" + rp +
-                    " A/L:" + al + " src:" + shi + " dst:" + dhi;
-                    dbg.setExtWord(true);
-                } else {
-                    System.out.println("Not implemented instruction: $" + Utils.hex16(instruction) +
-                            " at " + Utils.hex16(startPC));
-                    opstr = "<Unkown>";
-                }
-            }
-            output += dumpMem(startPC, size, memory);
-            output += opstr + " " + adr;
-            regs = "R" + register + "=" + Utils.hex16(reg[register]);
-        }
-      regs += " SP=" + Utils.hex16(reg[SP]);
-    }
-    break;
-    // Jump instructions
-    case 2:
-    case 3:
-      // 10 bits for address for these => 0x00fc => remove 2 bits
-      int jmpOffset = instruction & 0x3ff;
-      jmpOffset = (jmpOffset & 0x200) == 0 ?
-        2 * jmpOffset : -(2 * (0x200 - (jmpOffset & 0x1ff)));
-      String opstr = switch (instruction & 0xfc00) {
-        case JNE -> "JNE";
-        case JEQ -> "JEQ";
-        case JNC -> "JNC";
-        case JC -> "JC";
-        case JN -> "JN";
-        case JGE -> "JGE";
-        case JL -> "JL";
-        case JMP -> "JMP";
-        default -> {
-          System.out.println("Not implemented instruction: " + Utils.binary16(instruction));
-          yield "";
-        }
-      };
-      output += dumpMem(startPC, size, memory);
-      output += opstr + " $" + Utils.hex16(jmpOffset);
-      regs = "\tSR=" + dumpSR(reg[SR]);
-      break;
-    default:
-      // ---------------------------------------------------------------
-      // Double operand instructions!
-      // ---------------------------------------------------------------
-      int dstRegister = (instruction & 0xf);
-      int srcRegister = (instruction >> 8) & 0xf;
-      int as = (instruction >> 4) & 3;
-
-      // AD: 0 => register direct, 1 => register index, e.g. X(Rn)
-      boolean dstRegMode = ((instruction >> 7) & 1) == 0;
-      int dstAddress;
-      int srcAddress = 0;
-      int src = 0;
-      int dst = 0;
-      String srcadr = "";
-      String dstadr;
-      switch(as) {
-        // Operand in register!
-      case AM_REG:
-        if (srcRegister == CG2) {
-          srcadr = "#0";
-        } else if (srcRegister == CG1) {
-          srcadr = "#0";
-        } else {
-          srcadr = getRegName(srcRegister);
-        }
-        break;
-      case AM_INDEX:
-        // Indexed if reg != PC & CG1/CG2 - will PC be incremented?
-        if (srcRegister == CG1) {
-          srcAddress = memory[pc] + (memory[pc + 1] << 8);
-
-          MapEntry me;
-          if (map != null && (me = map.getEntry(srcAddress)) != null) {
-            srcadr = "&" + me.getName(); // + " = $" + Utils.hex16(srcAddress);
-          } else {
-            srcadr = "&$" + Utils.hex16(srcAddress);
           }
-          size += 2;
-        } else if (srcRegister == CG2) {
-          srcadr = "#1";
-        } else {
-          srcAddress = reg[srcRegister] + memory[pc] + (memory[pc + 1] << 8);
-          srcadr = "$" + Utils.hex16(memory[pc] + (memory[pc + 1] << 8)) + "(R" + srcRegister + ")";
-          size += 2;
+
+          switch (instruction & 0xff80) {
+            case RRC -> opstr = "RRC" + (word ? ".W" : ".B");
+            case SWPB -> opstr = "SWPB" + (word ? ".W" : ".B");
+            case RRA -> opstr = "RRA" + (word ? ".W" : ".B");
+            case SXT -> opstr = "SXT" + (word ? ".W" : ".B");
+            case PUSH -> opstr = "PUSH" + (word ? ".W" : ".B");
+            case CALL -> opstr = "CALL";
+            case RETI -> opstr = "RETI";
+            default -> {
+              if ((instruction & 0xf800) == 0x1800) {
+                int zc = (instruction & EXTWORD_ZC) > 0 ? 1 : 0;
+                int al = (instruction & EXTWORD_AL) > 0 ? 1 : 0;
+                int rp = (instruction & EXTWORD_REPEAT) > 0 ? 1 : 0;
+                int shi = (instruction & EXTWORD_SRC) >> 7;
+                int dhi = (instruction & EXTWORD_DST);
+                opstr = "ExtWord " + Utils.hex16(instruction) + ":ZC:" + zc + " #:" + rp +
+                        " A/L:" + al + " src:" + shi + " dst:" + dhi;
+                dbg.setExtWord(true);
+              } else {
+                System.out.println("Not implemented instruction: $" + Utils.hex16(instruction) +
+                        " at " + Utils.hex16(startPC));
+                opstr = "<Unkown>";
+              }
+            }
+          }
+          output += dumpMem(startPC, size, memory);
+          output += opstr + " " + adr;
+          regs = "R" + register + "=" + Utils.hex16(reg[register]);
         }
-        pc += 2;
-        break;
-        // Indirect register
-      case AM_IND_REG:
-        if (srcRegister == CG2) {
-          srcadr = "#2";
-        } else if (srcRegister == CG1) {
-          srcadr = "#4";
-        } else {
-          srcadr = "@" + getRegName(srcRegister);
+        regs += " SP=" + Utils.hex16(reg[SP]);
+      }
+
+      // Jump instructions
+      case 2, 3 -> {
+        // 10 bits for address for these => 0x00fc => remove 2 bits
+        int jmpOffset = instruction & 0x3ff;
+        jmpOffset = (jmpOffset & 0x200) == 0 ?
+                2 * jmpOffset : -(2 * (0x200 - (jmpOffset & 0x1ff)));
+        String opstr = switch (instruction & 0xfc00) {
+          case JNE -> "JNE";
+          case JEQ -> "JEQ";
+          case JNC -> "JNC";
+          case JC -> "JC";
+          case JN -> "JN";
+          case JGE -> "JGE";
+          case JL -> "JL";
+          case JMP -> "JMP";
+          default -> {
+            System.out.println("Not implemented instruction: " + Utils.binary16(instruction));
+            yield "";
+          }
+        };
+        output += dumpMem(startPC, size, memory);
+        output += opstr + " $" + Utils.hex16(jmpOffset);
+        regs = "\tSR=" + dumpSR(reg[SR]);
+      }
+      default -> {
+        // ---------------------------------------------------------------
+        // Double operand instructions!
+        // ---------------------------------------------------------------
+        int dstRegister = (instruction & 0xf);
+        int srcRegister = (instruction >> 8) & 0xf;
+        int as = (instruction >> 4) & 3;
+
+        // AD: 0 => register direct, 1 => register index, e.g. X(Rn)
+        boolean dstRegMode = ((instruction >> 7) & 1) == 0;
+        int dstAddress;
+        int srcAddress = 0;
+        int src = 0;
+        int dst = 0;
+        String srcadr = "";
+        String dstadr;
+        switch (as) {
+          // Operand in register!
+          case AM_REG -> {
+            if (srcRegister == CG2) {
+              srcadr = "#0";
+            } else if (srcRegister == CG1) {
+              srcadr = "#0";
+            } else {
+              srcadr = getRegName(srcRegister);
+            }
+          }
+          case AM_INDEX -> {
+            // Indexed if reg != PC & CG1/CG2 - will PC be incremented?
+            if (srcRegister == CG1) {
+              srcAddress = memory[pc] + (memory[pc + 1] << 8);
+
+              MapEntry me;
+              if (map != null && (me = map.getEntry(srcAddress)) != null) {
+                srcadr = "&" + me.getName(); // + " = $" + Utils.hex16(srcAddress);
+              } else {
+                srcadr = "&$" + Utils.hex16(srcAddress);
+              }
+              size += 2;
+            } else if (srcRegister == CG2) {
+              srcadr = "#1";
+            } else {
+              srcAddress = reg[srcRegister] + memory[pc] + (memory[pc + 1] << 8);
+              srcadr = "$" + Utils.hex16(memory[pc] + (memory[pc + 1] << 8)) + "(R" + srcRegister + ")";
+              size += 2;
+            }
+            pc += 2;
+          }
+          // Indirect register
+          case AM_IND_REG -> {
+            if (srcRegister == CG2) {
+              srcadr = "#2";
+            } else if (srcRegister == CG1) {
+              srcadr = "#4";
+            } else {
+              srcadr = "@" + getRegName(srcRegister);
+            }
+          }
+          case AM_IND_AUTOINC -> {
+            if (srcRegister == CG2) {
+              srcadr = "#$ffff";
+            } else if (srcRegister == CG1) {
+              srcadr = "#8";
+            } else if (srcRegister == PC) {
+              srcadr = "#$" + Utils.hex16(memory[pc] + (memory[pc + 1] << 8));
+              pc += 2;
+              size += 2;
+            } else {
+              srcadr = "@" + getRegName(srcRegister) + "+";
+              srcAddress = reg[srcRegister];
+            }
+          }
         }
-        break;
-      case AM_IND_AUTOINC:
-        if (srcRegister == CG2) {
-          srcadr = "#$ffff";
-        } else if (srcRegister == CG1) {
-          srcadr = "#8";
-        } else if (srcRegister == PC) {
-          srcadr = "#$" + Utils.hex16(memory[pc] + (memory[pc + 1] << 8));
+
+        if (dstRegMode) {
+          dstadr = getRegName(dstRegister);
+        } else {
+          dstAddress = memory[pc] + (memory[pc + 1] << 8);
+          MapEntry me = map != null ? map.getEntry(dstAddress) : null;
+          if (dstRegister == 2) {
+            if (me != null) {
+              dstadr = "&" + me.getName(); // + " = $" + Utils.hex16(srcAddress);
+            } else {
+              dstadr = "&$" + Utils.hex16(dstAddress);
+            }
+          } else {
+            if (me != null) {
+              dstadr = me.getName() + "(R" + dstRegister + ")";
+            } else {
+              dstadr = "$" + Utils.hex16(dstAddress) + "(R" + dstRegister + ")";
+            }
+          }
           pc += 2;
           size += 2;
-        } else {
-          srcadr = "@" + getRegName(srcRegister) + "+";
-          srcAddress = reg[srcRegister];
         }
-        break;
-      }
 
-      if (dstRegMode) {
-        dstadr = getRegName(dstRegister);
-      } else {
-        dstAddress = memory[pc] + (memory[pc + 1] << 8);
-        MapEntry me = map != null ? map.getEntry(dstAddress) : null;
-        if (dstRegister == 2) {
-          if (me != null) {
-            dstadr = "&" + me.getName(); // + " = $" + Utils.hex16(srcAddress);
-          } else {
-            dstadr = "&$" + Utils.hex16(dstAddress);
+        // If byte mode the source will not contain the full word...
+        if (!word) {
+          src = src & 0xff;
+          dst = dst & 0xff;
+        }
+        String opstr = switch (op) {
+          case MOV -> instruction == 0x3041 ? "RET /emulated: MOV.W " : "MOV" + (word ? ".W" : ".B");
+          case ADD -> "ADD" + (word ? ".W" : ".B");
+          case ADDC -> "ADDC" + (word ? ".W" : ".B");
+          case SUBC -> "SUBC" + (word ? ".W" : ".B");
+          case SUB -> "SUB" + (word ? ".W" : ".B");
+          case CMP -> "CMP" + (word ? ".W" : ".B");
+          case DADD -> "DADD" + (word ? ".W" : ".B");
+          case BIT -> "BIT" + (word ? ".W" : ".B");
+          case BIC -> "BIC" + (word ? ".W" : ".B");
+          case BIS -> "BIS" + (word ? ".W" : ".B");
+          case XOR -> "XOR" + (word ? ".W" : ".B");
+          case AND -> "AND" + (word ? ".W" : ".B");
+          default -> {
+            if (startPC > 0x200)
+              System.out.println(output + " DoubleOperand not implemented: " +
+                      op + " instruction: " +
+                      Utils.binary16(instruction) + " = " +
+                      Utils.hex16(instruction));
+            yield "";
           }
-        } else {
-          if (me != null) {
-            dstadr = me.getName() + "(R" + dstRegister + ")";
-          } else {
-            dstadr = "$" + Utils.hex16(dstAddress) + "(R" + dstRegister + ")";
-          }
-        }
-        pc += 2;
-        size += 2;
-      }
+        };
 
-      // If byte mode the source will not contain the full word...
-      if (!word) {
-        src = src & 0xff;
-        dst = dst & 0xff;
-      }
-      opstr = "";
-      switch (op) {
-      case MOV: // MOV
-        if (instruction == 0x3041) {
-          opstr = "RET /emulated: MOV.W ";
-        } else {
-          opstr = "MOV" + (word ? ".W" : ".B");
-        }
-        break;
-      case ADD: // ADD
-        opstr = "ADD" + (word ? ".W" : ".B");
-        break;
-      case ADDC: // ADDC
-        opstr = "ADDC" + (word ? ".W" : ".B");
-        break;
-      case SUBC: // SUBC
-        opstr = "SUBC" + (word ? ".W" : ".B");
-        break;
-      case SUB: // SUB
-        opstr = "SUB" + (word ? ".W" : ".B");
-        break;
-      case CMP: // CMP
-        opstr = "CMP" + (word ? ".W" : ".B");
-        break;
-      case DADD: // DADD
-        opstr = "DADD" + (word ? ".W" : ".B");
-        break;
-      case BIT: // BIT
-        opstr = "BIT" + (word ? ".W" : ".B");
-        break;
-      case BIC: // BIC
-        opstr = "BIC" + (word ? ".W" : ".B");
-        break;
-      case BIS: // BIS
-        opstr = "BIS" + (word ? ".W" : ".B");
-        break;
-      case XOR: // XOR
-        opstr = "XOR" + (word ? ".W" : ".B");
-        break;
-      case AND: // AND
-        opstr = "AND" + (word ? ".W" : ".B");
-        break;
-      default:
-        if (startPC > 0x200)
-          System.out.println(output + " DoubleOperand not implemented: " +
-              op + " instruction: " +
-              Utils.binary16(instruction) + " = " +
-              Utils.hex16(instruction));
-      }
+        output += dumpMem(startPC, size, memory);
+        output += opstr + " " + srcadr + ", " + dstadr;
 
-
-      output += dumpMem(startPC, size, memory);
-      output += opstr + " " + srcadr + ", " + dstadr;
-
-      regs = "R" + dstRegister + "=" + Utils.hex16(reg[dstRegister]) +
-        " R" + srcRegister + "=" + Utils.hex16(reg[srcRegister]);
-      regs += " SR=" + dumpSR(reg[SR]);
-      regs += " SP=" + Utils.hex16(reg[SP]);
-      regs += "; as = " + as;
-      srcAddress &= 0xffff;
-      if (srcAddress != -1) {
+        regs = "R" + dstRegister + "=" + Utils.hex16(reg[dstRegister]) +
+                " R" + srcRegister + "=" + Utils.hex16(reg[srcRegister]);
+        regs += " SR=" + dumpSR(reg[SR]);
+        regs += " SP=" + Utils.hex16(reg[SP]);
+        regs += "; as = " + as;
         srcAddress &= 0xffff;
-        regs += " sMem:" + Utils.hex16(memory[srcAddress] +
-                                       (memory[(srcAddress + 1) % 0xffff]
-                                        << 8));
+        if (srcAddress != -1) {
+          srcAddress &= 0xffff;
+          regs += " sMem:" + Utils.hex16(memory[srcAddress] +
+                  (memory[(srcAddress + 1) % 0xffff]
+                          << 8));
+        }
       }
     }
 

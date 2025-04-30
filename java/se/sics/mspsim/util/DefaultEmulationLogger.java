@@ -36,25 +36,26 @@ public class DefaultEmulationLogger implements EmulationLogger {
   @Override
   public void logw(Loggable source, WarningType type, String message)
           throws EmulationException {
-      switch (getMode(type)) {
-      case SILENT:
-          break;
-      case PRINT:
-          out.println(source.getID() + ": " + message);
-          cpu.generateTrace(out);
-          break;
-      case EXCEPTION:
-          out.println(source.getID() + ": " + message);
-          cpu.generateTrace(out);
-          throw new EmulationException(message);
+    switch (getMode(type)) {
+      case SILENT -> {
       }
+      case PRINT -> {
+        out.println(source.getID() + ": " + message);
+        cpu.generateTrace(out);
+      }
+      case EXCEPTION -> {
+        out.println(source.getID() + ": " + message);
+        cpu.generateTrace(out);
+        throw new EmulationException(message);
+      }
+    }
 
-      LogListener[] listeners = this.logListeners;
-      if (listeners != null) {
-          for (LogListener l : listeners) {
-              l.logw(source, type, message);
-          }
+    LogListener[] listeners = this.logListeners;
+    if (listeners != null) {
+      for (LogListener l : listeners) {
+        l.logw(source, type, message);
       }
+    }
   }
 
   @Override
