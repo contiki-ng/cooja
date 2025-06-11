@@ -565,123 +565,112 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
         /* write to FSM state register */
         memory[REG_FSMSTAT0] = (memory[REG_FSMSTAT0] & 0x3f);//state.getFSMState();
 
-        switch(stateMachine) {
-
-        case VREG_OFF:
-            if (DEBUG) log("VREG Off.");
-            flushRX();
-            flushTX();
-            status &= ~(STATUS_RSSI_VALID | STATUS_XOSC16M_STABLE);
-            memory[REG_RSSISTAT] = 0;
-            crcOk = false;
-            reset();
-            setMode(MODE_POWER_OFF);
-            updateCCA();
-            break;
-
-        case POWER_DOWN:
-            rxFIFO.reset();
-            status &= ~(STATUS_RSSI_VALID | STATUS_XOSC16M_STABLE);
-            memory[REG_RSSISTAT] = 0;
-            crcOk = false;
-            reset();
-            setMode(MODE_POWER_OFF);
-            updateCCA();
-            break;
-
-        case RX_CALIBRATE:
-            /* should be 12 according to specification */
-            setSymbolEvent(12);
-            setMode(MODE_RX_ON);
-            break;
-        case RX_SFD_SEARCH:
-            zeroSymbols = 0;
-            /* eight symbols after first SFD search RSSI will be valid */
-            if ((status & STATUS_RSSI_VALID) == 0) {
-                setSymbolEvent(8);
-            }
-            //      status |= STATUS_RSSI_VALID;
-            updateCCA();
-            setMode(MODE_RX_ON);
-            break;
-
-        case TX_CALIBRATE:
-            /* 12 symbols calibration, and one byte's wait since we deliver immediately
-             * to listener when after calibration?
-             */
-            setSymbolEvent(12 + 2);
-            setMode(MODE_TXRX_ON);
-            break;
-
-        case TX_PREAMBLE:
-            shrPos = 0;
-            SHR[0] = 0;
-            SHR[1] = 0;
-            SHR[2] = 0;
-            SHR[3] = 0;
-            SHR[4] = 0x7A;
-            shrNext();
-            break;
-
-        case TX_FRAME:
-            txfifoPos = 0;
-            // Reset CRC ok flag to disable software acknowledgments until next received packet
-            crcOk = false;
-            txNext();
-            break;
-
-        case RX_WAIT:
-            setSymbolEvent(8);
-            setMode(MODE_RX_ON);
-            break;
-
-        case IDLE:
-            status &= ~STATUS_RSSI_VALID;
-            memory[REG_RSSISTAT] = 0;
-            setMode(MODE_TXRX_OFF);
-            updateCCA();
-            break;
-
-        case TX_ACK_CALIBRATE:
-            /* TX active during ACK + NOTE: we ignore the SFD when receiving full packets, so
-             * we need to add another extra 2 symbols here to get a correct timing */
-            status |= STATUS_TX_ACTIVE;
-            memory[REG_FSMSTAT1] |= (1 << 1);
-            setSymbolEvent(12 + 2 + 2);
-            setMode(MODE_TXRX_ON);
-            break;
-        case TX_ACK_PREAMBLE:
-            /* same as normal preamble ?? */
-            shrPos = 0;
-            SHR[0] = 0;
-            SHR[1] = 0;
-            SHR[2] = 0;
-            SHR[3] = 0;
-            SHR[4] = 0x7A;
-            shrNext();
-            break;
-        case TX_ACK:
-            ackPos = 0;
-            // Reset CRC ok flag to disable software acknowledgments until next received packet
-            crcOk = false;
-            ackNext();
-            break;
-        case RX_FRAME:
-            /* mark position of frame start - for rejecting when address is wrong */
-            rxFIFO.mark();
-            rxread = 0;
-            frameRejected = false;
-            shouldAck = false;
-            crcOk = false;
-            break;
-
-        case RX_OVERFLOW:
-            break;
-
-        case TX_UNDERFLOW:
-            // TODO handle TX underflow
-            break;
+      switch (stateMachine) {
+        case VREG_OFF -> {
+          if (DEBUG) log("VREG Off.");
+          flushRX();
+          flushTX();
+          status &= ~(STATUS_RSSI_VALID | STATUS_XOSC16M_STABLE);
+          memory[REG_RSSISTAT] = 0;
+          crcOk = false;
+          reset();
+          setMode(MODE_POWER_OFF);
+          updateCCA();
         }
+        case POWER_DOWN -> {
+          rxFIFO.reset();
+          status &= ~(STATUS_RSSI_VALID | STATUS_XOSC16M_STABLE);
+          memory[REG_RSSISTAT] = 0;
+          crcOk = false;
+          reset();
+          setMode(MODE_POWER_OFF);
+          updateCCA();
+        }
+        case RX_CALIBRATE -> {
+          /* should be 12 according to specification */
+          setSymbolEvent(12);
+          setMode(MODE_RX_ON);
+        }
+        case RX_SFD_SEARCH -> {
+          zeroSymbols = 0;
+          /* eight symbols after first SFD search RSSI will be valid */
+          if ((status & STATUS_RSSI_VALID) == 0) {
+            setSymbolEvent(8);
+          }
+          //      status |= STATUS_RSSI_VALID;
+          updateCCA();
+          setMode(MODE_RX_ON);
+        }
+        case TX_CALIBRATE -> {
+          /* 12 symbols calibration, and one byte's wait since we deliver immediately
+           * to listener when after calibration?
+           */
+          setSymbolEvent(12 + 2);
+          setMode(MODE_TXRX_ON);
+        }
+        case TX_PREAMBLE -> {
+          shrPos = 0;
+          SHR[0] = 0;
+          SHR[1] = 0;
+          SHR[2] = 0;
+          SHR[3] = 0;
+          SHR[4] = 0x7A;
+          shrNext();
+        }
+        case TX_FRAME -> {
+          txfifoPos = 0;
+          // Reset CRC ok flag to disable software acknowledgments until next received packet
+          crcOk = false;
+          txNext();
+        }
+        case RX_WAIT -> {
+          setSymbolEvent(8);
+          setMode(MODE_RX_ON);
+        }
+        case IDLE -> {
+          status &= ~STATUS_RSSI_VALID;
+          memory[REG_RSSISTAT] = 0;
+          setMode(MODE_TXRX_OFF);
+          updateCCA();
+        }
+        case TX_ACK_CALIBRATE -> {
+          /* TX active during ACK + NOTE: we ignore the SFD when receiving full packets, so
+           * we need to add another extra 2 symbols here to get a correct timing */
+          status |= STATUS_TX_ACTIVE;
+          memory[REG_FSMSTAT1] |= (1 << 1);
+          setSymbolEvent(12 + 2 + 2);
+          setMode(MODE_TXRX_ON);
+        }
+        case TX_ACK_PREAMBLE -> {
+          /* same as normal preamble ?? */
+          shrPos = 0;
+          SHR[0] = 0;
+          SHR[1] = 0;
+          SHR[2] = 0;
+          SHR[3] = 0;
+          SHR[4] = 0x7A;
+          shrNext();
+        }
+        case TX_ACK -> {
+          ackPos = 0;
+          // Reset CRC ok flag to disable software acknowledgments until next received packet
+          crcOk = false;
+          ackNext();
+        }
+        case RX_FRAME -> {
+          /* mark position of frame start - for rejecting when address is wrong */
+          rxFIFO.mark();
+          rxread = 0;
+          frameRejected = false;
+          shouldAck = false;
+          crcOk = false;
+        }
+        case RX_OVERFLOW -> {
+        }
+        case TX_UNDERFLOW -> {
+        }
+        // TODO handle TX underflow
+      }
 
         /* Notify state listener */
         stateChanged(stateMachine.state);
@@ -888,58 +877,55 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
 //        System.out.printf("CC2520: writing to %x => %x\n", address, data);
         int oldValue = memory[address];
         memory[address] = data;
-        switch(address) {
-        case REG_FRMFILT0:
-            frameFilter = (data & FRAME_FILTER) != 0;
-            break;
-        case REG_FRMCTRL0:
-            autoCRC = (data & AUTOCRC) != 0;
-            autoAck = (data & AUTOACK) != 0;
-            break;
-        case REG_TXPOWER:
-            if (!isDefinedTxPower(data)) {
-                logw(WarningType.EXECUTION, "*** Warning - writing an undefined TXPOWER value (0x"
-                        + Utils.hex8(data) + ") to CC2520!!!");
-            }
-            break;
-        case REG_FIFOPCTRL:
-            fifopThr = data & FIFOP_THR;
-            if (DEBUG) log("FIFOPCTRL: 0x" + Utils.hex16(oldValue) + " => 0x" + Utils.hex16(data));
-            break;
-        case REG_GPIOPOLARITY:
-            if (DEBUG) log("GIOPOLARITY: 0x" + Utils.hex16(oldValue) + " => 0x" + Utils.hex16(data));
-            if (oldValue != data) {
-                updateGPIOConfig();
-            }
-            break;
-            //        case REG_IOCFG1:
-            //            if (DEBUG)
-            //                log("IOCFG1: SFDMUX "
-            //                        + ((memory[address] & SFDMUX) >> SFDMUX)
-            //                        + " CCAMUX: " + (memory[address] & CCAMUX));
-            //            updateCCA();
-            //            break;
-        case REG_GPIOCTRL0:
-                        /*
-                         * XXX TODO Implement support for GPIO control. Below example code
-                         * demonstrates how GPIO0 is set to fifop functionality (0x28).
-                         */
-                        if (data == 0x28) {
-                                fifopGPIO = gpio[0];
-                        }
-                break;
-        case REG_FSCTRL: {
-            ChannelListener listener = this.channelListener;
-            if (listener != null) {
-                int oldChannel = activeChannel;
-                updateActiveFrequency();
-                if (oldChannel != activeChannel) {
-                    listener.channelChanged(activeChannel);
-                }
-            }
-            break;
+      switch (address) {
+        case REG_FRMFILT0 -> frameFilter = (data & FRAME_FILTER) != 0;
+        case REG_FRMCTRL0 -> {
+          autoCRC = (data & AUTOCRC) != 0;
+          autoAck = (data & AUTOACK) != 0;
         }
+        case REG_TXPOWER -> {
+          if (!isDefinedTxPower(data)) {
+            logw(WarningType.EXECUTION, "*** Warning - writing an undefined TXPOWER value (0x"
+                    + Utils.hex8(data) + ") to CC2520!!!");
+          }
         }
+        case REG_FIFOPCTRL -> {
+          fifopThr = data & FIFOP_THR;
+          if (DEBUG) log("FIFOPCTRL: 0x" + Utils.hex16(oldValue) + " => 0x" + Utils.hex16(data));
+        }
+        case REG_GPIOPOLARITY -> {
+          if (DEBUG) log("GIOPOLARITY: 0x" + Utils.hex16(oldValue) + " => 0x" + Utils.hex16(data));
+          if (oldValue != data) {
+            updateGPIOConfig();
+          }
+        }
+        //        case REG_IOCFG1:
+        //            if (DEBUG)
+        //                log("IOCFG1: SFDMUX "
+        //                        + ((memory[address] & SFDMUX) >> SFDMUX)
+        //                        + " CCAMUX: " + (memory[address] & CCAMUX));
+        //            updateCCA();
+        //            break;
+        case REG_GPIOCTRL0 -> {
+          /*
+           * XXX TODO Implement support for GPIO control. Below example code
+           * demonstrates how GPIO0 is set to fifop functionality (0x28).
+           */
+          if (data == 0x28) {
+            fifopGPIO = gpio[0];
+          }
+        }
+        case REG_FSCTRL -> {
+          ChannelListener listener = this.channelListener;
+          if (listener != null) {
+            int oldChannel = activeChannel;
+            updateActiveFrequency();
+            if (oldChannel != activeChannel) {
+              listener.channelChanged(activeChannel);
+            }
+          }
+        }
+      }
         configurationChanged(address, oldValue, data);
     }
 

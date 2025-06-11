@@ -601,27 +601,19 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
 
     @Override
     public Object stringToValue(String text) {
-      Object ret;
-      switch (mFormat) {
-        case CHAR:
-          ret = text.charAt(0);
-          break;
-        case DEC:
-        case HEX:
+      return switch (mFormat) {
+        case CHAR -> text.charAt(0);
+        case DEC, HEX -> {
           try {
-            ret = switch (mType) {
+            yield switch (mType) {
               case BYTE, SHORT -> Integer.decode(text);
               case INT, LONG, ADDR -> Long.decode(text);
             };
+          } catch (NumberFormatException ex) {
+            yield 0;
           }
-          catch (NumberFormatException ex) {
-            ret = 0;
-          }
-          break;
-        default:
-          ret = null;
-      }
-      return ret;
+        }
+      };
     }
 
     @Override
