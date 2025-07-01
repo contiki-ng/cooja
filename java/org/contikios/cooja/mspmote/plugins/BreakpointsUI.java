@@ -292,7 +292,7 @@ class BreakpointsUI extends JPanel {
         return breakpoint.stopsSimulation();
       }
 
-      return Boolean.FALSE;
+      return false;
     }
     @Override
     public boolean isCellEditable(int row, int col){

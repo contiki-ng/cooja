@@ -127,7 +127,7 @@ public class ChannelModel {
 
     public static Object getDefaultValue(Parameter p) {
       return switch (p) {
-        case apply_random -> Boolean.FALSE;
+        case apply_random -> false;
         case snr_threshold -> 6.0;
         case bg_noise_mean -> AbstractRadioMedium.SS_NOTHING;
         case bg_noise_var -> 1.0;
@@ -135,13 +135,13 @@ public class ChannelModel {
         case system_gain_var -> 4.0;
         case frequency -> 2400.0; // MHz.
         case tx_power -> 1.5;
-        case tx_with_gain -> Boolean.TRUE;
+        case tx_with_gain -> true;
         case rx_sensitivity -> -100.0;
-        case rx_with_gain, rt_disallow_direct_path, rt_ignore_non_direct -> Boolean.FALSE;
-        case rt_fspl_on_total_length -> Boolean.TRUE;
+        case rx_with_gain, rt_disallow_direct_path, rt_ignore_non_direct -> false;
+        case rt_fspl_on_total_length -> true;
         case rt_max_rays, rt_max_refractions, rt_max_reflections -> 1;
         case rt_max_diffractions -> 0;
-        case rt_use_scattering -> Boolean.FALSE;
+        case rt_use_scattering -> false;
         case rt_refrac_coefficient -> -3.0;
         case rt_reflec_coefficient -> -5.0;
         case rt_diffr_coefficient -> -10.0;

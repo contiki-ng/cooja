@@ -958,7 +958,7 @@ public class RadioLogger extends VisPlugin {
         String analyzerName = element.getAttributeValue("name");
         final Action action;
         if (analyzerName != null && ((action = analyzerMap.get(analyzerName)) != null)) {
-          action.putValue(Action.SELECTED_KEY, Boolean.TRUE);
+          action.putValue(Action.SELECTED_KEY, true);
           action.actionPerformed(null);
         }
       } else if (name.equals("pcap_file")) {
@@ -1034,7 +1034,7 @@ public class RadioLogger extends VisPlugin {
         }
       }
     };
-    action.putValue(Action.SELECTED_KEY, selected ? Boolean.TRUE : Boolean.FALSE);
+    action.putValue(Action.SELECTED_KEY, selected);
     analyzerMap.put(actionName, action);
     return action;
   }
