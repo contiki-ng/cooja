@@ -65,7 +65,13 @@ public abstract class JFreeWindowDataHandler extends AbstractWindowDataHandler {
   public abstract int getDataSeriesCount();
   public abstract Series getDataSeries(int index);
 
-  /* (non-Javadoc)
+  /**
+   * Sets a property for a specific data series at the given index.
+   * Currently supports setting "label" property to assign a custom label to a data series.
+   *
+   * @param index The index of the data series
+   * @param param The property name to set ("label" is currently supported)
+   * @param args Array of arguments for the property, where args[0] contains the property value
    * @see se.sics.mspsim.cli.AbstractWindowDataHandler#setProperty(int, java.lang.String, java.lang.String[])
    */
   @Override

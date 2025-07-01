@@ -84,7 +84,7 @@ class SafeRandom extends Random {
     super.setSeed(seed);
   }
   
-  /*
+  /**
    * This function is called by all functions returning random numbers
    * @see java.util.Random#next(int)
    */
