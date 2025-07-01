@@ -120,7 +120,6 @@ testing {
     }
     test(JvmTestSuite) {
       useJUnitJupiter()
-      testType = TestSuiteType.INTEGRATION_TEST
     }
   }
 }
