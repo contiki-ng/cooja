@@ -160,66 +160,53 @@ public class ConsoleUI extends JComponent {
       @Override
       public void keyTyped(KeyEvent e) {
         switch (e.getKeyChar()) {
-        case 1: /* Ctrl-A */
-          cursorX = minCursorX;
-          editPos = 0;
-          break;
-        case 2: /* Ctrl-B */
-          if (editPos > 0) {
-            editPos--;
-            cursorX--;
+          case 1 -> {
+            cursorX = minCursorX;
+            editPos = 0;
           }
-          break;
-        case 4: /* Ctrl-D */
-          removeChar(false);
-          break;
-        case 5: /* Ctrl-E */
-          cursorX = len + minCursorX;
-          editPos = len;
-          break;
-        case 6: /* Ctrl-F */
-          if (editPos < len) {
-            cursorX++;
-            editPos++;
+          case 2 -> {
+            if (editPos > 0) {
+              editPos--;
+              cursorX--;
+            }
           }
-          break;
-        case 11: /* Ctrl-K */
-          if (editPos < len) {
-            // TODO copy to clipboard
-            len = editPos;
+          case 4 -> /* Ctrl-D */
+                  removeChar(false);
+          case 5 -> {
+            cursorX = len + minCursorX;
+            editPos = len;
+          }
+          case 6 -> {
+            if (editPos < len) {
+              cursorX++;
+              editPos++;
+            }
+          }
+          case 11 -> {
+            if (editPos < len) {
+              // TODO copy to clipboard
+              len = editPos;
+              layoutRows();
+              repaint();
+            }
+          }
+          case 12 -> {
+            cursorY = 0;
+            lastVisible = 0;
+            lines[0] = null;
             layoutRows();
             repaint();
           }
-          break;
-        case 12: /* Ctrl-L */
-          cursorY = 0;
-          lastVisible = 0;
-          lines[0] = null;
-          layoutRows();
-          repaint();
-          break;
-        case 14:
-          setHistory(-1);
-          break;
-        case 16:
-          setHistory(1);
-          break;
-        case 3: /* Ctrl-C */
-          copySelection();
-          break;
-        case 22: /* Ctrl-V */
-        case 25: /* Ctrl-Y */
-          paste(getClipboardContents());
-          break;
-        case KeyEvent.VK_ENTER:
-          handleChar('\n');
-          break;
-        case KeyEvent.VK_BACK_SPACE:
-        case KeyEvent.VK_DELETE:
-          removeChar(e.getKeyChar() == KeyEvent.VK_BACK_SPACE);
-          break;
-        default:
-          handleChar(e.getKeyChar());
+          case 14 -> setHistory(-1);
+          case 16 -> setHistory(1);
+          case 3 -> /* Ctrl-C */
+                  copySelection();
+          /* Ctrl-V */
+          case 22, 25 -> /* Ctrl-Y */
+                  paste(getClipboardContents());
+          case KeyEvent.VK_ENTER -> handleChar('\n');
+          case KeyEvent.VK_BACK_SPACE, KeyEvent.VK_DELETE -> removeChar(e.getKeyChar() == KeyEvent.VK_BACK_SPACE);
+          default -> handleChar(e.getKeyChar());
         }
       }
 
@@ -230,32 +217,28 @@ public class ConsoleUI extends JComponent {
       @Override
       public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
-        case KeyEvent.VK_RIGHT:
-          if (editPos < len) {
-            cursorX++;
-            editPos++;
+          case KeyEvent.VK_RIGHT -> {
+            if (editPos < len) {
+              cursorX++;
+              editPos++;
+            }
           }
-          break;
-        case KeyEvent.VK_LEFT:
-          if (editPos > 0) {
-            editPos--;
-            cursorX--;
+          case KeyEvent.VK_LEFT -> {
+            if (editPos > 0) {
+              editPos--;
+              cursorX--;
+            }
           }
-          break;
-        case KeyEvent.VK_HOME:
-          cursorX = minCursorX;
-          editPos = 0;
-          break;
-        case KeyEvent.VK_END:
-          cursorX = len + minCursorX;
-          editPos = len;
-          break;
-        case KeyEvent.VK_UP:
-          setHistory(1);
-          break;
-        case KeyEvent.VK_DOWN:
-          setHistory(-1);
-          break;
+          case KeyEvent.VK_HOME -> {
+            cursorX = minCursorX;
+            editPos = 0;
+          }
+          case KeyEvent.VK_END -> {
+            cursorX = len + minCursorX;
+            editPos = len;
+          }
+          case KeyEvent.VK_UP -> setHistory(1);
+          case KeyEvent.VK_DOWN -> setHistory(-1);
         }
         layoutRows();
         repaint();
