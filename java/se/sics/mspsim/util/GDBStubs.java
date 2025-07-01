@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.MSP430Core;
 import se.sics.mspsim.core.Memory;
@@ -54,9 +53,9 @@ public final class GDBStubs implements Runnable {
 
     private final static String OK = "OK";
 
-    ServerSocket serverSocket;
-    OutputStream output;
-    final MSP430Core cpu;
+    private ServerSocket serverSocket;
+    private OutputStream output;
+    private final MSP430Core cpu;
 
     public GDBStubs(MSP430Core cpu, int port) {
         this.cpu = cpu;
@@ -69,8 +68,8 @@ public final class GDBStubs implements Runnable {
         }
     }
 
-    final int[] buffer = new int[256];
-    int len;
+    private final int[] buffer = new int[256];
+    private int len;
 
     @Override
     public void run() {

@@ -133,59 +133,31 @@ public class JSONArray extends ArrayList<Object> implements Jsonable {
     }
 
     public int getAsInt(int index, int defaultValue) {
-        Object v = get(index);
-        if (v instanceof Number) {
-            return ((Number)v).intValue();
-        }
-        return defaultValue;
+      return get(index) instanceof Number number ? number.intValue() : defaultValue;
     }
 
     public long getAsLong(int index, long defaultValue) {
-        Object v = get(index);
-        if (v instanceof Number) {
-            return ((Number)v).longValue();
-        }
-        return defaultValue;
+      return get(index) instanceof Number number ? number.longValue() : defaultValue;
     }
 
     public float getAsFloat(int index, float defaultValue) {
-        Object v = get(index);
-        if (v instanceof Number) {
-            return ((Number)v).floatValue();
-        }
-        return defaultValue;
+      return get(index) instanceof Number number ? number.floatValue() : defaultValue;
     }
 
     public double getAsDouble(int index, double defaultValue) {
-        Object v = get(index);
-        if (v instanceof Number) {
-            return ((Number)v).doubleValue();
-        }
-        return defaultValue;
+      return get(index) instanceof Number number ? number.doubleValue() : defaultValue;
     }
 
     public boolean getAsBoolean(int index, boolean defaultValue) {
-        Object v = get(index);
-        if (v instanceof Boolean) {
-            return (Boolean) v;
-        }
-        return defaultValue;
+      return get(index) instanceof Boolean b ? b : defaultValue;
     }
 
     public JSONObject getJSONObject(int index) {
-        Object v = get(index);
-        if (v instanceof JSONObject) {
-            return (JSONObject)v;
-        }
-        return null;
+      return get(index) instanceof JSONObject jsonObject ? jsonObject : null;
     }
 
     public JSONArray getJSONArray(int index) {
-        Object v = get(index);
-        if (v instanceof JSONArray) {
-            return (JSONArray)v;
-        }
-        return null;
+      return get(index) instanceof JSONArray objects ? objects : null;
     }
 
     public void update(JSONArray v) {
@@ -196,13 +168,13 @@ public class JSONArray extends ArrayList<Object> implements Jsonable {
         for(int i = 0; i < count; i++) {
             Object target = get(i);
             Object source = v.get(i);
-            if (source instanceof JSONObject) {
-                if (target instanceof JSONObject) {
-                    ((JSONObject) target).update((JSONObject) source);
+            if (source instanceof JSONObject sourceObject) {
+                if (target instanceof JSONObject jsonObject) {
+                    jsonObject.update(sourceObject);
                 }
-            } else if (source instanceof JSONArray) {
-                if (target instanceof JSONArray) {
-                    ((JSONArray) target).update((JSONArray) source);
+            } else if (source instanceof JSONArray sourceArray) {
+                if (target instanceof JSONArray objects) {
+                    objects.update(sourceArray);
                 }
             } else if (target instanceof JSONObject || target instanceof JSONArray) {
                 // Compound values can not be replaced by primitive values
@@ -220,13 +192,13 @@ public class JSONArray extends ArrayList<Object> implements Jsonable {
         for(int i = 0; i < count; i++) {
             Object target = get(i);
             Object source = v.get(i);
-            if (source instanceof JSONObject) {
-                if (target instanceof JSONObject) {
-                    ((JSONObject) target).merge((JSONObject) source);
+            if (source instanceof JSONObject sourceObject) {
+                if (target instanceof JSONObject jsonObject) {
+                    jsonObject.merge(sourceObject);
                 }
-            } else if (source instanceof JSONArray) {
-                if (target instanceof JSONArray) {
-                    ((JSONArray) target).merge((JSONArray) source);
+            } else if (source instanceof JSONArray sourceArray) {
+                if (target instanceof JSONArray objects) {
+                    objects.merge(sourceArray);
                 }
             } else if (target instanceof JSONObject || target instanceof JSONArray) {
                 // Compound values can not be replaced by primitive values
@@ -237,10 +209,10 @@ public class JSONArray extends ArrayList<Object> implements Jsonable {
         if (v.size() > size()) {
             for(int i = size(), n = v.size(); i < n; i++) {
                 Object source = v.get(i);
-                if (source instanceof JSONObject) {
-                    add(((JSONObject) source).clone());
-                } else if (source instanceof JSONArray) {
-                    add(((JSONArray) source).clone());
+                if (source instanceof JSONObject jsonObject) {
+                    add(jsonObject.clone());
+                } else if (source instanceof JSONArray objects) {
+                    add(objects.clone());
                 } else {
                     add(source);
                 }
@@ -254,10 +226,10 @@ public class JSONArray extends ArrayList<Object> implements Jsonable {
         // Create deep copy
         for(int i = 0, n = clone.size(); i < n; i++) {
             Object value = clone.get(i);
-            if (value instanceof JSONObject) {
-                clone.set(i, ((JSONObject)value).clone());
-            } else if (value instanceof JSONArray) {
-                clone.set(i, ((JSONArray)value).clone());
+            if (value instanceof JSONObject jsonObject) {
+                clone.set(i, jsonObject.clone());
+            } else if (value instanceof JSONArray objects) {
+                clone.set(i, objects.clone());
             }
         }
         return clone;

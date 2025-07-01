@@ -34,7 +34,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import se.sics.mspsim.core.StateChangeListener;
 import se.sics.mspsim.platform.AbstractNodeGUI;
 
@@ -59,8 +58,8 @@ public class Z1Gui extends AbstractNodeGUI {
     private static final Rectangle LEDS_BOUNDS =
       new Rectangle(LED_X - 2, RED_Y - 2, LED_WIDTH + 1, BLUE_Y - RED_Y + LED_HEIGHT + 1);
 
-    private boolean buttonDown = false;
-    private boolean resetDown = false;
+    private boolean buttonDown;
+    private boolean resetDown;
 
     private final Z1Node node;
     private final StateChangeListener ledsListener = (source, oldState, newState) -> repaint(LEDS_BOUNDS);

@@ -37,8 +37,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -46,13 +46,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
-import org.jdom2.Element;
-
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.interfaces.SerialPort;
 import org.contikios.cooja.util.EventTriggers;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,9 +59,9 @@ public abstract class SerialUI extends Log implements SerialPort {
   private final static int MAX_LENGTH = 16*1024;
 
   protected final EventTriggers<EventTriggers.Update, Byte> serialDataTriggers = new EventTriggers<>();
-  private byte lastSerialData = 0; /* SerialPort */
+  private byte lastSerialData; /* SerialPort */
   private String lastLogMessage = ""; /* Log */
-  private int charactersReceived = 0;
+  private int charactersReceived;
   private final StringBuilder newMessage = new StringBuilder(); /* Log */
 
   /* Command history */
@@ -235,7 +233,7 @@ public abstract class SerialUI extends Log implements SerialPort {
       }
       sb.append(s).append(HISTORY_SEPARATOR);
     }
-    if (sb.length() == 0) {
+    if (sb.isEmpty()) {
       return null;
     }
 
@@ -286,7 +284,13 @@ public abstract class SerialUI extends Log implements SerialPort {
   }
 
   private static String trim(String text) {
-    return (text != null) && ((text = text.trim()).length() > 0) ? text : null;
+    if (text != null) {
+      text = text.trim();
+      if (!text.isEmpty()) {
+        return text;
+      }
+    }
+    return null;
   }
 
   @Override

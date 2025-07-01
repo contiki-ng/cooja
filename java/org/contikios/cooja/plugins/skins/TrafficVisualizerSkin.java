@@ -35,7 +35,6 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
@@ -60,14 +59,14 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
   private final float[] TRANSMITTED_COLOR_RGB = Color.BLUE.getRGBColorComponents(null);
   private final float[] UNTRANSMITTED_COLOR_RGB = Color.RED.getRGBColorComponents(null);
 
-  private boolean active = false;
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
-  private AbstractRadioMedium radioMedium = null;
+  private boolean active;
+  private Simulation simulation;
+  private Visualizer visualizer;
+  private AbstractRadioMedium radioMedium;
 
   private final List<RadioConnectionArrow> historyList = new ArrayList<>();
 
-  private final BiConsumer<Radio.RadioEvent, Object> radioMediumObserver = (event, obj) -> {
+  private void radioMediumObserver(Radio.RadioEvent event, Object obj) {
     RadioConnection last = radioMedium.getLastConnection();
     if (last != null && historyList.size() < MAX_HISTORY_SIZE) {
       synchronized(historyList) {
@@ -84,7 +83,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
         return;
       }
 
-      if (historyList.size() > 0) {
+      if (!historyList.isEmpty()) {
 
         synchronized (historyList) {
           /* Try to increase age and remove if max age was reached */
@@ -109,7 +108,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
     simulation.invokeSimulationThread(() -> {
       historyList.clear();
       /* Start observing radio medium for transmissions */
-      radioMedium.getRadioTransmissionTriggers().addTrigger(this, radioMediumObserver);
+      radioMedium.getRadioTransmissionTriggers().addTrigger(this, this::radioMediumObserver);
       /* Fade away arrows */
       simulation.scheduleEvent(ageArrowsTimeEvent, simulation.getSimulationTime() + 100*Simulation.MILLISECOND);
     });
@@ -124,7 +123,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
     }
 
     /* Stop observing radio medium */
-    radioMedium.getRadioTransmissionTriggers().removeTrigger(this, radioMediumObserver);
+    radioMedium.getRadioTransmissionTriggers().removeTrigger(this, this::radioMediumObserver);
   }
 
   @Override
@@ -210,7 +209,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
      * @return true if max age was not reached yet, false, if max age was
      * reached
      */
-    public boolean increaseAge() {
+    boolean increaseAge() {
       if (age < MAX_AGE) {
         age++;
         return true;
@@ -224,7 +223,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
      *
      * @return Relative age (0.0 - 1.0)
      */
-    public float getAge() {
+    float getAge() {
       return (float) age / (float) MAX_AGE;
     }
 
@@ -233,7 +232,7 @@ public class TrafficVisualizerSkin implements VisualizerSkin {
      *
      * @return radio connection
      */
-    public RadioConnection getConnection() {
+    RadioConnection getConnection() {
       return conn;
     }
   }

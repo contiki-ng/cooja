@@ -32,8 +32,6 @@
  */
 package se.sics.mspsim.core;
 
-import java.util.Arrays;
-
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.Memory.AccessMode;
 import se.sics.mspsim.util.Utils;
@@ -63,7 +61,6 @@ public class Flash extends IOUnit {
   private static final int ERASE_SHIFT = 1;
   private static final int ERASE_MASK = 0x06;
 
-  /* Erase modes needs to be first due to usage of ordinality */
   private enum WriteMode {
     NONE,
     ERASE_SEGMENT,
@@ -123,7 +120,7 @@ public class Flash extends IOUnit {
   /**
    * Infomem Configurations
    */
-  private int infomemcfg = 0;
+  private int infomemcfg;
   /**
    * Whether the infomem is locked or not
    */
@@ -182,10 +179,6 @@ public class Flash extends IOUnit {
     this.main_range = main_range;
     this.info_range = info_range;
     locked = true;
-
-    Arrays.fill(memory, main_range.start, main_range.end, 0xff);
-    Arrays.fill(memory, info_range.start, info_range.end, 0xff);
-
     reset(MSP430.RESET_POR);
   }
 
@@ -230,9 +223,6 @@ public class Flash extends IOUnit {
       }
       case SMCLK -> {
         finish_msec = ((double) time * freqdiv * 1000) / cpu.smclkFrq;
-      /* if (DEBUG)
-        System.out.println("Flash: Using SMCLK source with f=" + myfreq
-            + " Hz\nFlash: Time required=" + finish_msec + " ms"); */
         cpu.scheduleTimeEventMillis(end_process, finish_msec);
       }
       case MCLK -> {
@@ -447,13 +437,14 @@ public class Flash extends IOUnit {
   }
 
   private static WriteMode getEraseMode(int regdata) {
-    int idx = (regdata & ERASE_MASK) >> ERASE_SHIFT;
-
-    for (WriteMode em : WriteMode.values()) {
-      if (em.ordinal() == idx)
-        return em;
-    }
-    throw new IllegalArgumentException("Invalid erase mode: " + regdata);
+    return switch ((regdata & ERASE_MASK) >> ERASE_SHIFT) {
+      case 0 -> WriteMode.NONE;
+      case 1 -> WriteMode.ERASE_SEGMENT;
+      case 2 -> WriteMode.ERASE_MAIN;
+      case 3 -> WriteMode.ERASE_ALL;
+      default ->
+        throw new IllegalArgumentException("invalid erase mode: " + (regdata & ERASE_MASK));
+    };
   }
 
   private void triggerErase(int newmode) {

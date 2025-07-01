@@ -1,7 +1,6 @@
 package se.sics.mspsim.core;
 
 import java.util.ArrayList;
-
 import se.sics.mspsim.util.Utils;
 
 public abstract class MSP430Config {
@@ -78,24 +77,24 @@ public abstract class MSP430Config {
     public int maxMem = 64*1024;
     public int maxInterruptVector = 15;
 
-    public int mainFlashStart = 0x0000;
+    public int mainFlashStart;
     public int mainFlashSize = 48 * 1024;
 
-    public int infoMemStart = 0x0000;
+    public int infoMemStart;
     public int infoMemSize = 2 * 128;
 
     public int ramStart = 0x2000;
     public int ramSize = 2048;
 
-    public int ramMirrorStart = 0x0;
-    public int ramMirrorSize = 0x0;
-    public int ramMirrorAddress = 0x0;
+    public int ramMirrorStart;
+    public int ramMirrorSize;
+    public int ramMirrorAddress;
 
     public int flashControllerOffset = 0x128;
 
-    public boolean MSP430XArch = false;
+    public boolean MSP430XArch;
 
-    public int sfrOffset = 0;
+    public int sfrOffset;
 
     public int watchdogOffset = 0x120;
 

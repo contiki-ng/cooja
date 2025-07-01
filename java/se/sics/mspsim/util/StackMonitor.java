@@ -1,7 +1,8 @@
 package se.sics.mspsim.util;
+
 import se.sics.mspsim.core.MSP430;
-import se.sics.mspsim.core.RegisterMonitor;
 import se.sics.mspsim.core.Memory.AccessMode;
+import se.sics.mspsim.core.RegisterMonitor;
 import se.sics.mspsim.profiler.SimpleProfiler;
 
 public class StackMonitor {
@@ -9,10 +10,10 @@ public class StackMonitor {
   private int heapStartAddress;
   private int stackStartAddress;
 
-  private int stackMin = 0;
-  private int stackMax = 0;
-  private int stack = 0;
-  private int profStackMax = 0;
+  private int stackMin;
+  private int stackMax;
+  private int stack;
+  private int profStackMax;
 
   private final DataSource maxDataSource = new DataSource() {
     @Override

@@ -33,14 +33,13 @@ package org.contikios.cooja.mspmote;
 import java.awt.Component;
 import java.io.File;
 import java.io.PrintStream;
-import org.contikios.cooja.Simulation.SimulationStop;
-import org.contikios.cooja.WatchpointMote;
 import org.contikios.cooja.ContikiError;
 import org.contikios.cooja.Cooja;
-import org.contikios.cooja.MoteInterfaceHandler;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
+import org.contikios.cooja.Simulation.SimulationStop;
 import org.contikios.cooja.Watchpoint;
+import org.contikios.cooja.WatchpointMote;
 import org.contikios.cooja.motes.AbstractEmulatedMote;
 import org.contikios.cooja.mspmote.plugins.CodeVisualizerSkin;
 import org.contikios.cooja.mspmote.plugins.MspBreakpoint;
@@ -52,11 +51,12 @@ import se.sics.mspsim.cli.CommandHandler;
 import se.sics.mspsim.cli.LineListener;
 import se.sics.mspsim.cli.LineOutputStream;
 import se.sics.mspsim.core.EmulationException;
+import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.LogListener;
 import se.sics.mspsim.core.Loggable;
 import se.sics.mspsim.core.MSP430;
-import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.platform.GenericNode;
+import se.sics.mspsim.profiler.SimpleProfiler;
 import se.sics.mspsim.ui.ManagedWindow;
 import se.sics.mspsim.ui.WindowManager;
 import se.sics.mspsim.util.ComponentRegistry;
@@ -64,12 +64,11 @@ import se.sics.mspsim.util.ConfigManager;
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.MapEntry;
-import se.sics.mspsim.profiler.SimpleProfiler;
 
 /**
  * @author Fredrik Osterlind
  */
-public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteMemory> implements WatchpointMote {
+public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MSP430, MspMoteMemory> implements WatchpointMote {
   private static final Logger logger = LoggerFactory.getLogger(MspMote.class);
 
   private final static int EXECUTE_DURATION_US = 1; /* We always execute in 1 us steps */
@@ -81,22 +80,20 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   }
 
   private final CommandHandler commandHandler = new CommandHandler(System.out, System.err);
-  private final MSP430 myCpu;
   public final ComponentRegistry registry;
 
   /* Stack monitoring variables */
-  private boolean stopNextInstruction = false;
+  private boolean stopNextInstruction;
 
   public MspMote(MspMoteType moteType, Simulation sim, GenericNode node) throws MoteType.MoteTypeCreationException {
-    super(moteType, new MspMoteMemory(moteType.getEntries(node), node.getCPU()), sim);
+    super(moteType, node.getCPU(), new MspMoteMemory(moteType.getEntries(node), node.getCPU()), sim);
     registry = node.getRegistry();
     node.setCommandHandler(commandHandler);
     node.setup(new ConfigManager());
-    myCpu = node.getCPU();
     myCpu.setMonitorExec(true);
     myCpu.setTrace(0); /* TODO Enable */
     myCpu.getLogger().addLogListener(new LogListener() {
-      private final Logger mlogger = LoggerFactory.getLogger("MSPSim");
+      private static final Logger mlogger = LoggerFactory.getLogger("MSPSim");
       @Override
       public void log(Loggable source, String message) {
         mlogger.debug(getID() + ": " + source.getID() + ": " + message);
@@ -110,7 +107,6 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     // Throw exceptions at bad memory access.
     //myCpu.setThrowIfWarning(true);
     myCpu.reset();
-    moteInterfaces = new MoteInterfaceHandler(this);
     registry.removeComponent("windowManager");
     registry.registerComponent("windowManager", new WindowManager() {
       @Override
@@ -180,13 +176,6 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     getCPU().stop();
   }
 
-  /**
-   * @return MSP430 CPU
-   */
-  public MSP430 getCPU() {
-    return myCpu;
-  }
-
   public CommandHandler getCLICommandHandler() {
     return commandHandler;
   }
@@ -195,18 +184,18 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
   public void idUpdated(int newID) {
   }
 
-  private boolean booted = false;
+  private boolean booted;
 
   private long lastExecute = -1; /* Last time mote executed */
 
-  private double jumpError = 0.;
+  private double jumpError;
 
   @Override
-  public void execute(long time) {
+  protected void execute(long time) {
     execute(time, EXECUTE_DURATION_US);
   }
 
-  public void execute(long t, int duration) {
+  void execute(long t, int duration) {
     var clock = moteInterfaces.getClock();
     // Wait until mote boots.
     if (!booted && clock.getTime() < 0) {
@@ -278,7 +267,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
     return commandHandler.executeCommand(cmd, context);
   }
 
-  public String executeCLICommand(String cmd) {
+  String executeCLICommand(String cmd) {
     final StringBuilder sb = new StringBuilder();
     LineListener ll = line -> sb.append(line).append("\n");
     PrintStream po = new PrintStream(new LineOutputStream(ll));
@@ -300,7 +289,7 @@ public abstract class MspMote extends AbstractEmulatedMote<MspMoteType, MspMoteM
 
   @Override
   public String getExecutionDetails() {
-    return executeCLICommand("stacktrace");
+    return getStackTrace();
   }
 
   @Override

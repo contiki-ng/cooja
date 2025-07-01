@@ -69,14 +69,14 @@ public class IPAddress implements MoteInterface {
   private final Mote mote;
   private final VarMemory moteMem;
   private final MemoryLayout memLayout;
-  private IPContainer localIPAddr = null;
+  private IPContainer localIPAddr;
 
   private final SegmentMonitor memMonitor;
 
   private final List<IPContainer> ipList = new ArrayList<>();
 
-  private int ipv6_addr_size = 0;
-  private int ipv6_addr_list_offset = 0;
+  private int ipv6_addr_size;
+  private int ipv6_addr_list_offset;
 
   private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
   private final EventTriggers<Update, Mote> triggers = new EventTriggers<>();
@@ -90,8 +90,8 @@ public class IPAddress implements MoteInterface {
     /* If the ip memory sections changed, we recalculate addresses
      * and notify our observers.*/
     memMonitor = new MemoryInterface.SegmentMonitor() {
-      int accessCount = 0;
-      long lastAccess = 0;
+      int accessCount;
+      long lastAccess;
       @Override
       public void memoryChanged(MemoryInterface memory, SegmentMonitor.EventType type, long address) {
         if (type != SegmentMonitor.EventType.WRITE) {
@@ -122,7 +122,7 @@ public class IPAddress implements MoteInterface {
             }
             /* Initial scan for IP address */
             updateIPAddresses();
-            if (ipList.size() > 0) {
+            if (!ipList.isEmpty()) {
               updateUI();
             }
             // TODO: Remove other listeners?

@@ -104,12 +104,12 @@ public class SerialSocketServer implements Plugin, MotePlugin {
   private JFormattedTextField listenPortField;
   private JButton serverStartButton;
 
-  private int inBytes = 0, outBytes = 0;
+  private int inBytes, outBytes;
 
   private ServerSocket serverSocket;
   private Socket clientSocket;
 
-  private String commands = null;
+  private String commands;
 
   private final Mote mote;
   private final Simulation simulation;
@@ -318,31 +318,31 @@ public class SerialSocketServer implements Plugin, MotePlugin {
     listeners.add(listener);
   }
   
-  public void notifyServerStarted(int port) {
+  private void notifyServerStarted(int port) {
     for (ServerListener listener : listeners) {
       listener.onServerStarted(port);
     }
   }
   
-  public void notifyClientConnected(Socket client) {
+  private void notifyClientConnected(Socket client) {
     for (ServerListener listener : listeners) {
       listener.onClientConnected(client);
     }
   }
 
-  public void notifyClientDisconnected() {
+  private void notifyClientDisconnected() {
     for (ServerListener listener : listeners) {
       listener.onClientDisconnected();
     }
   }
   
-  public void notifyServerStopped() {
+  private void notifyServerStopped() {
     for (ServerListener listener : listeners) {
       listener.onServerStopped();
     }
   }
   
-  public void notifyServerError(String msg) {
+  private void notifyServerError(String msg) {
     for (ServerListener listener : listeners) {
       listener.onServerError(msg);
     }
@@ -395,7 +395,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
           }
           final var out = outStream;
           // FIXME: update code to use data directly.
-          serialPort.getSerialDataTriggers().addTrigger(this, serialDataObserver = (event, data) -> {
+          serialDataObserver = (event, data) -> {
             if (out == null) {
               return;
             }
@@ -407,9 +407,10 @@ public class SerialSocketServer implements Plugin, MotePlugin {
               logger.error("Failed writing:", ex);
               cleanupClient();
             }
-          });
-
-          inBytes = outBytes = 0;
+          };
+          serialPort.getSerialDataTriggers().addTrigger(this, serialDataObserver);
+          outBytes = 0;
+          inBytes = 0;
 
           logger.info("Client connected: " + clientSocket.getInetAddress());
           notifyClientConnected(clientSocket);
@@ -471,41 +472,34 @@ public class SerialSocketServer implements Plugin, MotePlugin {
 
   /* Forward data: virtual port -> mote */
   private class IncomingDataHandler implements Runnable {
-
-    DataInputStream in;
-
     @Override
     public void run() {
       int numRead = 0;
       byte[] data = new byte[16*1024];
-      try {
-        in = new DataInputStream(clientSocket.getInputStream());
+      try (var in = new DataInputStream(clientSocket.getInputStream())) {
+        logger.info("Forwarder: socket -> serial port");
+        while (numRead >= 0) {
+          final int finalNumRead = numRead;
+          final byte[] finalData = data;
+          /* We are not on the simulation thread */
+          simulation.invokeSimulationThread(() -> {
+            for (int i = 0; i < finalNumRead; i++) {
+              serialPort.writeByte(finalData[i]);
+            }
+            inBytes += finalNumRead;
+          });
+          try {
+            numRead = in.read(data);
+          } catch (IOException e) {
+            logger.info(e.getMessage());
+            numRead = -1;
+          }
+        }
+        logger.info("End of Stream");
+        cleanupClient();
       } catch (IOException ex) {
         logger.error("Failed opening input stream from client socket:", ex);
-        return;
       }
-
-      logger.info("Forwarder: socket -> serial port");
-      while (numRead >= 0) {
-        final int finalNumRead = numRead;
-        final byte[] finalData = data;
-        /* We are not on the simulation thread */
-        simulation.invokeSimulationThread(() -> {
-          for (int i = 0; i < finalNumRead; i++) {
-            serialPort.writeByte(finalData[i]);
-          }
-          inBytes += finalNumRead;
-        });
-
-        try {
-          numRead = in.read(data);
-        } catch (IOException e) {
-          logger.info(e.getMessage());
-          numRead = -1;
-        }
-      }
-      logger.info("End of Stream");
-      cleanupClient();
     }
   }
 
@@ -591,7 +585,7 @@ public class SerialSocketServer implements Plugin, MotePlugin {
     notifyClientDisconnected();
   }
 
-  private boolean closed = false;
+  private boolean closed;
 
   @Override
   public JInternalFrame getCooja() {
@@ -633,4 +627,3 @@ public class SerialSocketServer implements Plugin, MotePlugin {
     }
   });
 }
-

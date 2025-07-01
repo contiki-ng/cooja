@@ -40,8 +40,7 @@
  */
 package se.sics.mspsim.cli;
 
-import java.util.Hashtable;
-
+import java.util.HashMap;
 import se.sics.mspsim.ui.WindowManager;
 import se.sics.mspsim.ui.WindowUtils;
 import se.sics.mspsim.util.ComponentRegistry;
@@ -49,7 +48,7 @@ import se.sics.mspsim.util.ComponentRegistry;
 public class WindowCommands implements CommandBundle {
 
     private ComponentRegistry registry;
-    private final Hashtable<String,Target> windowTargets = new Hashtable<>();
+    private final HashMap<String,Target> windowTargets = new HashMap<>();
 
     @Override
     public void setupCommands(ComponentRegistry registry, CommandHandler handler) {

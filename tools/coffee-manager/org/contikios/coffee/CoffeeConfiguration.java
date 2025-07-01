@@ -33,9 +33,7 @@
 package org.contikios.coffee;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
-
 import org.contikios.coffee.CoffeeFS.CoffeeException;
 
 public class CoffeeConfiguration {
@@ -56,12 +54,12 @@ public class CoffeeConfiguration {
 					    "start_offset", "default_file_size",
 					    "default_log_size", "page_type_size"};
 		Properties prop = new Properties();
-		InputStream stream = CoffeeConfiguration.class.getResourceAsStream("/" + filename);
-		if (stream == null) {
-			throw new CoffeeException("failed to load the configuration file " + filename);
+		try (var stream = CoffeeConfiguration.class.getResourceAsStream("/" + filename)) {
+			if (stream == null) {
+				throw new CoffeeException("failed to load the configuration file " + filename);
+			}
+			prop.load(stream);
 		}
-
-		prop.load(stream);
     for (String requiredParameter : requiredParameters) {
       if (prop.getProperty(requiredParameter) == null) {
         throw new CoffeeException("missing the parameter \"" + requiredParameter + "\" in the configuration file " + filename);

@@ -41,39 +41,18 @@ import java.util.ArrayList;
  */
 public class ArgumentManager extends ConfigManager {
 
-  private String configName = "config";
-  private String[] arguments;
-  private boolean isConfigLoaded;
+  private final String[] arguments;
 
-  public ArgumentManager() {
-  }
-
-  public boolean isConfigLoaded() {
-    return isConfigLoaded;
-  }
-
-  public String getConfigArgumentName() {
-    return configName;
-  }
-
-  public void setConfigArgumentName(String configName) {
-    this.configName = configName;
-  }
-
-  public String[] getArguments() {
-    return arguments;
-  }
-
-  public void handleArguments(String[] args) {
+  public ArgumentManager(String[] args) {
     ArrayList<String> list = new ArrayList<>();
     ArrayList<String> config = new ArrayList<>();
     for (int i = 0, n = args.length; i < n; i++) {
       if ("-".equals(args[i])) {
-          // The rest should be considered arguments
-          for(++i; i < args.length; i++) {
-              list.add(args[i]);
-          }
-          break;
+        // The rest should be considered arguments
+        for(++i; i < args.length; i++) {
+          list.add(args[i]);
+        }
+        break;
       }
       if (args[i].startsWith("-")) {
         String param = args[i].substring(1);
@@ -83,29 +62,31 @@ public class ArgumentManager extends ConfigManager {
           value = param.substring(index + 1);
           param = param.substring(0, index);
         }
-        if (param.length() == 0) {
+        if (param.isEmpty()) {
           throw new IllegalArgumentException("illegal argument: " + args[i]);
         }
-        if (configName != null && configName.equals(param)) {
-          if (value.length() == 0) {
+        if ("config".equals(param)) {
+          if (value.isEmpty()) {
             throw new IllegalArgumentException("no config file name specified");
           }
           if (!loadConfiguration(value)) {
             throw new IllegalArgumentException("failed to load configuration " + value);
           }
-          isConfigLoaded = true;
         }
         config.add(param);
-        config.add(value.length() > 0 ? value : "true");
+        config.add(!value.isEmpty() ? value : "true");
       } else {
-        // Normal argument
+        // Normal argument.
         list.add(args[i]);
       }
     }
-    this.arguments = list.toArray(new String[0]);
+    arguments = list.toArray(new String[0]);
     for (int i = 0, n = config.size(); i < n; i += 2) {
       setProperty(config.get(i), config.get(i + 1));
     }
   }
 
+  public String[] getArguments() {
+    return arguments;
+  }
 } // ArgumentManager

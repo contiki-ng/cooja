@@ -76,21 +76,27 @@ public abstract class GenericNode extends Chip implements Runnable {
   protected final ComponentRegistry registry;
   protected ConfigManager config;
 
-  protected String firmwareFile = null;
-  protected OperatingModeStatistics stats;
+  protected String firmwareFile;
+  protected final OperatingModeStatistics stats;
 
-  public static MSP430 makeCPU(MSP430Config config) {
-    return new MSP430(new ComponentRegistry(), config);
-  }
-
-  public GenericNode(String id, MSP430Config config) {
-    this(id, makeCPU(config));
+  public static MSP430 makeCPU(MSP430Config config, String firmwareFile) throws IOException {
+    ELF elf = null;
+    int[] memory;
+    if (firmwareFile.endsWith("ihex")) { // IHEX Reading.
+      memory = IHexReader.readFile(firmwareFile, config.maxMem);
+    } else {
+      elf = ELF.readELF(firmwareFile);
+      memory = elf.loadPrograms(config.maxMem);
+    }
+    return new MSP430(config, memory, elf);
   }
 
   public GenericNode(String id, MSP430 cpu) {
     super(id, cpu);
     this.cpu = cpu;
+    stats = new OperatingModeStatistics(cpu);
     this.registry = cpu.getRegistry();
+    registry.registerComponent("node", this);
   }
 
   public ComponentRegistry getRegistry() {
@@ -109,15 +115,7 @@ public abstract class GenericNode extends Chip implements Runnable {
 
   public void setupArgs(ArgumentManager config) throws IOException {
     String[] args = config.getArguments();
-    if (args.length == 0) {
-      System.err.println("Usage: " + getClass().getName() + " <firmware>");
-      System.exit(1);
-    }
     firmwareFile = args[0];
-    if (!(new File(firmwareFile)).exists()) {
-      System.err.println("Could not find the firmware file '" + firmwareFile + "'.");
-      System.exit(1);
-    }
     if (config.getProperty("nogui") == null) {
       config.setProperty("nogui", "false");
     }
@@ -142,15 +140,6 @@ public abstract class GenericNode extends Chip implements Runnable {
       if (fp.exists()) {
         config.setProperty("autorun", fp.getAbsolutePath());
       }
-    }
-
-    if (firmwareFile.endsWith("ihex")) {
-      // IHEX Reading
-      int[] memory = cpu.memory;
-      IHexReader reader = new IHexReader();
-      reader.readFile(memory, firmwareFile);
-    } else {
-      loadFirmware(firmwareFile);
     }
     config.setProperty("firmwareFile", firmwareFile);
 
@@ -218,9 +207,6 @@ public abstract class GenericNode extends Chip implements Runnable {
 
   public void setup(ConfigManager config) {
     this.config = config;
-
-    registry.registerComponent("cpu", cpu);
-    registry.registerComponent("node", this);
     registry.registerComponent("config", config);
 
     CommandHandler ch = registry.getComponent(CommandHandler.class, "commandHandler");
@@ -244,8 +230,6 @@ public abstract class GenericNode extends Chip implements Runnable {
         }
         registry.registerComponent("commandHandler", ch);
     }
-
-    stats = new OperatingModeStatistics(cpu);
 
     registry.registerComponent("pluginRepository", new PluginRepository());
     registry.registerComponent("debugcmd", new DebugCommands());
@@ -274,8 +258,7 @@ public abstract class GenericNode extends Chip implements Runnable {
       try {
         cpu.cpuloop();
       } catch (Exception e) {
-        /* what should we do here */
-        e.printStackTrace();
+        System.err.println("Exception in cpu loop: " + e.getMessage());
       }
     }
   }
@@ -303,27 +286,5 @@ public abstract class GenericNode extends Chip implements Runnable {
     if (!cpu.isRunning()) {
       cpu.stepInstructions(nr);
     }
-  }
-
-  public ELF loadFirmware(String name) throws IOException {
-    return loadFirmware(ELF.readELF(firmwareFile = name));
-  }
-
-  public ELF loadFirmware(ELF elf) {
-    if (cpu.isRunning()) {
-        stop();
-    }
-    elf.loadPrograms(cpu.memory);
-    MapTable map = elf.getMap();
-    cpu.getDisAsm().setMap(map);
-    cpu.setMap(map);
-    registry.registerComponent("elf", elf);
-    registry.registerComponent("mapTable", map);
-    return elf;
-  }
-
-  @Override
-  public int getConfiguration(int param) {
-      return 0;
   }
 }

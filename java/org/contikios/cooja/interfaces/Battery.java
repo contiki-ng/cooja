@@ -31,7 +31,6 @@
 package org.contikios.cooja.interfaces;
 
 import javax.swing.JPanel;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;

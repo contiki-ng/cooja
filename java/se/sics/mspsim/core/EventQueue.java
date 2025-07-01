@@ -43,11 +43,11 @@ package se.sics.mspsim.core;
 
 import java.io.PrintStream;
 
-public class EventQueue {
+class EventQueue {
 
   private TimeEvent first;
   public long nextTime;
-  public int eventCount = 0;
+  public int eventCount;
 
   public EventQueue() {
   }
@@ -57,7 +57,7 @@ public class EventQueue {
     addEvent(event);
   }
 
-  public void addEvent(TimeEvent event) {
+  private void addEvent(TimeEvent event) {
     if (event.scheduledIn != null) {
       event.remove();
     }

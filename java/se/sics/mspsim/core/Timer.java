@@ -134,20 +134,20 @@ public class Timer extends IOUnit {
   // useful for setting expected compare and capture times to correct time.
   // valid for timer A
   private final int timerOverflow;
-  private long nextTimerTrigger = 0;
+  private long nextTimerTrigger;
 
   // this is used to create "tick" since last reset of the timer.
   // it will contain the full number of ticks since that reset and
   // is used to calculate the real counter value
-  private long counterStart = 0;
+  private long counterStart;
   private long counterAcc;
 
   // Counter stores the current timer counter register (TR)
-  private int counter = 0;
-  private int counterPassed = 0;
+  private int counter;
+  private int counterPassed;
 
   // Input map for timer A
-  public static final int[] TIMER_Ax149 = new int[] {
+  public static final int[] TIMER_Ax149 = {
     SRC_PORT + 0x10, SRC_ACLK, SRC_SMCLK, SRC_PORT + 0x21, // Timer
     SRC_PORT + 0x11, SRC_PORT + 0x22, SRC_GND, SRC_VCC,    // Cap 0
     SRC_PORT + 0x12, SRC_CAOUT, SRC_GND, SRC_VCC,          // Cap 1
@@ -155,7 +155,7 @@ public class Timer extends IOUnit {
   };
 
   // Input map for timer B (configurable in later versions for other MSP430 versions)
-  public static final int[] TIMER_Bx149 = new int[] {
+  public static final int[] TIMER_Bx149 = {
     SRC_PORT + 0x47, SRC_ACLK, SRC_SMCLK, SRC_PORT + 0x47, // Timer
     SRC_PORT + 0x40, SRC_PORT + 0x40, SRC_GND, SRC_VCC,    // Cap 0
     SRC_PORT + 0x41, SRC_PORT + 0x41, SRC_GND, SRC_VCC,    // Cap 1
@@ -166,7 +166,7 @@ public class Timer extends IOUnit {
     SRC_PORT + 0x46, SRC_ACLK, SRC_GND, SRC_VCC            // Cap 6
   };
 
-  public static final String[] capNames = new String[] {
+  public static final String[] capNames = {
     "NONE", "RISING", "FALLING", "BOTH"
   };
 
@@ -190,8 +190,8 @@ public class Timer extends IOUnit {
   // The IO registers
   private int tctl;
 
-  private boolean interruptEnable = false;
-  private boolean interruptPending = false;
+  private boolean interruptEnable;
+  private boolean interruptPending;
 
   private final int ccr1Vector;
   private final int ccr0Vector;
@@ -210,17 +210,17 @@ public class Timer extends IOUnit {
       long expCaptureTime;
 
       int capMode;
-      boolean captureOn = false;
+      boolean captureOn;
       int inputSel;
       int inputSrc;
-      long cyclesLeft = 0;
+      long cyclesLeft;
       boolean sync;
       int outMode;
 
       final int interruptVector;
       final int index;
 
-      public CCR(long time, String name, int vector, int index) {
+      CCR(long time, String name, int vector, int index) {
           super(time, name);
           interruptVector = vector;
           this.index = index;
@@ -282,7 +282,7 @@ public class Timer extends IOUnit {
       }
 
       /* this method only takes care of the interrupt triggering! */
-      public void triggerInterrupt(long cycles) {
+      void triggerInterrupt(long cycles) {
           /* trigger if trigger should be... */
           if ((tcctl & CC_TRIGGER_INT) == CC_TRIGGER_INT) {
               if (index == 0) {
@@ -299,7 +299,7 @@ public class Timer extends IOUnit {
           }
       }
 
-      public void updateCaptures(long cycles) {
+      void updateCaptures(long cycles) {
           int divisor = 1;
           int frqClk = 1;
           /* used to set next capture independent of counter when another clock is source
@@ -349,7 +349,7 @@ public class Timer extends IOUnit {
           }
       }
 
-      public void update() {
+      void update() {
           /* schedule this capture register for update*/
           if (expCaptureTime != -1 && expCaptureTime != time) {
               if (DEBUG) log(cpu.cycles + ":" + ">> SCHEDULING " + getName() + " = " + tccr +
@@ -358,14 +358,14 @@ public class Timer extends IOUnit {
           }
       }
 
-      public void timerStarted(long cycles) {
+      void timerStarted(long cycles) {
           if (cyclesLeft != 0) {
               expCaptureTime = cycles + cyclesLeft;
               update();
           }
       }
 
-      public void timerStopped(long cycles) {
+      void timerStopped(long cycles) {
           if (expCaptureTime != -1) {
               cyclesLeft = cycles - expCaptureTime;
               if (cyclesLeft < 0) {
@@ -374,7 +374,7 @@ public class Timer extends IOUnit {
           }
       }
 
-      public String info() {
+      String info() {
           return "CCR" + index + ":" +
           "  CM: " + capNames[capMode] +
           "  CCIS:" + inputSel + "  Source: " +
@@ -589,7 +589,7 @@ public class Timer extends IOUnit {
         ccr[i].triggerInterrupt(cycles);
     }
     /* if the timer overflow interrupt is triggering - lowest priority => signal! */
-    if (lastTIV == 0 && interruptEnable & interruptPending) {
+    if (lastTIV == 0 && interruptEnable && interruptPending) {
         lastTIV = timerOverflow;
         cpu.flagInterrupt(ccr1Vector, this, true);
     }
@@ -709,7 +709,8 @@ public class Timer extends IOUnit {
       reg.captureOn = (data & 0x100) > 0;
       reg.sync = (data & 0x800) > 0;
       reg.inputSel = (data >> 12) & 3;
-      int src = reg.inputSrc = srcMap[4 + index * 4 + reg.inputSel];
+      int src = srcMap[4 + index * 4 + reg.inputSel];
+      reg.inputSrc = src;
       reg.capMode = (data >> 14) & 3;
 
       /* capture a port state? */
@@ -787,7 +788,7 @@ public class Timer extends IOUnit {
       //calculateNextEventTime(cycles);
     }
   }
-  void updateCyclesMultiplicator() {
+  private void updateCyclesMultiplicator() {
     cyclesMultiplicator = inputDivider;
     if (clockSource == SRC_ACLK) {
       cyclesMultiplicator = (cyclesMultiplicator * cpu.smclkFrq) /
@@ -813,7 +814,7 @@ public class Timer extends IOUnit {
       // counterAcc - represent the value of the counter at the last reset.
       long cycctr = cycles - counterStart;
       double tick = cycctr / divider;
-      counterPassed = (int) (divider * (tick - (long) (tick)));
+      counterPassed = (int) (divider * (tick - (long) tick));
 
     counterStart = cycles - counterPassed;
     // set counterACC to the last returned value (which is the same
@@ -851,7 +852,7 @@ public class Timer extends IOUnit {
     // counterAcc - represent the value of the counter at the last reset.
     long cycctr = cycles - counterStart;
     double tick = cycctr / divider;
-    counterPassed = (int) (divider * (tick - (long) (tick)));
+    counterPassed = (int) (divider * (tick - (long) tick));
     long bigCounter = (long) (tick + counterAcc);
 
     switch (mode) {
@@ -869,7 +870,7 @@ public class Timer extends IOUnit {
       if (ccr[0].tccr == 0) {
         counter = 0;
       } else {
-        counter = (int) (bigCounter % (ccr[0].tccr * 2));
+        counter = (int) (bigCounter % (ccr[0].tccr * 2L));
         if (counter > ccr[0].tccr) {
           // Should back down to start again!
           counter = 2 * ccr[0].tccr - counter;
@@ -883,7 +884,7 @@ public class Timer extends IOUnit {
    return counter;
   }
 
-  public static String getSourceName(int source) {
+  private static String getSourceName(int source) {
     switch (source) {
     case SRC_ACLK:
       return "ACLK";

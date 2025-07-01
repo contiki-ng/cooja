@@ -32,14 +32,13 @@ package org.contikios.cooja.plugins.skins;
 
 import java.awt.Color;
 import java.awt.Graphics;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.plugins.Visualizer;
-import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
+import org.contikios.cooja.plugins.VisualizerSkin;
 
 /**
  * Mote type visualizer skin.
@@ -51,10 +50,10 @@ import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
  */
 @ClassDescription("Mote type")
 public class MoteTypeVisualizerSkin implements VisualizerSkin {
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
 
-  private static final Color[][] COLORS = new Color[][] {
+  private static final Color[][] COLORS = {
     new Color[] {Color.GREEN},
     new Color[] {Color.ORANGE},
     new Color[] {Color.MAGENTA},

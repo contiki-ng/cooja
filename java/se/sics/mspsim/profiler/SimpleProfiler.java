@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.regex.Pattern;
-
 import se.sics.mspsim.core.Chip;
 import se.sics.mspsim.core.EventListener;
 import se.sics.mspsim.core.EventSource;
@@ -67,10 +66,10 @@ public class SimpleProfiler implements Profiler, EventListener {
   private final HashMap<String, TagEntry> endTags = new HashMap<>();
   private final HashMap<String, String> ignoreFunctions = new HashMap<>();
   private CallEntry[] callStack = new CallEntry[64];
-  private int cSP = 0;
+  private int cSP;
   private MSP430Core cpu;
   private PrintStream logger;
-  private boolean hideIRQ = false;
+  private boolean hideIRQ;
 
   private CallListener[] callListeners;
 
@@ -163,18 +162,10 @@ public class SimpleProfiler implements Profiler, EventListener {
   public void profileReturn(long cycles) {
     if (cSP <= 0) {
       /* the stack pointer might have been messed with? */
-      PrintStream logger = this.logger;
-      if (logger != null) {
-          // logger.println("SimpleProfiler: Too many returns?");
-      } else {
-        // System.err.println("SimpleProfiler: Too many returns?");
-      }
       return;
     }
     CallEntry cspEntry = callStack[--cSP];
     MapEntry fkn = cspEntry.function;
-//     System.out.println("Profiler: return / call stack: " + cSP + ", " + fkn);
-
     long elapsed = cycles - cspEntry.cycles;
     long exElapsed = cycles - cspEntry.exclusiveCycles;
     if (cSP != 0) {
@@ -185,8 +176,9 @@ public class SimpleProfiler implements Profiler, EventListener {
     if (cspEntry.calls >= 0) {
       CallEntry ce = profileData.get(fkn);
       if (ce == null) {
-        profileData.put(fkn, ce = new CallEntry());
+        ce = new CallEntry();
         ce.function = fkn;
+        profileData.put(fkn, ce);
       }
       ce.cycles += elapsed;
       ce.exclusiveCycles += exElapsed;
@@ -307,7 +299,7 @@ public class SimpleProfiler implements Profiler, EventListener {
     out.println("************************* Profile Data **************************************");
     out.println("Function                              Calls    Average       Total  Exclusive");
 
-    if (functionNameRegexp != null && functionNameRegexp.length() > 0) {
+    if (functionNameRegexp != null && !functionNameRegexp.isEmpty()) {
       pattern = Pattern.compile(functionNameRegexp);
     }
     for (CallEntry entry : entries) {
@@ -388,7 +380,7 @@ public class SimpleProfiler implements Profiler, EventListener {
   private static class CallEntryComparator implements Comparator<CallEntry> {
     private final int mode;
 
-    public CallEntryComparator(String modeS) {
+    CallEntryComparator(String modeS) {
       if ("exclusive".equalsIgnoreCase(modeS)) {
         mode = 1;
       } else if ("calls".equalsIgnoreCase(modeS)) {
@@ -406,20 +398,13 @@ public class SimpleProfiler implements Profiler, EventListener {
     public int compare(CallEntry o1, CallEntry o2) {
       long diff;
       switch (mode) {
-      case 1:
-        diff = o2.exclusiveCycles - o1.exclusiveCycles;
-        break;
-      case 2:
-        diff = (long)o2.calls - o1.calls;
-        break;
-      case 3:
-        diff = (o2.calls > 0 ? (o2.cycles / o2.calls) : 0) -
-        (o1.calls > 0 ? (o1.cycles / o1.calls) : 0);
-        break;
-      case 4:
-        return o1.function.getName().compareTo(o2.function.getName());
-      default:
-        diff = o2.cycles - o1.cycles;
+        case 1 -> diff = o2.exclusiveCycles - o1.exclusiveCycles;
+        case 2 -> diff = (long) o2.calls - o1.calls;
+        case 3 -> diff = (o2.calls > 0 ? (o2.cycles / o2.calls) : 0) - (o1.calls > 0 ? (o1.cycles / o1.calls) : 0);
+        case 4 -> {
+          return o1.function.getName().compareTo(o2.function.getName());
+        }
+        default -> diff = o2.cycles - o1.cycles;
       }
       if (diff > 0) return 1;
       if (diff < 0) return -1;
@@ -429,12 +414,12 @@ public class SimpleProfiler implements Profiler, EventListener {
 
 
   private static class TagEntry implements Comparable<TagEntry> {
-    public final String tag;
+    final String tag;
     long cycles;
     long lastCycles;
     int calls;
 
-    public TagEntry(String tag) {
+    TagEntry(String tag) {
         this.tag = tag;
     }
 

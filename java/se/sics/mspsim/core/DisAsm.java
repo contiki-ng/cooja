@@ -545,7 +545,7 @@ public class DisAsm implements MSP430Constants {
     if (!step) {
       String line = "";
       try {line = input.readLine();}catch(Exception e){}
-      if (line != null && line.length() > 0 && line.charAt(0) == 'r') {
+      if (line != null && !line.isEmpty() && line.charAt(0) == 'r') {
         System.out.println("Registers:");
         for (int i = 0, n = 16; i < n; i++) {
           System.out.print("R" + i + "=" + Utils.hex16(reg[i]) + "  ");

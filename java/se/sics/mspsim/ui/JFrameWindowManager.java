@@ -1,7 +1,6 @@
 package se.sics.mspsim.ui;
 
 import java.awt.Component;
-
 import javax.swing.JFrame;
 
 public class JFrameWindowManager implements WindowManager {
@@ -10,7 +9,7 @@ public class JFrameWindowManager implements WindowManager {
     public ManagedWindow createWindow(final String name) {
         return new ManagedWindow() {
             private final JFrame window = new JFrame(name);
-            private boolean restored = false;
+            private boolean restored;
 
             @Override
             public void setSize(int width, int height) {
@@ -29,16 +28,17 @@ public class JFrameWindowManager implements WindowManager {
 
             @Override
             public void add(Component component) {
-                window.add(component);
+                window.getContentPane().add(component);
                 if (!restored) {
                     restored = true;
                     WindowUtils.restoreWindowBounds(name, window);
                 }
+                window.revalidate();
             }
 
             @Override
             public void removeAll() {
-                window.removeAll();
+                window.getContentPane().removeAll();
             }
 
             @Override

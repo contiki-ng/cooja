@@ -84,15 +84,6 @@ import javax.swing.ToolTipManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
-
-import org.contikios.cooja.mote.BaseContikiMoteType;
-import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
-import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
-import org.contikios.cooja.util.Annotations;
-import org.contikios.cooja.util.EventTriggers;
-import org.contikios.mrm.MRMVisualizerSkin;
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -105,16 +96,23 @@ import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.SerialPort;
+import org.contikios.cooja.mote.BaseContikiMoteType;
 import org.contikios.cooja.plugins.skins.AddressVisualizerSkin;
 import org.contikios.cooja.plugins.skins.AttributeVisualizerSkin;
+import org.contikios.cooja.plugins.skins.DGRMVisualizerSkin;
 import org.contikios.cooja.plugins.skins.GridVisualizerSkin;
 import org.contikios.cooja.plugins.skins.IDVisualizerSkin;
 import org.contikios.cooja.plugins.skins.LEDVisualizerSkin;
 import org.contikios.cooja.plugins.skins.LogVisualizerSkin;
+import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
 import org.contikios.cooja.plugins.skins.MoteTypeVisualizerSkin;
 import org.contikios.cooja.plugins.skins.PositionVisualizerSkin;
 import org.contikios.cooja.plugins.skins.TrafficVisualizerSkin;
 import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
+import org.contikios.cooja.util.Annotations;
+import org.contikios.cooja.util.EventTriggers;
+import org.contikios.mrm.MRMVisualizerSkin;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,11 +141,11 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
   private final Simulation simulation;
   private final JPanel canvas;
-  private boolean loadedConfig = false;
+  private boolean loadedConfig;
 
   /* Viewport */
   private final AffineTransform viewportTransform;
-  public int resetViewport = 0;
+  public int resetViewport;
 
   enum MotesActionState {
     NONE,
@@ -168,11 +166,11 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
   /* All selected motes */
   public final Set<Mote> selectedMotes = new HashSet<>();
   /* Mote that was under curser while mouse press */
-  Mote cursorMote;
+  private Mote cursorMote;
 
-  MotesActionState mouseActionState = MotesActionState.NONE;
+  private MotesActionState mouseActionState = MotesActionState.NONE;
   /* Position where mouse button was pressed */
-  Position pressedPos;
+  private Position pressedPos;
 
   private static final Cursor MOVE_CURSOR = new Cursor(Cursor.MOVE_CURSOR);
   private final Selection selection;
@@ -229,6 +227,9 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     /* Register external visualizers */
     registerVisualizerSkin(DGRMVisualizerSkin.class);
+    registerVisualizerSkin(LogisticLossVisualizerSkin.class);
+    registerVisualizerSkin(MRMVisualizerSkin.class);
+    registerVisualizerSkin(UDGMVisualizerSkin.class);
     String[] skins = gui.getProjectConfig().getStringArrayValue(Visualizer.class, "SKINS");
 
     for (String skinClass : skins) {
@@ -268,35 +269,22 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
               break;
             }
           }
-          var item = new JCheckBoxMenuItem(Cooja.getDescriptionOf(skinClass), activated);
-          item.putClientProperty("skinclass", skinClass);
-          item.addItemListener(e1 -> {
-            var menuItem = ((JCheckBoxMenuItem) e1.getItem());
-            if (menuItem == null) {
-              logger.error("No menu item");
-              return;
-            }
-
-            var skinClass1 = (Class<VisualizerSkin>) menuItem.getClientProperty("skinclass");
-            if (skinClass1 == null) {
-              logger.error("Unknown visualizer skin class");
-              return;
-            }
-
+          var menuItem = new JCheckBoxMenuItem(Cooja.getDescriptionOf(skinClass), activated);
+          menuItem.addItemListener(e1 -> {
             if (menuItem.isSelected()) {
               // Create and activate new skin.
-              generateAndActivateSkin(skinClass1);
+              generateAndActivateSkin(skinClass);
             } else {
               // Deactivate skin.
               VisualizerSkin skinToDeactivate = null;
               for (var skin : currentSkins) {
-                if (skin.getClass() == skinClass1) {
+                if (skin.getClass() == skinClass) {
                   skinToDeactivate = skin;
                   break;
                 }
               }
               if (skinToDeactivate == null) {
-                logger.error("Unknown visualizer to deactivate: " + skinClass1);
+                logger.error("Unknown visualizer to deactivate: " + skinClass);
                 return;
               }
               skinToDeactivate.setInactive();
@@ -304,7 +292,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
               currentSkins.remove(skinToDeactivate);
             }
           });
-          viewMenu.add(item);
+          viewMenu.add(menuItem);
         }
       }
 
@@ -749,6 +737,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 
         try {
+          @SuppressWarnings("unchecked")
           List<File> list = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
           if (list.size() != 1) {
             return;
@@ -781,6 +770,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           return false;
         }
         try {
+          @SuppressWarnings("unchecked")
           List<File> list = (List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor);
           if (list.size() != 1) {
             return false;
@@ -957,7 +947,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     repaint();
   }
 
-  final Map<Mote, double[]> moveStartPositions = new HashMap<>();
+  private final Map<Mote, double[]> moveStartPositions = new HashMap<>();
 
   private void beginMoveRequest(Mote selectedMote) {
     /* Save start positions and set move-start position to clicked mote */
@@ -1212,13 +1202,13 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       scaleX = 1;
     }
     else {
-      scaleX = (bigX - smallX) / (canvas.getWidth());
+      scaleX = (bigX - smallX) / canvas.getWidth();
     }
     if (smallY == bigY) {
       scaleY = 1;
     }
     else {
-      scaleY = (bigY - smallY) / (canvas.getHeight());
+      scaleY = (bigY - smallY) / canvas.getHeight();
     }
 
     viewportTransform.setToIdentity();
@@ -1387,7 +1377,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           String wanted = element.getText();
           /* Backwards compatibility: se.sics -> org.contikios */
           if (wanted.startsWith("se.sics")) {
-            wanted = wanted.replaceFirst("se\\.sics", "org.contikios");
+            wanted = wanted.replaceFirst("^se\\.sics", "org.contikios");
           }
           for (final var skinClass : visualizerSkins) {
             if (wanted.equals(skinClass.getName()) || wanted.equals(Cooja.getDescriptionOf(skinClass))) {
@@ -1537,8 +1527,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       Simulation simulation = mote.getSimulation();
       SerialPort serialPort = null;
       for (MoteInterface intf : mote.getInterfaces().getInterfaces()) {
-        if (intf instanceof SerialPort) {
-          serialPort = (SerialPort) intf;
+        if (intf instanceof SerialPort port) {
+          serialPort = port;
           break;
         }
       }
@@ -1616,18 +1606,18 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
     private int height;
     private boolean enable;
 
-    public void setSelection(int x, int y, int width, int height) {
+    void setSelection(int x, int y, int width, int height) {
       this.x = x;
       this.y = y;
       this.width = width;
       this.height = height;
     }
 
-    public void setEnabled(boolean enable) {
+    void setEnabled(boolean enable) {
       this.enable = enable;
     }
 
-    public void drawSelection(Graphics g) {
+    void drawSelection(Graphics g) {
       /* only draw if enabled */
       if (!enable) {
         return;

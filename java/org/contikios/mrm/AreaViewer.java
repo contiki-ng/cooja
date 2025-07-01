@@ -86,8 +86,6 @@ import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.ProgressMonitor;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.PluginType;
@@ -98,6 +96,7 @@ import org.contikios.cooja.interfaces.DirectionalAntennaRadio;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
 import org.contikios.mrm.ChannelModel.TxPair;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,18 +127,18 @@ public class AreaViewer extends VisPlugin {
     }
   };
 
-  ChannelModel.TransmissionData dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH;
-  final ButtonGroup visTypeSelectionGroup;
+  private ChannelModel.TransmissionData dataTypeToVisualize = ChannelModel.TransmissionData.SIGNAL_STRENGTH;
+  private final ButtonGroup visTypeSelectionGroup;
 
   // General drawing parameters
   private Point lastHandledPosition = new Point(0,0);
-  private double zoomCenterX = 0.0;
-  private double zoomCenterY = 0.0;
+  private double zoomCenterX;
+  private double zoomCenterY;
   private Point zoomCenterPoint = new Point();
   private double currentZoomX = 1.0f;
   private double currentZoomY = 1.0f;
-  private double currentPanX = 0.0f;
-  private double currentPanY = 0.0f;
+  private double currentPanX;
+  private double currentPanY;
 
   private boolean drawBackgroundImage = true;
   private boolean drawCalculatedObstacles = true;
@@ -149,27 +148,27 @@ public class AreaViewer extends VisPlugin {
   private boolean drawScaleArrow = true;
 
   // Background drawing parameters (meters)
-  private double backgroundStartX = 0.0;
-  private double backgroundStartY = 0.0;
-  private double backgroundWidth = 0.0;
-  private double backgroundHeight = 0.0;
-  private Image backgroundImage = null;
-  private File backgroundImageFile = null;
+  private double backgroundStartX;
+  private double backgroundStartY;
+  private double backgroundWidth;
+  private double backgroundHeight;
+  private Image backgroundImage;
+  private File backgroundImageFile;
 
   // Obstacle drawing parameters (same scale as background)
-  private boolean needToRepaintObstacleImage = false;
-  private double obstacleStartX = 0.0;
-  private double obstacleStartY = 0.0;
-  private double obstacleWidth = 0.0;
-  private double obstacleHeight = 0.0;
-  private Image obstacleImage = null;
+  private boolean needToRepaintObstacleImage;
+  private double obstacleStartX;
+  private double obstacleStartY;
+  private double obstacleWidth;
+  private double obstacleHeight;
+  private Image obstacleImage;
 
   // Channel probabilities drawing parameters (meters)
-  private double channelStartX = 0.0;
-  private double channelStartY = 0.0;
-  private double channelWidth = 0.0;
-  private double channelHeight = 0.0;
-  private Image channelImage = null;
+  private double channelStartX;
+  private double channelStartY;
+  private double channelWidth;
+  private double channelHeight;
+  private Image channelImage;
 
   private final JSlider resolutionSlider;
   private final JScrollPane scrollControlPanel;
@@ -181,19 +180,19 @@ public class AreaViewer extends VisPlugin {
   private static final String antennaImageFilename = "/images/antenna.png";
   private final Image antennaImage;
 
-  private Radio selectedRadio = null;
+  private Radio selectedRadio;
   private boolean inSelectMode = true;
-  private boolean inTrackMode = false;
+  private boolean inTrackMode;
 
-  private ChannelModel.TrackedSignalComponents trackedComponents = null;
+  private ChannelModel.TrackedSignalComponents trackedComponents;
 
   // Coloring variables
   private final JPanel coloringIntervalPanel;
-  private double coloringHighest = 0;
-  private double coloringLowest = 0;
+  private double coloringHighest;
+  private double coloringLowest;
   private boolean coloringIsFixed = true;
 
-  private Thread attenuatorThread = null;
+  private Thread attenuatorThread;
 
   private final JCheckBox showSettingsBox;
   private final JCheckBox backgroundCheckBox;
@@ -293,10 +292,10 @@ public class AreaViewer extends VisPlugin {
     canvas.setBackground(Color.WHITE);
     canvas.setLayout(new BorderLayout());
     canvas.addMouseListener(new MouseAdapter() {
-      private Popup popUpToolTip = null;
-      private boolean temporaryZoom = false;
-      private boolean temporaryPan = false;
-      private boolean trackedPreviously = false;
+      private Popup popUpToolTip;
+      private boolean temporaryZoom;
+      private boolean temporaryPan;
+      private boolean trackedPreviously;
 
       @Override
       public void mouseReleased(MouseEvent e1) {
@@ -355,7 +354,7 @@ public class AreaViewer extends VisPlugin {
         /* Select */
         if (inSelectMode) {
           ArrayList<Radio> hitRadios = trackClickedRadio(e1.getPoint());
-          if (hitRadios == null || hitRadios.size() == 0) {
+          if (hitRadios == null || hitRadios.isEmpty()) {
             if (e1.getButton() != MouseEvent.BUTTON1) {
               selectedRadio = null;
               channelImage = null;
@@ -434,7 +433,7 @@ public class AreaViewer extends VisPlugin {
           t.setTipText("<html>" +
                   trackedComponents.log.replace("\n", "<br>").replace(" pi", " &pi;") +
                   "</html>");
-          if (t.getTipText() == null || t.getTipText().equals("")) {
+          if (t.getTipText() == null || t.getTipText().isEmpty()) {
             return;
           }
           popUpToolTip = PopupFactory.getSharedInstance().getPopup(
@@ -615,7 +614,7 @@ public class AreaViewer extends VisPlugin {
 
             int foundObstacles = 0;
             for (int x = 0; x < obstacleArray.length; x++) {
-              for (int y = 0; y < (obstacleArray[0]).length; y++) {
+              for (int y = 0; y < obstacleArray[0].length; y++) {
                 if (obstacleArray[x][y]) { // Register obstacle.
                   double realWidth = (boxSize * backgroundWidth) / backgroundImage.getWidth(null);
                   double realHeight = (boxSize * backgroundHeight) / backgroundImage.getHeight(null);
@@ -905,8 +904,8 @@ public class AreaViewer extends VisPlugin {
 
       // Pan relative to mouse movement and current zoom
       // This way the mouse "lock" to the canvas
-      currentPanX += ((e.getX() - lastHandledPosition.x)) / currentZoomX;
-      currentPanY += ((e.getY() - lastHandledPosition.y)) / currentZoomY;
+      currentPanX += (e.getX() - lastHandledPosition.x) / currentZoomX;
+      currentPanY += (e.getY() - lastHandledPosition.y) / currentZoomY;
       lastHandledPosition = e.getPoint();
 
       canvas.repaint();
@@ -928,10 +927,9 @@ public class AreaViewer extends VisPlugin {
       }
 
       // Zoom relative to mouse movement (keep XY-proportions)
-      currentZoomY += 0.005 * currentZoomY * ((lastHandledPosition.y - e.getY()));
+      currentZoomY += 0.005 * currentZoomY * (lastHandledPosition.y - e.getY());
       currentZoomY = Math.max(0.05, currentZoomY);
-      currentZoomY = Math.min(1500, currentZoomY);
-      currentZoomX = currentZoomY;
+      currentZoomX = currentZoomY = Math.min(1500, currentZoomY);
 
       // We also need to update the current pan in order to zoom towards the mouse
       currentPanX =  zoomCenterPoint.x/currentZoomX - zoomCenterX;
@@ -995,33 +993,30 @@ public class AreaViewer extends VisPlugin {
   /**
    * Selects which graphical parts should be painted
    */
-  private final ActionListener selectGraphicsHandler = new ActionListener() {
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      if (e.getActionCommand().equals("toggle background")) {
-        drawBackgroundImage = ((JCheckBox) e.getSource()).isSelected();
-      } else if (e.getActionCommand().equals("toggle obstacles")) {
-        drawCalculatedObstacles = ((JCheckBox) e.getSource()).isSelected();
-      } else if (e.getActionCommand().equals("toggle channel")) {
-        drawChannelProbabilities = ((JCheckBox) e.getSource()).isSelected();
-      } else if (e.getActionCommand().equals("toggle radios")) {
-        drawRadios = ((JCheckBox) e.getSource()).isSelected();
+  private final ActionListener selectGraphicsHandler = e -> {
+    // FIXME: use a switch here.
+    if (e.getActionCommand().equals("toggle background")) {
+      drawBackgroundImage = ((JCheckBox) e.getSource()).isSelected();
+    } else if (e.getActionCommand().equals("toggle obstacles")) {
+      drawCalculatedObstacles = ((JCheckBox) e.getSource()).isSelected();
+    } else if (e.getActionCommand().equals("toggle channel")) {
+      drawChannelProbabilities = ((JCheckBox) e.getSource()).isSelected();
+    } else if (e.getActionCommand().equals("toggle radios")) {
+      drawRadios = ((JCheckBox) e.getSource()).isSelected();
 //      } else if (e.getActionCommand().equals("toggle radio activity")) {
 //        drawRadioActivity = ((JCheckBox) e.getSource()).isSelected();
-      } else if (e.getActionCommand().equals("toggle arrow")) {
-        drawScaleArrow = ((JCheckBox) e.getSource()).isSelected();
-      }
-
-      canvas.repaint();
+    } else if (e.getActionCommand().equals("toggle arrow")) {
+      drawScaleArrow = ((JCheckBox) e.getSource()).isSelected();
     }
+    canvas.repaint();
   };
 
   static class ObstacleFinderDialog extends JDialog {
     private final BufferedImage imageToAnalyze;
     private BufferedImage obstacleImage;
-    private JPanel canvasPanel = null;
-    private boolean[][] obstacleArray = null;
-    private boolean exitedOK = false;
+    private JPanel canvasPanel;
+    private boolean[][] obstacleArray;
+    private boolean exitedOK;
 
     private final JSlider redSlider;
     private final JSlider greenSlider;
@@ -1142,7 +1137,8 @@ public class AreaViewer extends VisPlugin {
 
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Red"));
+        tempLabel = new JLabel("Red");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         var tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0);
@@ -1155,10 +1151,12 @@ public class AreaViewer extends VisPlugin {
 
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Green"));
+        tempLabel = new JLabel("Green");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        tempPanel.add(tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0));
+        tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0);
+        tempPanel.add(tempSlider);
         tempSlider.setMajorTickSpacing(50);
         tempSlider.setPaintTicks(true);
         tempSlider.setPaintLabels(true);
@@ -1167,10 +1165,12 @@ public class AreaViewer extends VisPlugin {
 
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Blue"));
+        tempLabel = new JLabel("Blue");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        tempPanel.add(tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0));
+        tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 0);
+        tempPanel.add(tempSlider);
         tempSlider.setMajorTickSpacing(50);
         tempSlider.setPaintTicks(true);
         tempSlider.setPaintLabels(true);
@@ -1180,10 +1180,12 @@ public class AreaViewer extends VisPlugin {
         // Tolerance
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Tolerance"));
+        tempLabel = new JLabel("Tolerance");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        tempPanel.add(tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 128, 0));
+        tempSlider = new JSlider(JSlider.HORIZONTAL, 0, 128, 0);
+        tempPanel.add(tempSlider);
         tempSlider.setMajorTickSpacing(25);
         tempSlider.setPaintTicks(true);
         tempSlider.setPaintLabels(true);
@@ -1193,10 +1195,12 @@ public class AreaViewer extends VisPlugin {
         // Obstacle size
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
-        tempPanel.add(tempLabel = new JLabel("Obstacle size"));
+        tempLabel = new JLabel("Obstacle size");
+        tempPanel.add(tempLabel);
         tempLabel.setPreferredSize(labelDimension);
         tempLabel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-        tempPanel.add(tempSlider = new JSlider(JSlider.HORIZONTAL, 1, 40, 40));
+        tempSlider = new JSlider(JSlider.HORIZONTAL, 1, 40, 40);
+        tempPanel.add(tempSlider);
         tempSlider.setInverted(true);
         tempSlider.setMajorTickSpacing(5);
         tempSlider.setPaintTicks(true);
@@ -1219,7 +1223,8 @@ public class AreaViewer extends VisPlugin {
           }
         });
         tempPanel.add(Box.createHorizontalStrut(5));
-        tempPanel.add(tempButton = new JButton("Preview obstacles"));
+        tempButton = new JButton("Preview obstacles");
+        tempPanel.add(tempButton);
         tempButton.addActionListener(e -> {
           obstacleImage = createObstacleImage();
           canvasPanel.repaint();
@@ -1249,10 +1254,12 @@ public class AreaViewer extends VisPlugin {
         tempPanel = new JPanel();
         tempPanel.setLayout(new BoxLayout(tempPanel, BoxLayout.X_AXIS));
         tempPanel.add(Box.createHorizontalGlue());
-        tempPanel.add(tempButton = new JButton("Cancel"));
+        tempButton = new JButton("Cancel");
+        tempPanel.add(tempButton);
         tempButton.addActionListener(e -> dispose());
         tempPanel.add(Box.createHorizontalStrut(5));
-        tempPanel.add(tempButton = new JButton("OK"));
+        tempButton = new JButton("OK");
+        tempPanel.add(tempButton);
         tempButton.addActionListener(e -> {
           obstacleImage = createObstacleImage();
           exitedOK = true;
@@ -1897,23 +1904,23 @@ public class AreaViewer extends VisPlugin {
 
       // Decide on scale comparator
       double currentArrowDistance = 0.1; // in meters
-      if (currentZoomX < canvas.getWidth() / 2) {
+      if (currentZoomX < canvas.getWidth() / 2.0) {
         currentArrowDistance = 1; // 1m
       }
-      if (10 * currentZoomX < canvas.getWidth() / 2) {
+      if (10 * currentZoomX < canvas.getWidth() / 2.0) {
         currentArrowDistance = 10; // 10m
       }
-      if (100 * currentZoomX < canvas.getWidth() / 2) {
+      if (100 * currentZoomX < canvas.getWidth() / 2.0) {
         currentArrowDistance = 100; // 100m
       }
-      if (1000 * currentZoomX < canvas.getWidth() / 2) {
-        currentArrowDistance = 1000; // 100m
+      if (1000 * currentZoomX < canvas.getWidth() / 2.0) {
+        currentArrowDistance = 1000; // 1000m
       }
 
       // "Arrow" points
       int pixelArrowLength = (int) (currentArrowDistance * currentZoomX);
-      int[] xPoints = new int[] { -pixelArrowLength, -pixelArrowLength, -pixelArrowLength, 0, 0, 0 };
-      int[] yPoints = new int[] { -5, 5, 0, 0, -5, 5 };
+      int[] xPoints = { -pixelArrowLength, -pixelArrowLength, -pixelArrowLength, 0, 0, 0 };
+      int[] yPoints = { -5, 5, 0, 0, -5, 5 };
 
       // Paint arrow and text
       g2d.setTransform(originalTransform);
@@ -1974,7 +1981,7 @@ public class AreaViewer extends VisPlugin {
       }
     }
 
-    if (hitRadios.size() == 0) {
+    if (hitRadios.isEmpty()) {
       return null;
     }
     return hitRadios;
@@ -2177,16 +2184,16 @@ public class AreaViewer extends VisPlugin {
   }
 
   static class ImageSettingsDialog extends JDialog {
-    private double virtualStartX = 0.0;
-    private double virtualStartY = 0.0;
-    private double virtualWidth = 0.0;
-    private double virtualHeight = 0.0;
+    private double virtualStartX;
+    private double virtualStartY;
+    private double virtualWidth;
+    private double virtualHeight;
 
     private final JFormattedTextField virtualStartXField;
     private final JFormattedTextField virtualStartYField;
     private final JFormattedTextField virtualWidthField;
     private final JFormattedTextField virtualHeightField;
-    private boolean terminatedOK = false;
+    private boolean terminatedOK;
 
     /**
      * Creates a new dialog for settings background parameters
@@ -2266,19 +2273,19 @@ public class AreaViewer extends VisPlugin {
       setVisible(true);
     }
 
-    public boolean terminatedOK() {
+    boolean terminatedOK() {
       return terminatedOK;
     }
-    public double getVirtualStartX() {
+    double getVirtualStartX() {
       return virtualStartX;
     }
-    public double getVirtualStartY() {
+    double getVirtualStartY() {
       return virtualStartY;
     }
-    public double getVirtualWidth() {
+    double getVirtualWidth() {
       return virtualWidth;
     }
-    public double getVirtualHeight() {
+    double getVirtualHeight() {
       return virtualHeight;
     }
   }

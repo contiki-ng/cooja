@@ -37,15 +37,15 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
   private final MspMote mote;
   private final CC2520 radio;
 
-  private boolean isInterfered = false;
-  private boolean isTransmitting = false;
-  private boolean isReceiving = false;
+  private boolean isInterfered;
+  private boolean isTransmitting;
+  private boolean isReceiving;
 
   private byte lastOutgoingByte;
   private byte lastIncomingByte;
 
-  private RadioPacket lastOutgoingPacket = null;
-  private RadioPacket lastIncomingPacket = null;
+  private RadioPacket lastOutgoingPacket;
+  private RadioPacket lastIncomingPacket;
 
   public CC2520Radio(Mote m) {
     this.mote = (MspMote)m;
@@ -55,8 +55,8 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
     }
 
     radio.addRFListener(new RFListener() {
-      int len = 0;
-      int expLen = 0;
+      int len;
+      int expLen;
       final byte[] buffer = new byte[127 + 15];
       @Override
       public void receivedByte(byte data) {
@@ -170,11 +170,11 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
 
   @Override
   public void receiveCustomData(Object data) {
-    if (!(data instanceof Byte)) {
+    if (!(data instanceof Byte byteData)) {
       logger.error("Bad custom data: " + data);
       return;
     }
-    lastIncomingByte = (Byte) data;
+    lastIncomingByte = byteData;
 
     final byte inputByte;
     if (isInterfered()) {
@@ -268,13 +268,13 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
 //    return 31;
   }
 
-  double currentSignalStrength = 0;
+  private double currentSignalStrength;
 
   /**
    * Last 8 received signal strengths
    */
   private final double[] rssiLast = new double[8];
-  private int rssiLastCounter = 0;
+  private int rssiLastCounter;
 
   @Override
   public double getCurrentSignalStrength() {

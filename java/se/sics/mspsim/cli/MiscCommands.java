@@ -70,7 +70,7 @@ public class MiscCommands implements CommandBundle {
     handler.registerCommand("grep", new BasicLineCommand("print lines matching the specified pattern", "[-i] [-v] <regexp>") {
       private PrintStream out;
       private Pattern pattern;
-      private boolean isInverted = false;
+      private boolean isInverted;
 
       @Override
       public int executeCommand(CommandContext context) {
@@ -203,7 +203,7 @@ public class MiscCommands implements CommandBundle {
 
       private MSP430 cpu;
       private int period = 1;
-      private int count = 0;
+      private int count;
       private int maxCount = -1;
       private String commandLine;
       private boolean isRunning = true;
@@ -270,7 +270,7 @@ public class MiscCommands implements CommandBundle {
     handler.registerCommand("exec", new ExecCommand());
 
     handler.registerCommand("trig", new BasicLineCommand("trigg command when getting input", "<command>") {
-      String command = null;
+      String command;
       CommandContext context;
       @Override
       public int executeCommand(CommandContext context) {
@@ -332,8 +332,8 @@ public class MiscCommands implements CommandBundle {
           verbose = false;
         }
         if (context.getArgumentCount() == index) {
-          ServiceComponent[] sc = registry.getAllComponents(ServiceComponent.class);
-          if (sc.length == 0) {
+          var sc = registry.getAllComponents(ServiceComponent.class);
+          if (sc.isEmpty()) {
             context.out.println("No services found.");
           } else {
             for (ServiceComponent service : sc) {
@@ -394,8 +394,8 @@ public class MiscCommands implements CommandBundle {
           return 1;
         }
         if ("output".equals(inout)) {
-          if (chip instanceof RFSource) {
-            source = (RFSource) chip;
+          if (chip instanceof RFSource rfSource) {
+            source = rfSource;
             listener = data -> context.out.println(Utils.hex8(data));
             source.addRFListener(listener);
           } else {
@@ -490,10 +490,6 @@ public class MiscCommands implements CommandBundle {
   }
 
   private static ServiceComponent getServiceForName(ComponentRegistry registry, String name) {
-    Object o = registry.getComponent(name);
-    if (o instanceof ServiceComponent) {
-      return (ServiceComponent) o;
-    }
-    return null;
+    return registry.getComponent(name) instanceof ServiceComponent serviceComponent ? serviceComponent : null;
   }
 }

@@ -35,11 +35,18 @@
 package se.sics.mspsim.util;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ComponentRegistry {
 
     private final ArrayList<ComponentEntry> components = new ArrayList<>();
-    private boolean running = false;
+    private boolean running;
+
+    public ComponentRegistry(ComponentEntry... entries) {
+        for (var e : entries) {
+            registerComponent(e.name, e.component);
+        }
+    }
 
     private synchronized ComponentEntry[] getAllEntries() {
         return components.toArray(new ComponentEntry[0]);
@@ -105,15 +112,14 @@ public class ComponentRegistry {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public synchronized <T> T[] getAllComponents(Class<T> type, String name) {
+    public synchronized <T> List<T> getAllComponents(Class<T> type, String name) {
         ArrayList<T> list = new ArrayList<>();
         for (ComponentEntry entry : components) {
             if (type.isInstance(entry.component) && name.equals(entry.name)) {
                 list.add(type.cast(entry.component));
             }
         }
-        return list.toArray((T[]) java.lang.reflect.Array.newInstance(type, list.size()));
+        return list;
     }
 
     public synchronized <T> T getComponent(Class<T> type) {
@@ -125,15 +131,14 @@ public class ComponentRegistry {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public synchronized <T> T[] getAllComponents(Class<T> type) {
+    public synchronized <T> List<T> getAllComponents(Class<T> type) {
         ArrayList<T> list = new ArrayList<>();
         for (ComponentEntry entry : components) {
             if (type.isInstance(entry.component)) {
                 list.add(type.cast(entry.component));
             }
         }
-        return list.toArray((T[]) java.lang.reflect.Array.newInstance(type, list.size()));
+        return list;
     }
 
     public void start() {
@@ -159,5 +164,5 @@ public class ComponentRegistry {
         }
     }
 
-    private record ComponentEntry(String name, Object component) {}
+    public record ComponentEntry(String name, Object component) {}
 }

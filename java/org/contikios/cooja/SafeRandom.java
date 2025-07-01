@@ -43,9 +43,9 @@ import java.util.Random;
  */
 class SafeRandom extends Random {
   
-  final Simulation sim;
-  Thread initThread = null;
-  Boolean simStarted = false;
+  private final Simulation sim;
+  private Thread initThread;
+  private Boolean simStarted = false;
   
   private void assertSimThread() {
     // sim can be null, because setSeed is called by the super-constructor.

@@ -48,14 +48,14 @@ public class MMA7260QT extends Accelerometer {
 
     public static final int MODE_SLEEP = 0x00;
     public static final int MODE_ACTIVE = 0x01;
-    private static final String[] MODE_NAMES = new String[] {
+    private static final String[] MODE_NAMES = {
       "sleep", "active"
     };
-    private static final float[] GSELECT = new float[] {
+    private static final float[] GSELECT = {
         1.5f, 2, 4, 6
     };
 
-    private int gSelect = 0;
+    private int gSelect;
 
     public MMA7260QT(MSP430Core cpu) {
         super("MMA7260QT", cpu);
@@ -116,11 +116,4 @@ public class MMA7260QT extends Accelerometer {
         + String.format(" [x=%.2f (%d),y=%.2f (%d),z=%.2f (%d)]",
                 getX(), getADCX(), getY(), getADCY(), getZ(), getADCZ());
     }
-
-    /* currently just return the gSelect as configuration */
-    @Override
-    public int getConfiguration(int parameter) {
-        return gSelect;
-    }
-
 }

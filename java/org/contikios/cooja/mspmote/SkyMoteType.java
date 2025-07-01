@@ -30,6 +30,7 @@
 
 package org.contikios.cooja.mspmote;
 
+import java.io.IOException;
 import java.util.List;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
@@ -40,6 +41,7 @@ import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
+import org.contikios.cooja.mspmote.interfaces.Msp802154BitErrorRadio;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
 import org.contikios.cooja.mspmote.interfaces.MspClock;
 import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
@@ -50,6 +52,7 @@ import org.contikios.cooja.mspmote.interfaces.SkyButton;
 import org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem;
 import org.contikios.cooja.mspmote.interfaces.SkyFlash;
 import org.contikios.cooja.mspmote.interfaces.SkyTemperature;
+import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.platform.sky.SkyNode;
 
 @ClassDescription("Sky mote")
@@ -58,9 +61,13 @@ public class SkyMoteType extends MspMoteType {
 
   @Override
   public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
-    var cpu = SkyNode.makeCPU(SkyNode.makeChipConfig());
-    var node = new SkyNode(cpu, new CoojaM25P80(cpu));
-    return new SkyMote(this, simulation, node);
+    MSP430 cpu;
+    try {
+      cpu = SkyNode.makeCPU(SkyNode.makeChipConfig(), fileFirmware.getAbsolutePath());
+    } catch (IOException e) {
+      throw new MoteTypeCreationException("Failed to create CPU", e);
+    }
+    return new SkyMote(this, simulation, new SkyNode(cpu, new CoojaM25P80(cpu)));
   }
 
   @Override
@@ -80,8 +87,23 @@ public class SkyMoteType extends MspMoteType {
 
   @Override
   public List<Class<? extends MoteInterface>> getDefaultMoteInterfaceClasses() {
-	  return getAllMoteInterfaceClasses();
+    return List.of(
+            Position.class,
+            IPAddress.class,
+            Mote2MoteRelations.class,
+            MoteAttributes.class,
+            MspClock.class,
+            MspMoteID.class,
+            SkyButton.class,
+            SkyFlash.class,
+            SkyCoffeeFilesystem.class,
+            Msp802154Radio.class,
+            MspSerial.class,
+            MspLED.class,
+            MspDebugOutput.class,
+            SkyTemperature.class);
   }
+
   @Override
   public List<Class<? extends MoteInterface>> getAllMoteInterfaceClasses() {
     return List.of(
@@ -95,6 +117,7 @@ public class SkyMoteType extends MspMoteType {
         SkyFlash.class,
         SkyCoffeeFilesystem.class,
         Msp802154Radio.class,
+        Msp802154BitErrorRadio.class,
         MspSerial.class,
         MspLED.class,
         MspDebugOutput.class,

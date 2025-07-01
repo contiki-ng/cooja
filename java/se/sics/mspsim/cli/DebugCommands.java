@@ -56,8 +56,8 @@ import se.sics.mspsim.util.MapEntry;
 import se.sics.mspsim.util.Utils;
 
 public class DebugCommands implements CommandBundle {
-  private long lastCall = 0;
-  private long lastWall = 0;
+  private long lastCall;
+  private long lastWall;
   private ComponentRegistry registry;
 
   private ELF getELF() {
@@ -104,8 +104,8 @@ public class DebugCommands implements CommandBundle {
 
       ch.registerCommand("watch",
           new BasicAsyncCommand("add a write/read watch to a given address or symbol", "<address or symbol> [length] [char | hex | break]") {
-        int mode = 0;
-        int address = 0;
+        int mode;
+        int address;
         int length = 1;
         MemoryMonitor monitor;
         @Override
@@ -195,8 +195,8 @@ public class DebugCommands implements CommandBundle {
 
       ch.registerCommand("watchreg",
           new BasicAsyncCommand("add a write watch to a given register", "<register> [int]") {
-        int watchMode = 0;
-        int register = 0;
+        int watchMode;
+        int register;
         RegisterMonitor monitor;
         @Override
         public int executeCommand(final CommandContext context) {
@@ -292,7 +292,6 @@ public class DebugCommands implements CommandBundle {
             di = getELF().getDebugInfo(adr + 1);
           }
           if (di != null) {
-            di.getLine();
             context.out.println(di);
           } else {
             context.err.println("No line number found for: " + context.getArgument(0));
@@ -472,6 +471,7 @@ public class DebugCommands implements CommandBundle {
                 while (pos < acount) {
                     String tS = context.getArgument(pos++);
                     if ("ubyte".equals(tS)) {
+                        type = Utils.UBYTE;
                     } else if ("byte".equals(tS)) {
                         type = Utils.BYTE;
                     } else if ("word".equals(tS)) {
@@ -570,17 +570,13 @@ public class DebugCommands implements CommandBundle {
             int start = context.getArgumentAsAddress(0);
             int count = context.getArgumentAsInt(1);
             int size = 1; // unsigned byte
-            boolean signed = false;
             if (context.getArgumentCount() > 2) {
               String tS = context.getArgument(2);
-              if ("byte".equals(tS)) {
-              } else if ("word".equals(tS)) {
-                size = 2;
-              } else if ("uword".equals(tS)) {
+              if ("word".equals(tS) || "uword".equals(tS)) {
                 size = 2;
               }
             }
-            // Does not yet handle signed data...
+            // FIXME: add support to handle signed data.
             for (int i = 0; i < count; i++) {
               int data;
               data = xmem.readByte(start++);
@@ -615,7 +611,7 @@ public class DebugCommands implements CommandBundle {
           }});
 
         ch.registerCommand("gdbstubs", new BasicCommand("open up a gdb stubs server for GDB remote debugging", "port") {
-          private GDBStubs stubs = null;
+          private GDBStubs stubs;
           @Override
           public int executeCommand(CommandContext context) {
             if (stubs != null) {
@@ -635,11 +631,10 @@ public class DebugCommands implements CommandBundle {
             @Override
             public int executeCommand(final CommandContext context) {
                 if (context.getArgumentCount() == 0) {
-                    Loggable[] loggable = cpu.getLoggables();
-                    for (Loggable unit : loggable) {
+                    for (var unit : cpu.getLoggables()) {
                         String id = unit.getID();
                         String name = unit.getName();
-                        if (id == name) {
+                        if (id.equals(name)) {
                             context.out.println("  " + id);
                         } else {
                             context.out.println("  " + id + " (" + name + ')');

@@ -45,7 +45,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.SourceDataLine;
-
 import se.sics.mspsim.core.Chip;
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.MSP430Core;
@@ -68,9 +67,9 @@ public class Beeper extends Chip {
     private static byte[] buffer;
     private static byte[] quiet;
 
-    private boolean beepOn = false;
+    private boolean beepOn;
     private int beepCtrl;
-    private boolean isSoundEnabled = false;
+    private boolean isSoundEnabled;
 
     private SourceDataLine dataLine;
     private FloatControl volume;
@@ -91,7 +90,7 @@ public class Beeper extends Chip {
             for (int i = 0; i < WAVE_LEN; i++) {
                 double f1 = Math.sin(i * 3.141592 * 2 / WAVE_LEN) * 40;
                 f1 += Math.sin(i * 3.141592 * 4 / WAVE_LEN) * 30;
-                buf[i] = (byte) (f1);
+                buf[i] = (byte) f1;
             }
             buffer = buf;
         }
@@ -198,11 +197,4 @@ public class Beeper extends Chip {
         return "Volume: " + getVolume() + " Beep: " + (beepOn ? "on" : "off")
         + " Sound Enabled: " + isSoundEnabled;
     }
-
-    /* just return some value */
-    @Override
-    public int getConfiguration(int parameter) {
-        return beepOn ? 1 : 0;
-    }
-
 }

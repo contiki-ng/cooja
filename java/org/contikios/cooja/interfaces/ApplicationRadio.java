@@ -39,8 +39,6 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteTimeEvent;
 import org.contikios.cooja.RadioPacket;
@@ -63,21 +61,21 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
   private final Simulation simulation;
   private final Mote mote;
 
-  private RadioPacket packetFromMote = null;
-  private RadioPacket packetToMote = null;
+  private RadioPacket packetFromMote;
+  private RadioPacket packetToMote;
 
-  private boolean isTransmitting = false;
-  private boolean isReceiving = false;
-  private boolean isInterfered = false;
+  private boolean isTransmitting;
+  private boolean isReceiving;
+  private boolean isInterfered;
 
   private static final long transmissionEndTime = 0;
 
   private RadioEvent lastEvent = RadioEvent.UNKNOWN;
-  private long lastEventTime = 0;
+  private long lastEventTime;
 
   private double signalStrength = -100;
   private int radioChannel = -1;
-  private double outputPower = 0; /* typical cc2420 values: -25 <-> 0 dBm */
+  private double outputPower; /* typical cc2420 values: -25 <-> 0 dBm */
   private int outputPowerIndicator = 100;
 
   private int interfered;

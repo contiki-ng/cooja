@@ -34,8 +34,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Set;
-
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -56,8 +54,8 @@ public class DGRMVisualizerSkin implements VisualizerSkin {
 
   private static final Logger logger = LoggerFactory.getLogger(DGRMVisualizerSkin.class);
 
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {

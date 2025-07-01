@@ -78,14 +78,14 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	
 	private final ArrayList<RadioConnection> activeConnections = new ArrayList<>();
 	
-	private RadioConnection lastConnection = null;
+	private RadioConnection lastConnection;
 	
 	protected final Simulation simulation;
 	
 	/* Bookkeeping */
-	public int COUNTER_TX = 0;
-	public int COUNTER_RX = 0;
-	public int COUNTER_INTERFERED = 0;
+	public int COUNTER_TX;
+	public int COUNTER_RX;
+	public int COUNTER_INTERFERED;
 
   protected final EventTriggers<EventTriggers.AddRemove, Radio> radioMediumTriggers = new EventTriggers<>();
 
@@ -201,20 +201,21 @@ public abstract class AbstractRadioMedium implements RadioMedium {
             return;
           }
 
-          var data = ((CustomDataRadio) radio).getLastCustomDataTransmitted();
+          var customRadio = (CustomDataRadio) radio;
+          var data = customRadio.getLastCustomDataTransmitted();
           if (data == null) {
             logger.error("No custom data objectTransmission to forward");
             return;
           }
 
           for (var dstRadio : connection.getAllDestinations()) {
-            if (!(dstRadio instanceof CustomDataRadio) ||
-                    !((CustomDataRadio) dstRadio).canReceiveFrom((CustomDataRadio) radio)) {
+            if (!(dstRadio instanceof CustomDataRadio customDstRadio) ||
+                    !customDstRadio.canReceiveFrom(customRadio)) {
               continue; // Radios communicate via radio packets.
             }
 
             if (connection.getDestinationDelay(dstRadio) == 0) {
-              ((CustomDataRadio) dstRadio).receiveCustomData(data);
+              customDstRadio.receiveCustomData(data);
             } else {
               /* EXPERIMENTAL: Simulating propagation delay */
               final var delayedRadio = (CustomDataRadio) dstRadio;
@@ -245,8 +246,8 @@ public abstract class AbstractRadioMedium implements RadioMedium {
           }
 
           for (var dstRadio : connection.getAllDestinations()) {
-            if (radio instanceof CustomDataRadio && dstRadio instanceof CustomDataRadio &&
-                    ((CustomDataRadio) dstRadio).canReceiveFrom((CustomDataRadio) radio)) {
+            if (radio instanceof CustomDataRadio customDataRadio && dstRadio instanceof CustomDataRadio customDstRadio &&
+                    customDstRadio.canReceiveFrom(customDataRadio)) {
               continue; // Radios instead communicate via custom data objects.
             }
             // Forward radio packet.
@@ -298,14 +299,13 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	 * @param radio Source radio
 	 * @return New connection
 	 */
-	abstract public RadioConnection createConnections(Radio radio);
+  protected abstract RadioConnection createConnections(Radio radio);
 	
 	/**
 	 * Updates all radio interfaces' signal strengths according to
 	 * the current active connections.
 	 */
-	public void updateSignalStrengths() {
-		
+  protected void updateSignalStrengths() {
 		/* Reset signal strengths */
 		for (Radio radio : getRegisteredRadios()) {
 			radio.setCurrentSignalStrength(getBaseRssi(radio));
@@ -317,8 +317,8 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 			if (conn.getSource().getCurrentSignalStrength() < SS_STRONG) {
 				conn.getSource().setCurrentSignalStrength(SS_STRONG);
 			}
+      var sourceChannel = conn.getSource().getChannel();
 			for (Radio dstRadio : conn.getDestinations()) {
-        var sourceChannel = conn.getSource().getChannel();
         var dstChannel = dstRadio.getChannel();
         if (sourceChannel >= 0 && dstChannel >= 0 && sourceChannel != dstChannel) {
 					continue;
@@ -331,11 +331,11 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 		
 		/* Set signal strength to weak on interfered */
 		for (RadioConnection conn : conns) {
+      var srcChannel = conn.getSource().getChannel();
 			for (Radio intfRadio : conn.getInterfered()) {
 				if (intfRadio.getCurrentSignalStrength() < SS_STRONG) {
 					intfRadio.setCurrentSignalStrength(SS_STRONG);
 				}
-        var srcChannel = conn.getSource().getChannel();
         var intfChannel = intfRadio.getChannel();
         if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
 					continue;
@@ -462,7 +462,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 	* @param rssi
 	*          The minimum RSSI value to set when sending
 	*/
-	public void setSendRssi(Radio radio, double rssi) {
+  private void setSendRssi(Radio radio, double rssi) {
     simulation.invokeSimulationThread(() -> sendRssi.put(radio, rssi));
 	}
 	

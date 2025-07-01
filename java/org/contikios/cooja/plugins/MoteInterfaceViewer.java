@@ -37,16 +37,12 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
-
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -56,6 +52,7 @@ import org.contikios.cooja.MotePlugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
+import org.jdom2.Element;
 
 /**
  * Mote Interface Viewer views information about a specific mote interface.
@@ -66,8 +63,8 @@ import org.contikios.cooja.VisPlugin;
 @PluginType(PluginType.PType.MOTE_PLUGIN)
 public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, MotePlugin {
   private final Mote mote;
-  private MoteInterface selectedMoteInterface = null;
-  private JPanel currentInterfaceVisualizer = null;
+  private MoteInterface selectedMoteInterface;
+  private JPanel currentInterfaceVisualizer;
   private final JComboBox<String> selectInterfaceComboBox = new JComboBox<>();
   private final JScrollPane mainScrollPane;
 
@@ -203,20 +200,21 @@ public class MoteInterfaceViewer extends VisPlugin implements HasQuickHelp, Mote
 
   @Override
   public String getQuickHelp() {
-    String help = "<b>" + Cooja.getDescriptionOf(this) + "</b>";
-    help += "<p>Lists mote interfaces, and allows mote inspection and interaction via mote interface visualizers.";
+    StringBuilder help = new StringBuilder();
+    help.append("<b>").append(Cooja.getDescriptionOf(this)).append("</b>");
+    help.append("<p>Lists mote interfaces, and allows mote inspection and interaction via mote interface visualizers.");
 
     MoteInterface intf = selectedMoteInterface;
     if (intf != null) {
-      if (intf instanceof HasQuickHelp) {
-        help += "<p>" + ((HasQuickHelp)intf).getQuickHelp();
+      if (intf instanceof HasQuickHelp hasQuickHelp) {
+        help.append("<p>").append(hasQuickHelp.getQuickHelp());
       } else {
-        help += "<p><b>" + Cooja.getDescriptionOf(intf) + "</b>";
-        help += "<p>No help available";
+        help.append("<p><b>").append(Cooja.getDescriptionOf(intf)).append("</b>");
+        help.append("<p>No help available");
       }
     }
 
-    return help;
+    return help.toString();
   }
 
   @Override

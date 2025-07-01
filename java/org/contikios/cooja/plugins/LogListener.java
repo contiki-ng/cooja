@@ -51,9 +51,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.AbstractAction;
@@ -105,7 +107,7 @@ import org.slf4j.LoggerFactory;
 public class LogListener extends VisPlugin implements HasQuickHelp {
   private static final Logger logger = LoggerFactory.getLogger(LogListener.class);
 
-  private final Color[] BG_COLORS = new Color[] {
+  private final Color[] BG_COLORS = {
       new Color(200, 200, 200),
       new Color(200, 200, 255),
       new Color(200, 255, 200),
@@ -134,7 +136,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   public static final long TIME_HOUR = 60*TIME_MINUTE;
 
   private boolean formatTimeString = true;
-  private boolean hasHours = false;
+  private boolean hasHours;
 
   private final JTable logTable;
   private final TableRowSorter<TableModel> logFilter;
@@ -153,10 +155,10 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   private boolean backgroundColors = true;
   private final JCheckBoxMenuItem colorCheckbox;
 
-  private boolean inverseFilter = false;
+  private boolean inverseFilter;
   private final JCheckBoxMenuItem inverseFilterCheckbox;
 
-  private boolean hideDebug = false;
+  private boolean hideDebug;
   private final JCheckBoxMenuItem hideDebugCheckbox;
 
   private final JCheckBoxMenuItem appendCheckBox;
@@ -536,7 +538,6 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     adjuster.packColumns();
 
     /* Popup menu */
-
     JPopupMenu popupMenu = new JPopupMenu();
     JMenu focusMenu = new JMenu("Show in");
     focusMenu.add(new JMenuItem(showInAllAction));
@@ -544,6 +545,12 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
     focusMenu.add(new JMenuItem(timeLineAction));
     focusMenu.add(new JMenuItem(radioLoggerAction));
     popupMenu.add(focusMenu);
+    popupMenu.add(new JMenuItem(copyAllAction));
+    popupMenu.add(new JMenuItem(copyAllMessagesAction));
+    popupMenu.add(new JMenuItem(copyAction));
+    popupMenu.addSeparator();
+    popupMenu.add(new JMenuItem(clearAction));
+    logTable.setComponentPopupMenu(popupMenu);
     /* Fetch log output history */
     LogOutputEvent[] history = simulation.getEventCentral().getLogOutputHistory();
     if (history.length > 0) {
@@ -569,20 +576,18 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     /* Start observing motes for new log output */
     logUpdateAggregator.start();
-    simulation.getEventCentral().addLogOutputListener(logOutputListener = new LogOutputListener() {
-      @Override
-      public void newLogOutput(LogOutputEvent ev) {
-        if (!hasHours && ev.getTime() > TIME_HOUR) {
-          hasHours = true;
-          repaintTimeColumn();
-        }
-        LogData data = new LogData(ev);
-        logUpdateAggregator.add(data);
-        if (appendToFile) {
-          appendToFile(appendStreamFile, data.getTime() + "\t" + data.getID() + "\t" + data.ev.getMessage() + "\n");
-        }
+    logOutputListener = ev -> {
+      if (!hasHours && ev.getTime() > TIME_HOUR) {
+        hasHours = true;
+        repaintTimeColumn();
       }
-    });
+      var data = new LogData(ev);
+      logUpdateAggregator.add(data);
+      if (appendToFile) {
+        appendToFile(appendStreamFile, data.getTime() + "\t" + data.getID() + "\t" + data.ev.getMessage() + "\n");
+      }
+    };
+    simulation.getEventCentral().addLogOutputListener(logOutputListener);
 
     /* UI components */
     JPanel filterPanel = new JPanel();
@@ -710,7 +715,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     try {
     	final RowFilter<Object,Integer> regexp;
-      if (str != null && str.length() > 0) {
+      if (str != null && !str.isEmpty()) {
       	regexp = RowFilter.regexFilter(str, COLUMN_FROM, COLUMN_DATA, COLUMN_CONCAT);
       } else {
       	regexp = null;
@@ -773,19 +778,19 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
   private enum FilterState { NONE, PASS, REJECTED }
 
   private class LogData {
-    public final LogOutputEvent ev;
-    public       FilterState    filtered;
+    final LogOutputEvent ev;
+    FilterState    filtered;
 
-    public LogData(LogOutputEvent ev) {
+    LogData(LogOutputEvent ev) {
       this.ev = ev;
       this.filtered = FilterState.NONE;
     }
 
-    public String getID() {
+    String getID() {
       return "ID:" + ev.getMote().getID();
     }
 
-    public String getTime() {
+    String getTime() {
       if (formatTimeString) {
         return getFormattedTime(ev.getTime());
       } else {
@@ -793,7 +798,7 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
     }
 
-    public void setFiltered(boolean pass) {
+    void setFiltered(boolean pass) {
         if (pass)
             filtered = FilterState.PASS;
         else
@@ -807,10 +812,10 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
   }
 
-  private boolean appendToFile = false;
-  private File appendStreamFile = null;
-  private boolean appendToFileWroteHeader = false;
-  private PrintWriter appendStream = null;
+  private boolean appendToFile;
+  private File appendStreamFile;
+  private boolean appendToFileWroteHeader;
+  private PrintWriter appendStream;
   public boolean appendToFile(File file, String text) {
     /* Close stream */
     if (file == null) {
@@ -839,7 +844,8 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
 
     /* Append to file */
     if (!appendToFileWroteHeader) {
-      appendStream.println("-- Log Listener [" + simulation.getTitle() + "]: Started at " + (new Date()));
+      appendStream.println("-- Log Listener [" + simulation.getTitle() + "]: Started at " +
+              ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.RFC_1123_DATE_TIME));
       appendToFileWroteHeader = true;
     }
     appendStream.print(text);

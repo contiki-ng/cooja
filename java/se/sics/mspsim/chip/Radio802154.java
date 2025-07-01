@@ -39,7 +39,7 @@ public abstract class Radio802154 extends Chip implements RFListener, RFSource {
     protected RFListener rfListener;
     protected ChannelListener channelListener;
 
-    public Radio802154(String id, String name, MSP430Core cpu) {
+    protected Radio802154(String id, String name, MSP430Core cpu) {
         super(id, name, cpu);
     }
 

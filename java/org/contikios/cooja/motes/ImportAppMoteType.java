@@ -41,16 +41,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.contikios.cooja.Cooja;
-import org.jdom2.Element;
-
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.dialogs.ImportAppMoteDialog;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,9 +60,9 @@ import org.slf4j.LoggerFactory;
 public class ImportAppMoteType extends AbstractApplicationMoteType {
   private static final Logger logger = LoggerFactory.getLogger(ImportAppMoteType.class);
 
-  private File moteClassPath = null;
-  private String moteClassName = null;
-  private Constructor<? extends AbstractApplicationMote> moteConstructor = null;
+  private File moteClassPath;
+  private String moteClassName;
+  private Constructor<? extends AbstractApplicationMote> moteConstructor;
 
   public ImportAppMoteType() {
     super(true);
@@ -148,7 +146,7 @@ public class ImportAppMoteType extends AbstractApplicationMoteType {
               + (moteClassPath != null ? moteClassPath.getAbsolutePath() : "") + " " + moteClassName, e);
     }
 
-    if (getDescription() == null || getDescription().length() == 0) {
+    if (getDescription() == null || getDescription().isEmpty()) {
       setDescription("Imported Mote Type #" + moteClassName);
     }
     return true;

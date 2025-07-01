@@ -35,8 +35,8 @@ package org.contikios.cooja;
  */
 public abstract class TimeEvent {
 
-  private boolean isQueued = false;
-  private boolean isScheduled = false;
+  private boolean isQueued;
+  private boolean isScheduled;
 
   public TimeEvent() {
   }

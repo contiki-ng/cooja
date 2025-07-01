@@ -37,6 +37,7 @@
 package se.sics.mspsim.core;
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.util.ArrayUtils;
+import se.sics.mspsim.util.DefaultEmulationLogger;
 
 /**
  * @author Joakim Eriksson, SICS
@@ -56,12 +57,12 @@ public abstract class Chip implements Loggable, EventSource {
   private ConfigurationChangeListener[] ccListeners;
 
   private EventListener eventListener;
-  protected boolean sendEvents = false;
-  private String[] modeNames = null;
+  protected boolean sendEvents;
+  private String[] modeNames;
   private int mode;
   private int chipState;
-  protected EmulationLogger logger;
-  protected boolean DEBUG = false;
+  protected final EmulationLogger logger;
+  protected boolean DEBUG;
   protected int logLevel;
 
   public Chip(String id, MSP430Core cpu) {
@@ -75,6 +76,11 @@ public abstract class Chip implements Loggable, EventSource {
     if (cpu != null) {
       logger = cpu.getLogger();
       cpu.addChip(this);
+    } else {
+      if (!(this instanceof MSP430Core thisCPU)) {
+        throw new IllegalArgumentException("Initializing Chip without an MSP430Core available");
+      }
+      logger = new DefaultEmulationLogger(thisCPU, System.out);
     }
   }
 
@@ -189,10 +195,6 @@ public abstract class Chip implements Loggable, EventSource {
         }
       }
   }
-
-  /* interface for getting hold of configuration values - typically mapped to some kind of address */
-  public abstract int getConfiguration(int parameter);
-
 
   @Override
   public String getID() {

@@ -30,8 +30,6 @@
 package org.contikios.cooja.contikimote.interfaces;
 
 import javax.swing.JPanel;
-
-
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.contikimote.ContikiMote;
@@ -50,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * <li>clock_time_t simCurrentTime
  * <li>rtimer_clock_t simRtimerCurrentTicks
  * <li>clock_time_t simEtimerNextExpirationTime
- * <li>rtimer_clock_t simEtimerNextExpirationTime
+ * <li>rtimer_clock_t simRtimerNextExpirationTime
  * <li>int simEtimerProcessRunValue
  * <li>int simRtimerProcessRunValue
  * <li>int simEtimerPending
@@ -87,7 +85,7 @@ public class ContikiClock extends Clock implements PolledBeforeActiveTicks, Poll
   public void setTime(long newTime) {
     moteTime = newTime;
     if (moteTime > 0) {
-      moteMem.setIntValueOf("simCurrentTime", (int)(newTime/1000));
+      moteMem.setInt64ValueOf("simCurrentTime", newTime / 1000);
     }
   }
 
@@ -149,7 +147,7 @@ public class ContikiClock extends Clock implements PolledBeforeActiveTicks, Poll
     }
 
     /* Request tick next wakeup time for Etimer */
-    long etimerNextExpirationTime = (long)moteMem.getInt32ValueOf("simEtimerNextExpirationTime") * Simulation.MILLISECOND;
+    long etimerNextExpirationTime = moteMem.getInt64ValueOf("simEtimerNextExpirationTime") * Simulation.MILLISECOND;
     long etimerTimeToNextExpiration = etimerNextExpirationTime - moteTime;
     if (etimerTimeToNextExpiration <= 0) {
       /* logger.warn(mote.getID() + ": Event timer already expired, but has been delayed: " + etimerTimeToNextExpiration); */
@@ -169,9 +167,4 @@ public class ContikiClock extends Clock implements PolledBeforeActiveTicks, Poll
   public JPanel getInterfaceVisualizer() {
     return null;
   }
-
-  @Override
-  public void releaseInterfaceVisualizer(JPanel panel) {
-  }
-
 }

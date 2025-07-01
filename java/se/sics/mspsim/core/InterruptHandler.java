@@ -7,7 +7,7 @@ package se.sics.mspsim.core;
  * @author joakim
  *
  */
-public interface InterruptHandler {
+interface InterruptHandler {
   // We should add "Interrupt serviced..." to indicate that its latest
   // Interrupt was serviced...
   void interruptServiced(int vector);

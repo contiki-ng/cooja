@@ -40,6 +40,8 @@
  */
 package se.sics.mspsim.extutil.jfreechart;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.jfree.data.general.Series;
 import se.sics.mspsim.cli.AbstractWindowDataHandler;
 
@@ -49,6 +51,16 @@ import se.sics.mspsim.cli.AbstractWindowDataHandler;
  */
 public abstract class JFreeWindowDataHandler extends AbstractWindowDataHandler {
 
+  private HashMap<Integer,String> labelMap = new HashMap<>();
+
+  protected String getDataSeriesLabel(int index) {
+    return labelMap.get(index);
+  }
+
+  protected String getDataSeriesLabel(int index, String defaultLabel) {
+    var label = getDataSeriesLabel(index);
+    return label != null ? label : defaultLabel;
+  }
 
   public abstract int getDataSeriesCount();
   public abstract Series getDataSeries(int index);
@@ -58,13 +70,8 @@ public abstract class JFreeWindowDataHandler extends AbstractWindowDataHandler {
    */
   @Override
   public void setProperty(int index, String param, String[] args) {
-    if (index > getDataSeriesCount()) {
-      throw new IndexOutOfBoundsException("Illegal index: " + index);
-    }
     if ("label".equals(param)) {
-      getDataSeries(index).setKey(args[0]);
-      getComponent().revalidate();
-      getComponent().repaint();
+      labelMap.put(index, args[0]);
     }
   }
 

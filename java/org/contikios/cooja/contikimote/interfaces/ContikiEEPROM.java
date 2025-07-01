@@ -55,10 +55,9 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
-import org.jdom2.Element;
-
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,8 +84,8 @@ public class ContikiEEPROM implements MoteInterface, PolledAfterActiveTicks {
   public static final int EEPROM_SIZE = 1024; /* Configure EEPROM size here and in eeprom.c. Should really be multiple of 16 */
   private final Mote mote;
   private final VarMemory moteMem;
-  private int lastRead = 0;
-  private int lastWritten = 0;
+  private int lastRead;
+  private int lastWritten;
   private final LinkedHashMap<JPanel, Updates> labels = new LinkedHashMap<>();
 
   /**
@@ -162,15 +161,15 @@ public class ContikiEEPROM implements MoteInterface, PolledAfterActiveTicks {
     return lastWritten;
   }
 
-  static String byteArrayToPrintableCharacters(byte[] data, int offset, int length) {
+  private static String byteArrayToPrintableCharacters(byte[] data, int offset, int length) {
       StringBuilder sb = new StringBuilder();
       for (int i = offset; i < offset + length; i++) {
-        sb.append(data[i] > 31 && data[i] < 128 ? (char) data[i] : '.');
+        sb.append(data[i] > 31 ? (char) data[i] : '.');
       }
       return sb.toString();
   }
   
-  static String byteArrayToHexList(byte[] data, int offset, int length) {
+  private static String byteArrayToHexList(byte[] data, int offset, int length) {
       StringBuilder sb = new StringBuilder();
             
       for (int i = 0; i < length; i++) {
@@ -187,7 +186,7 @@ public class ContikiEEPROM implements MoteInterface, PolledAfterActiveTicks {
       return sb.toString();
   }
   
-  void redrawDataView(JTextArea textArea) {
+  private void redrawDataView(JTextArea textArea) {
       StringBuilder sb = new StringBuilder();
       Formatter fmt = new Formatter(sb);
       byte[] data = getEEPROMData();

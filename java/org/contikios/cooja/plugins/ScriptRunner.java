@@ -70,6 +70,7 @@ import org.contikios.cooja.Plugin;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
+import org.contikios.cooja.dialogs.JResourceChooser;
 import org.contikios.cooja.util.StringUtils;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -82,18 +83,10 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
 
   private final Cooja gui;
 
-  private static final String[] EXAMPLE_SCRIPTS = new String[] {
-      "basic.js", "Various commands",
-      "helloworld.js", "Wait for 'Hello, world'",
-      "log_all.js", "Just log all printf()'s and timeout",
-      "shell.js", "Basic shell interaction",
-      "plugins.js", "Interact with surrounding Cooja plugins",
-  };
-
   private final Simulation simulation;
   private final LogScriptEngine engine;
 
-  private boolean activated = false;
+  private boolean activated;
 
   /** The script text when running in headless mode. */
   private final ArrayList<String> headlessScript = new ArrayList<>();
@@ -111,7 +104,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
       frame = null;
       editorTabs = null;
       logTextArea = null;
-      engine = simulation.newScriptEngine(null);
+      engine = simulation.newScriptEngine(null, Cooja.configuration.nashornArgs());
       return;
     }
 
@@ -137,7 +130,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
     logTextArea.setMargin(new Insets(5,5,5,5));
     logTextArea.setEditable(false);
     logTextArea.setCursor(null);
-    engine = simulation.newScriptEngine(logTextArea);
+    engine = simulation.newScriptEngine(logTextArea, Cooja.configuration.nashornArgs());
 
     var newScript = new JMenuItem("New");
     newScript.addActionListener(l -> {
@@ -168,17 +161,16 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
       }
     });
     fileMenu.add(closeTab);
-    /* Example scripts */
-    final JMenu examplesMenu = new JMenu("Load example script");
-    for (int i=0; i < EXAMPLE_SCRIPTS.length; i += 2) {
-      final String file = EXAMPLE_SCRIPTS[i];
-      JMenuItem exampleItem = new JMenuItem(EXAMPLE_SCRIPTS[i+1]);
-      exampleItem.addActionListener(e -> {
-        checkForUpdatesAndSave();
-        updateScript(loadScript(file), null);
-      });
-      examplesMenu.add(exampleItem);
-    }
+    // Example scripts.
+    var examplesMenu = new JMenuItem("Load example script...");
+    examplesMenu.addActionListener(e -> {
+      var f = JResourceChooser.newResourceChooser(ScriptRunner.class, "/scripts");
+      if (f == null) {
+        return;
+      }
+      checkForUpdatesAndSave();
+      updateScript(loadScript(f), null);
+    });
     fileMenu.add(examplesMenu);
 
     final JCheckBoxMenuItem activateMenuItem = new JCheckBoxMenuItem("Activate");
@@ -240,7 +232,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
     }
 
     /* Set default script */
-    updateScript(loadScript(EXAMPLE_SCRIPTS[0]), null);
+    updateScript(loadScript("basic.js"), null);
   }
 
   private void saveScript(boolean saveToLinkedFile) {
@@ -286,7 +278,7 @@ public class ScriptRunner implements Plugin, HasQuickHelp {
   public void startPlugin() {
   }
 
-  public boolean setLinkFile(File source) {
+  private boolean setLinkFile(File source) {
     String script = StringUtils.loadFromFile(source);
     if (script == null) {
       logger.error("Could not read " + source);

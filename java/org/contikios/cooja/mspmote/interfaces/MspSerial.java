@@ -29,14 +29,12 @@
 
 package org.contikios.cooja.mspmote.interfaces;
 
-import java.util.Vector;
-
+import java.util.ArrayList;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.dialogs.SerialUI;
-import org.contikios.cooja.interfaces.SerialPort;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
 import se.sics.mspsim.core.USARTSource;
@@ -45,14 +43,14 @@ import se.sics.mspsim.core.USARTSource;
  * @author Fredrik Osterlind
  */
 @ClassDescription("Serial port")
-public class MspSerial extends SerialUI implements SerialPort {
+public class MspSerial extends SerialUI {
   private static final long DELAY_INCOMING_DATA = 69; /* 115200 bit/s */
   
   private final Simulation simulation;
   private final MspMote mote;
   private final USARTSource usart;
   
-  private final Vector<Byte> incomingData = new Vector<>();
+  private final ArrayList<Byte> incomingData = new ArrayList<>();
  
   private final TimeEvent writeDataEvent;
 
@@ -66,31 +64,31 @@ public class MspSerial extends SerialUI implements SerialPort {
     usart = getUSARTSource(this.mote);
     if (usart != null) {
       usart.addUSARTListener((source, data) -> MspSerial.this.dataReceived(data));
-    }
-    // FIXME: should writeDataEvent be inside usart != null block?
-    writeDataEvent = new MspMoteTimeEvent(this.mote) {
-      @Override
-      public void execute(long t) {
-        super.execute(t);
-        boolean finished = false;
-        byte b = 0;
-        synchronized (incomingData) {
-          if (incomingData.isEmpty() || !usart.isReceiveFlagCleared()) {
-            finished = true;
-          } else { // Write byte to serial port.
-            b = incomingData.remove(0);
+      writeDataEvent = new MspMoteTimeEvent(this.mote) {
+        @Override
+        public void execute(long t) {
+          super.execute(t);
+          boolean finished = false;
+          byte b = 0;
+          synchronized (incomingData) {
+            if (incomingData.isEmpty() || !usart.isReceiveFlagCleared()) {
+              finished = true;
+            } else { // Write byte to serial port.
+              b = incomingData.remove(0);
+            }
+          }
+          if (!finished) {
+            usart.byteReceived(b);
+            mote.requestImmediateWakeup();
+          }
+          if (!incomingData.isEmpty()) {
+            simulation.scheduleEvent(this, t + DELAY_INCOMING_DATA);
           }
         }
-        if (!finished) {
-          usart.byteReceived(b);
-          mote.requestImmediateWakeup();
-        }
-        if (!incomingData.isEmpty()) {
-          simulation.scheduleEvent(this, t+DELAY_INCOMING_DATA);
-        }
-      }
-    };
-
+      };
+    } else {
+      writeDataEvent = null;
+    }
   }
 
   protected USARTSource getUSARTSource(MspMote mote) {
@@ -99,6 +97,7 @@ public class MspSerial extends SerialUI implements SerialPort {
 
   @Override
   public void writeByte(byte b) {
+    if (writeDataEvent == null) return;
     incomingData.add(b);
     if (writeDataEvent.isScheduled()) {
       return;

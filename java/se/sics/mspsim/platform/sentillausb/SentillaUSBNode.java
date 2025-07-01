@@ -40,7 +40,7 @@
  */
 
 package se.sics.mspsim.platform.sentillausb;
-import se.sics.mspsim.chip.FileStorage;
+
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.core.IOPort;
@@ -51,7 +51,7 @@ import se.sics.mspsim.platform.sky.CC2420Node;
 /**
  * Emulation of Sentilla Gateway USB Mote
  */
-public class SentillaUSBNode extends CC2420Node {
+public class SentillaUSBNode extends CC2420Node<M25P80> {
 
     public static final int MODE_LEDS_OFF = 0;
     public static final int MODE_LEDS_1 = 1;
@@ -62,26 +62,20 @@ public class SentillaUSBNode extends CC2420Node {
     public static final int GREEN_LED = 0x20;
     public static final int RED_LED = 0x10;
 
-    private final M25P80 flash;
     private SentillaUSBGui gui;
 
-    private Leds leds;
+    private final Leds leds;
     boolean redLed;
     boolean greenLed;
 
     public SentillaUSBNode(MSP430 cpu, M25P80 flash) {
-        super("Sentilla USB", cpu);
-        this.flash = flash;
-        registry.registerComponent("xmem", flash);
+        super("Sentilla USB", cpu, flash);
         setMode(MODE_LEDS_OFF);
+        leds = new Leds(cpu, LEDS);
     }
 
     public Leds getLeds() {
         return leds;
-    }
-
-    public M25P80 getFlash() {
-        return flash;
     }
 
     // USART Listener
@@ -101,16 +95,8 @@ public class SentillaUSBNode extends CC2420Node {
     }
 
     @Override
-    public void setupNodePorts() {
-        super.setupNodePorts();
-        leds = new Leds(cpu, LEDS);
-        if (flashFile != null) {
-            getFlash().setStorage(new FileStorage(flashFile));
-        }
-    }
-
-    @Override
     public void setupGUI() {
+        super.setupGUI();
         if (gui == null) {
             gui = new SentillaUSBGui(this);
             registry.registerComponent("nodegui", gui);

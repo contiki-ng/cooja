@@ -31,8 +31,6 @@
 package org.contikios.cooja;
 
 import java.util.ArrayList;
-
-
 import org.contikios.cooja.interfaces.Radio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +55,7 @@ import org.slf4j.LoggerFactory;
 public class RadioConnection {
   private static final Logger logger = LoggerFactory.getLogger(RadioConnection.class);
 
-  private static int ID = 0; /* Unique radio connection ID. For internal use */
+  private static int ID; /* Unique radio connection ID. For internal use */
   private final int id;
 
   private final Radio source;
@@ -231,7 +229,7 @@ public class RadioConnection {
 
   @Override
   public String toString() {
-    if (destinationsNonInterfered.size() == 0) {
+    if (destinationsNonInterfered.isEmpty()) {
       return id + ": Radio connection: " + source.getMote() + " -> none";
     }
     if (destinationsNonInterfered.size() == 1) {

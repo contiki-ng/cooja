@@ -29,6 +29,8 @@
  */
 package org.contikios.cooja.plugins.skins;
 
+import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -39,7 +41,6 @@ import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.beans.PropertyVetoException;
 import java.util.Set;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -50,11 +51,8 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
-import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -91,9 +89,9 @@ public class UDGMVisualizerSkin implements VisualizerSkin {
   private static final Color COLOR_TX = new Color(0, 255, 0, 100);
   private static final Color COLOR_INT = new Color(50, 50, 50, 100);
 
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
-  private UDGM radioMedium = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
+  private UDGM radioMedium;
 
   private JInternalFrame rrFrame;
   private Box ratioRX, ratioTX, rangeTX, rangeINT;

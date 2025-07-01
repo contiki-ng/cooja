@@ -65,7 +65,7 @@ public class SkyCoffeeFilesystem implements MoteInterface {
 
   private final Mote mote;
 
-  private CoffeeFS coffeeFS = null;
+  private CoffeeFS coffeeFS;
   private CoffeeFile[] files = new CoffeeFile[0];
 
   private static final int COLUMN_NAME = 0;
@@ -207,7 +207,6 @@ public class SkyCoffeeFilesystem implements MoteInterface {
 
     files = coffeeFS.getFiles().values().toArray(new CoffeeFile[0]);
     for (CoffeeFile file : files) {
-      file.getName();
       try {
         file.getLength();
       } catch (IOException e) {

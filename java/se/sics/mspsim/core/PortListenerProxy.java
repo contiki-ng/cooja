@@ -43,7 +43,7 @@ public class PortListenerProxy implements PortListener {
 
     private PortListener[] portListeners;
 
-    public PortListenerProxy(PortListener listen1, PortListener listen2) {
+    private PortListenerProxy(PortListener listen1, PortListener listen2) {
         portListeners = new PortListener[] { listen1, listen2 };
     }
 
@@ -51,8 +51,8 @@ public class PortListenerProxy implements PortListener {
         if (portListener == null) {
             return listener;
         }
-        if (portListener instanceof PortListenerProxy) {
-            return ((PortListenerProxy)portListener).add(listener);
+        if (portListener instanceof PortListenerProxy portListenerProxy) {
+            return portListenerProxy.add(listener);
         }
         return new PortListenerProxy(portListener, listener);
     }
@@ -61,8 +61,8 @@ public class PortListenerProxy implements PortListener {
         if (portListener == listener) {
             return null;
         }
-        if (portListener instanceof PortListenerProxy) {
-            return ((PortListenerProxy)portListener).remove(listener);
+        if (portListener instanceof PortListenerProxy portListenerProxy) {
+            return portListenerProxy.remove(listener);
         }
         return portListener;
     }
@@ -87,7 +87,7 @@ public class PortListenerProxy implements PortListener {
     @Override
     public void portWrite(IOPort source, int data) {
         PortListener[] listeners = this.portListeners;
-        for(PortListener l : listeners) {
+        for (PortListener l : listeners) {
             l.portWrite(source, data);
         }
     }

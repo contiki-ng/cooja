@@ -34,7 +34,6 @@ package se.sics.mspsim.core;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 
 
@@ -130,14 +129,14 @@ public class RTC extends IOUnit {
         }
 
         /* RTCCTL0 */
-        private boolean oscFaultInterruptEnable = false;
-        private boolean eventInterruptEnable = false;
-        private boolean alarmInterruptEnable = false;
-        private boolean readyInterruptEnable = false;
-        private boolean oscFaultInterruptFlag = false;
-        private boolean eventInterruptFlag = false;
-        private boolean alarmInterruptFlag = false;
-        private boolean readyInterruptFlag = false;
+        private boolean oscFaultInterruptEnable;
+        private boolean eventInterruptEnable;
+        private boolean alarmInterruptEnable;
+        private boolean readyInterruptEnable;
+        private boolean oscFaultInterruptFlag;
+        private boolean eventInterruptFlag;
+        private boolean alarmInterruptFlag;
+        private boolean readyInterruptFlag;
 
         /**
          * Get the CTLO (byte) register
@@ -153,7 +152,7 @@ public class RTC extends IOUnit {
                 ctl0 |= (oscFaultInterruptFlag ? 1 : 0) << 3;
                 ctl0 |= (eventInterruptFlag ? 1 : 0) << 2;
                 ctl0 |= (alarmInterruptFlag ? 1 : 0) << 1;
-                ctl0 |= (readyInterruptFlag ? 1 : 0) << 0;
+                ctl0 |= (readyInterruptFlag ? 1 : 0);
                 return ctl0;
         }
 
@@ -183,18 +182,18 @@ public class RTC extends IOUnit {
         }
 
         /* RTCCTL1 */
-        private boolean formatBCD = false;
+        private boolean formatBCD;
         private boolean rtcHold = true;
         private boolean modeCalendar = true;
         private boolean rtcReady = true;
-        private int clockSource = 0;
-        private int rtcEvent = 0;
+        private int clockSource;
+        private int rtcEvent;
 
         /**
          * Handler of the 4 (byte) counter registers, for simplicity they can be
          * collected in a single 32-bit variable.
          */
-        private long rtcCount = 0;
+        private long rtcCount;
 
         /**
          * Period to increment the counters
@@ -202,13 +201,13 @@ public class RTC extends IOUnit {
         private double period = osc32KHzMs;
         private static final float osc32KHzMs = 0.031f;
 
-        private int preScaler0Src = 0;
-        private int preScaler0Div = 0;
-        private boolean preScaler0Hold = false;
+        private int preScaler0Src;
+        private int preScaler0Div;
+        private boolean preScaler0Hold;
 
-        private int preScaler1Src = 0;
-        private int preScaler1Div = 0;
-        private boolean preScaler1Hold = false;
+        private int preScaler1Src;
+        private int preScaler1Div;
+        private boolean preScaler1Hold;
 
         private static final int RT0SSEL = 0x4000;
         private static final int RT0PSHOLD = 0x0100;
@@ -303,7 +302,7 @@ public class RTC extends IOUnit {
 
                         } else {
                                 rtcCount += 1;
-                                long overflow = ((1L << ((rtcEvent + 1) * 8)));
+                                long overflow = (1L << ((rtcEvent + 1) * 8));
                                 overflow -= 1;
                                 if ((rtcCount & overflow) == 0) {
                                         generateInterrupt();
@@ -487,7 +486,7 @@ public class RTC extends IOUnit {
                         logw(WarningType.MISALIGNED_WRITE, "byte access not implemented");
                 }
 
-                int lo = (value) & 0xff; // low byte
+                int lo = value & 0xff; // low byte
                 int hi = (value >> 8) & 0xff; // high byte
 
                 switch (address - offset) {
@@ -695,31 +694,7 @@ public class RTC extends IOUnit {
                 }
         }
 
-        /*
-         * The inherited log function is not working for whatever reason. A quick
-         * redefinition helps a lot while developing the module
-         */
-        @Override
-        protected void log(String msg) {
-                if (DEBUG) {
-                        System.out.println(msg);
-                }
-        }
-
-        /**
-         * Log using printf format
-         *
-         * @param format
-         * @param arguments
-         */
-        protected void log(final String format, final Object... arguments) {
-                if (DEBUG) {
-                        System.out.printf(format, arguments);
-                }
-        }
-
         private void logNotImplemented(String feature) {
                 logw(WarningType.EMULATION_ERROR, feature + " is not implemented");
         }
-
 }

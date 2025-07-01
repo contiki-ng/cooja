@@ -56,24 +56,21 @@ import org.jdom2.Element;
 @ClassDescription("Position")
 public class Position implements MoteInterface {
   private final Mote mote;
-  private final double[] coords = new double[3];
+  private double x;
+  private double y;
+  private double z;
   private final LinkedHashMap<JPanel, JLabel> labels = new LinkedHashMap<>();
   private final EventTriggers<EventTriggers.Update, Mote> eventTriggers = new EventTriggers<>();
 
   /**
    * Creates a position for given mote with coordinates (x=0, y=0, z=0).
    *
-   * @param mote
-   *          Led's mote.
+   * @param mote Mote the position belongs to.
    * @see Mote
    * @see org.contikios.cooja.MoteInterfaceHandler
    */
   public Position(Mote mote) {
     this.mote = mote;
-
-    coords[0] = 0.0f;
-    coords[1] = 0.0f;
-    coords[2] = 0.0f;
   }
 
   /**
@@ -84,9 +81,9 @@ public class Position implements MoteInterface {
    * @param z New Z coordinate
    */
   public void setCoordinates(double x, double y, double z) {
-    coords[0] = x;
-    coords[1] = y;
-    coords[2] = z;
+    this.x = x;
+    this.y = y;
+    this.z = z;
     if (Cooja.isVisualized()) {
       EventQueue.invokeLater(() -> {
         final var number = NumberFormat.getNumberInstance();
@@ -104,21 +101,21 @@ public class Position implements MoteInterface {
    * @return X coordinate
    */
   public double getXCoordinate() {
-    return coords[0];
+    return x;
   }
 
   /**
    * @return Y coordinate
    */
   public double getYCoordinate() {
-    return coords[1];
+    return y;
   }
 
   /**
    * @return Z coordinate
    */
   public double getZCoordinate() {
-    return coords[2];
+    return z;
   }
 
   /**
@@ -128,12 +125,10 @@ public class Position implements MoteInterface {
    * @return Distance
    */
   public double getDistanceTo(Position pos) {
-    return Math.sqrt(Math.abs(coords[0] - pos.getXCoordinate())
-        * Math.abs(coords[0] - pos.getXCoordinate())
-        + Math.abs(coords[1] - pos.getYCoordinate())
-        * Math.abs(coords[1] - pos.getYCoordinate())
-        + Math.abs(coords[2] - pos.getZCoordinate())
-        * Math.abs(coords[2] - pos.getZCoordinate()));
+    var xDiff = Math.abs(x - pos.getXCoordinate());
+    var yDiff = Math.abs(y - pos.getYCoordinate());
+    var zDiff = Math.abs(z - pos.getZCoordinate());
+    return Math.sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
   }
 
   /**

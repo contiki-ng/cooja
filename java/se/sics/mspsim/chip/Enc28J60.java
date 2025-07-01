@@ -34,7 +34,6 @@
 package se.sics.mspsim.chip;
 
 import java.util.ArrayList;
-
 import se.sics.mspsim.core.Chip;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOPort.PinState;
@@ -83,23 +82,23 @@ public class Enc28J60 extends Chip {
         }
 
         @Override
-        public void log(String msg) {
+        protected void log(String msg) {
                 if (DEBUG) {
                         System.out.println(msg);
                 }
         }
 
-        private boolean writingToWBM = false;
-        private boolean readingFromRBM = false;
-        private boolean nextEcon1 = false;
-        private boolean nextEcon2 = false;
+        private boolean writingToWBM;
+        private boolean readingFromRBM;
+        private boolean nextEcon1;
+        private boolean nextEcon2;
 
         private final ArrayList<Byte> wbmData = new ArrayList<>();
 
         private final ArrayList<RbmPacket> rbmPackets = new ArrayList<>();
         private static class RbmPacket {
                 final ArrayList<Byte> data = new ArrayList<>();
-                boolean wasRead = false;
+                boolean wasRead;
         }
 
         public void writePacket(byte[] data) {
@@ -123,7 +122,7 @@ public class Enc28J60 extends Chip {
                 log("Enc28j60: nr pending packets increased to: " + rbmPackets.size());
         }
 
-        private PacketListener listener = null;
+        private PacketListener listener;
         public interface PacketListener {
                 void packetSent(Byte[] packetData);
         }
@@ -136,10 +135,9 @@ public class Enc28J60 extends Chip {
 
                 if (writingToWBM) {
                         wbmData.add((byte) data);
-                        val = 0x00;
                         return val;
                 } else if (readingFromRBM) {
-                        if (rbmPackets.size() > 0) {
+                        if (!rbmPackets.isEmpty()) {
                                 if (rbmPackets.get(0).data.isEmpty()) {
                                         log("Enc28j60: warning, packet data is already consumed, returning 0");
                                 } else {
@@ -148,7 +146,6 @@ public class Enc28J60 extends Chip {
                                 }
                         } else {
                                 log("Enc28j60: warning, no packet in rbm, returning 0");
-                                val = 0x00;
                         }
                         return val;
                 }
@@ -188,7 +185,7 @@ public class Enc28J60 extends Chip {
                 } else if (writing && data == WBM_COMMAND) {
                         writingToWBM = true;
                 } else if (data == RBM_COMMAND) {
-                        if (rbmPackets.size() > 0) {
+                        if (!rbmPackets.isEmpty()) {
                                 if (rbmPackets.get(0).data.isEmpty()) {
                                         log("Enc28j60: warning, packet data is already consumed, returning 0");
                                 } else {
@@ -197,7 +194,6 @@ public class Enc28J60 extends Chip {
                                 }
                         } else {
                                 log("Enc28j60: warning, no packet in rbm, returning 0");
-                                val = 0x00;
                         }
                         readingFromRBM = true;
                 }
@@ -205,10 +201,10 @@ public class Enc28J60 extends Chip {
         }
 
 
-        private int spiOut = 0; /* byte being sent over SPI */
-        private int spiOutCount = 0;
-        private int spiIn = 0; /* byte being received over SPI */
-        private int spiInCount = 0;
+        private int spiOut; /* byte being sent over SPI */
+        private int spiOutCount;
+        private int spiIn; /* byte being received over SPI */
+        private int spiInCount;
         public void write(IOPort port, int data) {
                 if (port != myPort) {
                         /* ignore  */
@@ -261,11 +257,6 @@ public class Enc28J60 extends Chip {
                         spiIn = 0;
                         spiInCount = 0;
                 }
-        }
-
-        @Override
-        public int getConfiguration(int parameter) {
-                return -1;
         }
 
         @Override

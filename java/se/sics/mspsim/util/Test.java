@@ -39,14 +39,14 @@
  *           $Revision$
  */
 package se.sics.mspsim.util;
-import java.io.IOException;
 
-import se.sics.mspsim.config.MSP430f1611Config;
+import java.io.IOException;
 import se.sics.mspsim.core.IOUnit;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.USART;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
+import se.sics.mspsim.platform.sky.CC2420Node;
 
 /**
  * Test - tests a firmware file and exits when reporting "FAIL:" first
@@ -57,11 +57,11 @@ public class Test implements USARTListener {
   private final StringBuilder lineBuffer = new StringBuilder();
   private final MSP430 cpu;
 
-  public Test(MSP430 cpu) {
+  private Test(MSP430 cpu) {
     this.cpu = cpu;
-    IOUnit usart = cpu.getIOUnit("USART 1");
-    if (usart instanceof USART) {
-      ((USART) usart).addUSARTListener(this);
+    IOUnit ioUnit = cpu.getIOUnit("USART 1");
+    if (ioUnit instanceof USART usart) {
+      usart.addUSARTListener(this);
     }
   }
 
@@ -90,26 +90,21 @@ public class Test implements USARTListener {
   }
 
   public static void main(String[] args) {
-    MSP430 cpu = new MSP430(new ComponentRegistry(), new MSP430f1611Config());
     int index = 0;
+    boolean debug = false;
     if (args[index].startsWith("-")) {
       // Flag
       if ("-debug".equalsIgnoreCase(args[index])) {
-        cpu.setDebug(true);
+        debug = true;
       } else {
         System.err.println("Unknown flag: " + args[index]);
         System.exit(1);
       }
       index++;
     }
-
     try {
-      int[] memory = cpu.memory;
-      ELF elf = ELF.readELF(args[index++]);
-      elf.loadPrograms(memory);
-      MapTable map = elf.getMap();
-      cpu.getDisAsm().setMap(map);
-      cpu.setMap(map);
+      var cpu = CC2420Node.makeCPU(CC2420Node.makeChipConfig(), args[index]);
+      cpu.setDebug(debug);
       cpu.reset();
 
       // Create the "tester"

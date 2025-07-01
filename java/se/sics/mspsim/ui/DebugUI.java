@@ -81,7 +81,8 @@ public class DebugUI extends JPanel {
       JPanel regs = new JPanel(new GridLayout(2,8,4,0));
       regsLabel = new JLabel[16];
       for (int i = 0, n = 16; i < n; i++) {
-        regs.add(regsLabel[i] = new JLabel("$0000"));
+        regsLabel[i] = new JLabel("$0000");
+        regs.add(regsLabel[i]);
       }
       add(regs, BorderLayout.SOUTH);
       updateRegs();
@@ -150,7 +151,7 @@ public class DebugUI extends JPanel {
   }
 
   class MyCellRenderer extends JLabel implements ListCellRenderer<DbgInstruction> {
-    public MyCellRenderer() {
+    MyCellRenderer() {
       setOpaque(true);
     }
 

@@ -48,7 +48,7 @@ public class PMM extends IOUnit {
     @Override
     public void reset(int type) {
         /* Initial values */
-        memory[baseAddress + 0x0] = 0x9600; /* PMMCTL0 */
+        memory[baseAddress] = 0x9600; /* PMMCTL0 */
         memory[baseAddress + 0x2] = 0x0000; /* PMMCTL1 */
         memory[baseAddress + 0x4] = 0x4400; /* SVSMHCTL */
         memory[baseAddress + 0x6] = 0x4400; /* SVSMLCTL */

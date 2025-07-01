@@ -35,14 +35,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.PrintStream;
 import java.util.List;
-
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.HasQuickHelp;
@@ -63,8 +61,8 @@ import se.sics.mspsim.cli.LineOutputStream;
 public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   private final MspMote mspMote;
   private final String[] history = new String[50];
-  private int historyPos = 0;
-  private int historyCount = 0;
+  private int historyPos;
+  private int historyCount;
   private static final int UPDATE_INTERVAL = 250;
   private final UpdateAggregator<String> cliResponseAggregator;
 
@@ -187,7 +185,13 @@ public class MspCLI extends VisPlugin implements MotePlugin, HasQuickHelp {
   }
 
   private static String trim(String text) {
-    return (text != null) && ((text = text.trim()).length() > 0) ? text : null;
+    if (text != null) {
+      text = text.trim();
+      if (!text.isEmpty()) {
+        return text;
+      }
+    }
+    return null;
   }
 
   @Override

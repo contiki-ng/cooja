@@ -39,7 +39,6 @@
 
 package se.sics.mspsim.debug;
 import java.util.ArrayList;
-
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.ELFDebug;
@@ -61,8 +60,8 @@ public class StabDebug implements ELFDebug {
 
   public static final boolean DEBUG = false;
 
-  final ELFSection dbgStab;
-  final ELFSection dbgStabStr;
+  private final ELFSection dbgStab;
+  private final ELFSection dbgStabStr;
 
   public StabDebug(ELF elf, ELFSection stab, ELFSection stabstr) {
     dbgStab = stab;
@@ -199,16 +198,6 @@ public class StabDebug implements ELFDebug {
 //            currentLine = stab.desc;
               currentLineAdr = lastAddress + stab.value;
               allAddresses.add(currentLineAdr);
-            /*if (currentLineAdr >= address) {
-              // Finished!!!
-              if (DEBUG) {
-                System.out.println("File: " + currentPath + " " + currentFile);
-                System.out.println("Function: " + currentFunction);
-                System.out.println("Line No: " + currentLine);
-              }
-              return new DebugInfo(currentLine, currentPath, currentFile,
-                  currentFunction);
-            }*/
             }
           }
         }
@@ -242,7 +231,7 @@ public class StabDebug implements ELFDebug {
         } else {
           currentFile = stab.data;
 
-          if (currentFile != null && currentFile.length() > 0) {
+          if (currentFile != null && !currentFile.isEmpty()) {
             if (currentPath == null) {
               sourceFiles.add(currentFile);
             } else {
@@ -261,7 +250,7 @@ public class StabDebug implements ELFDebug {
     return sourceFilesArray;
   }
 
-  public record Stab(String data, int type, int other, int desc, int value) {
+  record Stab(String data, int type, int other, int desc, int value) {
    @Override
    public String toString() {
         return Integer.toHexString(type) + " " + data + "   [" + other + "," + desc + "," + value + "]";

@@ -51,9 +51,9 @@ import java.util.RandomAccess;
  */
 public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Cloneable {
   private E[] queueData;
-  private int first = 0;
-  private int last = 0;
-  private int size = 0;
+  private int first;
+  private int last;
+  private int size;
 
   public ArrayQueue() {
     this(16);
@@ -108,8 +108,6 @@ public class ArrayQueue<E> extends AbstractList<E> implements RandomAccess, Clon
       // At least one element must exist since size > 0
       System.arraycopy(queueData, first, newData, 0, firstSize);
       System.arraycopy(queueData, 0, newData, firstSize, last);
-    } else {
-      // Empty queue i.e. do nothing
     }
   }
 

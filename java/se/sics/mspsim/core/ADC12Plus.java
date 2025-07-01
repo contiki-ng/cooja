@@ -77,7 +77,6 @@
 package se.sics.mspsim.core;
 
 import java.util.Arrays;
-
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 
 
@@ -143,7 +142,7 @@ public class ADC12Plus extends IOUnit {
         public static final int ADC12MCTL14 = 0x001E; // Reset with POR
         public static final int ADC12MCTL15 = 0x001F; // Reset with POR
 
-        public static final int[] SHTBITS = new int[] { 4, 8, 16, 32, 64, 96, 128,
+        public static final int[] SHTBITS = { 4, 8, 16, 32, 64, 96, 128,
                         192, 256, 384, 512, 768, 1024, 1024, 1024, 1024 };
 
         public static final int BUSY_MASK = 0x01;
@@ -155,22 +154,22 @@ public class ADC12Plus extends IOUnit {
         public static final int CONSEQ_REPEAT_SEQUENCE = 0x03;
         public static final int CONSEQ_SEQUENCE_MASK = 0x01;
 
-        private int adc12ctl0 = 0;
-        private int adc12ctl1 = 0;
-        private int adc12ctl2 = 0;
+        private int adc12ctl0;
+        private int adc12ctl1;
+        private int adc12ctl2;
         private final int[] adc12mctl = new int[16];
         private final int[] adc12mem = new int[16];
-        private int adc12Pos = 0;
+        private int adc12Pos;
 
         private int shTime0 = 4;
         private int shTime1 = 4;
-        private boolean adc12On = false;
+        private boolean adc12On;
         private boolean enableConversion;
         private boolean startConversion;
         private boolean isConverting;
 
-        private int shSource = 0;
-        private int startMem = 0;
+        private int shSource;
+        private int startMem;
         private int adcDiv = 1;
 
         private final ADCInput[] adcInput = new ADCInput[16];
@@ -192,11 +191,11 @@ public class ADC12Plus extends IOUnit {
 
         /* These are CTL2 variables */
         private int bitsResolution = 12;
-        private boolean formatSigned = false;
+        private boolean formatSigned;
         private int clockPredivider = 1;
 
         /* Reference voltage 2.5V or 1.5V */
-        private boolean ref25V = false;
+        private boolean ref25V;
 
         public ADC12Plus(MSP430Core cpu, int offset, int intVector) {
                 super("ADC12Plus", cpu, cpu.memory, offset);
@@ -337,9 +336,7 @@ public class ADC12Plus extends IOUnit {
                         break;
                 default:
                         if (address >= ADC12MCTL0 && address <= ADC12MCTL15) {
-                                if (enableConversion) {
-                                        /* Ongoing conversion: not possible to modify */
-                                } else {
+                                if (!enableConversion) { // Cannot modify ongoing conversions.
                                         adc12mctl[address - ADC12MCTL0] = value & 0xff;
                                         if (DEBUG)
                                                 log("ADC12MCTL" + (address - ADC12MCTL0) + " source = "
@@ -381,7 +378,7 @@ public class ADC12Plus extends IOUnit {
                 return 0;
         }
 
-        int smp = 0;
+        int smp;
 
         private void convert() {
                 // If off then just return...

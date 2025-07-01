@@ -32,7 +32,6 @@ package org.contikios.cooja.mspmote;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.dialogs.AbstractCompileDialog;
 import org.contikios.cooja.mote.BaseContikiMoteType;

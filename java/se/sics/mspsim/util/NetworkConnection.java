@@ -39,10 +39,10 @@ package se.sics.mspsim.util;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
 import se.sics.mspsim.chip.PacketListener;
 
 /**
@@ -54,9 +54,9 @@ public class NetworkConnection implements Runnable {
   private final static boolean DEBUG = false;
   private final static int DEFAULT_PORT = 4711;
 
-  private ServerSocket serverSocket = null;
+  private ServerSocket serverSocket;
   private final SendThread sendThread;
-  private ConnectionThread[] connections = null;
+  private ConnectionThread[] connections;
   private PacketListener packetListener;
 
   public NetworkConnection() {
@@ -141,7 +141,7 @@ public class NetworkConnection implements Runnable {
 
   private boolean connect(int port) {
     try {
-      Socket socket = new Socket("127.0.0.1", port);
+      Socket socket = new Socket(InetAddress.getLoopbackAddress(), port);
       connections = ArrayUtils.add(ConnectionThread.class, connections, new ConnectionThread(socket));
     } catch (IOException e) {
       return false;
@@ -149,22 +149,25 @@ public class NetworkConnection implements Runnable {
     return true;
   }
 
+  // Records in Java should normally not contain arrays, but the code uses SendEvent solely as an internal container
+  // without comparing it to other objects.
+  @SuppressWarnings("ArrayRecordComponent")
   private record SendEvent(byte[] data, ConnectionThread source) {}
 
   final class SendThread implements Runnable {
 
     private final ArrayList<SendEvent> queue = new ArrayList<>();
 
-    public SendThread() {
+    SendThread() {
       new Thread(this, "NetworkConnection.SendThread").start();
     }
 
-    public synchronized void send(byte[] receivedData, ConnectionThread source) {
+    synchronized void send(byte[] receivedData, ConnectionThread source) {
       queue.add(new SendEvent(receivedData, source));
       notifyAll();
     }
 
-    public synchronized SendEvent getNext() throws InterruptedException {
+    synchronized SendEvent getNext() throws InterruptedException {
       while (queue.isEmpty()) {
         wait();
       }
@@ -216,14 +219,14 @@ public class NetworkConnection implements Runnable {
     DataInputStream input;
     OutputStream output;
 
-    public ConnectionThread(Socket socket) throws IOException {
+    ConnectionThread(Socket socket) throws IOException {
       this.socket = socket;
       input = new DataInputStream(socket.getInputStream());
       output = socket.getOutputStream();
       new Thread(this, "NetworkConnection.ConnectionThread").start();
     }
 
-    public void close() {
+    void close() {
       try {
         input.close();
         socket.close();
@@ -233,7 +236,7 @@ public class NetworkConnection implements Runnable {
       socket = null;
     }
 
-    public boolean isClosed() {
+    boolean isClosed() {
       return socket == null;
     }
 

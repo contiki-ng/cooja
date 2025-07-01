@@ -95,8 +95,8 @@ public class Multiplier32 extends IOUnit {
     private int mpy32ctl0;
     private long res64;
 
-    private boolean signed = false;
-    private boolean accumulating = false;
+    private boolean signed;
+    private boolean accumulating;
 
     /**
      * Creates a new <code>Multiplier32</code> instance.
@@ -109,60 +109,44 @@ public class Multiplier32 extends IOUnit {
     @Override
     public int read(int address, boolean word, long cycles) {
         address = address - offset;
-        switch (address) {
-        case MPY:
-            return mpy;
-        case MPYS:
-            return mpys;
-        case MAC:
-            return mac;
-        case MACS:
-            return macs;
-        case OP2:
-            return op2;
-        case RESHI:
-            if (DEBUG) log("read res hi: " + resHi );
-            return resHi;
-        case RESLO:
-            if (DEBUG) log("read res lo: " + resLo );
-            return resLo;
-        case SUMEXT:
-            if (DEBUG) log("read sumext: " + sumext);
-            return sumext;
-        case MPY32L:
-            return mpy32L;
-        case MPY32H:
-            return mpy32H;
-        case MPYS32L:
-            return mpys32L;
-        case MPYS32H:
-            return mpys32H;
-        case MAC32L:
-            return mac32L;
-        case MAC32H:
-            return mac32H;
-        case MACS32L:
-            return macs32L;
-        case MACS32H:
-            return macs32H;
-        case OP2L:
-            return op2L;
-        case OP2H:
-            return op2H;
-        case RES0:
-            return res0;
-        case RES1:
-            return res1;
-        case RES2:
-            return res2;
-        case RES3:
-            return res3;
-        case MPY32CTL0:
-            return mpy32ctl0;
-        default:
-            logw(WarningType.EMULATION_ERROR, "read unhandled address: 0x" + Utils.hex(address, 4));
-            return 0;
+      return switch (address) {
+        case MPY -> mpy;
+        case MPYS -> mpys;
+        case MAC -> mac;
+        case MACS -> macs;
+        case OP2 -> op2;
+        case RESHI -> {
+          if (DEBUG) log("read res hi: " + resHi);
+          yield resHi;
         }
+        case RESLO -> {
+          if (DEBUG) log("read res lo: " + resLo);
+          yield resLo;
+        }
+        case SUMEXT -> {
+          if (DEBUG) log("read sumext: " + sumext);
+          yield sumext;
+        }
+        case MPY32L -> mpy32L;
+        case MPY32H -> mpy32H;
+        case MPYS32L -> mpys32L;
+        case MPYS32H -> mpys32H;
+        case MAC32L -> mac32L;
+        case MAC32H -> mac32H;
+        case MACS32L -> macs32L;
+        case MACS32H -> macs32H;
+        case OP2L -> op2L;
+        case OP2H -> op2H;
+        case RES0 -> res0;
+        case RES1 -> res1;
+        case RES2 -> res2;
+        case RES3 -> res3;
+        case MPY32CTL0 -> mpy32ctl0;
+        default -> {
+          logw(WarningType.EMULATION_ERROR, "read unhandled address: 0x" + Utils.hex(address, 4));
+          yield 0;
+        }
+      };
     }
 
     @Override
@@ -246,7 +230,7 @@ public class Multiplier32 extends IOUnit {
                 accumulating = false;
             }
             case MPYS32H -> {
-                if (!word & data > 0x80) {
+                if (!word && data > 0x80) {
                     data -= 0x100;
                 }
                 mpys32H = data;
@@ -262,7 +246,7 @@ public class Multiplier32 extends IOUnit {
                 op1 = (op1 & 0xffff) | (data << 16);
             }
             case MACS32L -> {
-                if (!word & data > 0x80) {
+                if (!word && data > 0x80) {
                     data -= 0x100;
                 }
                 op1 = macs32L = data;
@@ -270,7 +254,7 @@ public class Multiplier32 extends IOUnit {
                 accumulating = true;
             }
             case MACS32H -> {
-                if (!word & data > 0x80) {
+                if (!word && data > 0x80) {
                     data -= 0x100;
                 }
                 macs32H = data;

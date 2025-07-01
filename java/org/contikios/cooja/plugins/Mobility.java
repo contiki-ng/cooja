@@ -33,7 +33,6 @@ package org.contikios.cooja.plugins;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.swing.JFileChooser;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
@@ -63,7 +62,7 @@ public class Mobility implements Plugin {
   private long periodStart; /* us */
   private int currentMove;
 
-  private File filePositions = null;
+  private File filePositions;
 
   private final MessageListUI log;
 
@@ -182,6 +181,7 @@ public class Mobility implements Plugin {
   }
 
   record Move(long time, int moteIndex, double posX, double posY) {
+    @Override
     public String toString() {
       return "MOVE: mote " + moteIndex + " -> [" + posX + "," + posY + "] @ " + time/Simulation.MILLISECOND;
     }

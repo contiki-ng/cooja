@@ -60,7 +60,7 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
   public final static byte[] UNSPECIFIED_ADDRESS
           = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  private static final byte[][] addrContexts = new byte[][]{
+  private static final byte[][] addrContexts = {
     {(byte) 0xaa, (byte) 0xaa, 0, 0, 0, 0, 0, 0}
   };
 
@@ -82,20 +82,11 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
     int tf = (packet.get(0) >> 3) & 0x03;
     boolean nhc = (packet.get(0) & SICSLOWPAN_IPHC_NH_C) > 0;
     int hlim = (packet.get(0) & 0x03);
-    switch (hlim) {
-      case 0x00:
-        hlim = 0;
-        break;
-      case 0x01:
-        hlim = 1;
-        break;
-      case 0x02:
-        hlim = 64;
-        break;
-      case 0x03:
-        hlim = 255;
-        break;
-    }
+    hlim = switch (hlim) {
+      case 0x02 -> 64;
+      case 0x03 -> 255;
+      default -> hlim;
+    };
     int cid = (packet.get(1) >> 7) & 0x01;
     int sac = (packet.get(1) >> 6) & 0x01;
     int sam = (packet.get(1) >> 4) & 0x03;
@@ -464,6 +455,7 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
     verbose.append("<br/><b>IPv6</b>")
             .append(" TC = ").append(trafficClass)
             .append(", FL = ").append(flowLabel)
+            .append(", ttl = ").append(ttl)
             .append("<br>");
     verbose.append("From ");
     IPUtils.getUncompressedIPv6AddressString(verbose, srcAddress);

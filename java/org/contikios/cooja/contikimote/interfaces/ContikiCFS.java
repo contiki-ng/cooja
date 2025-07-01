@@ -46,7 +46,6 @@ import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
-
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.slf4j.Logger;
@@ -75,8 +74,8 @@ public class ContikiCFS implements MoteInterface, PolledAfterActiveTicks {
   private final Mote mote;
   private final VarMemory moteMem;
 
-  private int lastRead = 0;
-  private int lastWritten = 0;
+  private int lastRead;
+  private int lastWritten;
   private final LinkedHashMap<JPanel, Updates> labels = new LinkedHashMap<>();
 
   /**

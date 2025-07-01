@@ -1,14 +1,49 @@
 plugins {
-    id 'application'
+  id 'application'
+  id 'jvm-test-suite'
+  id 'com.diffplug.spotless' version '7.0.4'
+  id 'net.ltgt.errorprone' version '4.2.0'
 }
 
 group = 'org.contikios.cooja'
 
-def javaVersion = 17
+def javaVersion = 21
 
 java {
   toolchain {
     languageVersion = JavaLanguageVersion.of(javaVersion)
+  }
+}
+
+spotless {
+  java {
+    toggleOffOn()
+    // FIXME: gives unclosed string literal in ScriptRunner.java with spotless 6.23.3.
+    // removeUnusedImports()
+    importOrder()
+    // trimTrailingWhitespace()
+    // cleanthat()
+    // formatAnnotations()
+
+    // Use a different clang-format binary with -PclangFormat=clang-format-15.
+    // FIXME: make clang-format default in the future
+    // def clangFormatBinary = (String) project.findProperty('clangFormat') ?: 'clang-format'
+    def clangFormatBinary = (String) project.findProperty('clangFormat')
+    if (clangFormatBinary) {
+      try {
+        def clangOutput = new ByteArrayOutputStream()
+        exec {
+          commandLine clangFormatBinary, '--version'
+          standardOutput = clangOutput
+        }
+        def clangVersion = (String) (clangOutput.toString() =~ /\d+\.\d+\.\d+/)[0]
+        clangFormat(clangVersion).pathToExe(clangFormatBinary).style('file')
+      } catch (IndexOutOfBoundsException ignored) {
+        logger.warn("Failed to parse version when running '{} --version'", clangFormatBinary)
+      } catch (Exception e) {
+        logger.warn("Failed to run '{} --version': {}", clangFormatBinary, e.getMessage())
+      }
+    }
   }
 }
 
@@ -19,35 +54,33 @@ repositories {
 dependencies {
   implementation files('lib/jipv6.jar')
   // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-  implementation 'ch.qos.logback:logback-classic:1.4.5'
+  implementation 'ch.qos.logback:logback-classic:1.5.18'
   // https://mvnrepository.com/artifact/com.github.cliftonlabs/json-simple
   implementation 'com.github.cliftonlabs:json-simple:4.0.1'
+  // https://mvnrepository.com/artifact/com.formdev/flatlaf
+  implementation 'com.formdev:flatlaf:3.6'
   // https://mvnrepository.com/artifact/de.sciss/syntaxpane
   implementation 'de.sciss:syntaxpane:1.3.0'
   // https://mvnrepository.com/artifact/info.picocli/picocli
-  implementation 'info.picocli:picocli:4.7.0'
+  implementation 'info.picocli:picocli:4.7.7'
   // https://mvnrepository.com/artifact/info.picocli/picocli-codegen
-  annotationProcessor 'info.picocli:picocli-codegen:4.7.0'
+  annotationProcessor 'info.picocli:picocli-codegen:4.7.7'
   // https://mvnrepository.com/artifact/org.jdom/jdom2
   implementation 'org.jdom:jdom2:2.0.6.1'
   // https://mvnrepository.com/artifact/org.jfree/jfreechart
-  implementation 'org.jfree:jfreechart:1.5.4'
+  implementation 'org.jfree:jfreechart:1.5.6'
   // https://mvnrepository.com/artifact/org.openjdk.nashorn/nashorn-core
-  implementation 'org.openjdk.nashorn:nashorn-core:15.4'
+  implementation 'org.openjdk.nashorn:nashorn-core:15.6'
   // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-  implementation 'org.slf4j:slf4j-api:2.0.6'
+  implementation 'org.slf4j:slf4j-api:2.0.17'
   // https://mvnrepository.com/artifact/org.swinglabs.swingx/swingx-autocomplete
   implementation 'org.swinglabs.swingx:swingx-autocomplete:1.6.5-1'
+  errorprone("com.google.errorprone:error_prone_core:2.36.0")
 }
 
 
 // FIXME: add test resources.
 sourceSets {
-  corecomm {
-    resources {
-      srcDirs = ['java/org/contikios/cooja/corecomm']
-    }
-  }
   data {
     resources {
       srcDirs = ['tools/coffee-manager']
@@ -57,10 +90,9 @@ sourceSets {
   main {
     java {
       srcDirs = ['java', 'tools/coffee-manager']
-      exclude 'org/contikios/cooja/corecomm/CoreCommTemplate.java'
     }
     resources {
-      srcDirs = [corecomm.resources, data.resources, 'config']
+      srcDirs = [data.resources, 'config']
     }
   }
 }
@@ -72,31 +104,106 @@ application {
     // 08-ipv6-unicast.csc is one example. Unclear why, the JVM should not
     // do anything with the pointers in C-land part of ContikiMoteType.
     '-XX:-UseCompressedOops', '-XX:-UseCompressedClassPointers',
-    // Enable the experimental foreign function interface in Java 17.
-    '--enable-native-access', 'ALL-UNNAMED', '--add-modules', 'jdk.incubator.foreign']
+    // Enable the preview foreign function interface.
+    '--enable-preview', '--enable-native-access', 'ALL-UNNAMED']
+}
+
+testing {
+  suites {
+    configureEach {
+      dependencies {
+        implementation project()
+        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+        implementation 'org.junit.jupiter:junit-jupiter-api:5.13.2'
+        runtimeOnly 'org.junit.platform:junit-platform-launcher'
+      }
+    }
+    test(JvmTestSuite) {
+      useJUnitJupiter()
+      testType = TestSuiteType.INTEGRATION_TEST
+    }
+  }
+}
+
+test {
+  reports {
+    junitXml {
+      outputPerTestCase = true
+      mergeReruns = true
+    }
+  }
+  testLogging {
+    events "failed", "passed", "skipped"
+  }
 }
 
 tasks.withType(JavaCompile).configureEach {
-  options.compilerArgs += ['--add-modules', 'jdk.incubator.foreign',
+  // ErrorProne is slow, only enable with ./gradlew build -Perrorprone.
+  options.errorprone.enabled = project.hasProperty('errorprone')
+  // Uncomment the next two lines and the disable line to generate a patch.
+  //options.errorprone.errorproneArgs = ['-XepPatchChecks:MissingOverride',
+  //   '-XepPatchLocation:' + buildscript.sourceFile.getParent()]
+  options.errorprone.disable('AnnotateFormatMethod')
+  options.errorprone.disable('ByteBufferBackingArray')
+  options.errorprone.disable('CatchAndPrintStackTrace')
+  options.errorprone.disable('DefaultCharset')
+  options.errorprone.disable('DoubleCheckedLocking')
+  options.errorprone.disable('EmptyBlockTag')
+  options.errorprone.disable('EmptyCatch')
+  options.errorprone.disable('EqualsGetClass')
+  options.errorprone.disable('EqualsHashCode')
+  options.errorprone.disable('EqualsUnsafeCast')
+  options.errorprone.disable('ErroneousBitwiseExpression')
+  options.errorprone.disable('FallThrough')
+  options.errorprone.disable('FloatingPointLiteralPrecision')
+  options.errorprone.disable('HidingField')
+  options.errorprone.disable('ImmutableEnumChecker')
+  options.errorprone.disable('InconsistentCapitalization')
+  options.errorprone.disable('InlineMeSuggester')
+  options.errorprone.disable('JavaUtilDate')
+  options.errorprone.disable('JdkObsolete')
+  options.errorprone.disable('MissingCasesInEnumSwitch')
+  options.errorprone.disable('MissingSummary')
+  options.errorprone.disable('MutablePublicArray')
+  options.errorprone.disable('NarrowingCompoundAssignment')
+  options.errorprone.disable('NonApiType')
+  options.errorprone.disable('OperatorPrecedence')
+  options.errorprone.disable('ReferenceEquality')
+  options.errorprone.disable('StaticAssignmentInConstructor')
+  options.errorprone.disable('StringSplitter')
+  options.errorprone.disable('ThreadPriorityCheck')
+  options.errorprone.disable('UnusedMethod')
+  options.errorprone.disable('UnusedVariable')
+  options.compilerArgs += ['-Werror', '--enable-preview',
                            "-Aproject=${project.group}/${project.name}"]
+
+  String compilerArgs = project.findProperty('compilerArgs') as String
+  if (compilerArgs) {
+    compilerArgs.split().each { arg ->
+      options.compilerArgs << arg
+    }
+  }
+}
+
+tasks.withType(AbstractArchiveTask).configureEach {
+  preserveFileTimestamps = false
+  reproducibleFileOrder = true
 }
 
 tasks.register('copyDependencies', Copy) {
-  description = "Copy jar dependencies into ${buildDir}/libs/lib/."
+  def dir = layout.buildDirectory.dir("libs/lib")
+  description = "Copy jar dependencies into ${dir.get()}"
   group = "Build"
   from configurations.runtimeClasspath.files
-  into "build/libs/lib"
+  into dir
 }
 
 // Run Cooja with: java <JVM parameters> -jar build/libs/cooja.jar <Cooja parameters>
 jar {
   dependsOn copyDependencies
-  reproducibleFileOrder = true
   manifest {
-    // Set Multi-Release to true to ensure the JVM uses the right class from log4j.
     attributes 'Main-Class': 'org.contikios.cooja.Main',
-      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' '),
-      'Multi-Release': 'true'
+      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' ')
   }
 }
 
@@ -104,11 +211,9 @@ tasks.register('fullJar', Jar) {
   description = "Assembles a jar that contains all dependencies."
   group = "Build"
   archiveClassifier.set('full')
-  reproducibleFileOrder = true
   manifest {
     attributes 'Main-Class': 'org.contikios.cooja.Main',
-      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' '),
-      'Multi-Release': 'true'
+      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' ')
   }
 
   from sourceSets.main.output
@@ -120,13 +225,34 @@ tasks.register('fullJar', Jar) {
   }
 }
 
+// Make startScripts use the fullJar and application settings.
+tasks.named("startScripts") {
+  mainClass = application.mainClass
+  defaultJvmOpts = application.applicationDefaultJvmArgs
+  classpath = fullJar.outputs.files
+  doLast {
+    delete windowsScript
+  }
+}
+
+distributions {
+  main {
+    // Exclude default libraries and include fullJar instead.
+    contents {
+      exclude { FileTreeElement details ->
+        details.file.name.endsWith('.jar') && !details.file.name.contains('cooja-full')
+      }
+      into('lib') {
+        from fullJar
+      }
+    }
+  }
+}
+
 run {
   // Bad Cooja location detected with gradle run, explicitly pass -cooja.
   doFirst {
-    args += ['--cooja', "$projectDir",
-             '--javac', javaToolchains.compilerFor {
-                         languageVersion = JavaLanguageVersion.of(javaVersion)
-                       }.get().executablePath]
+    args += ['--cooja', "$projectDir"]
   }
   // Connect stdin to make the MSPSim CLI work, except when running in CI.
   if (System.getenv('CI') == null) {

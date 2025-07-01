@@ -86,7 +86,7 @@ public class StreamCommandHandler extends CommandHandler implements Runnable {
         if (((char) 27 + "[A").equals(line)) {
           line = lastLine;
         }
-        if (line.length() > 0) {
+        if (!line.isEmpty()) {
           lastLine = line;
           lineRead(line);
         }

@@ -1,7 +1,6 @@
 package se.sics.mspsim.util;
 
 import java.io.PrintStream;
-
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.EmulationLogger;
 import se.sics.mspsim.core.LogListener;
@@ -11,8 +10,7 @@ import se.sics.mspsim.core.MSP430Core;
 public class DefaultEmulationLogger implements EmulationLogger {
 
   private final MSP430Core cpu;
-  private final WarningMode[] warningModes = new WarningMode[WarningType.values().length];
-  private WarningMode defaultMode = WarningMode.PRINT;
+  private final WarningMode defaultMode = WarningMode.PRINT;
   private final PrintStream out;
   private LogListener[] logListeners;
 
@@ -22,16 +20,11 @@ public class DefaultEmulationLogger implements EmulationLogger {
   }
 
   protected WarningMode getMode(WarningType type) {
-      WarningMode mode = warningModes[type.ordinal()];
-      if (mode == null) {
-          mode = defaultMode;
-      }
-      return mode;
+      return defaultMode;
   }
 
   @Override
   public void log(Loggable source, String message) {
-//      out.println(source.getID() + ": " + message);
       LogListener[] listeners = this.logListeners;
       if (listeners != null) {
           for (LogListener l : listeners) {
@@ -62,26 +55,6 @@ public class DefaultEmulationLogger implements EmulationLogger {
               l.logw(source, type, message);
           }
       }
-  }
-
-  @Override
-  public WarningMode getDefaultWarningMode() {
-      return defaultMode;
-  }
-
-  @Override
-  public void setDefaultWarningMode(WarningMode mode) {
-      this.defaultMode = mode;
-  }
-
-  @Override
-  public WarningMode getWarningMode(WarningType type) {
-      return warningModes[type.ordinal()];
-  }
-
-  @Override
-  public void setWarningMode(WarningType type, WarningMode mode) {
-      warningModes[type.ordinal()] = mode;
   }
 
   @Override

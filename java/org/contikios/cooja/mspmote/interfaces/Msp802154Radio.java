@@ -64,19 +64,19 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
 
   private RadioEvent lastEvent = RadioEvent.UNKNOWN;
 
-  protected final MspMote mote;
-  protected final Radio802154 radio;
+  final MspMote mote;
+  final Radio802154 radio;
 
-  private boolean isInterfered = false;
-  private boolean isTransmitting = false;
-  private boolean isReceiving = false;
-  private boolean isSynchronized = false;
+  private boolean isInterfered;
+  private boolean isTransmitting;
+  private boolean isReceiving;
+  private boolean isSynchronized;
 
-  protected byte lastOutgoingByte;
-  protected byte lastIncomingByte;
+  private byte lastOutgoingByte;
+  byte lastIncomingByte;
 
-  private RadioPacket lastOutgoingPacket = null;
-  private RadioPacket lastIncomingPacket = null;
+  private RadioPacket lastOutgoingPacket;
+  private RadioPacket lastIncomingPacket;
 
   public Msp802154Radio(Mote m) {
     this.mote = (MspMote)m;
@@ -86,8 +86,8 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
     }
 
     radio.addRFListener(new RFListener() {
-      int len = 0;
-      int expMpduLen = 0;
+      int len;
+      int expMpduLen;
       final byte[] buffer = new byte[127 + 6];
       final private byte[] syncSeq = {0,0,0,0,0x7A};
       
@@ -234,11 +234,10 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
 
   @Override
   public void receiveCustomData(Object data) {
-    if (!(data instanceof Byte)) {
+    if (!(data instanceof Byte lastIncomingByte)) {
       logger.error("Bad custom data: " + data);
       return;
     }
-    lastIncomingByte = (Byte) data;
 
     final byte inputByte;
     if (isInterfered()) {
@@ -334,13 +333,13 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
    * Current received signal strength.
    * May differ from CC2420's internal value which is an average of the last 8 symbols.
    */
-  double currentSignalStrength = 0;
+  double currentSignalStrength;
 
   /**
    * Last 8 received signal strengths
    */
   private final double[] rssiLast = new double[8];
-  private int rssiLastCounter = 0;
+  private int rssiLastCounter;
 
   @Override
   public double getCurrentSignalStrength() {
@@ -419,6 +418,6 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
   
   @Override
   public boolean canReceiveFrom(CustomDataRadio radio) {
-    return radio.getClass().equals(this.getClass());
+    return radio instanceof Msp802154Radio;
   }
 }

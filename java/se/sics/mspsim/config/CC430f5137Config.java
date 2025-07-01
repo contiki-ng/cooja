@@ -36,7 +36,6 @@
 package se.sics.mspsim.config;
 
 import java.util.ArrayList;
-
 import se.sics.mspsim.core.ClockSystem;
 import se.sics.mspsim.core.GenericUSCI;
 import se.sics.mspsim.core.IOPort;
@@ -46,11 +45,11 @@ import se.sics.mspsim.core.MSP430Core;
 import se.sics.mspsim.core.Multiplier32;
 import se.sics.mspsim.core.PMM;
 import se.sics.mspsim.core.PMMDummy;
+import se.sics.mspsim.core.RF1A;
 import se.sics.mspsim.core.SysReg;
 import se.sics.mspsim.core.Timer;
 import se.sics.mspsim.core.UnifiedClockSystem;
 import se.sics.mspsim.util.Utils;
-import se.sics.mspsim.core.RF1A;
 
 public class CC430f5137Config extends MSP430Config {
 
@@ -127,12 +126,14 @@ public class CC430f5137Config extends MSP430Config {
 //            System.out.println("Adding IOUnit USCI: " + usci.getName());
             ioUnits.add(usci);
         }
-        IOPort last = null;
-        ioUnits.add(last = IOPort.parseIOPort(cpu, 47, portConfig[0], last));
-        ioUnits.add(last = IOPort.parseIOPort(cpu, 42, portConfig[1], last));
+        IOPort last = IOPort.parseIOPort(cpu, 47, portConfig[0], null);
+        ioUnits.add(last);
+        last = IOPort.parseIOPort(cpu, 42, portConfig[1], last);
+        ioUnits.add(last);
 
         for (int i = 2; i < portConfig.length; i++) {
-            ioUnits.add(last = IOPort.parseIOPort(cpu, 0, portConfig[i], last));
+          last = IOPort.parseIOPort(cpu, 0, portConfig[i], last);
+          ioUnits.add(last);
         }
 
                 /* XXX: Stub IO units: Sysreg and PMM */

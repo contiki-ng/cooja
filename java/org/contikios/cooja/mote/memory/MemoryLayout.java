@@ -72,7 +72,7 @@ public class MemoryLayout {
       this.size = size;
     }
 
-    public void setSize(int size) {
+    void setSize(int size) {
       this.size = size;
     }
 
@@ -108,7 +108,7 @@ public class MemoryLayout {
    * @param sizeofPointer
    * @param sizeofInt
    */
-  public MemoryLayout(ByteOrder order, int wordsize, int sizeofInt, int sizeofPointer) {
+  private MemoryLayout(ByteOrder order, int wordsize, int sizeofInt, int sizeofPointer) {
     this.order = order;
     this.WORD_SIZE = wordsize;
     this.intSize = sizeofInt;
@@ -146,7 +146,7 @@ public class MemoryLayout {
    * 
    * @return if aligned
    */
-  public boolean isAligned() {
+  private boolean isAligned() {
     return aligned;
   }
 

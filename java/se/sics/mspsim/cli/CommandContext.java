@@ -1,6 +1,5 @@
 package se.sics.mspsim.cli;
 import java.io.PrintStream;
-
 import se.sics.mspsim.core.MSP430Constants;
 import se.sics.mspsim.util.MapTable;
 import se.sics.mspsim.util.Utils;
@@ -11,7 +10,7 @@ public class CommandContext {
   private final String commandLine;
   private final MapTable mapTable;
   private final int pid;
-  private boolean exited = false;
+  private boolean exited;
   private final Command command;
 
   public PrintStream out;
@@ -102,7 +101,7 @@ public class CommandContext {
 
   public int getArgumentAsAddress(int index) {
     String adr = getArgument(index);
-    if (adr == null || adr.length() == 0) return 0;
+    if (adr == null || adr.isEmpty()) return 0;
     char c = adr.charAt(0);
     if (!Character.isLetter(c) && c != '_' && c != '.') {
       try {

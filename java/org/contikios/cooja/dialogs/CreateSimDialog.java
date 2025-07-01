@@ -41,7 +41,6 @@ import java.awt.event.WindowEvent;
 import java.text.NumberFormat;
 import java.util.Random;
 import java.util.Vector;
-
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -55,7 +54,6 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.RadioMedium;
 import org.contikios.cooja.Simulation;
@@ -69,7 +67,7 @@ public class CreateSimDialog extends JDialog {
   private final static int LABEL_WIDTH = 170;
   private final static int LABEL_HEIGHT = 25;
 
-  private SimConfig config = null;
+  private SimConfig config;
 
   /**
    * Shows a dialog for configuring a simulation.

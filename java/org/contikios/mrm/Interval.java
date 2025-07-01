@@ -30,7 +30,8 @@
 
 package org.contikios.mrm;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,8 +151,8 @@ class Interval {
    * @param interval Other interval
    * @return New intervals
    */
-  public Vector<Interval> subtract(Interval interval) {
-    Vector<Interval> returnIntervals = new Vector<>();
+  public List<Interval> subtract(Interval interval) {
+    ArrayList<Interval> returnIntervals = new ArrayList<>();
     
     // Given interval higher than this interval
     if (highValue <= interval.getLow()) {
@@ -205,10 +206,10 @@ class Interval {
    * @param interval Interval to subtract
    * @return New intervals
    */
-  static public Vector<Interval> subtract(Vector<Interval> initialIntervals, Interval interval) {
-    Vector<Interval> newIntervals = new Vector<>();
+  static public List<Interval> subtract(ArrayList<Interval> initialIntervals, Interval interval) {
+    ArrayList<Interval> newIntervals = new ArrayList<>();
     for (var initialInterval : initialIntervals) {
-      Vector<Interval> tempIntervals = initialInterval.subtract(interval);
+      var tempIntervals = initialInterval.subtract(interval);
       if (tempIntervals != null)
         newIntervals.addAll(tempIntervals);
     }

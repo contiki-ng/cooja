@@ -37,7 +37,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-
 import javax.swing.AbstractAction;
 import javax.swing.JColorChooser;
 import javax.swing.JMenuItem;
@@ -49,7 +48,6 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Watchpoint;
 import org.contikios.cooja.WatchpointMote;
@@ -59,7 +57,7 @@ import org.contikios.cooja.WatchpointMote;
  * 
  * @author Fredrik Osterlind
  */
-public class BreakpointsUI extends JPanel {
+class BreakpointsUI extends JPanel {
   private static final int COLUMN_ADDRESS = 0;
   private static final int COLUMN_FILELINE = 1;
   private static final int COLUMN_INFO = 2;
@@ -75,7 +73,7 @@ public class BreakpointsUI extends JPanel {
   private final WatchpointMote mote;
   private final JTable table;
 
-  private Watchpoint selectedWatchpoint = null;
+  private Watchpoint selectedWatchpoint;
 
   public BreakpointsUI(WatchpointMote mote, final MspCodeWatcher codeWatcher) {
     this.mote = mote;

@@ -9,7 +9,7 @@ import org.contikios.cooja.util.EventTriggers;
 
 public class ApplicationLED extends LED {
     private final Mote mote;
-    private byte currentLedValue = 0;
+    private byte currentLedValue;
 
     public static final byte LEDS_GREEN = 1;
     public static final byte LEDS_YELLOW = 2;

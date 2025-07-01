@@ -41,18 +41,18 @@
 package se.sics.mspsim.cli;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Map;
 
 public abstract class Target {
 
     protected static final boolean DEBUG = false;
 
-    private final Hashtable<String,Target> targets;
+    private final Map<String,Target> targets;
     private final String name;
     private final boolean autoclose;
     private ArrayList<CommandContext> contexts = new ArrayList<>();
 
-    public Target(Hashtable<String,Target> targets, String name, boolean autoclose) {
+    public Target(Map<String,Target> targets, String name, boolean autoclose) {
         this.targets = targets;
         this.name = name;
         this.autoclose = autoclose;
@@ -123,7 +123,7 @@ public abstract class Target {
                             + name + " (" + contexts.size() + ')');
                     }
                 }
-                if (contexts.size() == 0) {
+                if (contexts.isEmpty()) {
                     close = true;
                 }
             }
@@ -144,7 +144,7 @@ public abstract class Target {
                 // Already closed
                 return;
             }
-            if (contexts.size() > 0 && !forceClose) {
+            if (!contexts.isEmpty() && !forceClose) {
                 // Target still has connected writers.
                 return;
             }

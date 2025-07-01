@@ -103,9 +103,7 @@ public class SPICommand {
                     mask = (mask << 1) | 1;
                     bitCount++;
                 }
-            } else if (subs[i].equals(currentName)) {
-                /* do nothing */
-            } else {
+            } else if (!subs[i].equals(currentName)) {
                 if (start != 0) {
                     if (DEBUG) System.out.println("Bitfield: " + currentName + ": [" +
                             start + " - " + (c - 1) + "]");

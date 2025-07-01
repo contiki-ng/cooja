@@ -40,43 +40,25 @@
  */
 
 package se.sics.mspsim.util;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NetworkPacket {
-  byte[] data;
-  final String description;
-  public static final String IPv6 =
+  private byte[] data;
+  private final String description;
+  private static final String IPv6 =
     "version:4=6|trafficClass:8|flowLabel:20" +
     "|payloadLength:16|nextHeader:8|hopLimit:8" +
     "|sourceAddress:128|destinationAddress:128";
 
-  Hashtable<String,Field> fields = new Hashtable<>();
+  private Map<String,Field> fields = new HashMap<>();
 
-  private static class Field {
-    final String name;
-    final int pos;
-    final int size;
-    int mask = 0;
-    int value = 0;
-
-    Field(String name, int pos, int size) {
-      this.name = name;
-      this.pos = pos;
-      this.size = size;
-    }
-
-    public void setMatchMask(int mask, int value) {
-      this.mask = mask;
-      this.value = value;
-    }
-
+  private record Field(String name, int pos, int size, int mask, int value) {
     @Override
-    public String toString() {
-      return name + ":" + pos + "-" + (pos + size - 1) +
-      (mask != 0 ? "=" + value : "");
+      public String toString() {
+        return name + ":" + pos + "-" + (pos + size - 1) + (mask != 0 ? "=" + value : "");
+      }
     }
-  }
 
 
   public NetworkPacket(String pattern) {
@@ -93,11 +75,8 @@ public class NetworkPacket {
         matchVal = match[1];
       }
       int size = Integer.parseInt(val);
-      Field f = new Field(field[0], pos, size);
-      if (matchVal != null) {
-        int mask = Integer.parseInt(matchVal);
-        f.setMatchMask(mask, mask);
-      }
+      int mask = matchVal == null ? 0 : Integer.parseInt(matchVal);
+      Field f = new Field(field[0], pos, size, mask, mask);
       pos += size;
       System.out.println("Adding field: " + f);
       fields.put(f.name, f);
@@ -105,14 +84,13 @@ public class NetworkPacket {
   }
 
 
-  NetworkPacket(String pattern, Hashtable<String, Field> fields) {
+  NetworkPacket(String pattern, Map<String, Field> fields) {
     this.description = pattern;
     this.fields = fields;
   }
 
   public boolean matches(byte[] data) {
-    for (Enumeration<Field> iterator = fields.elements(); iterator.hasMoreElements();) {
-      Field f = iterator.nextElement();
+    for (var f : fields.values()) {
       if (f.mask != 0) {
         int val = getIntBits(data, f.pos, f.pos + f.size - 1);
         if ((val & f.mask) != f.value) {
@@ -167,7 +145,7 @@ public class NetworkPacket {
   }
 
   public static void main(String[] args) {
-    byte[] data = new byte[] {
+    byte[] data = {
         0x61, 0x04, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,

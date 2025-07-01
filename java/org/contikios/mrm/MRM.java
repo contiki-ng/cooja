@@ -33,23 +33,20 @@ package org.contikios.mrm;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
-import org.contikios.cooja.Cooja;
-import org.contikios.cooja.util.EventTriggers;
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
+import org.contikios.cooja.Cooja;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.DirectionalAntennaRadio;
 import org.contikios.cooja.interfaces.NoiseSourceRadio;
 import org.contikios.cooja.interfaces.NoiseSourceRadio.NoiseLevelListener;
-import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
-import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.radiomediums.AbstractRadioMedium;
+import org.contikios.cooja.util.EventTriggers;
 import org.contikios.mrm.ChannelModel.Parameter;
 import org.contikios.mrm.ChannelModel.RadioPair;
 import org.contikios.mrm.ChannelModel.TxPair;
+import org.jdom2.Element;
 
 /**
  * Multi-path Ray-tracing radio medium (MRM).
@@ -107,7 +104,6 @@ public class MRM extends AbstractRadioMedium {
     if (Cooja.isVisualized()) {
       simulation.getCooja().registerPlugin(AreaViewer.class);
       simulation.getCooja().registerPlugin(FormulaViewer.class);
-      Visualizer.registerVisualizerSkin(MRMVisualizerSkin.class);
     }
   }
 
@@ -118,7 +114,6 @@ public class MRM extends AbstractRadioMedium {
     if (Cooja.isVisualized()) {
       simulation.getCooja().unregisterPlugin(AreaViewer.class);
       simulation.getCooja().unregisterPlugin(FormulaViewer.class);
-      Visualizer.unregisterVisualizerSkin(MRMVisualizerSkin.class);
     }
     currentChannelModel.getSettingsTriggers().deleteTriggers(this);
   }
@@ -130,10 +125,9 @@ public class MRM extends AbstractRadioMedium {
         
         /* Radio Medium changed here so notify Observers */
     radioMediumTriggers.trigger(EventTriggers.AddRemove.ADD, radio);
-        
-        if (WITH_NOISE && radio instanceof NoiseSourceRadio) {
-                ((NoiseSourceRadio)radio).addNoiseLevelListener(noiseListener);
-        }
+    if (WITH_NOISE && radio instanceof NoiseSourceRadio noiseRadio) {
+      noiseRadio.addNoiseLevelListener(noiseListener);
+    }
   }
   @Override
   public void unregisterRadioInterface(Radio radio, Simulation sim) {
@@ -141,20 +135,18 @@ public class MRM extends AbstractRadioMedium {
 
         /* Radio Medium changed here so notify Observers */
     radioMediumTriggers.trigger(EventTriggers.AddRemove.REMOVE, radio);
-        
-        if (WITH_NOISE && radio instanceof NoiseSourceRadio) {
-                ((NoiseSourceRadio)radio).removeNoiseLevelListener(noiseListener);
-        }
+    if (WITH_NOISE && radio instanceof NoiseSourceRadio noiseRadio) {
+      noiseRadio.removeNoiseLevelListener(noiseListener);
+    }
   }
   
   @Override
-  public MRMRadioConnection createConnections(final Radio sender) {
+  protected MRMRadioConnection createConnections(final Radio sender) {
     MRMRadioConnection newConnection = new MRMRadioConnection(sender);
-    final Position senderPos = sender.getPosition();
 
     /* TODO Cache potential destination in DGRM */
     /* Loop through all potential destinations */
-    for (Radio recv: getRegisteredRadios()) {
+    for (final var recv: getRegisteredRadios()) {
       if (sender == recv) {
         continue;
       }
@@ -166,8 +158,6 @@ public class MRM extends AbstractRadioMedium {
         newConnection.addInterfered(recv);
         continue;
       }
-      final Radio recvFinal = recv;
-
       /* Calculate receive probability */
       TxPair txPair = new RadioPair() {
         @Override
@@ -176,7 +166,7 @@ public class MRM extends AbstractRadioMedium {
         }
         @Override
         public Radio getToRadio() {
-          return recvFinal;
+          return recv;
         }
       };
       double[] probData = currentChannelModel.getProbability(
@@ -201,13 +191,9 @@ public class MRM extends AbstractRadioMedium {
              * When this is implemented, also implement
              * RadioConnection.java:getReceptionStartTime()
              */
-
-            /* Was interfered: keep interfering */
-            newConnection.addInterfered(recv, recvSignalStrength);
-          } else {
-            /* Was interfered: keep interfering */
-            newConnection.addInterfered(recv, recvSignalStrength);
           }
+          /* Was interfered: keep interfering */
+          newConnection.addInterfered(recv, recvSignalStrength);
         } else if (recv.isTransmitting()) {
           newConnection.addInterfered(recv, recvSignalStrength);
         } else if (recv.isReceiving()) {
@@ -230,9 +216,7 @@ public class MRM extends AbstractRadioMedium {
             /* Capture effect: recv-radio is already receiving.
              * Are we strong enough to interfere? */
 
-            if (recvSignalStrength < currSignal - CAPTURE_EFFECT_THRESHOLD /* config */) {
-              /* No, we are too weak */
-            } else {
+            if (recvSignalStrength >= currSignal - CAPTURE_EFFECT_THRESHOLD /* config */) {
               /* New signal is strong enough to either interfere with ongoing transmission,
                * or to be received/captured */
               long startTime = newConnection.getReceptionStartTime();
@@ -271,10 +255,9 @@ public class MRM extends AbstractRadioMedium {
         if (!WITH_CAPTURE_EFFECT) {
                 newConnection.addInterfered(recv, recvSignalStrength);
                 recv.interfereAnyReception();
-        } else {
-                /* TODO Implement new type: newConnection.addNoise()?
-         * Currently, this connection will never disturb this radio... */
         }
+        // TODO: add else-branch and implement new type: newConnection.addNoise()?
+        // Currently, this connection will never disturb this radio.
       }
 
     }
@@ -283,11 +266,11 @@ public class MRM extends AbstractRadioMedium {
   }
 
   @Override
-  public void updateSignalStrengths() {
+  protected void updateSignalStrengths() {
 
     /* Reset: Background noise */
         double background = 
-                currentChannelModel.getParameterDoubleValue((Parameter.bg_noise_mean));
+                currentChannelModel.getParameterDoubleValue(Parameter.bg_noise_mean);
     for (Radio radio : getRegisteredRadios()) {
       radio.setCurrentSignalStrength(background);
     }
@@ -295,9 +278,9 @@ public class MRM extends AbstractRadioMedium {
     /* Active radio connections */
     RadioConnection[] conns = getActiveConnections();
     for (RadioConnection conn : conns) {
+      var srcChannel = conn.getSource().getChannel();
       for (Radio dstRadio : conn.getDestinations()) {
         double signalStrength = ((MRMRadioConnection) conn).getDestinationSignalStrength(dstRadio);
-        var srcChannel = conn.getSource().getChannel();
         var dstChannel = dstRadio.getChannel();
         if (srcChannel >= 0 && dstChannel >= 0 && srcChannel != dstChannel) {
           continue;
@@ -310,8 +293,8 @@ public class MRM extends AbstractRadioMedium {
 
     /* Interfering/colliding radio connections */
     for (RadioConnection conn : conns) {
+      var srcChannel = conn.getSource().getChannel();
       for (Radio intfRadio : conn.getInterfered()) {
-        var srcChannel = conn.getSource().getChannel();
         var intfChannel = intfRadio.getChannel();
         if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
           continue;
@@ -322,7 +305,6 @@ public class MRM extends AbstractRadioMedium {
         }
 
         if (!intfRadio.isInterfered()) {
-          /*logger.warn("Radio was not interfered: " + intfRadio);*/
                 intfRadio.interfereAnyReception();
         }
       }
@@ -330,32 +312,29 @@ public class MRM extends AbstractRadioMedium {
 
     /* Check for noise sources */
     if (!WITH_NOISE) return;
-    for (Radio noiseRadio: getRegisteredRadios()) {
+    for (final var noiseRadio: getRegisteredRadios()) {
       if (!(noiseRadio instanceof NoiseSourceRadio radio)) {
         continue;
       }
-      final Radio fromRadio = noiseRadio;
-      int signalStrength = radio.getNoiseLevel();
-      if (signalStrength == Integer.MIN_VALUE) {
+      if (radio.getNoiseLevel() == Integer.MIN_VALUE) {
         continue;
       }
 
       /* Calculate how noise source affects surrounding radios */
-      for (Radio affectedRadio : getRegisteredRadios()) {
+      for (final var affectedRadio : getRegisteredRadios()) {
         if (noiseRadio == affectedRadio) {
           continue;
         }
 
         /* Update noise levels */
-        final Radio toRadio = affectedRadio;
         TxPair txPair = new RadioPair() {
           @Override
           public Radio getFromRadio() {
-            return fromRadio;
+            return noiseRadio;
           }
           @Override
           public Radio getToRadio() {
-            return toRadio;
+            return affectedRadio;
           }
         };
         double[] signalMeanVar = currentChannelModel.getReceivedSignalStrength(txPair);
@@ -433,28 +412,28 @@ public class MRM extends AbstractRadioMedium {
   static class MRMRadioConnection extends RadioConnection {
     private final HashMap<Radio, Double> signalStrengths = new HashMap<>();
 
-    public MRMRadioConnection(Radio sourceRadio) {
+    MRMRadioConnection(Radio sourceRadio) {
       super(sourceRadio);
     }
 
-    public void addDestination(Radio radio, double signalStrength) {
+    void addDestination(Radio radio, double signalStrength) {
       signalStrengths.put(radio, signalStrength);
       addDestination(radio);
     }
 
-    public void addInterfered(Radio radio, double signalStrength) {
+    void addInterfered(Radio radio, double signalStrength) {
       signalStrengths.put(radio, signalStrength);
       addInterfered(radio);
     }
 
-    public double getDestinationSignalStrength(Radio radio) {
+    double getDestinationSignalStrength(Radio radio) {
         if (signalStrengths.get(radio) == null) {
                 return Double.MIN_VALUE;
         }
       return signalStrengths.get(radio);
     }
 
-    public double getInterferenceSignalStrength(Radio radio) {
+    double getInterferenceSignalStrength(Radio radio) {
         if (signalStrengths.get(radio) == null) {
                 return Double.MIN_VALUE;
         }

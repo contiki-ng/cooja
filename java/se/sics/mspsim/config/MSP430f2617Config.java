@@ -36,7 +36,6 @@
 package se.sics.mspsim.config;
 
 import java.util.ArrayList;
-
 import se.sics.mspsim.core.ADC12;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
@@ -115,12 +114,14 @@ public class MSP430f2617Config extends MSP430Config {
 
         // Add port 1,2 with interrupt capability!
         // IOPorts will add themselves to the CPU
-        IOPort last = null;
-        ioUnits.add(last = IOPort.parseIOPort(cpu, 18, portConfig[0], last));
-        ioUnits.add(last = IOPort.parseIOPort(cpu, 19, portConfig[1], last));
+        IOPort last = IOPort.parseIOPort(cpu, 18, portConfig[0], null);
+        ioUnits.add(last);
+        last = IOPort.parseIOPort(cpu, 19, portConfig[1], last);
+        ioUnits.add(last);
 
         for (int i = 2; i < portConfig.length; i++) {
-            ioUnits.add(last = IOPort.parseIOPort(cpu, 0, portConfig[i], last));
+          last = IOPort.parseIOPort(cpu, 0, portConfig[i], last);
+          ioUnits.add(last);
         }
 
         ADC12 adc12 = new ADC12(cpu);

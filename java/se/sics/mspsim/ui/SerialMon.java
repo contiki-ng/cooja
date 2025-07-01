@@ -41,14 +41,12 @@ import java.awt.EventQueue;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayDeque;
-
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
 import se.sics.mspsim.core.StateChangeListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
@@ -69,15 +67,15 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
   private JTextArea textArea;
   private JTextField commandField;
   private final String[] history = new String[50];
-  private int historyPos = 0;
-  private int historyCount = 0;
+  private int historyPos;
+  private int historyCount;
   private String text = "*** Serial mon for MSPsim ***\n";
 
   private final ArrayDeque<String> sendQueue = new ArrayDeque<>(8);
   private int sendIndex;
 
   private int lines = 1;
-  private boolean isUpdatePending = false;
+  private boolean isUpdatePending;
 
   public SerialMon(USARTSource usart, String title) {
     this.usart = usart;
@@ -102,7 +100,8 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
   private void initGUI() {
     window = new JFrame(title);
 //     window.setBounds(100, 100, 400,340);
-    window.add(new JScrollPane(textArea = new JTextArea(20, 40),
+    textArea = new JTextArea(20, 40);
+    window.add(new JScrollPane(textArea,
                                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),
                BorderLayout.CENTER);
@@ -121,7 +120,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
     commandField = new JTextField();
     commandField.addActionListener(e -> {
       String command = commandField.getText().trim();
-      if (command.length() > 0) {
+      if (!command.isEmpty()) {
         if (sendCommand(command)) {
           int previous = historyCount - 1;
           if (previous < 0) previous += history.length;
@@ -147,7 +146,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
               commandField.getToolkit().beep();
             } else {
               String cmd = commandField.getText().trim();
-              if (cmd.length() > 0) {
+              if (!cmd.isEmpty()) {
                 history[historyPos] = cmd;
               }
               historyPos = nextPos;
@@ -163,7 +162,7 @@ public class SerialMon implements USARTListener, StateChangeListener, ServiceCom
               commandField.getToolkit().beep();
             } else {
               String cmd = commandField.getText().trim();
-              if (cmd.length() > 0) {
+              if (!cmd.isEmpty()) {
                 history[historyPos] = cmd;
               }
               historyPos = nextPos;

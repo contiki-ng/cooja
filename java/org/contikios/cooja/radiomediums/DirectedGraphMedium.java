@@ -37,14 +37,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import org.contikios.cooja.util.EventTriggers;
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Radio;
+import org.contikios.cooja.util.EventTriggers;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,11 +85,6 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
       return Arrays.stream(destinations).map(d -> d.radio).toList();
     }
     return Collections.emptyList();
-  }
-
-  @Override
-  public void removed() {
-    super.removed();
   }
 
   public void addEdge(Edge e) {
@@ -146,7 +140,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
 
   
   @Override
-  public void updateSignalStrengths() {
+  protected void updateSignalStrengths() {
 
     /* Reset signal strengths (Default: SS_NOTHING) */
     for (Radio radio : getRegisteredRadios()) {
@@ -164,10 +158,9 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
       }
       //Maximum reception signal of all possible radios received
       DGRMDestinationRadio[] dstRadios =  getPotentialDestinations(conn.getSource());
-      if (dstRadios == null) continue; 
+      if (dstRadios == null) continue;
+      var activeSourceChannel = conn.getSource().getChannel();
       for (DGRMDestinationRadio dstRadio : dstRadios) {
-
-        int activeSourceChannel = conn.getSource().getChannel();
         int edgeChannel = dstRadio.channel;
         int activeDstChannel = dstRadio.radio.getChannel();
         if (activeSourceChannel != -1) {
@@ -240,7 +233,7 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
   }
 
   @Override
-  public RadioConnection createConnections(Radio source) {
+  protected RadioConnection createConnections(Radio source) {
     if (edgesDirty) {
       analyzeEdges();
     }

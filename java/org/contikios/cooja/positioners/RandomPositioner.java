@@ -30,7 +30,6 @@
 
 package org.contikios.cooja.positioners;
 import java.util.Random;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Positioner;
 
@@ -41,12 +40,12 @@ import org.contikios.cooja.Positioner;
  */
 @ClassDescription("Random positioning")
 public class RandomPositioner extends Positioner {
-  final double startX;
-  final double endX;
-  final double startY;
-  final double endY;
-  final double startZ;
-  final double endZ;
+  private final double startX;
+  private final double endX;
+  private final double startY;
+  private final double endY;
+  private final double startZ;
+  private final double endZ;
 
   private final Random random = new Random(); /* Do not use main random generator for setup */
 

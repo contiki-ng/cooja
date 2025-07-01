@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -57,13 +56,9 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.AbstractTableModel;
-
-import org.contikios.cooja.HasQuickHelp;
-import org.contikios.cooja.util.EventTriggers;
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
+import org.contikios.cooja.HasQuickHelp;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MotePlugin;
 import org.contikios.cooja.PluginType;
@@ -77,6 +72,8 @@ import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteType;
+import org.contikios.cooja.util.EventTriggers;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.mspsim.core.EmulationException;
@@ -93,7 +90,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
 
   private static final Logger logger = LoggerFactory.getLogger(MspCodeWatcher.class);
   private final Simulation simulation;
-  private File currentCodeFile = null;
+  private File currentCodeFile;
   private int currentLineNumber = -1;
 
   private final DebugUI assCodeUI;
@@ -221,7 +218,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     add(BorderLayout.SOUTH, sourceCodeControl);
 
     /* Listen for breakpoint changes */
-    watchpointMote.addWatchpointListener(watchpointListener = new WatchpointListener() {
+    watchpointListener = new WatchpointListener() {
       @Override
       public void watchpointTriggered(final Watchpoint watchpoint) {
         SwingUtilities.invokeLater(() -> {
@@ -238,7 +235,8 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
       public void watchpointsChanged() {
         sourceCodeUI.updateBreakpoints();
       }
-    });
+    };
+    watchpointMote.addWatchpointListener(watchpointListener);
 
     /* Observe when simulation starts/stops */
     simulation.getSimulationStateTriggers().addTrigger(this, (state, simulation) -> EventQueue.invokeLater(() -> {
@@ -271,7 +269,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
     fileComboBox.setSelectedIndex(0);
   }
 
-  public void displaySourceFile(final File file, final int line, final boolean markCurrent) {
+  void displaySourceFile(final File file, final int line, final boolean markCurrent) {
     SwingUtilities.invokeLater(() -> {
       mainPane.setSelectedIndex(SOURCECODE); /* code */
       sourceCodeUI.displayNewCode(file, line, markCurrent);
@@ -373,15 +371,15 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
             "<br>This plugin shows the source code for MSP430 based motes and can set or remove breakpoints." +
             "<br><br>" +
             "<b>Note:</b> You must compile the code with <i>DEBUG=1</i> to include information about the source code in the build." +
-            "<br><br>Example: make TARGET=sky DEBUG=1 hello-world";
+            "<br><br>Example: $(MAKE) -j$(CPUS) TARGET=sky DEBUG=1 hello-world";
   }
 
   private class Rule {
     String from;
     String to;
-    int prefixMatches = 0;
-    int locatesFile = 0;
-    public Rule(String from, String to) {
+    int prefixMatches;
+    int locatesFile;
+    Rule(String from, String to) {
       this.from = from;
       this.to = to;
     }
@@ -464,10 +462,10 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
   }
 
   private final MessageListUI rulesDebuggingOutput = new MessageListUI();
-  private boolean rulesWithDebuggingOutput = false;
-  private int[] rulesMatched = null;
-  private int[] rulesOK = null;
-  private JTable table = null;
+  private boolean rulesWithDebuggingOutput;
+  private int[] rulesMatched;
+  private int[] rulesOK;
+  private JTable table;
   private void tryMapDebugInfo() {
     /* called from AWT */
     int r = JOptionPane.showConfirmDialog(Cooja.getTopParentContainer(),
@@ -636,11 +634,7 @@ public class MspCodeWatcher extends VisPlugin implements MotePlugin, HasQuickHel
           sb.append(r1.to);
         }
       }
-      if (sb.length() >= 1) {
-        Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", sb.substring(1));
-      } else {
-        Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", "");
-      }
+      Cooja.setExternalToolsSetting("MSPCODEWATCHER_RULES", sb.isEmpty() ? "" : sb.substring(1));
     });
 
     JButton closeButton = new JButton("Close");

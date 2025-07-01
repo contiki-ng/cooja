@@ -45,13 +45,11 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.util.Hashtable;
-
+import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.border.Border;
-
 import se.sics.mspsim.util.ArrayUtils;
 
 /**
@@ -69,8 +67,8 @@ public class ChartPanel extends JComponent {
 
   private static final Color LIGHT_GRAY = new Color(0xff909090);
 
-  private final Hashtable<String,Object> config = new Hashtable<>();
-  private Chart[] charts = null;
+  private final HashMap<String,Object> config = new HashMap<>();
+  private Chart[] charts;
 
   private Chart axisChart;
 
@@ -250,10 +248,7 @@ public class ChartPanel extends JComponent {
           double minY = chart.getMinY();
           double minX = chart.getMinX();
           double maxX = chart.getMaxX();
-
-          if (maxY < minY || maxX <= minX) {
-            // No data in this chart
-          } else {
+          if (!(maxY < minY || maxX <= minX)) {
 //          double yfac = (1.0 * height) / (maxY - minY);
 //          double xfac = (1.0 * width) / (maxX - minX);
 
@@ -265,8 +260,8 @@ public class ChartPanel extends JComponent {
     }
   }
 
-  private static double getGridValue(double totMinX, double totMaxX, int maxCount) {
-    double diff = totMaxX - totMinX;
+  private static double getGridValue(double totMin, double totMax, int maxCount) {
+    double diff = totMax - totMin;
     if (diff <= 0) {
       return 1;
     }
@@ -303,7 +298,7 @@ public class ChartPanel extends JComponent {
 
     int[] data = new int[40];
     for (int i = 0, n = data.length; i < n; i++) {
-      data[i] = (int) ((Math.random() * 300));
+      data[i] = (int) (Math.random() * 300);
     }
     bc.setConfig("color", new Color(0xffb0b0b0));
     bc.setData(data);

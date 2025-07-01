@@ -31,9 +31,7 @@ package org.contikios.cooja.dialogs;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.Timer;
-
 import org.contikios.cooja.plugins.LogListener;
 
 /**

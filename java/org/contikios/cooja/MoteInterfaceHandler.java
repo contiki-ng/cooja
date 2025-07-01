@@ -66,18 +66,18 @@ public class MoteInterfaceHandler {
   private IPAddress myIPAddress;
   private LED myLED;
   private Log myLog;
-  private MoteID myMoteID;
+  private MoteID<?> myMoteID;
   private PIR myPIR;
   private Position myPosition;
   private Radio myRadio;
   private SerialPort mySerialPort;
 
   /**
-   * Creates new mote interface handler. All given interfaces are created.
+   * Initializes mote interface handler. All given interfaces are created.
    *
    * @param mote Mote
    */
-  public MoteInterfaceHandler(Mote mote) throws MoteType.MoteTypeCreationException {
+  public void init(Mote mote) throws MoteType.MoteTypeCreationException {
     for (var interfaceClass : mote.getType().getMoteInterfaceClasses()) {
       try {
         moteInterfaces.add(interfaceClass.getConstructor(Mote.class).newInstance(mote));
@@ -213,7 +213,7 @@ public class MoteInterfaceHandler {
    *
    * @return Mote ID interface
    */
-  public MoteID getMoteID() {
+  public MoteID<?> getMoteID() {
     if (myMoteID == null) {
       myMoteID = getInterfaceOfType(MoteID.class);
     }
@@ -297,7 +297,7 @@ public class MoteInterfaceHandler {
   public boolean setConfigXML(Mote mote, Element element, boolean ignoreFailure) {
     var name = element.getText().trim();
     if (name.startsWith("se.sics")) {
-      name = name.replaceFirst("se\\.sics", "org.contikios");
+      name = name.replaceFirst("^se\\.sics", "org.contikios");
     }
     MoteInterface moteInterface = null;
     for (var candidateInterface : getInterfaces()) {

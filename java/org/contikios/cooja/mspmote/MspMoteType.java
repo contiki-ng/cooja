@@ -35,19 +35,19 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.contikios.cooja.dialogs.AbstractCompileDialog;
-import org.contikios.cooja.mote.BaseContikiMoteType;
-import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Simulation;
+import org.contikios.cooja.dialogs.AbstractCompileDialog;
+import org.contikios.cooja.mote.BaseContikiMoteType;
+import org.contikios.cooja.mote.memory.MemoryInterface.Symbol;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.MapEntry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * MSP430-based mote types emulated in MSPSim.
@@ -60,8 +60,8 @@ import org.slf4j.LoggerFactory;
 public abstract class MspMoteType extends BaseContikiMoteType {
   private static final Logger logger = LoggerFactory.getLogger(MspMoteType.class);
 
-  private boolean loadedDebugInfo = false;
-  private HashMap<File, HashMap<Integer, Integer>> debuggingInfo = null; /* cached */
+  private boolean loadedDebugInfo;
+  private HashMap<File, HashMap<Integer, Integer>> debuggingInfo; /* cached */
   private ELF elf; /* cached */
 
   @Override
@@ -142,18 +142,11 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return -1;
   }
 
-  protected Map<String, Symbol> getEntries(GenericNode node) throws MoteTypeCreationException {
+  Map<String, Symbol> getEntries(GenericNode node) {
     if (Cooja.isVisualized()) {
       EventQueue.invokeLater(() -> Cooja.setProgressMessage("Loading " + getContikiFirmwareFile().getName()));
     }
-    ELF elf;
-    try {
-      elf = getELF();
-    } catch (Exception e) {
-      logger.error("Error when reading firmware:", e);
-      throw new MoteTypeCreationException("Error when reading firmware: " + e.getMessage());
-    }
-    node.loadFirmware(elf);
+    var elf = (ELF) node.getRegistry().getComponent("elf");
     var vars = new HashMap<String, Symbol>();
     for (var entry : elf.getMap().getAllEntries()) {
       if (entry.getType() != MapEntry.TYPE.variable) {
@@ -171,7 +164,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return elf;
   }
 
-  public HashMap<File, HashMap<Integer, Integer>> getFirmwareDebugInfo()
+  private HashMap<File, HashMap<Integer, Integer>> getFirmwareDebugInfo()
   throws IOException {
     if (debuggingInfo == null) {
       debuggingInfo = getFirmwareDebugInfo(getELF());
@@ -179,7 +172,7 @@ public abstract class MspMoteType extends BaseContikiMoteType {
     return debuggingInfo;
   }
 
-  public static HashMap<File, HashMap<Integer, Integer>> getFirmwareDebugInfo(ELF elf) {
+  private static HashMap<File, HashMap<Integer, Integer>> getFirmwareDebugInfo(ELF elf) {
     HashMap<File, HashMap<Integer, Integer>> fileToLineHash = new HashMap<>();
 
     if (elf.getDebug() == null) {

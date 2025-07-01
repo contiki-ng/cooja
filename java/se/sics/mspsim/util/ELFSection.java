@@ -64,12 +64,12 @@ public class ELFSection {
   public static final int SYMTYPE_SECTION = 3;
   public static final int SYMTYPE_FILE = 4;
 
-  public static final String[] typeNames = new String[] {
+  public static final String[] typeNames = {
     "null", "progbits", "symtab", "strtab", "rela",
     "hash", "dynamic", "note", "nobits", "rel", "shlib", "dynsym"
   };
 
-  public static final String[] symTypeNames = new String[] {
+  public static final String[] symTypeNames = {
     "none", "object", "function", "section", "file"
   };
 
@@ -86,7 +86,7 @@ public class ELFSection {
 
   ELF elf;
 
-  int pos = 0;
+  private int pos;
 
   public String getSectionName() {
     if (elf.strTable != null) {

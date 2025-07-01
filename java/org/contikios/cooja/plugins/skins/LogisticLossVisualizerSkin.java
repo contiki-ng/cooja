@@ -38,7 +38,6 @@ import java.awt.Point;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.util.Set;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -72,9 +71,9 @@ public class LogisticLossVisualizerSkin implements VisualizerSkin {
   private static final Color COLOR_TX = new Color(0, 255, 0, 100);
   private static final Color COLOR_INT = new Color(50, 50, 50, 100);
 
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
-  private LogisticLoss radioMedium = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
+  private LogisticLoss radioMedium;
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {
@@ -124,7 +123,6 @@ public class LogisticLossVisualizerSkin implements VisualizerSkin {
       int y = pixelCoord.y;
 
       // Fetch current output power indicator (scale with as percent)
-      Radio selectedRadio = selectedMote.getInterfaces().getRadio();
       double moteInterferenceRange
               = radioMedium.INTERFERENCE_RANGE;
       double moteTransmissionRange

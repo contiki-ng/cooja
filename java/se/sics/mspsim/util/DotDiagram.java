@@ -45,7 +45,6 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -67,7 +66,7 @@ public class DotDiagram extends JComponent {
   private final int[] minData;
   private int totMax;
   private int totMin;
-  private boolean lockMinMax = false;
+  private boolean lockMinMax;
   private int maxDataLen;
   private double factor;
 
@@ -78,12 +77,12 @@ public class DotDiagram extends JComponent {
   private int sizeY;
   private int lowerY;
   private double xspace;
-  private int ySpacing = 0;
-  private boolean rescale = false;
-  private boolean gridVisible = false;
+  private int ySpacing;
+  private boolean rescale;
+  private boolean gridVisible;
 
-  private String yLabel = null;
-  private String xLabel = null;
+  private String yLabel;
+  private String xLabel;
 
   private final boolean isAdditive;
   private final boolean isFilled;
@@ -261,7 +260,7 @@ public class DotDiagram extends JComponent {
     int leftInset = 2;
     int topInset = 2;
     int yLabelSize = 0;
-    if (yLabel != null || xLabel != null) {
+    if (yLabel != null) {
       yLabelSize = fm.stringWidth(yLabel);
     }
     if(gridVisible) {

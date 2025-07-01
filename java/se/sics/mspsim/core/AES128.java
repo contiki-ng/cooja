@@ -35,7 +35,6 @@ package se.sics.mspsim.core;
 import java.util.Arrays;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 
 
@@ -162,46 +161,46 @@ public class AES128 extends IOUnit {
                 pos = 0;
             }
 
-            public int position() {
+            int position() {
                 return pos;
             }
 
-            public void position(int p) {
+            void position(int p) {
                 pos = p;
             }
 
-            public boolean hasRemaining() {
+            boolean hasRemaining() {
                 return pos < buffer.length;
             }
 
-            public void clear() {
+            void clear() {
                 pos = 0;
             }
 
-            public void resetPos() {
+            void resetPos() {
                 pos = 0;
             }
 
-            public byte[] array() {
+            byte[] array() {
                 return buffer;
             }
 
-            public void put(byte[] bytes) {
+            void put(byte[] bytes) {
               for (byte aByte : bytes) {
                 put(aByte);
               }
             }
 
-            public void put(byte data) {
+            void put(byte data) {
                 buffer[pos++] = data;
             }
 
             /* assume that calling code is ok... */
-            public byte get() {
+            byte get() {
                 return buffer[pos++];
             }
 
-            public int limit() {
+            int limit() {
                 return buffer.length;
             }
         }
@@ -213,7 +212,7 @@ public class AES128 extends IOUnit {
         /**
          * Syntax sugar
          */
-        private boolean isBusy = false;
+        private boolean isBusy;
 
         /**
          * Nice names for buffer operations :-)
@@ -255,15 +254,15 @@ public class AES128 extends IOUnit {
         }
 
         /* AESACTL0 register */
-        private boolean advancedCipherMode = false;
-        private boolean interruptEnable = false;
-        private boolean errorFlag = false;
-        private boolean readyInterruptFlag = false;
-        private boolean resetFlag = false;
+        private boolean advancedCipherMode;
+        private boolean interruptEnable;
+        private boolean errorFlag;
+        private boolean readyInterruptFlag;
+        private boolean resetFlag;
         private int cipherMode = MODE_ECB;
         private int keyLength = KEY_128;
         private int operation = AESOP_0;
-        private int cipherBlockCounter = 0;
+        private int cipherBlockCounter;
 
         /**
          * CTL0 Register built upon variables
@@ -332,17 +331,6 @@ public class AES128 extends IOUnit {
                 }
         }
 
-        /*
-         * The inherited log function is not working for whatever reason. A quick
-         * redefinition helps a lot while developing the module
-         */
-        @Override
-        protected void log(String msg) {
-                if (DEBUG) {
-                        System.out.println(msg);
-                }
-        }
-
         /**
          * Log using printf format
          *
@@ -361,7 +349,7 @@ public class AES128 extends IOUnit {
         @Override
         public void write(int address, int value, boolean word, long cycles) {
                 log("write @ %x <-- %x (word=%b)\n", address, value, word);
-                int lo = (value) & 0xff; // low byte
+                int lo = value & 0xff; // low byte
                 int hi = (value >> 8) & 0xff; // high byte
 
                 switch (address - offset) {

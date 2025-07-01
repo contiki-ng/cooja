@@ -40,9 +40,7 @@
  */
 package se.sics.mspsim.util;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
-
 import se.sics.mspsim.core.Chip;
 import se.sics.mspsim.core.MSP430Core;
 import se.sics.mspsim.core.OperatingModeListener;
@@ -96,7 +94,7 @@ public class OperatingModeStatistics {
 
   public synchronized void printStat() {
     for (StatEntry entry : statistics) {
-      entry.printStat(System.out);
+      entry.printStat();
     }
   }
 
@@ -140,7 +138,7 @@ public class OperatingModeStatistics {
     private long lastCycles;
     private long lastValue;
 
-    public StatDataSource(StatEntry entry, int mode, int operation) {
+    StatDataSource(StatEntry entry, int mode, int operation) {
       this.entry = entry;
       this.mode = mode;
       this.operation = operation;
@@ -175,7 +173,7 @@ public class OperatingModeStatistics {
     private final long[] lastValue;
     private final long[] lastCycles;
 
-    public StatMultiDataSource(StatEntry entry) {
+    StatMultiDataSource(StatEntry entry) {
       this.entry = entry;
       this.lastValue = new long[entry.elapsed.length];
       this.lastCycles = new long[entry.elapsed.length];
@@ -240,12 +238,11 @@ public class OperatingModeStatistics {
       this.startTime = cpu.cycles;
     }
 
-    void printStat(PrintStream out) {
-      out.println("Stat for: " + chip.getID());
+    void printStat() {
+      System.out.println("Stat for: " + chip.getID());
       for (int i = 0; i < elapsed.length; i++) {
-        out.println((i + 1) + " = " + elapsed[i]);
+        System.out.println((i + 1) + " = " + elapsed[i]);
       }
     }
   }
-
 }

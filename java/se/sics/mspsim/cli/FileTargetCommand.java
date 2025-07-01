@@ -4,18 +4,18 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.Map;
 
 public class FileTargetCommand extends BasicLineCommand {
-  private final Hashtable<String,Target> fileTargets;
+  private final Map<String,Target> fileTargets;
   private final boolean print;
   private final boolean append;
 
   private Target ft;
   private CommandContext context;
 
-  public FileTargetCommand(Hashtable<String,Target> fileTargets,
-        String name, String desc, boolean print, boolean append) {
+  public FileTargetCommand(Map<String,Target> fileTargets,
+                           String name, String desc, boolean print, boolean append) {
     super(name, desc);
     this.fileTargets = fileTargets;
     this.print = print;

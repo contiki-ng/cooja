@@ -39,8 +39,8 @@
  *           $Rev$
  */
 package se.sics.mspsim.util;
-import java.io.PrintStream;
 
+import java.io.PrintStream;
 import se.sics.mspsim.cli.BasicAsyncCommand;
 import se.sics.mspsim.cli.BasicCommand;
 import se.sics.mspsim.cli.BasicLineCommand;
@@ -77,7 +77,7 @@ public class StatCommands implements CommandBundle {
             } else {
               String id = unit.getID();
               String name = unit.getName();
-              if (id == name) {
+              if (id.equals(name)) {
                 context.out.println(unit.getName() + ": " + unit.getClass().getName());
               } else {
                 context.out.println(unit.getID() + " (" + unit.getName() + "): "
@@ -90,18 +90,13 @@ public class StatCommands implements CommandBundle {
             }
           }
         } else {
-          Loggable[] units = cpu.getLoggables();
-          if (units == null) {
-            context.out.println("No loggables found.");
-          } else {
-            for (Loggable unit : units) {
-              String id = unit.getID();
-              String name = unit.getName();
-              if (id == name) {
-                context.out.println("  " + id);
-              } else {
-                context.out.println("  " + id + " (" + name + ')');
-              }
+          for (var unit : cpu.getLoggables()) {
+            String id = unit.getID();
+            String name = unit.getName();
+            if (id.equals(name)) {
+              context.out.println("  " + id);
+            } else {
+              context.out.println("  " + id + " (" + name + ')');
             }
           }
         }

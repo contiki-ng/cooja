@@ -34,16 +34,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import org.contikios.cooja.Cooja;
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
-import org.contikios.cooja.plugins.Visualizer;
 import org.contikios.cooja.plugins.skins.UDGMVisualizerSkin;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,10 +123,6 @@ public class UDGM extends AbstractRadioMedium {
     simulation.getMoteTriggers().addTrigger(this, (o, m) -> dgrm.requestEdgeAnalysis());
 
     dgrm.requestEdgeAnalysis();
-
-    if (Cooja.isVisualized()) {
-      Visualizer.registerVisualizerSkin(UDGMVisualizerSkin.class);
-    }
   }
 
   @Override
@@ -150,15 +143,6 @@ public class UDGM extends AbstractRadioMedium {
     return list;
   }
 
-  @Override
-  public void removed() {
-  	super.removed();
-
-    if (Cooja.isVisualized()) {
-      Visualizer.unregisterVisualizerSkin(UDGMVisualizerSkin.class);
-    }
-  }
-  
   public void setTxRange(double r) {
     TRANSMITTING_RANGE = r;
     dgrm.requestEdgeAnalysis();
@@ -170,7 +154,7 @@ public class UDGM extends AbstractRadioMedium {
   }
 
   @Override
-  public RadioConnection createConnections(Radio sender) {
+  protected RadioConnection createConnections(Radio sender) {
     RadioConnection newConnection = new RadioConnection(sender);
 
     /* Fail radio transmission randomly - no radios will hear this transmission */
@@ -285,7 +269,7 @@ public class UDGM extends AbstractRadioMedium {
   }
 
   @Override
-  public void updateSignalStrengths() {
+  protected void updateSignalStrengths() {
     /* Override: uses distance as signal strength factor */
     
     /* Reset signal strengths */
@@ -299,8 +283,8 @@ public class UDGM extends AbstractRadioMedium {
       if (conn.getSource().getCurrentSignalStrength() < SS_STRONG) {
         conn.getSource().setCurrentSignalStrength(SS_STRONG);
       }
+      var srcChannel = conn.getSource().getChannel();
       for (Radio dstRadio : conn.getDestinations()) {
-        var srcChannel = conn.getSource().getChannel();
         var dstChannel = dstRadio.getChannel();
         if (srcChannel >= 0 && dstChannel >= 0 && srcChannel != dstChannel) {
           continue;
@@ -321,8 +305,8 @@ public class UDGM extends AbstractRadioMedium {
 
     /* Set signal strength to below weak on interfered */
     for (RadioConnection conn : conns) {
+      var srcChannel = conn.getSource().getChannel();
       for (Radio intfRadio : conn.getInterfered()) {
-        var srcChannel = conn.getSource().getChannel();
         var intfChannel = intfRadio.getChannel();
         if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
           continue;

@@ -42,7 +42,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -65,9 +64,9 @@ import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.MoteInterface;
+import org.contikios.cooja.interfaces.Clock;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.mote.BaseContikiMoteType;
@@ -93,7 +92,7 @@ public abstract class AbstractCompileDialog extends JDialog {
 
   protected final static Dimension LABEL_DIMENSION = new Dimension(170, 25);
 
-  private static File lastFile = null;
+  private static File lastFile;
 
   public enum DialogState {
     NO_SELECTION,
@@ -114,12 +113,12 @@ public abstract class AbstractCompileDialog extends JDialog {
   private final JButton createButton = new JButton("Create");
 
   protected final String targetName;
-  private Component currentCompilationOutput = null;
-  private Process currentCompilationProcess = null;
+  private Component currentCompilationOutput;
+  private Process currentCompilationProcess;
 
   /* Accessible at Contiki compilation success */
-  protected File contikiSource = null;
-  protected File contikiFirmware = null;
+  protected File contikiSource;
+  protected File contikiFirmware;
 
   public AbstractCompileDialog(Cooja gui, final BaseContikiMoteType moteType, BaseContikiMoteType.MoteTypeConfig cfg) {
     super(Cooja.getTopParentContainer(), "Create Mote Type: Compile Contiki", ModalityType.APPLICATION_MODAL);
@@ -228,7 +227,7 @@ public abstract class AbstractCompileDialog extends JDialog {
           public void actionPerformed(ActionEvent e1) {
             String command = commands.remove(0);
             try {
-              currentCompilationProcess = BaseContikiMoteType.compile(
+              currentCompilationProcess = moteType.compile(
                   command,
                   moteType.getCompilationEnvironment(),
                   new File(contikiField.getText()).getParentFile(),
@@ -247,11 +246,11 @@ public abstract class AbstractCompileDialog extends JDialog {
         nextCommandAction.actionPerformed(null); /* Recursive calls for all commands */
       }
     };
-    cleanButton.setToolTipText("make clean TARGET=" + targetName);
+    cleanButton.setToolTipText("$(MAKE) clean TARGET=" + targetName);
     cleanButton.addActionListener(e -> {
       createButton.setEnabled(false);
       try {
-        currentCompilationProcess = BaseContikiMoteType.compile("make clean TARGET=" + targetName,
+        currentCompilationProcess = moteType.compile("$(MAKE) clean TARGET=" + targetName,
             moteType.getCompilationEnvironment(), new File(contikiField.getText()).getParentFile(),
             null, null, new MessageListUI(), true);
       } catch (Exception e1) {
@@ -421,10 +420,9 @@ public abstract class AbstractCompileDialog extends JDialog {
     }
     ArrayList<Class<? extends MoteInterface>> selected = new ArrayList<>();
     for (var c : moteIntfBox.getComponents()) {
-      if (c instanceof JCheckBox checkbox) {
-        if (checkbox.isSelected()) {
-          selected.add((Class<? extends MoteInterface>) checkbox.getClientProperty("class"));
-        }
+      if (c instanceof JCheckBox checkbox && checkbox.isSelected()
+              && checkbox.getClientProperty("interfaceType") instanceof InterfaceContainer interfaceClass) {
+        selected.add(interfaceClass.interfaceClass());
       }
     }
     return new BaseContikiMoteType.MoteTypeConfig(descriptionField.getText(), null, contikiField.getText(),
@@ -505,20 +503,12 @@ public abstract class AbstractCompileDialog extends JDialog {
   protected void addMoteInterface(Class<? extends MoteInterface> intfClass, boolean selected) {
     /* If mote interface was already added  */
     for (Component c : moteIntfBox.getComponents()) {
-      if (!(c instanceof JCheckBox)) {
+      if (!(c instanceof JCheckBox checkBox)) {
         continue;
       }
-
-      Class<? extends MoteInterface> existingClass =
-        (Class<? extends MoteInterface>)
-        ((JCheckBox) c).getClientProperty("class");
-
-      if (existingClass == null) {
-        continue;
-      }
-
-      if (existingClass == intfClass) {
-        ((JCheckBox) c).setSelected(selected);
+      if (checkBox.getClientProperty("interfaceType") instanceof InterfaceContainer interfaceClass
+              && interfaceClass.interfaceClass() == intfClass) {
+        checkBox.setSelected(selected);
         return;
       }
     }
@@ -526,7 +516,7 @@ public abstract class AbstractCompileDialog extends JDialog {
     /* Create new mote interface checkbox */
     JCheckBox intfCheckBox = new JCheckBox(Cooja.getDescriptionOf(intfClass));
     intfCheckBox.setSelected(selected);
-    intfCheckBox.putClientProperty("class", intfClass);
+    intfCheckBox.putClientProperty("interfaceType", new InterfaceContainer(intfClass));
     intfCheckBox.setAlignmentX(Component.LEFT_ALIGNMENT);
     intfCheckBox.setToolTipText(intfClass.getName());
     intfCheckBox.addActionListener(e -> {
@@ -539,8 +529,10 @@ public abstract class AbstractCompileDialog extends JDialog {
       }
     });
 
-    /* Always select position and ID interface */
-    if (Position.class.isAssignableFrom(intfClass) || MoteID.class.isAssignableFrom(intfClass)) {
+    // Always select clock, ID, and position interfaces.
+    if (Clock.class.isAssignableFrom(intfClass) ||
+            MoteID.class.isAssignableFrom(intfClass) ||
+            Position.class.isAssignableFrom(intfClass)) {
       intfCheckBox.setEnabled(false);
       intfCheckBox.setSelected(true);
     }
@@ -554,7 +546,7 @@ public abstract class AbstractCompileDialog extends JDialog {
    */
   protected String getDefaultCompileCommands(String name) {
     String sourceNoExtension = new File(name.substring(0, name.length() - 2)).getName();
-    return Cooja.getExternalToolsSetting("PATH_MAKE") + " -j$(CPUS) " +
+    return "$(MAKE) -j$(CPUS) " +
             sourceNoExtension + "." + targetName + " TARGET=" + targetName;
   }
 
@@ -564,6 +556,9 @@ public abstract class AbstractCompileDialog extends JDialog {
     }
     currentCompilationProcess.destroy();
     currentCompilationProcess = null;
+  }
+
+  private record InterfaceContainer(Class<? extends MoteInterface> interfaceClass) {
   }
 
 }

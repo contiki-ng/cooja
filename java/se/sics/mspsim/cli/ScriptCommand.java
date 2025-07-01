@@ -76,7 +76,7 @@ public class ScriptCommand extends Command {
         String line;
         while ((line = in.readLine()) != null) {
           line = line.trim();
-          if (line.length() > 0 && (line.charAt(0) != '#' || line.startsWith("#!"))) {
+          if (!line.isEmpty() && (line.charAt(0) != '#' || line.startsWith("#!"))) {
             if (context.executeCommand(line) != 0) {
               break;
             }

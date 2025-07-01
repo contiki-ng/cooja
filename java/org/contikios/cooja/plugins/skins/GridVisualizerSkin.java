@@ -32,7 +32,6 @@ package org.contikios.cooja.plugins.skins;
 
 import java.awt.Color;
 import java.awt.Graphics;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -47,7 +46,7 @@ import org.contikios.cooja.plugins.VisualizerSkin;
  */
 @ClassDescription("10m background grid")
 public class GridVisualizerSkin implements VisualizerSkin {
-  private Visualizer visualizer = null;
+  private Visualizer visualizer;
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {

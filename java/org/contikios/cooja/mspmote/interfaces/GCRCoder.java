@@ -45,11 +45,11 @@ public class GCRCoder {
    * GCR conversion table - used for converting ordinary byte to 10-bits (or 4
    * bits to 5)
    */
-  static final int[] GCR_encode = new int[] { 0x0a, 0x0b, 0x12, 0x13, 0x0e,
+  private static final int[] GCR_encode = { 0x0a, 0x0b, 0x12, 0x13, 0x0e,
       0x0f, 0x16, 0x17, 0x09, 0x19, 0x1a, 0x1b, 0x0d, 0x1d, 0x1e, 0x15 };
 
   /* 5 bits > 4 bits (0xff => invalid) */
-  static final int[] GCR_decode = new int[] { 0xff, 0xff, 0xff, 0xff, // 0 -
+  private static final int[] GCR_decode = { 0xff, 0xff, 0xff, 0xff, // 0 -
       // 3invalid...
       0xff, 0xff, 0xff, 0xff, // 4 - 7 invalid...
       0xff, 0x08, 0x00, 0x01, // 8 invalid... 9 = 8, a = 0, b = 1
@@ -61,9 +61,9 @@ public class GCRCoder {
       0xff, 0x0d, 0x0e, 0xff, // 1c, 1f invalid...
   };
 
-  private int gcr_bits = 0;
+  private int gcr_bits;
 
-  private int gcr_val = 0;
+  private int gcr_val;
 
   public GCRCoder() {
   }
@@ -107,7 +107,7 @@ public class GCRCoder {
     if (gcr_bits >= 10) {
       int val = gcr_val & 0x3ff;
       return (GCR_decode[val >> 5] << 4) != 0xff
-              && (GCR_decode[val & 0x1f]) != 0xff;
+              && GCR_decode[val & 0x1f] != 0xff;
     }
     return true;
   }
@@ -116,7 +116,7 @@ public class GCRCoder {
   boolean gcr_get_decoded(int[] raw_data, int current_pos) {
     if (gcr_bits >= 10) {
       int val = gcr_val & 0x3ff;
-      raw_data[current_pos] = ((GCR_decode[val >> 5] << 4) | (GCR_decode[val & 0x1f]));
+      raw_data[current_pos] = ((GCR_decode[val >> 5] << 4) | GCR_decode[val & 0x1f]);
       gcr_val = gcr_val >> 10;
       gcr_bits = gcr_bits - 10;
       return true;

@@ -41,7 +41,6 @@ package se.sics.mspsim.debug;
 
 import java.io.File;
 import java.util.ArrayList;
-
 import se.sics.mspsim.util.DebugInfo;
 import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.ELFDebug;
@@ -74,7 +73,7 @@ public class DwarfReader implements ELFDebug {
     public static final int    DW_LNE_define_file = 3;
     public static final int    DW_LNE_set_discriminator = 4; /* DWARF > 2.0 */
 
-    final ELF elfFile;
+    private final ELF elfFile;
 
     /* Address ranges */
     static class Arange {
@@ -102,9 +101,7 @@ public class DwarfReader implements ELFDebug {
         LineEntry[] lineEntries;
     }
 
-    final ArrayList<LineData> lineInfo = new ArrayList<>();
-
-    private final ArrayList<Arange> aranges = new ArrayList<>();
+    private final ArrayList<LineData> lineInfo = new ArrayList<>();
 
     public DwarfReader(ELF elfFile) {
         this.elfFile = elfFile;
@@ -162,8 +159,6 @@ public class DwarfReader implements ELFDebug {
                 sec.readElf8();
             }
 
-            //        pos = pos + 15 + opcodeBase - 1;
-            //        System.out.println("Line pos = " + pos + " sec-pos = " + sec.getPosition());
             if (DEBUG) System.out.println("Line --- include files ---");
             ArrayList<String> directories = new ArrayList<>();
             directories.add("./");
@@ -219,7 +214,6 @@ public class DwarfReader implements ELFDebug {
                 int lineColumn = 0;
                 boolean endSequence = false;
                 boolean isStatement = defaultIsStmt != 0;
-                boolean isBasicBlock = false;
 
                 lineData.clear();
 
@@ -243,7 +237,6 @@ public class DwarfReader implements ELFDebug {
                             lineLine = 1;
                             lineColumn = 0;
                             isStatement = defaultIsStmt != 0;
-                            isBasicBlock = false;
 
                             if (DEBUG) System.out.println("Line: End sequence executed!!!");
                             break;
@@ -287,7 +280,6 @@ public class DwarfReader implements ELFDebug {
                         if (DEBUG) System.out.println("Line: copy data (" + lineLine + "," +
                                 Utils.hex16(lineAddress) + ") to matrix...");
                         lineData.add(new LineEntry(lineLine, lineAddress, lineFile));
-                        isBasicBlock = false;
                         break;
                     case DW_LNS_advance_pc:
                         long add = sec.readLEB128();
@@ -313,7 +305,6 @@ public class DwarfReader implements ELFDebug {
                         if (DEBUG) System.out.println("Line: Negated is statement");
                         break;
                     case DW_LNS_set_basic_block:
-                        isBasicBlock = true;
                         if (DEBUG) System.out.println("Line: Set basic block to true");
                         break;
                     case DW_LNS_const_add_pc:
@@ -353,7 +344,6 @@ public class DwarfReader implements ELFDebug {
 
                         lineAddress += minOpLen * operationAdvance;
                         lineData.add(new LineEntry(lineLine, lineAddress, lineFile));
-                        isBasicBlock = false;
 
                         if (DEBUG) System.out.println("Line: *** Special operation => addr: " +
                                 Utils.hex16(lineAddress) + " Line: " + lineLine + " lineInc: " + lineInc);
@@ -362,7 +352,7 @@ public class DwarfReader implements ELFDebug {
                 if (DEBUG) System.out.println("Line - Position " + sec.getPosition() + " totLen: " + totLen +
                         " endPos: " + endPos);
 
-                if (lineData.size() > 0) {
+                if (!lineData.isEmpty()) {
                     /* create a block of line-address data that can be used for lookup later.*/
                     LineData lineTable = new LineData();
                     lineTable.lineEntries = lineData.toArray(new LineEntry[0]);
@@ -399,7 +389,7 @@ public class DwarfReader implements ELFDebug {
         do {
             Arange arange = new Arange();
             /* here we should read the address data */
-            arange.length = sec.readElf32(pos + 0); /* length not including the length field */
+            arange.length = sec.readElf32(pos); /* length not including the length field */
             arange.version = sec.readElf16(pos + 4); /* version */
             arange.offset = sec.readElf32(pos + 6); /* 4 byte offset into debug_info section (?)*/
             arange.addressSize = sec.readElf8(pos + 10); /* size of address */

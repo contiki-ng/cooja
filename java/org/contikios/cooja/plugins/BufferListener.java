@@ -28,7 +28,6 @@
  */
 
 package org.contikios.cooja.plugins;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.awt.BorderLayout;
@@ -44,7 +43,6 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -160,8 +158,8 @@ public class BufferListener extends VisPlugin {
     registerBufferType(CustomPointerBuffer.class);
   }
 
-  private Parser parser = null;
-  private Buffer buffer = null;
+  private Parser parser;
+  private Buffer buffer;
   @Override
   public void startPlugin() {
     super.startPlugin();
@@ -178,8 +176,8 @@ public class BufferListener extends VisPlugin {
     }
   }
 
-  private boolean formatTimeString = false;
-  private boolean hasHours = false;
+  private boolean formatTimeString;
+  private boolean hasHours;
 
   private final JTable logTable;
   private final TableRowSorter<TableModel> logFilter;
@@ -193,16 +191,16 @@ public class BufferListener extends VisPlugin {
 
   private final AbstractTableModel model;
 
-  private boolean backgroundColors = false;
+  private boolean backgroundColors;
   private final JCheckBoxMenuItem colorCheckbox;
 
-  private boolean inverseFilter = false;
+  private boolean inverseFilter;
   private final JCheckBoxMenuItem inverseFilterCheckbox;
 
   private boolean hideReads = true;
   private final JCheckBoxMenuItem hideReadsCheckbox;
 
-  private boolean withStackTrace = false;
+  private boolean withStackTrace;
   private final JCheckBoxMenuItem withStackTraceCheckbox;
 
   private final JMenu bufferMenu = new JMenu("Buffer");
@@ -347,7 +345,7 @@ public class BufferListener extends VisPlugin {
       }
     };
     DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
-      private final Color[] BG_COLORS = new Color[] {
+      private final Color[] BG_COLORS = {
           new Color(200, 200, 200),
           new Color(200, 200, 255),
           new Color(200, 255, 200),
@@ -364,8 +362,8 @@ public class BufferListener extends VisPlugin {
           Object value, boolean isSelected, boolean hasFocus, int row,
           int column) {
         if (row >= logTable.getRowCount()) {
-          if (value instanceof BufferAccess && parser instanceof GraphicalParser) {
-            graphicalParserPanel.update((BufferAccess) value, (GraphicalParser)parser);
+          if (value instanceof BufferAccess bufferAccess && parser instanceof GraphicalParser graphicalParser) {
+            graphicalParserPanel.update(bufferAccess, graphicalParser);
             return graphicalParserPanel;
           }
           return super.getTableCellRendererComponent(
@@ -384,8 +382,8 @@ public class BufferListener extends VisPlugin {
           bgColor = table.getSelectionBackground();
         }
 
-        if (value instanceof BufferAccess && parser instanceof GraphicalParser) {
-          graphicalParserPanel.update((BufferAccess) value, (GraphicalParser)parser);
+        if (value instanceof BufferAccess bufferAccess && parser instanceof GraphicalParser graphicalParser) {
+          graphicalParserPanel.update(bufferAccess, graphicalParser);
           graphicalParserPanel.setBackground(bgColor);
           return graphicalParserPanel;
         } else {
@@ -433,7 +431,7 @@ public class BufferListener extends VisPlugin {
       }
     });
     logTable.addMouseListener(new MouseAdapter() {
-      private Parser lastParser = null;
+      private Parser lastParser;
       @Override
       public void mousePressed(MouseEvent e) {
         if (e.getButton() != MouseEvent.BUTTON2) {
@@ -496,8 +494,14 @@ public class BufferListener extends VisPlugin {
             bufferMenu.addSeparator();
           }
           JCheckBoxMenuItem mi = new JCheckBoxMenuItem(Cooja.getDescriptionOf(btClass), btClass == buffer.getClass());
-          mi.putClientProperty("CLASS", btClass);
-          mi.addActionListener(bufferSelectedListener);
+          mi.addActionListener(bufferSelectedEvent -> {
+                                 var b = createBufferInstance(btClass);
+                                 if (b != null) {
+                                   if (b.configure(BufferListener.this)) {
+                                     setBuffer(b);
+                                   }
+                                 }
+                               });
           bufferMenu.add(mi);
         }
       }
@@ -515,8 +519,7 @@ public class BufferListener extends VisPlugin {
         parserMenu.removeAll();
         for (var bpClass: bufferParsers) {
           JCheckBoxMenuItem mi = new JCheckBoxMenuItem(Cooja.getDescriptionOf(bpClass), bpClass == parser.getClass());
-          mi.putClientProperty("CLASS", bpClass);
-          mi.addActionListener(parserSelectedListener);
+          mi.addActionListener(parserSelectedEvent -> setParser(bpClass));
           parserMenu.add(mi);
         }
       }
@@ -751,10 +754,10 @@ public class BufferListener extends VisPlugin {
     updateTitle();
   }
 
-  public enum MemoryMonitorType { SEGMENT, POINTER, CONSTPOINTER }
+  public enum MemoryMonitorType { SEGMENT, POINTER }
 
   static class PointerMemoryMonitor extends SegmentMemoryMonitor {
-    private SegmentMemoryMonitor segmentMonitor = null;
+    private SegmentMemoryMonitor segmentMonitor;
     private long lastSegmentAddress = -1;
     private final long pointerAddress;
     private final int pointerSize;
@@ -816,15 +819,15 @@ public class BufferListener extends VisPlugin {
   }
 
   static class SegmentMemoryMonitor implements SegmentMonitor {
-    protected final BufferListener bl;
-    protected final Mote mote;
+    final BufferListener bl;
+    final Mote mote;
 
     private final long address;
     private final int size;
 
-    private byte[] oldData = null;
+    private byte[] oldData;
 
-    public SegmentMemoryMonitor(BufferListener bl, Mote mote, long address, int size)
+    SegmentMemoryMonitor(BufferListener bl, Mote mote, long address, int size)
     throws Exception {
       this.bl = bl;
       this.mote = mote;
@@ -838,20 +841,20 @@ public class BufferListener extends VisPlugin {
       }
     }
 
-    public Mote getMote() {
+    Mote getMote() {
       return mote;
     }
-    public long getAddress() {
+    long getAddress() {
       return address;
     }
-    public int getSize() {
+    int getSize() {
       return size;
     }
     public MemoryMonitorType getType() {
       return MemoryMonitorType.SEGMENT;
     }
 
-    public void dispose() {
+    void dispose() {
       if (address > 0) {
         mote.getMemory().removeSegmentMonitor(address, size, this);
       }
@@ -1008,16 +1011,16 @@ public class BufferListener extends VisPlugin {
     return true;
   }
 
-  public String getFilter() {
+  private String getFilter() {
     return filterTextField.getText();
   }
 
-  public void setFilter(String str) {
+  private void setFilter(String str) {
     filterTextField.setText(str);
 
     try {
       final RowFilter<Object,Object> regexp;
-      if (str != null && str.length() > 0) {
+      if (str != null && !str.isEmpty()) {
         /* TODO Handle graphical components */
         regexp = RowFilter.regexFilter(str, COLUMN_FROM, COLUMN_TYPE, COLUMN_SOURCE, COLUMN_DATA);
       } else {
@@ -1077,7 +1080,7 @@ public class BufferListener extends VisPlugin {
     public final long time;
 
     public final byte[] mem;
-    private boolean[] accessedBitpattern = null;
+    private boolean[] accessedBitpattern;
 
     public final SegmentMonitor.EventType type;
     public final String sourceStr;
@@ -1103,7 +1106,7 @@ public class BufferListener extends VisPlugin {
         Arrays.fill(accessedBitpattern, true);
       }
 
-      if (mote instanceof AbstractEmulatedMote<?, ?> emulatedMote) {
+      if (mote instanceof AbstractEmulatedMote<?, ?, ?> emulatedMote) {
         String s = emulatedMote.getPCString();
         sourceStr = s==null?"[unknown]":s;
         stackTrace = withStackTrace ? emulatedMote.getStackTrace() : null;
@@ -1205,18 +1208,6 @@ public class BufferListener extends VisPlugin {
     }
   };
 
-  private final ActionListener parserSelectedListener =
-          e -> setParser((Class<? extends Parser>) ((JMenuItem) e.getSource()).getClientProperty("CLASS"));
-
-  private final ActionListener bufferSelectedListener = e -> {
-    var b = createBufferInstance((Class<? extends Buffer>) ((JMenuItem) e.getSource()).getClientProperty("CLASS"));
-    if (b != null) {
-      if (b.configure(BufferListener.this)) {
-        setBuffer(b);
-      }
-    }
-  };
-
   private void setParser(Class<? extends Parser> bpClass) {
     Parser bp;
     try {
@@ -1313,7 +1304,7 @@ public class BufferListener extends VisPlugin {
     Object parse(BufferAccess ba);
   }
   public static abstract class GraphicalParser implements Parser {
-    BufferAccess ba = null;
+    BufferAccess ba;
     @Override
     public Object parse(BufferAccess ba) {
       this.ba = ba;
@@ -1921,4 +1912,5 @@ public class BufferListener extends VisPlugin {
       return true;
     }
   }
+
 }

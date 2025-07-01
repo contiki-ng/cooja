@@ -27,6 +27,7 @@
 
 package org.contikios.cooja;
 
+import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -106,7 +107,6 @@ import org.contikios.cooja.dialogs.ExternalToolsDialog;
 import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
-import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.util.Annotations;
 import org.jdom2.Element;
@@ -116,13 +116,16 @@ import org.slf4j.LoggerFactory;
 
 /** The graphical user interface for Cooja. */
 public class GUI {
+  /** The look and feel of Cooja. */
+  enum LookAndFeel { CrossPlatform, FlatLaf, Nimbus, System }
+
   private static final Logger logger = LoggerFactory.getLogger(GUI.class);
   static final String WINDOW_TITLE = "Cooja: The Contiki Network Simulator";
 
   static JFrame frame;
   final JDesktopPane myDesktopPane;
-  private static JProgressBar PROGRESS_BAR = null;
-  private static final ArrayList<String> PROGRESS_WARNINGS = new ArrayList<>();
+  private static JProgressBar PROGRESS_BAR;
+  private final ArrayList<String> PROGRESS_WARNINGS = new ArrayList<>();
 
   final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
   private final JTextPane quickHelpTextPane;
@@ -135,7 +138,7 @@ public class GUI {
   private final ToolbarListener toolbarListener;
 
   private final Cooja cooja;
-  boolean hasFileHistoryChanged;
+  private boolean hasFileHistoryChanged;
 
   public GUI(Cooja cooja) {
     this.cooja = cooja;
@@ -169,7 +172,10 @@ public class GUI {
         updateDesktopSize();
       }
     });
-    myDesktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+    // Dragging windows on OS X leaves residue from the borders with FlatLaf, so avoid setting dragMode.
+    if (Cooja.configuration.lookAndFeel() != LookAndFeel.FlatLaf) {
+      myDesktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+    }
     frame = new JFrame(WINDOW_TITLE);
 
     // Help panel.
@@ -181,6 +187,7 @@ public class GUI {
     // Print a warning when repainting outside EDT with: gradlew run -Dcooja.debug.repaint=true
     if (System.getProperty("debug.repaint") != null) {
       RepaintManager.setCurrentManager(new RepaintManager() {
+        @Override
         public void addDirtyRegion(JComponent comp, int a, int b, int c, int d) {
           if (!java.awt.EventQueue.isDispatchThread()) {
             // Log to console so the thread name is printed along with the complete backtrace.
@@ -324,7 +331,7 @@ public class GUI {
       private static final long TIME_MINUTE = 60 * TIME_SECOND;
       private static final long TIME_HOUR = 60 * TIME_MINUTE;
 
-      public static String getTimeString(Simulation sim) {
+      static String getTimeString(Simulation sim) {
         if (sim == null) {
           return "Time:";
         }
@@ -799,7 +806,7 @@ public class GUI {
           String description = Cooja.getDescriptionOf(moteTypeClass);
           var menuItem = new JMenuItem(description + "...");
           menuItem.setActionCommand("create mote type");
-          menuItem.putClientProperty("class", moteTypeClass);
+          menuItem.putClientProperty("moteTypeInfo", new MoteTypeContainer(moteTypeClass));
           menuItem.addActionListener(guiEventHandler);
 
           // Add new item directly after cross level separator.
@@ -903,14 +910,13 @@ public class GUI {
     // Tools menu.
     toolsMenu.addMenuListener(new MenuListener() {
       private final ActionListener menuItemListener = e -> {
-        Object pluginClass = ((JMenuItem)e.getSource()).getClientProperty("class");
-        Object mote = ((JMenuItem)e.getSource()).getClientProperty("mote");
-        cooja.tryStartPlugin((Class<? extends Plugin>) pluginClass, cooja.getSimulation(), (Mote)mote);
+        var pluginInfo = (PluginInfoContainer)((JMenuItem)e.getSource()).getClientProperty("pluginInfo");
+        cooja.tryStartPlugin(pluginInfo.pluginType(), cooja.getSimulation(), pluginInfo.mote());
       };
       private JMenuItem createMenuItem(Class<? extends Plugin> newPluginClass) {
         String description = Cooja.getDescriptionOf(newPluginClass);
         JMenuItem menuItem = new JMenuItem(description + "...");
-        menuItem.putClientProperty("class", newPluginClass);
+        menuItem.putClientProperty("pluginInfo", new PluginInfoContainer(newPluginClass, null));
         menuItem.addActionListener(menuItemListener);
         // Only enable items when there is a simulation, otherwise the user gets a dialog with a backtrace.
         menuItem.setEnabled(cooja.getSimulation() != null);
@@ -1144,15 +1150,10 @@ public class GUI {
 
   public void loadQuickHelp(final Object obj) {
     String help;
-    if (obj instanceof HasQuickHelp) {
-      help = ((HasQuickHelp) obj).getQuickHelp();
+    if (obj instanceof HasQuickHelp hasQuickHelp) {
+      help = hasQuickHelp.getQuickHelp();
     } else {
-      String key;
-      if (obj instanceof String) {
-        key = (String) obj;
-      } else {
-        key = obj.getClass().getName();
-      }
+      String key = obj instanceof String text ? text : obj.getClass().getName();
       help = switch (key) {
         case "KEYBOARD_SHORTCUTS" -> "<b>Keyboard shortcuts</b><br>" +
                 "<br><i>Ctrl+N:</i> New simulation" +
@@ -1185,9 +1186,8 @@ public class GUI {
     }
 
     ActionListener menuItemListener = e -> {
-      Object pluginClass1 = ((JMenuItem)e.getSource()).getClientProperty("class");
-      Object mote = ((JMenuItem)e.getSource()).getClientProperty("mote");
-      cooja.tryStartPlugin((Class<? extends Plugin>) pluginClass1, cooja.getSimulation(), (Mote)mote);
+      var pluginInfo = (PluginInfoContainer)((JMenuItem)e.getSource()).getClientProperty("pluginInfo");
+      cooja.tryStartPlugin(pluginInfo.pluginType(), cooja.getSimulation(), pluginInfo.mote());
     };
 
     final int MAX_PER_ROW = 30;
@@ -1199,8 +1199,7 @@ public class GUI {
         continue;
       }
       JMenuItem menuItem = new JMenuItem(mote.toString() + "...");
-      menuItem.putClientProperty("class", pluginClass);
-      menuItem.putClientProperty("mote", mote);
+      menuItem.putClientProperty("pluginInfo", new PluginInfoContainer(pluginClass, mote));
       menuItem.addActionListener(menuItemListener);
       menu.add(menuItem);
       added++;
@@ -1224,8 +1223,7 @@ public class GUI {
         continue;
       }
       var menuItem = new JMenuItem(new StartPluginGUIAction(Cooja.getDescriptionOf(motePluginClass) + "..."));
-      menuItem.putClientProperty("class", motePluginClass);
-      menuItem.putClientProperty("mote", mote);
+      menuItem.putClientProperty("pluginInfo", new PluginInfoContainer(motePluginClass, mote));
       menuMotePlugins.add(menuItem);
     }
     return menuMotePlugins;
@@ -1342,8 +1340,8 @@ public class GUI {
    * @param manualRandomSeed The random seed to use for the simulation
    * @return The worker that will load the simulation.
    */
-  public SwingWorker<Simulation, Object> createLoadSimWorker(Simulation.SimConfig cfg, final boolean quick,
-                                                             Long manualRandomSeed) {
+  private SwingWorker<Simulation, Object> createLoadSimWorker(Simulation.SimConfig cfg, final boolean quick,
+                                                              Long manualRandomSeed) {
     assert java.awt.EventQueue.isDispatchThread() : "Call from AWT thread";
     final var configFile = cfg == null ? null : new File(cfg.file());
     final var autoStart = configFile == null && cooja.getSimulation().isRunning();
@@ -1539,11 +1537,10 @@ public class GUI {
         // Optionally show compilation warnings.
         var hideWarn = Boolean.parseBoolean(Cooja.getExternalToolsSetting("HIDE_WARNINGS", "false"));
         if (quick && !hideWarn && !PROGRESS_WARNINGS.isEmpty()) {
-          final String[] warnings = PROGRESS_WARNINGS.toArray(new String[0]);
           final JDialog dialog = new JDialog(GUI.frame, "Compilation warnings", false);
           // Warnings message list.
           MessageListUI compilationOutput = new MessageListUI();
-          for (String w : warnings) {
+          for (var w : PROGRESS_WARNINGS) {
             compilationOutput.addMessage(w, MessageList.ERROR);
           }
           compilationOutput.addPopupMenuItem(null, true);
@@ -1624,7 +1621,7 @@ public class GUI {
     myDesktopPane.revalidate();
   }
 
-  public static void setProgressMessage(String msg, int type) {
+  public void setProgressMessage(String msg, int type) {
     if (PROGRESS_BAR != null && PROGRESS_BAR.isShowing()) {
       PROGRESS_BAR.setString(msg);
       PROGRESS_BAR.setStringPainted(true);
@@ -1669,7 +1666,7 @@ public class GUI {
     newHistory.append(newFile);
     for (int i = 0, count = 1; i < history.length && count < 10; i++) {
       String historyFile = history[i];
-      if (!newFile.equals(historyFile) && historyFile.length() != 0) {
+      if (!newFile.equals(historyFile) && !historyFile.isEmpty()) {
         newHistory.append(';').append(historyFile);
         count++;
       }
@@ -1791,34 +1788,19 @@ public class GUI {
     return n != JOptionPane.YES_OPTION;
   }
 
-  public static void setLookAndFeel() {
+  static void setLookAndFeel(LookAndFeel lookAndFeel) {
     JFrame.setDefaultLookAndFeelDecorated(true);
     JDialog.setDefaultLookAndFeelDecorated(true);
     ToolTipManager.sharedInstance().setDismissDelay(60000);
-    // Nimbus.
     try {
-      String osName = System.getProperty("os.name").toLowerCase();
-      if (osName.startsWith("linux")) {
-        try {
-          for (var info : UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-              UIManager.setLookAndFeel(info.getClassName());
-              break;
-            }
-          }
-        } catch (UnsupportedLookAndFeelException e) {
-          UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        }
-      } else {
-        UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+      switch (lookAndFeel) {
+        case CrossPlatform -> UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        case FlatLaf -> UIManager.setLookAndFeel(new FlatLightLaf());
+        case Nimbus -> UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        case System -> UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
       }
-    } catch (Exception e) {
-      // System.
-      try {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-      } catch (Exception e2) {
-        throw new RuntimeException("Failed to set look and feel", e2);
-      }
+    } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+      throw new RuntimeException("Failed to set look and feel", e);
     }
   }
 
@@ -1832,7 +1814,7 @@ public class GUI {
         case "create mote type" -> {
           cooja.getSimulation().stopSimulation();
           // Create mote type
-          var clazz = (Class<? extends MoteType>) ((JMenuItem) e.getSource()).getClientProperty("class");
+          var clazz = ((MoteTypeContainer)((JMenuItem) e.getSource()).getClientProperty("moteTypeInfo")).moteTypeClass();
           try {
             newMoteType = ExtensionManager.createMoteType(cooja, clazz.getName());
             if (newMoteType == null || !newMoteType.configureAndInit(frame, cooja.getSimulation(), true)) {
@@ -1920,7 +1902,7 @@ public class GUI {
           }
         }
         for (Mote m : newMotes) {
-          MoteID moteID = m.getInterfaces().getMoteID();
+          var moteID = m.getInterfaces().getMoteID();
           if (moteID != null) {
             moteID.setMoteID(nextMoteID++);
           } else {
@@ -1941,36 +1923,42 @@ public class GUI {
 
   /** GUI actions */
   abstract static class GUIAction extends AbstractAction {
-    public GUIAction(String name) {
+    GUIAction(String name) {
       super(name);
     }
-    public GUIAction(String name, int mnemonic) {
+    GUIAction(String name, int mnemonic) {
       this(name);
       putValue(Action.MNEMONIC_KEY, mnemonic);
     }
-    public GUIAction(String name, KeyStroke accelerator) {
+    GUIAction(String name, KeyStroke accelerator) {
       this(name);
       putValue(Action.ACCELERATOR_KEY, accelerator);
     }
-    public GUIAction(String name, int mnemonic, KeyStroke accelerator) {
+    GUIAction(String name, int mnemonic, KeyStroke accelerator) {
       this(name, mnemonic);
       putValue(Action.ACCELERATOR_KEY, accelerator);
     }
     public abstract boolean shouldBeEnabled();
   }
   class StartPluginGUIAction extends GUIAction {
-    public StartPluginGUIAction(String name) {
+    StartPluginGUIAction(String name) {
       super(name);
     }
     @Override
     public void actionPerformed(final ActionEvent e) {
-      var pluginClass = (Class<Plugin>) ((JMenuItem) e.getSource()).getClientProperty("class");
-      Mote mote = (Mote) ((JMenuItem) e.getSource()).getClientProperty("mote");
-      cooja.tryStartPlugin(pluginClass, cooja.getSimulation(), mote);
+      var pluginInfo = (PluginInfoContainer)((JMenuItem) e.getSource()).getClientProperty("pluginInfo");
+      cooja.tryStartPlugin(pluginInfo.pluginType(), cooja.getSimulation(), pluginInfo.mote());
     }
     @Override
     public boolean shouldBeEnabled() {
       return cooja.getSimulation() != null;
     }
   }
+
+  private record PluginInfoContainer(Class<? extends Plugin> pluginType, Mote mote) {
+  }
+
+  private record MoteTypeContainer(Class<? extends MoteType> moteTypeClass) {
+  }
+
 }

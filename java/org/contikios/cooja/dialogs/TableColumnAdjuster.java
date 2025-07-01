@@ -40,7 +40,6 @@ import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
-
 import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -320,9 +319,7 @@ public class TableColumnAdjuster implements PropertyChangeListener, TableModelLi
           return;
         }
         int viewColumn = table.convertColumnIndexToView(column);
-        if (viewColumn < 0) {
-          // Column is not visible
-        } else {
+        if (viewColumn >= 0) {
           TableColumn tableColumn = table.getColumnModel().getColumn(viewColumn);
           if (tableColumn.getResizable()) {
             int firstRow = e.getFirstRow();

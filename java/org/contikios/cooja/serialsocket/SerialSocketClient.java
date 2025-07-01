@@ -59,7 +59,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.border.EtchedBorder;
 import javax.swing.text.NumberFormatter;
-import org.jdom2.Element;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -69,6 +68,7 @@ import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.interfaces.SerialPort;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +100,7 @@ public class SerialSocketClient implements Plugin, MotePlugin {
   private JFormattedTextField serverPortField;
   private JButton serverSelectButton;
   
-  private int inBytes = 0, outBytes = 0;
+  private int inBytes, outBytes;
 
   private Socket socket;
   private DataInputStream in;
@@ -528,4 +528,3 @@ public class SerialSocketClient implements Plugin, MotePlugin {
     return mote;
   }
 }
-

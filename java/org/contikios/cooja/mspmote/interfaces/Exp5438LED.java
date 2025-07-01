@@ -48,8 +48,8 @@ import se.sics.mspsim.platform.ti.Exp5438Node;
  */
 @ClassDescription("Exp5438 LEDs")
 public class Exp5438LED extends LED {
-  private boolean redOn = false;
-  private boolean yellowOn = false;
+  private boolean redOn;
+  private boolean yellowOn;
 
   private static final Color RED = new Color(255, 0, 0);
   private static final Color DARK_RED = new Color(100, 0, 0);
@@ -59,8 +59,8 @@ public class Exp5438LED extends LED {
   public Exp5438LED(Mote mote) {
     var mspMote = (Exp5438Mote) mote;
     IOUnit unit = mspMote.getCPU().getIOUnit("P1");
-    if (unit instanceof IOPort) {
-      ((IOPort) unit).addPortListener((source, data) -> {
+    if (unit instanceof IOPort ioPort) {
+      ioPort.addPortListener((source, data) -> {
         boolean oldRedOn = redOn;
         boolean oldYellowOn = yellowOn;
         redOn = (data & Exp5438Node.LEDS_CONF_RED) != 0;

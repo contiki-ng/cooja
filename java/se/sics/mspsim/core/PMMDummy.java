@@ -38,10 +38,6 @@ public class PMMDummy extends IOUnit {
     }
 
     @Override
-    public void reset(int type) {
-    }
-
-    @Override
     public void write(int address, int value, boolean word, long cycles) {
         memory[address] = value;
     }

@@ -39,7 +39,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.PluginType;
@@ -65,7 +64,7 @@ public class BaseRSSIconf extends VisPlugin {
 	private final static int IDX_Mote = 0;
 	private final static int IDX_BaseRSSI = 1;
 
-	private final static String[] COLUMN_NAMES = new String[] { "Mote",
+	private final static String[] COLUMN_NAMES = { "Mote",
 			"BaseRSSI (-45!)" }; // TODO maybe include offset of -45 directly
 
 	private final AbstractRadioMedium radioMedium;
@@ -112,15 +111,13 @@ public class BaseRSSIconf extends VisPlugin {
                 column < 0 || column >= COLUMN_NAMES.length) {
           return;
         }
-
-        Radio radio = radioMedium.getRegisteredRadios()[row];
-        try {
-          if (column == IDX_BaseRSSI) {
-            radioMedium.setBaseRssi(radio,((Number) value).doubleValue());
-          } else {
-            super.setValueAt(value, row, column);
+        if (column == IDX_BaseRSSI) {
+          if (value instanceof Number num) {
+            var radio = radioMedium.getRegisteredRadios()[row];
+            radioMedium.setBaseRssi(radio, num.doubleValue());
           }
-        } catch (ClassCastException e) {
+        } else {
+          super.setValueAt(value, row, column);
         }
       }
 
@@ -174,22 +171,22 @@ public class BaseRSSIconf extends VisPlugin {
 				.setCellRenderer(new DefaultTableCellRenderer() { // TODO ????
 							@Override
 							public void setValue(Object value) {
-								if (!(value instanceof Double)) {
+                if (!(value instanceof Double num)) {
 									setText(value.toString());
 									return;
 								}
-								setText(String.format("%1.1f", (Double) value));
+                setText(String.format("%1.1f", num));
 							}
 						});
 		motesTable.getColumnModel().getColumn(IDX_BaseRSSI)
 				.setCellRenderer(new DefaultTableCellRenderer() {
 					@Override
 					public void setValue(Object value) {
-						if (!(value instanceof Double)) {
+            if (!(value instanceof Double num)) {
 							setText(value.toString());
 							return;
 						}
-						setText(String.format("%1.1f dBm", (Double) value));
+            setText(String.format("%1.1f dBm", num));
 					}
 				});
 		motesTable.getColumnModel().getColumn(IDX_Mote)

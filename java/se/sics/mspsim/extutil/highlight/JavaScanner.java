@@ -321,7 +321,7 @@ public class JavaScanner extends Scanner {
   }
 
   // Read one line of a /*...*/ comment, given the expected type
-  int readComment(int type) {
+  private int readComment(int type) {
     if (start >= end)
       return type;
     char c = buffer[start];
@@ -401,9 +401,6 @@ public class JavaScanner extends Scanner {
       case 'F':
       case 'd':
       case 'D':
-        start = start + charlength;
-        charlength = 1;
-        return NUMBER;
       case 'l':
       case 'L':
         start = start + charlength;
@@ -478,7 +475,7 @@ public class JavaScanner extends Scanner {
     return NUMBER;
   }
 
-  boolean readDigits(int radix) {
+  private boolean readDigits(int radix) {
     if (start >= end)
       return false;
     char c = buffer[start];
@@ -498,7 +495,7 @@ public class JavaScanner extends Scanner {
     return true;
   }
 
-  void readSuffix() {
+  private void readSuffix() {
     if (start >= end)
       return;
     char c = buffer[start];
@@ -540,34 +537,19 @@ public class JavaScanner extends Scanner {
     if (c2 == '\\')
       c2 = next();
 
-    switch (c2) {
-    case 'b':
-    case 't':
-    case 'n':
-    case 'f':
-    case 'r':
-    case '\"':
-    case '\'':
-    case '\\':
-      start = start + charlength;
-      charlength = 1;
-      return true;
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-      return readOctal(3);
-    case '4':
-    case '5':
-    case '6':
-    case '7':
-      return readOctal(2);
-    default:
-      return false;
-    }
+    return switch (c2) {
+      case 'b', 't', 'n', 'f', 'r', '\"', '\'', '\\' -> {
+        start = start + charlength;
+        charlength = 1;
+        yield true;
+      }
+      case '0', '1', '2', '3' -> readOctal(3);
+      case '4', '5', '6', '7' -> readOctal(2);
+      default -> false;
+    };
   }
 
-  boolean readOctal(int maxlength) {
+  private boolean readOctal(int maxlength) {
     if (start >= end)
       return false;
     char c = buffer[start];
@@ -608,7 +590,7 @@ public class JavaScanner extends Scanner {
 
   private int charlength = 1;
 
-  private int pair = 0;
+  private int pair;
 
   private char next() {
     if (start >= end)

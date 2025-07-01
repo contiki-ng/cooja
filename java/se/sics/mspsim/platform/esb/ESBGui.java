@@ -42,12 +42,10 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.TargetDataLine;
-
 import se.sics.mspsim.core.ADC12;
 import se.sics.mspsim.core.ADCInput;
 import se.sics.mspsim.core.StateChangeListener;
@@ -76,8 +74,8 @@ public class ESBGui extends AbstractNodeGUI implements ADCInput {
 
   private final ESBNode node;
   private final StateChangeListener ledsListener = (source, oldState, newState) -> repaint(LED_BOUNDS);
-  private boolean buttonDown = false;
-  private boolean resetDown = false;
+  private boolean buttonDown;
+  private boolean resetDown;
 
   private TargetDataLine inDataLine;
 

@@ -41,12 +41,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import org.contikios.cooja.Cooja.Config;
 import org.contikios.cooja.Cooja.LogbackColors;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.util.ArgumentManager;
 
 /**
@@ -57,6 +59,12 @@ import se.sics.mspsim.util.ArgumentManager;
         "JVM: ${java.version} (${java.vendor} ${java.vm.name} ${java.vm.version})",
         "OS: ${os.name} ${os.version} ${os.arch}"}, sortOptions = false, sortSynopsis = false)
 class Main {
+  /**
+   * Option for specifying look and feel.
+   */
+  @Option(names = "--look-and-feel", paramLabel = "LookAndFeel", description = "one of: ${COMPLETION-CANDIDATES}")
+  GUI.LookAndFeel lookAndFeel = GUI.LookAndFeel.Nimbus;
+
   /**
    * Option for specifying if a GUI should be used.
    */
@@ -77,6 +85,12 @@ class Main {
   String logDir = ".";
 
   /**
+   * Option for specifying Nashorn arguments.
+   */
+  @Option(names = "--nashorn-args", paramLabel = "ARGS", description = "the Nashorn arguments")
+  String nashornArgs = "--language=es6";
+
+  /**
    * Option for specifying Contiki-NG path.
    */
   @Option(names = "--contiki", paramLabel = "DIR", description = "the Contiki-NG directory")
@@ -87,12 +101,6 @@ class Main {
    */
   @Option(names = "--cooja", paramLabel = "DIR", description = "the Cooja directory")
   String coojaPath;
-
-  /**
-   * Option for specifying javac path.
-   */
-  @Option(names = "--javac", paramLabel = "FILE", description = "the javac binary")
-  String javac;
 
   /**
    * Option for specifying external user config file.
@@ -116,7 +124,7 @@ class Main {
    * Option for specifying simulation files to load.
    */
   @Parameters(paramLabel = "FILE", description = "one or more simulation files")
-  List<String> simulationFiles = new ArrayList<>();
+  final List<String> simulationFiles = new ArrayList<>();
 
   /**
    * Option for instructing Cooja to update the simulation file (.csc).
@@ -152,6 +160,7 @@ class Main {
   public static void main(String[] args) {
     Main options = new Main();
     CommandLine commandLine = new CommandLine(options);
+    commandLine.setCaseInsensitiveEnumValuesAllowed(true);
     try {
       commandLine.parseArgs(args);
     } catch (CommandLine.ParameterException e) {
@@ -214,11 +223,15 @@ class Main {
       }
     }
 
+    var mspSim = options.mspSimPlatform != null;
+    if (mspSim && options.simulationFiles.isEmpty()) {
+      System.err.println("MSPSim: missing firmware name argument");
+      System.exit(1);
+    }
+
     // Parse and verify soundness of simulation files argument.
     ArrayList<Simulation.SimConfig> simConfigs = new ArrayList<>();
     for (var arg : options.simulationFiles) {
-      // Pass simulationFiles to MSPSim if given --platform.
-      if (options.mspSimPlatform != null) continue;
       // Argument on the form "file.csc[,key1=value1,key2=value2, ..]"
       var map = new HashMap<String, String>();
       String file = null;
@@ -238,7 +251,7 @@ class Main {
         System.err.println("Failed argument parsing of simulation file " + arg);
         System.exit(1);
       }
-      if (!file.endsWith(".csc") && !file.endsWith(".csc.gz")) {
+      if (!mspSim && !file.endsWith(".csc") && !file.endsWith(".csc.gz")) {
         System.err.println("Cooja expects simulation filenames to have an extension of '.csc' or '.csc.gz");
         System.exit(1);
       }
@@ -246,6 +259,8 @@ class Main {
         System.err.println("File '" + file + "' does not exist");
         System.exit(1);
       }
+      // MSPSim does not use the SimConfig record, so skip to next validation.
+      if (mspSim) continue;
       var randomSeed = map.get("random-seed");
       var autoStart = map.getOrDefault("autostart", Boolean.toString(options.autoStart || !options.gui));
       var updateSim = map.getOrDefault("update-simulation", Boolean.toString(options.updateSimulation));
@@ -287,31 +302,24 @@ class Main {
       System.exit(1);
     }
 
-    if (options.mspSimPlatform == null && options.javac == null) {
-      System.err.println("Missing required option: '--javac=FILE'");
-      System.exit(1);
-    }
-
-    if (options.mspSimPlatform == null && !Files.exists(Path.of(options.javac))) {
-      System.err.println("Java compiler '" + options.javac + "' does not exist");
-      System.exit(1);
-    }
-
     if (options.mspSimPlatform == null) { // Start Cooja.
       // Use colors that are good on a dark background and readable on a white background.
       var colors = new LogbackColors(ANSIConstants.BOLD + "91", "96",
               ANSIConstants.GREEN_FG, ANSIConstants.DEFAULT_FG);
-      var cfg = new Config(colors, options.gui, options.externalUserConfig,
-                options.logDir, options.contikiPath, options.coojaPath, options.javac);
+      var cfg = new Config(colors, options.gui, options.lookAndFeel, options.externalUserConfig,
+                options.nashornArgs,
+                options.logDir, options.contikiPath, options.coojaPath);
       Cooja.go(cfg, simConfigs);
     } else { // Start MSPSim.
-      var config = new ArgumentManager();
-      config.handleArguments(options.simulationFiles.toArray(new String[0]));
-      var nodeType = config.getProperty("nodeType");
-      if (nodeType == null) {
-        nodeType = getNodeTypeByPlatform(options.mspSimPlatform);
+      var config = new ArgumentManager(options.simulationFiles.toArray(new String[0]));
+      GenericNode node = null;
+      try {
+        node = createNode(Objects.requireNonNullElseGet(config.getProperty("nodeType"), () ->
+                getNodeTypeByPlatform(options.mspSimPlatform)), options.simulationFiles.get(0));
+      } catch (IOException e) {
+        System.err.println("IOException from createNode: " + e.getMessage());
+        System.exit(1);
       }
-      var node = createNode(nodeType);
       if (node == null) {
         System.err.println("MSPSim does not currently support the platform '" + options.mspSimPlatform + "'.");
         System.exit(1);

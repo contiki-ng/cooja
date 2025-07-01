@@ -183,7 +183,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   public static final int MODE_TXRX_ON = 0x02;
   public static final int MODE_POWER_OFF = 0x03;
   public static final int MODE_MAX = MODE_POWER_OFF;
-  private static final String[] MODE_NAMES = new String[] {
+  private static final String[] MODE_NAMES = {
     "off", "listen", "transmit", "power_off"
   };
 
@@ -246,7 +246,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   // When accessing RAM the second byte of the address contains
   // a flag indicating read/write
   public static final int FLAG_RAM_READ = 0x20;
-  private static final int[] BC_ADDRESS = new int[] {0xff, 0xff};
+  private static final int[] BC_ADDRESS = {0xff, 0xff};
 
   private SpiState state = SpiState.WAITING;
   private int usartDataPos;
@@ -259,7 +259,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private int rxlen;
   private int rxread;
   private int zeroSymbols;
-  private boolean ramRead = false;
+  private boolean ramRead;
 
   /* RSSI is an externally set value of the RSSI for this CC2420 */
   /* low RSSI => CCA = true in normal mode */
@@ -267,7 +267,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private int rssi = -100;
   private static final int RSSI_OFFSET = -45; /* cc2420 datasheet */
   /* current CCA value */
-  private boolean cca = false;
+  private boolean cca;
 
   /* This is the magical LQI */
   private int corrval = 37;
@@ -276,24 +276,24 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private int fifopThr = 64;
 
   /* if autoack is configured or if */
-  private boolean autoAck = false;
-  private boolean shouldAck = false;
-  private boolean addressDecode = false;
-  private boolean ackRequest = false;
-  private boolean autoCRC = false;
+  private boolean autoAck;
+  private boolean shouldAck;
+  private boolean addressDecode;
+  private boolean ackRequest;
+  private boolean autoCRC;
 
   // Data from last received packet
-  private int dsn = 0;
-  private int fcf0 = 0;
-  private int fcf1 = 0;
-  private int frameType = 0;
-  private boolean crcOk = false;
+  private int dsn;
+  private int fcf0;
+  private int fcf1;
+  private int frameType;
+  private boolean crcOk;
 
-  private int activeFrequency = 0;
-  private int activeChannel = 0;
+  private int activeFrequency;
+  private int activeChannel;
 
   //private int status = STATUS_XOSC16M_STABLE | STATUS_RSSI_VALID;
-  private int status = 0;
+  private int status;
 
   private final int[] registers = new int[64];
   // More than needed...
@@ -304,16 +304,16 @@ public class CC2420 extends Radio802154 implements USARTListener {
 
   private boolean chipSelect;
 
-  private IOPort ccaPort = null;
+  private IOPort ccaPort;
   private int ccaPin;
 
-  private IOPort fifopPort = null;
+  private IOPort fifopPort;
   private int fifopPin;
 
-  private IOPort fifoPort = null;
+  private IOPort fifoPort;
   private int fifoPin;
 
-  private IOPort sfdPort = null;
+  private IOPort sfdPort;
   private int sfdPin;
 
   private int txCursor;
@@ -394,17 +394,17 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private boolean currentFIFO;
   private boolean currentFIFOP;
   private boolean overflow;
-  private boolean frameRejected = false;
+  private boolean frameRejected;
 
   public interface StateListener {
     void newState(RadioState state);
   }
 
-  private StateListener stateListener = null;
+  private StateListener stateListener;
   private int ackPos;
   /* type = 2 (ACK), third byte needs to be sequence number... */
   private final int[] ackBuf = {0x05, 0x02, 0x00, 0x00, 0x00, 0x00};
-  private boolean ackFramePending = false;
+  private boolean ackFramePending;
   private final CCITT_CRC rxCrc = new CCITT_CRC();
   private final CCITT_CRC txCrc = new CCITT_CRC();
 
@@ -564,14 +564,14 @@ public class CC2420 extends Radio802154 implements USARTListener {
       /* reset state */
       rxFIFO.restore();
       setSFD(false);
-      setFIFO(rxFIFO.length() > 0);
+      setFIFO(!rxFIFO.isEmpty());
       frameRejected = true;
   }
 
   /* variables for the address recognition */
-  int destinationAddressMode = 0;
-  boolean decodeAddress = false;
-  /* Receive a byte from the radio medium
+  private int destinationAddressMode;
+  private boolean decodeAddress;
+  /** Receive a byte from the radio medium
    * @see se.sics.mspsim.chip.RFListener#receivedByte(byte)
    */
   @Override
@@ -872,7 +872,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
                       " fifo: " + rxFIFO.stateToString());
           } else if (--rxfifoReadLeft == 0) {
               /* check if we have another packet in buffer */
-              if (rxFIFO.length() > 0) {
+              if (!rxFIFO.isEmpty()) {
                   /* check if the packet is complete or longer than fifopThr */
                   if (rxFIFO.length() > rxFIFO.peek(0) ||
                           (rxFIFO.length() > fifopThr && !decodeAddress && !frameRejected)) {
@@ -882,7 +882,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
               }
           }
           // Set the FIFO pin low if there are no more bytes available in the RXFIFO.
-          if (rxFIFO.length() == 0) {
+          if (rxFIFO.isEmpty()) {
               if (logLevel > INFO) log("Setting FIFO to low (buffer empty)");
               setFIFO(false);
           }
@@ -1505,11 +1505,4 @@ public class CC2420 extends Radio802154 implements USARTListener {
   @Override
   public void stateChanged(int state) {
   }
-
-  /* return data in register at the correct position */
-  @Override
-  public int getConfiguration(int parameter) {
-      return registers[parameter];
-  }
-
 } // CC2420

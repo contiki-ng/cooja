@@ -49,7 +49,7 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
   protected final T moteType;
   protected final M moteMemory;
 
-  protected MoteInterfaceHandler moteInterfaces;
+  protected final MoteInterfaceHandler moteInterfaces = new MoteInterfaceHandler();
   private long nextWakeupTime = -1;
 
   protected final ArrayList<WatchpointListener> watchpointListeners = new ArrayList<>();
@@ -216,7 +216,7 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
    * 
    * @param time Simulation time.
    */
-  public abstract void execute(long time);
+  protected abstract void execute(long time);
 
   /**
    * Execute mote software as soon as possible.
@@ -268,7 +268,7 @@ public abstract class AbstractWakeupMote<T extends MoteType, M extends MemoryInt
     return true;
   }
 
-  private HashMap<String, Object> properties = null;
+  private HashMap<String, Object> properties;
   @Override
   public void setProperty(String key, Object obj) {
     if (properties == null) {

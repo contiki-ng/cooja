@@ -35,14 +35,10 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
-
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -54,6 +50,7 @@ import org.contikios.cooja.SupportedArguments;
 import org.contikios.cooja.VisPlugin;
 import org.contikios.cooja.mspmote.MspMote;
 import org.contikios.cooja.mspmote.MspMoteType;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.sics.mspsim.core.MSP430;
@@ -72,13 +69,13 @@ public class MspStackWatcher extends VisPlugin implements MotePlugin {
   private final MspMote mspMote;
 
   private final StackUI stackUI;
-  private RegisterMonitor.Adapter registerMonitor = null;
+  private RegisterMonitor.Adapter registerMonitor;
 
   private final JToggleButton toggleButton;
 
   private final MoteTimeEvent increasePosTimeEvent;
 
-  private Integer userOverriddenStack = null;
+  private Integer userOverriddenStack;
 
   private final JLabel memLabel = new JLabel("");
   

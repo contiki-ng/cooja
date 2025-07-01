@@ -73,6 +73,7 @@ import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.motes.AbstractApplicationMoteType;
+import org.contikios.cooja.mspmote.interfaces.Msp802154BitErrorRadio;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
 import org.contikios.cooja.mspmote.interfaces.MspClock;
 import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
@@ -123,6 +124,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
           entry("org.contikios.cooja.mspmote.interfaces.MspMoteID", MspMoteID.class),
           entry("org.contikios.cooja.mspmote.interfaces.MspSerial", MspSerial.class),
           entry("org.contikios.cooja.mspmote.interfaces.Msp802154Radio", Msp802154Radio.class),
+          entry("org.contikios.cooja.mspmote.interfaces.Msp802154BitErrorRadio", Msp802154BitErrorRadio.class),
           entry("org.contikios.cooja.mspmote.interfaces.SkyButton", SkyButton.class),
           entry("org.contikios.cooja.mspmote.interfaces.SkyByteRadio", Msp802154Radio.class), // Compatibility.
           entry("org.contikios.cooja.mspmote.interfaces.SkyCoffeeFilesystem", SkyCoffeeFilesystem.class),
@@ -133,11 +135,11 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
 
   // FIXME: combine fileSource and fileFirmware so only one can be active.
   /** Source file of the mote type. */
-  protected File fileSource = null;
+  protected File fileSource;
   /** Commands to compile the source into the firmware. */
-  protected String compileCommands = null;
+  protected String compileCommands;
   /** Firmware of the mote type. */
-  protected File fileFirmware = null;
+  protected File fileFirmware;
 
   protected BaseContikiMoteType() {
     super(false);
@@ -293,7 +295,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
         case "moteinterface" -> {
           var name = element.getText().trim();
           if (name.startsWith("se.sics")) {
-            name = name.replaceFirst("se\\.sics", "org.contikios");
+            name = name.replaceFirst("^se\\.sics", "org.contikios");
           }
           // Skip interfaces that have been removed or merged into other classes.
           if ("org.contikios.cooja.interfaces.RimeAddress".equals(name)) {
@@ -301,10 +303,15 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
           }
           var clazz = builtinInterfaces.get(name);
           if (clazz == null) {
-            clazz = sim.getCooja().tryLoadClass(this, MoteInterface.class, name);
+            for (var moteInterfaceClass : getAllMoteInterfaceClasses()) {
+              if (name.equals(moteInterfaceClass.getName())) {
+                clazz = moteInterfaceClass;
+                break;
+              }
+            }
           }
           if (clazz == null) {
-            logger.warn("Can't find mote interface class: " + name);
+            logger.error("Mote interface {} not available for {} mote", name, getMoteName());
             return false;
           }
           moteInterfaceClasses.add(clazz);
@@ -384,6 +391,11 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
     }.invokeAndWait();
   }
 
+  /** Return make flags if class is not part of the mote. */
+  protected String getMakeFlags(Class<? extends MoteInterface> clazz) {
+    return null;
+  }
+
   /** Return a compilation environment. */
   public LinkedHashMap<String, String> getCompilationEnvironment() {
     return null;
@@ -402,7 +414,7 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
    * @return Sub-process if called asynchronously
    * @throws MoteTypeCreationException If process returns error, or outputFile does not exist
    */
-  public static Process compile(
+  public Process compile(
           final String commandIn,
           final Map<String, String> env,
           final File directory,
@@ -411,10 +423,20 @@ public abstract class BaseContikiMoteType extends AbstractApplicationMoteType {
           final MessageList messageDialog,
           boolean synchronous)
           throws MoteTypeCreationException {
-    Pattern p = Pattern.compile("([^\\s\"']+|\"[^\"]*\"|'[^']*')");
     // Perform compile command variable expansions.
+    var make = new StringBuilder(Cooja.getExternalToolsSetting("PATH_MAKE"));
+    for (var interfaceClass : getAllMoteInterfaceClasses()) {
+      if (moteInterfaceClasses.contains(interfaceClass)) {
+        continue;
+      }
+      var flags = getMakeFlags(interfaceClass);
+      if (flags != null) {
+        make.append(" ").append(flags);
+      }
+    }
     String cpus = Integer.toString(Runtime.getRuntime().availableProcessors());
-    Matcher m = p.matcher(commandIn.replace("$(CPUS)", cpus));
+    Pattern p = Pattern.compile("([^\\s\"']+|\"[^\"]*\"|'[^']*')");
+    Matcher m = p.matcher(commandIn.replace("$(MAKE)", make.toString()).replace("$(CPUS)", cpus));
     ArrayList<String> commandList = new ArrayList<>();
     while (m.find()) {
       String arg = m.group();

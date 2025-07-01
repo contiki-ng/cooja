@@ -49,8 +49,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
-
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -86,7 +84,7 @@ public class DGRMConfigurator extends VisPlugin {
   private final static int IDX_LQI = 4;
   private final static int IDX_DELAY = 5;
 
-  private final static String[] COLUMN_NAMES = new String[] {
+  private final static String[] COLUMN_NAMES = {
     "Source", "Destination", "RX Ratio", "RSSI","LQI", "Delay"
   };
 
@@ -135,11 +133,11 @@ public class DGRMConfigurator extends VisPlugin {
     graphTable.getColumnModel().getColumn(IDX_RATIO).setCellRenderer(new DefaultTableCellRenderer() {
       @Override
       public void setValue(Object value) {
-        if (!(value instanceof Double)) {
+        if (value instanceof Double valueAsDouble) {
+          setText(String.format("%1.1f%%", 100 * valueAsDouble));
+        } else {
           setText(value.toString());
-          return;
         }
-        setText(String.format("%1.1f%%", 100* (Double) value));
       }
     });
     graphTable.getColumnModel().getColumn(IDX_SIGNAL).setCellRenderer(new DefaultTableCellRenderer() {
@@ -227,7 +225,7 @@ public class DGRMConfigurator extends VisPlugin {
     JOptionPane optionPane = new JOptionPane();
     optionPane.setMessage(description);
     optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
-    String[] options = new String[] {"Cancel", "Add"};
+    String[] options = {"Cancel", "Add"};
     optionPane.setOptions(options);
     optionPane.setInitialValue(options[1]);
     JDialog dialog = optionPane.createDialog(this, title);
@@ -263,7 +261,7 @@ public class DGRMConfigurator extends VisPlugin {
 	private void doImportFromFile() {
 		/* Delete existing edges */
     if (radioMedium.getEdges().length > 0) {
-      String[] options = new String[] { "Remove", "Cancel" };
+      String[] options = { "Remove", "Cancel" };
       int n = JOptionPane.showOptionDialog(
           Cooja.getTopParentContainer(),
           "Importing edges will remove all your existing edges.",
@@ -314,7 +312,7 @@ public class DGRMConfigurator extends VisPlugin {
 	static final int INDEX_RSSI_MEDIAN = 6;
 	static final int INDEX_RSSI_MIN = 7;
 	static final int INDEX_RSSI_MAX = 8;
-	public static DirectedGraphMedium.Edge[] parseDGRMLinksFile(File file, Simulation simulation) {
+	private static DirectedGraphMedium.Edge[] parseDGRMLinksFile(File file, Simulation simulation) {
 		String fileContents = StringUtils.loadFromFile(file);
 		ArrayList<DirectedGraphMedium.Edge> edges = new ArrayList<>();
 
@@ -357,7 +355,7 @@ public class DGRMConfigurator extends VisPlugin {
 		return edges.toArray(new DirectedGraphMedium.Edge[0]);
 	}
 
-  final AbstractTableModel model = new AbstractTableModel() {
+  private final AbstractTableModel model = new AbstractTableModel() {
     @Override
     public String getColumnName(int column) {
       if (column < 0 || column >= COLUMN_NAMES.length) {

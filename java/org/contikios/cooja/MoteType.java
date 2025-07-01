@@ -32,11 +32,9 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 import javax.swing.JComponent;
-
-import org.jdom2.Element;
-
 import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageList;
+import org.jdom2.Element;
 
 /**
  * The mote type defines properties common for several motes. These properties
@@ -156,6 +154,12 @@ public interface MoteType {
   default long getExecutableAddressOf(File file, int lineNr) {
     return -1;
   }
+
+  /** Called when the mote type is added to the simulation. */
+  default void added() { }
+
+  /** Called when the mote type is removed from the simulation. */
+  default void removed() { }
 
   class MoteTypeCreationException extends Exception {
     private MessageList compilationOutput;

@@ -5,10 +5,10 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.Reader;
 import javax.swing.JTextPane;
-import java.awt.geom.Rectangle2D;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -298,7 +298,7 @@ public class SyntaxHighlighter extends JTextPane implements DocumentListener, To
         Rectangle2D r = getUI().modelToView2D(this, pos, Position.Bias.Forward);
         if (r != null && r.getHeight() > 0) {
           Rectangle vr = getVisibleRect();
-          vr.y = (int) (r.getY() - vr.height / 2);
+          vr.y = (int) (r.getY() - vr.height / 2.0);
           if (vr.y < 0) {
             vr.y = 0;
           }

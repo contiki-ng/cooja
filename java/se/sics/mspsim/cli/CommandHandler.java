@@ -1,9 +1,10 @@
 package se.sics.mspsim.cli;
 import java.io.File;
 import java.io.PrintStream;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
+import java.util.HashMap;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.util.ActiveComponent;
 import se.sics.mspsim.util.ComponentRegistry;
@@ -13,14 +14,14 @@ public class CommandHandler implements ActiveComponent, LineListener {
 
   private static final String scriptDirectory = "scripts";
 
-  private final Hashtable<String, Command> commands = new Hashtable<>();
+  private final HashMap<String, Command> commands = new HashMap<>();
 
-  protected final PrintStream out;
-  protected final PrintStream err;
+  final PrintStream out;
+  final PrintStream err;
   private MapTable mapTable;
   private ComponentRegistry registry;
   private final ArrayList<CommandContext[]> currentAsyncCommands = new ArrayList<>();
-  private int pidCounter = 0;
+  private int pidCounter;
 
   public CommandHandler(PrintStream out, PrintStream err) {
     this.out = out;
@@ -95,8 +96,8 @@ public class CommandHandler implements ActiveComponent, LineListener {
         cErr.println("Error: Command failed: " + e.getMessage());
         e.printStackTrace(cErr);
         error = true;
-        if (e instanceof EmulationException) {
-            throw (EmulationException) e;
+        if (e instanceof EmulationException emulationException) {
+            throw emulationException;
         }
       }
       if (error) {
@@ -128,15 +129,45 @@ public class CommandHandler implements ActiveComponent, LineListener {
     return -1;
   }
 
+  private File resolveScript(String script) {
+    // Only search for script files
+    if (!script.endsWith(".sc")) {
+      return null;
+    }
+    var scriptFile = new File(scriptDirectory, script);
+    if (scriptFile.exists()) {
+      return scriptFile;
+    }
+    scriptFile = new File("config/scripts", script);
+    if (scriptFile.exists()) {
+      return scriptFile;
+    }
+    File parent;
+    try {
+      parent = new File(CommandHandler.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+              .getParentFile().getParentFile();
+    } catch (URISyntaxException e) {
+      parent = null;
+    }
+    if (parent != null) {
+      var scriptPath = "resources/main/scripts/" + script;
+      scriptFile = new File(parent, scriptPath);
+      if (!scriptFile.exists()) { // Running from gradle
+        scriptFile= new File(parent.getParentFile(), scriptPath);
+      }
+    }
+    return scriptFile.exists() ? scriptFile : null;
+  }
+
   // This will return an instance that can be configured -
   // which is basically not OK... TODO - fix this!!!
   private Command getCommand(String cmd)  {
     Command command = commands.get(cmd);
     if (command != null) {
-        return (Command) command.getInstance();
+        return command.getInstance();
     }
-    File scriptFile = new File(scriptDirectory, cmd);
-    if (scriptFile.isFile() && scriptFile.canRead()) {
+    File scriptFile = resolveScript(cmd);
+    if (scriptFile != null && scriptFile.isFile() && scriptFile.canRead()) {
       return new ScriptCommand(scriptFile);
     }
     return null;
@@ -182,11 +213,8 @@ public class CommandHandler implements ActiveComponent, LineListener {
 
   @Override
   public void start() {
-    Object[] commandBundles = registry.getAllComponents(CommandBundle.class);
-    if (commandBundles != null) {
-      for (Object commandBundle : commandBundles) {
-        ((CommandBundle) commandBundle).setupCommands(registry, this);
-      }
+    for (var commandBundle: registry.getAllComponents(CommandBundle.class)) {
+      commandBundle.setupCommands(registry, this);
     }
   }
 
@@ -234,11 +262,11 @@ public class CommandHandler implements ActiveComponent, LineListener {
           String helpText = command.getCommandHelp(cmd);
           String argHelp = command.getArgumentHelp(cmd);
           context.out.print(cmd);
-          if (argHelp != null && argHelp.length() > 0) {
+          if (argHelp != null && !argHelp.isEmpty()) {
             context.out.print(' ' + argHelp);
           }
           context.out.println();
-          if (helpText != null && helpText.length() > 0) {
+          if (helpText != null && !helpText.isEmpty()) {
             context.out.println("  " + helpText);
           }
           return 0;
@@ -251,7 +279,7 @@ public class CommandHandler implements ActiveComponent, LineListener {
     registerCommand("ps", new BasicCommand("list current executing commands/processes", "") {
       @Override
       public int executeCommand(CommandContext context) {
-        if (currentAsyncCommands.size() > 0) {
+        if (!currentAsyncCommands.isEmpty()) {
             context.out.println(" PID\tCommand");
           for (CommandContext[] currentAsyncCommand : currentAsyncCommands) {
             CommandContext cmd = currentAsyncCommand[0];

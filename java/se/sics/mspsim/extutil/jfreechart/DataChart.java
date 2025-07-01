@@ -19,9 +19,7 @@ import se.sics.mspsim.util.DataSource;
 import se.sics.mspsim.util.ServiceComponent;
 import se.sics.mspsim.util.StackMonitor;
 
-@SuppressWarnings("serial")
 public class DataChart extends JPanel implements ServiceComponent {
-
   private enum Mode {NONE, STACK, DUTY}
   private Mode mode = Mode.NONE;
 
@@ -31,7 +29,7 @@ public class DataChart extends JPanel implements ServiceComponent {
   private MSP430 cpu;
   private DataSourceSampler dss;
   private Status status = Status.STOPPED;
-  private String name = null;
+  private String name;
 
   public DataChart(String title, String yaxis) {
     DateAxis domain = new DateAxis("Time");
@@ -40,7 +38,8 @@ public class DataChart extends JPanel implements ServiceComponent {
     xyplot.setDomainAxis(domain);
     xyplot.setRangeAxis(range);
  // xyplot.setBackgroundPaint(Color.black);
-    xyplot.setDataset(dataset = new TimeSeriesCollection());
+    dataset = new TimeSeriesCollection();
+    xyplot.setDataset(dataset);
 
     DefaultXYItemRenderer renderer = new DefaultXYItemRenderer();
     renderer.setSeriesPaint(0, Color.red);
@@ -142,9 +141,7 @@ public class DataChart extends JPanel implements ServiceComponent {
   @Override
   public void stop() {
       jw.setVisible(false);
-      if (mode == Mode.STACK) {
-          // ?
-      } else {
+      if (mode != Mode.STACK) {
           dss.stop();
       }
       status = Status.STOPPED;

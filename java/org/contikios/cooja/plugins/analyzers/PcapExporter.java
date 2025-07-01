@@ -1,13 +1,13 @@
 package org.contikios.cooja.plugins.analyzers;
 
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PcapExporter {
+class PcapExporter {
   private static final Logger logger = LoggerFactory.getLogger(PcapExporter.class);
 
   DataOutputStream out;

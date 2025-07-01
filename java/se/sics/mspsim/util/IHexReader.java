@@ -46,71 +46,53 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import se.sics.mspsim.config.MSP430f1611Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.platform.sky.CC2420Node;
 
 public class IHexReader {
-
-  // 64k tmp ram!
-  private final int[] tmpMemory = new int[64 * 1024];
-
+  private static final Logger logger = LoggerFactory.getLogger(IHexReader.class);
   /**
-   * Creates a new <code>IHexReader</code> instance.
-   *
+   * Utility class, should not be constructed.
    */
-  public IHexReader() {
-  }
+  private IHexReader() {}
 
-  public boolean readFile(int[] memory, String file) {
-    for (int i = 0, n = tmpMemory.length; i < n; i++) {
-      tmpMemory[i] = -1;
+  public static int[] readFile(String file, int memSize) {
+    var memory = new int[memSize];
+    for (int i = 0, n = memory.length; i < n; i++) {
+      memory[i] = -1;
     }
-    try {
-      BufferedReader bInput = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8));
+    try (var bInput = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8))) {
       String line;
       boolean terminate = false;
       while ((line = bInput.readLine()) != null && !terminate) {
         if (line.charAt(0) != ':') {
-          System.out.println("Not an IHex file?! " + line.charAt(0));
-          bInput.close();
-          return false;
+          logger.error("{} not an IHex file? Line starting with '{}'", file, line.charAt(0));
+          return null;
         }
         int size = hexToInt(line.charAt(1)) * 0x10 + hexToInt(line.charAt(2));
         int adr =  hexToInt(line.charAt(3)) * 0x1000 +
           hexToInt(line.charAt(4)) * 0x100 + hexToInt(line.charAt(5)) * 0x10 +
           hexToInt(line.charAt(6));
         int type = hexToInt(line.charAt(7)) * 0x10 + hexToInt(line.charAt(8));
-//      System.out.println("Block:  size: " + size + "=>  address: " +
-//                         hex(adr) +   "  type: " + type);
 
         // Termination !!!
         if (type == 0x01) {
-          System.out.println("IHEX file ended (termination)");
           terminate = true;
         } else {
           int index = 9;
           for (int i = 0; i < size; i++) {
-            tmpMemory[adr + i] = (hexToInt(line.charAt(index++)) * 0x10 +
+            memory[adr + i] = (hexToInt(line.charAt(index++)) * 0x10 +
                                   hexToInt(line.charAt(index++)));
           }
-
         }
       }
-      bInput.close();
-
-      // Write all data that we got in to the real memory!!!
-      System.out.println("Writing to memory!");
-      for (int i = 0, n = tmpMemory.length; i < n; i++) {
-        if (tmpMemory[i] != -1) {
-          memory[i] = tmpMemory[i];
-        }
-      }
-
-      return true;
     } catch (IOException ioe) {
-      ioe.printStackTrace();
+      logger.error("IO exception when reading {}", file, ioe);
+      return null;
     }
-    return false;
+    return memory;
   }
 
   private static String hex(int data) {
@@ -125,14 +107,11 @@ public class IHexReader {
     }
   }
 
-  public static void main(String[] args) {
-    IHexReader reader = new IHexReader();
+  public static void main(String[] args) throws IOException {
     int data = 0x84;
     System.out.println("RRA: " + hex((data & 0x80) + (data >> 1)));
 
-    MSP430 cpu = new MSP430(new ComponentRegistry(), new MSP430f1611Config());
-    int[] memory = cpu.memory;
-    reader.readFile(memory, args[0]);
+    MSP430 cpu = CC2420Node.makeCPU(CC2420Node.makeChipConfig(), args[0]);
     cpu.reset();
     cpu.cpuloop();
   }

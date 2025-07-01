@@ -1,5 +1,5 @@
 <configuration>
-  <conversionRule conversionWord="highlightdark" converterClass="org.contikios.cooja.util.LogbackColor" />
+  <conversionRule conversionWord="highlightdark" class="org.contikios.cooja.util.LogbackColor" />
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>${logback.layoutPattern:-%highlightdark(%-5level [%thread] [%file:%line] - %msg){}%n}</pattern>

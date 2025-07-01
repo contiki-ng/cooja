@@ -2,23 +2,21 @@ package se.sics.mspsim.platform.z1;
 
 import se.sics.mspsim.chip.Button;
 import se.sics.mspsim.chip.CC2420;
-import se.sics.mspsim.chip.FileStorage;
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.config.MSP430f2617Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
-import se.sics.mspsim.core.IOUnit;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.core.USCI;
-import se.sics.mspsim.platform.GenericNode;
+import se.sics.mspsim.platform.GenericFlashNode;
 import se.sics.mspsim.ui.SerialMon;
 
-public class Z1Node extends GenericNode implements PortListener, USARTListener {
+public class Z1Node extends GenericFlashNode<M25P80> implements PortListener, USARTListener {
 
     public static final int MODE_LEDS_OFF = 0;
     public static final int MODE_LEDS_1 = 1;
@@ -60,24 +58,54 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
     boolean blueLed;
     boolean greenLed;
 
-    private Leds leds;
-    private Button button;
+    private final Leds leds;
+    private final Button button;
     private Z1Gui gui;
 
-    private CC2420 radio;
+    private final CC2420 radio;
 //    private TMP102 tmp102;
-    private final M25P80 flash;
-    private String flashFile;
 
     public static MSP430Config makeChipConfig() {
         return new MSP430f2617Config();
     }
 
+    // FIXME: replace flash with M25P16.
+    // The Z1 platform has a M25P16 chip with 2MB compared to the M25P80 with 1MB, but the chips are compatible.
     public Z1Node(MSP430 cpu, M25P80 flash) {
-        super("Z1", cpu);
-        this.flash = flash;
-        registry.registerComponent("xmem", flash);
+        super("Z1", cpu, flash);
         setMode(MODE_LEDS_OFF);
+        var port1 = cpu.getIOUnit(IOPort.class, "P1");
+//        port1.addPortListener(this);
+        var port2 = cpu.getIOUnit(IOPort.class, "P2");
+//        port2.addPortListener(this);
+        var port3 = cpu.getIOUnit(IOPort.class, "P3");
+        port3.addPortListener(this);
+        var port4 = cpu.getIOUnit(IOPort.class, "P4");
+        port4.addPortListener(this);
+        var port5 = cpu.getIOUnit(IOPort.class, "P5");
+        port5.addPortListener(this);
+
+//        tmp102 = new TMP102(cpu);
+
+        USCI usart0 = cpu.getIOUnit(USCI.class, "USCI B0");
+        if (usart0 != null) {
+            radio = new CC2420(cpu);
+            radio.setCCAPort(port1, CC2420_CCA);
+            radio.setFIFOPPort(port1, CC2420_FIFOP);
+            radio.setFIFOPort(port1, CC2420_FIFO);
+            usart0.addUSARTListener(this);
+            radio.setSFDPort(port4, CC2420_SFD);
+        } else {
+            throw new EmulationException("Could not setup mote - missing USCI B0");
+        }
+
+        leds = new Leds(cpu, LEDS);
+        button = new Button("Button", cpu, port2, BUTTON_PIN, true);
+
+        var usart = cpu.getIOUnit("USCI A0");
+        if (usart instanceof USARTSource) {
+            registry.registerComponent("serialio", usart);
+        }
     }
 
     public Leds getLeds() {
@@ -86,13 +114,6 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
 
     public Button getButton() {
         return button;
-    }
-
-    public M25P80 getFlash() {
-        // TODO Replace with M25P16.
-        // The Z1 platform has a M25P16 chip with 2MB compared to the M25P80
-        // with 1MB but the chips are compatible.
-        return flash;
     }
 
     @Override
@@ -106,7 +127,7 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
         }
     }
 
-    private int lastPort5 = 0;
+    private int lastPort5;
     @Override
     public void portWrite(IOPort source, int data) {
         switch (source.getPort()) {
@@ -137,84 +158,22 @@ public class Z1Node extends GenericNode implements PortListener, USARTListener {
         }
     }
 
-    private void setupNodePorts() {
-        var port1 = cpu.getIOUnit(IOPort.class, "P1");
-//        port1.addPortListener(this);
-        var port2 = cpu.getIOUnit(IOPort.class, "P2");
-//        port2.addPortListener(this);
-        var port3 = cpu.getIOUnit(IOPort.class, "P3");
-        port3.addPortListener(this);
-        var port4 = cpu.getIOUnit(IOPort.class, "P4");
-        port4.addPortListener(this);
-        var port5 = cpu.getIOUnit(IOPort.class, "P5");
-        port5.addPortListener(this);
-
-//        tmp102 = new TMP102(cpu);
-
-        USCI usart0 = cpu.getIOUnit(USCI.class, "USCI B0");
-        if (usart0 != null) {
-            radio = new CC2420(cpu);
-            radio.setCCAPort(port1, CC2420_CCA);
-            radio.setFIFOPPort(port1, CC2420_FIFOP);
-            radio.setFIFOPort(port1, CC2420_FIFO);
-
-            usart0.addUSARTListener(this);
-            radio.setSFDPort(port4, CC2420_SFD);
-        } else {
-            throw new EmulationException("Could not setup mote - missing USCI B0");
-        }
-
-        leds = new Leds(cpu, LEDS);
-        button = new Button("Button", cpu, port2, BUTTON_PIN, true);
-
-        IOUnit usart = cpu.getIOUnit("USCI A0");
-        if (usart instanceof USARTSource) {
-            registry.registerComponent("serialio", usart);
-        }
-        if (flashFile != null) {
-            getFlash().setStorage(new FileStorage(flashFile));
-        }
-    }
-
     @Override
     public void setupNode() {
-        // create a filename for the flash file
-        // This should be possible to take from a config file later!
-        String fileName = config.getProperty("flashfile");
-        if (fileName == null) {
-            fileName = firmwareFile;
-            if (fileName != null) {
-                int ix = fileName.lastIndexOf('.');
-                if (ix > 0) {
-                    fileName = fileName.substring(0, ix);
-                }
-                fileName = fileName + ".flash";
-            }
-        }
-        if (DEBUG) log("Using flash file: " + (fileName == null ? "no file" : fileName));
-
-        this.flashFile = fileName;
-
-        setupNodePorts();
-
+        super.setupNode();
         if (!config.getPropertyAsBoolean("nogui", true)) {
             setupGUI();
-
-            // Add some windows for listening to serial output
-            IOUnit usart = cpu.getIOUnit("USCI A0");
-            if (usart instanceof USARTSource) {
-                SerialMon serial = new SerialMon((USARTSource)usart, "USCI A0 Port Output");
-                registry.registerComponent("serialgui", serial);
-            }
         }
-
-
     }
 
     public void setupGUI() {
         if (gui == null) {
             gui = new Z1Gui(this);
             registry.registerComponent("nodegui", gui);
+            // Add some windows for listening to serial output.
+            if (cpu.getIOUnit("USCI A0") instanceof USARTSource usart) {
+                registry.registerComponent("serialgui", new SerialMon(usart, "USCI A0 Port Output"));
+            }
         }
     }
 

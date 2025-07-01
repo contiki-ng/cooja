@@ -1,6 +1,7 @@
 package se.sics.mspsim.platform.sky;
 import se.sics.mspsim.chip.CC2420;
 import se.sics.mspsim.chip.DS2411;
+import se.sics.mspsim.chip.ExternalFlash;
 import se.sics.mspsim.chip.PacketListener;
 import se.sics.mspsim.config.MSP430f1611Config;
 import se.sics.mspsim.core.IOPort;
@@ -12,12 +13,13 @@ import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
 import se.sics.mspsim.extutil.jfreechart.DataChart;
 import se.sics.mspsim.extutil.jfreechart.DataSourceSampler;
-import se.sics.mspsim.platform.GenericNode;
+import se.sics.mspsim.platform.GenericFlashNode;
 import se.sics.mspsim.ui.SerialMon;
 import se.sics.mspsim.util.NetworkConnection;
 import se.sics.mspsim.util.OperatingModeStatistics;
 
-public abstract class CC2420Node extends GenericNode implements PortListener, USARTListener {
+public abstract class CC2420Node<FlashType extends ExternalFlash> extends GenericFlashNode<FlashType>
+        implements PortListener, USARTListener {
 
     // Port 2.
     public static final int DS2411_DATA_PIN = 4;
@@ -37,38 +39,21 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
     public static final int CC2420_VREG = (1 << 5);
     public static final int CC2420_CHIP_SELECT = 0x04;
 
-    protected IOPort port1;
-    protected IOPort port2;
-    protected IOPort port4;
-    protected IOPort port5;
+    protected final IOPort port1;
+    protected final IOPort port2;
+    protected final IOPort port4;
+    protected final IOPort port5;
 
-    public CC2420 radio;
-    public DS2411 ds2411;
-
-    protected String flashFile;
+    protected final CC2420 radio;
+    private final DS2411 ds2411;
 
     public static MSP430Config makeChipConfig() {
         // FIXME: this should be a config for the MSP430x1611.
         return new MSP430f1611Config();
     }
 
-    public CC2420Node(String id, MSP430 cpu) {
-        super(id, cpu);
-    }
-
-    public void setDebug(boolean debug) {
-        cpu.setDebug(debug);
-    }
-
-    public boolean getDebug() {
-        return cpu.getDebug();
-    }
-
-    public void setNodeID(int id) {
-        ds2411.setMACID(id & 0xff, id & 0xff, id & 0xff, (id >> 8) & 0xff, id & 0xff, id & 0xff);
-    }
-
-    public void setupNodePorts() {
+    public CC2420Node(String id, MSP430 cpu, FlashType flash) {
+        super(id, cpu, flash);
         ds2411 = new DS2411(cpu);
 
         port1 = cpu.getIOUnit(IOPort.class, "P1");
@@ -84,42 +69,36 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
         port5 = cpu.getIOUnit(IOPort.class, "P5");
         port5.addPortListener(this);
 
-        USART usart0 = cpu.getIOUnit(USART.class, "USART0");
+        var usart0 = cpu.getIOUnit(USART.class, "USART0");
         radio = new CC2420(cpu);
         radio.setCCAPort(port1, CC2420_CCA);
         radio.setFIFOPPort(port1, CC2420_FIFOP);
         radio.setFIFOPort(port1, CC2420_FIFO);
-
+        // FIXME: move closer to allocation.
         usart0.addUSARTListener(this);
         radio.setSFDPort(port4, CC2420_SFD);
 
-        USART usart = cpu.getIOUnit(USART.class, "USART1");
+        var usart = cpu.getIOUnit(USART.class, "USART1");
         if (usart != null) {
             registry.registerComponent("serialio", usart);
         }
     }
 
+    public void setDebug(boolean debug) {
+        cpu.setDebug(debug);
+    }
+
+    public boolean getDebug() {
+        return cpu.getDebug();
+    }
+
+    public void setNodeID(int id) {
+        ds2411.setMACID(id & 0xff, id & 0xff, id & 0xff, (id >> 8) & 0xff, id & 0xff, id & 0xff);
+    }
+
     @Override
     public void setupNode() {
-        // create a filename for the flash file
-        // This should be possible to take from a config file later!
-        String fileName = config.getProperty("flashfile");
-        if (fileName == null) {
-            fileName = firmwareFile;
-            if (fileName != null) {
-                int ix = fileName.lastIndexOf('.');
-                if (ix > 0) {
-                    fileName = fileName.substring(0, ix);
-                }
-                fileName = fileName + ".flash";
-            }
-        }
-        if (DEBUG) System.out.println("Using flash file: " + (fileName == null ? "no file" : fileName));
-
-        this.flashFile = fileName;
-
-        setupNodePorts();
-
+        super.setupNode();
         if (stats != null) {
             stats.addMonitor(this);
             stats.addMonitor(radio);
@@ -127,13 +106,6 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
         }
         if (!config.getPropertyAsBoolean("nogui", true)) {
             setupGUI();
-
-            // Add some windows for listening to serial output
-            USART usart = cpu.getIOUnit(USART.class, "USART1");
-            if (usart != null) {
-                SerialMon serial = new SerialMon(usart, "USART1 Port Output");
-                registry.registerComponent("serialgui", serial);
-            }
             if (stats != null) {
                 // A HACK for some "graphs"!!!
                 DataChart dataChart = new DataChart("Duty Cycle", "Duty Cycle");
@@ -173,6 +145,11 @@ public abstract class CC2420Node extends GenericNode implements PortListener, US
     }
 
     public void setupGUI() {
+        // Add some windows for listening to serial output.
+        var usart = cpu.getIOUnit(USART.class, "USART1");
+        if (usart != null) {
+            registry.registerComponent("serialgui", new SerialMon(usart, "USART1 Port Output"));
+        }
     }
 
     @Override

@@ -111,11 +111,11 @@ public class MspMoteMemory implements MemoryInterface {
 
   class MemoryCPUMonitor extends se.sics.mspsim.core.MemoryMonitor.Adapter {
 
-    public final SegmentMonitor mm;
-    public final int address;
-    public final int size;
+    final SegmentMonitor mm;
+    final int address;
+    final int size;
 
-    public MemoryCPUMonitor(SegmentMonitor mm, int address, int size) {
+    MemoryCPUMonitor(SegmentMonitor mm, int address, int size) {
       this.mm = mm;
       this.address = address;
       this.size = size;

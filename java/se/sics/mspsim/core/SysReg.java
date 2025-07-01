@@ -56,10 +56,6 @@ Reset vector generator SYSRSTIV 1Eh
         }
 
         @Override
-        public void reset(int type) {
-        }
-
-        @Override
         public void write(int address, int value, boolean word, long cycles) {
                 if (DEBUG)
                         log(this.getName() + ": Write to: "

@@ -31,13 +31,10 @@
 package org.contikios.cooja.mspmote.interfaces;
 
 import java.util.Random;
-
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
-import org.contikios.cooja.radiomediums.AbstractRadioMedium;
-
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
+import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -330,11 +327,10 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
 
   @Override
   public void receiveCustomData(Object data) {
-    if (!(data instanceof Byte)) {
+    if (!(data instanceof Byte lastIncomingByte)) {
       logger.error("Bad custom data: " + data);
       return;
     }
-    lastIncomingByte = (Byte) data;
 
     final byte inputByte;
     if (isInterfered()) {

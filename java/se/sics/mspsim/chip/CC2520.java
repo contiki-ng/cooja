@@ -228,10 +228,10 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     public static final int STATUS_DPU_H            = 1 << 3;
     public static final int STATUS_DPU_L            = 1 << 2;
     public static final int STATUS_TX_ACTIVE        = 1 << 1;
-    public static final int STATUS_RX_ACTIVE        = 1 << 0;
+    public static final int STATUS_RX_ACTIVE        = 1;
 
     // Exceptions (bits in the EXCFLAGx memory)
-    public final static int EXC_RF_IDLE             = 1 << 0;
+    public final static int EXC_RF_IDLE             = 1;
     public final static int EXC_TX_FRM_DONE         = 1 << 1;
     public final static int EXC_RX_FRM_ABORTED      = 0x20;
     public final static int EXC_RX_FRM_UNDERFLOW    = 0x20;
@@ -250,7 +250,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
 //    public static final int RAM_CBCSTATE            = 0x150;
 
     /* one single byte instruction can be stored in the IBUF */
-    int instructionBuffer = 0;
+    int instructionBuffer;
 
     // IOCFG0 memory Bit masks
     public static final int BCN_ACCEPT = (1<<11);
@@ -265,7 +265,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
 //    public static final int CCAMUX_XOSC16M_STABLE = 24;
 
     // FRMFILT0/FRMCTRL0 values
-    public static final int FRAME_FILTER = (1 << 0);
+    public static final int FRAME_FILTER = 1;
     public static final int AUTOCRC      = (1 << 6);
     public static final int AUTOACK      = (1 << 5);
 
@@ -286,7 +286,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     public static final int MODE_TXRX_ON = 0x02;
     public static final int MODE_POWER_OFF = 0x03;
     public static final int MODE_MAX = MODE_POWER_OFF;
-    private static final String[] MODE_NAMES = new String[] {
+    private static final String[] MODE_NAMES = {
         "off", "listen", "transmit", "power_off"
     };
 
@@ -341,7 +341,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     // 802.15.4 symbol period in ms
     public static final double SYMBOL_PERIOD = 0.016; // 16 us
 
-    private static final int[] BC_ADDRESS = new int[] {0xff, 0xff};
+    private static final int[] BC_ADDRESS = {0xff, 0xff};
 
     private int shrPos;
     private int txfifoPos;
@@ -364,24 +364,24 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     private int fifopThr = 0x40;
 
     /* Configuration for frame filtering and auto acknowledgments */
-    private boolean frameFilter = false;
-    private boolean autoAck = false;
-    private boolean shouldAck = false;
-    private boolean ackRequest = false;
-    private boolean autoCRC = false;
+    private boolean frameFilter;
+    private boolean autoAck;
+    private boolean shouldAck;
+    private boolean ackRequest;
+    private boolean autoCRC;
 
     // Data from last received packet
-    private int dsn = 0;
-    private int fcf0 = 0;
-    private int fcf1 = 0;
-    private int frameType = 0;
-    private boolean crcOk = false;
+    private int dsn;
+    private int fcf0;
+    private int fcf1;
+    private int frameType;
+    private boolean crcOk;
 
-    private int activeFrequency = 0;
-    private int activeChannel = 0;
+    private int activeFrequency;
+    private int activeChannel;
 
     //private int status = STATUS_XOSC16M_STABLE | STATUS_RSSI_VALID;
-    private int status = 0;
+    private int status;
 
     private final int[] memory = new int[0x400]; /* total memory */
 
@@ -406,7 +406,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     private boolean currentFIFOP;
 
     /* current CCA value */
-    private boolean currentCCA = false;
+    private boolean currentCCA;
 
     private int txCursor;
     private boolean isRadioOn;
@@ -473,12 +473,12 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
         }
     };
     private boolean overflow;
-    private boolean frameRejected = false;
+    private boolean frameRejected;
 
     private int ackPos;
     /* type = 2 (ACK), third byte needs to be sequence number... */
     private final int[] ackBuf = {0x05, 0x02, 0x00, 0x00, 0x00, 0x00};
-    private boolean ackFramePending = false;
+    private boolean ackFramePending;
     private final CCITT_CRC rxCrc = new CCITT_CRC();
     private final CCITT_CRC txCrc = new CCITT_CRC();
 
@@ -694,14 +694,14 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
         /* reset state */
         rxFIFO.restore();
         setSFD(false);
-        setFIFO(rxFIFO.length() > 0);
+        setFIFO(!rxFIFO.isEmpty());
         frameRejected = true;
     }
 
     /* variables for the address recognition */
-    int destinationAddressMode = 0;
-    boolean decodeAddress = false;
-    /* Receive a byte from the radio medium
+    private int destinationAddressMode;
+    private boolean decodeAddress;
+    /** Receive a byte from the radio medium
      * @see se.sics.mspsim.chip.RFListener#receivedByte(byte)
      */
     @Override
@@ -1563,13 +1563,6 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     public void stateChanged(int state) {
     }
 
-    /* return data in register at the correct position */
-    @Override
-    public int getConfiguration(int parameter) {
-        return memory[parameter];
-    }
-
-
     /* For SPI Commands */
     @Override
     public int getSPIData(int offset) {
@@ -1608,7 +1601,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
                     " fifo: " + rxFIFO.stateToString());
         } else if (--rxfifoReadLeft == 0) {
             /* check if we have another packet in buffer */
-            if (rxFIFO.length() > 0) {
+            if (!rxFIFO.isEmpty()) {
                 /* check if the packet is complete or longer than fifopThr */
                 if (rxFIFO.length() > rxFIFO.peek(0) ||
                         (rxFIFO.length() > fifopThr && !decodeAddress && !frameRejected)) {
@@ -1618,7 +1611,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
             }
         }
         // Set the FIFO pin low if there are no more bytes available in the RXFIFO.
-        if (rxFIFO.length() == 0) {
+        if (rxFIFO.isEmpty()) {
             if (DEBUG) log("Setting FIFO to low (buffer empty)");
             setFIFO(false);
         }

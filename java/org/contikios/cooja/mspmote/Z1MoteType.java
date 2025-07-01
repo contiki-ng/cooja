@@ -29,6 +29,7 @@
  */
 
 package org.contikios.cooja.mspmote;
+import java.io.IOException;
 import java.util.List;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.ClassDescription;
@@ -39,6 +40,7 @@ import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.mspmote.interfaces.CoojaM25P80;
+import org.contikios.cooja.mspmote.interfaces.Msp802154BitErrorRadio;
 import org.contikios.cooja.mspmote.interfaces.Msp802154Radio;
 import org.contikios.cooja.mspmote.interfaces.MspButton;
 import org.contikios.cooja.mspmote.interfaces.MspClock;
@@ -46,6 +48,7 @@ import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
 import org.contikios.cooja.mspmote.interfaces.MspDefaultSerial;
 import org.contikios.cooja.mspmote.interfaces.MspLED;
 import org.contikios.cooja.mspmote.interfaces.MspMoteID;
+import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.platform.z1.Z1Node;
 
 @ClassDescription("Z1 mote")
@@ -69,14 +72,30 @@ public class Z1MoteType extends MspMoteType {
 
     @Override
     public MspMote generateMote(Simulation simulation) throws MoteTypeCreationException {
-        var cpu = Z1Node.makeCPU(Z1Node.makeChipConfig());
-        var node = new Z1Node(cpu, new CoojaM25P80(cpu));
-        return new Z1Mote(this, simulation, node);
+        MSP430 cpu;
+        try {
+            cpu = Z1Node.makeCPU(Z1Node.makeChipConfig(), fileFirmware.getAbsolutePath());
+        } catch (IOException e) {
+            throw new MoteTypeCreationException("Failed to create CPU", e);
+        }
+        return new Z1Mote(this, simulation, new Z1Node(cpu, new CoojaM25P80(cpu)));
     }
 
     @Override
     public List<Class<? extends MoteInterface>> getDefaultMoteInterfaceClasses() {
-  	  return getAllMoteInterfaceClasses();
+        return List.of(
+                Position.class,
+                IPAddress.class,
+                Mote2MoteRelations.class,
+                MoteAttributes.class,
+                MspClock.class,
+                MspMoteID.class,
+                MspButton.class,
+//                SkyFlash.class,
+                Msp802154Radio.class,
+                MspDefaultSerial.class,
+                MspLED.class,
+                MspDebugOutput.class);
     }
 
     @Override
@@ -91,6 +110,7 @@ public class Z1MoteType extends MspMoteType {
                 MspButton.class,
 //                SkyFlash.class,
                 Msp802154Radio.class,
+                Msp802154BitErrorRadio.class,
                 MspDefaultSerial.class,
                 MspLED.class,
                 MspDebugOutput.class);

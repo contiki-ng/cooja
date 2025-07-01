@@ -67,8 +67,8 @@ public class MapTable {
 
   public int heapStartAddress = -1;
   public int stackStartAddress = -1;
-  private int bssFill = 0;
-  private int dataFill = 0;
+  private int bssFill;
+  private int dataFill;
 
   private final ArrayList<MapEntry> modules = new ArrayList<>();
   private final ArrayList<MapEntry> entries = new ArrayList<>();
@@ -189,7 +189,7 @@ public class MapTable {
     }
   }
 
-  public void loadMap(String file) throws IOException {
+  private void loadMap(String file) throws IOException {
     HashMap<String, MapEntry> moduleTable = new HashMap<>();
     try (var bInput = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8))) {
       String line;

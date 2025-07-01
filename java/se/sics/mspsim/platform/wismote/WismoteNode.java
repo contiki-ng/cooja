@@ -42,7 +42,6 @@ import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.config.MSP430f5437Config;
 import se.sics.mspsim.core.EmulationException;
 import se.sics.mspsim.core.IOPort;
-import se.sics.mspsim.core.IOUnit;
 import se.sics.mspsim.core.MSP430;
 import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
@@ -77,7 +76,7 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 
     /* P8.6 - Red (left) led */
     private static final int LEDS_CONF_RED1   = 1 << 6;
-    private static final int LEDS_RED1        = 1 << 0;
+    private static final int LEDS_RED1        = 1;
     /* P5.2 - Green (middle) led */
     private static final int LEDS_CONF_GREEN  = 1 << 4;
     private static final int LEDS_GREEN       = 1 << 1;
@@ -87,13 +86,11 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 
     private static final int[] LEDS = { 0xff2020, 0x20ff20, 0xff2020 };
 
-    //private final M25P80 flash;
-    //private String flashFile;
-    private CC2520 radio;
-    private Leds leds;
-    private Button button;
+    private final CC2520 radio;
+    private final Leds leds;
+    private final Button button;
     private WismoteGui gui;
-    private DS2411 ds2411;
+    private final DS2411 ds2411;
 
     public static MSP430Config makeChipConfig() {
         return new MSP430f5437Config();
@@ -101,8 +98,36 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
 
     public WismoteNode(MSP430 cpu) {
         super("Wismote", cpu);
-//        this.flash = flash;
-//        registry.registerComponent("xmem", flash);
+        ds2411 = new DS2411(cpu);
+
+        var port1 = cpu.getIOUnit(IOPort.class, "P1");
+        port1.addPortListener(this);
+        ds2411.setDataPort(port1, DS2411_DATA_PIN);
+
+        var port2 = cpu.getIOUnit(IOPort.class, "P2");
+        port2.addPortListener(this);
+        cpu.getIOUnit(IOPort.class, "P3").addPortListener(this);
+        cpu.getIOUnit(IOPort.class, "P4").addPortListener(this);
+        cpu.getIOUnit(IOPort.class, "P5").addPortListener(this);
+        cpu.getIOUnit(IOPort.class, "P8").addPortListener(this);
+
+        if (cpu.getIOUnit("USCI B0") instanceof USARTSource usart0) {
+            radio = new CC2520(cpu);
+            radio.setGPIO(1, port1, CC2520_FIFO);
+            radio.setGPIO(3, port1, CC2520_CCA);
+            radio.setGPIO(2, port1, CC2520_FIFOP);
+            radio.setGPIO(4, port2, CC2520_SFD);
+            usart0.addUSARTListener(this);
+        } else {
+            throw new EmulationException("Could not setup wismote mote - missing USCI B0");
+        }
+        leds = new Leds(cpu, LEDS);
+        button = new Button("Button", cpu, port1, BUTTON_PIN, true);
+
+        var usart = cpu.getIOUnit("USCI A1");
+        if (usart instanceof USARTSource) {
+            registry.registerComponent("serialio", usart);
+        }
     }
 
     public Leds getLeds() {
@@ -112,10 +137,6 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
     public Button getButton() {
         return button;
     }
-
-//    public M25P80 getFlash() {
-//        return flash;
-//    }
 
     @Override
     public void dataReceived(USARTSource source, int data) {
@@ -147,75 +168,11 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
         }
     }
 
-    private void setupNodePorts() {
-//        if (flashFile != null) {
-//            getFlash().setStorage(new FileStorage(flashFile));
-//        }
-        ds2411 = new DS2411(cpu);
-
-        IOPort port1 = cpu.getIOUnit(IOPort.class, "P1");
-        port1.addPortListener(this);
-        ds2411.setDataPort(port1, DS2411_DATA_PIN);
-
-        IOPort port2 = cpu.getIOUnit(IOPort.class, "P2");
-        port2.addPortListener(this);
-        cpu.getIOUnit(IOPort.class, "P3").addPortListener(this);
-        cpu.getIOUnit(IOPort.class, "P4").addPortListener(this);
-        cpu.getIOUnit(IOPort.class, "P5").addPortListener(this);
-        cpu.getIOUnit(IOPort.class, "P8").addPortListener(this);
-
-        IOUnit usart0 = cpu.getIOUnit("USCI B0");
-        if (usart0 instanceof USARTSource) {
-
-            radio = new CC2520(cpu);
-            radio.setGPIO(1, port1, CC2520_FIFO);
-            radio.setGPIO(3, port1, CC2520_CCA);
-            radio.setGPIO(2, port1, CC2520_FIFOP);
-            radio.setGPIO(4, port2, CC2520_SFD);
-
-            ((USARTSource) usart0).addUSARTListener(this);
-        } else {
-            throw new EmulationException("Could not setup wismote mote - missing USCI B0");
-        }
-        leds = new Leds(cpu, LEDS);
-        button = new Button("Button", cpu, port1, BUTTON_PIN, true);
-
-        IOUnit usart = cpu.getIOUnit("USCI A1");
-        if (usart instanceof USARTSource) {
-            registry.registerComponent("serialio", usart);
-        }
-    }
-
     @Override
     public void setupNode() {
-        // create a filename for the flash file
-        // This should be possible to take from a config file later!
-        String fileName = config.getProperty("flashfile");
-        if (fileName == null) {
-            fileName = firmwareFile;
-            if (fileName != null) {
-                int ix = fileName.lastIndexOf('.');
-                if (ix > 0) {
-                    fileName = fileName.substring(0, ix);
-                }
-                fileName = fileName + ".flash";
-            }
-        }
-        if (DEBUG) System.out.println("Using flash file: " + (fileName == null ? "no file" : fileName));
-
-        //this.flashFile = fileName;
-
-        setupNodePorts();
-
+        // To add flash support: super.setupNode();
         if (!config.getPropertyAsBoolean("nogui", true)) {
             setupGUI();
-
-            // Add some windows for listening to serial output
-            IOUnit usart = cpu.getIOUnit("USCI A1");
-            if (usart instanceof USARTSource) {
-                SerialMon serial = new SerialMon((USARTSource)usart, "USCI A1 Port Output");
-                registry.registerComponent("serialgui", serial);
-            }
         }
     }
 
@@ -223,6 +180,10 @@ public class WismoteNode extends GenericNode implements PortListener, USARTListe
         if (gui == null) {
             gui = new WismoteGui(this);
             registry.registerComponent("nodegui", gui);
+            // Add some windows for listening to serial output.
+            if (cpu.getIOUnit("USCI A1") instanceof USARTSource usart) {
+                registry.registerComponent("serialgui", new SerialMon(usart, "USCI A1 Port Output"));
+            }
         }
     }
 

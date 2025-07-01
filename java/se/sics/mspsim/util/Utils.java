@@ -54,20 +54,23 @@ public class Utils {
   }
 
   public static String toString(int data, int type, int mode) {
-      int size = 1 + type / 2;
-      switch (mode) {
-      case    ASCII:
-          if (data >= 32 && data <= 127) {
-              return String.valueOf((char) data);
-          } else {
-              return ".";
-          }
-      case    ASCII_UNMODIFIED:
+    switch (mode) {
+      case ASCII -> {
+        if (data >= 32 && data <= 127) {
           return String.valueOf((char) data);
-      case    HEX:
-          return (size == 2 ? Utils.hex16(data):Utils.hex8(data));
+        } else {
+          return ".";
+        }
       }
-      return String.valueOf(data);
+      case ASCII_UNMODIFIED -> {
+        return String.valueOf((char) data);
+      }
+      case HEX -> {
+        int size = 1 + type / 2;
+        return (size == 2 ? Utils.hex16(data) : Utils.hex8(data));
+      }
+    }
+    return String.valueOf(data);
   }
 
   public static String binary8(int data) {

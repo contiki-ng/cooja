@@ -1,11 +1,12 @@
 package se.sics.mspsim.platform.sky;
 import se.sics.mspsim.chip.Button;
+import se.sics.mspsim.chip.ExternalFlash;
 import se.sics.mspsim.chip.Leds;
 import se.sics.mspsim.chip.SHT11;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.MSP430;
 
-public abstract class MoteIVNode extends CC2420Node {
+public abstract class MoteIVNode<FlashType extends ExternalFlash> extends CC2420Node<FlashType> {
 
   public static final int MODE_LEDS_OFF = 0;
   public static final int MODE_LEDS_1 = 1;
@@ -30,15 +31,19 @@ public abstract class MoteIVNode extends CC2420Node {
   public boolean blueLed;
   public boolean greenLed;
 
-  private Leds leds;
-  private Button button;
-  public SHT11 sht11;
+  private final Leds leds;
+  private final Button button;
+  public final SHT11 sht11;
 
   public SkyGui gui;
 
-  public MoteIVNode(String id, MSP430 cpu) {
-    super(id, cpu);
+  public MoteIVNode(String id, MSP430 cpu, FlashType flash) {
+    super(id, cpu, flash);
     setMode(MODE_LEDS_OFF);
+    leds = new Leds(cpu, LEDS);
+    button = new Button("Button", cpu, port2, BUTTON_PIN, true);
+    sht11 = new SHT11(cpu);
+    sht11.setDataPort(port1, SHT11_DATA_PIN);
   }
 
   public Leds getLeds() {
@@ -55,17 +60,8 @@ public abstract class MoteIVNode extends CC2420Node {
   }
 
   @Override
-  public void setupNodePorts() {
-    super.setupNodePorts();
-
-    leds = new Leds(cpu, LEDS);
-    button = new Button("Button", cpu, port2, BUTTON_PIN, true);
-    sht11 = new SHT11(cpu);
-    sht11.setDataPort(port1, SHT11_DATA_PIN);
-  }
-
-  @Override
   public void setupGUI() {
+    super.setupGUI();
     if (gui == null) {
       gui = new SkyGui(this);
       registry.registerComponent("nodegui", gui);

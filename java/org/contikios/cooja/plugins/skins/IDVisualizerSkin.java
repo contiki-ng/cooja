@@ -34,7 +34,6 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.Simulation;
@@ -49,8 +48,8 @@ import org.contikios.cooja.plugins.VisualizerSkin;
  */
 @ClassDescription("Mote IDs")
 public class IDVisualizerSkin implements VisualizerSkin {
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {

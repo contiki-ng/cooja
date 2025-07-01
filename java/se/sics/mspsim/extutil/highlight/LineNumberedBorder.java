@@ -4,7 +4,6 @@ import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
-
 import javax.swing.border.AbstractBorder;
 
 /**
@@ -46,7 +45,7 @@ public class LineNumberedBorder extends AbstractBorder {
    */
   private int location = LEFT_SIDE;
 
-  private Color separatorColor = null;
+  private Color separatorColor;
 
   public LineNumberedBorder(int location, int justify) {
     setLocation(location);
@@ -71,8 +70,8 @@ public class LineNumberedBorder extends AbstractBorder {
   @Override
   public Insets getBorderInsets(Component c, Insets insets) {
     // if c is not a SyntaxHighlighter...nothing is done...
-    if (c instanceof SyntaxHighlighter) {
-      int width = lineNumberWidth((SyntaxHighlighter) c);
+    if (c instanceof SyntaxHighlighter syntaxHighlighter) {
+      int width = lineNumberWidth(syntaxHighlighter);
       if (location == LEFT_SIDE) {
         insets.left = width;
       } else {
@@ -218,7 +217,7 @@ public class LineNumberedBorder extends AbstractBorder {
     // loop until out of the "visible" region...
     //
     int length =
-        (String.valueOf(Math.max(jta.getRows(), jta.getLineCount() + 1))).length();
+        String.valueOf(Math.max(jta.getRows(), jta.getLineCount() + 1)).length();
     while (ybaseline < yend) {
       //
       // options:

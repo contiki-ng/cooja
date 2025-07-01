@@ -31,14 +31,13 @@
 package org.contikios.cooja.contikimote;
 
 import java.util.ArrayList;
+import org.contikios.cooja.MoteType;
+import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
-import org.contikios.cooja.MoteInterfaceHandler;
-import org.contikios.cooja.MoteType;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
-import org.contikios.cooja.Simulation;
 import org.contikios.cooja.motes.AbstractWakeupMote;
 
 /**
@@ -70,9 +69,9 @@ public class ContikiMote extends AbstractWakeupMote<ContikiMoteType, SectionMote
    * @param moteType Mote type
    * @param sim Mote's simulation
    */
-  protected ContikiMote(ContikiMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
+  ContikiMote(ContikiMoteType moteType, Simulation sim) throws MoteType.MoteTypeCreationException {
     super(moteType, moteType.createInitialMemory(), sim);
-    moteInterfaces = new MoteInterfaceHandler(this);
+    moteInterfaces.init(this);
     for (var intf : moteInterfaces.getInterfaces()) {
       if (intf instanceof PolledBeforeActiveTicks intf2) {
         polledBeforeActive.add(intf2);
@@ -101,7 +100,7 @@ public class ContikiMote extends AbstractWakeupMote<ContikiMoteType, SectionMote
    * @param simTime Current simulation time
    */
   @Override
-  public void execute(long simTime) {
+  protected void execute(long simTime) {
     // (Jan 2023, Java 17/IntelliJ): Keep the interface actions in explicit for-loops,
     // so costs are clearly attributed in performance profiles.
     for (var moteInterface : polledBeforeActive) {

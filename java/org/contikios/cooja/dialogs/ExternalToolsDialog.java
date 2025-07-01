@@ -57,7 +57,7 @@ import org.contikios.cooja.Cooja;
 public class ExternalToolsDialog extends JDialog {
   private final static int LABEL_WIDTH = 220;
   private final static int LABEL_HEIGHT = 15;
-  private static final String[] settingsNames = new String[] {
+  private static final String[] settingsNames = {
     "PATH_COOJA",
     "PATH_CONTIKI", "PATH_APPS",
     "PATH_APPSEARCH",
@@ -73,9 +73,6 @@ public class ExternalToolsDialog extends JDialog {
 
     "PARSE_COMMAND",
     "COMMAND_VAR_NAME_ADDRESS_SIZE",
-    "COMMAND_DATA_START", "COMMAND_DATA_END",
-    "COMMAND_BSS_START", "COMMAND_BSS_END",
-    "COMMAND_COMMON_START", "COMMAND_COMMON_END",
 
     "HIDE_WARNINGS"
   };

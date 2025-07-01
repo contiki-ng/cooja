@@ -57,7 +57,7 @@ public class CC2520SPI {
             new SPICommand("SRES 0 0 0 0 1 1 1 1 - - - - - - - -"),
             new SPICommand("MEMRD 0 0 0 1 a a a a a a a a a a a a - - - - - - - - ...") {
                 final BitField adr = getBitField("a");
-                int cAdr = 0;
+                int cAdr;
                 @Override
                 public boolean dataReceived(int data) {
                     /* check if this is first two bytes*/
@@ -82,9 +82,6 @@ public class CC2520SPI {
 //                    int sdata[] = spiData.getSPIData();
                     if (len == 2) {
                         cAdr = adr.getValue(spiData);
-//                        System.out.println("SPI BitValue: [" + adr.startBit + " - " +
-//                                adr.endBit + "] mask:" + adr.firstMask);
-//                        System.out.printf("SPI Data: %02x %02x  => adr:%x\n", sdata[0], sdata[1], cAdr);
                     } else if (len > 2){
                         cc2520.writeMemory(cAdr, data);
                         cAdr = (cAdr + 1) & 0x3ff;
@@ -205,7 +202,7 @@ public class CC2520SPI {
             new SPICommand("ABORT 0 1 1 1 1 1 1 1 0 0 0 0 0 0 c c"),
             new SPICommand("REGRD 1 0 a a a a a a - - - - - - - - ...") {
                 final BitField adr = getBitField("a");
-                int cAdr = 0;
+                int cAdr;
                 @Override
                 public boolean dataReceived(int data) {
                     /* check if this is first byte*/
@@ -222,7 +219,7 @@ public class CC2520SPI {
             },
             new SPICommand("REGWR 1 1 a a a a a a d d d d d d d d ...") {
                 final BitField adr = getBitField("a");
-                int cAdr = 0;
+                int cAdr;
                 @Override
                 public boolean dataReceived(int data) {
                     /* check if this is first byte*/

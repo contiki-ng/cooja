@@ -48,7 +48,7 @@ public class TR1001 extends Chip implements RFListener, RFSource {
   public static final int MODE_RX_ON = 0x01;
   public static final int MODE_TXRX_ON = 0x02;
   public static final int MODE_MAX = MODE_TXRX_ON;
-  private static final String[] MODE_NAMES = new String[] {
+  private static final String[] MODE_NAMES = {
     "off", "listen", "transmit"
   };
   private final USART usart;
@@ -117,10 +117,5 @@ public class TR1001 extends Chip implements RFListener, RFSource {
         log(" ----- TR1001 RECEIVED BYTE TOO EARLY -----");
       }
     }
-  }
-
-  @Override
-  public int getConfiguration(int parameter) {
-      return 0;
   }
 }

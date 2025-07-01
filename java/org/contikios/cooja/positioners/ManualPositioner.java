@@ -35,7 +35,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.NumberFormat;
 import java.util.Random;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -46,7 +45,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Positioner;
@@ -59,7 +57,7 @@ import org.contikios.cooja.Positioner;
 @ClassDescription("Manual positioning")
 public class ManualPositioner extends Positioner {
   private int nodesLeft;
-  private boolean skipRemainder = false;
+  private boolean skipRemainder;
   private double lastX, lastY, lastZ;
 
   private final double startX;
@@ -136,11 +134,11 @@ public class ManualPositioner extends Positioner {
   }
 
   static class PositionDialog extends JDialog {
-    public boolean shouldSkipRemainder = false;
-    public final JFormattedTextField xField;
-    public final JFormattedTextField yField;
-    public final JFormattedTextField zField;
-    public PositionDialog(int mote) {
+    boolean shouldSkipRemainder;
+    final JFormattedTextField xField;
+    final JFormattedTextField yField;
+    final JFormattedTextField zField;
+    PositionDialog(int mote) {
       JButton button;
       JFormattedTextField numberField;
 

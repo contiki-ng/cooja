@@ -40,12 +40,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-
 import javax.swing.JPanel;
-
 import se.sics.mspsim.core.MSP430;
-import se.sics.mspsim.core.RegisterMonitor;
 import se.sics.mspsim.core.Memory.AccessMode;
+import se.sics.mspsim.core.RegisterMonitor;
 import se.sics.mspsim.util.ComponentRegistry;
 import se.sics.mspsim.util.MapTable;
 import se.sics.mspsim.util.ServiceComponent;
@@ -62,19 +60,17 @@ public class StackUI extends JPanel implements ServiceComponent {
   private LineChart maxStackChart;
   private LineChart maxUsageStackChart;
 
-//  private DotDiagram diagram;
   private final int[] minData = new int[STACK_FRAME];
   private final int[] maxData = new int[STACK_FRAME];
   private final int[] maxUsageData = new int[STACK_FRAME];
   private final int[] minCache = new int[STACK_FRAME];
   private final int[] maxCache = new int[STACK_FRAME];
   private final int[] maxUsageCache = new int[STACK_FRAME];
-//  private String[] notes = new String[STACK_FRAME];
 
-  private long lastCycles = 0;
-  private int pos = 0;
+  private long lastCycles;
+  private int pos;
 
-  private boolean update = false;
+  private boolean update;
 
   private Status status = Status.STOPPED;
 
@@ -85,7 +81,7 @@ public class StackUI extends JPanel implements ServiceComponent {
 
   private String name;
 
-  private boolean increasePos = false;
+  private boolean increasePos;
 
   public StackUI(MSP430 cpu) {
     this(cpu, 2500);
@@ -95,14 +91,6 @@ public class StackUI extends JPanel implements ServiceComponent {
     super(new BorderLayout());
     this.updateCyclePeriod = updateCyclePeriod;
     this.cpu = cpu;
-
-//    diagram = new DotDiagram(2);
-//    diagram.setDotColor(0, Color.green);
-//    diagram.setDotColor(1, Color.green);
-//    diagram.addConstant(Color.red,
-//        this.stackStartAddress - this.heapStartAddress);
-//    diagram.setShowGrid(true);
-//    add(diagram, BorderLayout.CENTER);
   }
 
   public void requestIncreasePos() {
@@ -159,7 +147,7 @@ public class StackUI extends JPanel implements ServiceComponent {
       }
 
       registerMonitor = new RegisterMonitor.Adapter() {
-          private int m = 0;
+          private int m;
           @Override
           public void notifyWriteBefore(int register, int data, AccessMode mode) {
               int size = stackStartAddress - data;
@@ -176,17 +164,12 @@ public class StackUI extends JPanel implements ServiceComponent {
                   || increasePos) {
                 increasePos = false;
                   lastCycles = cpu.cpuCycles;
-//                    System.out.println("STACK UPDATE: " + type + "," + adr + "," + data + "," + pos);
-
                   pos = (pos + 1) % minData.length;
                   minData[pos] = Integer.MAX_VALUE;
                   maxUsageData[pos] = m;
                   maxData[pos] = 0;
                   update = true;
                   repaint();
-//                    this.notes[pos] = null;
-//                    diagram.setData(0, this.minData, pos, this.minData.length);
-//                    diagram.setDataWithNotes(1, this.maxData, notes, pos, this.maxData.length);
               }
           }
       };

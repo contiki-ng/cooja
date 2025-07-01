@@ -40,7 +40,7 @@
  */
 
 package se.sics.mspsim.platform.sky;
-import se.sics.mspsim.chip.FileStorage;
+
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.MSP430;
@@ -49,21 +49,13 @@ import se.sics.mspsim.core.USARTSource;
 /**
  * Emulation of Sky Mote
  */
-public class SkyNode extends MoteIVNode {
-  private final M25P80 flash;
-
+public class SkyNode extends MoteIVNode<M25P80> {
   /**
    * Creates a new <code>SkyNode</code> instance.
    *
    */
   public SkyNode(MSP430 cpu, M25P80 flash) {
-    super("Tmote Sky", cpu);
-    this.flash = flash;
-    registry.registerComponent("xmem", flash);
-  }
-
-  public M25P80 getFlash() {
-    return flash;
+    super("Tmote Sky", cpu, flash);
   }
 
   // USART Listener
@@ -80,13 +72,5 @@ public class SkyNode extends MoteIVNode {
   @Override
   protected void flashWrite(IOPort source, int data) {
     flash.portWrite(source, data);
-  }
-
-  @Override
-  public void setupNodePorts() {
-    super.setupNodePorts();
-    if (flashFile != null) {
-        getFlash().setStorage(new FileStorage(flashFile));
-    }
   }
 }

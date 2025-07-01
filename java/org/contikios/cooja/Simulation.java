@@ -94,7 +94,7 @@ public final class Simulation {
 
   private long lastStartRealTime;
   private long lastStartSimulationTime;
-  private long currentSimulationTime = 0;
+  private long currentSimulationTime;
 
   private String title;
 
@@ -102,8 +102,8 @@ public final class Simulation {
 
   private static final Logger logger = LoggerFactory.getLogger(Simulation.class);
 
-  private volatile boolean isRunning = false;
-  private volatile boolean isShutdown = false;
+  private volatile boolean isRunning;
+  private volatile boolean isShutdown;
 
   private final Cooja cooja;
 
@@ -139,7 +139,7 @@ public final class Simulation {
   private final SimEventCentral eventCentral = new SimEventCentral(this);
 
   /** The return value from startSimulation. */
-  private volatile Integer returnValue = null;
+  private volatile Integer returnValue;
 
   /** Mote relation (directed). */
   public record MoteRelation(Mote source, Mote dest, Color color) {}
@@ -347,12 +347,13 @@ public final class Simulation {
       for (var pluginElement : root.getChildren("plugin")) {
         var pluginClassName = pluginElement.getText().trim();
         if (pluginClassName.startsWith("se.sics")) {
-          pluginClassName = pluginClassName.replaceFirst("se\\.sics", "org.contikios");
+          pluginClassName = pluginClassName.replaceFirst("^se\\.sics", "org.contikios");
         }
         // Skip plugins that have been removed or merged into other classes.
         if ("org.contikios.cooja.plugins.SimControl".equals(pluginClassName) ||
                 "org.contikios.cooja.plugins.SimInformation".equals(pluginClassName) ||
-                "org.contikios.cooja.plugins.MoteTypeInformation".equals(pluginClassName)) {
+                "org.contikios.cooja.plugins.MoteTypeInformation".equals(pluginClassName) ||
+                "org.contikios.cooja.plugins.EventListener".equals(pluginClassName)) {
           continue;
         }
         // Backwards compatibility: old visualizers were replaced.
@@ -498,8 +499,8 @@ public final class Simulation {
 
   /** Create a new script engine that logs to the logTextArea and add it to the list
    *  of active script engines. */
-  public LogScriptEngine newScriptEngine(JTextArea logTextArea) {
-    var engine = new LogScriptEngine(this, scriptEngines.size(), logTextArea);
+  public LogScriptEngine newScriptEngine(JTextArea logTextArea, String nashornArgs) {
+    var engine = new LogScriptEngine(this, nashornArgs, scriptEngines.size(), logTextArea);
     scriptEngines.add(engine);
     return engine;
   }
@@ -697,6 +698,59 @@ public final class Simulation {
     return config;
   }
 
+  Collection<Element> getPluginConfigXML() {
+    var config = new ArrayList<Element>();
+    for (var startedPlugin : startedPlugins) {
+      var pluginElement = new Element("plugin");
+      pluginElement.setText(startedPlugin.getClass().getName());
+
+      // Create mote argument config (if mote plugin).
+      if (startedPlugin instanceof MotePlugin motePlugin) {
+        Mote taggedMote = motePlugin.getMote();
+        for (int moteNr = 0; moteNr < getMotesCount(); moteNr++) {
+          if (getMote(moteNr) == taggedMote) {
+            var pluginSubElement = new Element("mote_arg");
+            pluginSubElement.setText(Integer.toString(moteNr));
+            pluginElement.addContent(pluginSubElement);
+            break;
+          }
+        }
+      }
+
+      // Create plugin specific configuration.
+      var pluginXML = startedPlugin.getConfigXML();
+      if (pluginXML != null) {
+        var pluginSubElement = new Element("plugin_config");
+        pluginSubElement.addContent(pluginXML);
+        pluginElement.addContent(pluginSubElement);
+      }
+
+      // If plugin is visualizer plugin, create visualization arguments
+      var pluginFrame = startedPlugin.getCooja();
+      if (pluginFrame != null) {
+        var pluginSubElement = new Element("bounds");
+        var bounds = pluginFrame.getBounds();
+        pluginSubElement.setAttribute("x", String.valueOf(bounds.x));
+        pluginSubElement.setAttribute("y", String.valueOf(bounds.y));
+        pluginSubElement.setAttribute("height", String.valueOf(bounds.height));
+        pluginSubElement.setAttribute("width", String.valueOf(bounds.width));
+
+        var z = Cooja.getDesktopPane().getComponentZOrder(pluginFrame);
+        if (z != 0) {
+          pluginSubElement.setAttribute("z", String.valueOf(z));
+        }
+
+        if (pluginFrame.isIcon()) {
+          pluginSubElement.setAttribute("minimized", String.valueOf(true));
+        }
+
+        pluginElement.addContent(pluginSubElement);
+      }
+      config.add(pluginElement);
+    }
+    return config;
+  }
+
   public boolean isQuickSetup() {
       return quick;
   }
@@ -830,6 +884,7 @@ public final class Simulation {
   public void addMoteType(MoteType newMoteType) {
     Cooja.usedMoteTypeIDs.add(newMoteType.getIdentifier());
     moteTypes.add(newMoteType);
+    newMoteType.added();
     moteTypeTriggers.trigger(AddRemove.ADD, newMoteType);
   }
 
@@ -844,10 +899,10 @@ public final class Simulation {
         removeMote(m);
       }
     }
-
     if (moteTypes.remove(type)) {
       moteTypeTriggers.trigger(AddRemove.REMOVE, type);
     }
+    type.removed();
   }
 
   /**

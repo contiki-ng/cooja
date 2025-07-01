@@ -7,13 +7,13 @@ import se.sics.jipv6.core.IPv6Packet;
 import se.sics.jipv6.core.Packet;
 import se.sics.jipv6.tunnel.TSPClient;
 
-public class TSPTest extends AbstractPacketHandler implements Runnable {
+class TSPTest extends AbstractPacketHandler implements Runnable {
 
-  public final byte[] GOOGLE = new byte[] {
+  private final byte[] GOOGLE = {
       0x20, 0x01,  0x48, 0x60,  (byte) 0xb0, 0x02,  0x00, 0x00,
       0x00, 0x00,  0x00, 0x00,  0x00, 0x00,  0x00, 0x68
   };
-  static IPStack ipStack;
+  private static IPStack ipStack;
 
   public static void main(String[] args) {
     ipStack = new IPStack();

@@ -32,7 +32,7 @@
 package org.contikios.cooja.motes;
 
 import java.awt.Container;
-
+import java.util.Random;
 import org.contikios.cooja.AbstractionLevelDescription;
 import org.contikios.cooja.COOJARadioPacket;
 import org.contikios.cooja.ClassDescription;
@@ -45,8 +45,11 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.ApplicationRadio;
 
 /**
- * Simple application-level mote that periodically transmits dummy radio packets
+ * Simple application-level mote that transmits dummy radio packets
  * on all radio channels (-1), interfering all surrounding radio communication.
+ * The transmission can be switched on/off; and the Tx duty cycle can be
+ * adjusted by setting the time duration of the packet and the inter-packet
+ * latency.
  * <p>
  * This mote type also implements the mote functionality ("mote software"),
  * and can be used as an example of implementing application-level mote.
@@ -78,41 +81,55 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
   }
 
   public static class DisturberMote extends AbstractApplicationMote {
-    private ApplicationRadio radio = null;
+    private ApplicationRadio radio;
     
     private final RadioPacket radioPacket = new COOJARadioPacket(new byte[] {
         0x01, 0x02, 0x03, 0x04, 0x05
     });
-    private final static long DELAY = Simulation.MILLISECOND/5;
-    private final static long DURATION = 10*Simulation.MILLISECOND;
-    
-    public DisturberMote(MoteType moteType, Simulation simulation) throws MoteTypeCreationException {
+    private long avgDelay = 16 * Simulation.MILLISECOND;
+    private long duration = 4 * Simulation.MILLISECOND;
+    private boolean txOn = false;
+
+    DisturberMote(MoteType moteType, Simulation simulation) throws MoteTypeCreationException {
       super(moteType, simulation);
+    }
+
+    /* Schedule next (potential) transmission of dummy packet */
+    private void scheduleNext(RadioPacket p) {
+      Random rd = getSimulation().getRandomGenerator();
+      long delay = avgDelay / 2 + (long)(rd.nextDouble() * avgDelay);
+      getSimulation().scheduleEvent(new MoteTimeEvent(this) {
+          @Override
+          public void execute(long t) {
+            if (txOn) {
+              radio.startTransmittingPacket(radioPacket, duration);
+            }
+            scheduleNext(radioPacket);
+          }
+        }, getSimulation().getSimulationTime() + duration + delay);
     }
     
     @Override
-    public void execute(long time) {
+    protected void execute(long time) {
       if (radio == null) {
         radio = (ApplicationRadio) getInterfaces().getRadio();
       }
       
       /* Start sending interfering traffic */
-      radio.startTransmittingPacket(radioPacket, DURATION);
+      if (txOn) {
+        radio.startTransmittingPacket(radioPacket, duration);
+      }
+      /* Schedule next Tx */
+      scheduleNext(radioPacket);
     }
 
     @Override
     public void receivedPacket(RadioPacket p) {
       /* Ignore */
     }
+
     @Override
     public void sentPacket(RadioPacket p) {
-      /* Send another packet after a small pause */
-      getSimulation().scheduleEvent(new MoteTimeEvent(this) {
-        @Override
-        public void execute(long t) {
-          radio.startTransmittingPacket(radioPacket, DURATION);
-        }
-      }, getSimulation().getSimulationTime() + DELAY);
     }
 
     @Override
@@ -128,5 +145,35 @@ public class DisturberMoteType extends AbstractApplicationMoteType {
 
     @Override
     public void writeString(String s) {}
+
+    /* Get average delay in ms */
+    public long getAvgDelay() {
+      return avgDelay;
+    }
+
+    /* Get duration in ms */
+    public long getDuration() {
+      return duration;
+    }
+
+    /* Set average delay in ms */
+    public void setAvgDelay(long delay) {
+      avgDelay = delay;
+    }
+
+    /* Set duration in ms */
+    public void setDuration(long dur) {
+      duration = dur;
+    }
+
+    /* Enable Tx */
+    public void txOn() {
+      txOn = true;
+    }
+
+    /* Disable Tx */
+    public void txOff() {
+      txOn = false;
+    }
   }
 }

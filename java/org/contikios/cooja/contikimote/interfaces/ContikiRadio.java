@@ -32,9 +32,6 @@ package org.contikios.cooja.contikimote.interfaces;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.jdom2.Element;
-
 import org.contikios.cooja.COOJARadioPacket;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.RadioPacket;
@@ -46,6 +43,7 @@ import org.contikios.cooja.interfaces.Radio;
 import org.contikios.cooja.mote.memory.VarMemory;
 import org.contikios.cooja.radiomediums.UDGM;
 import org.contikios.cooja.util.CCITT_CRC;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,21 +98,21 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
    */
   private double radioTransmissionRateKBPS;
 
-  private RadioPacket packetToMote = null;
+  private RadioPacket packetToMote;
 
-  private RadioPacket packetFromMote = null;
+  private RadioPacket packetFromMote;
 
   private boolean radioOn;
 
-  private boolean isTransmitting = false;
+  private boolean isTransmitting;
 
-  private boolean isInterfered = false;
+  private boolean isInterfered;
 
   private long transmissionEndTime = -1;
 
   private RadioEvent lastEvent = RadioEvent.UNKNOWN;
 
-  private long lastEventTime = 0;
+  private long lastEventTime;
 
   private int oldOutputPowerIndicator = -1;
 
@@ -314,8 +312,9 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     }
 
     /* Check if radio output power changed */
-    if (myMoteMemory.getByteValueOf("simPower") != oldOutputPowerIndicator) {
-      oldOutputPowerIndicator = myMoteMemory.getByteValueOf("simPower");
+    var currPower = myMoteMemory.getByteValueOf("simPower");
+    if (currPower != oldOutputPowerIndicator) {
+      oldOutputPowerIndicator = currPower;
       lastEvent = RadioEvent.UNKNOWN;
       radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
     }
@@ -340,8 +339,8 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     }
 
     /* New transmission */
-    int size = myMoteMemory.getIntValueOf("simOutSize");
-    if (!isTransmitting && size > 0) {
+    int size;
+    if (!isTransmitting && (size = myMoteMemory.getIntValueOf("simOutSize")) > 0) {
       packetFromMote = new COOJARadioPacket(myMoteMemory.getByteArray("simOutDataBuffer", size + 2));
 
       if (packetFromMote.getPacketData() == null || packetFromMote.getPacketData().length == 0) {

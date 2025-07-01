@@ -32,7 +32,7 @@ package se.sics.mspsim.core;
 import se.sics.mspsim.chip.CC1101;
 import se.sics.mspsim.core.IOPort.PinState;
 
-public class RF1A extends IOUnit implements InterruptHandler {
+public class RF1A extends IOUnit {
     private static final boolean DEBUG = true;
 
     public static final int ADDRESS = 0xf00;
@@ -65,8 +65,8 @@ public class RF1A extends IOUnit implements InterruptHandler {
 
     private final CC1101 cc1101;
 
-    private boolean interruptOnCC1101GDO0 = false;
-    private boolean gdo0IsHigh = false;
+    private boolean interruptOnCC1101GDO0;
+    private boolean gdo0IsHigh;
 
     public RF1A(final MSP430Core cpu, int[] memory) {
         super("RF1A", "RF1A", cpu, memory, ADDRESS);
@@ -83,7 +83,7 @@ public class RF1A extends IOUnit implements InterruptHandler {
     @Override
     public void reset(int type) {
         /* Initial values */
-        memory[ADDRESS + 0x00] = 0x0000; /* RF1AIFCTL0 */
+        memory[ADDRESS] = 0x0000; /* RF1AIFCTL0 */
         memory[ADDRESS + 0x02] = 0x0000; /* RF1AIFCTL1 */
         memory[ADDRESS + 0x04] = 0x0000; /* RF1AIFCTL2 */
         memory[ADDRESS + 0x06] = 0x0000; /* RF1AIFERR */
@@ -122,10 +122,10 @@ public class RF1A extends IOUnit implements InterruptHandler {
     }
 
     private int ioAddress = -1;
-    private boolean ioBurst = false;
-    private boolean ioRead = false;
-    private boolean ioWrite = false;
-    private boolean expectingDummyWrite = false;
+    private boolean ioBurst;
+    private boolean ioRead;
+    private boolean ioWrite;
+    private boolean expectingDummyWrite;
     @Override
     public void write(int address, int value, boolean word, long cycles) {
 
@@ -143,13 +143,13 @@ public class RF1A extends IOUnit implements InterruptHandler {
               ioRead = false;
               ioWrite = false;
               expectingDummyWrite = true;
-              cc1101.strobe(value & (~CC1101.SPI_READ_BIT) & (~CC1101.SPI_BURST_BIT));
+              cc1101.strobe(value & ~CC1101.SPI_READ_BIT & ~CC1101.SPI_BURST_BIT);
             } else {
               /* Store address */
               ioRead = CC1101.spiIsRead(value);
               ioWrite = !ioRead;
               cc1101.setLastInstructionWasRead(ioRead);
-              ioAddress = value & (~CC1101.SPI_READ_BIT) & (~CC1101.SPI_BURST_BIT);
+              ioAddress = value & ~CC1101.SPI_READ_BIT & ~CC1101.SPI_BURST_BIT;
               if (DEBUG) {
                 if (ioAddress == CC1101.CC1101_RXFIFO) {
                 } else if (ioAddress == CC1101.CC1101_MARCSTATE) {

@@ -5,13 +5,11 @@ import java.awt.Graphics;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-
 import javax.swing.JComponent;
 import javax.swing.Timer;
-
+import se.sics.mspsim.core.MSP430Core;
 import se.sics.mspsim.core.Memory;
 import se.sics.mspsim.core.MemoryMonitor;
-import se.sics.mspsim.core.MSP430Core;
 
 public class CPUHeatMap extends JComponent implements MemoryMonitor {
     private final Timer ticker;
@@ -21,7 +19,7 @@ public class CPUHeatMap extends JComponent implements MemoryMonitor {
     private final int[] heatR;
     private final int[] heatW;
     private final int[] heatE;
-    private int heatMax = 0;
+    private int heatMax;
     private int mode = 1;
 
     private final MSP430Core cpu;

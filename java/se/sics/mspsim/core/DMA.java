@@ -50,84 +50,87 @@ public class DMA extends IOUnit {
         int currentDestinationAddress;
         int storedSize;
 
-        int srcIncr = 0;
-        int dstIncr = 0;
-        boolean dstByteMode = false;
-        boolean srcByteMode = false;
+        int srcIncr;
+        int dstIncr;
+        boolean dstByteMode;
+        boolean srcByteMode;
 
         DMATrigger trigger;
         int triggerIndex;
-        int transferMode = 0;
+        int transferMode;
 
-        boolean enable = false;
-        boolean dmaLevel = false; /* edge or level sensitive trigger */
-        boolean dmaIE = false;
-        boolean dmaIFG = false;
+        boolean enable;
+        boolean dmaLevel; /* edge or level sensitive trigger */
+        boolean dmaIE;
+        boolean dmaIFG;
 
-        public Channel(int i) {
+        Channel(int i) {
             channelNo = i;
         }
 
-        public void setTrigger(DMATrigger t, int index) {
+        void setTrigger(DMATrigger t, int index) {
             if (DEBUG) log("Setting trigger to " + t);
             trigger = t;
             triggerIndex = index;
         }
 
-        public void write(int address, int data) {
-            switch(address) {
-            case 0:
-                ctl = data;
-                transferMode = (data >> 12) & 7;
-                dstIncr = INCR[(data >> 10) & 3];
-                srcIncr = INCR[(data >> 8) & 3];
-                dstByteMode = (data & 0x80) > 0; /* bit 7 */
-                srcByteMode = (data & 0x40) > 0; /* bit 6 */
-                dmaLevel = (data & 0x20) > 0; /* bit 5 */
-                boolean enabling = !enable && (data & 0x10) > 0;
-                enable = (data & 0x10) > 0; /* bit 4 */
-                dmaIFG = (data & IFG_MASK) > 0; /* bit 3 */
-                dmaIE = (data & 0x04) > 0; /* bit 2 */
-                if (DEBUG) log("DMA Ch." + channelNo + ": config srcIncr: " + srcIncr + " dstIncr:" + dstIncr
-                        + " en: " + enable + " srcB:" + srcByteMode + " dstB:" + dstByteMode + " level: " + dmaLevel +
-                        " transferMode: " + transferMode + " ie:" + dmaIE);
-                /* this might be wrong ? */
-                /*if (enabling) trigger(trigger, triggerIndex);*/
-                interruptMultiplexer.updateInterrupt(dmaIFG & dmaIE, channelNo);
-                break;
-            case 2:
-                sourceAddress = data;
-                currentSourceAddress = data;
-                break;
-            case 4:
-                destinationAddress = data;
-                currentDestinationAddress = data;
-                break;
-            case 6:
-                size = data;
-                storedSize = data;
-                break;
+        void write(int address, int data) {
+            switch (address) {
+                case 0 -> {
+                    ctl = data;
+                    transferMode = (data >> 12) & 7;
+                    dstIncr = INCR[(data >> 10) & 3];
+                    srcIncr = INCR[(data >> 8) & 3];
+                    dstByteMode = (data & 0x80) > 0; /* bit 7 */
+                    srcByteMode = (data & 0x40) > 0; /* bit 6 */
+                    dmaLevel = (data & 0x20) > 0; /* bit 5 */
+                    boolean enabling = !enable && (data & 0x10) > 0;
+                    enable = (data & 0x10) > 0; /* bit 4 */
+                    dmaIFG = (data & IFG_MASK) > 0; /* bit 3 */
+                    dmaIE = (data & 0x04) > 0; /* bit 2 */
+                    if (DEBUG) log("DMA Ch." + channelNo + ": config srcIncr: " + srcIncr + " dstIncr:" + dstIncr
+                            + " en: " + enable + " srcB:" + srcByteMode + " dstB:" + dstByteMode + " level: " + dmaLevel +
+                            " transferMode: " + transferMode + " ie:" + dmaIE);
+                    /* this might be wrong ? */
+                    /*if (enabling) trigger(trigger, triggerIndex);*/
+                    interruptMultiplexer.updateInterrupt(dmaIFG && dmaIE, channelNo);
+                }
+                case 2 -> {
+                    sourceAddress = data;
+                    currentSourceAddress = data;
+                }
+                case 4 -> {
+                    destinationAddress = data;
+                    currentDestinationAddress = data;
+                }
+                case 6 -> {
+                    size = data;
+                    storedSize = data;
+                }
             }
         }
 
-        public int read(int address) {
-            switch(address) {
-            case 0:
-                /* set the IFG */
-                ctl = (ctl & ~IFG_MASK) | (dmaIFG ? IFG_MASK : 0);
-                return ctl;
-            case 2:
-                return sourceAddress;
-            case 4:
-                return destinationAddress;
-            case 6:
-                return size;
+        int read(int address) {
+            switch (address) {
+                case 0 -> { // set the IFG.
+                    ctl = (ctl & ~IFG_MASK) | (dmaIFG ? IFG_MASK : 0);
+                    return ctl;
+                }
+                case 2 -> {
+                    return sourceAddress;
+                }
+                case 4 -> {
+                    return destinationAddress;
+                }
+                case 6 -> {
+                    return size;
+                }
             }
             logw(WarningType.EXECUTION, "Illegal read of DMA Channel register");
             return 0;
         }
 
-        public void trigger(DMATrigger trigger, int index) {
+        void trigger(DMATrigger trigger, int index) {
             /* perform memory move and possibly clear triggering flag!!! */
             /* NOTE: show config byte/word also !!! */
             if (enable) {
@@ -151,7 +154,7 @@ public class DMA extends IOUnit {
                     }
                     /* flag interrupt and update interrupt vector */
                     dmaIFG = true;
-                    interruptMultiplexer.updateInterrupt(dmaIFG & dmaIE, channelNo);
+                    interruptMultiplexer.updateInterrupt(dmaIFG && dmaIE, channelNo);
                 }
             }
         }
@@ -165,7 +168,7 @@ public class DMA extends IOUnit {
             return "DMA Channel " + channelNo;
         }
 
-        public String info() {
+        String info() {
             return getName() + (enable ? " Enabled " : " Disabled")
                     + "  Index: " + triggerIndex + "  Trigger: " + trigger
                     + "\n    current source: 0x"
@@ -221,38 +224,24 @@ public class DMA extends IOUnit {
     public void write(int address, int value, boolean word, long cycles) {
         if (DEBUG) log("DMA write to: " + Utils.hex(address, 4) + ": " + value);
         switch (address) {
-        case DMACTL0:
-            /* DMA Control 0 */
-            dmactl0 = value;
-            channels[0].setTrigger(dmaTrigger[value & 0xf], dmaTriggerIndex[value & 0xf]);
-            channels[1].setTrigger(dmaTrigger[(value >> 4) & 0xf], dmaTriggerIndex[(value >> 4) & 0xf]);
-            channels[2].setTrigger(dmaTrigger[(value >> 8) & 0xf], dmaTriggerIndex[(value >> 8) & 0xf]);
-            break;
-        case DMACTL1:
-            /* DMA Control 1 */
-            dmactl1 = value;
-            break;
-        default:
-            /* must be word ??? */
-            Channel c = channels[(address - DMAxCTL) / 8];
-            c.write(address & 0x07, value);
+            case DMACTL0 -> { // DMA Control 0.
+                dmactl0 = value;
+                channels[0].setTrigger(dmaTrigger[value & 0xf], dmaTriggerIndex[value & 0xf]);
+                channels[1].setTrigger(dmaTrigger[(value >> 4) & 0xf], dmaTriggerIndex[(value >> 4) & 0xf]);
+                channels[2].setTrigger(dmaTrigger[(value >> 8) & 0xf], dmaTriggerIndex[(value >> 8) & 0xf]);
+            }
+            case DMACTL1 -> dmactl1 = value; // DMA Control 1.
+            default -> channels[(address - DMAxCTL) / 8].write(address & 0x07, value); // must be word?
         }
     }
 
     @Override
     public int read(int address, boolean word, long cycles) {
-        switch (address) {
-        case DMACTL0:
-            /* DMA Control 0 */
-            return dmactl0;
-        case DMACTL1:
-            /* DMA Control 1 */
-            return dmactl1;
-        default:
-            /* must be word ??? */
-            Channel c = channels[(address - DMAxCTL) / 8];
-            return c.read(address & 7);
-        }
+        return switch (address) {
+            case DMACTL0 -> dmactl0;
+            case DMACTL1 -> dmactl1;
+            default -> channels[(address - DMAxCTL) / 8].read(address & 7); // must be word?
+        };
     }
 
     @Override

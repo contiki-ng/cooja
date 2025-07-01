@@ -34,10 +34,6 @@ import java.util.List;
 import java.util.Random;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.Mote;
@@ -52,16 +48,17 @@ import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.MoteID;
 import org.contikios.cooja.interfaces.Position;
+import org.jdom2.Element;
 
 @ClassDescription("Application Mote Type")
 public abstract class AbstractApplicationMoteType implements MoteType {
   /** Description of the mote type. */
-  protected String description = null;
+  protected String description;
   /** Identifier of the mote type. */
   protected String identifier;
 
   /** Project configuration of the mote type. */
-  protected ProjectConfig myConfig = null;
+  protected ProjectConfig myConfig;
 
   /** MoteInterface classes used by the mote type. */
   protected final ArrayList<Class<? extends MoteInterface>> moteInterfaceClasses = new ArrayList<>();
@@ -177,25 +174,9 @@ public abstract class AbstractApplicationMoteType implements MoteType {
     return configureAndInit(Cooja.getTopParentContainer(), simulation, Cooja.isVisualized());
   }
 
-  public static class SimpleMoteID implements MoteID {
-    private int id = -1;
+  public static class SimpleMoteID extends MoteID<Mote> {
     public SimpleMoteID(Mote mote) {
-    }
-    @Override
-    public int getMoteID() {
-      return id;
-    }
-    @Override
-    public void setMoteID(int newID) {
-      this.id = newID;
-    }
-    @Override
-    public JPanel getInterfaceVisualizer() {
-      return null;
-    }
-    @Override
-    public void releaseInterfaceVisualizer(JPanel panel) {
+      super(mote);
     }
   }
-
 }

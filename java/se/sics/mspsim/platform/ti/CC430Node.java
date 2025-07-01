@@ -2,7 +2,8 @@ package se.sics.mspsim.platform.ti;
 
 import se.sics.mspsim.config.CC430f5137Config;
 import se.sics.mspsim.core.IOPort;
-import se.sics.mspsim.core.IOUnit;
+import se.sics.mspsim.core.MSP430;
+import se.sics.mspsim.core.MSP430Config;
 import se.sics.mspsim.core.PortListener;
 import se.sics.mspsim.core.USARTListener;
 import se.sics.mspsim.core.USARTSource;
@@ -11,28 +12,20 @@ import se.sics.mspsim.ui.SerialMon;
 
 public class CC430Node extends GenericNode implements PortListener, USARTListener {
 
-    IOPort port1;
-    IOPort port3;
-    IOPort port4;
-    IOPort port5;
-    IOPort port7;
-    IOPort port8;
+    private final IOPort port1;
+    private final IOPort port3;
+    private final IOPort port4;
+    private final IOPort port5;
+    private final IOPort port7;
+    private final IOPort port8;
 
-    public CC430Node() {
-        /* TODO XXX MSP430F5438 */
-        super("CC430", new CC430f5137Config());
+    public static MSP430Config makeChipConfig() {
+        // TODO: this should be a config for MSP430F5438.
+        return new CC430f5137Config();
     }
 
-    @Override
-    public void dataReceived(USARTSource source, int data) {
-    }
-
-    @Override
-    public void portWrite(IOPort source, int data) {
-
-    }
-
-    private void setupNodePorts() {
+    public CC430Node(MSP430 cpu) {
+        super("CC430", cpu);
         port1 = cpu.getIOUnit(IOPort.class, "P1");
         port1.addPortListener(this);
         port3 = cpu.getIOUnit(IOPort.class, "P3");
@@ -45,29 +38,36 @@ public class CC430Node extends GenericNode implements PortListener, USARTListene
         port7.addPortListener(this);
         port8 = cpu.getIOUnit(IOPort.class, "P8");
         port8.addPortListener(this);
-
-        IOUnit usart0 = cpu.getIOUnit("USCI B0");
-        if (usart0 instanceof USARTSource) {
+        if (cpu.getIOUnit("USCI B0") instanceof USARTSource usart0) {
             registry.registerComponent("serialio0", usart0);
         }
 
-        IOUnit usart = cpu.getIOUnit("USCI A0");
+        var usart = cpu.getIOUnit("USCI A0");
         if (usart instanceof USARTSource) {
             registry.registerComponent("serialio", usart);
         }
     }
 
     @Override
-    public void setupNode() {
-        setupNodePorts();
+    public void dataReceived(USARTSource source, int data) {
+    }
 
+    @Override
+    public void portWrite(IOPort source, int data) {
+
+    }
+
+    @Override
+    public void setupNode() {
         if (!config.getPropertyAsBoolean("nogui", true)) {
-            // Add some windows for listening to serial output
-            IOUnit usart = cpu.getIOUnit("USCI A0");
-            if (usart instanceof USARTSource) {
-                SerialMon serial = new SerialMon((USARTSource)usart, "USCI A0 Port Output");
-                registry.registerComponent("serialgui", serial);
-            }
+            setupGUI();
+        }
+    }
+
+    public void setupGUI() {
+        // Add some windows for listening to serial output.
+        if (cpu.getIOUnit("USCI A0") instanceof USARTSource usart) {
+            registry.registerComponent("serialgui", new SerialMon(usart, "USCI A0 Port Output"));
         }
     }
 

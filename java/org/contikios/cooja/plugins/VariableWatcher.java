@@ -112,7 +112,7 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
   private final JButton writeButton;
   private final VarMemory moteMemory;
 
-  MemoryInterface.SegmentMonitor memMonitor;
+  private MemoryInterface.SegmentMonitor memMonitor;
 
   private final ValueFormatter hf;
 
@@ -199,8 +199,8 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
     }
   }
 
-  final VarFormats[] valueFormats = {VarFormats.CHAR, VarFormats.DEC, VarFormats.HEX};
-  final VarTypes[] valueTypes = {VarTypes.BYTE, VarTypes.SHORT, VarTypes.INT, VarTypes.LONG, VarTypes.ADDR};
+  private final VarFormats[] valueFormats = {VarFormats.CHAR, VarFormats.DEC, VarFormats.HEX};
+  private final VarTypes[] valueTypes = {VarTypes.BYTE, VarTypes.SHORT, VarTypes.INT, VarTypes.LONG, VarTypes.ADDR};
 
   /**
    * @param moteToView Mote
@@ -676,8 +676,8 @@ public class VariableWatcher extends VisPlugin implements MotePlugin, HasQuickHe
 
   /**
    * Updates all value fields based on buffered data.
-   *
-   * @note Does not read memory. Leaves number of fields unchanged.
+   * <p>
+   * NOTE: Does not read memory. Leaves number of fields unchanged.
    */
   private void refreshValues() {
 

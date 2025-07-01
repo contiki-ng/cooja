@@ -42,7 +42,6 @@
 package se.sics.mspsim.core;
 import java.io.PrintStream;
 import java.util.Properties;
-
 import se.sics.mspsim.profiler.CallListener;
 import se.sics.mspsim.util.MapEntry;
 

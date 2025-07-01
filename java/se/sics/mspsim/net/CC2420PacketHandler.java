@@ -41,7 +41,6 @@
 package se.sics.mspsim.net;
 
 import java.io.PrintStream;
-
 import se.sics.jipv6.core.AbstractPacketHandler;
 import se.sics.jipv6.core.Packet;
 import se.sics.mspsim.chip.RFListener;
@@ -61,13 +60,13 @@ public class CC2420PacketHandler extends AbstractPacketHandler implements RFList
 
   private PrintStream out;
 
-  final byte[] packetBuffer = new byte[256];
-  int mode = SFD_SEARCH;
-  int pos;
-  int packetLen;
-  int sfdSearch = 0;
+  private final byte[] packetBuffer = new byte[256];
+  private int mode = SFD_SEARCH;
+  private int pos;
+  private int packetLen;
+  private int sfdSearch;
 
-  final MSP430Core cpu;
+  private final MSP430Core cpu;
   public CC2420PacketHandler(MSP430Core cpu) {
     this.cpu = cpu;
   }

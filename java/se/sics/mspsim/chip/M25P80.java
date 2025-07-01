@@ -42,7 +42,6 @@
 package se.sics.mspsim.chip;
 import java.io.IOException;
 import java.util.Arrays;
-
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.MSP430Core;
@@ -76,16 +75,16 @@ public class M25P80 extends ExternalFlash implements USARTListener, PortListener
   private static final double PROGRAM_PAGE_MILLIS = 1.0; // 0.8 - 5 ms
   private static final double SECTOR_ERASE_MILLIS = 800; // 800 - 3 000 ms
 
-  private int state = 0;
+  private int state;
   private boolean chipSelect;
 
   private int pos;
-  private int status = 0;
+  private int status;
 
-  private boolean writeEnable = false;
-  private boolean writing = false;
+  private boolean writeEnable;
+  private boolean writing;
 
-  private final int[] identity = new int[] {
+  private final int[] identity = {
       0x20,0x20,0x14,0x10,
       0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
       0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
@@ -102,12 +101,12 @@ public class M25P80 extends ExternalFlash implements USARTListener, PortListener
       writing = false;
     }};
 
-  protected M25P80(String id, MSP430Core cpu) {
-      super(id, "External Flash", cpu);
+  M25P80(String id, MSP430Core cpu) {
+      super(id, cpu);
   }
 
   public M25P80(MSP430Core cpu) {
-      super("M25P80", "External Flash", cpu);
+      this("M25P80", cpu);
   }
 
   @Override
@@ -194,7 +193,7 @@ public class M25P80 extends ExternalFlash implements USARTListener, PortListener
           } else {
             // Do the programming!!!
             source.byteReceived(0);
-            writeBuffer((readAddress++) & 0xff, data);
+            writeBuffer(readAddress++ & 0xff, data);
           }
           return;
         }

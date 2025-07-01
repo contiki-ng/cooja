@@ -41,7 +41,6 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-
 import se.sics.mspsim.debug.DwarfReader;
 import se.sics.mspsim.debug.StabDebug;
 
@@ -49,43 +48,46 @@ public class ELF {
 
   // private static final int EI_NIDENT = 16;
   private static final int EI_ENCODING = 5;
-  private static final int[] MAGIC = new int[] {0x7f, 'E', 'L', 'F'};
+  private static final int[] MAGIC = {0x7f, 'E', 'L', 'F'};
 
   public static final boolean DEBUG = false;
 
 
-  boolean encMSB = true;
-  int type;
-  int machine;
-  int version;
-  int entry;
-  int phoff;
-  int shoff;
-  int flags;
-  int ehsize;
-  int phentsize;
-  int phnum;
-  int shentsize;
-  int shnum;
-  int shstrndx;
+  private boolean encMSB = true;
+  private int type;
+  private int machine;
+  private int version;
+  private int entry;
+  private int phoff;
+  private int shoff;
+  private int flags;
+  private int ehsize;
+  private int phentsize;
+  private int phnum;
+  private int shentsize;
+  private int shnum;
+  private int shstrndx;
 
   final byte[] elfData;
-  private int pos = 0;
+  private int pos;
 
   private ELFSection[] sections;
   private ELFProgram[] programs;
   private final ArrayList<FileInfo> files = new ArrayList<>();
 
   ELFSection strTable;
-  ELFSection symTable;
-  ELFSection dbgStab;
+  private ELFSection symTable;
+  private ELFSection dbgStab;
   public ELFSection dbgStabStr;
 
-  ELFDebug debug;
+  private ELFDebug debug;
 
-  public ELF(byte[] data) {
+  public ELF(byte[] data) throws ELFException {
     elfData = data;
     setPos(0);
+    readHeader();
+    readPrograms();
+    readSections();
   }
 
   private void readHeader() throws ELFException {
@@ -201,12 +203,12 @@ public class ELF {
       b = (elfData[pos++] & 0xff) << 24 |
         ((elfData[pos++] & 0xff) << 16) |
         ((elfData[pos++] & 0xff) << 8) |
-        (elfData[pos++] & 0xff);
+        (elfData[pos] & 0xff);
     } else {
       b = (elfData[pos++] & 0xff) |
         ((elfData[pos++] & 0xff) << 8) |
         ((elfData[pos++] & 0xff) << 16) |
-        ((elfData[pos++] & 0xff) << 24);
+        ((elfData[pos] & 0xff) << 24);
     }
     return b;
   }
@@ -214,17 +216,15 @@ public class ELF {
   int readElf16(int pos) {
     int b;
     if (encMSB) {
-      b = ((elfData[pos++] & 0xff) << 8) |
-        (elfData[pos++] & 0xff);
+      b = ((elfData[pos++] & 0xff) << 8) | (elfData[pos] & 0xff);
     } else {
-      b = (elfData[pos++] & 0xff) |
-        ((elfData[pos++] & 0xff) << 8);
+      b = (elfData[pos++] & 0xff) | ((elfData[pos] & 0xff) << 8);
     }
     return b;
   }
 
   int readElf8(int pos) {
-    return elfData[pos++] & 0xff;
+    return elfData[pos] & 0xff;
   }
 
   private void readSections() {
@@ -264,7 +264,9 @@ public class ELF {
         dwarf.read();
         debug = dwarf;
     }
-
+    if (dbgStab != null) {
+      debug = new StabDebug(this, dbgStab, dbgStabStr);
+    }
   }
 
   private void readPrograms() {
@@ -278,21 +280,14 @@ public class ELF {
     }
   }
 
-  public void readAll() throws ELFException {
-    readHeader();
-    readPrograms();
-    readSections();
-    if (dbgStab != null) {
-      debug = new StabDebug(this, dbgStab, dbgStabStr);
-    }
-  }
-
-  public void loadPrograms(int[] memory) {
+  public int[] loadPrograms(int size) {
+    var memory = new int[size];
     for (int i = 0, n = phnum; i < n; i++) {
       // paddr or vaddr???
       loadBytes(memory, programs[i].offset, programs[i].paddr,
                 programs[i].fileSize, programs[i].memSize);
     }
+    return memory;
   }
 
   private void loadBytes(int[] memory, int offset, int addr, int len,
@@ -441,9 +436,7 @@ public class ELF {
       if (DEBUG) {
         System.out.println("Length of data: " + data.length);
       }
-      ELF elf = new ELF(data);
-      elf.readAll();
-      return elf;
+      return new ELF(data);
     }
   }
 

@@ -37,10 +37,9 @@
 
 package se.sics.mspsim.core;
 import java.io.PrintStream;
-
 import se.sics.mspsim.profiler.SimpleProfiler;
 import se.sics.mspsim.util.ArrayUtils;
-import se.sics.mspsim.util.ComponentRegistry;
+import se.sics.mspsim.util.ELF;
 import se.sics.mspsim.util.MapTable;
 
 public class MSP430 extends MSP430Core {
@@ -49,19 +48,19 @@ public class MSP430 extends MSP430Core {
   private int[] trace;
   private int tracePos;
 
-  private boolean debug = false;
-  private boolean running = false;
-  private boolean isBreaking = false;
+  private boolean debug;
+  private boolean running;
+  private boolean isBreaking;
   private double rate = 2.0;
 
   // Debug time - measure cycles
-  private long lastCycles = 0;
-  private long lastCpuCycles = 0;
+  private long lastCycles;
+  private long lastCpuCycles;
   private long time;
-  private long nextSleep = 0;
-  private long nextOut = 0;
+  private long nextSleep;
+  private long nextOut;
 
-  private double lastCPUPercent = 0d;
+  private double lastCPUPercent;
 
   private final DisAsm disAsm;
 
@@ -71,9 +70,16 @@ public class MSP430 extends MSP430Core {
    * Creates a new <code>MSP430</code> instance.
    *
    */
-  public MSP430(ComponentRegistry registry, MSP430Config config) {
-    super(registry, config);
+  public MSP430(MSP430Config config, int[] mem, ELF elf) {
+    super(config, mem);
     disAsm = new DisAsm();
+    if (elf != null) {
+      var map = elf.getMap();
+      disAsm.setMap(map);
+      setMap(map);
+      registry.registerComponent("elf", elf);
+      registry.registerComponent("mapTable", map);
+    }
   }
 
   public double getCPUPercent() {
@@ -190,9 +196,9 @@ public class MSP430 extends MSP430Core {
   /* this represents the micros time that was "promised" last time */
   /* NOTE: this is a delta compared to "current micros"
    */
-  long lastReturnedMicros;
-  long lastMicrosCycles;
-  boolean microClockReady = false;
+  private long lastReturnedMicros;
+  private long lastMicrosCycles;
+  private boolean microClockReady;
 
   /* when DCO has changed speed, this method will be called */
   @Override
@@ -205,7 +211,7 @@ public class MSP430 extends MSP430Core {
    * Note: jumpMicros just jump the clock until that time
    * executeMicros also check eventQ, etc. and executes instructions
    */
-  long maxCycles = 0;
+  private long maxCycles;
   public long stepMicros(long jumpMicros, long executeMicros) throws EmulationException {
     if (isRunning()) {
       throw new IllegalStateException("step not possible when CPU is running");
@@ -293,9 +299,6 @@ public class MSP430 extends MSP430Core {
       lastReturnedMicros = 0;
     }
 
-    if(cycles < maxCycles) {
-      throw new RuntimeException("cycles < maxCycles : " + cycles + " < " + maxCycles);
-    }
     if(lastReturnedMicros < 0) {
       throw new RuntimeException("lastReturnedMicros < 0 : " + lastReturnedMicros);
     }
@@ -371,9 +374,9 @@ public class MSP430 extends MSP430Core {
                          +  " cycDiff: " + cd + " => " + 1000 * (cd / td )
                          + " cyc/s  cpuDiff:" + cpud + " => "
                          + 1000 * (cpud / td ) + " cyc/s  "
-                         + (10000 * cpud / cd)/100.0 + "%");
+                         + (10000.0 * cpud / cd)/100.0 + "%");
     }
-    lastCPUPercent = (10000 * cpud / cd) / 100.0;
+    lastCPUPercent = (10000.0 * cpud / cd) / 100.0;
     time = System.currentTimeMillis();
     lastCycles = cycles;
     lastCpuCycles = cpuCycles;

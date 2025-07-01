@@ -1,12 +1,10 @@
 package se.sics.mspsim.cli;
 
 import java.awt.Font;
-import java.util.Hashtable;
-
+import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
 import se.sics.mspsim.extutil.jfreechart.LineChart;
 import se.sics.mspsim.extutil.jfreechart.LineSampleChart;
 import se.sics.mspsim.ui.ManagedWindow;
@@ -17,9 +15,9 @@ public class WindowTarget extends Target {
   private ManagedWindow window;
   // Default in the current version - TODO: replace with better
   private final JTextArea jta = new JTextArea(40,80);
-  private WindowDataHandler dataHandler = null;
+  private WindowDataHandler dataHandler;
 
-  public WindowTarget(Hashtable<String,Target> targets, String name) {
+  public WindowTarget(Map<String,Target> targets, String name) {
     super(targets, name, false);
   }
 
@@ -43,6 +41,9 @@ public class WindowTarget extends Target {
     if (line.startsWith("#!")) {
       line = line.substring(2);
       String[] parts = CommandParser.parseLine(line);
+      if (parts == null || parts.length == 0) {
+        return;
+      }
       String cmd = parts[0];
       if ("bounds".equals(cmd)) {
         try {
@@ -58,6 +59,7 @@ public class WindowTarget extends Target {
           dataHandler.setProperty("title", new String[] {args});
         }
       } else if ("type".equals(cmd)) {
+        var hasOldDataHandler = dataHandler != null;
         if ("line-sample".equals(parts[1])) {
           dataHandler = new LineSampleChart();
         } else if ("line".equals(parts[1])) {
@@ -66,9 +68,11 @@ public class WindowTarget extends Target {
           context.err.println("Unknown window data handler type: " + parts[1]);
         }
         if (dataHandler != null) {
-          System.out.println("Replacing window data handler! " + parts[1] + " " + dataHandler);
+          if (hasOldDataHandler) {
+            System.out.println("Replacing window data handler! " + parts[1] + " " + dataHandler);
+            window.removeAll();
+          }
           JComponent dataComponent = dataHandler.getComponent();
-          window.removeAll();
           window.add(dataComponent);
           String title = window.getTitle();
           if (title != null) {

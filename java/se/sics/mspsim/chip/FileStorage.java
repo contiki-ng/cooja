@@ -48,7 +48,7 @@ public class FileStorage implements Storage {
     private RandomAccessFile file;
     private FileChannel fileChannel;
     private FileLock fileLock;
-    private long maxSize = 0;
+    private long maxSize;
 
     public FileStorage(String filename) {
         this.filename = filename;
@@ -75,7 +75,7 @@ public class FileStorage implements Storage {
                 String c = m.group(2);
                 String extName = m.group(3);
                 int count = 1;
-                if (c != null && c.length() > 0) {
+                if (c != null && !c.isEmpty()) {
                     count = Integer.parseInt(c) + 1;
                 }
                 for (int i = 0; !openFile(baseName + count + extName) && i < 100; i++, count++);

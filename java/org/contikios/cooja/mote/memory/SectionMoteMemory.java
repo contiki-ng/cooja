@@ -99,11 +99,6 @@ public class SectionMoteMemory implements MemoryInterface {
     }
 
     sections.put(name, section);
-    if (section.getSymbolMap() != null) {
-      // XXX how to handle double names here?
-      symbols.putAll(section.getSymbolMap());
-    }
-
     if (DEBUG) {
       logger.debug(String.format(
               "Added section '%s' of size %d @0x%x",
@@ -269,12 +264,12 @@ public class SectionMoteMemory implements MemoryInterface {
   }
 
   private class PolledMemorySegments {
-    public final SegmentMonitor mm;
-    public final long address;
-    public final int size;
+    final SegmentMonitor mm;
+    final long address;
+    final int size;
     private byte[] oldMem;
 
-    public PolledMemorySegments(SegmentMonitor mm, long address, int size) {
+    PolledMemorySegments(SegmentMonitor mm, long address, int size) {
       this.mm = mm;
       this.address = address;
       this.size = size;

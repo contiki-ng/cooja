@@ -32,12 +32,11 @@ package org.contikios.cooja;
 
 import java.util.Collection;
 import javax.swing.JPanel;
-import org.jdom2.Element;
-
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
+import org.jdom2.Element;
 
 /**
  * A mote interface represents a mote property. Typically, this is a simulated

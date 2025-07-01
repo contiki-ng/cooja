@@ -36,7 +36,6 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import javax.swing.JPanel;
 import org.contikios.cooja.Mote;
-
 import org.contikios.cooja.interfaces.LED;
 import org.contikios.cooja.interfaces.PolledAfterActiveTicks;
 import org.contikios.cooja.mote.memory.VarMemory;
@@ -59,11 +58,11 @@ public class ContikiLED extends LED implements PolledAfterActiveTicks {
 
   private final Mote mote;
   private final VarMemory moteMem;
-  private byte currentLedValue = 0;
+  private byte currentLedValue;
 
   private static final byte LEDS_GREEN = 1;
-  private static final byte LEDS_YELLOW = 2;
-  private static final byte LEDS_RED = 4;
+  private static final byte LEDS_RED = 2;
+  private static final byte LEDS_YELLOW = 4;
 
   private static final Color DARK_GREEN = new Color(0, 50, 0);
   private static final Color DARK_YELLOW = new Color(50, 50, 0);

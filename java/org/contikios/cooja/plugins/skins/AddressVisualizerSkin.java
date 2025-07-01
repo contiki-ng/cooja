@@ -45,8 +45,8 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.IPAddress;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.plugins.Visualizer;
-import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.plugins.Visualizer.MoteMenuAction;
+import org.contikios.cooja.plugins.VisualizerSkin;
 import org.contikios.cooja.util.AnyMoteEventTriggers;
 import org.contikios.cooja.util.EventTriggers;
 
@@ -59,8 +59,8 @@ import org.contikios.cooja.util.EventTriggers;
  */
 @ClassDescription("IP addresses")
 public class AddressVisualizerSkin implements VisualizerSkin {
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
 
   private AnyMoteEventTriggers<EventTriggers.Update> newMotesListener;
 
@@ -93,7 +93,7 @@ public class AddressVisualizerSkin implements VisualizerSkin {
 
   private static String getMoteString(Mote mote) {
     IPAddress ipAddr = mote.getInterfaces().getIPAddress();
-    if ((ipAddr != null) && (ipAddr.hasIP())) {
+    if ((ipAddr != null) && ipAddr.hasIP()) {
       if (ipAddr.getLocalIP() == null) {
         return "";
       }

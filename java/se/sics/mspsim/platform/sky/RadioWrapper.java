@@ -7,9 +7,9 @@ public class RadioWrapper implements RFListener {
 
   private final CC2420 radio;
   private PacketListener packetListener;
-  int len = 0;
-  int pos = 0;
-  final byte[] buffer = new byte[128];
+  private int len;
+  private int pos;
+  private final byte[] buffer = new byte[128];
 
   public RadioWrapper(CC2420 radio) {
     this.radio = radio;

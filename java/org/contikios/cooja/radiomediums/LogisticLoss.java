@@ -33,17 +33,14 @@ package org.contikios.cooja.radiomediums;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.Map;
-import org.contikios.cooja.Cooja;
-import org.jdom2.Element;
+import java.util.Random;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.interfaces.Radio;
-import org.contikios.cooja.plugins.Visualizer;
-import org.contikios.cooja.plugins.skins.LogisticLossVisualizerSkin;
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +134,7 @@ public class LogisticLoss extends AbstractRadioMedium {
     public static final double DEFAULT_TX_POWER_DBM = 0.0;
 
     /* Enable the time-varying component? */
-    public boolean ENABLE_TIME_VARIATION = false;
+    public boolean ENABLE_TIME_VARIATION;
 
     /* Bounds for the time-varying component */
     public double TIME_VARIATION_MIN_PL_DB = -10;
@@ -146,7 +143,7 @@ public class LogisticLoss extends AbstractRadioMedium {
     /* How often to update the time-varying path loss value (in simulation time)? */
     private static final double TIME_VARIATION_STEP_SEC = 10.0;
 
-    private long lastTimeVariationUpdatePeriod = 0;
+    private long lastTimeVariationUpdatePeriod;
 
     private final DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
 
@@ -204,10 +201,6 @@ public class LogisticLoss extends AbstractRadioMedium {
         simulation.getMoteTriggers().addTrigger(this, (o, m) -> dgrm.requestEdgeAnalysis());
 
         dgrm.requestEdgeAnalysis();
-
-        if (Cooja.isVisualized()) {
-            Visualizer.registerVisualizerSkin(LogisticLossVisualizerSkin.class);
-        }
     }
 
     @Override
@@ -216,15 +209,7 @@ public class LogisticLoss extends AbstractRadioMedium {
     }
 
     @Override
-    public void removed() {
-        super.removed();
-        if (Cooja.isVisualized()) {
-            Visualizer.unregisterVisualizerSkin(LogisticLossVisualizerSkin.class);
-        }
-    }
-  
-    @Override
-    public RadioConnection createConnections(Radio sender) {
+    protected RadioConnection createConnections(Radio sender) {
         RadioConnection newConnection = new RadioConnection(sender);
 
         /* Fail radio transmission randomly - no radios will hear this transmission */
@@ -392,7 +377,7 @@ public class LogisticLoss extends AbstractRadioMedium {
     }
 
     @Override
-    public void updateSignalStrengths() {
+    protected void updateSignalStrengths() {
         /* Override: uses distance as signal strength factor */
 
         if(ENABLE_TIME_VARIATION) {
@@ -410,8 +395,8 @@ public class LogisticLoss extends AbstractRadioMedium {
             if (conn.getSource().getCurrentSignalStrength() < SS_STRONG) {
                 conn.getSource().setCurrentSignalStrength(SS_STRONG);
             }
+            var srcChannel = conn.getSource().getChannel();
             for (Radio dstRadio : conn.getDestinations()) {
-                var srcChannel = conn.getSource().getChannel();
                 var dstChannel = dstRadio.getChannel();
                 if (srcChannel >= 0 && dstChannel >= 0 && srcChannel != dstChannel) {
                     continue;
@@ -426,8 +411,8 @@ public class LogisticLoss extends AbstractRadioMedium {
 
         /* Set signal strength to below weak on interfered */
         for (RadioConnection conn : conns) {
+            var srcChannel = conn.getSource().getChannel();
             for (Radio intfRadio : conn.getInterfered()) {
-                var srcChannel = conn.getSource().getChannel();
                 var intfChannel = intfRadio.getChannel();
                 if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
                     continue;
@@ -556,7 +541,7 @@ public class LogisticLoss extends AbstractRadioMedium {
         private final int x;
         private final int y;
 
-        public Index(int a, int b) {
+        Index(int a, int b) {
             if(a <= b) {
                 this.x = a;
                 this.y = b;
@@ -590,11 +575,11 @@ public class LogisticLoss extends AbstractRadioMedium {
         /* The current value of the time-varying */
         private double timeVariationPlDb;
 
-        public TimeVaryingEdge() {
+        TimeVaryingEdge() {
             timeVariationPlDb = 0.0;
         }
 
-        public void evolve() {
+        void evolve() {
             /* evolve the value */
             timeVariationPlDb += random.nextDouble() - 0.5;
             /* bound the value */
@@ -605,7 +590,7 @@ public class LogisticLoss extends AbstractRadioMedium {
             }
         }
 
-        public double getPL() {
+        double getPL() {
             return timeVariationPlDb;
         }
     }

@@ -1,7 +1,6 @@
 package se.sics.mspsim.core;
 
 import java.util.ArrayDeque;
-
 import se.sics.mspsim.chip.I2CUnit.I2CData;
 
 
@@ -49,12 +48,12 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
     protected int ifg;
     protected int iv = 2; /* TODO Implement me! */
 
-    private int clockSource = 0;
-    private int baudRate = 0;
+    private int clockSource;
+    private int baudRate;
 
     private int tickPerByte = 1000;
     private long nextTXReady = -1;
-    private boolean transmitting = false;
+    private boolean transmitting;
 
     private int ctl0;
     private int ctl1;
@@ -65,7 +64,7 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
     private int txbuf;
     private int stat;
 
-    private boolean syncMode = false;
+    private boolean syncMode;
 
     /* always on for now - but SWRST controls it */
     private boolean moduleEnabled = true;

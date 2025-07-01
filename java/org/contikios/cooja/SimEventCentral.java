@@ -33,11 +33,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.util.AnyMoteEventTriggers;
+import org.contikios.cooja.util.ArrayUtils;
 import org.contikios.cooja.util.EventTriggers;
 import org.jdom2.Element;
-import org.contikios.cooja.interfaces.Log;
-import org.contikios.cooja.util.ArrayUtils;
 
 /**
  * Simulation event central. Simplifies implementations of plugins that observe
@@ -62,7 +62,7 @@ public class SimEventCentral {
       if (msg == null) {
         return;
       }
-      if (msg.length() > 0 && msg.charAt(msg.length() - 1) == '\n') {
+      if (!msg.isEmpty() && msg.charAt(msg.length() - 1) == '\n') {
         msg = msg.substring(0, msg.length() - 1);
       }
 
@@ -91,13 +91,13 @@ public class SimEventCentral {
 
   /* GENERIC */
   private static class MoteEvent {
-    public static int _ID_COUNTER = 0; /* Debugging */
-    public final int ID; /* Debugging */
+    static int _ID_COUNTER; /* Debugging */
+    final int ID; /* Debugging */
 
     private final Mote mote;
     private final long time;
 
-    public MoteEvent(Mote mote, long time) {
+    MoteEvent(Mote mote, long time) {
       ID = _ID_COUNTER++;
 
       this.mote = mote;
@@ -117,10 +117,10 @@ public class SimEventCentral {
   }
   /** Help class for maintaining mote-specific observations */
   private record MoteObservation(Mote mote, Log log, BiConsumer<EventTriggers.Update, Log.LogDataInfo> trigger) {
-    public MoteObservation {
+    MoteObservation {
       log.getLogDataTriggers().addTrigger(this, trigger);
     }
-    public void disconnect() {
+    void disconnect() {
       log.getLogDataTriggers().removeTrigger(this, trigger);
     }
   }
@@ -152,7 +152,7 @@ public class SimEventCentral {
   /* LOG OUTPUT */
   public static class LogOutputEvent extends MoteEvent {
     public final String msg;
-    public LogOutputEvent(Mote mote, long time, String msg) {
+    LogOutputEvent(Mote mote, long time, String msg) {
       super(mote, time);
       this.msg = msg;
     }

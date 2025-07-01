@@ -64,7 +64,7 @@ public class HighlightSourceViewer implements SourceViewer {
   private JFrame window;
   private SyntaxHighlighter highlighter;
   private String currentFile;
-  private ArrayList<File> path = null;
+  private ArrayList<File> path;
   private JFileChooser fileChooser;
 
   public HighlightSourceViewer() {
@@ -210,11 +210,5 @@ public class HighlightSourceViewer implements SourceViewer {
       }
     }
     return null;
-  }
-
-  public static void main(String[] args) {
-    HighlightSourceViewer sv = new HighlightSourceViewer();
-    sv.setVisible(true);
-    sv.viewFile(".", args[0]);
   }
 }

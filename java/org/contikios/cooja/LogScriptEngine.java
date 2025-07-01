@@ -68,7 +68,7 @@ public class LogScriptEngine {
   private static final Logger logger = LoggerFactory.getLogger(LogScriptEngine.class);
   private static final long DEFAULT_TIMEOUT = 20*60*1000*Simulation.MILLISECOND; /* 1200s = 20 minutes */
 
-  private final NashornScriptEngine engine = (NashornScriptEngine) new NashornScriptEngineFactory().getScriptEngine();
+  private final NashornScriptEngine engine;
 
   private final BufferedWriter logWriter; // For non-GUI tests.
 
@@ -100,9 +100,9 @@ public class LogScriptEngine {
     }
   };
 
-  private Semaphore semaphoreScript = null; /* Semaphores blocking script/simulation */
-  private Semaphore semaphoreSim = null;
-  private Thread scriptThread = null; /* Script thread */
+  private Semaphore semaphoreScript; /* Semaphores blocking script/simulation */
+  private Semaphore semaphoreSim;
+  private Thread scriptThread; /* Script thread */
   private final Simulation simulation;
 
   private long timeout;
@@ -110,7 +110,8 @@ public class LogScriptEngine {
   private long startRealTime;
   private final JTextArea textArea;
 
-  protected LogScriptEngine(Simulation simulation, int logNumber, JTextArea logTextArea) {
+  LogScriptEngine(Simulation simulation, String nashornArgs, int logNumber, JTextArea logTextArea) {
+    engine = (NashornScriptEngine) new NashornScriptEngineFactory().getScriptEngine(nashornArgs);
     this.simulation = simulation;
     textArea = logTextArea;
     simulation.getEventCentral().addLogOutputListener(logOutputListener);
@@ -168,7 +169,7 @@ public class LogScriptEngine {
     }
   }
 
-  protected void closeLog() {
+  void closeLog() {
     simulation.getEventCentral().removeLogOutputListener(logOutputListener);
     if (Cooja.isVisualized()) {
       return;

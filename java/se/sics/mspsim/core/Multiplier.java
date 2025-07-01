@@ -66,8 +66,8 @@ public class Multiplier extends IOUnit {
 
   private int op1;
 
-  private boolean signed = false;
-  private boolean accumulating = false;
+  private boolean signed;
+  private boolean accumulating;
   /**
    * Creates a new <code>Multiplier</code> instance.
    *
@@ -78,30 +78,29 @@ public class Multiplier extends IOUnit {
 
   @Override
   public int read(int address, boolean word, long cycles) {
-    switch (address) {
-    case MPY:
-      return mpy;
-    case MPYS:
-      return mpys;
-    case MAC:
-      return mac;
-    case MACS:
-      return macs;
-    case OP2:
-      return op2;
-    case RESHI:
-      if (DEBUG) log("read res hi: " + resHi );
-      return resHi;
-    case RESLO:
-      if (DEBUG) log("read res lo: " + resLo );
-      return resLo;
-    case SUMEXT:
-      if (DEBUG) log("read sumext: " + sumext);
-      return sumext;
-    default:
+    return switch (address) {
+      case MPY -> mpy;
+      case MPYS -> mpys;
+      case MAC -> mac;
+      case MACS -> macs;
+      case OP2 -> op2;
+      case RESHI -> {
+        if (DEBUG) log("read res hi: " + resHi);
+        yield resHi;
+      }
+      case RESLO -> {
+        if (DEBUG) log("read res lo: " + resLo);
+        yield resLo;
+      }
+      case SUMEXT -> {
+        if (DEBUG) log("read sumext: " + sumext);
+        yield sumext;
+      }
+      default -> {
         logw(WarningType.EMULATION_ERROR, "read unhandled address: 0x" + Utils.hex(address, 4));
-        return 0;
-    }
+        yield 0;
+      }
+    };
   }
 
   @Override

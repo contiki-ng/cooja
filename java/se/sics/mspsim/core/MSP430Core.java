@@ -36,15 +36,16 @@
  */
 
 package se.sics.mspsim.core;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.Collection;
 import se.sics.mspsim.core.EmulationLogger.WarningType;
 import se.sics.mspsim.core.Memory.AccessMode;
 import se.sics.mspsim.core.Memory.AccessType;
 import se.sics.mspsim.util.ComponentRegistry;
-import se.sics.mspsim.util.DefaultEmulationLogger;
+import se.sics.mspsim.util.ComponentRegistry.ComponentEntry;
 import se.sics.mspsim.util.MapEntry;
 import se.sics.mspsim.util.MapTable;
 import se.sics.mspsim.util.Utils;
@@ -73,13 +74,13 @@ public class MSP430Core extends Chip implements MSP430Constants {
   public final int[] memory;
   private final Flash flash;
   boolean isFlashBusy;
-  boolean isStopping = false;
+  boolean isStopping;
 
   private final Memory[] memorySegments;
   Memory currentSegment;
 
-  public long cycles = 0;
-  public long cpuCycles = 0;
+  public long cycles;
+  public long cpuCycles;
   MapTable map;
   public final boolean MSP430XArch;
   public final MSP430Config config;
@@ -100,18 +101,18 @@ public class MSP430Core extends Chip implements MSP430Constants {
   public int instruction;
   private int extWord;
   int servicedInterrupt = -1;
-  InterruptHandler servicedInterruptUnit = null;
+  InterruptHandler servicedInterruptUnit;
 
-  protected boolean interruptsEnabled = false;
-  protected boolean cpuOff = false;
+  protected boolean interruptsEnabled;
+  protected boolean cpuOff;
 
   // Not private since they are needed (for fast access...)
   public int dcoFrq = 2500000;
   int aclkFrq = 32768;
   public int smclkFrq = dcoFrq;
 
-  long lastCyclesTime = 0;
-  long lastVTime = 0;
+  long lastCyclesTime;
+  long lastVTime;
   long lastMicrosDelta;
   double currentDCOFactor = 1.0;
 
@@ -130,21 +131,17 @@ public class MSP430Core extends Chip implements MSP430Constants {
   final ComponentRegistry registry;
   Profiler profiler;
 
-  public MSP430Core(ComponentRegistry registry, MSP430Config config) {
+  public MSP430Core(MSP430Config config, int[] mem) {
     super("MSP430", "MSP430 Core", null);
-
-    logger = registry.getComponent(EmulationLogger.class);
-    if (logger == null) {
-        logger = new DefaultEmulationLogger(this, System.out);
-        registry.registerComponent("logger", logger);
-    }
-
+    var registry = new ComponentRegistry(
+            new ComponentEntry("cpu", this),
+            new ComponentEntry("logger", logger));
     MAX_INTERRUPT = config.maxInterruptVector;
     MAX_MEM_IO = config.maxMemIO;
     MAX_MEM = config.maxMem;
     MSP430XArch = config.MSP430XArch;
 
-    memory = new int[MAX_MEM];
+    memory = mem;
     memorySegments = new Memory[MAX_MEM >> 8];
 
     flash = new Flash(this, memory,
@@ -213,9 +210,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
             if (ramMirrorSegment == null) {
                 ramMirrorSegment = new RAMOffsetSegment(this, config.ramMirrorAddress - config.ramMirrorStart);
             }
-//            System.out.println("Setting RAM mirror segment at: " + Utils.hex(i << 8, 4)
-//                    + " => " + Utils.hex((i << 8) + ramMirrorSegment.getOffset()));
-            memorySegments[i] = ramMirrorSegment;
+          memorySegments[i] = ramMirrorSegment;
         } else if (config.isFlash(i << 8) || config.isInfoMem(i << 8)) {
 //            System.out.println("Setting Flash segment at: " + Utils.hex16(i << 8));
             memorySegments[i] = flashSegment;
@@ -356,26 +351,9 @@ public class MSP430Core extends Chip implements MSP430Constants {
       return chips.toArray(new Chip[0]);
   }
 
-  public <T extends Chip> T[] getChips(Class<T> type) {
-      ArrayList<T> list = new ArrayList<>();
-      for(Chip chip : chips) {
-          if (type.isInstance(chip)) {
-              list.add(type.cast(chip));
-          }
-      }
-      @SuppressWarnings("unchecked")
-      T[] tmp = (T[]) java.lang.reflect.Array.newInstance(type, list.size());
-      return list.toArray(tmp);
-  }
-
-  public Loggable[] getLoggables() {
-      Loggable[] ls = new Loggable[ioUnits.size() + chips.size()];
-      for (int i = 0; i < ioUnits.size(); i++) {
-          ls[i] = ioUnits.get(i);
-      }
-      for (int i = 0; i < chips.size(); i++) {
-          ls[i + ioUnits.size()] = chips.get(i);
-      }
+  public Collection<Loggable> getLoggables() {
+      var ls = new ArrayList<Loggable>(ioUnits);
+      ls.addAll(chips);
       return ls;
   }
 
@@ -389,8 +367,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   public boolean hasWatchPoint(int address) {
       Memory mem = memorySegments[address >> 8];
-      if (mem instanceof WatchedMemory) {
-          return ((WatchedMemory)mem).hasWatchPoint(address);
+      if (mem instanceof WatchedMemory watchedMemory) {
+          return watchedMemory.hasWatchPoint(address);
       }
       return false;
   }
@@ -398,8 +376,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
   public synchronized void addWatchPoint(int address, MemoryMonitor mon) {
       int seg = address >> 8;
       WatchedMemory wm;
-      if (memorySegments[seg] instanceof WatchedMemory) {
-          wm = (WatchedMemory) memorySegments[seg];
+      if (memorySegments[seg] instanceof WatchedMemory watchedMemory) {
+          wm = watchedMemory;
       } else {
           wm = new WatchedMemory(address & 0xfff00, memorySegments[seg]);
           memorySegments[seg] = wm;
@@ -456,12 +434,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
       }
 
     // Before the write!
-//    if (value >= MAX_MEM) {
-//        System.out.println("Writing larger than MAX_MEM to " + r + " value:" + value);
-//        new Throwable().printStackTrace();
-//    }
 
-      RegisterMonitor rwm = regWriteMonitors[r];
+    RegisterMonitor rwm = regWriteMonitors[r];
     if (rwm != null) {
         // TODO Add register access mode
         rwm.notifyWriteBefore(r, value, AccessMode.WORD);
@@ -483,9 +457,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
 //      if (debugInterrupts) System.out.println("Wrote to InterruptEnabled: " + interruptsEnabled + " was: " + oldIE);
 
       if (!oldIE && interruptsEnabled && servicedInterrupt >= 0) {
-//          System.out.println("*** Interrupts enabled while in interrupt : " +
-//                  servicedInterrupt + " PC: $" + getAddressAsString(reg[PC]));
-          /* must handle pending immediately */
+        /* must handle pending immediately */
           handlePendingInterrupts();
       }
 
@@ -583,8 +555,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
     currentDCOFactor = 1.0 * bcs.getMaxDCOFrequency() / frequency;
 
-    /*    System.out.println("*** DCO: MAX:" + bcs.getMaxDCOFrequency() +
-          " current: " + frequency + " DCO_FAC = " + currentDCOFactor);*/
     if (DEBUG)
       log("Set smclkFrq: " + smclkFrq);
     dcoReset();
@@ -619,10 +589,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
       } else {
         TimeEvent te = vTimeEventQueue.popFirst();
         long now = getTime();
-//        if (now > te.time) {
-//          System.out.println("VTimeEvent got delayed by: " + (now - te.time) + " at " +
-//              cycles + " target Time: " + te.time + " class: " + te.getClass().getName());
-//        }
         te.execute(now);
         if (vTimeEventQueue.eventCount > 0) {
           nextVTimeEventCycles = convertVTime(vTimeEventQueue.nextTime);
@@ -848,30 +814,19 @@ public class MSP430Core extends Chip implements MSP430Constants {
   }
 
   void printWarning(EmulationLogger.WarningType type, int address) throws EmulationException {
-      String message;
-      switch(type) {
-      case MISALIGNED_READ:
-          message = "**** Illegal read - misaligned word from $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      case MISALIGNED_WRITE:
-          message = "**** Illegal write - misaligned word to $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      case ADDRESS_OUT_OF_BOUNDS_READ:
-          message = "**** Illegal read - out of bounds from $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      case ADDRESS_OUT_OF_BOUNDS_WRITE:
-          message = "**** Illegal write -  out of bounds from $" +
-                  getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
-          break;
-      default:
-          message = "**** " + type + " address $" + getAddressAsString(address) +
-          " at $" + getAddressAsString(reg[PC]);
-          break;
-      }
-      logger.logw(this, type, message);
+    String message = switch (type) {
+      case MISALIGNED_READ -> "**** Illegal read - misaligned word from $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      case MISALIGNED_WRITE -> "**** Illegal write - misaligned word to $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      case ADDRESS_OUT_OF_BOUNDS_READ -> "**** Illegal read - out of bounds from $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      case ADDRESS_OUT_OF_BOUNDS_WRITE -> "**** Illegal write -  out of bounds from $" +
+              getAddressAsString(address) + " at $" + getAddressAsString(reg[PC]);
+      default -> "**** " + type + " address $" + getAddressAsString(address) +
+              " at $" + getAddressAsString(reg[PC]);
+    };
+    logger.logw(this, type, message);
   }
 
   public void generateTrace(PrintStream out) {
@@ -900,10 +855,12 @@ public class MSP430Core extends Chip implements MSP430Constants {
     if (interruptMax < MAX_INTERRUPT) {
       // Push PC and SR to stack
       // store on stack - always move 2 steps (W) even if B.
-      writeRegister(SP, sp = spBefore - 2);
+      sp = spBefore - 2;
+      writeRegister(SP, sp);
       currentSegment.write(sp, pc, AccessMode.WORD);
 
-      writeRegister(SP, sp = sp - 2);
+      sp -= 2;
+      writeRegister(SP, sp);
       currentSegment.write(sp, (sr & 0x0fff) | ((pc & 0xf0000) >> 4), AccessMode.WORD);
     }
     // Clear SR
@@ -950,7 +907,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   /* returns true if any instruction was emulated - false if CpuOff */
   public int emulateOP(long maxCycles) throws EmulationException {
-    //System.out.println("CYCLES BEFORE: " + cycles);
     int pc = readRegister(PC);
     long startCycles = cycles;
 
@@ -1029,8 +985,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
         wordx20 = (instruction & 0x40) == 0;
 
         instruction = currentSegment.read(pc, AccessMode.WORD, AccessType.EXECUTE);
-        /*System.out.println("*** Extension word!!! " + Utils.hex16(extWord) +
-                "  read the instruction too: " + Utils.hex16(instruction) + " at " + Utils.hex16(pc - 2));*/
     } else {
         extWord = 0;
     }
@@ -1068,9 +1022,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
         op = instruction & 0xf0f0;
         if (!MSP430XArch)
             throw new EmulationException("Executing MSP430X instruction but MCU is not a MSP430X");
-//        System.out.println("Executing MSP430X instruction op:" + Utils.hex16(op) +
-//                " ins:" + Utils.hex16(instruction) + " PC = $" + getAddressAsString(pc - 2));
-        int src;
+      int src;
         /* data is either bit 19-16 or src register */
         int srcData = (instruction & 0x0f00) >> 8;
         int dstData = (instruction & 0x000f);
@@ -1092,12 +1044,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
             writeRegister(PC, pc);
             /* read from address in register */
             src = readRegister(srcData);
-//            System.out.println("Reading $" + getAddressAsString(src) +
-//                    " from register: " + srcData);
-            dst = currentSegment.read(src, mode, AccessType.READ);
-//            System.out.println("Reading from mem: $" + getAddressAsString(dst));
+          dst = currentSegment.read(src, mode, AccessType.READ);
             writeRegister(srcData, src + 4);
-//            System.out.println("*** Writing $" + getAddressAsString(dst) + " to reg: " + dstData);
             writeRegister(dstData, dst);
             updateStatus = false;
             cycles += 3;
@@ -1106,9 +1054,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
             src = currentSegment.read(pc, AccessMode.WORD, AccessType.READ);
             writeRegister(PC, pc += 2);
             dst = src + (srcData << 16);
-            //System.out.println(Utils.hex20(pc) + " MOVA &ABS Reading from $" + getAddressAsString(dst) + " to reg: " + dstData);
             dst = currentSegment.read(dst, mode,  AccessType.READ);
-            //System.out.println("   => $" + getAddressAsString(dst));
             writeRegister(dstData, dst);
             updateStatus = false;
             cycles += 4;
@@ -1155,7 +1101,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
             src = currentSegment.read(pc, AccessMode.WORD, AccessType.READ);
             writeRegister(PC, pc += 2);
             dst = src + (srcData << 16);
-//            System.out.println("*** Writing $" + getAddressAsString(dst) + " to reg: " + dstData);
             dst &= 0xfffff;
             writeRegister(dstData, dst);
             updateStatus = false;
@@ -1307,7 +1252,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
                 nxtCarry = (dst & (1 << (count + 1))) > 0? CARRY: 0;
 
                 /* Rotate dst. */
-                dst = dst >> (count);
+                dst = dst >> count;
 
                 /* Rotate the high bits, insert into dst. */
                 if (rrword) {
@@ -1317,7 +1262,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
                 }
                 break;
             case RRAM:
-//                System.out.println("RRAM executing");
                 /* roll in MSB from above */
                 /* 1 11 111 1111 needs to get in if MSB is 1 */
                 if ((dst & (rrword ? 0x8000 : 0x80000)) > 0) {
@@ -1329,14 +1273,12 @@ public class MSP430Core extends Chip implements MSP430Constants {
                 dst = dst >> 1;
                 break;
             case RLAM:
-                //                System.out.println("RLAM executing at " + pc);
                 /* just roll in "zeroes" from left */
                 dst = dst << (count - 1);
                 nxtCarry = (dst & (rrword ? 0x8000 : 0x80000)) > 0 ? CARRY : 0;
                 dst = dst << 1;
                 break;
             case RRUM:
-                //System.out.println("RRUM executing");
                 /* just roll in "zeroes" from right */
                 dst = dst >> (count - 1);
                 nxtCarry = (dst & 1) > 0 ? CARRY : 0;
@@ -1451,10 +1393,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
                           int n = 1 + ((instruction >> 4) & 0x0f);
                           int regNo = instruction & 0x0f;
 
-                          //                  System.out.println("PUSHM " + (type == AccessMode.WORD20 ? "A" : "W") +
-                          //                          " n: " + n + " " + regNo + " at " + Utils.hex16(pcBefore));
-
-                          /* decrease stack pointer and write n times */
+                    /* decrease stack pointer and write n times */
                           for(int i = 0; i < n; i++) {
                                   sp -= size;
                                   cycles += 2;
@@ -1615,9 +1554,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
               }
               zeroCarry = (extWord & EXTWORD_ZC) > 0;
 
-//              if (repeats > 1) {
-//                  System.out.println("*** Repeat " + repeats + " ZeroCarry: " + zeroCarry);
-//              }
           } else if (dst == -1) {
               dst = currentSegment.read(dstAddress, mode, AccessType.READ);
           }
@@ -1629,9 +1565,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
               if (repeats >= 0) {
                   if (zeroCarry) {
                       sr = sr & ~CARRY;
-                      //System.out.println("ZC => Cleared carry...");
                   }
-                  //System.out.println("*** Repeat: " + repeats);
               }
               switch(op) {
               case RRC:
@@ -1973,10 +1907,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
       // **** Perform the read...
       if (srcAddress != -1) {
 
-//        if (srcAddress  > 0xffff) {
-//            System.out.println("SrcAddress is: " + Utils.hex20(srcAddress));
-//        }
-//	srcAddress = srcAddress & 0xffff;
         src = currentSegment.read(srcAddress, mode, AccessType.READ);
 
 //	src = currentSegment.read(srcAddress, word ? AccessMode.WORD : AccessMode.BYTE, AccessType.READ);
@@ -1993,9 +1923,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
           if (repeats >= 0) {
               if (zeroCarry) {
                   sr = sr & ~CARRY;
-                  //System.out.println("ZC => Cleared carry...");
               }
-              //System.out.println("*** Repeat: " + repeats);
           }
 
           int tmp;
@@ -2037,13 +1965,9 @@ public class MSP430Core extends Chip implements MSP430Constants {
               // If tmp == 0 and currenly not the same sign for src & dst
               if (tmp == 0 && ((src ^ dst) & b) != 0) {
                   sr |= OVERFLOW;
-                  //        System.out.println("OVERFLOW - ADD/SUB " + Utils.hex16(src)
-                  //                           + " + " + Utils.hex16(tmpDst));
               }
 
-              //          System.out.println(Utils.hex16(dst) + " [SR=" +
-              //                             Utils.hex16(reg[SR]) + "]");
-              writeRegister(SR, sr);
+            writeRegister(SR, sr);
               write = true;
               break;
           case CMP: // CMP
@@ -2080,11 +2004,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
               break;
           case BIC: // BIC
               // No status reg change
-              //          System.out.println("BIC: =>" + Utils.hex16(dstAddress) + " => "
-              //                             + Utils.hex16(dst) + " AS: " + as +
-              //                             " sReg: " + srcRegister + " => " + src +
-              //                             " dReg: " + dstRegister + " => " + dst);
-              dst = (~src) & dst;
+              dst = ~src & dst;
 
               write = true;
               updateStatus = false;
@@ -2155,8 +2075,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
       writeRegister(SR, sr);
     }
 
-    //System.out.println("CYCLES AFTER: " + cycles);
-
     // -------------------------------------------------------------------
     // Event processing (when CPU is awake)
     // -------------------------------------------------------------------
@@ -2217,11 +2135,6 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   public String getAddressAsString(int addr) {
       return config.getAddressAsString(addr);
-  }
-
-  @Override
-  public int getConfiguration(int parameter) {
-      return 0;
   }
 
   @Override

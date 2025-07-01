@@ -47,14 +47,13 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import org.jdom2.Element;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Cooja;
 import org.contikios.cooja.PluginType;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.SupportedArguments;
 import org.contikios.mrm.ChannelModel.Parameter;
+import org.jdom2.Element;
 
 /**
  * This plugin allows a user to reconfigure current radio channel parameters.
@@ -400,16 +399,15 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
    */
   private JFormattedTextField addDoubleParameter(Parameter id, String description, Container contentPane, double initialValue) {
     JPanel panel = new JPanel();
-    JLabel label;
-    JFormattedTextField textField;
-
     panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
     panel.setAlignmentY(Component.TOP_ALIGNMENT);
     panel.add(Box.createHorizontalStrut(10));
-    panel.add(label = new JLabel(description));
+    JLabel label = new JLabel(description);
     label.setPreferredSize(labelDimension);
+    panel.add(label);
     panel.add(Box.createHorizontalGlue());
-    panel.add(textField = new JFormattedTextField(doubleFormat));
+    JFormattedTextField textField = new JFormattedTextField(doubleFormat);
+    panel.add(textField);
     textField.setValue(initialValue);
     textField.setColumns(4);
     textField.putClientProperty("id", id);
@@ -459,10 +457,12 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
     panel.setAlignmentY(Component.TOP_ALIGNMENT);
     panel.add(Box.createHorizontalStrut(10));
-    panel.add(label = new JLabel(description));
+    label = new JLabel(description);
+    panel.add(label);
     label.setPreferredSize(labelDimension);
     panel.add(Box.createHorizontalGlue());
-    panel.add(textField = new JFormattedTextField(integerFormat));
+    textField = new JFormattedTextField(integerFormat);
+    panel.add(textField);
     textField.setValue((double) initialValue);
     textField.setColumns(4);
     textField.putClientProperty("id", id);
@@ -506,16 +506,15 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
    */
   private JCheckBox addBooleanParameter(Parameter id, String description, Container contentPane, boolean initialValue) {
     JPanel panel = new JPanel();
-    JLabel label;
-    JCheckBox checkBox;
-
     panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
     panel.setAlignmentY(Component.TOP_ALIGNMENT);
     panel.add(Box.createHorizontalStrut(10));
-    panel.add(label = new JLabel(description));
+    JLabel label = new JLabel(description);
+    panel.add(label);
     label.setPreferredSize(labelDimension);
     panel.add(Box.createHorizontalGlue());
-    panel.add(checkBox = new JCheckBox());
+    JCheckBox checkBox = new JCheckBox();
+    panel.add(checkBox);
     checkBox.setSelected(initialValue);
     checkBox.putClientProperty("id", id);
     checkBox.addActionListener(e -> {

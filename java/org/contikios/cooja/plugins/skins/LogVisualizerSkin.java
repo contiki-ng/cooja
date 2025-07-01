@@ -34,13 +34,11 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
-
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.MoteInterface;
-import org.contikios.cooja.Simulation;
-import org.contikios.cooja.SimEventCentral.LogOutputEvent;
 import org.contikios.cooja.SimEventCentral.LogOutputListener;
+import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Log;
 import org.contikios.cooja.interfaces.Position;
 import org.contikios.cooja.plugins.Visualizer;
@@ -55,15 +53,10 @@ import org.contikios.cooja.plugins.VisualizerSkin;
  */
 @ClassDescription("Log output: printf()'s")
 public class LogVisualizerSkin implements VisualizerSkin {
-  private Simulation simulation = null;
-  private Visualizer visualizer = null;
+  private Simulation simulation;
+  private Visualizer visualizer;
 
-  private final LogOutputListener logOutputListener = new LogOutputListener() {
-    @Override
-    public void newLogOutput(LogOutputEvent ev) {
-      visualizer.repaint();
-    }
-  };
+  private final LogOutputListener logOutputListener = ev -> visualizer.repaint();
 
   @Override
   public void setActive(Simulation simulation, Visualizer vis) {

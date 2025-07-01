@@ -54,10 +54,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.OutputStream;
 import java.util.ArrayDeque;
-
 import javax.swing.JComponent;
 import javax.swing.Timer;
-
 import se.sics.mspsim.cli.CommandHandler;
 
 /* Console UI for command line interfaces
@@ -79,8 +77,8 @@ public class ConsoleUI extends JComponent {
   /* up to 200 visible lines */
   private final String[] lines = new String[200];
 
-  private int lineCount = 0;
-  private int lastVisible = 0;
+  private int lineCount;
+  private int lastVisible;
 
   /* the lines that are on the screen */
   /*
@@ -89,12 +87,12 @@ public class ConsoleUI extends JComponent {
 
   private String[] screenLines = new String[50];
   /* size of lines */
-  int lineWidth = 40;
+  private int lineWidth = 40;
 
   private final ArrayDeque<String> commands = new ArrayDeque<>();
 
-  private int len = 0;
-  private int back = 0;
+  private int len;
+  private int back;
 
   private static final int charWidth = 7;
   private static final int charHeight = 11;
@@ -104,19 +102,19 @@ public class ConsoleUI extends JComponent {
 
   /* editor variables */
   private static final boolean insert = true;
-  private boolean editing = false;
+  private boolean editing;
   private boolean cursor;
 
-  private int editPos = 0;
-  private int cursorX = 0;
-  private int minCursorX = 0;
-  private int cursorY = 0;
+  private int editPos;
+  private int cursorX;
+  private int minCursorX;
+  private int cursorY;
 
-  private boolean selectActive = false;
-  private int selectStartX = 0;
-  private int selectStartY = 0;
-  private int selectEndX = 0;
-  private int selectEndY = 0;
+  private boolean selectActive;
+  private int selectStartX;
+  private int selectStartY;
+  private int selectEndX;
+  private int selectEndY;
 
 
   private static final int MIN_X = 8;
@@ -272,8 +270,9 @@ public class ConsoleUI extends JComponent {
   public void setVisible(boolean visible) {
     super.setVisible(visible);
     if (timer == null) {
-      // Ignore
-    } else if (visible) {
+      return;
+    }
+    if (visible) {
       timer.start();
     } else {
       timer.stop();
@@ -304,7 +303,7 @@ public class ConsoleUI extends JComponent {
     switch (c) {
       case '\n' -> {
         String line = new String(chars, 0, len);
-        if (line.trim().length() > 0)
+        if (!line.trim().isEmpty())
           history[pos++] = line;
         addLine(currentOutput + line);
         if (pos >= history.length)
@@ -391,8 +390,8 @@ public class ConsoleUI extends JComponent {
    * the screen completely. It is possible to just scroll upwards if just adding
    * another "last" line.
    */
-  int scrCursorX = 0;
-  int scrCursorY = 0;
+  private int scrCursorX;
+  private int scrCursorY;
 
   private int layoutRows() {
 
@@ -457,9 +456,9 @@ public class ConsoleUI extends JComponent {
         charWidth, 2);
   }
 
-  final StringBuffer currentOutput = new StringBuffer();
+  private final StringBuffer currentOutput = new StringBuffer();
 
-  int oldBottomLine = 0;
+  private int oldBottomLine;
   @Override
   protected void paintComponent(Graphics g) {
     int pos;
@@ -525,7 +524,7 @@ public class ConsoleUI extends JComponent {
     }
   }
 
-  final StringBuffer buffer = new StringBuffer();
+  private final StringBuffer buffer = new StringBuffer();
 
   /* add a line to the "visible" screen */
   private void addLine(String line) {
@@ -544,7 +543,7 @@ public class ConsoleUI extends JComponent {
     /* editor is reset too */
     editPos = minCursorX = cursorX = len = 0;
 
-    if (editing && buffer.length() > 0) {
+    if (editing && !buffer.isEmpty()) {
       /*
        * set edit to false, so we do not get here again before end of "printout".
        */
@@ -561,7 +560,7 @@ public class ConsoleUI extends JComponent {
   }
 
   /* just print space instead of tabs */
-  static final String tabs = "           ";
+  private static final String tabs = "           ";
 
   /* print char to the shell */
   public void output(int c) {

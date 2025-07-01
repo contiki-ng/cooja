@@ -40,7 +40,6 @@
 
 package se.sics.mspsim.cli;
 import java.util.Properties;
-
 import se.sics.mspsim.core.Chip;
 import se.sics.mspsim.core.EventListener;
 import se.sics.mspsim.core.MSP430;
@@ -175,7 +174,7 @@ public class ProfilerCommands implements CommandBundle {
                 for(Chip chip : cpu.getChips()) {
                     String id = chip.getID();
                     String name = chip.getName();
-                    if (id == name) {
+                    if (id.equals(name)) {
                         context.out.println("  " + id);
                     } else {
                         context.out.println("  " + id + " (" + name + ')');

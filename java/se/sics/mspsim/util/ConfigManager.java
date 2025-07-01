@@ -39,107 +39,40 @@
  *           $Revision$
  */
 package se.sics.mspsim.util;
-import java.io.BufferedInputStream;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
 public class ConfigManager {
 
-  protected Properties properties = null;
+  private Properties properties;
 
 
   // -------------------------------------------------------------------
   // Config file handling
   // -------------------------------------------------------------------
 
-  public boolean loadConfiguration(String configFile) {
-    return loadConfiguration(new File(configFile));
-  }
-
-  public boolean loadConfiguration(File configFile) {
-    try {
-      try (var input = new BufferedInputStream(new FileInputStream(configFile))) {
-        loadConfiguration(input);
-      }
+  boolean loadConfiguration(String configFile) {
+    try (var input = Files.newBufferedReader(new File(configFile).toPath(), StandardCharsets.UTF_8)) {
+      var p = new Properties();
+      p.load(input);
+      this.properties = p;
       return true;
     } catch (FileNotFoundException e) {
       return false;
     } catch (IOException e) {
-      throw new IllegalArgumentException("could not read config file '"
-          + configFile + "': " + e);
+      throw new IllegalArgumentException("could not read config file '" + configFile + "': " + e);
     }
   }
-
-  public boolean loadConfiguration(URL configURL) {
-    try {
-      try (var input = new BufferedInputStream(configURL.openStream())) {
-        loadConfiguration(input);
-      }
-      return true;
-    } catch (FileNotFoundException e) {
-      return false;
-    } catch (IOException e) {
-      throw new IllegalArgumentException("could not read config file '"
-          + configURL + "': " + e);
-    }
-  }
-
-  public void loadConfiguration(InputStream input) throws IOException {
-    Properties p = new Properties();
-    p.load(input);
-    this.properties = p;
-  }
-
-  public boolean saveConfiguration(File filename, String comments) {
-    if (properties != null) {
-      OutputStream output = null;
-      try {
-        output = new FileOutputStream(filename);
-        properties.store(output, comments);
-        return true;
-      } catch (IOException e) {
-        e.printStackTrace();
-      } finally {
-        if (output != null) {
-          try {
-            output.close();
-          } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          }
-        }
-      }
-    }
-    return false;
-  }
-
 
   // -------------------------------------------------------------------
   // Properties handling
   // -------------------------------------------------------------------
-
-  /**
-   * Returns the property names. Does not include inherited properties.
-   *
-   * @return an array with the non-inherited property names
-   */
-  public String[] getPropertyNames() {
-    if (properties == null) {
-      return new String[0];
-    }
-    synchronized (properties) {
-      return properties.keySet().toArray(new String[0]);
-    }
-  }
 
   public String getProperty(String name) {
     return getProperty(name, null);
@@ -150,7 +83,7 @@ public class ConfigManager {
     ? properties.getProperty(name)
         : null;
 
-    if (value == null || value.length() == 0) {
+    if (value == null || value.isEmpty()) {
       return defaultValue;
     }
     return value;
@@ -172,141 +105,12 @@ public class ConfigManager {
     }
   }
 
-  public String[] getPropertyAsArray(String name) {
-    return getPropertyAsArray(name, null);
-  }
-
-  public String[] getPropertyAsArray(String name, String defaultValue) {
-    String valueList = getProperty(name, defaultValue);
-    if (valueList != null) {
-      StringTokenizer tok = new StringTokenizer(valueList, ", \t");
-      int len = tok.countTokens();
-      if (len > 0) {
-        String[] values = new String[len];
-        for (int i = 0; i < len; i++) {
-          values[i] = tok.nextToken();
-        }
-        return values;
-      }
-    }
-    return null;
-  }
-
-  public int getPropertyAsInt(String name, int defaultValue) {
-    String value = getProperty(name, null);
-    return value != null ? parseInt(name, value, defaultValue) : defaultValue;
-  }
-
-  public int[] getPropertyAsIntArray(String name) {
-    return getPropertyAsIntArray(name, null);
-  }
-
-  public int[] getPropertyAsIntArray(String name, String defaultValue) {
-    String valueList = getProperty(name, defaultValue);
-    if (valueList != null) {
-      return parseIntArray(valueList, defaultValue);
-    } else if (defaultValue != null) {
-      return parseIntArray(defaultValue, null);
-    } else {
-      return null;
-    }
-  }
-
-  private static int[] parseIntArray(String valueList, String secondaryValue) {
-    StringTokenizer tok = new StringTokenizer(valueList, ", \t/");
-    int len = tok.countTokens();
-    if (len > 0) {
-      try {
-        int[] values = new int[len];
-        for (int i = 0; i < len; i++) {
-          values[i] = Integer.parseInt(tok.nextToken());
-        }
-        return values;
-      } catch (NumberFormatException e) {
-        // Ignore parse errors and try secondary value if specified and not already tried
-      }
-    }
-    if(secondaryValue != null && !secondaryValue.equals(valueList)) {
-      return parseIntArray(secondaryValue, null);
-    }
-    return null;
-  }
-
-  public long getPropertyAsLong(String name, long defaultValue) {
-    String value = getProperty(name, null);
-    return value != null
-    ? parseLong(name, value, defaultValue)
-        : defaultValue;
-  }
-
-  public float getPropertyAsFloat(String name, float defaultValue) {
-    String value = getProperty(name, null);
-    return value != null
-    ? parseFloat(name, value, defaultValue)
-        : defaultValue;
-  }
-
-  public double getPropertyAsDouble(String name, double defaultValue) {
-    String value = getProperty(name, null);
-    return value != null
-    ? parseDouble(name, value, defaultValue)
-        : defaultValue;
-  }
-
   public boolean getPropertyAsBoolean(String name, boolean defaultValue) {
     String value = getProperty(name, null);
-    return value != null
-    ? parseBoolean(name, value, defaultValue)
-        : defaultValue;
-  }
-
-  protected static int parseInt(String name, String value, int defaultValue) {
-    try {
-      return Integer.parseInt(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-integer value '"
-          + value + '\'');
-    }
-    return defaultValue;
-  }
-
-  protected static long parseLong(String name, String value, long defaultValue) {
-    try {
-      return Long.parseLong(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-long value '"
-          + value + '\'');
-    }
-    return defaultValue;
-  }
-
-  protected static float parseFloat(String name, String value, float defaultValue) {
-    try {
-      return Float.parseFloat(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-float value '"
-          + value + '\'');
-    }
-    return defaultValue;
-  }
-
-  protected static double parseDouble(String name, String value, double defaultValue) {
-    try {
-      return Double.parseDouble(value);
-    } catch (Exception e) {
-      System.err.println("config '" + name + "' has a non-double value '"
-          + value + '\'');
-    }
-    return defaultValue;
-  }
-
-  protected static boolean parseBoolean(String name, String value, boolean defaultValue) {
-    return "true".equals(value) || "yes".equals(value) || "1".equals(value);
+    return value == null ? defaultValue : "true".equals(value) || "yes".equals(value) || "1".equals(value);
   }
 
   public void print(PrintStream out) {
       properties.list(out);
   }
-
-
 } // ConfigManager
