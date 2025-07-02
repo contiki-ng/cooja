@@ -55,7 +55,8 @@ public class LineOutputStream extends OutputStream {
     this.listener = listener;
   }
 
-  /* Buffers and calls line listener when a line is complete
+  /**
+   * Buffers and calls line listener when a line is complete
    * @see java.io.OutputStream#write(int)
    */
   @Override

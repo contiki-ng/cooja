@@ -170,6 +170,7 @@ tasks.withType(JavaCompile).configureEach {
   options.errorprone.disable('OperatorPrecedence')
   options.errorprone.disable('ReferenceEquality')
   options.errorprone.disable('StaticAssignmentInConstructor')
+  options.errorprone.disable('StatementSwitchToExpressionSwitch')
   options.errorprone.disable('StringSplitter')
   options.errorprone.disable('ThreadPriorityCheck')
   options.errorprone.disable('UnusedMethod')

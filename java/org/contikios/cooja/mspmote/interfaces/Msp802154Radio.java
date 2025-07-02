@@ -380,7 +380,8 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
   }
   
   
-  /* This will set the CORR-value of the CC2420
+  /**
+   * This will set the CORR-value of the CC2420
    * 
    * @see org.contikios.cooja.interfaces.Radio#setLQI(int)
    */

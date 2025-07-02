@@ -97,7 +97,8 @@ public class TR1001 extends Chip implements RFListener, RFSource {
     rfListener = RFListener.Proxy.INSTANCE.remove(rfListener, rf);
   }
 
-  /* Receive a byte from the radio medium
+  /**
+   * Receive a byte from the radio medium
    * @see se.sics.mspsim.chip.RFListener#receivedByte(byte)
    */
   @Override

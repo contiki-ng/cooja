@@ -80,7 +80,7 @@ public class JResourceChooser {
     }
 
     // Remove the create directory button since that will fail inside jar.
-    UIManager.put("FileChooser.readOnly", Boolean.TRUE);
+    UIManager.put("FileChooser.readOnly", true);
     String file = null;
     var root = new File("/");
     try (var r = jarFileSystem) {
@@ -93,7 +93,7 @@ public class JResourceChooser {
     } catch (IOException e) {
       logger.error("Failed to close JAR file system", e);
     } finally {
-      UIManager.put("FileChooser.readOnly", Boolean.FALSE);
+      UIManager.put("FileChooser.readOnly", false);
     }
     return file;
   }

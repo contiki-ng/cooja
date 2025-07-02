@@ -115,7 +115,7 @@ public class SkyCoffeeFilesystem implements MoteInterface {
                 return "? bytes";
               }
             }
-            return Boolean.FALSE;
+            return false;
           }
           @Override
           public boolean isCellEditable(int row, int col) {
