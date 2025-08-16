@@ -338,119 +338,87 @@ public class CC1120 extends Radio802154 implements USARTListener {
         }
 
         void strobe(int cmd) {
-                switch (cmd) {
-                case CC1120_SRES:
-                        System.out.println("CC1120_SRES not implemented");
-                        reset();
-                        break;
+          switch (cmd) {
+            case CC1120_SRES -> {
+              System.out.println("CC1120_SRES not implemented");
+              reset();
+            }
+            case CC1120_SFSTXON -> System.out.println("CC1120_SFSTXON not implemented");
+            case CC1120_SXOFF -> System.out.println("CC1120_SXOFF not implemented");
+            case CC1120_SCAL -> {
+              changeFrequencyNextState = true;
+              setState(CC1120RadioState.CC1120_STATE_IDLE);
+            }
+            case CC1120_SRX -> {
 
-                case CC1120_SFSTXON:
-                        System.out.println("CC1120_SFSTXON not implemented");
-                        break;
+              if (getState() == CC1120RadioState.CC1120_STATE_IDLE ||
+                      getState() == CC1120RadioState.CC1120_STATE_SLEEP) {
+                TimeEvent goToRX = new TimeEvent(0, "CC1120 go to RX") {
+                  @Override
+                  public void execute(long t) {
+                    if (getState() == CC1120RadioState.CC1120_STATE_RX) {
+                      /* Radio already in RX, ignore */
+                      return;
+                    }
+                    rxfifo.clear();
+                    rxExpectedLen = -1;
+                    rxGotSynchByte = false;
+                    setGDO0(false);
+                    setState(CC1120RadioState.CC1120_STATE_RX);
+                  }
+                };
 
-                case CC1120_SXOFF:
-                        System.out.println("CC1120_SXOFF not implemented");
-                        break;
-
-                case CC1120_SCAL:
-                        changeFrequencyNextState = true;
-                        setState(CC1120RadioState.CC1120_STATE_IDLE);
-                        break;
-
-                case CC1120_SRX:
-
-                        if(getState() == CC1120RadioState.CC1120_STATE_IDLE ||
-                        getState() == CC1120RadioState.CC1120_STATE_SLEEP) {
-                                TimeEvent goToRX = new TimeEvent(0, "CC1120 go to RX") {
-                                        @Override
-                                        public void execute(long t) {
-                                                if(getState() == CC1120RadioState.CC1120_STATE_RX) {
-                                                        /* Radio already in RX, ignore */
-                                                        return;
-                                                }
-                                                rxfifo.clear();
-                                                rxExpectedLen = -1;
-                                                rxGotSynchByte = false;
-                                                setGDO0(false);
-                                                setState(CC1120RadioState.CC1120_STATE_RX);
-                                        }
-                                };
-
-                                /* The time to activate RX depends on SETTLING_CFG's FS_AUTOCAL settings.
-                                 * Calibrated from trxeb1120 platform. */
-                                double stateDelay;
-                                int settling = getRegister(CC1120_SETTLING_CFG);
-                                settling = (settling >> 3) & 0b11; /* bit 4:3 */
-                                if (settling == 0) {
-                                        stateDelay = 0.20;
-                                } else {
-                                        /* Only settling = 1 is implemented. Assume calibration otherwise. */
-                                        stateDelay = 0.50;
-                                }
-                                cpu.scheduleTimeEventMillis(goToRX, stateDelay);
-
-                        } else {
-                                setStateRX();
-                        }
-
-                        break;
-
-                case CC1120_STX:
-      int len = 0xff&txfifo.get(0);
-      txFooterCountdown = 1 + len + 1/*len*/;
-      if (DEBUG) {
-          System.out.println("TX started: len = " + len + ", txFooterCountdown = " + txFooterCountdown);
-      }
-      txNext();
-                        setState(CC1120RadioState.CC1120_STATE_TX);
-                        break;
-
-                case CC1120_SIDLE:
-                        setState(CC1120RadioState.CC1120_STATE_IDLE);
-                        break;
-
-                case CC1120_SAFC:
-                        System.out.println("CC1120_SAFC not implemented");
-                        break;
-
-                case CC1120_SWOR:
-                        System.out.println("CC1120_SWOR not implemented");
-                        break;
-
-                case CC1120_SPWD:
-                        /*System.out.println("CC1120_SPWD almost implemented");*/
-                        /* TODO XXX
-                         * Wait until CS is de-asserted. (We should at least wait until radio is done
-                         * receiving or transmitting.)*/
-            setState(CC1120RadioState.CC1120_STATE_SLEEP);
-                        break;
-
-                case CC1120_SFRX:
-                        rxfifo.clear();
-                        rxExpectedLen = -1;
-                        rxGotSynchByte = false;
-                        setGDO0(false);
-                        /* printRXFIFO(); */
-                        break;
-
-                case CC1120_SFTX:
-                        txfifo.clear();
-                        txFooterCountdown = -1;
-                        /* printTXFIFO(); */
-                        break;
-
-                case CC1120_SWORRST:
-                        System.out.println("CC1120_SWORRST not implemented");
-                        break;
-
-                case CC1120_SNOP:
-                        System.out.println("CC1120_SNOP not implemented");
-                        break;
-
-                default:
-                        System.out.printf("strobe(0x%02x)\n", cmd);
-                        break;
+                /* The time to activate RX depends on SETTLING_CFG's FS_AUTOCAL settings.
+                 * Calibrated from trxeb1120 platform. */
+                double stateDelay;
+                int settling = getRegister(CC1120_SETTLING_CFG);
+                settling = (settling >> 3) & 0b11; /* bit 4:3 */
+                if (settling == 0) {
+                  stateDelay = 0.20;
+                } else {
+                  /* Only settling = 1 is implemented. Assume calibration otherwise. */
+                  stateDelay = 0.50;
                 }
+                cpu.scheduleTimeEventMillis(goToRX, stateDelay);
+
+              } else {
+                setStateRX();
+              }
+            }
+            case CC1120_STX -> {
+              int len = 0xff & txfifo.get(0);
+              txFooterCountdown = 1 + len + 1/*len*/;
+              if (DEBUG) {
+                System.out.println("TX started: len = " + len + ", txFooterCountdown = " + txFooterCountdown);
+              }
+              txNext();
+              setState(CC1120RadioState.CC1120_STATE_TX);
+            }
+            case CC1120_SIDLE -> setState(CC1120RadioState.CC1120_STATE_IDLE);
+            case CC1120_SAFC -> System.out.println("CC1120_SAFC not implemented");
+            case CC1120_SWOR -> System.out.println("CC1120_SWOR not implemented");
+            case CC1120_SPWD ->
+              /*System.out.println("CC1120_SPWD almost implemented");*/
+              /* TODO XXX
+               * Wait until CS is de-asserted. (We should at least wait until radio is done
+               * receiving or transmitting.)*/
+                    setState(CC1120RadioState.CC1120_STATE_SLEEP);
+            case CC1120_SFRX -> {
+              rxfifo.clear();
+              rxExpectedLen = -1;
+              rxGotSynchByte = false;
+              setGDO0(false);
+              /* printRXFIFO(); */
+            }
+            case CC1120_SFTX -> {
+              txfifo.clear();
+              txFooterCountdown = -1;
+              /* printTXFIFO(); */
+            }
+            case CC1120_SWORRST -> System.out.println("CC1120_SWORRST not implemented");
+            case CC1120_SNOP -> System.out.println("CC1120_SNOP not implemented");
+            default -> System.out.printf("strobe(0x%02x)\n", cmd);
+          }
         }
 
         @Override
@@ -565,34 +533,39 @@ public class CC1120 extends Radio802154 implements USARTListener {
                 source.byteReceived(getMarcstate());
         }
         int setReg(int address, int data, boolean extended) {
-
-                switch (address) {
-                case CC1120_TXFIFO:
-                        txfifo.add((byte) data);
-                        /* printTXFIFO(); */
-                        return txfifo.size();
-                case CC1120_FREQ2: /* XXX This is probably wrong, extended right? */
-                        nextFreq2 = data;
-                        return 0;
-                case CC1120_FREQ1:
-                        nextFreq1 = data;
-                        return 0;
-                case CC1120_FREQ0:
-                        nextFreq0 = data;
-                        return 0;
-                case CC1120_IOCFG0:
-                        if (data == 65 || data == 1) {
-                                /* CC1120_SETTING_IOCFG0 (IOCFG_GPIO_CFG_RXFIFO_THR_PKT)
-                                 * or
-                                 * CC1120_SETTING_IOCFG0 (IOCFG_GPIO_CFG_RXFIFO_THR_PKT | IOCFG_GPIO_CFG_INVERT) */
-                                triggerGDO0onFifoThreshold = true;
-                        } else {
-                                /* Assuming:
-                                 * CC1120_SETTING_IOCFG0 (IOCFG_GPIO_CFG_PKT_SYNC_RXTX | IOCFG_GPIO_CFG_INVERT) */
-                                triggerGDO0onSynch = true;
-                        }
-                        return 0;
-                }
+          switch (address) {
+            case CC1120_TXFIFO -> {
+              txfifo.add((byte) data);
+              /* printTXFIFO(); */
+              return txfifo.size();
+              /* printTXFIFO(); */
+            }
+            case CC1120_FREQ2 -> {
+              nextFreq2 = data;
+              return 0;
+            }
+            case CC1120_FREQ1 -> {
+              nextFreq1 = data;
+              return 0;
+            }
+            case CC1120_FREQ0 -> {
+              nextFreq0 = data;
+              return 0;
+            }
+            case CC1120_IOCFG0 -> {
+              if (data == 65 || data == 1) {
+                /* CC1120_SETTING_IOCFG0 (IOCFG_GPIO_CFG_RXFIFO_THR_PKT)
+                 * or
+                 * CC1120_SETTING_IOCFG0 (IOCFG_GPIO_CFG_RXFIFO_THR_PKT | IOCFG_GPIO_CFG_INVERT) */
+                triggerGDO0onFifoThreshold = true;
+              } else {
+                /* Assuming:
+                 * CC1120_SETTING_IOCFG0 (IOCFG_GPIO_CFG_PKT_SYNC_RXTX | IOCFG_GPIO_CFG_INVERT) */
+                triggerGDO0onSynch = true;
+              }
+              return 0;
+            }
+          }
 
                 if (extended) {
                         int oldValue = extendedRegisters[address];
@@ -630,32 +603,37 @@ public class CC1120 extends Radio802154 implements USARTListener {
         int getReg(int address, boolean extended) {
                 /* MSP430Core.profiler.printStackTrace(System.out); */
                 if (extended) {
-                        switch (address) {
-                        case CC1120_MARCSTATE:
-                                return getMarcstate();
-                        case CC1120_NUM_RXBYTES:
-                                return rxfifo.size();
-                        case CC1120_NUM_TXBYTES:
-                                return txfifo.size();
-                        case CC1120_RSSI1:
-                                return currentRssiReg1;
-                        case CC1120_RSSI0:
-                          int ret = 0;
-        ret += (0b1111 & currentRssiReg0); /* RSSI_3_0 */
+                  switch (address) {
+                    case CC1120_MARCSTATE -> {
+                      return getMarcstate();
+                    }
+                    case CC1120_NUM_RXBYTES -> {
+                      return rxfifo.size();
+                    }
+                    case CC1120_NUM_TXBYTES -> {
+                      return txfifo.size();
+                    }
+                    case CC1120_RSSI1 -> {
+                      return currentRssiReg1;
+                    }
+                    case CC1120_RSSI0 -> {
+                      int ret = 0;
+                      ret += (0b1111 & currentRssiReg0); /* RSSI_3_0 */
 
-        ret = ret << 1;
-        if(currentRssi > CCA_THRESHOLD) {
-          ret += 1; /* Carrier detected */
-        }
+                      ret = ret << 1;
+                      if (currentRssi > CCA_THRESHOLD) {
+                        ret += 1; /* Carrier detected */
+                      }
 
-        ret = ret << 1;
-        ret += 1; /* TODO XXX Carrier sense is always valid */
+                      ret = ret << 1;
+                      ret += 1; /* TODO XXX Carrier sense is always valid */
 
-        ret = ret << 1;
-        ret += 1; /* TODO XXX RSSI is always valid */
+                      ret = ret << 1;
+                      ret += 1; /* TODO XXX RSSI is always valid */
 
-        return ret;
-                        }
+                      return ret;
+                    }
+                  }
                 }
 
                 switch (address) {
