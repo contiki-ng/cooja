@@ -38,6 +38,7 @@ import org.contikios.cooja.interfaces.PolledAfterAllTicks;
 import org.contikios.cooja.interfaces.PolledBeforeActiveTicks;
 import org.contikios.cooja.interfaces.PolledBeforeAllTicks;
 import org.contikios.cooja.mote.memory.SectionMoteMemory;
+import org.contikios.cooja.mote.memory.VarMemory;
 import org.contikios.cooja.motes.AbstractWakeupMote;
 
 /**
@@ -87,6 +88,14 @@ public class ContikiMote extends AbstractWakeupMote<ContikiMoteType, SectionMote
       }
     }
     requestImmediateWakeup();
+  }
+
+  @Override
+  public void added() {
+    super.added();
+    VarMemory moteMem = new VarMemory(getMemory());
+    int simRandomSeed = getSimulation().getRandomGenerator().nextInt();
+    moteMem.setIntValueOf("simRandomSeed", simRandomSeed);
   }
 
   /**
