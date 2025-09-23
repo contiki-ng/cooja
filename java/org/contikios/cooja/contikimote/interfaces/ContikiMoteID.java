@@ -41,10 +41,7 @@ import org.contikios.cooja.mote.memory.VarMemory;
  * Contiki variables:
  * <ul>
  * <li>int simMoteID
- * <li>char simMoteIDChanged
  * </ul>
- *
- * This interface also seeds the Contiki random generator: 'random_init()'.
  * <p>
  *
  * This observable notifies observers when the mote ID is set or altered.
@@ -71,7 +68,5 @@ public class ContikiMoteID extends MoteID<ContikiMote> {
   public void setMoteID(int newID) {
     super.setMoteID(newID);
     moteMem.setIntValueOf("simMoteID", newID);
-    moteMem.setByteValueOf("simMoteIDChanged", (byte) 1);
-    moteMem.setIntValueOf("simRandomSeed", (int) (mote.getSimulation().getRandomSeed() + newID));
   }
 }
