@@ -483,54 +483,43 @@ public class Timer extends IOUnit {
       resetTIV(cycles);
       return val;
     }
-    int val = 0;
     int index = address - offset;
-    switch(index) {
-    case TR:
-      val = updateCounter(cycles);
-      break;
-    case TCTL:
-      val = tctl;
-      if (interruptPending) {
-        val |= 1;
-      } else {
-        val &= 0xfffe;
+    int val = switch (index) {
+      case TR -> updateCounter(cycles);
+      case TCTL -> {
+        int tctl_value = tctl;
+        if (interruptPending) {
+          tctl_value |= 1;
+        } else {
+          tctl_value &= 0xfffe;
+        }
+        if (DEBUG) {
+          log("Read: " +
+                  " CTL: inDiv:" + inputDivider +
+                  " src: " + getSourceName(clockSource) +
+                  " IEn:" + interruptEnable + " IFG: " +
+                  interruptPending + " mode: " + mode);
+        }
+        yield tctl_value;
       }
-      if (DEBUG) {
-        log("Read: " +
-            " CTL: inDiv:" + inputDivider +
-            " src: " + getSourceName(clockSource) +
-            " IEn:" + interruptEnable + " IFG: " +
-            interruptPending + " mode: " + mode);
+      case TCCTL0, TCCTL1, TCCTL2, TCCTL3, TCCTL4, TCCTL5, TCCTL6 -> {
+        int i = (index - TCCTL0) / 2;
+        updateTCCTL(i, cycles);
+        yield ccr[i].tcctl;
       }
-      break;
-    case TCCTL0:
-    case TCCTL1:
-    case TCCTL2:
-    case TCCTL3:
-    case TCCTL4:
-    case TCCTL5:
-    case TCCTL6:
-      int i = (index - TCCTL0) / 2;
-      updateTCCTL(i, cycles);
-      val = ccr[i].tcctl;
-      break;
-    case TCCR0:
-    case TCCR1:
-    case TCCR2:
-    case TCCR3:
-    case TCCR4:
-    case TCCR5:
-    case TCCR6:
-      i = (index - TCCR0) / 2;
-      if (i >= noCompare) {
+      case TCCR0, TCCR1, TCCR2, TCCR3, TCCR4, TCCR5, TCCR6 -> {
+        int i;
+        i = (index - TCCR0) / 2;
+        if (i >= noCompare) {
           throw new EmulationException(getName() + " Reading from CCR register that is not available " + i);
+        }
+        yield ccr[i].tccr;
       }
-      val = ccr[i].tccr;
-      break;
-    default:
-      logw(WarningType.VOID_IO_READ, "Not supported read, returning zero!!! addr: " + index + " addr: $" + Utils.hex(address, 4));
-    }
+      default -> {
+        logw(WarningType.VOID_IO_READ, "Not supported read, returning zero!!! addr: " + index + " addr: $" + Utils.hex(address, 4));
+        yield 0;
+      }
+    };
 
     if (DEBUG) {
       log("Read " + getName(address) + "($" + Utils.hex(address, 4) + ") => $" +
@@ -616,178 +605,165 @@ public class Timer extends IOUnit {
 
 
     switch (iAddress) {
-    case TR:
-      setCounter(data, cycles);
-      break;
-    case TCTL:
-      if (DEBUG) {
-        log("wrote to TCTL: " + Utils.hex16(data));
-      }
-      inputDivider = 1 << ((data >> 6) & 3);
-      clockSource = srcMap[(data >> 8) & 3];
-
-      updateCyclesMultiplicator();
-
-      if ((data & TCLR) != 0) {
-        counter = 0;
-        resetCounter(cycles);
-
-        for (int i = 0; i < noCompare; i++) {
-            ccr[i].updateCaptures(cycles);
-        }
-      }
-
-      int newMode = (data >> 4) & 3;
-      if (mode == STOP && newMode != STOP) {
-        // Set the initial counter to the value that counter should have after
-        // recalculation
-        resetCounter(cycles);
-
-        // Wait until full wrap before setting the IRQ flag!
-        nextTimerTrigger = (long) (cycles + cyclesMultiplicator * ((0xffff - counter) & 0xffff));
+      case TR -> setCounter(data, cycles);
+      case TCTL -> {
         if (DEBUG) {
-          log("Starting timer!");
+          log("wrote to TCTL: " + Utils.hex16(data));
+        }
+        inputDivider = 1 << ((data >> 6) & 3);
+        clockSource = srcMap[(data >> 8) & 3];
+
+        updateCyclesMultiplicator();
+
+        if ((data & TCLR) != 0) {
+          counter = 0;
+          resetCounter(cycles);
+
+          for (int i = 0; i < noCompare; i++) {
+            ccr[i].updateCaptures(cycles);
+          }
         }
 
-        for (int i = 0; i < noCompare; i++) {
+        int newMode = (data >> 4) & 3;
+        if (mode == STOP && newMode != STOP) {
+          // Set the initial counter to the value that counter should have after
+          // recalculation
+          resetCounter(cycles);
+
+          // Wait until full wrap before setting the IRQ flag!
+          nextTimerTrigger = (long) (cycles + cyclesMultiplicator * ((0xffff - counter) & 0xffff));
+          if (DEBUG) {
+            log("Starting timer!");
+          }
+
+          for (int i = 0; i < noCompare; i++) {
             ccr[i].timerStarted(cycles);
+          }
+
+          if (DEBUG) log(cpu.cycles + ": Timer started: " + counter + "  CCR1:" + ccr[1].expCaptureTime);
+
         }
-
-        if (DEBUG) log(cpu.cycles + ": Timer started: " + counter + "  CCR1:" + ccr[1].expCaptureTime);
-
-      }
-      if (mode != STOP && newMode == STOP) {
+        if (mode != STOP && newMode == STOP) {
           /* call update counter to remember how many cycles that passed before this stop... */
           updateCounter(cycles);
           for (int i = 0; i < noCompare; i++) {
-              ccr[i].timerStopped(cycles);
+            ccr[i].timerStopped(cycles);
           }
           if (DEBUG) log(cpu.cycles + ": Timer stopped: " + counter + "  CCR1:" + ccr[1].expCaptureTime);
-      }
+        }
 
-      mode = newMode;
+        mode = newMode;
 
-      interruptEnable = (data & 0x02) > 0;
+        interruptEnable = (data & 0x02) > 0;
 
-      if (DEBUG) {
-        log("Write:  CTL: inDiv:" + inputDivider +
-                " src: " + getSourceName(clockSource) +
-                " IEn:" + interruptEnable + " IFG: " +
-                interruptPending + " mode: " + mode +
-                ((data & TCLR) != 0 ? " CLR" : ""));
-      }
+        if (DEBUG) {
+          log("Write:  CTL: inDiv:" + inputDivider +
+                  " src: " + getSourceName(clockSource) +
+                  " IEn:" + interruptEnable + " IFG: " +
+                  interruptPending + " mode: " + mode +
+                  ((data & TCLR) != 0 ? " CLR" : ""));
+        }
 
-      // Write to the tctl.
-      tctl = data;
-      // Clear bit
-      tctl &= ~0x04;
+        // Write to the tctl.
+        tctl = data;
+        // Clear bit
+        tctl &= ~0x04;
 
-      // Clear interrupt pending if so requested...
-      if ((data & 0x01) == 0) {
-        interruptPending = false;
-      }
+        // Clear interrupt pending if so requested...
+        if ((data & 0x01) == 0) {
+          interruptPending = false;
+        }
 
-      //    updateCaptures(-1, cycles);
-      for (int i = 0; i < noCompare; i++) {
+        //    updateCaptures(-1, cycles);
+        for (int i = 0; i < noCompare; i++) {
           ccr[i].updateCaptures(cycles);
-      }
-
-      break;
-    case TCCTL0:
-    case TCCTL1:
-    case TCCTL2:
-    case TCCTL3:
-    case TCCTL4:
-    case TCCTL5:
-    case TCCTL6:
-      // Control register...
-      int index = (iAddress - TCCTL0) / 2;
-      CCR reg = ccr[index];
-      reg.tcctl = data;
-      reg.outMode = (data >> 5)& 7;
-      boolean oldCapture = reg.captureOn;
-      reg.captureOn = (data & 0x100) > 0;
-      reg.sync = (data & 0x800) > 0;
-      reg.inputSel = (data >> 12) & 3;
-      int src = srcMap[4 + index * 4 + reg.inputSel];
-      reg.inputSrc = src;
-      reg.capMode = (data >> 14) & 3;
-
-      /* capture a port state? */
-      if (!oldCapture && reg.captureOn && (src & SRC_PORT) != 0) {
-        int port = (src & 0xff) >> 4;
-        int pin = src & 0x0f;
-        IOPort ioPort = cpu.getIOUnit(IOPort.class, "P" + port);
-        if (DEBUG) log("Assigning Port: " + port + " pin: " + pin +
-            " for capture");
-        ioPort.setTimerCapture(this, pin);
-      }
-
-      updateCounter(cycles);
-
-      if (DEBUG) {
-        log(getName() + "Write: CCTL" + index + ": => " + Utils.hex16(data) +
-                " CM: " + capNames[reg.capMode] +
-                " CCIS:" + reg.inputSel + " name: " +
-                getSourceName(reg.inputSrc) +
-                " Capture: " + reg.captureOn +
-                " IE: " + ((data & CC_IE) != 0));
-      }
-
-      reg.updateCaptures(cycles);
-//      updateCaptures(index, cycles);
-      break;
-      // Write to compare register!
-    case TCCR0:
-    case TCCR1:
-    case TCCR2:
-    case TCCR3:
-    case TCCR4:
-    case TCCR5:
-    case TCCR6:
-      // update of compare register
-      index = (iAddress - TCCR0) / 2;
-      updateCounter(cycles);
-      if (index == 0) {
-        // Reset the counter to bring it down to a smaller value...
-        // Check if up or updwn and reset if counter too high...
-        if (counter > data && (mode == UPDWN || mode == UP)) {
-          counter = 0;
-          resetCounter(cycles);
         }
       }
-      if (ccr[index] == null)
-          logw(WarningType.VOID_IO_WRITE, "Timer write to " + Utils.hex16(address));
-      ccr[index].tccr = data;
+      case TCCTL0, TCCTL1, TCCTL2, TCCTL3, TCCTL4, TCCTL5, TCCTL6 -> {
+        // Control register...
+        int index = (iAddress - TCCTL0) / 2;
+        CCR reg = ccr[index];
+        reg.tcctl = data;
+        reg.outMode = (data >> 5) & 7;
+        boolean oldCapture = reg.captureOn;
+        reg.captureOn = (data & 0x100) > 0;
+        reg.sync = (data & 0x800) > 0;
+        reg.inputSel = (data >> 12) & 3;
+        int src = srcMap[4 + index * 4 + reg.inputSel];
+        reg.inputSrc = src;
+        reg.capMode = (data >> 14) & 3;
 
-      int diff = data - counter;
-      if (diff <= 0) {
-        // Ok we need to wrap!
-        diff += 0x10000;
+        /* capture a port state? */
+        if (!oldCapture && reg.captureOn && (src & SRC_PORT) != 0) {
+          int port = (src & 0xff) >> 4;
+          int pin = src & 0x0f;
+          IOPort ioPort = cpu.getIOUnit(IOPort.class, "P" + port);
+          if (DEBUG) log("Assigning Port: " + port + " pin: " + pin +
+                  " for capture");
+          ioPort.setTimerCapture(this, pin);
+        }
+
+        updateCounter(cycles);
+
+        if (DEBUG) {
+          log(getName() + "Write: CCTL" + index + ": => " + Utils.hex16(data) +
+                  " CM: " + capNames[reg.capMode] +
+                  " CCIS:" + reg.inputSel + " name: " +
+                  getSourceName(reg.inputSrc) +
+                  " Capture: " + reg.captureOn +
+                  " IE: " + ((data & CC_IE) != 0));
+        }
+
+        reg.updateCaptures(cycles);
+//      updateCaptures(index, cycles);
       }
-      if (DEBUG) {
-        log("Write: Setting compare " + index + " to " +
-                Utils.hex16(data) + " TR: " +
-                Utils.hex16(counter) + " diff: " + Utils.hex16(diff));
+      // Write to compare register!
+      case TCCR0, TCCR1, TCCR2, TCCR3, TCCR4, TCCR5, TCCR6 -> {
+        // update of compare register
+        int index = (iAddress - TCCR0) / 2;
+        updateCounter(cycles);
+        if (index == 0) {
+          // Reset the counter to bring it down to a smaller value...
+          // Check if up or updwn and reset if counter too high...
+          if (counter > data && (mode == UPDWN || mode == UP)) {
+            counter = 0;
+            resetCounter(cycles);
+          }
+        }
+        if (ccr[index] == null)
+          logw(WarningType.VOID_IO_WRITE, "Timer write to " + Utils.hex16(address));
+        ccr[index].tccr = data;
+
+        int diff = data - counter;
+        if (diff <= 0) {
+          // Ok we need to wrap!
+          diff += 0x10000;
+        }
+        if (DEBUG) {
+          log("Write: Setting compare " + index + " to " +
+                  Utils.hex16(data) + " TR: " +
+                  Utils.hex16(counter) + " diff: " + Utils.hex16(diff));
+        }
+        // Use the counterPassed information to compensate the expected capture/compare time!!!
+        ccr[index].expCaptureTime = cycles + (long) (cyclesMultiplicator * diff + 1) - counterPassed;
+        if (DEBUG && counterPassed > 0) {
+          log("Comp: " + counterPassed + " cycl: " + cycles + " TR: " +
+                  counter + " CCR" + index + " = " + data + " diff = " + diff + " cycMul: " + cyclesMultiplicator + " expCyc: " +
+                  ccr[index].expCaptureTime);
+        }
+        counterPassed = 0;
+        if (DEBUG) {
+          log("Cycles: " + cycles + " expCap[" + index + "]: " + ccr[index].expCaptureTime
+                  + " ctr:" + counter + " data: " + data + " ~" +
+                  (100 * (cyclesMultiplicator * diff * 1L) / 2500000) / 100.0 + " sec" +
+                  "at cycles: " + ccr[index].expCaptureTime);
+        }
+        ccr[index].update();
+        //calculateNextEventTime(cycles);
       }
-      // Use the counterPassed information to compensate the expected capture/compare time!!!
-      ccr[index].expCaptureTime = cycles + (long)(cyclesMultiplicator * diff + 1) - counterPassed;
-      if (DEBUG && counterPassed > 0) {
-        log("Comp: " + counterPassed + " cycl: " + cycles + " TR: " +
-            counter + " CCR" + index + " = " + data + " diff = " + diff + " cycMul: " + cyclesMultiplicator + " expCyc: " +
-            ccr[index].expCaptureTime);
-      }
-      counterPassed = 0;
-      if (DEBUG) {
-        log("Cycles: " + cycles + " expCap[" + index + "]: " + ccr[index].expCaptureTime
-                + " ctr:" + counter + " data: " + data + " ~" +
-                (100 * (cyclesMultiplicator * diff * 1L) / 2500000) / 100.0 + " sec" +
-                "at cycles: " + ccr[index].expCaptureTime);
-      }
-      ccr[index].update();
-      //calculateNextEventTime(cycles);
     }
   }
+
   private void updateCyclesMultiplicator() {
     cyclesMultiplicator = inputDivider;
     if (clockSource == SRC_ACLK) {
@@ -855,28 +831,23 @@ public class Timer extends IOUnit {
     counterPassed = (int) (divider * (tick - (long) tick));
     long bigCounter = (long) (tick + counterAcc);
 
-    switch (mode) {
-    case CONTIN:
-      counter = (int) (bigCounter & 0xffff);
-      break;
-    case UP:
-      if (ccr[0].tccr == 0) {
-        counter = 0;
-      } else {
-        counter = (int) (bigCounter % ccr[0].tccr);
-      }
-      break;
-    case UPDWN:
-      if (ccr[0].tccr == 0) {
-        counter = 0;
-      } else {
-        counter = (int) (bigCounter % (ccr[0].tccr * 2L));
-        if (counter > ccr[0].tccr) {
-          // Should back down to start again!
-          counter = 2 * ccr[0].tccr - counter;
+    counter = switch (mode) {
+      case CONTIN -> (int) (bigCounter & 0xffff);
+      case UP -> ccr[0].tccr == 0 ? 0 : (int) (bigCounter % ccr[0].tccr);
+      case UPDWN -> {
+        if (ccr[0].tccr == 0) {
+          yield 0;
+        } else {
+          int tmp = (int) (bigCounter % (ccr[0].tccr * 2L));
+          if (tmp > ccr[0].tccr) {
+            // Should back down to start again!
+            tmp = 2 * ccr[0].tccr - tmp;
+          }
+          yield tmp;
         }
       }
-    }
+      default -> counter;
+    };
     if (DEBUG) {
       log("Updating counter cycctr: " + cycctr +
           " divider: " + divider + " mode:" + mode + " => " + counter);
@@ -885,22 +856,14 @@ public class Timer extends IOUnit {
   }
 
   private static String getSourceName(int source) {
-    switch (source) {
-    case SRC_ACLK:
-      return "ACLK";
-    case SRC_VCC:
-      return "VCC";
-    case SRC_GND:
-      return "GND";
-    case SRC_SMCLK:
-      return "SMCLK";
-    default:
-      if ((source & SRC_PORT) == SRC_PORT) {
-        return "Port " + ((source & 0xf0) >> 4) + "." +
-          (source & 0xf);
-      }
-    }
-    return "";
+    return switch (source) {
+      case SRC_ACLK -> "ACLK";
+      case SRC_VCC -> "VCC";
+      case SRC_GND -> "GND";
+      case SRC_SMCLK -> "SMCLK";
+      default -> (source & SRC_PORT) == SRC_PORT ? "Port " + ((source & 0xf0) >> 4) + "." +
+              (source & 0xf) : "";
+    };
   }
 
   /**
