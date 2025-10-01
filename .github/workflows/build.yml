@@ -37,7 +37,7 @@ jobs:
           java-version: 21
           distribution: 'zulu'
       - name: Verify gradle-wrapper checksum
-        uses: gradle/actions/wrapper-validation@v4
+        uses: gradle/actions/wrapper-validation@v5
       - name: configure macOS/Intel Gradle
         if: matrix.os == 'macos-13'
         run: |
@@ -65,7 +65,7 @@ jobs:
         run: |
           brew install make clang-format
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           cache-read-only: false
       # The build step includes :spotlessJavaBuild.
