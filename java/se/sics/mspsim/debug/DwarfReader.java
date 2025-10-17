@@ -220,38 +220,38 @@ public class DwarfReader implements ELFDebug {
                 while(!endSequence) {
                     int opCode = sec.readElf8();
                     if (DEBUG) System.out.print("POS: " + sec.getPosition() + " INS: " + Utils.hex8(opCode) + " ");
-                    switch(opCode) {
-                    case DW_LNS_EXT:
-                        /* extended opcodes */
-                        int len = (int) sec.readLEB128();
-                        int extPos = sec.getPosition();
-                        int extIns = sec.readElf8();
-                        if (DEBUG) System.out.println("EXT: " + Utils.hex8(extIns) + " LEN: " + len);
-                        switch(extIns) {
-                        case DW_LNE_end_sequence:
-                            endSequence = true;
-                            lineData.add(new LineEntry(lineLine, lineAddress, lineFile));
+                  switch (opCode) {
+                    case DW_LNS_EXT -> {
+                      /* extended opcodes */
+                      int len = (int) sec.readLEB128();
+                      int extPos = sec.getPosition();
+                      int extIns = sec.readElf8();
+                      if (DEBUG) System.out.println("EXT: " + Utils.hex8(extIns) + " LEN: " + len);
+                      switch (extIns) {
+                        case DW_LNE_end_sequence -> {
+                          endSequence = true;
+                          lineData.add(new LineEntry(lineLine, lineAddress, lineFile));
 
-                            lineAddress = 0;
-                            lineFile = 1;
-                            lineLine = 1;
-                            lineColumn = 0;
-                            isStatement = defaultIsStmt != 0;
+                          lineAddress = 0;
+                          lineFile = 1;
+                          lineLine = 1;
+                          lineColumn = 0;
+                          isStatement = defaultIsStmt != 0;
 
-                            if (DEBUG) System.out.println("Line: End sequence executed!!!");
-                            break;
-                        case DW_LNE_set_address:
-                            if (len == 3) {
-                                lineAddress = sec.readElf16();
-                            } else if (len == 5) {
-                                lineAddress = sec.readElf32();
-                            } else {
-                                throw new IllegalStateException("No support for " + (len - 1) + " bytes addresses");
-                            }
-                            if (DEBUG) System.out.println("Line: Set address to: " + Utils.hex16(lineAddress) +
-                                    " (len: " + len + ")");
-                            break;
-                        case DW_LNE_define_file: {
+                          if (DEBUG) System.out.println("Line: End sequence executed!!!");
+                        }
+                        case DW_LNE_set_address -> {
+                          if (len == 3) {
+                            lineAddress = sec.readElf16();
+                          } else if (len == 5) {
+                            lineAddress = sec.readElf32();
+                          } else {
+                            throw new IllegalStateException("No support for " + (len - 1) + " bytes addresses");
+                          }
+                          if (DEBUG) System.out.println("Line: Set address to: " + Utils.hex16(lineAddress) +
+                                  " (len: " + len + ")");
+                        }
+                        case DW_LNE_define_file -> {
                           /* XXX TODO Implement me */
                           String filename = sec.readString();
                           long directoryIndex = sec.readLEB128();
@@ -259,95 +259,95 @@ public class DwarfReader implements ELFDebug {
                           long fileSize = sec.readLEB128();
                           if (DEBUG) System.out.println("Line: Should define the file '" + filename + "' dir "
                                   + directoryIndex + " modified " + lastModified + " size " + fileSize);
-                          break;
                         }
-                        case DW_LNE_set_discriminator: // DWARF 4.0?
-                            /* currently just read it but ignore it - TODO: use this info */
-                          /*reg_discriminator = */sec.readElf8();
+                        case DW_LNE_set_discriminator -> {
+                          /* currently just read it but ignore it - TODO: use this info */
+                          /*reg_discriminator = */
+                          sec.readElf8();
                           if (DEBUG) System.out.println("Line: Should support DW_LNE_set_discriminator");
-                          break;
-                        default:
+                        }
+                        default -> {
                           /* XXX TODO Implement me */
                           if (DEBUG) System.out.println("Line: unhandled EXT instr: " + Utils.hex8(extIns));
                         }
-                        if (sec.getPosition() != extPos + len) {
-                            throw new IllegalStateException("*** ERROR posistion is not as exepected!!!!" + (extPos + len) + " is " +
-                                    sec.getPosition());
-                        }
-                        break;
-                    case DW_LNS_copy:
-                        /* copy data to matrix... */
-                        if (DEBUG) System.out.println("Line: copy data (" + lineLine + "," +
-                                Utils.hex16(lineAddress) + ") to matrix...");
-                        lineData.add(new LineEntry(lineLine, lineAddress, lineFile));
-                        break;
-                    case DW_LNS_advance_pc:
-                        long add = sec.readLEB128();
-                        lineAddress += minOpLen * add;
-                        if (DEBUG) System.out.println("Line: Increased address to: " + Utils.hex16(lineAddress));
-                        break;
-                    case DW_LNS_advance_line:
-                        long addLine = sec.readLEB128S();
-                        lineLine += addLine;
-                        if (DEBUG) System.out.println("Line: Increased line to: " + lineLine +
-                                " (incr: " + addLine + ")");
-                        break;
-                    case DW_LNS_set_file:
-                        lineFile = (int) sec.readLEB128();
-                        if (DEBUG) System.out.println("Line: Set file to: " + lineFile);
-                        break;
-                    case DW_LNS_set_column:
-                        lineColumn = (int) sec.readLEB128();
-                        if (DEBUG) System.out.println("Line: set column to: " + lineColumn);
-                        break;
-                    case DW_LNS_negate_stmt:
-                        isStatement = !isStatement;
-                        if (DEBUG) System.out.println("Line: Negated is statement");
-                        break;
-                    case DW_LNS_set_basic_block:
-                        if (DEBUG) System.out.println("Line: Set basic block to true");
-                        break;
-                    case DW_LNS_const_add_pc:
-                        if (DEBUG) System.out.println("Line: *** Should add const to PC - but how much - same as FF??");
-                        {
-                          int adjustedOpcode = 255 - opcodeBase;
-                          int operationAdvance = adjustedOpcode / lineRange;
-                          lineAddress += minOpLen * operationAdvance;
-                        }
-
-                        break;
-                    case DW_LNS_fixed_advance_pc:
-                        int incr = sec.readElf16();
-                        lineAddress += incr;
-                        if (DEBUG) System.out.println("Line: *** Increased address to: " + Utils.hex16(lineAddress));
-                        break;
-                    case DW_LNS_set_prologue_end:
-                      /*reg_prologue_end = true;*/
-                      break;
-                    case  DW_LNS_set_epilogue_begin:
-                      /*reg_epilogue_begin = true;*/
-                      break;
-                    case  DW_LNS_set_isa:
-                      /*reg_isa = (int) */ sec.readLEB128();
-                      break;
-                    default:
-                        if (DEBUG) {
-                            System.out.println("INS: " + Utils.hex8(opCode) + " AINS: " + Utils.hex8(opCode - opcodeBase)
-                                    + " lineRange: " + lineRange);
-                        }
-
-                        int adjustedOpcode = opCode - opcodeBase;
-                        int operationAdvance = adjustedOpcode / lineRange;
-
-                        int lineInc = lineBase + (adjustedOpcode % lineRange);
-                        lineLine += lineInc;
-
-                        lineAddress += minOpLen * operationAdvance;
-                        lineData.add(new LineEntry(lineLine, lineAddress, lineFile));
-
-                        if (DEBUG) System.out.println("Line: *** Special operation => addr: " +
-                                Utils.hex16(lineAddress) + " Line: " + lineLine + " lineInc: " + lineInc);
+                      }
+                      if (sec.getPosition() != extPos + len) {
+                        throw new IllegalStateException("*** ERROR posistion is not as exepected!!!!" + (extPos + len) + " is " +
+                                sec.getPosition());
+                      }
                     }
+                    case DW_LNS_copy -> {
+                      /* copy data to matrix... */
+                      if (DEBUG) System.out.println("Line: copy data (" + lineLine + "," +
+                              Utils.hex16(lineAddress) + ") to matrix...");
+                      lineData.add(new LineEntry(lineLine, lineAddress, lineFile));
+                    }
+                    case DW_LNS_advance_pc -> {
+                      long add = sec.readLEB128();
+                      lineAddress += minOpLen * add;
+                      if (DEBUG) System.out.println("Line: Increased address to: " + Utils.hex16(lineAddress));
+                    }
+                    case DW_LNS_advance_line -> {
+                      long addLine = sec.readLEB128S();
+                      lineLine += addLine;
+                      if (DEBUG) System.out.println("Line: Increased line to: " + lineLine +
+                              " (incr: " + addLine + ")");
+                    }
+                    case DW_LNS_set_file -> {
+                      lineFile = (int) sec.readLEB128();
+                      if (DEBUG) System.out.println("Line: Set file to: " + lineFile);
+                    }
+                    case DW_LNS_set_column -> {
+                      lineColumn = (int) sec.readLEB128();
+                      if (DEBUG) System.out.println("Line: set column to: " + lineColumn);
+                    }
+                    case DW_LNS_negate_stmt -> {
+                      isStatement = !isStatement;
+                      if (DEBUG) System.out.println("Line: Negated is statement");
+                    }
+                    case DW_LNS_set_basic_block -> {
+                      if (DEBUG) System.out.println("Line: Set basic block to true");
+                    }
+                    case DW_LNS_const_add_pc -> {
+                      if (DEBUG) System.out.println("Line: *** Should add const to PC - but how much - same as FF??");
+                      {
+                        int adjustedOpcode = 255 - opcodeBase;
+                        int operationAdvance = adjustedOpcode / lineRange;
+                        lineAddress += minOpLen * operationAdvance;
+                      }
+                    }
+                    case DW_LNS_fixed_advance_pc -> {
+                      int incr = sec.readElf16();
+                      lineAddress += incr;
+                      if (DEBUG) System.out.println("Line: *** Increased address to: " + Utils.hex16(lineAddress));
+                    }
+                    case DW_LNS_set_prologue_end -> {
+                      /*reg_prologue_end = true;*/
+                    }
+                    case DW_LNS_set_epilogue_begin -> {
+                      /*reg_epilogue_begin = true;*/
+                    }
+                    case DW_LNS_set_isa ->
+                      /*reg_isa = (int) */ sec.readLEB128();
+                    default -> {
+                      if (DEBUG) {
+                        System.out.println("INS: " + Utils.hex8(opCode) + " AINS: " + Utils.hex8(opCode - opcodeBase)
+                                + " lineRange: " + lineRange);
+                      }
+
+                      int adjustedOpcode = opCode - opcodeBase;
+                      int operationAdvance = adjustedOpcode / lineRange;
+
+                      int lineInc = lineBase + (adjustedOpcode % lineRange);
+                      lineLine += lineInc;
+
+                      lineAddress += minOpLen * operationAdvance;
+                      lineData.add(new LineEntry(lineLine, lineAddress, lineFile));
+
+                      if (DEBUG) System.out.println("Line: *** Special operation => addr: " +
+                              Utils.hex16(lineAddress) + " Line: " + lineLine + " lineInc: " + lineInc);
+                    }
+                  }
                 }
                 if (DEBUG) System.out.println("Line - Position " + sec.getPosition() + " totLen: " + totLen +
                         " endPos: " + endPos);

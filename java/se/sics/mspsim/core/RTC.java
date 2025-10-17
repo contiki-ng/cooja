@@ -614,73 +614,44 @@ public class RTC extends IOUnit {
                         logw(WarningType.MISALIGNED_READ, "byte access not implemented");
                 }
 
-                switch (address - offset) {
-                case RTCCTL01:
-                        if (word) {
-                                return getCTL01Reg();
-                        } else {
-                                return getCTL0Reg();
-                        }
-
-                case RTCCTL23:
-                        logNotImplemented("calibration");
-                        break;
-
-                case RTCPS:
-                        logNotImplemented("prescaling coutner");
-                        break;
-
-                case RTCPS0CTL:
-                        return getPS0CTL();
-
-                case RTCPS1CTL:
-                        return getPS1CTL();
-
-                case RTCIV:
-                        /*
-                         * Any access, read or write, of the RTCIV register automatically
-                         * resets the highest-pending interrupt flag. If another interrupt flag
-                         * is set, another interrupt is immediately generated after servicing
-                         * the initial interrupt. In addition, all flags can be cleared via
-                         * software.
-                         */
-                        int tmp = getIV();
-                        clearHighestInterrupt();
-                        return tmp;
-
-                case RTCTIM0: // RTCNT12
-                        if (modeCalendar) {
-                                return formatField(Calendar.MINUTE) << 8
-                                                | formatField(Calendar.SECOND);
-                        } else {
-                                return (int) (rtcCount & 0xffff);
-                        }
-
-                case RTCTIM1: // RTCNT34
-                        if (modeCalendar) {
-                                return formatField(Calendar.DAY_OF_WEEK) << 8
-                                                | formatField(Calendar.HOUR_OF_DAY);
-                        } else {
-                                return (int) ((rtcCount >> 16) & 0xffff);
-                        }
-
-                case RTCDATE:
-                        if (modeCalendar) {
-                                return formatField(Calendar.MONTH) << 8
-                                                | formatField(Calendar.DAY_OF_MONTH);
-                        }
-                        break;
-
-                case RTCYEAR:
-                        if (modeCalendar) {
-                                return formatField(Calendar.YEAR);
-                        }
-                        break;
-
-                default:
-                        logNotImplemented("register: " + address);
-                }
-                return 0;
+          return switch (address - offset) {
+            case RTCCTL01 -> word ? getCTL01Reg() : getCTL0Reg();
+            case RTCCTL23 -> {
+              logNotImplemented("calibration");
+              yield 0;
+            }
+            case RTCPS -> {
+              logNotImplemented("prescaling coutner");
+              yield 0;
+            }
+            case RTCPS0CTL -> getPS0CTL();
+            case RTCPS1CTL -> getPS1CTL();
+            case RTCIV -> {
+              /*
+               * Any access, read or write, of the RTCIV register automatically
+               * resets the highest-pending interrupt flag. If another interrupt flag
+               * is set, another interrupt is immediately generated after servicing
+               * the initial interrupt. In addition, all flags can be cleared via
+               * software.
+              */
+              int tmp = getIV();
+              clearHighestInterrupt();
+              yield tmp;
+            }
+            case RTCTIM0 -> // RTCNT12
+                    modeCalendar ? formatField(Calendar.MINUTE) << 8
+                            | formatField(Calendar.SECOND) : (int) (rtcCount & 0xffff);
+            case RTCTIM1 -> // RTCNT34
+                    modeCalendar ? formatField(Calendar.DAY_OF_WEEK) << 8
+                            | formatField(Calendar.HOUR_OF_DAY) : (int) ((rtcCount >> 16) & 0xffff);
+            case RTCDATE -> modeCalendar ? formatField(Calendar.MONTH) << 8
+                    | formatField(Calendar.DAY_OF_MONTH) : 0;
+            case RTCYEAR -> modeCalendar ? formatField(Calendar.YEAR) : 0;
+            default -> {
+              logNotImplemented("register: " + address);
+              yield 0;
+            }
+          };
         }
 
         @Override

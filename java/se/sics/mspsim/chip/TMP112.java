@@ -67,17 +67,15 @@ public class TMP112 extends I2CUnit implements TemperatureChip {
 
         @Override
         protected int registerRead(int address) {
-                switch (address) {
-                case TEMP_REG:
-                        return getRawTemperature() & 0xffff;
-                case CONFIG_REG:
-                        return config;
-                case TEMP_L_REG:
-                case TEMP_H_REG:
-                        logw("not implemented");
-                        break;
-                }
-                return 0;
+          return switch (address) {
+            case TEMP_REG -> getRawTemperature() & 0xffff;
+            case CONFIG_REG -> config;
+            case TEMP_L_REG, TEMP_H_REG -> {
+              logw("not implemented");
+              yield 0;
+            }
+            default -> 0;
+          };
         }
 
         @Override
