@@ -254,6 +254,7 @@ public class LogisticLoss extends AbstractRadioMedium {
                     newConnection.addInterfered(recv);
                 } else if (recv.isTransmitting()) {
                     newConnection.addInterfered(recv);
+                    recv.interfereAnyReception();
                 } else {
                     boolean receiveNewOk = random.nextDouble() < getRxSuccessProbability(sender, recv);
 

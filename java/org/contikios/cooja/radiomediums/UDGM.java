@@ -219,6 +219,7 @@ public class UDGM extends AbstractRadioMedium {
           newConnection.addInterfered(recv);
         } else if (recv.isTransmitting()) {
           newConnection.addInterfered(recv);
+          recv.interfereAnyReception();
         } else if (recv.isReceiving() ||
             (random.nextDouble() > getRxSuccessProbability(sender, recv))) {
           /* Was receiving, or reception failed: start interfering */
