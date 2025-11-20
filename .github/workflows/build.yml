@@ -23,11 +23,11 @@ jobs:
 
     steps:
       - name: Checkout Contiki-NG repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: contiki-ng/contiki-ng
           path: contiki-ng
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: contiki-ng/cooja
           path: contiki-ng/tools/cooja
