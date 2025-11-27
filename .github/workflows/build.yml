@@ -74,7 +74,7 @@ jobs:
         run: ./gradlew build jar -Perrorprone
 
       - name: ccache
-        uses: hendrikmuhs/ccache-action@v1.2.19
+        uses: hendrikmuhs/ccache-action@v1.2.20
         with:
           key: compilation-${{ runner.os }}
           max-size: 160M
