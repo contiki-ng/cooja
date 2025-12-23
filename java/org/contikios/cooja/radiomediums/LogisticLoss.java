@@ -343,8 +343,11 @@ public class LogisticLoss extends AbstractRadioMedium {
             d = 0.01;
         }
 
+        double moteTransmissionRange = TRANSMITTING_RANGE
+            * ((double) source.getCurrentOutputPowerIndicator() / (double) source.getOutputPowerIndicatorMax());
+
         /* Using the log-distance formula */
-        double path_loss_dbm = -RX_SENSITIVITY_DBM + 10 * PATH_LOSS_EXPONENT * Math.log10(d / TRANSMITTING_RANGE);
+        double path_loss_dbm = -RX_SENSITIVITY_DBM + 10 * PATH_LOSS_EXPONENT * Math.log10(d / moteTransmissionRange);
 
         /* Add the time-varying component if enabled */
         if (ENABLE_TIME_VARIATION) {
