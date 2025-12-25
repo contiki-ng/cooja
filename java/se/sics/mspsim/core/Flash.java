@@ -131,44 +131,37 @@ public class Flash extends IOUnit {
     public void execute(long t) {
       blocked_cpu = false;
 
-      switch(currentWriteMode) {
-      case NONE:
-        break;
+      switch (currentWriteMode) {
+        case NONE -> {
+        }
+        case ERASE_SEGMENT, ERASE_MAIN, ERASE_ALL -> {
+          // Erase flags are automatically cleared after each erase
+          mode = 0;
+          currentWriteMode = WriteMode.NONE;
+          cpu.isFlashBusy = false;
+        }
+        case WRITE_SINGLE -> cpu.isFlashBusy = false;
 
-      case ERASE_SEGMENT:
-      case ERASE_MAIN:
-      case ERASE_ALL:
-        // Erase flags are automatically cleared after each erase
-        mode = 0;
-        currentWriteMode = WriteMode.NONE;
-        cpu.isFlashBusy = false;
-        break;
-
-      case WRITE_SINGLE:
-        cpu.isFlashBusy = false;
         // WRT flags are NOT automatically cleared
-        break;
-
-      case WRITE_BLOCK:
-        blockwriteCount++;
-        if (blockwriteCount == 64) {
-          // FIXME: What happens if we try to write more than 64 bytes
-          // on real hardware???
-          logw(WarningType.EXECUTION, "Last access in block mode. Forced exit?");
-          currentWriteMode = WriteMode.WRITE_BLOCK_FINISH;
+        case WRITE_BLOCK -> {
+          blockwriteCount++;
+          if (blockwriteCount == 64) {
+            // FIXME: What happens if we try to write more than 64 bytes
+            // on real hardware???
+            logw(WarningType.EXECUTION, "Last access in block mode. Forced exit?");
+            currentWriteMode = WriteMode.WRITE_BLOCK_FINISH;
+          }
+          wait = true;
         }
-        wait = true;
-        break;
-
-      case WRITE_BLOCK_FINISH:
-        if (DEBUG) {
-          log("Programming voltage dropped, write mode disabled.");
+        case WRITE_BLOCK_FINISH -> {
+          if (DEBUG) {
+            log("Programming voltage dropped, write mode disabled.");
+          }
+          currentWriteMode = WriteMode.NONE;
+          cpu.isFlashBusy = false;
+          wait = true;
+          mode = 0;
         }
-        currentWriteMode = WriteMode.NONE;
-        cpu.isFlashBusy = false;
-        wait = true;
-        mode = 0;
-        break;
       }
     }
   };
@@ -256,79 +249,76 @@ public class Flash extends IOUnit {
       }
     }
 
-    switch(currentWriteMode) {
-    case ERASE_SEGMENT:
-      int[] a_area_start = new int[1];
-      int[] a_area_end = new int[1];
-      getSegmentRange(address, a_area_start, a_area_end);
-      int area_start = a_area_start[0];
-      int area_end = a_area_end[0];
+    switch (currentWriteMode) {
+      case ERASE_SEGMENT -> {
+        int[] a_area_start = new int[1];
+        int[] a_area_end = new int[1];
+        getSegmentRange(address, a_area_start, a_area_end);
+        int area_start = a_area_start[0];
+        int area_end = a_area_end[0];
 
-      if (DEBUG) {
-        log("Segment erase @" + Utils.hex(address, 4) +
-            ": erasing area " + Utils.hex(area_start, 4) + "-" +
-            Utils.hex(area_end, 4));
+        if (DEBUG) {
+          log("Segment erase @" + Utils.hex(address, 4) +
+                  ": erasing area " + Utils.hex(area_start, 4) + "-" +
+                  Utils.hex(area_end, 4));
+        }
+        for (int i = area_start; i < area_end; i++) {
+          memory[i] = 0xff;
+        }
+        waitFlashProcess(SEGMENT_ERASE_TIME);
       }
-      for (int i = area_start; i < area_end; i++) {
-        memory[i] = 0xff;
+      case ERASE_MAIN -> {
+        if (!main_range.isInRange(address)) {
+          return;
+        }
+        for (int i = main_range.start; i < main_range.end; i++) {
+          memory[i] = 0xff;
+        }
+        waitFlashProcess(MASS_ERASE_TIME);
       }
-      waitFlashProcess(SEGMENT_ERASE_TIME);
-      break;
-
-    case ERASE_MAIN:
-      if (! main_range.isInRange(address)) {
-        return;
+      case ERASE_ALL -> {
+        for (int i = main_range.start; i < main_range.end; i++) {
+          memory[i] = 0xff;
+        }
+        for (int i = info_range.start; i < main_range.end; i++) {
+          memory[i] = 0xff;
+        }
+        waitFlashProcess(MASS_ERASE_TIME);
       }
-      for (int i = main_range.start; i < main_range.end; i++) {
-        memory[i] = 0xff;
-      }
-      waitFlashProcess(MASS_ERASE_TIME);
-      break;
-
-    case ERASE_ALL:
-      for (int i = main_range.start; i < main_range.end; i++) {
-        memory[i] = 0xff;
-      }
-      for (int i = info_range.start; i < main_range.end; i++) {
-        memory[i] = 0xff;
-      }
-      waitFlashProcess(MASS_ERASE_TIME);
-      break;
-    case WRITE_SINGLE:
-    case WRITE_BLOCK:
-      if (currentWriteMode == WriteMode.WRITE_BLOCK) {
-        wait = false;
-        // TODO: Register target block and verify all writes stay in the same
-        // block. What does the real hardware on random writes?!?
-        if (blockwriteCount == 0) {
-          wait_time = BLOCKWRITE_FIRST_TIME;
-          if (DEBUG) {
-            log("Flash write in block mode started @" + Utils.hex(address, 4));
-          }
-          if (addressInFlash(cpu.getPC())) {
-            logw(WarningType.EXECUTION, "Oops. Block write access only allowed when executing from RAM.");
+      case WRITE_SINGLE, WRITE_BLOCK -> {
+        if (currentWriteMode == WriteMode.WRITE_BLOCK) {
+          wait = false;
+          // TODO: Register target block and verify all writes stay in the same
+          // block. What does the real hardware on random writes?!?
+          if (blockwriteCount == 0) {
+            wait_time = BLOCKWRITE_FIRST_TIME;
+            if (DEBUG) {
+              log("Flash write in block mode started @" + Utils.hex(address, 4));
+            }
+            if (addressInFlash(cpu.getPC())) {
+              logw(WarningType.EXECUTION, "Oops. Block write access only allowed when executing from RAM.");
+            }
+          } else {
+            wait_time = BLOCKWRITE_TIME;
           }
         } else {
-          wait_time = BLOCKWRITE_TIME;
+          wait_time = WRITE_TIME;
         }
-      } else {
-        wait_time = WRITE_TIME;
-      }
-      /* Flash memory allows clearing bits only */
-      memory[address] &= data & 0xff;
-      if (dataMode != AccessMode.BYTE) {
+        /* Flash memory allows clearing bits only */
+        memory[address] &= data & 0xff;
+        if (dataMode != AccessMode.BYTE) {
           memory[address + 1] &= (data >> 8) & 0xff;
           if (dataMode == AccessMode.WORD20) {
-              /* TODO should the write really write the full word? CHECK THIS */
-              memory[address + 2] &= (data >> 16) & 0xff;
-              memory[address + 3] &= (data >> 24) & 0xff;
+            /* TODO should the write really write the full word? CHECK THIS */
+            memory[address + 2] &= (data >> 16) & 0xff;
+            memory[address + 3] &= (data >> 24) & 0xff;
           }
+        }
+        if (DEBUG) {
+          log("Writing $" + Utils.hex20(data) + " to $" + Utils.hex(address, 4) + " (" + dataMode.bytes + " bytes)");
+        }
+        waitFlashProcess(wait_time);
       }
-      if (DEBUG) {
-        log("Writing $" + Utils.hex20(data) + " to $" + Utils.hex(address, 4) + " (" + dataMode.bytes + " bytes)");
-      }
-      waitFlashProcess(wait_time);
-      break;
     }
   }
 
@@ -406,16 +396,12 @@ public class Flash extends IOUnit {
   }
 
   private ClockSource getClockSource() {
-    switch((clockcfg & FSSEL_MASK) >> FSSEL_SHIFT) {
-      case 0:
-      return ClockSource.ACLK;
-      case 1:
-      return ClockSource.MCLK;
-      case 2:
-      case 3:
-      return ClockSource.SMCLK;
-    }
-    throw new RuntimeException("Bad clock source");
+    return switch ((clockcfg & FSSEL_MASK) >> FSSEL_SHIFT) {
+      case 0 -> ClockSource.ACLK;
+      case 1 -> ClockSource.MCLK;
+      case 2, 3 -> ClockSource.SMCLK;
+      default -> throw new RuntimeException("Bad clock source");
+    };
   }
 
   private boolean checkKey(int value) {
@@ -507,78 +493,75 @@ public class Flash extends IOUnit {
 
     int regdata = value & CMDMASK;
     switch (address) {
-    case FCTL1:
-      // access violation while erase/write in progress
-      // exception: block write mode and WAIT==1
+      case FCTL1 -> {
+        // access violation while erase/write in progress
+        // exception: block write mode and WAIT==1
 //      if ((mode & ERASE_MASK) != 0 || (mode & WRT) != 0) {
-      if (cpu.isFlashBusy && ((mode & BLKWRT) == 0 || !wait)) {
+        if (cpu.isFlashBusy && ((mode & BLKWRT) == 0 || !wait)) {
           //	if (!((mode & BLKWRT) != 0 && wait)) {
-        triggerAccessViolation("FCTL1 write not allowed while erase/write active");
-        return;
-      }
-
-      if ((mode & ERASE_MASK) != (regdata & ERASE_MASK)) {
-        if ((mode & ERASE_MASK) == 0) {
-          triggerErase(regdata);
+          triggerAccessViolation("FCTL1 write not allowed while erase/write active");
+          return;
         }
-        mode &= ~ERASE_MASK;
-        mode |= regdata & ERASE_MASK;
-      }
 
-      if ((mode & WRT) != (regdata & WRT)) {
-        if ((regdata & WRT) != 0) {
-          if ((regdata & BLKWRT) != 0) {
-            triggerBlockWrite();
-            mode |= BLKWRT;
-          } else {
-            triggerSingleWrite();
+        if ((mode & ERASE_MASK) != (regdata & ERASE_MASK)) {
+          if ((mode & ERASE_MASK) == 0) {
+            triggerErase(regdata);
+          }
+          mode &= ~ERASE_MASK;
+          mode |= regdata & ERASE_MASK;
+        }
+
+        if ((mode & WRT) != (regdata & WRT)) {
+          if ((regdata & WRT) != 0) {
+            if ((regdata & BLKWRT) != 0) {
+              triggerBlockWrite();
+              mode |= BLKWRT;
+            } else {
+              triggerSingleWrite();
+            }
+          }
+          mode &= ~WRT;
+          mode |= regdata & WRT;
+        }
+
+        if ((mode & BLKWRT) != 0 && (regdata & BLKWRT) == 0) {
+          triggerEndBlockWrite();
+          mode &= ~BLKWRT;
+        }
+      }
+      case FCTL2 -> {
+        // access violation if BUSY==1
+        if (cpu.isFlashBusy) {
+          triggerAccessViolation(
+                  "Register write to FCTL2 not allowed when busy");
+          return;
+        }
+        clockcfg = regdata;
+      }
+      case FCTL3 -> {
+        if ((statusreg & EMEX) == 0 && (regdata & EMEX) != 0) {
+          triggerEmergencyExit();
+        }
+
+        if (locked && (regdata & LOCK) == 0) {
+          triggerUnlockFlash();
+        } else {
+          if (!locked && (regdata & LOCK) != 0) {
+            triggerLockFlash();
           }
         }
-        mode &= ~WRT;
-        mode |= regdata & WRT;
-      }
 
-      if ((mode & BLKWRT) != 0 && (regdata & BLKWRT) == 0) {
-        triggerEndBlockWrite();
-        mode &= ~BLKWRT;
-      }
-      break;
-
-    case FCTL2:
-      // access violation if BUSY==1
-      if (cpu.isFlashBusy) {
-        triggerAccessViolation(
-            "Register write to FCTL2 not allowed when busy");
-        return;
-      }
-      clockcfg = regdata;
-      break;
-
-    case FCTL3:
-      if ((statusreg & EMEX) == 0 && (regdata & EMEX) != 0) {
-        triggerEmergencyExit();
-      }
-
-      if (locked && (regdata & LOCK) == 0) {
-        triggerUnlockFlash();
-      } else {
-        if (!locked && (regdata & LOCK) != 0) {
-          triggerLockFlash();
+        if (((statusreg ^ regdata) & KEYV) != 0) {
+          statusreg ^= KEYV;
+        }
+        if (((statusreg ^ regdata) & ACCVIFG) != 0) {
+          statusreg ^= ACCVIFG;
         }
       }
-
-      if (((statusreg ^ regdata) & KEYV) != 0) {
-        statusreg ^= KEYV;
+      case FCTL4 -> {
+        lockInfo = (regdata & LOCKINFO) > 0;
+        infomemcfg = regdata;
       }
-      if (((statusreg ^ regdata) & ACCVIFG) != 0) {
-        statusreg ^= ACCVIFG;
-      }
-
-      break;
-    case FCTL4:
-      lockInfo = (regdata & LOCKINFO) > 0;
-      infomemcfg = regdata;
-      break;
     }
   }
 

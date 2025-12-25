@@ -28,97 +28,96 @@ public class CScanner extends Scanner {
       return WHITESPACE;
 
     switch (state) {
-    case MID_COMMENT:
-    case END_COMMENT:
-      type = readComment(MID_COMMENT);
-      if (type == END_COMMENT)
-        state = WHITESPACE;
-      else
-        state = MID_COMMENT;
-      return type;
-    default:
-      char c = buffer[start];
-      if (c == '\\')
-        c = next();
-      if (c < 128)
-        type = kind[c];
-      else
-        type = unikind[Character.getType(c)];
-      switch (type) {
-      case WHITESPACE:
-        start = start + charlength;
-        charlength = 1;
-        while (start < end) {
-          c = buffer[start];
-          if (c == '\\')
-            c = next();
-          int k;
-          if (c < 128)
-            k = kind[c];
-          else
-            k = unikind[Character.getType(c)];
-          if (k != WHITESPACE)
-            break;
-          start = start + charlength;
-          charlength = 1;
-        }
-        break;
-      case UNRECOGNIZED:
-      case BRACKET:
-      case SEPARATOR:
-        start = start + charlength;
-        charlength = 1;
-        break;
-      case OPERATOR:
-        start = start + charlength;
-        charlength = 1;
-        type = readOperator(c);
-        break;
-      case CHARACTER:
-        start = start + charlength;
-        charlength = 1;
-        type = readCharLiteral();
-        break;
-      case STRING:
-        start = start + charlength;
-        charlength = 1;
-        type = readStringLiteral();
-        break;
-      case IDENTIFIER:
-        start = start + charlength;
-        charlength = 1;
-        while (start < end) {
-          c = buffer[start];
-          if (c == '\\')
-            c = next();
-          int k;
-          if (c < 128)
-            k = kind[c];
-          else
-            k = unikind[Character.getType(c)];
-          if (k != IDENTIFIER && k != NUMBER)
-            break;
-          start = start + charlength;
-          charlength = 1;
-        }
-        break;
-      case NUMBER:
-        start = start + charlength;
-        charlength = 1;
-        type = readNumber(c);
-        break;
-      case PUNCTUATION:
-        start = start + charlength;
-        charlength = 1;
-        type = readDot();
-        break;
-      case COMMENT:
-        start = start + charlength;
-        charlength = 1;
-        type = readSlash();
-        if (type == START_COMMENT)
+      case MID_COMMENT, END_COMMENT -> {
+        type = readComment(MID_COMMENT);
+        if (type == END_COMMENT)
+          state = WHITESPACE;
+        else
           state = MID_COMMENT;
-        break;
+        return type;
+      }
+      default -> {
+        char c = buffer[start];
+        if (c == '\\')
+          c = next();
+        if (c < 128)
+          type = kind[c];
+        else
+          type = unikind[Character.getType(c)];
+        switch (type) {
+          case WHITESPACE -> {
+            start = start + charlength;
+            charlength = 1;
+            while (start < end) {
+              c = buffer[start];
+              if (c == '\\')
+                c = next();
+              int k;
+              if (c < 128)
+                k = kind[c];
+              else
+                k = unikind[Character.getType(c)];
+              if (k != WHITESPACE)
+                break;
+              start = start + charlength;
+              charlength = 1;
+            }
+          }
+          case UNRECOGNIZED, BRACKET, SEPARATOR -> {
+            start = start + charlength;
+            charlength = 1;
+          }
+          case OPERATOR -> {
+            start = start + charlength;
+            charlength = 1;
+            type = readOperator(c);
+          }
+          case CHARACTER -> {
+            start = start + charlength;
+            charlength = 1;
+            type = readCharLiteral();
+          }
+          case STRING -> {
+            start = start + charlength;
+            charlength = 1;
+            type = readStringLiteral();
+          }
+          case IDENTIFIER -> {
+            start = start + charlength;
+            charlength = 1;
+            while (start < end) {
+              c = buffer[start];
+              if (c == '\\')
+                c = next();
+              int k;
+              if (c < 128)
+                k = kind[c];
+              else
+                k = unikind[Character.getType(c)];
+              if (k != IDENTIFIER && k != NUMBER)
+                break;
+              start = start + charlength;
+              charlength = 1;
+            }
+          }
+          case NUMBER -> {
+            start = start + charlength;
+            charlength = 1;
+            type = readNumber(c);
+          }
+          case PUNCTUATION -> {
+            start = start + charlength;
+            charlength = 1;
+            type = readDot();
+          }
+          case COMMENT -> {
+            start = start + charlength;
+            charlength = 1;
+            type = readSlash();
+            if (type == START_COMMENT)
+              state = MID_COMMENT;
+          }
+        }
       }
     }
     if (debug) {
@@ -135,71 +134,60 @@ public class CScanner extends Scanner {
     char c2;
 
     switch (c) {
-    case '~':
-    case '?':
-    case ':':
-      break;
-    case '+':
-    case '-':
-    case '&':
-    case '|':
-      c2 = buffer[start];
-      if (c2 == '\\')
-        c2 = next();
-      if (c2 != c && c2 != '=')
-        break;
-      start = start + charlength;
-      charlength = 1;
-      break;
-    case '=':
-    case '*':
-    case '!':
-    case '^':
-    case '%':
-    case '/':
-      c2 = buffer[start];
-      if (c2 == '\\')
-        c2 = next();
-      if (c2 != '=')
-        break;
-      start = start + charlength;
-      charlength = 1;
-      break;
-    case '<':
-    case '>':
-      c2 = buffer[start];
-      if (c2 == '\\')
-        c2 = next();
-      if (c2 == '=') {
-        start = start + charlength;
-        charlength = 1;
-      } else if (c2 == c) {
-        start = start + charlength;
-        charlength = 1;
-        if (start >= end)
+      case '~', '?', ':' -> {
+      }
+      case '+', '-', '&', '|' -> {
+        c2 = buffer[start];
+        if (c2 == '\\')
+          c2 = next();
+        if (c2 != c && c2 != '=')
           break;
-        char c3 = buffer[start];
-        if (c3 == '\\')
-          c3 = next();
-        if (c3 == '=') {
+        start = start + charlength;
+        charlength = 1;
+      }
+      case '=', '*', '!', '^', '%', '/' -> {
+        c2 = buffer[start];
+        if (c2 == '\\')
+          c2 = next();
+        if (c2 != '=')
+          break;
+        start = start + charlength;
+        charlength = 1;
+      }
+      case '<', '>' -> {
+        c2 = buffer[start];
+        if (c2 == '\\')
+          c2 = next();
+        if (c2 == '=') {
           start = start + charlength;
           charlength = 1;
-        } else if (c == '>' && c3 == '>') // >>>
-        {
+        } else if (c2 == c) {
           start = start + charlength;
           charlength = 1;
           if (start >= end)
             break;
-          char c4 = buffer[start];
-          if (c4 == '\\')
-            c4 = next();
-          if (c4 != '=')
-            break;
-          start = start + charlength;
-          charlength = 1;
+          char c3 = buffer[start];
+          if (c3 == '\\')
+            c3 = next();
+          if (c3 == '=') {
+            start = start + charlength;
+            charlength = 1;
+          } else if (c == '>' && c3 == '>') // >>>
+          {
+            start = start + charlength;
+            charlength = 1;
+            if (start >= end)
+              break;
+            char c4 = buffer[start];
+            if (c4 == '\\')
+              c4 = next();
+            if (c4 != '=')
+              break;
+            start = start + charlength;
+            charlength = 1;
+          }
         }
       }
-      break;
     }
     return OPERATOR;
   }
@@ -212,20 +200,20 @@ public class CScanner extends Scanner {
       c2 = next();
 
     switch (c2) {
-    case '\\':
-      start = start + charlength;
-      charlength = 1;
-      boolean ok = readEscapeSequence();
-      if (!ok)
+      case '\\' -> {
+        start = start + charlength;
+        charlength = 1;
+        boolean ok = readEscapeSequence();
+        if (!ok)
+          return bad(CHARACTER);
+      }
+      case '\'', '\n' -> {
         return bad(CHARACTER);
-      break;
-    case '\'':
-    case '\n':
-      return bad(CHARACTER);
-    default:
-      start = start + charlength;
-      charlength = 1;
-      break;
+      }
+      default -> {
+        start = start + charlength;
+        charlength = 1;
+      }
     }
     if (start >= end)
       return bad(CHARACTER);
@@ -248,21 +236,22 @@ public class CScanner extends Scanner {
 
     while (c != '"') {
       switch (c) {
-      case '\\':
-        start = start + charlength;
-        charlength = 1;
-        boolean ok = readEscapeSequence();
-        if (!ok)
+        case '\\' -> {
+          start = start + charlength;
+          charlength = 1;
+          boolean ok = readEscapeSequence();
+          if (!ok)
+            return bad(STRING);
+        }
+        case '\n' -> {
           return bad(STRING);
-        break;
-      case '\n':
-        return bad(STRING);
-      default:
-        start = start + charlength;
-        charlength = 1;
-        if (start >= end)
-          return bad(STRING);
-        break;
+        }
+        default -> {
+          start = start + charlength;
+          charlength = 1;
+          if (start >= end)
+            return bad(STRING);
+        }
       }
       c = buffer[start];
       if (c == '\\')
@@ -353,41 +342,29 @@ public class CScanner extends Scanner {
       if (c2 == '\\')
         c2 = next();
       switch (c2) {
-      case 'x':
-      case 'X':
-        start = start + charlength;
-        charlength = 1;
-        boolean ok = readDigits(16);
-        if (!ok)
-          return bad(NUMBER);
-        readSuffix();
-        return NUMBER;
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-        readDigits(8);
-        readSuffix();
-        return NUMBER;
-      case '.':
-      case 'e':
-      case 'E':
-        start = saveStart;
-        charlength = saveLength;
-        break;
-      case 'f':
-      case 'F':
-      case 'd':
-      case 'D':
-      case 'l':
-      case 'L':
-        start = start + charlength;
-        charlength = 1;
-        return NUMBER;
+        case 'x', 'X' -> {
+          start = start + charlength;
+          charlength = 1;
+          boolean ok = readDigits(16);
+          if (!ok)
+            return bad(NUMBER);
+          readSuffix();
+          return NUMBER;
+        }
+        case 0, 1, 2, 3, 4, 5, 6, 7 -> {
+          readDigits(8);
+          readSuffix();
+          return NUMBER;
+        }
+        case '.', 'e', 'E' -> {
+          start = saveStart;
+          charlength = saveLength;
+        }
+        case 'f', 'F', 'd', 'D', 'l', 'L' -> {
+          start = start + charlength;
+          charlength = 1;
+          return NUMBER;
+        }
       }
     }
     boolean hasDigits = false;
@@ -426,16 +403,7 @@ public class CScanner extends Scanner {
     if (!hasDigits)
       return bad(NUMBER);
     switch (c) {
-    case 'e':
-    case 'E':
-      start = start + charlength;
-      charlength = 1;
-      if (start >= end)
-        return bad(NUMBER);
-      c = buffer[start];
-      if (c == '\\')
-        c = next();
-      if (c == '+' || c == '-') {
+      case 'e', 'E' -> {
         start = start + charlength;
         charlength = 1;
         if (start >= end)
@@ -443,16 +411,22 @@ public class CScanner extends Scanner {
         c = buffer[start];
         if (c == '\\')
           c = next();
+        if (c == '+' || c == '-') {
+          start = start + charlength;
+          charlength = 1;
+          if (start >= end)
+            return bad(NUMBER);
+          c = buffer[start];
+          if (c == '\\')
+            c = next();
+        }
+        readDigits(10);
       }
-      readDigits(10);
-      break;
-    case 'f':
-    case 'F':
-    case 'd':
-    case 'D':
-      start = start + charlength;
-      charlength = 1;
-      return NUMBER;
+      case 'f', 'F', 'd', 'D' -> {
+        start = start + charlength;
+        charlength = 1;
+        return NUMBER;
+      }
     }
     return NUMBER;
   }
@@ -484,14 +458,10 @@ public class CScanner extends Scanner {
     if (c == '\\')
       c = next();
     switch (c) {
-    case 'f':
-    case 'F':
-    case 'd':
-    case 'D':
-    case 'l':
-    case 'L':
-      start = start + charlength;
-      charlength = 1;
+      case 'f', 'F', 'd', 'D', 'l', 'L' -> {
+        start = start + charlength;
+        charlength = 1;
+      }
     }
   }
 
@@ -715,156 +685,20 @@ public class CScanner extends Scanner {
       kind[c] = -1;
     for (char c = 0; c < 128; c++)
       switch (c) {
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-      case 8:
-      case 11:
-      case 13:
-      case 14:
-      case 15:
-      case 16:
-      case 17:
-      case 18:
-      case 19:
-      case 20:
-      case 21:
-      case 22:
-      case 23:
-      case 24:
-      case 25:
-      case 27:
-      case 28:
-      case 29:
-      case 30:
-      case 31:
-      case 127:
-      case '#':
-      case '@':
-      case '`':
-      case '\\':
-        kind[c] = UNRECOGNIZED;
-        break;
-      case '\t':
-      case '\n':
-      case ' ':
-      case '\f':
-      case 26:
-        kind[c] = WHITESPACE;
-        break;
-      case '!':
-      case '%':
-      case '&':
-      case '*':
-      case '+':
-      case '-':
-      case ':':
-      case '<':
-      case '=':
-      case '>':
-      case '?':
-      case '^':
-      case '|':
-      case '~':
-        kind[c] = OPERATOR;
-        break;
-      case '"':
-        kind[c] = STRING;
-        break;
-      case '\'':
-        kind[c] = CHARACTER;
-        break;
-      case '.':
-        kind[c] = PUNCTUATION;
-        break;
-      case '/':
-        kind[c] = COMMENT;
-        break;
-      case '$':
-      case 'A':
-      case 'B':
-      case 'C':
-      case 'D':
-      case 'E':
-      case 'F':
-      case 'G':
-      case 'H':
-      case 'I':
-      case 'J':
-      case 'K':
-      case 'L':
-      case 'M':
-      case 'N':
-      case 'O':
-      case 'P':
-      case 'Q':
-      case 'R':
-      case 'S':
-      case 'T':
-      case 'U':
-      case 'V':
-      case 'W':
-      case 'X':
-      case 'Y':
-      case 'Z':
-      case '_':
-      case 'a':
-      case 'b':
-      case 'c':
-      case 'd':
-      case 'e':
-      case 'f':
-      case 'g':
-      case 'h':
-      case 'i':
-      case 'j':
-      case 'k':
-      case 'l':
-      case 'm':
-      case 'n':
-      case 'o':
-      case 'p':
-      case 'q':
-      case 'r':
-      case 's':
-      case 't':
-      case 'u':
-      case 'v':
-      case 'w':
-      case 'x':
-      case 'y':
-      case 'z':
-        kind[c] = IDENTIFIER;
-        break;
-      case '0':
-      case '1':
-      case '2':
-      case '3':
-      case '4':
-      case '5':
-      case '6':
-      case '7':
-      case '8':
-      case '9':
-        kind[c] = NUMBER;
-        break;
-      case '(':
-      case ')':
-      case '[':
-      case ']':
-      case '{':
-      case '}':
-        kind[c] = BRACKET;
-        break;
-      case ',':
-      case ';':
-        kind[c] = SEPARATOR;
-        break;
+        case 0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, 127,
+             '#', '@', '`', '\\' -> kind[c] = UNRECOGNIZED;
+        case '\t', '\n', ' ', '\f', 26 -> kind[c] = WHITESPACE;
+        case '!', '%', '&', '*', '+', '-', ':', '<', '=', '>', '?', '^', '|', '~' -> kind[c] = OPERATOR;
+        case '"' -> kind[c] = STRING;
+        case '\'' -> kind[c] = CHARACTER;
+        case '.' -> kind[c] = PUNCTUATION;
+        case '/' -> kind[c] = COMMENT;
+        case '$', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+             'U', 'V', 'W', 'X', 'Y', 'Z', '_', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+             'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' -> kind[c] = IDENTIFIER;
+        case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> kind[c] = NUMBER;
+        case '(', ')', '[', ']', '{', '}' -> kind[c] = BRACKET;
+        case ',', ';' -> kind[c] = SEPARATOR;
       }
     for (char c = 0; c < 128; c++)
       if (kind[c] == -1)
@@ -875,45 +709,20 @@ public class CScanner extends Scanner {
     for (byte b = 0; b < 31; b++)
       unikind[b] = -1;
     for (byte b = 0; b < 31; b++)
-      switch (b) {
-      case Character.UNASSIGNED:
-      case Character.ENCLOSING_MARK:
-      case Character.OTHER_NUMBER:
-      case Character.SPACE_SEPARATOR:
-      case Character.LINE_SEPARATOR:
-      case Character.PARAGRAPH_SEPARATOR:
-      case Character.CONTROL:
-      case 17: // category 17 is unused
-      case Character.PRIVATE_USE:
-      case Character.SURROGATE:
-      case Character.DASH_PUNCTUATION:
-      case Character.START_PUNCTUATION:
-      case Character.END_PUNCTUATION:
-      case Character.OTHER_PUNCTUATION:
-      case Character.MATH_SYMBOL:
-      case Character.MODIFIER_SYMBOL:
-      case Character.OTHER_SYMBOL:
-      case Character.INITIAL_QUOTE_PUNCTUATION:
-      case Character.FINAL_QUOTE_PUNCTUATION:
-        unikind[b] = UNRECOGNIZED;
-        break;
-      case Character.UPPERCASE_LETTER:
-      case Character.LOWERCASE_LETTER:
-      case Character.TITLECASE_LETTER:
-      case Character.MODIFIER_LETTER:
-      case Character.OTHER_LETTER:
-      case Character.LETTER_NUMBER:
-      case Character.CONNECTOR_PUNCTUATION: // maybe NUMBER
-      case Character.CURRENCY_SYMBOL:
-        // Characters where Other_ID_Start is true
-        unikind[b] = IDENTIFIER;
-        break;
-      case Character.NON_SPACING_MARK:
-      case Character.COMBINING_SPACING_MARK:
-      case Character.DECIMAL_DIGIT_NUMBER:
-      case Character.FORMAT:
-        unikind[b] = NUMBER;
-        break;
+      switch (b) { // category 17 is unused
+        case Character.UNASSIGNED, Character.ENCLOSING_MARK, Character.OTHER_NUMBER, Character.SPACE_SEPARATOR,
+             Character.LINE_SEPARATOR, Character.PARAGRAPH_SEPARATOR, Character.CONTROL, 17, Character.PRIVATE_USE,
+             Character.SURROGATE, Character.DASH_PUNCTUATION, Character.START_PUNCTUATION, Character.END_PUNCTUATION,
+             Character.OTHER_PUNCTUATION, Character.MATH_SYMBOL, Character.MODIFIER_SYMBOL, Character.OTHER_SYMBOL,
+             Character.INITIAL_QUOTE_PUNCTUATION, Character.FINAL_QUOTE_PUNCTUATION -> unikind[b] = UNRECOGNIZED;
+        // maybe NUMBER
+        case Character.UPPERCASE_LETTER, Character.LOWERCASE_LETTER, Character.TITLECASE_LETTER,
+             Character.MODIFIER_LETTER, Character.OTHER_LETTER, Character.LETTER_NUMBER,
+             Character.CONNECTOR_PUNCTUATION, Character.CURRENCY_SYMBOL ->
+          // Characters where Other_ID_Start is true
+                unikind[b] = IDENTIFIER;
+        case Character.NON_SPACING_MARK, Character.COMBINING_SPACING_MARK, Character.DECIMAL_DIGIT_NUMBER,
+             Character.FORMAT -> unikind[b] = NUMBER;
       }
     for (byte b = 0; b < 31; b++)
       if (unikind[b] == -1)

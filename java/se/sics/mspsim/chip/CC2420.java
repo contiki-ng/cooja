@@ -368,24 +368,16 @@ public class CC2420 extends Radio802154 implements USARTListener {
   private final TimeEvent symbolEvent = new TimeEvent(0, "CC2420 Symbol") {
     @Override
     public void execute(long t) {
-      switch(stateMachine) {
-      case RX_CALIBRATE:
-      case RX_WAIT:
-        setState(RadioState.RX_SFD_SEARCH);
-        break;
+      switch (stateMachine) {
+        case RX_CALIBRATE, RX_WAIT -> setState(RadioState.RX_SFD_SEARCH);
+
         /* this will be called 8 symbols after first SFD_SEARCH */
-      case RX_SFD_SEARCH:
-        status |= STATUS_RSSI_VALID;
-        updateCCA();
-        break;
-
-      case TX_CALIBRATE:
-        setState(RadioState.TX_PREAMBLE);
-        break;
-
-      case TX_ACK_CALIBRATE:
-          setState(RadioState.TX_ACK_PREAMBLE);
-          break;
+        case RX_SFD_SEARCH -> {
+          status |= STATUS_RSSI_VALID;
+          updateCCA();
+        }
+        case TX_CALIBRATE -> setState(RadioState.TX_PREAMBLE);
+        case TX_ACK_CALIBRATE -> setState(RadioState.TX_ACK_PREAMBLE);
       }
     }
   };
@@ -443,88 +435,79 @@ public class CC2420 extends Radio802154 implements USARTListener {
     /* write to FSM state register */
     registers[REG_FSMSTATE] = state.getFSMState();
 
-    switch(stateMachine) {
-
-    case VREG_OFF:
-      if (logLevel > INFO) log("VREG Off.");
-      flushRX();
-      flushTX();
-      status &= ~(STATUS_RSSI_VALID | STATUS_XOSC16M_STABLE);
-      crcOk = false;
-      reset();
-      setMode(MODE_POWER_OFF);
-      updateCCA();
-      break;
-
-    case POWER_DOWN:
-      rxFIFO.reset();
-      status &= ~(STATUS_RSSI_VALID | STATUS_XOSC16M_STABLE);
-      crcOk = false;
-      reset();
-      setMode(MODE_POWER_OFF);
-      updateCCA();
-      break;
-
-    case RX_CALIBRATE:
-      /* should be 12 according to specification */
-      setSymbolEvent(12);
-      setMode(MODE_RX_ON);
-      break;
-    case RX_SFD_SEARCH:
-      zeroSymbols = 0;
-      /* eight symbols after first SFD search RSSI will be valid */
-      if ((status & STATUS_RSSI_VALID) == 0) {
-          setSymbolEvent(8);
+    switch (stateMachine) {
+      case VREG_OFF -> {
+        if (logLevel > INFO) log("VREG Off.");
+        flushRX();
+        flushTX();
+        status &= ~(STATUS_RSSI_VALID | STATUS_XOSC16M_STABLE);
+        crcOk = false;
+        reset();
+        setMode(MODE_POWER_OFF);
+        updateCCA();
       }
+      case POWER_DOWN -> {
+        rxFIFO.reset();
+        status &= ~(STATUS_RSSI_VALID | STATUS_XOSC16M_STABLE);
+        crcOk = false;
+        reset();
+        setMode(MODE_POWER_OFF);
+        updateCCA();
+      }
+      case RX_CALIBRATE -> {
+        /* should be 12 according to specification */
+        setSymbolEvent(12);
+        setMode(MODE_RX_ON);
+      }
+      case RX_SFD_SEARCH -> {
+        zeroSymbols = 0;
+        /* eight symbols after first SFD search RSSI will be valid */
+        if ((status & STATUS_RSSI_VALID) == 0) {
+          setSymbolEvent(8);
+        }
 //      status |= STATUS_RSSI_VALID;
-      updateCCA();
-      setMode(MODE_RX_ON);
-      break;
-
-    case TX_CALIBRATE:
-      /* 12 symbols calibration, and one byte's wait since we deliver immediately
+        updateCCA();
+        setMode(MODE_RX_ON);
+      }
+      case TX_CALIBRATE -> {
+        /* 12 symbols calibration, and one byte's wait since we deliver immediately
        * to listener when after calibration?
        */
-      setSymbolEvent(12 + 2);
-      setMode(MODE_TXRX_ON);
-      break;
-
-    case TX_PREAMBLE:
-      shrPos = 0;
-      SHR[0] = 0;
-      SHR[1] = 0;
-      SHR[2] = 0;
-      SHR[3] = 0;
-      SHR[4] = 0x7A;
-      shrNext();
-      break;
-
-    case TX_FRAME:
-      txfifoPos = 0;
-      // Reset CRC ok flag to disable software acknowledgments until next received packet
-      crcOk = false;
-      txNext();
-      break;
-
-    case RX_WAIT:
-      setSymbolEvent(8);
-      setMode(MODE_RX_ON);
-      break;
-
-    case IDLE:
-      status &= ~STATUS_RSSI_VALID;
-      setMode(MODE_TXRX_OFF);
-      updateCCA();
-      break;
-
-    case TX_ACK_CALIBRATE:
+        setSymbolEvent(12 + 2);
+        setMode(MODE_TXRX_ON);
+      }
+      case TX_PREAMBLE -> {
+        shrPos = 0;
+        SHR[0] = 0;
+        SHR[1] = 0;
+        SHR[2] = 0;
+        SHR[3] = 0;
+        SHR[4] = 0x7A;
+        shrNext();
+      }
+      case TX_FRAME -> {
+        txfifoPos = 0;
+        // Reset CRC ok flag to disable software acknowledgments until next received packet
+        crcOk = false;
+        txNext();
+      }
+      case RX_WAIT -> {
+        setSymbolEvent(8);
+        setMode(MODE_RX_ON);
+      }
+      case IDLE -> {
+        status &= ~STATUS_RSSI_VALID;
+        setMode(MODE_TXRX_OFF);
+        updateCCA();
+      }
+      case TX_ACK_CALIBRATE -> {
         /* TX active during ACK + NOTE: we ignore the SFD when receiving full packets, so
-         * we need to add another extra 2 symbols here to get a correct timing */
+       * we need to add another extra 2 symbols here to get a correct timing */
         status |= STATUS_TX_ACTIVE;
         setSymbolEvent(12 + 2 + 2);
         setMode(MODE_TXRX_ON);
-      break;
-    case TX_ACK_PREAMBLE:
+      }
+      case TX_ACK_PREAMBLE -> {
         /* same as normal preamble ?? */
         shrPos = 0;
         SHR[0] = 0;
@@ -533,21 +516,21 @@ public class CC2420 extends Radio802154 implements USARTListener {
         SHR[3] = 0;
         SHR[4] = 0x7A;
         shrNext();
-        break;
-    case TX_ACK:
+      }
+      case TX_ACK -> {
         ackPos = 0;
         // Reset CRC ok flag to disable software acknowledgments until next received packet
         crcOk = false;
         ackNext();
-        break;
-    case RX_FRAME:
+      }
+      case RX_FRAME -> {
         /* mark position of frame start - for rejecting when address is wrong */
         rxFIFO.mark();
         rxread = 0;
         frameRejected = false;
         shouldAck = false;
         crcOk = false;
-        break;
+      }
     }
 
     /* Notify state listener */
@@ -726,50 +709,46 @@ public class CC2420 extends Radio802154 implements USARTListener {
 
   private void setReg(int address, int data) {
       int oldValue = registers[address];
-      switch(address){
-        case REG_RSSI:
-          registers[address] = (registers[address] & 0xFF) | (data & 0xFF00);
-          break;
-        default:
-          registers[address] = data;
+    switch (address) {
+      case REG_RSSI -> registers[address] = (registers[address] & 0xFF) | (data & 0xFF00);
+      default -> registers[address] = data;
+    }
+    switch (address) {
+      case REG_IOCFG0 -> {
+        fifopThr = data & FIFOP_THR;
+        if (logLevel > INFO) log("IOCFG0: 0x" + Utils.hex16(oldValue) + " => 0x" + Utils.hex16(data));
+        if ((oldValue & POLARITY_MASK) != (data & POLARITY_MASK)) {
+          // Polarity has changed - must update pins
+          setFIFOP(currentFIFOP);
+          setFIFO(currentFIFO);
+          setSFD(currentSFD);
+          setCCA(currentCCA);
+        }
       }
-      switch(address) {
-      case REG_IOCFG0:
-          fifopThr = data & FIFOP_THR;
-          if (logLevel > INFO) log("IOCFG0: 0x" + Utils.hex16(oldValue) + " => 0x" + Utils.hex16(data));
-          if ((oldValue & POLARITY_MASK) != (data & POLARITY_MASK)) {
-              // Polarity has changed - must update pins
-              setFIFOP(currentFIFOP);
-              setFIFO(currentFIFO);
-              setSFD(currentSFD);
-              setCCA(currentCCA);
+      case REG_IOCFG1 -> {
+        if (logLevel > INFO)
+          log("IOCFG1: SFDMUX "
+                  + ((registers[address] & SFDMUX) >> SFDMUX_SHIFT)
+                  + " CCAMUX: " + ((registers[address] & CCAMUX) >> CCAMUX_SHIFT));
+        updateCCA();
+      }
+      case REG_MDMCTRL0 -> {
+        addressDecode = (data & ADR_DECODE) != 0;
+        autoCRC = (data & ADR_AUTOCRC) != 0;
+        autoAck = (data & AUTOACK) != 0;
+      }
+      case REG_FSCTRL -> {
+        ChannelListener listener = this.channelListener;
+        if (listener != null) {
+          int oldChannel = activeChannel;
+          updateActiveFrequency();
+          if (oldChannel != activeChannel) {
+            listener.channelChanged(activeChannel);
           }
-          break;
-      case REG_IOCFG1:
-          if (logLevel > INFO)
-            log("IOCFG1: SFDMUX "
-                          + ((registers[address] & SFDMUX) >> SFDMUX_SHIFT)
-                          + " CCAMUX: " + ((registers[address] & CCAMUX) >> CCAMUX_SHIFT));
-          updateCCA();
-          break;
-      case REG_MDMCTRL0:
-          addressDecode = (data & ADR_DECODE) != 0;
-          autoCRC = (data & ADR_AUTOCRC) != 0;
-          autoAck = (data & AUTOACK) != 0;
-          break;
-      case REG_FSCTRL: {
-          ChannelListener listener = this.channelListener;
-          if (listener != null) {
-              int oldChannel = activeChannel;
-              updateActiveFrequency();
-              if (oldChannel != activeChannel) {
-                  listener.channelChanged(activeChannel);
-              }
-          }
-          break;
+        }
       }
-      }
-      configurationChanged(address, oldValue, data);
+    }
+    configurationChanged(address, oldValue, data);
   }
 
   @Override
@@ -785,8 +764,8 @@ public class CC2420 extends Radio802154 implements USARTListener {
       // Chip is not selected
 
     } else if (stateMachine != RadioState.VREG_OFF) {
-      switch(state) {
-      case WAITING:
+      switch (state) {
+      case WAITING -> {
         if ((data & FLAG_READ) != 0) {
           state = SpiState.READ_REGISTER;
         } else {
@@ -814,9 +793,8 @@ public class CC2420 extends Radio802154 implements USARTListener {
         usartDataPos = 0;
         // Assuming that the status always is sent back???
         //source.byteReceived(status);
-        break;
-
-      case WRITE_REGISTER:
+      }
+      case WRITE_REGISTER -> {
         if (usartDataPos == 0) {
           source.byteReceived(registers[usartDataAddress] >> 8);
           // set the high bits
@@ -836,8 +814,8 @@ public class CC2420 extends Radio802154 implements USARTListener {
           /* register written - go back to waiting... */
           state = SpiState.WAITING;
         }
-        break;
-      case READ_REGISTER:
+      }
+      case READ_REGISTER -> {
         if (usartDataPos == 0) {
           source.byteReceived(registers[usartDataAddress] >> 8);
           usartDataPos = 1;
@@ -845,57 +823,60 @@ public class CC2420 extends Radio802154 implements USARTListener {
           source.byteReceived(registers[usartDataAddress] & 0xff);
           if (logLevel > INFO) {
             log("read from " + Utils.hex8(usartDataAddress) + " = "
-                + registers[usartDataAddress]);
+                    + registers[usartDataAddress]);
           }
           state = SpiState.WAITING;
         }
         return;
-        //break;
-      case READ_RXFIFO: {
+      }
+      //break;
+      case READ_RXFIFO -> {
+        {
           int fifoData = rxFIFO.read();
           if (logLevel > INFO) log("RXFIFO READ: " + rxFIFO.stateToString());
           source.byteReceived(fifoData);
 
           /* first check and clear FIFOP - since we now have read a byte! */
           if (currentFIFOP && !overflow) {
-              /* FIFOP is lowered when rxFIFO is lower than or equal to fifopThr */
-              if(rxFIFO.length() <= fifopThr) {
-                  if (logLevel > INFO) log("*** FIFOP cleared at: " + rxFIFO.stateToString());
-                  setFIFOP(false);
-              }
+            /* FIFOP is lowered when rxFIFO is lower than or equal to fifopThr */
+            if (rxFIFO.length() <= fifopThr) {
+              if (logLevel > INFO) log("*** FIFOP cleared at: " + rxFIFO.stateToString());
+              setFIFOP(false);
+            }
           }
 
           /* initiate read of another packet - update some variables to keep track of packet reading... */
           if (rxfifoReadLeft == 0) {
-              rxfifoReadLeft = fifoData;
-              if (logLevel > INFO) log("Init read of packet - len: " + rxfifoReadLeft +
-                      " fifo: " + rxFIFO.stateToString());
+            rxfifoReadLeft = fifoData;
+            if (logLevel > INFO) log("Init read of packet - len: " + rxfifoReadLeft +
+                    " fifo: " + rxFIFO.stateToString());
           } else if (--rxfifoReadLeft == 0) {
-              /* check if we have another packet in buffer */
-              if (!rxFIFO.isEmpty()) {
-                  /* check if the packet is complete or longer than fifopThr */
-                  if (rxFIFO.length() > rxFIFO.peek(0) ||
-                          (rxFIFO.length() > fifopThr && !decodeAddress && !frameRejected)) {
-                      if (logLevel > INFO) log("More in FIFO - FIFOP = 1! plen: " + rxFIFO.stateToString());
-                      if (!overflow) setFIFOP(true);
-                  }
+            /* check if we have another packet in buffer */
+            if (!rxFIFO.isEmpty()) {
+              /* check if the packet is complete or longer than fifopThr */
+              if (rxFIFO.length() > rxFIFO.peek(0) ||
+                      (rxFIFO.length() > fifopThr && !decodeAddress && !frameRejected)) {
+                if (logLevel > INFO) log("More in FIFO - FIFOP = 1! plen: " + rxFIFO.stateToString());
+                if (!overflow) setFIFOP(true);
               }
+            }
           }
           // Set the FIFO pin low if there are no more bytes available in the RXFIFO.
           if (rxFIFO.isEmpty()) {
-              if (logLevel > INFO) log("Setting FIFO to low (buffer empty)");
-              setFIFO(false);
+            if (logLevel > INFO) log("Setting FIFO to low (buffer empty)");
+            setFIFO(false);
           }
+        }
+        return; /* avoid returning the status byte */
       }
-      return; /* avoid returning the status byte */
-      case WRITE_TXFIFO:
-        if(txfifoFlush) {
+      case WRITE_TXFIFO -> {
+        if (txfifoFlush) {
           txCursor = 0;
           txfifoFlush = false;
         }
         if (logLevel > INFO) log("Writing data: " + data + " to tx: " + txCursor);
 
-        if(txCursor == 0) {
+        if (txCursor == 0) {
           if ((data & 0xff) > 127) {
             logger.logw(this, WarningType.EXECUTION, "CC2420: Warning - packet size too large: " + (data & 0xff));
           }
@@ -908,8 +889,8 @@ public class CC2420 extends Radio802154 implements USARTListener {
         if (sendEvents) {
           sendEvent("WRITE_TXFIFO", null);
         }
-        break;
-      case RAM_ACCESS:
+      }
+      case RAM_ACCESS -> {
         if (usartDataPos == 0) {
           usartDataAddress |= (data << 1) & 0x180;
           ramRead = (data & FLAG_RAM_READ) != 0;
@@ -926,8 +907,8 @@ public class CC2420 extends Radio802154 implements USARTListener {
             }
             if (logLevel > INFO && usartDataAddress == RAM_PANID + 2) {
               log("Pan ID set to: 0x" +
-                  Utils.hex8(memory[RAM_PANID]) +
-                  Utils.hex8(memory[RAM_PANID + 1]));
+                      Utils.hex8(memory[RAM_PANID]) +
+                      Utils.hex8(memory[RAM_PANID + 1]));
             }
           } else {
             //log("Read RAM Addr: " + address + " Data: " + memory[address]);
@@ -939,7 +920,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
             return;
           }
         }
-        break;
+      }
       }
       source.byteReceived(oldStatus);
     } else {
@@ -963,40 +944,39 @@ public class CC2420 extends Radio802154 implements USARTListener {
     }
 
     switch (data) {
-    case REG_SNOP:
+    case REG_SNOP -> {
       if (logLevel > INFO) log("SNOP => " + Utils.hex8(status) + " at " + cpu.cycles);
-      break;
-    case REG_SRXON:
-      if(stateMachine == RadioState.IDLE) {
+    }
+    case REG_SRXON -> {
+      if (stateMachine == RadioState.IDLE) {
         setState(RadioState.RX_CALIBRATE);
         //updateActiveFrequency();
         if (logLevel > INFO) {
-            log("Strobe RX-ON!!!");
+          log("Strobe RX-ON!!!");
         }
       } else {
         if (logLevel > INFO) log("WARNING: SRXON when not IDLE");
       }
-
-      break;
-    case REG_SRFOFF:
+    }
+    case REG_SRFOFF -> {
       if (logLevel > INFO) {
         log("Strobe RXTX-OFF!!! at " + cpu.cycles);
         if (stateMachine == RadioState.TX_ACK ||
-              stateMachine == RadioState.TX_FRAME ||
-              stateMachine == RadioState.RX_FRAME) {
+                stateMachine == RadioState.TX_FRAME ||
+                stateMachine == RadioState.RX_FRAME) {
           log("WARNING: turning off RXTX during " + stateMachine);
         }
       }
       setState(RadioState.IDLE);
-      break;
-    case REG_STXON:
+    }
+    case REG_STXON -> {
       // State transition valid from IDLE state or all RX states
-      if( (stateMachine == RadioState.IDLE) ||
-          (stateMachine == RadioState.RX_CALIBRATE) ||
-          (stateMachine == RadioState.RX_SFD_SEARCH) ||
-          (stateMachine == RadioState.RX_FRAME) ||
-          (stateMachine == RadioState.RX_OVERFLOW) ||
-          (stateMachine == RadioState.RX_WAIT)) {
+      if ((stateMachine == RadioState.IDLE) ||
+              (stateMachine == RadioState.RX_CALIBRATE) ||
+              (stateMachine == RadioState.RX_SFD_SEARCH) ||
+              (stateMachine == RadioState.RX_FRAME) ||
+              (stateMachine == RadioState.RX_OVERFLOW) ||
+              (stateMachine == RadioState.RX_WAIT)) {
         status |= STATUS_TX_ACTIVE;
         setState(RadioState.TX_CALIBRATE);
         if (sendEvents) {
@@ -1005,59 +985,54 @@ public class CC2420 extends Radio802154 implements USARTListener {
         // Starting up TX subsystem - indicate that we are in TX mode!
         if (logLevel > INFO) log("Strobe STXON - transmit on! at " + cpu.cycles);
       }
-      break;
-    case REG_STXONCCA:
+    }
+    case REG_STXONCCA -> {
       // Only valid from all RX states,
       // since CCA requires ??(look this up) receive symbol periods to be valid
-      if( (stateMachine == RadioState.RX_CALIBRATE) ||
-          (stateMachine == RadioState.RX_SFD_SEARCH) ||
-          (stateMachine == RadioState.RX_FRAME) ||
-          (stateMachine == RadioState.RX_OVERFLOW) ||
-          (stateMachine == RadioState.RX_WAIT)) {
+      if ((stateMachine == RadioState.RX_CALIBRATE) ||
+              (stateMachine == RadioState.RX_SFD_SEARCH) ||
+              (stateMachine == RadioState.RX_FRAME) ||
+              (stateMachine == RadioState.RX_OVERFLOW) ||
+              (stateMachine == RadioState.RX_WAIT)) {
 
         if (sendEvents) {
           sendEvent("STXON_CCA", null);
         }
 
-        if(cca) {
+        if (cca) {
           status |= STATUS_TX_ACTIVE;
           setState(RadioState.TX_CALIBRATE);
           if (logLevel > INFO) log("Strobe STXONCCA - transmit on! at " + cpu.cycles);
-        }else{
+        } else {
           if (logLevel > INFO) log("STXONCCA Ignored, CCA false");
         }
       }
-      break;
-    case REG_SFLUSHRX:
-      flushRX();
-      break;
-    case REG_SFLUSHTX:
+    }
+    case REG_SFLUSHRX -> flushRX();
+    case REG_SFLUSHTX -> {
       if (logLevel > INFO) log("Flushing TXFIFO");
       flushTX();
-      break;
-    case REG_SXOSCON:
+    }
+    case REG_SXOSCON ->
       //log("Strobe Oscillator On");
-      startOscillator();
-      break;
-    case REG_SXOSCOFF:
+            startOscillator();
+    case REG_SXOSCOFF ->
       //log("Strobe Oscillator Off");
-      stopOscillator();
-      break;
-    case REG_SACK:
-    case REG_SACKPEND:
-        // Set the frame pending flag for all future autoack based on SACK/SACKPEND
-        ackFramePending = data == REG_SACKPEND;
-        if (stateMachine == RadioState.RX_FRAME) {
-            shouldAck = true;
-        } else if (crcOk) {
-            setState(RadioState.TX_ACK_CALIBRATE);
-        }
-        break;
-    default:
+            stopOscillator();
+    case REG_SACK, REG_SACKPEND -> {
+      // Set the frame pending flag for all future autoack based on SACK/SACKPEND
+      ackFramePending = data == REG_SACKPEND;
+      if (stateMachine == RadioState.RX_FRAME) {
+        shouldAck = true;
+      } else if (crcOk) {
+        setState(RadioState.TX_ACK_CALIBRATE);
+      }
+    }
+    default -> {
       if (logLevel > INFO) {
         log("Unknown strobe command: " + data);
       }
-    break;
+    }
     }
   }
 
