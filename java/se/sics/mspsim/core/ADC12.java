@@ -173,57 +173,54 @@ public class ADC12 extends IOUnit {
   @Override
   public void write(int address, int value, boolean word, long cycles) {
     switch (address) {
-    case ADC12CTL0:
-      if (enableConversion) {
-        // Ongoing conversion: only some parts may be changed
-        adc12ctl0 = (adc12ctl0 & 0xfff0) + (value & 0xf);
-      } else {
-        adc12ctl0 = value;
-        shTime0 = SHTBITS[(value >> 8) & 0x0f];
-        shTime1 = SHTBITS[(value >> 12) & 0x0f];
-        adc12On = (value & 0x10) > 0;
-      }
-      enableConversion = (value & 0x02) > 0;
-      startConversion = (value & 0x01) > 0;
+      case ADC12CTL0 -> {
+        if (enableConversion) {
+          // Ongoing conversion: only some parts may be changed
+          adc12ctl0 = (adc12ctl0 & 0xfff0) + (value & 0xf);
+        } else {
+          adc12ctl0 = value;
+          shTime0 = SHTBITS[(value >> 8) & 0x0f];
+          shTime1 = SHTBITS[(value >> 12) & 0x0f];
+          adc12On = (value & 0x10) > 0;
+        }
+        enableConversion = (value & 0x02) > 0;
+        startConversion = (value & 0x01) > 0;
 
-      if (DEBUG) log("Set SHTime0: " + shTime0 + " SHTime1: " + shTime1 + " ENC:" +
-          enableConversion + " Start: " + startConversion + " ADC12ON: " + adc12On);
-      if (adc12On && enableConversion && startConversion && !isConverting) {
-        // Set the start time to be now!
-        isConverting = true;
-        adc12Pos = startMem;
-        int delay = adcDiv * ((adc12Pos < 8 ? shTime0 : shTime1) + 13);
-        cpu.scheduleTimeEvent(adcTrigger, cpu.getTime() + delay);
+        if (DEBUG) log("Set SHTime0: " + shTime0 + " SHTime1: " + shTime1 + " ENC:" +
+                enableConversion + " Start: " + startConversion + " ADC12ON: " + adc12On);
+        if (adc12On && enableConversion && startConversion && !isConverting) {
+          // Set the start time to be now!
+          isConverting = true;
+          adc12Pos = startMem;
+          int delay = adcDiv * ((adc12Pos < 8 ? shTime0 : shTime1) + 13);
+          cpu.scheduleTimeEvent(adcTrigger, cpu.getTime() + delay);
+        }
       }
-      break;
-    case ADC12CTL1:
-      if (enableConversion) {
-        // Ongoing conversion: only some parts may be changed
-        adc12ctl1 = (adc12ctl1 & 0xfff8) + (value & 0x6);
-      } else {
-        adc12ctl1 = value & 0xfffe;
-        startMem = (value >> 12) & 0xf;
-        shSource = (value >> 10) & 0x3;
-        adcDiv = ((value >> 5) & 0x7) + 1;
-        adcSSel = (value >> 3) & 0x03;
+      case ADC12CTL1 -> {
+        if (enableConversion) {
+          // Ongoing conversion: only some parts may be changed
+          adc12ctl1 = (adc12ctl1 & 0xfff8) + (value & 0x6);
+        } else {
+          adc12ctl1 = value & 0xfffe;
+          startMem = (value >> 12) & 0xf;
+          shSource = (value >> 10) & 0x3;
+          adcDiv = ((value >> 5) & 0x7) + 1;
+          adcSSel = (value >> 3) & 0x03;
+        }
+        conSeq = (value >> 1) & 0x03;
+        if (DEBUG) log("Set startMem: " + startMem + " SHSource: " + shSource +
+                " ConSeq-mode:" + conSeq + " Div: " + adcDiv + " ADCSSEL: " + adcSSel);
       }
-      conSeq = (value >> 1) & 0x03;
-      if (DEBUG) log("Set startMem: " + startMem + " SHSource: " + shSource +
-          " ConSeq-mode:" + conSeq + " Div: " + adcDiv + " ADCSSEL: " + adcSSel);
-      break;
-    case ADC12IE:
-      adc12ie = value;
-      break;
-    case ADC12IFG:
-      adc12ifg = value;
-      break;
-    default:
-      if (address >= ADC12MCTL0 && address <= ADC12MCTL15)  {
-        if (!enableConversion) { // Cannot modify ongoing conversions.
-          adc12mctl[address - ADC12MCTL0] = value & 0xff;
-          if (DEBUG) log("ADC12MCTL" + (address - ADC12MCTL0)
-              + " source = " + (value & 0xf)
-              + (((value & EOS_MASK) != 0) ? " EOS bit set" : ""));
+      case ADC12IE -> adc12ie = value;
+      case ADC12IFG -> adc12ifg = value;
+      default -> {
+        if (address >= ADC12MCTL0 && address <= ADC12MCTL15) {
+          if (!enableConversion) { // Cannot modify ongoing conversions.
+            adc12mctl[address - ADC12MCTL0] = value & 0xff;
+            if (DEBUG) log("ADC12MCTL" + (address - ADC12MCTL0)
+                    + " source = " + (value & 0xf)
+                    + (((value & EOS_MASK) != 0) ? " EOS bit set" : ""));
+          }
         }
       }
     }
@@ -232,32 +229,29 @@ public class ADC12 extends IOUnit {
   // read a value from the IO unit
   @Override
   public int read(int address, boolean word, long cycles) {
-    switch(address) {
-    case ADC12CTL0:
-      return adc12ctl0;
-    case ADC12CTL1:
-      return isConverting ? (adc12ctl1 | BUSY_MASK) : adc12ctl1;
-    case ADC12IE:
-      return adc12ie;
-    case ADC12IFG:
-      return adc12ifg;
-    default:
-      if (address >= ADC12MCTL0 && address <= ADC12MCTL15)  {
-        return adc12mctl[address - ADC12MCTL0];
-      } else if (address >= ADC12MEM0 && address <= ADC12MEM15) {
-        int reg = (address - ADC12MEM0) / 2;
-        // Clear ifg!
-        adc12ifg &= ~(1 << reg);
+    return switch (address) {
+      case ADC12CTL0 -> adc12ctl0;
+      case ADC12CTL1 -> isConverting ? (adc12ctl1 | BUSY_MASK) : adc12ctl1;
+      case ADC12IE -> adc12ie;
+      case ADC12IFG -> adc12ifg;
+      default -> {
+        if (address >= ADC12MCTL0 && address <= ADC12MCTL15) {
+          yield adc12mctl[address - ADC12MCTL0];
+        } else if (address >= ADC12MEM0 && address <= ADC12MEM15) {
+          int reg = (address - ADC12MEM0) / 2;
+          // Clear ifg!
+          adc12ifg &= ~(1 << reg);
 //        System.out.println("Read ADCMEM" + (reg / 2));
-        if (adc12iv == reg * 2 + 6) {
-          cpu.flagInterrupt(adc12Vector, this, false);
-          adc12iv = 0;
+          if (adc12iv == reg * 2 + 6) {
+            cpu.flagInterrupt(adc12Vector, this, false);
+            adc12iv = 0;
 //          System.out.println("** de-Trigger ADC12 IRQ for ADCMEM" + adc12Pos);
+          }
+          yield adc12mem[reg];
         }
-        return adc12mem[reg];
+        yield 0;
       }
-    }
-    return 0;
+    };
   }
 
   int smp;

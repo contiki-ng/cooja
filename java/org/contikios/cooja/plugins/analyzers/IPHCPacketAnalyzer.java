@@ -171,19 +171,13 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
 
       /* Hop limit */
       switch (packet.get(0) & 0x03) {
-        case SICSLOWPAN_IPHC_TTL_1:
-          ttl = 1;
-          break;
-        case SICSLOWPAN_IPHC_TTL_64:
-          ttl = 64;
-          break;
-        case SICSLOWPAN_IPHC_TTL_255:
-          ttl = 255;
-          break;
-        case SICSLOWPAN_IPHC_TTL_I:
+        case SICSLOWPAN_IPHC_TTL_1 -> ttl = 1;
+        case SICSLOWPAN_IPHC_TTL_64 -> ttl = 64;
+        case SICSLOWPAN_IPHC_TTL_255 -> ttl = 255;
+        case SICSLOWPAN_IPHC_TTL_I -> {
           ttl = packet.get(hc06_ptr);
           hc06_ptr += 1;
-          break;
+        }
       }
 
       /* context based compression */
@@ -195,69 +189,63 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
         }
 
         switch (packet.get(1) & SICSLOWPAN_IPHC_SAM_11) {
-          case SICSLOWPAN_IPHC_SAM_00:
+          case SICSLOWPAN_IPHC_SAM_00 ->
             /* copy the unspecificed address */
-            srcAddress = UNSPECIFIED_ADDRESS;
-            break;
-          case SICSLOWPAN_IPHC_SAM_01: /* 64 bits */
+                  srcAddress = UNSPECIFIED_ADDRESS;
+          case SICSLOWPAN_IPHC_SAM_01 -> {
             /* copy prefix from context */
 
             System.arraycopy(context, 0, srcAddress, 0, 8);
             /* copy IID from packet */
             packet.copy(hc06_ptr, srcAddress, 8, 8);
             hc06_ptr += 8;
-            break;
-          case SICSLOWPAN_IPHC_SAM_10: /* 16 bits */
+          }
+          case SICSLOWPAN_IPHC_SAM_10 -> {
             /* unicast address */
 
             System.arraycopy(context, 0, srcAddress, 0, 8);
             /* copy 6 NULL bytes then 2 last bytes of IID */
             packet.copy(hc06_ptr, srcAddress, 14, 2);
             hc06_ptr += 2;
-            break;
-          case SICSLOWPAN_IPHC_SAM_11: /* 0-bits */
+          }
+          case SICSLOWPAN_IPHC_SAM_11 -> {
             /* copy prefix from context */
 
             System.arraycopy(context, 0, srcAddress, 0, 8);
             /* infer IID from L2 address */
             System.arraycopy(packet.llsender, 0, srcAddress,
-                             16 - packet.llsender.length, packet.llsender.length);
-            break;
+                    16 - packet.llsender.length, packet.llsender.length);
+          }
         }
         /* end context based compression */
       } else {
         /* no compression and link local */
         switch (packet.get(1) & SICSLOWPAN_IPHC_SAM_11) {
-          case SICSLOWPAN_IPHC_SAM_00: /* 128 bits */
-            /* copy whole address from packet */
-
+          case SICSLOWPAN_IPHC_SAM_00 -> {
             packet.copy(hc06_ptr, srcAddress, 0, 16);
             hc06_ptr += 16;
-            break;
-          case SICSLOWPAN_IPHC_SAM_01: /* 64 bits */
-
+          }
+          case SICSLOWPAN_IPHC_SAM_01 -> {
             srcAddress[0] = (byte) 0xfe;
             srcAddress[1] = (byte) 0x80;
             /* copy IID from packet */
             packet.copy(hc06_ptr, srcAddress, 8, 8);
             hc06_ptr += 8;
-            break;
-          case SICSLOWPAN_IPHC_SAM_10: /* 16 bits */
-
+          }
+          case SICSLOWPAN_IPHC_SAM_10 -> {
             srcAddress[0] = (byte) 0xfe;
             srcAddress[1] = (byte) 0x80;
             packet.copy(hc06_ptr, srcAddress, 14, 2);
             hc06_ptr += 2;
-            break;
-          case SICSLOWPAN_IPHC_SAM_11: /* 0 bits */
-            /* setup link-local address */
+          }
+          case SICSLOWPAN_IPHC_SAM_11 -> {
 
             srcAddress[0] = (byte) 0xfe;
             srcAddress[1] = (byte) 0x80;
             /* infer IID from L2 address */
             System.arraycopy(packet.llsender, 0, srcAddress,
-                             16 - packet.llsender.length, packet.llsender.length);
-            break;
+                    16 - packet.llsender.length, packet.llsender.length);
+          }
         }
       }
 
@@ -271,33 +259,29 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
         } else {
           /* non-context based multicast compression */
           switch (packet.get(1) & SICSLOWPAN_IPHC_DAM_11) {
-            case SICSLOWPAN_IPHC_DAM_00: /* 128 bits */
+            case SICSLOWPAN_IPHC_DAM_00 -> {
               /* copy whole address from packet */
-
               packet.copy(hc06_ptr, destAddress, 0, 16);
               hc06_ptr += 16;
-              break;
-            case SICSLOWPAN_IPHC_DAM_01: /* 48 bits FFXX::00XX:XXXX:XXXX */
-
+            }
+            case SICSLOWPAN_IPHC_DAM_01 -> {
               destAddress[0] = (byte) 0xff;
               destAddress[1] = packet.get(hc06_ptr);
               packet.copy(hc06_ptr + 1, destAddress, 11, 5);
               hc06_ptr += 6;
-              break;
-            case SICSLOWPAN_IPHC_DAM_10: /* 32 bits FFXX::00XX:XXXX */
-
+            }
+            case SICSLOWPAN_IPHC_DAM_10 -> {
               destAddress[0] = (byte) 0xff;
               destAddress[1] = packet.get(hc06_ptr);
               packet.copy(hc06_ptr + 1, destAddress, 13, 3);
               hc06_ptr += 4;
-              break;
-            case SICSLOWPAN_IPHC_DAM_11: /* 8 bits FF02::00XX */
-
+            }
+            case SICSLOWPAN_IPHC_DAM_11 -> {
               destAddress[0] = (byte) 0xff;
               destAddress[1] = (byte) 0x02;
               destAddress[15] = packet.get(hc06_ptr);
               hc06_ptr++;
-              break;
+            }
           }
         }
       } else {
@@ -307,59 +291,52 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
           byte[] context = addrContexts[dci];
 
           switch (packet.get(1) & SICSLOWPAN_IPHC_DAM_11) {
-            case SICSLOWPAN_IPHC_DAM_01: /* 64 bits */
-
+            case SICSLOWPAN_IPHC_DAM_01 -> {
               System.arraycopy(context, 0, destAddress, 0, 8);
               /* copy IID from packet */
               packet.copy(hc06_ptr, destAddress, 8, 8);
               hc06_ptr += 8;
-              break;
-            case SICSLOWPAN_IPHC_DAM_10: /* 16 bits */
+            }
+            case SICSLOWPAN_IPHC_DAM_10 -> {
               /* unicast address */
-
               System.arraycopy(context, 0, destAddress, 0, 8);
               /* copy IID from packet */
               packet.copy(hc06_ptr, destAddress, 14, 2);
               hc06_ptr += 2;
-              break;
-            case SICSLOWPAN_IPHC_DAM_11: /* 0 bits */
+            }
+            case SICSLOWPAN_IPHC_DAM_11 -> {
               /* unicast address */
-
               System.arraycopy(context, 0, destAddress, 0, 8);
               /* infer IID from L2 address */
               System.arraycopy(packet.llreceiver, 0, destAddress,
-                               16 - packet.llreceiver.length, packet.llreceiver.length);
-              break;
+                      16 - packet.llreceiver.length, packet.llreceiver.length);
+            }
           }
         } else {
           /* not context based => link local M = 0, DAC = 0 - same as SAC */
           switch (packet.get(1) & SICSLOWPAN_IPHC_DAM_11) {
-            case SICSLOWPAN_IPHC_DAM_00: /* 128 bits */
-
+            case SICSLOWPAN_IPHC_DAM_00 -> {
               packet.copy(hc06_ptr, destAddress, 0, 16);
               hc06_ptr += 16;
-              break;
-            case SICSLOWPAN_IPHC_DAM_01: /* 64 bits */
-
+            }
+            case SICSLOWPAN_IPHC_DAM_01 -> {
               destAddress[0] = (byte) 0xfe;
               destAddress[1] = (byte) 0x80;
               packet.copy(hc06_ptr, destAddress, 8, 8);
               hc06_ptr += 8;
-              break;
-            case SICSLOWPAN_IPHC_DAM_10: /* 16 bits */
-
+            }
+            case SICSLOWPAN_IPHC_DAM_10 -> {
               destAddress[0] = (byte) 0xfe;
               destAddress[1] = (byte) 0x80;
               packet.copy(hc06_ptr, destAddress, 14, 2);
               hc06_ptr += 2;
-              break;
-            case SICSLOWPAN_IPHC_DAM_11: /* 0 bits */
-
+            }
+            case SICSLOWPAN_IPHC_DAM_11 -> {
               destAddress[0] = (byte) 0xfe;
               destAddress[1] = (byte) 0x80;
               System.arraycopy(packet.llreceiver, 0, destAddress,
-                               16 - packet.llreceiver.length, packet.llreceiver.length);
-              break;
+                      16 - packet.llreceiver.length, packet.llreceiver.length);
+            }
           }
         }
       }
@@ -371,30 +348,30 @@ public class IPHCPacketAnalyzer extends PacketAnalyzer {
         if ((packet.get(hc06_ptr) & SICSLOWPAN_NDC_UDP_MASK) == SICSLOWPAN_NHC_UDP_ID) {
           proto = PROTO_UDP;
           switch (packet.get(hc06_ptr) & (byte) SICSLOWPAN_NHC_UDP_11) {
-            case (byte) SICSLOWPAN_NHC_UDP_00:
+            case (byte) SICSLOWPAN_NHC_UDP_00 -> {
               /* 1 byte for NHC, 4 byte for ports, 2 bytes chksum */
               srcPort = packet.getInt(hc06_ptr + 1, 2) & 0xFFFF;
               destPort = packet.getInt(hc06_ptr + 3, 2) & 0xFFFF;
               hc06_ptr += 7;
-              break;
-            case (byte) SICSLOWPAN_NHC_UDP_01:
+            }
+            case (byte) SICSLOWPAN_NHC_UDP_01 -> {
               /* 1 byte for NHC, 3 byte for ports, 2 bytes chksum */
               srcPort = packet.getInt(hc06_ptr + 1, 2);
               destPort = SICSLOWPAN_UDP_8_BIT_PORT_MIN + (packet.get(hc06_ptr + 3) & 0xFF);
               hc06_ptr += 6;
-              break;
-            case (byte) SICSLOWPAN_NHC_UDP_10:
+            }
+            case (byte) SICSLOWPAN_NHC_UDP_10 -> {
               /* 1 byte for NHC, 3 byte for ports, 2 bytes chksum */
               srcPort = SICSLOWPAN_UDP_8_BIT_PORT_MIN + (packet.get(hc06_ptr + 1) & 0xFF);
               destPort = packet.getInt(hc06_ptr + 2, 2);
               hc06_ptr += 6;
-              break;
-            case (byte) SICSLOWPAN_NHC_UDP_11:
+            }
+            case (byte) SICSLOWPAN_NHC_UDP_11 -> {
               /* 1 byte for NHC, 1 byte for ports, 2 bytes chksum */
               srcPort = SICSLOWPAN_UDP_4_BIT_PORT_MIN + (packet.get(hc06_ptr + 1) >> 4);
               destPort = SICSLOWPAN_UDP_4_BIT_PORT_MIN + (packet.get(hc06_ptr + 1) & 0x0F);
               hc06_ptr += 4;
-              break;
+            }
           }
         }
       } else {
