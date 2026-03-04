@@ -7,7 +7,7 @@ plugins {
 
 group = 'org.contikios.cooja'
 
-def javaVersion = 21
+def javaVersion = 25
 
 java {
   toolchain {
