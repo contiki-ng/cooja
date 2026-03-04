@@ -7,7 +7,7 @@ plugins {
 
 group = 'org.contikios.cooja'
 
-def javaVersion = 21
+def javaVersion = 25
 
 java {
   toolchain {
@@ -100,12 +100,8 @@ sourceSets {
 application {
   mainClass = 'org.contikios.cooja.Main'
   applicationDefaultJvmArgs = ['-Xms400M', '-Xmx2048M',
-    // Several Contiki-NG tests crash the JVM without these flags with Java 17,
-    // 08-ipv6-unicast.csc is one example. Unclear why, the JVM should not
-    // do anything with the pointers in C-land part of ContikiMoteType.
-    '-XX:-UseCompressedOops', '-XX:-UseCompressedClassPointers',
-    // Enable the preview foreign function interface.
-    '--enable-preview', '--enable-native-access', 'ALL-UNNAMED']
+    // Enable the foreign function interface.
+    '--enable-native-access', 'ALL-UNNAMED']
 }
 
 testing {
