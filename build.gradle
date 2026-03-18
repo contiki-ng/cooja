@@ -143,6 +143,7 @@ tasks.withType(JavaCompile).configureEach {
   options.errorprone.disable('CatchAndPrintStackTrace')
   options.errorprone.disable('DefaultCharset')
   options.errorprone.disable('DoubleCheckedLocking')
+  options.errorprone.disable('EffectivelyPrivate')
   options.errorprone.disable('EmptyBlockTag')
   options.errorprone.disable('EmptyCatch')
   options.errorprone.disable('EqualsGetClass')
