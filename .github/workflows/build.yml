@@ -18,7 +18,7 @@ jobs:
       # Do not cancel other jobs on first failure.
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-14, macos-15-intel ]
+        os: [ ubuntu-latest, macos-26, macos-26-intel ]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -31,39 +31,39 @@ jobs:
         with:
           repository: contiki-ng/cooja
           path: contiki-ng/tools/cooja
-      - name: Setup Java 21
+      - name: Setup Java 25
         uses: actions/setup-java@v5
         with:
-          java-version: 21
+          java-version: 25
           distribution: 'zulu'
       - name: Verify gradle-wrapper checksum
         uses: gradle/actions/wrapper-validation@v5
       - name: configure macOS/Intel Gradle
-        if: matrix.os == 'macos-15-intel'
+        if: matrix.os == 'macos-26-intel'
         run: |
-          # Prevent Gradle from picking up Java 8 on Github CI runner.
+          # Prevent Gradle from picking up Java 21 on Github CI runner.
           mkdir -p $HOME/.gradle
-          echo "org.gradle.java.home=$JAVA_HOME_21_X64" > $HOME/.gradle/gradle.properties
+          echo "org.gradle.java.home=$JAVA_HOME_25_X64" > $HOME/.gradle/gradle.properties
           # Homebrew prefix is different for x86-64 and aarch64.
           export HOMEBREW_PREFIX=/usr/local
           # Put Homebrew installed make first in PATH so "make" is version 4.x.
           echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.profile
           echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.bashrc
       - name: configure macOS/arm64 Gradle
-        if: matrix.os == 'macos-14'
+        if: matrix.os == 'macos-26'
         run: |
-          # Prevent Gradle from picking up Java 8 on Github CI runner.
+          # Prevent Gradle from picking up Java 21 on Github CI runner.
           mkdir -p $HOME/.gradle
-          echo "org.gradle.java.home=$JAVA_HOME_21_arm64" > $HOME/.gradle/gradle.properties
+          echo "org.gradle.java.home=$JAVA_HOME_25_arm64" > $HOME/.gradle/gradle.properties
           # Homebrew prefix is different for x86-64 and aarch64.
           export HOMEBREW_PREFIX=/opt/homebrew
           # Put Homebrew installed make first in PATH so "make" is version 4.x.
           echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.profile
           echo "export PATH=$HOMEBREW_PREFIX/opt/make/libexec/gnubin:$PATH" >> ~/.bashrc
       - name: install macOS software
-        if: matrix.os == 'macos-14' || matrix.os == 'macos-15-intel'
+        if: matrix.os == 'macos-26' || matrix.os == 'macos-26-intel'
         run: |
-          brew install make clang-format
+          brew install make
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
@@ -76,7 +76,7 @@ jobs:
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2.21
         with:
-          key: compilation-${{ runner.os }}
+          key: compilation-${{ matrix.os }}
           max-size: 160M
       - name: Run Contiki-NG simulation tests
         run: |
