@@ -480,7 +480,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
       private void handleMouseDrag(MouseEvent e) {
         Position currPos = transformPixelToPosition(e.getPoint());
         switch (mouseActionState) {
-          case DEFAULT_PRESS:
+          case DEFAULT_PRESS -> {
             if (cursorMote == null) {
               mouseActionState = MotesActionState.PANNING;
             } else {
@@ -492,8 +492,8 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
                 moveStartPositions.put(m, new double[]{pos.getXCoordinate(), pos.getYCoordinate(), pos.getZCoordinate()});
               }
             }
-            break;
-          case MOVING:
+          }
+          case MOVING -> {
             canvas.setCursor(MOVE_CURSOR);
             for (Mote moveMote : selectedMotes) {
               moveMote.getInterfaces().getPosition().setCoordinates(
@@ -502,21 +502,19 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
                       moveStartPositions.get(moveMote)[2]);
               repaint();
             }
-            break;
-          case PAN_PRESS:
-            mouseActionState = MotesActionState.PANNING;
-            break;
-          case PANNING:
+          }
+          case PAN_PRESS -> mouseActionState = MotesActionState.PANNING;
+          case PANNING -> {
             // The current mouse position should correspond to where panning started.
             viewportTransform.translate(currPos.getXCoordinate() - pressedPos.getXCoordinate(),
                     currPos.getYCoordinate() - pressedPos.getYCoordinate());
             repaint();
-            break;
-          case SELECT_PRESS:
+          }
+          case SELECT_PRESS -> {
             mouseActionState = MotesActionState.SELECTING;
             selection.setEnabled(true);
-            break;
-          case SELECTING:
+          }
+          case SELECTING -> {
             int pressedX = transformToPixelX(pressedPos.getXCoordinate());
             int pressedY = transformToPixelY(pressedPos.getYCoordinate());
             int currX = transformToPixelX(currPos.getXCoordinate());
@@ -529,7 +527,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
             selectedMotes.clear();
             selectedMotes.addAll(Arrays.asList(findMotesInRange(startX, startY, width, height)));
             repaint();
-            break;
+          }
         }
       }
 
@@ -628,10 +626,10 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
         if (SwingUtilities.isLeftMouseButton(e)) {
           switch (mouseActionState) {
-            case PAN_PRESS:
+            case PAN_PRESS -> {
               // ignore
-              break;
-            case SELECT_PRESS:
+            }
+            case SELECT_PRESS -> {
               if (cursorMote == null) { // Click on free canvas deselects all motes.
                 selectedMotes.clear();
               } else { // Toggle selection for mote.
@@ -641,24 +639,23 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
                   selectedMotes.add(cursorMote);
                 }
               }
-              break;
-            case DEFAULT_PRESS:
+            }
+            case DEFAULT_PRESS -> {
               if (cursorMote == null) { // Click on free canvas deselects all motes.
                 selectedMotes.clear();
               } else {                 // Click on mote selects single mote.
                 selectedMotes.clear();
                 selectedMotes.add(cursorMote);
               }
-              break;
-            case MOVING:
+            }
+            case MOVING ->
               // Release stops moving.
-              canvas.setCursor(Cursor.getDefaultCursor());
-              break;
-            case SELECTING:
+                    canvas.setCursor(Cursor.getDefaultCursor());
+            case SELECTING -> {
               // Release stops moving.
               selection.setEnabled(false);
               repaint();
-              break;
+            }
           }
           // Release always stops previous actions.
           mouseActionState = MotesActionState.NONE;
@@ -1373,7 +1370,7 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
 
     for (Element element : configXML) {
       switch (element.getName()) {
-        case "skin":
+        case "skin" -> {
           String wanted = element.getText();
           /* Backwards compatibility: se.sics -> org.contikios */
           if (wanted.startsWith("se.sics")) {
@@ -1389,31 +1386,29 @@ public class Visualizer extends VisPlugin implements HasQuickHelp {
           if (wanted != null) {
             logger.warn("Could not load visualizer: " + element.getText());
           }
-          break;
-        case "moterelations":
-          showMoteToMoteRelations = true;
-          break;
-        case "viewport":
+        }
+        case "moterelations" -> showMoteToMoteRelations = true;
+        case "viewport" -> {
           try {
             String[] matrix = element.getText().split(" ");
             viewportTransform.setTransform(
                     Double.parseDouble(matrix[0]),
-                  Double.parseDouble(matrix[1]),
-                  Double.parseDouble(matrix[2]),
-                  Double.parseDouble(matrix[3]),
-                  Double.parseDouble(matrix[4]),
-                  Double.parseDouble(matrix[5])
+                    Double.parseDouble(matrix[1]),
+                    Double.parseDouble(matrix[2]),
+                    Double.parseDouble(matrix[3]),
+                    Double.parseDouble(matrix[4]),
+                    Double.parseDouble(matrix[5])
             );
             resetViewport = 0;
-          }
-          catch (NumberFormatException e) {
+          } catch (NumberFormatException e) {
             logger.warn("Bad viewport: " + e.getMessage());
             resetViewport();
-          } break;
-        case "hidden":
+          }
+        }
+        case "hidden" -> {
           BasicInternalFrameUI ui = (BasicInternalFrameUI) getUI();
           ui.getNorthPane().setPreferredSize(new Dimension(0, 0));
-          break;
+        }
       }
     }
     return true;
