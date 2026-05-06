@@ -259,7 +259,7 @@ public class RTC extends IOUnit {
                         }
                 }
 
-                /**
+                /*
                  * Re-Schedule the timer event
                  */
                 private void reSchedule() {
@@ -267,7 +267,7 @@ public class RTC extends IOUnit {
                         rtcInit();
                 }
 
-                /**
+                /*
                  * Update the counters or the calendar, depending on the mode
                  */
                 private void updateCounters() {
@@ -313,7 +313,7 @@ public class RTC extends IOUnit {
                         }
                 }
 
-                /**
+                /*
                  * Trigger a microprocessor interrupt
                  */
                 private void generateInterrupt() {

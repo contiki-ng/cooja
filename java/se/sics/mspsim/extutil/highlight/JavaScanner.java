@@ -25,14 +25,14 @@ public class JavaScanner extends Scanner {
     super();
     initKind();
     initUniKind();
-    switch (version) {
-      case "1.1" -> this.version = 11;
-      case "1.2" -> this.version = 12;
-      case "1.3" -> this.version = 13;
-      case "1.4" -> this.version = 14;
-      case "1.5" -> this.version = 15;
+    this.version = switch (version) {
+      case "1.1" -> 11;
+      case "1.2" -> 12;
+      case "1.3" -> 13;
+      case "1.4" -> 14;
+      case "1.5" -> 15;
       default -> throw new Error("Unknown version of Java: " + version);
-    }
+    };
   }
 
   /** Override the read method from the Scanner class. */
