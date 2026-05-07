@@ -46,10 +46,22 @@ public class MspDefaultSerial extends MspSerial {
 
     @Override
     protected USARTSource getUSARTSource(MspMote mote) {
+        // Try to get USART by the standard IOUnit names used by different platforms
+        // FR5xxx uses "USCI A0", older platforms use "USART 1"
+        String[] usartNames = {"USCI A0", "USART 1", "USCI A1"};
+        for (String name : usartNames) {
+            USARTSource usart = mote.getCPU().getIOUnit(USARTSource.class, name);
+            if (usart != null) {
+                return usart;
+            }
+        }
+
+        // Fallback: check if serialio component is registered
         USARTSource usart = mote.getCPU().getRegistry().getComponent(USARTSource.class, "serialio");
         if (usart != null) {
             return usart;
         }
+
         return super.getUSARTSource(mote);
     }
 
