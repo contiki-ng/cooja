@@ -620,9 +620,6 @@ public class Timer extends IOUnit {
       setCounter(data, cycles);
       break;
     case TCTL:
-      if (DEBUG) {
-        log("wrote to TCTL: " + Utils.hex16(data));
-      }
       inputDivider = 1 << ((data >> 6) & 3);
       clockSource = srcMap[(data >> 8) & 3];
 
