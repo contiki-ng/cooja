@@ -94,6 +94,10 @@ public abstract class MSP430Config {
 
     public boolean MSP430XArch;
 
+    // FRAM configuration (for FR5xxx series)
+    public boolean hasFRAM = false;
+    public int framControllerOffset = 0x140;
+
     public int sfrOffset;
 
     public int watchdogOffset = 0x120;

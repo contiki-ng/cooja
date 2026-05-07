@@ -63,6 +63,7 @@ import org.contikios.cooja.contikimote.ContikiMoteType;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.motes.DisturberMoteType;
 import org.contikios.cooja.motes.ImportAppMoteType;
+import org.contikios.cooja.mspmote.Msp430FR5969MoteType;
 import org.contikios.cooja.mspmote.SkyMoteType;
 import org.contikios.cooja.mspmote.Z1MoteType;
 import org.contikios.cooja.positioners.EllipsePositioner;
@@ -416,6 +417,7 @@ public class Cooja {
     registerMoteType(ContikiMoteType.class);
     registerMoteType(SkyMoteType.class);
     registerMoteType(Z1MoteType.class);
+    registerMoteType(Msp430FR5969MoteType.class);
     var moteTypeClassNames = projectConfig.getStringArrayValue(Cooja.class,"MOTETYPES");
     if (moteTypeClassNames != null) {
       for (var moteTypeClassName : moteTypeClassNames) {
