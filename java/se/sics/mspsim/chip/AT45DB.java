@@ -151,116 +151,105 @@ public class AT45DB extends ExternalFlash implements USARTListener {
 
       if (chipSelect) {
 
-        switch(state) {
+        switch (state) {
+          case READ_ADDRESS -> {
+            pos++;
+            if (pos == 1) {
+              pageAddress = ((data & 0xF) << 7);
+            } else if (pos == 2) {
+              pageAddress |= ((data & 0xFE) >> 1);
+              bufferAddress = ((data & 1) << 9);
+            } else if (pos == 3) {
+              bufferAddress |= data;
 
-        case READ_ADDRESS:
-          pos++;
-          if(pos == 1) {
-            pageAddress = ((data & 0xF) << 7);
-          }else if (pos == 2) {
-            pageAddress |= ((data & 0xFE) >> 1);
-            bufferAddress = ((data & 1) << 9);
-          }else if (pos == 3) {
-            bufferAddress |= data;
+              if (DEBUG)
+                log("Address - PA[10-0]: " + pageAddress + " BA[8-0]: " + bufferAddress);
 
-            if(DEBUG)
-              log("Address - PA[10-0]: " + pageAddress + " BA[8-0]: " + bufferAddress);
-
-            if(dummy == 0) {
-              if(DEBUG) log("State " + state + " -> " + next_state);
-              setState(next_state);
+              if (dummy == 0) {
+                if (DEBUG) log("State " + state + " -> " + next_state);
+                setState(next_state);
+              }
+            } else {
+              if (--dummy == 0) {
+                if (DEBUG) log("State " + state + " -> " + next_state);
+                setState(next_state);
+              }
             }
-          }else{
-            if(--dummy == 0) {
-              if(DEBUG) log("State " + state + " -> " + next_state);
-              setState(next_state);
+            source.byteReceived(0);
+          }
+          case BUFFER1_READ, BUFFER2_READ -> {
+            // Return bytes from the RAM buffer
+            buf_num = (state == BUFFER1_READ ? 1 : 2);
+            source.byteReceived(readBuffer(buf_num, bufferAddress++));
+            if (bufferAddress >= PAGE_SIZE)
+              logw(WarningType.EXECUTION, "ERROR: Buffer Read past buffer size: " + bufferAddress);
+          }
+          case BUFFER1_WRITE, BUFFER2_WRITE -> {
+            buf_num = (state == BUFFER1_WRITE ? 1 : 2);
+            writeBuffer(buf_num, bufferAddress++, data);
+            if (bufferAddress >= PAGE_SIZE)
+              logw(WarningType.EXECUTION, "ERROR: Buffer Write past buffer size: " + bufferAddress);
+            source.byteReceived(0);
+          }
+          case STATUS_REGISTER_READ ->
+            // Chip select false will transition state, as the status register can be
+            // polled by clocking data on SI until CS is false
+                  source.byteReceived(status);
+          case STATE_RESET, STATE_IDLE -> {
+            // data is a command byte
+            switch (data) {
+              case BUFFER1_TO_PAGE_ERASE, BUFFER2_TO_PAGE_ERASE -> {
+                if (DEBUG)
+                  log("Buffer" + (data == BUFFER1_TO_PAGE_ERASE ? "1" : "2") + " to Page with Erase Command");
+                pos = 0;
+                setState(READ_ADDRESS);
+                next_state = data;
+                dummy = 0;
+                setReady(false);
+                source.byteReceived(0);
+              }
+              case BUFFER1_READ, BUFFER2_READ -> {
+                if (DEBUG)
+                  log("Read Buffer Command " + (data == BUFFER1_READ ? "Buffer1" : "Buffer2"));
+                pos = 0;
+                setState(READ_ADDRESS);
+                next_state = data;
+                dummy = 1;
+                setReady(false);
+                source.byteReceived(0);
+              }
+              case BUFFER1_WRITE, BUFFER2_WRITE -> {
+                if (DEBUG)
+                  log("Write Buffer Command " + (data == BUFFER1_WRITE ? "Buffer1" : "Buffer2"));
+                pos = 0;
+                setState(READ_ADDRESS);
+                next_state = data;
+                dummy = 0;
+                setReady(false);
+                source.byteReceived(0);
+              }
+              case PAGE_TO_BUFFER1, PAGE_TO_BUFFER2 -> {
+                if (DEBUG)
+                  log("Page To Buffer " + (data == PAGE_TO_BUFFER1 ? "1" : "2") + " Command");
+                pos = 0;
+                setState(READ_ADDRESS);
+                next_state = data;
+                dummy = 0;
+                setReady(false);
+                source.byteReceived(0);
+              }
+              case STATUS_REGISTER_READ -> {
+                if (DEBUG) log("Read status register command.  status: " + status);
+                setState(STATUS_REGISTER_READ);
+                source.byteReceived(0);
+              }
+              default -> {
+                logw(WarningType.EMULATION_ERROR, "WARNING: Command not implemented: " + data);
+                source.byteReceived(0);
+              }
             }
           }
-          source.byteReceived(0);
-          break;
-
-        case BUFFER1_READ:
-        case BUFFER2_READ:
-          // Return bytes from the RAM buffer
-          buf_num = (state == BUFFER1_READ ? 1 : 2);
-          source.byteReceived(readBuffer(buf_num, bufferAddress++));
-          if(bufferAddress >= PAGE_SIZE)
-            logw(WarningType.EXECUTION, "ERROR: Buffer Read past buffer size: " + bufferAddress);
-          break;
-
-        case BUFFER1_WRITE:
-        case BUFFER2_WRITE:
-          buf_num = (state == BUFFER1_WRITE ? 1 : 2);
-          writeBuffer(buf_num, bufferAddress++, data);
-          if(bufferAddress >= PAGE_SIZE)
-            logw(WarningType.EXECUTION, "ERROR: Buffer Write past buffer size: " + bufferAddress);
-          source.byteReceived(0);
-          break;
-
-        case STATUS_REGISTER_READ:
-          // Chip select false will transition state, as the status register can be
-          // polled by clocking data on SI until CS is false
-          source.byteReceived(status);
-          break;
-
-        case STATE_RESET:
-        case STATE_IDLE:
-          // data is a command byte
-          switch (data) {
-            case BUFFER1_TO_PAGE_ERASE, BUFFER2_TO_PAGE_ERASE -> {
-              if (DEBUG)
-                log("Buffer" + (data == BUFFER1_TO_PAGE_ERASE ? "1" : "2") + " to Page with Erase Command");
-              pos = 0;
-              setState(READ_ADDRESS);
-              next_state = data;
-              dummy = 0;
-              setReady(false);
-              source.byteReceived(0);
-            }
-            case BUFFER1_READ, BUFFER2_READ -> {
-              if (DEBUG)
-                log("Read Buffer Command " + (data == BUFFER1_READ ? "Buffer1" : "Buffer2"));
-              pos = 0;
-              setState(READ_ADDRESS);
-              next_state = data;
-              dummy = 1;
-              setReady(false);
-              source.byteReceived(0);
-            }
-            case BUFFER1_WRITE, BUFFER2_WRITE -> {
-              if (DEBUG)
-                log("Write Buffer Command " + (data == BUFFER1_WRITE ? "Buffer1" : "Buffer2"));
-              pos = 0;
-              setState(READ_ADDRESS);
-              next_state = data;
-              dummy = 0;
-              setReady(false);
-              source.byteReceived(0);
-            }
-            case PAGE_TO_BUFFER1, PAGE_TO_BUFFER2 -> {
-              if (DEBUG)
-                log("Page To Buffer " + (data == PAGE_TO_BUFFER1 ? "1" : "2") + " Command");
-              pos = 0;
-              setState(READ_ADDRESS);
-              next_state = data;
-              dummy = 0;
-              setReady(false);
-              source.byteReceived(0);
-            }
-            case STATUS_REGISTER_READ -> {
-              if (DEBUG) log("Read status register command.  status: " + status);
-              setState(STATUS_REGISTER_READ);
-              source.byteReceived(0);
-            }
-            default -> {
-              logw(WarningType.EMULATION_ERROR, "WARNING: Command not implemented: " + data);
-              source.byteReceived(0);
-            }
-          }
-          break;
-        default:
-          source.byteReceived(0);
-        break;
+          default -> source.byteReceived(0);
         }
       }
     }

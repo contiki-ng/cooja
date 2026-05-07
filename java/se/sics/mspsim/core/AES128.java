@@ -348,110 +348,104 @@ public class AES128 extends IOUnit {
          */
         @Override
         public void write(int address, int value, boolean word, long cycles) {
-                log("write @ %x <-- %x (word=%b)\n", address, value, word);
-                int lo = value & 0xff; // low byte
-                int hi = (value >> 8) & 0xff; // high byte
+          log("write @ %x <-- %x (word=%b)\n", address, value, word);
+          int lo = value & 0xff; // low byte
+          int hi = (value >> 8) & 0xff; // high byte
 
-                switch (address - offset) {
-                case AESACTL0:
-                        if ((value & AESSWRST) == AESSWRST) {
-                                reset(0);
-                        }
+          switch (address - offset) {
+            case AESACTL0 -> {
+              if ((value & AESSWRST) == AESSWRST) {
+                reset(0);
+              }
 
-                        if (!(advancedCipherMode && cipherBlockCounter > 0)) {
-                                advancedCipherMode = ((value & AESCMEN) == AESCMEN);
-                        }
+              if (!(advancedCipherMode && cipherBlockCounter > 0)) {
+                advancedCipherMode = ((value & AESCMEN) == AESCMEN);
+              }
 
-                        interruptEnable = ((value & AESRDYIE) == AESRDYIE);
-                        errorFlag = ((value & AESERRFG) == AESERRFG);
-                        readyInterruptFlag = ((value & AESRDYIFG) == AESRDYIFG);
+              interruptEnable = ((value & AESRDYIE) == AESRDYIE);
+              errorFlag = ((value & AESERRFG) == AESERRFG);
+              readyInterruptFlag = ((value & AESRDYIFG) == AESRDYIFG);
 
-                        if (!(advancedCipherMode && cipherBlockCounter > 0)
-                                        && !advancedCipherMode) {
-                                cipherMode = ((value & 0x60) >> 5);
-                        }
+              if (!(advancedCipherMode && cipherBlockCounter > 0)
+                      && !advancedCipherMode) {
+                cipherMode = ((value & 0x60) >> 5);
+              }
 
-                        keyLength = ((value & 0xC) >> 2);
+              keyLength = ((value & 0xC) >> 2);
 
-                        if (!(advancedCipherMode && cipherBlockCounter > 0)) {
-                                operation = value & 0x03;
-                        }
-                        break;
+              if (!(advancedCipherMode && cipherBlockCounter > 0)) {
+                operation = value & 0x03;
+              }
+            }
+            case AESACTL1 -> {
+              /* Only lower byte allowed */
+              if (!(advancedCipherMode && cipherBlockCounter > 0)) {
+                value &= 0x000f;
+                cipherBlockCounter = value;
+              }
+            }
+            case AESASTAT -> {
+              /* Only two fields can be written in this register */
+              value &= (AESDINWR | AESKEYWR);
 
-                case AESACTL1:
-                        /* Only lower byte allowed */
-                        if (!(advancedCipherMode && cipherBlockCounter > 0)) {
-                                value &= 0x000f;
-                                cipherBlockCounter = value;
-                        }
-
-                        break;
-
-                case AESASTAT:
-                        /* Only two fields can be written in this register */
-                        value &= (AESDINWR | AESKEYWR);
-
-                        if ((value & AESKEYWR) == 0) {
-                                /*
-                                 * This flag can only be cleared if the advanceModeSupport is not
-                                 * enabled (ref. User Guide)
-                                 */
-                                if (!advancedCipherMode) {
-                                        value |= AESKEYWR;
-                                } else {
-                                        key.resetPos();
-                                }
-                        } else {
-                                isBusy = true;
-                                key.position(key.limit());
-                                switch (operation) {
-                                        case AESOP_0 -> aesEncrypt();
-                                        case AESOP_1 -> aesDecrypt();
-                                        case AESOP_2 -> // gen 1st round key
-                                                logw(WarningType.ILLEGAL_IO_WRITE, "to implement");
-                                        case AESOP_3 -> // decrypt 1st round key
-                                                logw(WarningType.ILLEGAL_IO_WRITE, "to implement");
-                                }
-                                isBusy = false;
-                                readyInterruptFlag = true;
-                        }
-
-                        if ((value & AESDINWR) == 0) {
-                                if (!advancedCipherMode) {
-                                        value |= AESKEYWR;
-                                } else {
-                                        inData.resetPos();
-                                }
-                        } else {
-                                inData.position(inData.limit());
-                        }
-
-                        break;
-
-                case AESAKEY:
-                        if (key.hasRemaining()) {
-                                /* Clear the ready interrupt flag */
-                                readyInterruptFlag = false;
-                                key.put((byte) lo);
-                                if (word && key.hasRemaining()) {
-                                        key.put((byte) hi);
-                                }
-                        }
-                        break;
-
-                case AESADIN:
-                        if (inData.hasRemaining()) {
-                                /* Clear the ready interrupt flag */
-                                readyInterruptFlag = false;
-                                inData.put((byte) lo);
-                                if (word && inData.hasRemaining()) {
-                                        inData.put((byte) hi);
-                                }
-                        }
-                        break;
+              if ((value & AESKEYWR) == 0) {
+                /*
+               * This flag can only be cleared if the advanceModeSupport is not
+               * enabled (ref. User Guide)
+               */
+                if (!advancedCipherMode) {
+                  value |= AESKEYWR;
+                } else {
+                  key.resetPos();
                 }
+              } else {
+                isBusy = true;
+                key.position(key.limit());
+                switch (operation) {
+                  case AESOP_0 -> aesEncrypt();
+                  case AESOP_1 -> aesDecrypt();
+                  case AESOP_2 -> // gen 1st round key
+                          logw(WarningType.ILLEGAL_IO_WRITE, "to implement");
+                  case AESOP_3 -> // decrypt 1st round key
+                          logw(WarningType.ILLEGAL_IO_WRITE, "to implement");
+                }
+                isBusy = false;
+                readyInterruptFlag = true;
+              }
 
-                log("ctl0: %04x\nstat: %04x\n", getCTL0Reg(), getStatReg());
+              if ((value & AESDINWR) == 0) {
+                if (!advancedCipherMode) {
+                  value |= AESKEYWR;
+                } else {
+                  inData.resetPos();
+                }
+              } else {
+                inData.position(inData.limit());
+              }
+            }
+            case AESAKEY -> {
+              if (key.hasRemaining()) {
+                /* Clear the ready interrupt flag */
+                readyInterruptFlag = false;
+                key.put((byte) lo);
+                if (word && key.hasRemaining()) {
+                  key.put((byte) hi);
+                }
+              }
+            }
+            case AESADIN -> {
+              if (inData.hasRemaining()) {
+                /* Clear the ready interrupt flag */
+                readyInterruptFlag = false;
+                inData.put((byte) lo);
+                if (word && inData.hasRemaining()) {
+                  inData.put((byte) hi);
+                }
+              }
+            }
+          }
+
+          log("ctl0: %04x\nstat: %04x\n", getCTL0Reg(), getStatReg());
         }
 
         /**
