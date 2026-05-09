@@ -44,7 +44,7 @@ public class IOPort extends IOUnit {
 
     public enum PinState { LOW, HI }
 
-    public enum PortReg {IN, OUT, DIR, SEL, SEL2, IFG, IES, IE, REN, DS, IV_L, IV_H}
+    public enum PortReg {IN, OUT, DIR, SEL, SEL0, SEL1, SEL2, SELC, IFG, IES, IE, REN, DS, IV_L, IV_H}
 
     /* portmaps for 1611 */
     private static final PortReg[] PORTMAP_INTERRUPT =
@@ -204,7 +204,10 @@ public class IOPort extends IOUnit {
             case REN -> ren;
             case DS -> ds;
             case SEL -> sel;
+            case SEL0 -> sel;   // SEL0 maps to sel for FR5xxx
+            case SEL1 -> sel2;  // SEL1 maps to sel2 for FR5xxx
             case SEL2 -> sel2;
+            case SELC -> sel | sel2;  // SELC is complement register
         };
     }
 
