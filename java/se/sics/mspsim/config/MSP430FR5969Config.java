@@ -65,8 +65,8 @@ public class MSP430FR5969Config extends MSP430Config {
     private static final String[] portConfig = {
         "P1=200,IN 00,OUT 02,DIR 04,REN 06,SEL0 0A,SEL1 0C,IV_L 0E,IV_H 0F,SELC 16,IES 18,IE 1A,IFG 1C",
         "P2=200,IN 01,OUT 03,DIR 05,REN 07,SEL0 0B,SEL1 0D,IV_L 1E,IV_H 1F,SELC 17,IES 19,IE 1B,IFG 1D",
-        "P3=220,IN 00,OUT 02,DIR 04,REN 06,SEL0 0A,SEL1 0C,SELC 16",
-        "P4=220,IN 01,OUT 03,DIR 05,REN 07,SEL0 0B,SEL1 0D,SELC 17",
+        "P3=220,IN 00,OUT 02,DIR 04,REN 06,SEL0 0A,SEL1 0C,IV_L 0E,IV_H 0F,SELC 16,IES 18,IE 1A,IFG 1C",
+        "P4=220,IN 01,OUT 03,DIR 05,REN 07,SEL0 0B,SEL1 0D,IV_L 1E,IV_H 1F,SELC 17,IES 19,IE 1B,IFG 1D",
         "PJ=320,IN 00,OUT 02,DIR 04,REN 06,SEL0 0A,SEL1 0C"
     };
 
@@ -133,18 +133,19 @@ public class MSP430FR5969Config extends MSP430Config {
             ioUnits.add(usci);
         }
 
-        // Setup IO ports
-        // P1 has interrupt vector 47 (0x005E), P2 has interrupt vector 44 (0x0058)
+        // Setup IO ports. Port interrupt vectors (PORTx_VECTOR / 2):
+        //   P1=47 (0x005E), P2=44 (0x0058), P3=41 (0x0052), P4=40 (0x0050).
+        // PJ has no port interrupt.
         IOPort last = IOPort.parseIOPort(cpu, 47, portConfig[0], null);
         ioUnits.add(last);
         last = IOPort.parseIOPort(cpu, 44, portConfig[1], last);
         ioUnits.add(last);
-
-        // P3, P4, PJ don't have interrupts
-        for (int i = 2; i < portConfig.length; i++) {
-            last = IOPort.parseIOPort(cpu, 0, portConfig[i], last);
-            ioUnits.add(last);
-        }
+        last = IOPort.parseIOPort(cpu, 41, portConfig[2], last);
+        ioUnits.add(last);
+        last = IOPort.parseIOPort(cpu, 40, portConfig[3], last);
+        ioUnits.add(last);
+        last = IOPort.parseIOPort(cpu, 0, portConfig[4], last);
+        ioUnits.add(last);
 
         // Setup system registers
         SysReg sysreg = new SysReg(cpu, cpu.memory);
