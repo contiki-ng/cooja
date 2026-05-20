@@ -72,6 +72,13 @@ public class FRAMSegment implements Memory {
 
     @Override
     public void write(int dstAddress, int data, AccessMode mode) throws EmulationException {
+        // Honour WPROT: when set the write is blocked and WPIFG is raised.
+        // get()/set() bypass this so debugger and ELF-loader writes still
+        // work after WPROT has been engaged.
+        if (framController != null && !framController.attemptWrite(dstAddress)) {
+            return;
+        }
+
         memory[dstAddress] = data & 0xff;
         if (mode != AccessMode.BYTE) {
             memory[dstAddress + 1] = (data >> 8) & 0xff;
