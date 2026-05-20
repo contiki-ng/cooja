@@ -100,6 +100,13 @@ public abstract class MSP430Config {
 
     public int sfrOffset;
 
+    /*
+     * Absolute address of WDTCTL - i.e. the one watchdog register the
+     * emulator actually models, NOT the WDT_A module base. On F1xxx/F2xxx
+     * these coincide at 0x120; on F5xxx/FR5xxx WDTCTL sits at 0x15C while
+     * the module base is 0x150 (offset 0xC inside the module). Configs
+     * should set this to the WDTCTL address for their part.
+     */
     public int watchdogOffset = 0x120;
 
     /*
