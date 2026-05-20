@@ -409,8 +409,18 @@ public class IOPort extends IOUnit {
     public void reset(int type) {
         int oldValue = out | ~dir & 0xff;
 
-        Arrays.fill(pinState, PinState.LOW);
+        // External pin levels (driven by chips such as Button) survive POR.
+        // Initialise null entries to LOW on first reset; rebuild IN so it
+        // matches the current pin levels rather than zeroing it out.
         in = 0;
+        for (int i = 0; i < pinState.length; i++) {
+            if (pinState[i] == null) {
+                pinState[i] = PinState.LOW;
+            }
+            if (pinState[i] == PinState.HI) {
+                in |= 1 << i;
+            }
+        }
         dir = 0;
         ren = 0;
         ifg = 0;
