@@ -41,7 +41,7 @@ import javax.swing.JPanel;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.interfaces.LED;
-import org.contikios.cooja.mspmote.Msp430FR5969Mote;
+import org.contikios.cooja.mspmote.MSP430FR5969Mote;
 import org.contikios.cooja.util.EventTriggers;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.platform.fr5969.FR5969Node;
@@ -53,7 +53,7 @@ import se.sics.mspsim.platform.fr5969.FR5969Node;
  * LED2 (Green): P4.6
  */
 @ClassDescription("MSP430FR5969 LEDs")
-public class Msp430FR5969LED extends LED {
+public class MSP430FR5969LED extends LED {
 
     private static final Color RED_ON = new Color(255, 0, 0);
     private static final Color RED_OFF = new Color(100, 0, 0);
@@ -63,8 +63,8 @@ public class Msp430FR5969LED extends LED {
     private boolean redOn;
     private boolean greenOn;
 
-    public Msp430FR5969LED(Mote mote) {
-        var mspMote = (Msp430FR5969Mote) mote;
+    public MSP430FR5969LED(Mote mote) {
+        var mspMote = (MSP430FR5969Mote) mote;
 
         // Listen to P1 for red LED (P1.0)
         IOPort port1 = mspMote.getCPU().getIOUnit(IOPort.class, "P1");

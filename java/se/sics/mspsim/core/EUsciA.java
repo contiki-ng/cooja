@@ -36,7 +36,7 @@ import java.util.ArrayDeque;
 /**
  * UART-mode implementation of the eUSCI_A peripheral on FR5xxx parts.
  */
-public class eUSCI_A extends IOUnit implements DMATrigger, USARTSource {
+public class EUsciA extends IOUnit implements DMATrigger, USARTSource {
 
     private static final boolean DEBUG = false;
 
@@ -120,7 +120,7 @@ public class eUSCI_A extends IOUnit implements DMATrigger, USARTSource {
         }
     };
 
-    public eUSCI_A(MSP430Core cpu, int uartIndex, int[] memory, MSP430Config config) {
+    public EUsciA(MSP430Core cpu, int uartIndex, int[] memory, MSP430Config config) {
         super(config.uartConfig[uartIndex].name, cpu, memory, config.uartConfig[uartIndex].offset);
         this.uartIndex = uartIndex;
         this.vector = config.uartConfig[uartIndex].rxVector;
