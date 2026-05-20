@@ -40,7 +40,7 @@ import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.Mote2MoteRelations;
 import org.contikios.cooja.interfaces.MoteAttributes;
 import org.contikios.cooja.interfaces.Position;
-import org.contikios.cooja.mspmote.interfaces.Msp430FR5969LED;
+import org.contikios.cooja.mspmote.interfaces.MSP430FR5969LED;
 import org.contikios.cooja.mspmote.interfaces.MspButton;
 import org.contikios.cooja.mspmote.interfaces.MspClock;
 import org.contikios.cooja.mspmote.interfaces.MspDebugOutput;
@@ -55,7 +55,7 @@ import se.sics.mspsim.platform.fr5969.FR5969Node;
  */
 @ClassDescription("MSP430FR5969 mote")
 @AbstractionLevelDescription("Emulated level")
-public class Msp430FR5969MoteType extends MspMoteType {
+public class MSP430FR5969MoteType extends MspMoteType {
 
     @Override
     public String getMoteType() {
@@ -81,7 +81,7 @@ public class Msp430FR5969MoteType extends MspMoteType {
         } catch (IOException e) {
             throw new MoteTypeCreationException("Failed to create FR5969 CPU", e);
         }
-        return new Msp430FR5969Mote(this, simulation, new FR5969Node(cpu));
+        return new MSP430FR5969Mote(this, simulation, new FR5969Node(cpu));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class Msp430FR5969MoteType extends MspMoteType {
                 MspMoteID.class,
                 MspButton.class,
                 MspDefaultSerial.class,
-                Msp430FR5969LED.class,
+                MSP430FR5969LED.class,
                 MspDebugOutput.class);
     }
 
@@ -107,7 +107,7 @@ public class Msp430FR5969MoteType extends MspMoteType {
                 MspMoteID.class,
                 MspButton.class,
                 MspDefaultSerial.class,
-                Msp430FR5969LED.class,
+                MSP430FR5969LED.class,
                 MspDebugOutput.class);
     }
 }

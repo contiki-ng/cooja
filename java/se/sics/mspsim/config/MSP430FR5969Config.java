@@ -34,6 +34,7 @@ package se.sics.mspsim.config;
 import java.util.ArrayList;
 import se.sics.mspsim.core.CRC16;
 import se.sics.mspsim.core.ClockSystem;
+import se.sics.mspsim.core.EUsciA;
 import se.sics.mspsim.core.FR5969ClockSystem;
 import se.sics.mspsim.core.IOPort;
 import se.sics.mspsim.core.IOUnit;
@@ -43,7 +44,6 @@ import se.sics.mspsim.core.Multiplier32;
 import se.sics.mspsim.core.PMM;
 import se.sics.mspsim.core.SysReg;
 import se.sics.mspsim.core.Timer;
-import se.sics.mspsim.core.eUSCI_A;
 import se.sics.mspsim.util.Utils;
 
 public class MSP430FR5969Config extends MSP430Config {
@@ -128,7 +128,7 @@ public class MSP430FR5969Config extends MSP430Config {
 
         // Setup eUSCI units (using eUSCI_A for FR5xxx register layout)
         for (int i = 0, n = uartConfig.length; i < n; i++) {
-            eUSCI_A usci = new eUSCI_A(cpu, i, cpu.memory, this);
+            EUsciA usci = new EUsciA(cpu, i, cpu.memory, this);
             cpu.setIORange(uartConfig[i].offset, 0x20, usci);
             ioUnits.add(usci);
         }
