@@ -279,7 +279,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
     /* timers after ports ? */
     ioUnits.addAll(Arrays.asList(timers));
 
-    watchdog = new Watchdog(this, config.watchdogOffset);
+    watchdog = new Watchdog(this, config.watchdogOffset, config.wdtDelayTable, config.wdtISxMask,
+                            config.wdtSSELMask, config.wdtSSEL_ACLK, config.wdtSSEL_VLOCLK);
     ioSegment.setIORange(config.watchdogOffset, 1, watchdog);
 
     ioUnits.add(watchdog);
