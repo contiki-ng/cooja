@@ -61,13 +61,17 @@ public class MSP430FR5969Config extends MSP430Config {
     public static final int SRAM_SIZE = 2 * 1024;        // 2KB SRAM
 
     // Port configuration for FR5969
-    // FR5969 has P1, P2, P3, P4, and PJ
+    // FR5969 has P1, P2, P3, P4, and PJ. PASELC/PBSELC/PJSELC sit at offset
+    // 0x10/0x11 from each port group's base (PASELC=0x210, PBSELC=0x230,
+    // PJSELC=0x330) per the FR5969 device header - the generic Px table in
+    // SLAU367P §12 puts SELC at 0x16/0x17 which is the layout of a different
+    // device. Use the device-specific addresses here.
     private static final String[] portConfig = {
-        "P1=200,IN 00,OUT 02,DIR 04,REN 06,SEL0 0A,SEL1 0C,IV_L 0E,IV_H 0F,SELC 16,IES 18,IE 1A,IFG 1C",
-        "P2=200,IN 01,OUT 03,DIR 05,REN 07,SEL0 0B,SEL1 0D,IV_L 1E,IV_H 1F,SELC 17,IES 19,IE 1B,IFG 1D",
-        "P3=220,IN 00,OUT 02,DIR 04,REN 06,SEL0 0A,SEL1 0C,IV_L 0E,IV_H 0F,SELC 16,IES 18,IE 1A,IFG 1C",
-        "P4=220,IN 01,OUT 03,DIR 05,REN 07,SEL0 0B,SEL1 0D,IV_L 1E,IV_H 1F,SELC 17,IES 19,IE 1B,IFG 1D",
-        "PJ=320,IN 00,OUT 02,DIR 04,REN 06,SEL0 0A,SEL1 0C"
+        "P1=200,IN 00,OUT 02,DIR 04,REN 06,SEL0 0A,SEL1 0C,IV_L 0E,IV_H 0F,SELC 10,IES 18,IE 1A,IFG 1C",
+        "P2=200,IN 01,OUT 03,DIR 05,REN 07,SEL0 0B,SEL1 0D,IV_L 1E,IV_H 1F,SELC 11,IES 19,IE 1B,IFG 1D",
+        "P3=220,IN 00,OUT 02,DIR 04,REN 06,SEL0 0A,SEL1 0C,IV_L 0E,IV_H 0F,SELC 10,IES 18,IE 1A,IFG 1C",
+        "P4=220,IN 01,OUT 03,DIR 05,REN 07,SEL0 0B,SEL1 0D,IV_L 1E,IV_H 1F,SELC 11,IES 19,IE 1B,IFG 1D",
+        "PJ=320,IN 00,OUT 02,DIR 04,REN 06,SEL0 0A,SEL1 0C,SELC 10"
     };
 
     public MSP430FR5969Config() {
