@@ -79,6 +79,18 @@ public class MSP430FR5969Config extends MSP430Config {
         sfrOffset = 0x100;
         watchdogOffset = 0x15C;
 
+        // FR5xxx WDT_A: WDTISx is bits 0..2 with longer intervals than the
+        // 2-bit F1xxx table. See SLAU367P table 11-2.
+        wdtDelayTable = new int[] {
+            1 << 31, 1 << 27, 1 << 23, 1 << 19,
+            1 << 15, 1 << 13, 1 << 9,  1 << 6,
+        };
+        wdtISxMask = 0x07;
+        // FR5xxx WDTSSEL is bits 5..6, encoding SMCLK/ACLK/VLOCLK/X_CLK.
+        wdtSSELMask = 0x60;
+        wdtSSEL_ACLK = 0x20;
+        wdtSSEL_VLOCLK = 0x40;
+
         // Timer configuration for FR5969 (vector = header offset / 2)
         // Timer_A0 (Timer0_A5): 5 CCR, CCR0=53 (0x006A), CCR1-4=52 (0x0068)
         // Timer_A1 (Timer1_A3): 3 CCR, CCR0=49 (0x0062), CCR1-2=48 (0x0060)
