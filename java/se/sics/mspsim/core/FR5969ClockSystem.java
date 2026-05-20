@@ -43,7 +43,8 @@ import se.sics.mspsim.util.Utils;
  *   CSCTL3 (0x0166): Clock dividers (DIVM, DIVS, DIVA)
  *   CSCTL4 (0x0168): LFXT control
  *   CSCTL5 (0x016A): HFXT control
- *   CSCTL6 (0x016C): Fault flags
+ *   CSCTL6 (0x016C): Clock request enables (ACLKREQEN/MCLKREQEN/SMCLKREQEN/
+ *                    MODCLKREQEN)
  */
 public class FR5969ClockSystem extends ClockSystem {
 
@@ -100,7 +101,7 @@ public class FR5969ClockSystem extends ClockSystem {
     private static final int HFXTDRIVE_MASK = 0x00C0;
     private static final int HFFREQ_MASK = 0x0C00;
 
-    // CSCTL6: Fault flags
+    // CSCTL5: Fault flags
     private static final int LFXTOFFG = 0x0001;      // LFXT fault flag
     private static final int HFXTOFFG = 0x0002;      // HFXT fault flag
 
@@ -194,8 +195,9 @@ public class FR5969ClockSystem extends ClockSystem {
         memory[CSCTL5] = 0xC5;
         memory[CSCTL5 + 1] = 0x00;
 
-        // CSCTL6: clear (matches cooja-ng)
-        memory[CSCTL6] = 0x00;
+        // CSCTL6: ACLKREQEN | MCLKREQEN | SMCLKREQEN set after reset; MODCLKREQEN
+        // clear. Per SLAU367P table 3-10 (reset value 0007h).
+        memory[CSCTL6] = 0x07;
         memory[CSCTL6 + 1] = 0x00;
 
         // Apply initial configuration
@@ -337,6 +339,14 @@ public class FR5969ClockSystem extends ClockSystem {
         }
     }
 
+    // HFXT crystal frequency. The MSP-EXP430FR5969 LaunchPad does not have an
+    // HFXT crystal populated, and the emulator does not model the oscillator,
+    // so any firmware that routes MCLK/SMCLK/ACLK to HFXTCLK is signalling a
+    // configuration we cannot honour. Surface that with a one-shot warning
+    // and 0 Hz so downstream timing breaks loudly instead of silently running
+    // at the old LFXT fallback of 32 kHz.
+    private boolean hfxtWarned;
+
     private int getSourceFrequency(int selector, int dcoFreq) {
         return switch (selector) {
             case SEL_LFXTCLK -> LFXTCLK_FREQ;
@@ -344,7 +354,13 @@ public class FR5969ClockSystem extends ClockSystem {
             case SEL_LFMODCLK -> LFMODCLK_FREQ;
             case SEL_DCOCLK -> dcoFreq;
             case SEL_MODCLK -> MODCLK_FREQ;
-            case SEL_HFXTCLK -> LFXTCLK_FREQ;  // Default to LFXT if HFXT not configured
+            case SEL_HFXTCLK -> {
+                if (!hfxtWarned) {
+                    log("HFXTCLK selected but not modelled; returning 0 Hz");
+                    hfxtWarned = true;
+                }
+                yield 0;
+            }
             default -> dcoFreq;
         };
     }
