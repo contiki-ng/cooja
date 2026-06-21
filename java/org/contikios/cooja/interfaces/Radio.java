@@ -58,7 +58,7 @@ public abstract class Radio implements MoteInterface {
    * Events that radios should notify observers about.
    */
   public enum RadioEvent {
-    UNKNOWN, HW_OFF, HW_ON,
+    UNKNOWN, HW_OFF, HW_ON, CHANNEL_HOP,
     RECEPTION_STARTED, RECEPTION_FINISHED, RECEPTION_INTERFERED,
     TRANSMISSION_STARTED, TRANSMISSION_FINISHED,
     PACKET_TRANSMITTED, CUSTOM_DATA_TRANSMITTED
