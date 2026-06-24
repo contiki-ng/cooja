@@ -249,79 +249,73 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
 
     // Indicate ready to write!!! - this should not be done here...
     switch (address) {
-    case UAxCTL0:
-    case UBxCTL0:
-      uctl0 = data;
-      spiMode = (data & 0x01) > 0;
-      if (DEBUG) log(" write to UAxCTL0 " + data);
-      break;
-    case UAxCTL1:
-    case UBxCTL1:
+      case UAxCTL0, UBxCTL0 -> {
+        uctl0 = data;
+        spiMode = (data & 0x01) > 0;
+        if (DEBUG) log(" write to UAxCTL0 " + data);
+      }
+      case UAxCTL1, UBxCTL1 -> {
         /* emulate the reset */
         if ((uctl1 & 1) == 1 && (data & 1) == 0)
-            reset(0);
-      uctl1 = data;
-      if (DEBUG) log(" write to UAxCTL1 " + data);
+          reset(0);
+        uctl1 = data;
+        if (DEBUG) log(" write to UAxCTL1 " + data);
 
-      if (((data >> 6) & 3) == 1) {
-        clockSource = MSP430Constants.CLK_ACLK;
-        if (DEBUG) {
-          log(" Selected ACLK as source");
+        if (((data >> 6) & 3) == 1) {
+          clockSource = MSP430Constants.CLK_ACLK;
+          if (DEBUG) {
+            log(" Selected ACLK as source");
+          }
+        } else {
+          clockSource = MSP430Constants.CLK_SMCLK;
+          if (DEBUG) {
+            log(" Selected SMCLK as source");
+          }
         }
-      } else {
-        clockSource = MSP430Constants.CLK_SMCLK;
-        if (DEBUG) {
-          log(" Selected SMCLK as source");
-        }
+        updateBaudRate();
       }
-      updateBaudRate();
-      break;
-    case UAxMCTL:
-      umctl = data;
-      if (DEBUG) log(" write to UMCTL " + data);
-      break;
-    case UAxBR0:
-    case UBxBR0:
-      ubr0 = data;
-      updateBaudRate();
-      break;
-    case UAxBR1:
-    case UBxBR1:
-      ubr1 = data;
-      updateBaudRate();
-      break;
-    case UAxSTAT:
-    case UBxSTAT:
+      case UAxMCTL -> {
+        umctl = data;
+        if (DEBUG) log(" write to UMCTL " + data);
+      }
+      case UAxBR0, UBxBR0 -> {
+        ubr0 = data;
+        updateBaudRate();
+      }
+      case UAxBR1, UBxBR1 -> {
+        ubr1 = data;
+        updateBaudRate();
+      }
+      case UAxSTAT, UBxSTAT -> {
         //ustat = data;
-      break;
-    case UAxTXBUF:
-    case UBxTXBUF:
-      if (DEBUG) log(": USART_UTXBUF:" + (char) data + " = " + data + "\n");
-      if (txEnabled || (spiMode && rxEnabled)) {
-        // Interruptflag not set!
-        clrBitIFG(utxifg);
-        /* the TX is no longer empty ! */
-        ustat |= USCI_BUSY;
-        /* should the interrupt be flagged off here ? - or only the flags */
-        if (DEBUG) log(" flagging off transmit interrupt");
-        //      cpu.flagInterrupt(transmitInterrupt, this, false);
+      }
+      case UAxTXBUF, UBxTXBUF -> {
+        if (DEBUG) log(": USART_UTXBUF:" + (char) data + " = " + data + "\n");
+        if (txEnabled || (spiMode && rxEnabled)) {
+          // Interruptflag not set!
+          clrBitIFG(utxifg);
+          /* the TX is no longer empty ! */
+          ustat |= USCI_BUSY;
+          /* should the interrupt be flagged off here ? - or only the flags */
+          if (DEBUG) log(" flagging off transmit interrupt");
+          //      cpu.flagInterrupt(transmitInterrupt, this, false);
 
-        // Schedule on cycles here
-        // TODO: adding 3 extra cycles here seems to give
-        // slightly better timing in some test...
+          // Schedule on cycles here
+          // TODO: adding 3 extra cycles here seems to give
+          // slightly better timing in some test...
 
-        nextTXByte = data;
-        if (!transmitting) {
+          nextTXByte = data;
+          if (!transmitting) {
             /* how long time will the copy from the TX_BUF to the shift reg take? */
             /* assume 3 cycles? */
             nextTXReady = cycles + 1; //tickPerByte + 3;
             cpu.scheduleCycleEvent(txTrigger, nextTXReady);
+          }
+        } else {
+          log("Ignoring UTXBUF data since TX not active...");
         }
-      } else {
-        log("Ignoring UTXBUF data since TX not active...");
+        utxbuf = data;
       }
-      utxbuf = data;
-      break;
     }
   }
 
@@ -332,46 +326,38 @@ public class USCI extends IOUnit implements SFRModule, DMATrigger, USARTSource {
       }
     address = address - offset;
 
-    switch (address) {
-    case UAxCTL0:
-    case UBxCTL0:
-      if (DEBUG) log(" read from UCTL");
-      return uctl0;
-    case UAxCTL1:
-    case UBxCTL1:
-      if (DEBUG) log(" read from UTCTL: " + uctl1);
-      return uctl1;
-    case UAxMCTL:
-      return umctl;
-    case UAxBR0:
-    case UBxBR0:
-      return ubr0;
-    case UAxBR1:
-    case UBxBR1:
-      return ubr1;
-    case UAxTXBUF:
-    case UBxTXBUF:
-      return utxbuf;
-    case UAxSTAT:
-    case UBxSTAT:
-//      System.out.println(getName() + " Reading STAT: " + ustat);
-      return ustat;
-    case UAxRXBUF:
-    case UBxRXBUF:
-      int tmp = urxbuf;
-      // When byte is read - the interruptflag is cleared!
-      // and error status should also be cleared later...
-      // is this cleared also on the MSP430x2xx series???
-      if (MSP430Constants.DEBUGGING_LEVEL > 0) {
-          log(" clearing rx interrupt flag " + cpu.getPC() + " byte: " + tmp);
+    return switch (address) {
+      case UAxCTL0, UBxCTL0 -> {
+        if (DEBUG) log(" read from UCTL");
+        yield uctl0;
       }
-      clrBitIFG(urxifg);
-      /* This should be changed to a state rather than an "event" */
-      /* Force callback since this is not used as a state */
-      stateChanged(USARTListener.RXFLAG_CLEARED, true);
-      return tmp;
-    }
-    return 0;
+      case UAxCTL1, UBxCTL1 -> {
+        if (DEBUG) log(" read from UTCTL: " + uctl1);
+        yield uctl1;
+      }
+      case UAxMCTL -> umctl;
+      case UAxBR0, UBxBR0 -> ubr0;
+      case UAxBR1, UBxBR1 -> ubr1;
+      case UAxTXBUF, UBxTXBUF -> utxbuf;
+      case UAxSTAT, UBxSTAT ->
+//      System.out.println(getName() + " Reading STAT: " + ustat);
+              ustat;
+      case UAxRXBUF, UBxRXBUF -> {
+        int tmp = urxbuf;
+        // When byte is read - the interruptflag is cleared!
+        // and error status should also be cleared later...
+        // is this cleared also on the MSP430x2xx series???
+        if (MSP430Constants.DEBUGGING_LEVEL > 0) {
+          log(" clearing rx interrupt flag " + cpu.getPC() + " byte: " + tmp);
+        }
+        clrBitIFG(urxifg);
+        /* This should be changed to a state rather than an "event" */
+        /* Force callback since this is not used as a state */
+        stateChanged(USARTListener.RXFLAG_CLEARED, true);
+        yield tmp;
+      }
+      default -> 0;
+    };
   }
 
   private void updateBaudRate() {

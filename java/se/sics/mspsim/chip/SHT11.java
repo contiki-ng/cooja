@@ -184,55 +184,55 @@ public class SHT11 extends Chip {
     char c = high ? 'C' : 'c';
     if (DEBUG) log("clock pin " + c);
     switch (state) {
-    case IDLE:
-      if (checkInit(c)) {
-        state = COMMAND;
-      }
-      break;
-    case COMMAND:
-      if (c == 'c') {
-        readData = (readData << 1) | (dataHi ? 1 : 0);
-        bitCnt++;
-        if (bitCnt == 8) {
-          if (DEBUG) log("read: " + Utils.hex8(readData));
-          bitCnt = 0;
-          state = ACK_CMD;
-          sdataPort.setPinState(sdataPin, IOPort.PinState.LOW);
+      case IDLE -> {
+        if (checkInit(c)) {
+          state = COMMAND;
         }
       }
-      break;
-    case ACK_CMD:
-      if (c == 'c') {
-        sdataPort.setPinState(sdataPin, IOPort.PinState.HI);
-        if (readData == CMD_MEASURE_HUM || readData == CMD_MEASURE_TEMP) {
-          state = MEASURE;
-          /* schedule measurement for 20 millis */
-          cpu.scheduleTimeEventMillis(measureEvent, 20);
+      case COMMAND -> {
+        if (c == 'c') {
+          readData = (readData << 1) | (dataHi ? 1 : 0);
+          bitCnt++;
+          if (bitCnt == 8) {
+            if (DEBUG) log("read: " + Utils.hex8(readData));
+            bitCnt = 0;
+            state = ACK_CMD;
+            sdataPort.setPinState(sdataPin, IOPort.PinState.LOW);
+          }
         }
       }
-      break;
-    case MEASURE:
-      break;
-    case WRITE_BYTE:
-      if (c == 'C') {
-        boolean hi = (writeData & 0x80) != 0;
-        sdataPort.setPinState(sdataPin, hi ? IOPort.PinState.HI : IOPort.PinState.LOW);
-        bitCnt++;
-        writeData = writeData << 1;
-        if (bitCnt == 8) {
-          // All bits are written!
-          state = ACK_WRITE;
-          if (DEBUG) log("Wrote byte: " + output[writePos]);
-          writePos++;
+      case ACK_CMD -> {
+        if (c == 'c') {
+          sdataPort.setPinState(sdataPin, IOPort.PinState.HI);
+          if (readData == CMD_MEASURE_HUM || readData == CMD_MEASURE_TEMP) {
+            state = MEASURE;
+            /* schedule measurement for 20 millis */
+            cpu.scheduleTimeEventMillis(measureEvent, 20);
+          }
         }
       }
-      break;
-    case ACK_WRITE:
-      if (c == 'C' && dataHi) {
-        if (DEBUG) log("*** NO ACK???");
-        reset(0);
+      case MEASURE -> {
       }
-      break;
+      case WRITE_BYTE -> {
+        if (c == 'C') {
+          boolean hi = (writeData & 0x80) != 0;
+          sdataPort.setPinState(sdataPin, hi ? IOPort.PinState.HI : IOPort.PinState.LOW);
+          bitCnt++;
+          writeData = writeData << 1;
+          if (bitCnt == 8) {
+            // All bits are written!
+            state = ACK_WRITE;
+            if (DEBUG) log("Wrote byte: " + output[writePos]);
+            writePos++;
+          }
+        }
+      }
+      case ACK_WRITE -> {
+        if (c == 'C' && dataHi) {
+          if (DEBUG) log("*** NO ACK???");
+          reset(0);
+        }
+      }
     }
     clockHi = high;
   }

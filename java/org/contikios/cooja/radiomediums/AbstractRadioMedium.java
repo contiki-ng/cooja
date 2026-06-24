@@ -106,26 +106,17 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 		this.simulation = simulation;
     radioEventsObserver = (event, radio) -> {
       switch (event) {
-        case RECEPTION_STARTED:
-        case RECEPTION_INTERFERED:
-        case RECEPTION_FINISHED:
-          break;
-
-        case UNKNOWN:
-        case HW_ON: {
-          updateSignalStrengths();
+        case RECEPTION_STARTED, RECEPTION_INTERFERED, RECEPTION_FINISHED -> {
         }
-        break;
-        case HW_OFF: {
-          // This radio must not be a connection source.
+        case UNKNOWN, HW_ON -> updateSignalStrengths();
+        case HW_OFF -> {
           if (getActiveConnectionFrom(radio) != null) {
             logger.error("Connection source turned off radio: " + radio);
           }
           removeFromActiveConnections(radio);
           updateSignalStrengths();
         }
-        break;
-        case TRANSMISSION_STARTED: {
+        case TRANSMISSION_STARTED -> {
           if (radio.isReceiving()) {
             // Radio starts transmitting when it should be receiving! Ok, but it won't receive the packet.
             radio.interfereAnyReception();
@@ -157,8 +148,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
           lastConnection = null;
           radioTransmissionTriggers.trigger(Radio.RadioEvent.TRANSMISSION_STARTED, null);
         }
-        break;
-        case TRANSMISSION_FINISHED: { // Remove radio connection.
+        case TRANSMISSION_FINISHED -> {
           var connection = getActiveConnectionFrom(radio);
           if (connection == null) {
             return; // SilentRadioMedium will return here.
@@ -193,8 +183,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
           updateSignalStrengths();
           radioTransmissionTriggers.trigger(Radio.RadioEvent.TRANSMISSION_FINISHED, null);
         }
-        break;
-        case CUSTOM_DATA_TRANSMITTED: {
+        case CUSTOM_DATA_TRANSMITTED -> {
           var connection = getActiveConnectionFrom(radio);
           if (connection == null) {
             logger.error("No radio connection found");
@@ -231,10 +220,8 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 
             }
           }
-
         }
-        break;
-        case PACKET_TRANSMITTED: {
+        case PACKET_TRANSMITTED -> {
           var connection = getActiveConnectionFrom(radio);
           if (connection == null) {
             return; // SilentRadioMedium will return here.
@@ -268,10 +255,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
             }
           }
         }
-        break;
-        default:
-          logger.error("Unsupported radio event: " + event);
-          break;
+        default -> logger.error("Unsupported radio event: " + event);
       }
     };
 	}
