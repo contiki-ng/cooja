@@ -72,7 +72,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
   private final RegisterMonitor[] regReadMonitors = new RegisterMonitor[16];
 
   public final int[] memory;
-  private final Flash flash;
+  private final Flash flash;          // null if hasFRAM
+  private final FRAMController framController;  // null if !hasFRAM
   boolean isFlashBusy;
   boolean isStopping;
 
@@ -144,10 +145,18 @@ public class MSP430Core extends Chip implements MSP430Constants {
     memory = mem;
     memorySegments = new Memory[MAX_MEM >> 8];
 
-    flash = new Flash(this, memory,
-            new Flash.FlashRange(config.mainFlashStart, config.mainFlashStart + config.mainFlashSize, 512, 64),
-            new Flash.FlashRange(config.infoMemStart, config.infoMemStart + config.infoMemSize, 128, 64),
-            config.flashControllerOffset);
+    if (config.hasFRAM) {
+        // FRAM-based device (FR5xxx series)
+        flash = null;
+        framController = new FRAMController(this, memory, config.framControllerOffset);
+    } else {
+        // Flash-based device (traditional MSP430)
+        flash = new Flash(this, memory,
+                new Flash.FlashRange(config.mainFlashStart, config.mainFlashStart + config.mainFlashSize, 512, 64),
+                new Flash.FlashRange(config.infoMemStart, config.infoMemStart + config.infoMemSize, 128, 64),
+                config.flashControllerOffset);
+        framController = null;
+    }
 
     currentSegment = new Memory() {
         @Override
@@ -199,7 +208,12 @@ public class MSP430Core extends Chip implements MSP430Constants {
     int maxSeg = MAX_MEM >> 8;
     Memory ramSegment = new RAMSegment(this);
     RAMOffsetSegment ramMirrorSegment = null;
-    Memory flashSegment = new FlashSegment(this, flash);
+    Memory nvmSegment;
+    if (config.hasFRAM) {
+        nvmSegment = new FRAMSegment(this, framController);
+    } else {
+        nvmSegment = new FlashSegment(this, flash);
+    }
     IOSegment ioSegment = new IOSegment(this, MAX_MEM_IO, voidIO);
     Memory noMemorySegment = new NoMemSegment(this);
     for (int i = 0; i < maxSeg; i++) {
@@ -212,8 +226,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
             }
           memorySegments[i] = ramMirrorSegment;
         } else if (config.isFlash(i << 8) || config.isInfoMem(i << 8)) {
-//            System.out.println("Setting Flash segment at: " + Utils.hex16(i << 8));
-            memorySegments[i] = flashSegment;
+//            System.out.println("Setting Flash/FRAM segment at: " + Utils.hex16(i << 8));
+            memorySegments[i] = nvmSegment;
         } else if (config.isIO(i << 8)) {
 //            System.out.println("Setting IO segment at: " + Utils.hex16(i << 8));
             memorySegments[i] = ioSegment;
@@ -234,7 +248,11 @@ public class MSP430Core extends Chip implements MSP430Constants {
     // Maybe for debugging purposes...
     ioUnits = new ArrayList<>();
 
-    ioSegment.setIORange(config.flashControllerOffset, Flash.SIZE, flash);
+    if (config.hasFRAM) {
+        ioSegment.setIORange(config.framControllerOffset, FRAMController.SIZE, framController);
+    } else {
+        ioSegment.setIORange(config.flashControllerOffset, Flash.SIZE, flash);
+    }
 
     /* Setup special function registers */
     sfr = new SFR(this, memory);
@@ -261,7 +279,8 @@ public class MSP430Core extends Chip implements MSP430Constants {
     /* timers after ports ? */
     ioUnits.addAll(Arrays.asList(timers));
 
-    watchdog = new Watchdog(this, config.watchdogOffset);
+    watchdog = new Watchdog(this, config.watchdogOffset, config.wdtDelayTable, config.wdtISxMask,
+                            config.wdtSSELMask, config.wdtSSEL_ACLK, config.wdtSSEL_VLOCLK);
     ioSegment.setIORange(config.watchdogOffset, 1, watchdog);
 
     ioUnits.add(watchdog);
@@ -313,6 +332,10 @@ public class MSP430Core extends Chip implements MSP430Constants {
 
   public SFR getSFR() {
     return sfr;
+  }
+
+  public FRAMController getFRAMController() {
+    return framController;
   }
 
   public void addChip(Chip chip) {
@@ -844,7 +867,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
       profiler.profileInterrupt(interruptMax, cycles);
     }
 
-    if (flash.blocksCPU()) {
+    if (flash != null && flash.blocksCPU()) {
       /* TODO: how should this error/warning be handled ?? */
       throw new IllegalStateException(
           "Got interrupt while flash controller blocks CPU. CPU CRASHED.");
@@ -918,7 +941,7 @@ public class MSP430Core extends Chip implements MSP430Constants {
     }
 
     /* Did not execute any instructions */
-    if (cpuOff || flash.blocksCPU()) {
+    if (cpuOff || (flash != null && flash.blocksCPU())) {
       //       System.out.println("Jumping: " + (nextIOTickCycles - cycles));
       // nextEventCycles must exist, otherwise CPU can not wake up!?
 

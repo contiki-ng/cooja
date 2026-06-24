@@ -49,6 +49,11 @@ public class Button extends Chip {
         this.port = port;
         this.pin = pin;
         this.polarity = polarity;
+        // Establish the released pin level. The IOPort's pin state defaults to
+        // LOW, so an active-low button (polarity=false, released=HI) would otherwise
+        // start out indistinguishable from a pressed button until the first state
+        // change, and the first press would not produce a HI/LO edge.
+        port.setPinState(pin, polarity ? IOPort.PinState.LOW : IOPort.PinState.HI);
     }
 
     public boolean isPressed() {
