@@ -110,7 +110,7 @@ testing {
       dependencies {
         implementation project()
         // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-        implementation 'org.junit.jupiter:junit-jupiter-api:6.1.0'
+        implementation 'org.junit.jupiter:junit-jupiter-api:6.1.1'
         runtimeOnly 'org.junit.platform:junit-platform-launcher'
       }
     }
