@@ -31,8 +31,8 @@ import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -48,6 +48,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -82,7 +83,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -91,6 +91,7 @@ import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.ProgressMonitor;
 import javax.swing.RepaintManager;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
@@ -124,7 +125,8 @@ public class GUI {
 
   static JFrame frame;
   final JDesktopPane myDesktopPane;
-  private static JProgressBar PROGRESS_BAR;
+  private SwingWorker<Simulation, Object> loadWorker;
+  private int loadProgress;
   private final ArrayList<String> PROGRESS_WARNINGS = new ArrayList<>();
 
   final ArrayList<Class<? extends Plugin>> menuMotePluginClasses = new ArrayList<>();
@@ -1354,42 +1356,43 @@ public class GUI {
       addToFileHistory(configFile);
     }
 
-    final JPanel progressPanel;
-    final JDialog progressDialog;
+    ProgressMonitor progressMonitor;
     if (quick) {
-      final String progressTitle = "Loading " + (configFile == null ? "" : configFile.getAbsolutePath());
-      progressDialog = new JDialog(frame, progressTitle, Dialog.ModalityType.APPLICATION_MODAL);
-
-      progressPanel = new JPanel(new BorderLayout());
-      var progressBar = new JProgressBar(0, 100);
-      progressBar.setValue(0);
-      progressBar.setIndeterminate(true);
-
-      PROGRESS_BAR = progressBar; // Allow various parts of Cooja to show messages.
-
-      var button = new JButton("Abort");
-
-      progressPanel.add(BorderLayout.CENTER, progressBar);
-      progressPanel.add(BorderLayout.SOUTH, button);
-      progressPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-
-      progressDialog.getContentPane().add(progressPanel);
-      progressDialog.setSize(400, 200);
-
-      progressDialog.getRootPane().setDefaultButton(button);
-      progressDialog.setLocationRelativeTo(frame);
-      progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+      final String progressTitle = "Loading " + (configFile == null ? cooja.getSimulation().getCfg().file() : configFile.getAbsolutePath());
+      progressMonitor = new ProgressMonitor(frame, progressTitle, "", 0, 6);
+      progressMonitor.setMillisToDecideToPopup(0);
+      progressMonitor.setMillisToPopup(0);
+      progressMonitor.setProgress(0);
+      // Emulate a modal dialog by disabling the Cooja frame. This is to avoid strange
+      // behaviors with Ctrl-R, possibly conflicting with the reload simulation action.
+      frame.setEnabled(false);
     } else {
-      progressPanel = null;
-      progressDialog = null;
+      progressMonitor = null;
     }
+    loadProgress = 0;
 
     // SwingWorker can pass information from worker to process() through publish().
     // Communicate information the other way through this shared queue.
     final var channel = new SynchronousQueue<>(true);
-    var worker = new SwingWorker<Simulation, Object>() {
+    loadWorker = new SwingWorker<>() {
+      private volatile boolean cancelled;
+      private final PropertyChangeListener progressListener = evt -> {
+        if (cancelled || progressMonitor == null) return;
+        if (progressMonitor.isCanceled()) {
+          cancelled = true;
+          cancel(true);
+          return;
+        }
+        switch (evt.getPropertyName()) {
+          case "progress" -> progressMonitor.setProgress((Integer) evt.getNewValue());
+          case "maxProgress" -> progressMonitor.setMaximum((Integer) evt.getNewValue());
+          case "progressMessage" -> progressMonitor.setNote(evt.getNewValue().toString());
+        }
+      };
+
       @Override
       public Simulation doInBackground() {
+        addPropertyChangeListener(progressListener);
         Element root;
         try {
           root = configFile == null ? cooja.extractSimulationConfig() : cooja.readSimulationConfig(cfg);
@@ -1431,6 +1434,19 @@ public class GUI {
             shouldRetry = false;
             PROGRESS_WARNINGS.clear();
             newSim = cooja.createSimulation(config, root, quick, manualRandomSeed);
+            if (isCancelled() || cancelled) {
+              // Simulation.startPlugin can be waiting for the AWT thread at this point. Schedule
+              // the removal of plugins in the AWT thread too.
+              final var finalNewSim = newSim;
+              EventQueue.invokeLater(() -> {
+                frame.setEnabled(true);
+                finalNewSim.removed();
+              });
+              return null;
+            }
+            // Simulation is loaded, close progress dialog so user cannot cancel.
+            if (progressMonitor != null) progressMonitor.close();
+            cooja.setSimulation(newSim);
             if (newSim != null && autoStart) {
               newSim.startSimulation();
             }
@@ -1441,6 +1457,7 @@ public class GUI {
               var rv = channel.take();
               if (!(rv instanceof Integer i)) return null;
               shouldRetry = i == 1;
+              if (!shouldRetry) cancelled = true;
             } catch (InterruptedException ex) {
               cooja.doRemoveSimulation();
               return null;
@@ -1496,12 +1513,16 @@ public class GUI {
               }
             }
           } else if (ex instanceof Exception e) { // Display failure + reload button.
-            var retry = showErrorDialog("Simulation load error", e, true);
+            var retry = !isCancelled() && showErrorDialog("Simulation load error", e, true);
             rv = retry ? 1 : 0;
+            loadProgress = 0;
+            if (progressMonitor != null) progressMonitor.setProgress(0);
+            setProgress(retry ? 0 : 100);
           }
           try {
             channel.put(rv);
           } catch (InterruptedException e) {
+            cancelled = true;
             cancel(true);
             return;
           }
@@ -1510,6 +1531,9 @@ public class GUI {
 
       @Override
       protected void done() {
+        frame.setEnabled(true);
+        if (progressMonitor != null) progressMonitor.close();
+        if (cancelled) return;
         // Simulation loaded, plugins started, now Z-order visualized plugins.
         for (int z = 0; z < myDesktopPane.getAllFrames().length; z++) {
           for (var plugin : myDesktopPane.getAllFrames()) {
@@ -1570,20 +1594,9 @@ public class GUI {
           dialog.setVisible(true);
         }
         PROGRESS_WARNINGS.clear();
-        if (progressDialog != null && progressDialog.isDisplayable()) {
-          progressDialog.dispose();
-        }
       }
     };
-
-    if (progressDialog != null) {
-      java.awt.EventQueue.invokeLater(() -> {
-        progressPanel.setVisible(true);
-        progressDialog.getRootPane().getDefaultButton().addActionListener(e -> worker.cancel(true));
-        progressDialog.setVisible(true);
-      });
-    }
-    return worker;
+    return loadWorker;
   }
 
   public void updateProgress(boolean stoppedSimulation) {
@@ -1621,10 +1634,21 @@ public class GUI {
     myDesktopPane.revalidate();
   }
 
+  public void tickProgress() {
+    if (loadWorker != null) {
+      loadWorker.firePropertyChange("progress", loadProgress, ++loadProgress);
+    }
+  }
+
+  public void setMaxProgress(int max) {
+    if (loadWorker != null) {
+      loadWorker.firePropertyChange("maxProgress", 0, max);
+    }
+  }
+
   public void setProgressMessage(String msg, int type) {
-    if (PROGRESS_BAR != null && PROGRESS_BAR.isShowing()) {
-      PROGRESS_BAR.setString(msg);
-      PROGRESS_BAR.setStringPainted(true);
+    if (loadWorker != null) {
+      loadWorker.firePropertyChange("progressMessage", null, msg);
     }
     if (type != MessageListUI.NORMAL) {
       PROGRESS_WARNINGS.add(msg);
