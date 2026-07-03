@@ -264,12 +264,12 @@ public class DirectedGraphMedium extends AbstractRadioMedium {
       int dstc = dest.radio.getChannel();
       int edgeChannel = dest.getChannel();
 
-      if (edgeChannel >= 0 && dstc >= 0 && edgeChannel != dstc) {
+      if (channelsDiffer(edgeChannel, dstc)) {
       	/* Fail: the edge is configured for a different radio channel */
         continue;
       }
 
-      if (srcc >= 0 && dstc >= 0 && srcc != dstc) {
+      if (channelsDiffer(srcc, dstc)) {
         /* Fail: radios are on different (but configured) channels */
         newConn.addInterfered(dest.radio);
         continue;

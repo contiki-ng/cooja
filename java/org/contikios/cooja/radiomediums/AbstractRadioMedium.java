@@ -344,7 +344,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
       var sourceChannel = conn.getSource().getChannel();
 			for (Radio dstRadio : conn.getDestinations()) {
         var dstChannel = dstRadio.getChannel();
-        if (sourceChannel >= 0 && dstChannel >= 0 && sourceChannel != dstChannel) {
+        if (channelsDiffer(sourceChannel, dstChannel)) {
 					continue;
 				}
 				if (dstRadio.getCurrentSignalStrength() < SS_STRONG) {
@@ -361,7 +361,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 					intfRadio.setCurrentSignalStrength(SS_STRONG);
 				}
         var intfChannel = intfRadio.getChannel();
-        if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
+        if (channelsDiffer(srcChannel, intfChannel)) {
 					continue;
 				}
 				if (!intfRadio.isInterfered()) {
