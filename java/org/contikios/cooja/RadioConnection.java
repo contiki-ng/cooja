@@ -186,6 +186,15 @@ public class RadioConnection {
 
   /**
    * @param radio Radio
+   * @return True if radio is a destination in this connection, whether
+   *         interfered or not
+   */
+  public boolean isAnyDestination(Radio radio) {
+    return allDestinations.contains(radio);
+  }
+
+  /**
+   * @param radio Radio
    * @return True if radio is interfered in this connection
    */
   public boolean isInterfered(Radio radio) {

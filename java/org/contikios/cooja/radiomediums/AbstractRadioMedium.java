@@ -109,16 +109,30 @@ public abstract class AbstractRadioMedium implements RadioMedium {
         case RECEPTION_STARTED:
         case RECEPTION_INTERFERED:
           break;
-        case RECEPTION_FINISHED:
+        case RECEPTION_FINISHED: {
+          /* The radio reverted to "not interfered": continue interfering
+           * if another active transmission still reaches this radio. */
+          reassertInterference(radio);
+        }
+        break;
         case CHANNEL_HOP: {
-          /* in such cases the radio reverts to "not interfered */
+          /* The radio switched channel and reverted to "not interfered". */
           for (RadioConnection conn : getActiveConnections()) {
-            if (conn.isInterfered(radio)
-                && (conn.getSource().getChannel() == radio.getChannel())) {
-              /* continue interfering due to transmission on radio's channel */
-              radio.interfereAnyReception();
+            if (conn.getSource() != radio && conn.isAnyDestination(radio)) {
+              /* The radio switched channel during an ongoing reception:
+               * the partly received packet must not be delivered. */
+              if (!conn.isInterfered(radio)) {
+                conn.addInterfered(radio);
+              }
+              if (!radio.isInterfered()) {
+                radio.interfereAnyReception();
+              }
             }
           }
+          /* Continue interfering if an active transmission on the new
+           * channel marks this radio as interfered. */
+          reassertInterference(radio);
+          updateSignalStrengths();
         }
         break;
         case UNKNOWN:
@@ -377,6 +391,36 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 		}
 	}
 	
+	/**
+	 * @param c1 Channel of the first radio
+	 * @param c2 Channel of the second radio
+	 * @return True if both channels are configured (&gt;= 0) and differ.
+	 *         A negative channel means the radio uses all channels.
+	 */
+	public static boolean channelsDiffer(int c1, int c2) {
+		return c1 >= 0 && c2 >= 0 && c1 != c2;
+	}
+
+	/**
+	 * Interfere the radio again if any active connection on the radio's
+	 * current channel marks it as interfered. Called after a radio has
+	 * reverted to "not interfered" (finished reception or channel hop).
+	 *
+	 * @param radio Radio
+	 */
+	private void reassertInterference(Radio radio) {
+		if (radio.isInterfered()) {
+			return;
+		}
+		for (RadioConnection conn : activeConnections) {
+			if (conn.isInterfered(radio)
+					&& !channelsDiffer(conn.getSource().getChannel(), radio.getChannel())) {
+				radio.interfereAnyReception();
+				return;
+			}
+		}
+	}
+
 	private RadioConnection getActiveConnectionFrom(Radio source) {
 		for (RadioConnection conn : activeConnections) {
 			if (conn.getSource() == source) {
