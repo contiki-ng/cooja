@@ -167,7 +167,7 @@ public class NetworkConnection implements Runnable {
       notifyAll();
     }
 
-    synchronized SendEvent getNext() throws InterruptedException {
+    private synchronized SendEvent getNext() throws InterruptedException {
       while (queue.isEmpty()) {
         wait();
       }

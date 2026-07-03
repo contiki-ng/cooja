@@ -90,7 +90,7 @@ public class SimEventCentral {
   }
 
   /* GENERIC */
-  private static class MoteEvent {
+  static class MoteEvent {
     static int _ID_COUNTER; /* Debugging */
     final int ID; /* Debugging */
 

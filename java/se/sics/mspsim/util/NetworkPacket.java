@@ -84,7 +84,7 @@ public class NetworkPacket {
   }
 
 
-  NetworkPacket(String pattern, Map<String, Field> fields) {
+  private NetworkPacket(String pattern, Map<String, Field> fields) {
     this.description = pattern;
     this.fields = fields;
   }
