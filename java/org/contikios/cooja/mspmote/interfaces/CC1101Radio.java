@@ -150,8 +150,9 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 
     this.cc1101.addChannelListener(channel -> {
       /* XXX Currently assumes zero channel switch time */
-      lastEvent = RadioEvent.UNKNOWN;
-      radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
+      isInterfered = false;
+      lastEvent = RadioEvent.CHANNEL_HOP;
+      radioEventTriggers.trigger(RadioEvent.CHANNEL_HOP, this);
     });
 	}
 

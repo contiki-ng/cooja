@@ -152,8 +152,9 @@ public class Msp802154Radio extends Radio implements CustomDataRadio {
 
     radio.addChannelListener(channel -> {
       /* XXX Currently assumes zero channel switch time */
-      lastEvent = RadioEvent.UNKNOWN;
-      radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);
+      isInterfered = false;
+      lastEvent = RadioEvent.CHANNEL_HOP;
+      radioEventTriggers.trigger(RadioEvent.CHANNEL_HOP, this);
     });
   }
 
