@@ -271,7 +271,7 @@ public class Cooja {
     return gui.myDesktopPane;
   }
 
-  //// PROJECT CONFIG AND EXTENDABLE PARTS METHODS ////
+  // // PROJECT CONFIG AND EXTENDABLE PARTS METHODS ////
 
   /**
    * Register new mote type class.

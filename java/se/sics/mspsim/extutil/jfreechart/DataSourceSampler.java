@@ -62,7 +62,7 @@ public class DataSourceSampler implements ActionListener {
     sampleAll();
   }
 
-  private static class TimeSource {
+  static class TimeSource {
 
     private final MSP430Core cpu;
     private final DataSource dataSource;
