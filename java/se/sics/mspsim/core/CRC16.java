@@ -207,31 +207,29 @@ public class CRC16 extends IOUnit {
                  * The offset variable is used in case the peripheral changes the base
                  * address in some microcontroller model
                  */
-                switch (address - offset) {
-                case CRC16.CRCDI:
-                        if (word) {
-                                int hi = (value >> 8) & 0x00ff;
-                                int lo = value & 0x00ff;
-                                crc.processRb((byte) lo);
-                                crc.processRb((byte) hi);
-                        } else {
-                                crc.processRb((byte) value);
-                        }
-                        break;
-                case CRC16.CRCDIRB:
-                        if (word) {
-                                int hi = (value >> 8) & 0x00ff;
-                                int lo = value & 0x00ff;
-                                crc.process((byte) hi);
-                                crc.process((byte) lo);
-                        } else {
-                                crc.process((byte) value);
-                        }
-                        break;
-                case CRC16.CRCINIRES:
-                        crc.reset(value & 0xffff);
-                        break;
-                }
+          switch (address - offset) {
+            case CRC16.CRCDI -> {
+              if (word) {
+                int hi = (value >> 8) & 0x00ff;
+                int lo = value & 0x00ff;
+                crc.processRb((byte) lo);
+                crc.processRb((byte) hi);
+              } else {
+                crc.processRb((byte) value);
+              }
+            }
+            case CRC16.CRCDIRB -> {
+              if (word) {
+                int hi = (value >> 8) & 0x00ff;
+                int lo = value & 0x00ff;
+                crc.process((byte) hi);
+                crc.process((byte) lo);
+              } else {
+                crc.process((byte) value);
+              }
+            }
+            case CRC16.CRCINIRES -> crc.reset(value & 0xffff);
+          }
         }
 
         /**

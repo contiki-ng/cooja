@@ -232,71 +232,69 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
 //     System.out.println(">>>> Write to " + getName() + " at " +
 //                     address + " = " + data);
     switch (address) {
-    case UCTL:
-      uctl = data;
-      spiMode = (data & 0x04) > 0;
-      if (DEBUG) log(" write to UCTL " + data);
-      break;
-    case UTCTL:
-      utctl = data;
-      if (DEBUG) log(" write to UTCTL " + data);
-
-      if (((data >> 4) & 3) == 1) {
-        clockSource = MSP430Constants.CLK_ACLK;
-        if (DEBUG) {
-          log(" Selected ACLK as source");
-        }
-      } else {
-        clockSource = MSP430Constants.CLK_SMCLK;
-        if (DEBUG) {
-          log(" Selected SMCLK as source");
-        }
+      case UCTL -> {
+        uctl = data;
+        spiMode = (data & 0x04) > 0;
+        if (DEBUG) log(" write to UCTL " + data);
       }
-      sfr.setAutoclear(rxVector, (data & UTCTL_URXSE) != UTCTL_URXSE);
-      updateBaudRate();
-      break;
-    case URCTL:
-      urctl = data;
-      break;
-    case UMCTL:
-      umctl = data;
-      if (DEBUG) log(" write to UMCTL " + data);
-      break;
-    case UBR0:
-      ubr0 = data;
-      updateBaudRate();
-      break;
-    case UBR1:
-      ubr1 = data;
-      updateBaudRate();
-      break;
-    case UTXBUF:
-      if (DEBUG) log(" USART_UTXBUF: " + data + " " + (data > 32 ? (char)data : '.'));
-      if (txEnabled || (spiMode && rxEnabled)) {
-        // Interruptflag not set!
-        clrBitIFG(utxifg);
-        /* the TX is no longer empty ! */
-        utctl &= ~UTCTL_TXEMPTY;
-        /* should the interrupt be flagged off here ? - or only the flags */
-        if (DEBUG) log(" flagging off transmit interrupt");
-        //      cpu.flagInterrupt(transmitInterrupt, this, false);
+      case UTCTL -> {
+        utctl = data;
+        if (DEBUG) log(" write to UTCTL " + data);
 
-        // Schedule on cycles here
-        // TODO: adding 3 extra cycles here seems to give
-        // slightly better timing in some test...
+        if (((data >> 4) & 3) == 1) {
+          clockSource = MSP430Constants.CLK_ACLK;
+          if (DEBUG) {
+            log(" Selected ACLK as source");
+          }
+        } else {
+          clockSource = MSP430Constants.CLK_SMCLK;
+          if (DEBUG) {
+            log(" Selected SMCLK as source");
+          }
+        }
+        sfr.setAutoclear(rxVector, (data & UTCTL_URXSE) != UTCTL_URXSE);
+        updateBaudRate();
+      }
+      case URCTL -> urctl = data;
+      case UMCTL -> {
+        umctl = data;
+        if (DEBUG) log(" write to UMCTL " + data);
+      }
+      case UBR0 -> {
+        ubr0 = data;
+        updateBaudRate();
+      }
+      case UBR1 -> {
+        ubr1 = data;
+        updateBaudRate();
+      }
+      case UTXBUF -> {
+        if (DEBUG) log(" USART_UTXBUF: " + data + " " + (data > 32 ? (char) data : '.'));
+        if (txEnabled || (spiMode && rxEnabled)) {
+          // Interruptflag not set!
+          clrBitIFG(utxifg);
+          /* the TX is no longer empty ! */
+          utctl &= ~UTCTL_TXEMPTY;
+          /* should the interrupt be flagged off here ? - or only the flags */
+          if (DEBUG) log(" flagging off transmit interrupt");
+          //      cpu.flagInterrupt(transmitInterrupt, this, false);
 
-        nextTXByte = data;
-        if (!transmitting) {
+          // Schedule on cycles here
+          // TODO: adding 3 extra cycles here seems to give
+          // slightly better timing in some test...
+
+          nextTXByte = data;
+          if (!transmitting) {
             /* how long time will the copy from the TX_BUF to the shift reg take? */
             /* assume 3 cycles? */
             nextTXReady = cycles + 1; //tickPerByte + 3;
             cpu.scheduleCycleEvent(txTrigger, nextTXReady);
+          }
+        } else {
+          log("Ignoring UTXBUF data since TX not active...");
         }
-      } else {
-        log("Ignoring UTXBUF data since TX not active...");
+        utxbuf = data;
       }
-      utxbuf = data;
-      break;
     }
   }
 
@@ -304,37 +302,35 @@ public class USART extends IOUnit implements SFRModule, DMATrigger, USARTSource 
   public int read(int address, boolean word, long cycles) {
     address = address - offset;
 
-    switch (address) {
-    case UCTL:
-      if (DEBUG) log(" read from UCTL");
-      return uctl;
-    case UTCTL:
-      if (DEBUG) log(" read from UTCTL: " + utctl);
-      return utctl;
-    case URCTL:
-      return urctl;
-    case UMCTL:
-      return umctl;
-    case UBR0:
-      return ubr0;
-    case UBR1:
-      return ubr1;
-    case UTXBUF:
-      return utxbuf;
-    case URXBUF:
-      int tmp = urxbuf;
-      // When byte is read - the interruptflag is cleared!
-      // and error status should also be cleared later...
-      if (MSP430Constants.DEBUGGING_LEVEL > 0) {
-          log(" clearing rx interrupt flag " + cpu.getPC() + " byte: " + tmp);
+    return switch (address) {
+      case UCTL -> {
+        if (DEBUG) log(" read from UCTL");
+        yield uctl;
       }
-      clrBitIFG(urxifg);
-      /* This should be changed to a state rather than an "event" */
-      /* Force callback since this is not used as a state */
-      stateChanged(USARTListener.RXFLAG_CLEARED, true);
-      return tmp;
-    }
-    return 0;
+      case UTCTL -> {
+        if (DEBUG) log(" read from UTCTL: " + utctl);
+        yield utctl;
+      }
+      case URCTL -> urctl;
+      case UMCTL -> umctl;
+      case UBR0 -> ubr0;
+      case UBR1 -> ubr1;
+      case UTXBUF -> utxbuf;
+      case URXBUF -> {
+        int tmp = urxbuf;
+        // When byte is read - the interruptflag is cleared!
+        // and error status should also be cleared later...
+        if (MSP430Constants.DEBUGGING_LEVEL > 0) {
+          log(" clearing rx interrupt flag " + cpu.getPC() + " byte: " + tmp);
+        }
+        clrBitIFG(urxifg);
+        /* This should be changed to a state rather than an "event" */
+        /* Force callback since this is not used as a state */
+        stateChanged(USARTListener.RXFLAG_CLEARED, true);
+        yield tmp;
+      }
+      default -> 0;
+    };
   }
 
   private void updateBaudRate() {

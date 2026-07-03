@@ -63,41 +63,41 @@ public class CPUHeatMap extends JComponent implements MemoryMonitor {
     }
 
     public void updateImage() {
-        double factor = 250.0 / heatMax;
-        switch (mode) {
-        case 0:
-            int me, mr, mw;
-            for (int i = 0; i < cpu.MAX_MEM; i++) {
-                mw = me = mr = 0;
-                if (heatW[i] > 0) mw = 80;
-                if (heatR[i] > 0) mr = 80;
-                if (heatE[i] > 0) me = 80;
+      double factor = 250.0 / heatMax;
+      switch (mode) {
+        case 0 -> {
+          int me, mr, mw;
+          for (int i = 0; i < cpu.MAX_MEM; i++) {
+            mw = me = mr = 0;
+            if (heatW[i] > 0) mw = 80;
+            if (heatR[i] > 0) mr = 80;
+            if (heatE[i] > 0) me = 80;
 
-                heatmap.setRGB(i & 127, i / 128,
-                        ((int)(factor * heatW[i] + mw) << 16) |
-                        ((int)(factor * heatR[i] + mr) << 8) |
-                        (int)(factor * heatE[i]) + me);
-            }
-            break;
-        case 1:
-            /* slow... */
-            for (int i = 0; i < cpu.MAX_MEM; i++) {
-                int r = heatW[i];
-                int g = heatR[i];
-                int b = heatE[i];
-
-                heatW[i] = (99 * r) / 100;
-                heatR[i] = (99 * g) / 100;
-                heatE[i] = (99 * b) / 100;
-
-                if (r > 255) r = 255;
-                if (g > 255) g = 255;
-                if (b > 255) b = 255;
-
-                heatmap.setRGB(i & 127, i / 128, (r << 16) | (g << 8) | b);
-            }
-            break;
+            heatmap.setRGB(i & 127, i / 128,
+                    ((int) (factor * heatW[i] + mw) << 16) |
+                            ((int) (factor * heatR[i] + mr) << 8) |
+                            (int) (factor * heatE[i]) + me);
+          }
         }
+        case 1 -> {
+          /* slow... */
+          for (int i = 0; i < cpu.MAX_MEM; i++) {
+            int r = heatW[i];
+            int g = heatR[i];
+            int b = heatE[i];
+
+            heatW[i] = (99 * r) / 100;
+            heatR[i] = (99 * g) / 100;
+            heatE[i] = (99 * b) / 100;
+
+            if (r > 255) r = 255;
+            if (g > 255) g = 255;
+            if (b > 255) b = 255;
+
+            heatmap.setRGB(i & 127, i / 128, (r << 16) | (g << 8) | b);
+          }
+        }
+      }
     }
 
     @Override

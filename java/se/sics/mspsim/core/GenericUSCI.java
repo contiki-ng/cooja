@@ -237,29 +237,29 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
       address = address - offset;
 
       // Indicate ready to write!!! - this should not be done here...
-        switch (address) {
-      case CTL0:
-        syncMode = (data & 0x01) > 0;
-        i2cEnabled = (data & 0x06) == 0x06;
-        if (DEBUG) log(" write to UxxCTL0 " + data);
-        break;
-      case CTL1:
+      switch (address) {
+        case CTL0 -> {
+          syncMode = (data & 0x01) > 0;
+          i2cEnabled = (data & 0x06) == 0x06;
+          if (DEBUG) log(" write to UxxCTL0 " + data);
+        }
+        case CTL1 -> {
           /* emulate the reset */
           if ((ctl1 & SWRST) == SWRST && (data & SWRST) == 0)
-              reset(0);
+            reset(0);
           moduleEnabled = (data & SWRST) == 0;
           if (DEBUG) log(" write to UxxCTL1 " + data + " => ModEn:" + moduleEnabled);
 
           if (((data >> 6) & 3) == 1) {
-              clockSource = MSP430Constants.CLK_ACLK;
-              if (DEBUG) {
-                  log(" Selected ACLK as source");
-              }
+            clockSource = MSP430Constants.CLK_ACLK;
+            if (DEBUG) {
+              log(" Selected ACLK as source");
+            }
           } else {
-              clockSource = MSP430Constants.CLK_SMCLK;
-              if (DEBUG) {
-                  log(" Selected SMCLK as source");
-              }
+            clockSource = MSP430Constants.CLK_SMCLK;
+            if (DEBUG) {
+              log(" Selected SMCLK as source");
+            }
           }
           updateBaudRate();
 
@@ -268,137 +268,119 @@ public class GenericUSCI extends IOUnit implements DMATrigger, USARTSource {
            * just transmit the corresponding signals.
            */
           if (i2cEnabled) {
-                  if ((data & 0x04) > 0 && (ctl1 & 0x04) == 0) { // stop condition
-                          txBuffer.add(I2CData.STOP);
-                  }
-                  if ((data & 0x02) > 0 && (ctl1 & 0x02) == 0) {
-                          i2cTransmitter = (data & 0x10) == 0x10;
-                          /* Transmit a start condition START|ADDR|R/W */
-                          int t = I2CData.START;
-                          t |= i2cSlaveAddress << 1;
-                          t |= i2cTransmitter ? 1 : 0;
-                          txBuffer.add(t);
-                          rxbuf = 0;
-                  }
-                  clrBitIFG(TXIFG);
-                  stat |= USCI_BUSY;
-              if (!transmitting) {
-                  nextTXReady = cycles + 1; //tickPerByte + 3;
-                  cpu.scheduleCycleEvent(txTrigger, nextTXReady);
-              }
+            if ((data & 0x04) > 0 && (ctl1 & 0x04) == 0) { // stop condition
+              txBuffer.add(I2CData.STOP);
+            }
+            if ((data & 0x02) > 0 && (ctl1 & 0x02) == 0) {
+              i2cTransmitter = (data & 0x10) == 0x10;
+              /* Transmit a start condition START|ADDR|R/W */
+              int t = I2CData.START;
+              t |= i2cSlaveAddress << 1;
+              t |= i2cTransmitter ? 1 : 0;
+              txBuffer.add(t);
+              rxbuf = 0;
+            }
+            clrBitIFG(TXIFG);
+            stat |= USCI_BUSY;
+            if (!transmitting) {
+              nextTXReady = cycles + 1; //tickPerByte + 3;
+              cpu.scheduleCycleEvent(txTrigger, nextTXReady);
+            }
           }
 
           ctl1 = data;
-
-          break;
-      case MCTL:
-        mctl = data;
-        if (DEBUG) log(" write to UMCTL " + data);
-        break;
-      case BR0:
-        ubr0 = data;
-        updateBaudRate();
-        break;
-      case BR1:
-        ubr1 = data;
-        updateBaudRate();
-        break;
-      case STAT:
+        }
+        case MCTL -> {
+          mctl = data;
+          if (DEBUG) log(" write to UMCTL " + data);
+        }
+        case BR0 -> {
+          ubr0 = data;
+          updateBaudRate();
+        }
+        case BR1 -> {
+          ubr1 = data;
+          updateBaudRate();
+        }
+        case STAT -> {
           //ustat = data;
-        break;
-      case IE:
-          ie = data;
-        break;
-      case TXBUF:
-        if (DEBUG) log(": USART_UTXBUF:" + (char) data + " = " + data + "\n");
-        if (moduleEnabled) {
-          // Interruptflag not set!
-          clrBitIFG(TXIFG);
-          /* the TX is no longer empty ! */
-          stat |= USCI_BUSY;
-          /* should the interrupt be flagged off here ? - or only the flags */
-          if (DEBUG) log(" flagging off transmit interrupt");
-          //      cpu.flagInterrupt(transmitInterrupt, this, false);
+        }
+        case IE -> ie = data;
+        case TXBUF -> {
+          if (DEBUG) log(": USART_UTXBUF:" + (char) data + " = " + data + "\n");
+          if (moduleEnabled) {
+            // Interruptflag not set!
+            clrBitIFG(TXIFG);
+            /* the TX is no longer empty ! */
+            stat |= USCI_BUSY;
+            /* should the interrupt be flagged off here ? - or only the flags */
+            if (DEBUG) log(" flagging off transmit interrupt");
+            //      cpu.flagInterrupt(transmitInterrupt, this, false);
 
-          // Schedule on cycles here
-          // TODO: adding 3 extra cycles here seems to give
-          // slightly better timing in some test...
-          txBuffer.add(data);
-          if (!transmitting) {
+            // Schedule on cycles here
+            // TODO: adding 3 extra cycles here seems to give
+            // slightly better timing in some test...
+            txBuffer.add(data);
+            if (!transmitting) {
               /* how long time will the copy from the TX_BUF to the shift reg take? */
               /* assume 3 cycles? */
               nextTXReady = cycles + tickPerByte + 1; //tickPerByte + 3;
               cpu.scheduleCycleEvent(txTrigger, nextTXReady);
+            }
+          } else {
+            log("Ignoring UTXBUF data since TX not active...");
           }
-        } else {
-          log("Ignoring UTXBUF data since TX not active...");
+          txbuf = data;
         }
-        txbuf = data;
-        break;
-
-      case I2CSA:
-        i2cSlaveAddress = data & 0x3ff;
-        break;
-
-      case I2COA:
-        i2cOwnAddress = data & 0x3ff;
-        break;
+        case I2CSA -> i2cSlaveAddress = data & 0x3ff;
+        case I2COA -> i2cOwnAddress = data & 0x3ff;
       }
     }
 
     @Override
     public int read(int address, boolean word, long cycles) {
-        int op = address - offset;
-        switch (op) {
-        case CTL0:
-            return ctl0;
-        case CTL1:
-            return ctl1;
-        case BR0:
-            return br0;
-        case BR1:
-            return br1;
-        case TXBUF:
-            return txbuf;
-        case RXBUF:
-            int tmp = rxbuf;
-            // When byte is read - the interruptflag is cleared!
-            // and error status should also be cleared later...
-            // is this cleared also on the MSP430x5xx series???
-            if (MSP430Constants.DEBUGGING_LEVEL > 0) {
-                log(" clearing rx interrupt flag " + cpu.getPC() + " byte: " + tmp);
-            }
-            clrBitIFG(RXIFG);
-            /* This should be changed to a state rather than an "event" */
-            /* Force callback since this is not used as a state */
-            stateChanged(USARTListener.RXFLAG_CLEARED, true);
+      int op = address - offset;
+      return switch (op) {
+        case CTL0 -> ctl0;
+        case CTL1 -> ctl1;
+        case BR0 -> br0;
+        case BR1 -> br1;
+        case TXBUF -> txbuf;
+        case RXBUF -> {
+          int tmp = rxbuf;
+          // When byte is read - the interruptflag is cleared!
+          // and error status should also be cleared later...
+          // is this cleared also on the MSP430x5xx series???
+          if (MSP430Constants.DEBUGGING_LEVEL > 0) {
+            log(" clearing rx interrupt flag " + cpu.getPC() + " byte: " + tmp);
+          }
+          clrBitIFG(RXIFG);
+          /* This should be changed to a state rather than an "event" */
+          /* Force callback since this is not used as a state */
+          stateChanged(USARTListener.RXFLAG_CLEARED, true);
 
-            /* For timing issues we have to send the ACK after reading the
-             * register */
-            if (i2cEnabled && !i2cTransmitter) {
-                        txBuffer.add(I2CData.ACK);
-                        stat |= USCI_BUSY;
-                if (!transmitting) {
-                    /* how long time will the copy from the TX_BUF to the shift reg take? */
-                    /* assume 3 cycles? */
-                    nextTXReady = cpu.cpuCycles + tickPerByte + 1; //tickPerByte + 3;
-                    cpu.scheduleCycleEvent(txTrigger, nextTXReady);
-                }
+          /* For timing issues we have to send the ACK after reading the
+           * register */
+          if (i2cEnabled && !i2cTransmitter) {
+            txBuffer.add(I2CData.ACK);
+            stat |= USCI_BUSY;
+            if (!transmitting) {
+              /* how long time will the copy from the TX_BUF to the shift reg take? */
+              /* assume 3 cycles? */
+              nextTXReady = cpu.cpuCycles + tickPerByte + 1; //tickPerByte + 3;
+              cpu.scheduleCycleEvent(txTrigger, nextTXReady);
             }
+          }
 
-            return tmp;
-        case MCTL:
-            return mctl;
-        case STAT:
-            return stat;
-        case IE:
-            return ie;
-        case IFG:
-            return ifg;
-        case IV:
-            return iv;
+          yield tmp;
         }
-        return 0;
+        case MCTL -> mctl;
+        case STAT -> stat;
+        case IE -> ie;
+        case IFG -> ifg;
+        case IV -> iv;
+        default -> 0;
+      };
     }
 
     /* reuse USART listener API for USCI */

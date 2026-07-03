@@ -499,15 +499,15 @@ public class AreaViewer extends VisPlugin {
       @Override
       public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-          case "set custom bitmap":
+          case "set custom bitmap" -> {
             if (!setCustomBitmap() || !analyzeBitmapForObstacles()) {
               backgroundImage = null;
               currentChannelModel.removeAllObstacles();
               noneButton.setSelected(true);
               repaint();
             }
-            break;
-          case "set predefined 1":
+          }
+          case "set predefined 1" -> {
             currentChannelModel.removeAllObstacles();
             currentChannelModel.addRectObstacle(0, 0, 50, 5, false);
             currentChannelModel.addRectObstacle(0, 5, 5, 50, false);
@@ -515,8 +515,8 @@ public class AreaViewer extends VisPlugin {
             currentChannelModel.addRectObstacle(0, 70, 5, 20, false);
             currentChannelModel.notifySettingsChanged();
             repaint();
-            break;
-          case "set predefined 2":
+          }
+          case "set predefined 2" -> {
             currentChannelModel.removeAllObstacles();
             currentChannelModel.addRectObstacle(0, 0, 10, 10, false);
             currentChannelModel.addRectObstacle(30, 0, 10, 10, false);
@@ -529,15 +529,13 @@ public class AreaViewer extends VisPlugin {
             currentChannelModel.addRectObstacle(85, 90, 10, 10, false);
             currentChannelModel.notifySettingsChanged();
             repaint();
-            break;
-          case "set no obstacles":
+          }
+          case "set no obstacles" -> {
             backgroundImage = null;
             currentChannelModel.removeAllObstacles();
             repaint();
-            break;
-          default:
-            logger.error("Unhandled action command: " + e.getActionCommand());
-            break;
+          }
+          default -> logger.error("Unhandled action command: " + e.getActionCommand());
         }
       }
 

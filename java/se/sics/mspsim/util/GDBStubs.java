@@ -112,79 +112,68 @@ public final class GDBStubs implements Runnable {
     throws IOException, EmulationException {
         System.out.println("cmd: " + cmd);
         char c = cmd.charAt(0);
-        switch (c) {
-        case 'H':
-            sendResponse(OK);
-            break;
-        case 'q':
-            switch (cmd) {
-                case "qC" -> sendResponse("QC1");
-                case "qOffsets" -> sendResponse("Text=0;Data=0;Bss=0");
-                case "qfThreadInfo" -> sendResponse("m 01");
-                case "qsThreadInfo" -> sendResponse("l");
-                case "qSymbol::" -> sendResponse(OK);
+      switch (c) {
+        case 'H' -> sendResponse(OK);
+        case 'q' -> {
+          switch (cmd) {
+            case "qC" -> sendResponse("QC1");
+            case "qOffsets" -> sendResponse("Text=0;Data=0;Bss=0");
+            case "qfThreadInfo" -> sendResponse("m 01");
+            case "qsThreadInfo" -> sendResponse("l");
+            case "qSymbol::" -> sendResponse(OK);
 
-                //} else if ("qThreadExtraInfo,1".equals(cmd)){
-                //              sendResponse(stringToHex("Stoped"));
-                default -> {
-                    System.out.println("Command unknown");
-                    sendResponse("");
-                }
+            //} else if ("qThreadExtraInfo,1".equals(cmd)){
+            //              sendResponse(stringToHex("Stoped"));
+            default -> {
+              System.out.println("Command unknown");
+              sendResponse("");
             }
-
-            break;
-        case '?':
-            sendResponse("S01");
-            break;
-        case 'g':
-            readRegisters();
-            break;
-        case 'k': // kill
-            sendResponse(OK);
-            break;
-        case 'm':
-        case 'M':
-        case 'X':
-            String cmd2 = cmd.substring(1);
-            String[] wdata = cmd2.split(":");
-            int cPos = cmd.indexOf(':');
-            if (cPos > 0) {
-                /* only until length in first part */
-                cmd2 = wdata[0];
-            }
-            String[] parts = cmd2.split(",");
-            int addr = Integer.decode("0x" + parts[0]);
-            int len = Integer.decode("0x" + parts[1]);
-            StringBuilder data = new StringBuilder();
-            Memory mem = cpu.getMemory();
-            if (c == 'm') {
-                System.out.println("Returning memory from: " + addr + " len = "
-                        + len);
-                /* This might be wrong - which is the correct byte order? */
-                for (int i = 0; i < len; i++) {
-                    data.append(Utils.hex8(mem.get(addr++, Memory.AccessMode.BYTE)));
-                }
-                sendResponse(data.toString());
-            } else {
-                System.out.println("Writing to memory at: " + addr + " len = "
-                        + len + " with: "
-                        + ((wdata.length > 1) ? wdata[1] : ""));
-                cPos++;
-                for (int i = 0; i < len; i++) {
-                    System.out.println("Writing: " + cmdBytes[cPos] + " to "
-                            + addr + " cpos=" + cPos);
-                    mem.set(addr++, cmdBytes[cPos++], Memory.AccessMode.BYTE);
-                }
-                sendResponse(OK);
-            }
-            break;
-        case 'C':
-            sendResponse("S01");
-            break;
-        default:
-            System.out.println("Command unknown");
-            sendResponse("");
+          }
         }
+        case '?' -> sendResponse("S01");
+        case 'g' -> readRegisters();
+        case 'k' -> // kill
+                sendResponse(OK);
+        case 'm', 'M', 'X' -> {
+          String cmd2 = cmd.substring(1);
+          String[] wdata = cmd2.split(":");
+          int cPos = cmd.indexOf(':');
+          if (cPos > 0) {
+            /* only until length in first part */
+            cmd2 = wdata[0];
+          }
+          String[] parts = cmd2.split(",");
+          int addr = Integer.decode("0x" + parts[0]);
+          int len = Integer.decode("0x" + parts[1]);
+          StringBuilder data = new StringBuilder();
+          Memory mem = cpu.getMemory();
+          if (c == 'm') {
+            System.out.println("Returning memory from: " + addr + " len = "
+                    + len);
+            /* This might be wrong - which is the correct byte order? */
+            for (int i = 0; i < len; i++) {
+              data.append(Utils.hex8(mem.get(addr++, Memory.AccessMode.BYTE)));
+            }
+            sendResponse(data.toString());
+          } else {
+            System.out.println("Writing to memory at: " + addr + " len = "
+                    + len + " with: "
+                    + ((wdata.length > 1) ? wdata[1] : ""));
+            cPos++;
+            for (int i = 0; i < len; i++) {
+              System.out.println("Writing: " + cmdBytes[cPos] + " to "
+                      + addr + " cpos=" + cPos);
+              mem.set(addr++, cmdBytes[cPos++], Memory.AccessMode.BYTE);
+            }
+            sendResponse(OK);
+          }
+        }
+        case 'C' -> sendResponse("S01");
+        default -> {
+          System.out.println("Command unknown");
+          sendResponse("");
+        }
+      }
     }
 
     private void readRegisters() throws IOException {
