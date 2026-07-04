@@ -109,13 +109,11 @@ testing {
     configureEach {
       dependencies {
         implementation project()
-        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-        implementation 'org.junit.jupiter:junit-jupiter-api:6.1.1'
-        runtimeOnly 'org.junit.platform:junit-platform-launcher'
       }
     }
     test(JvmTestSuite) {
-      useJUnitJupiter()
+      // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter
+      useJUnitJupiter('6.1.1')
     }
   }
 }
@@ -190,8 +188,13 @@ tasks.register('copyDependencies', Copy) {
   def dir = layout.buildDirectory.dir("libs/lib")
   description = "Copy jar dependencies into ${dir.get()}"
   group = "Build"
-  from configurations.runtimeClasspath.files
+  from configurations.runtimeClasspath
   into dir
+}
+
+// Class-Path for the jar manifests, resolved lazily at execution time.
+def manifestClassPath = configurations.runtimeClasspath.elements.map { files ->
+  '. ' + files.collect { 'lib/' + it.asFile.name }.join(' ')
 }
 
 // Run Cooja with: java <JVM parameters> -jar build/libs/cooja.jar <Cooja parameters>
@@ -199,7 +202,7 @@ jar {
   dependsOn copyDependencies
   manifest {
     attributes 'Main-Class': 'org.contikios.cooja.Main',
-      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' ')
+      'Class-Path': manifestClassPath
   }
 }
 
@@ -209,12 +212,16 @@ tasks.register('fullJar', Jar) {
   archiveClassifier.set('full')
   manifest {
     attributes 'Main-Class': 'org.contikios.cooja.Main',
-      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' ')
+      'Class-Path': manifestClassPath
   }
 
   from sourceSets.main.output
 
+  // Files with the same path in several jars are not merged, the first
+  // occurrence is kept. Affects among others META-INF/services files.
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  // Dependency module descriptors do not describe the merged jar.
+  exclude 'module-info.class', 'META-INF/versions/*/module-info.class'
   dependsOn configurations.runtimeClasspath
   from {
     configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
