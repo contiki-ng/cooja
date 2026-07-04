@@ -103,29 +103,34 @@ application {
     '--enable-native-access', 'ALL-UNNAMED']
 }
 
+// Referenced from the junit-jupiter-api dependency so dependabot updates it.
+def junitVersion = '6.1.1'
+
 testing {
   suites {
     configureEach {
       dependencies {
         implementation project()
+        // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+        implementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
       }
     }
     test(JvmTestSuite) {
-      // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter
-      useJUnitJupiter('6.1.1')
+      useJUnitJupiter(junitVersion)
+      targets.configureEach {
+        testTask.configure {
+          reports {
+            junitXml {
+              outputPerTestCase = true
+              mergeReruns = true
+            }
+          }
+          testLogging {
+            events "failed", "passed", "skipped"
+          }
+        }
+      }
     }
-  }
-}
-
-test {
-  reports {
-    junitXml {
-      outputPerTestCase = true
-      mergeReruns = true
-    }
-  }
-  testLogging {
-    events "failed", "passed", "skipped"
   }
 }
 
