@@ -171,8 +171,7 @@ tasks.withType(JavaCompile).configureEach {
   options.errorprone.disable('ThreadPriorityCheck')
   options.errorprone.disable('UnusedMethod')
   options.errorprone.disable('UnusedVariable')
-  options.compilerArgs += ['-Werror', '--enable-preview',
-                           "-Aproject=${project.group}/${project.name}"]
+  options.compilerArgs += ['-Werror', "-Aproject=${project.group}/${project.name}"]
 
   String compilerArgs = project.findProperty('compilerArgs') as String
   if (compilerArgs) {
