@@ -28,6 +28,9 @@
 package org.contikios.cooja;
 
 import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.ui.FlatInternalFrameUI;
+import com.formdev.flatlaf.ui.FlatUIUtils;
+import com.formdev.flatlaf.util.UIScale;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -37,6 +40,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -76,6 +80,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -108,6 +113,7 @@ import org.contikios.cooja.dialogs.MessageList;
 import org.contikios.cooja.dialogs.MessageListUI;
 import org.contikios.cooja.dialogs.ProjectDirectoriesDialog;
 import org.contikios.cooja.interfaces.Position;
+import org.contikios.cooja.ui.WindowSnap;
 import org.contikios.cooja.util.Annotations;
 import org.jdom2.Element;
 import org.jdom2.Text;
@@ -160,18 +166,7 @@ public class GUI {
         return c;
       }
     };
-    myDesktopPane.setDesktopManager(new DefaultDesktopManager() {
-      @Override
-      public void endResizingFrame(JComponent f) {
-        super.endResizingFrame(f);
-        updateDesktopSize();
-      }
-      @Override
-      public void endDraggingFrame(JComponent f) {
-        super.endDraggingFrame(f);
-        updateDesktopSize();
-      }
-    });
+    myDesktopPane.setDesktopManager(new SnapDesktopManager());
     // Dragging windows on OS X leaves residue from the borders with FlatLaf, so avoid setting dragMode.
     if (Cooja.configuration.lookAndFeel() != LookAndFeel.FlatLaf) {
       myDesktopPane.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
@@ -1801,6 +1796,112 @@ public class GUI {
       }
     } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
       throw new RuntimeException("Failed to set look and feel", e);
+    }
+  }
+
+  /** Desktop manager that snaps windows to the desktop borders and to other windows. */
+  private class SnapDesktopManager extends DefaultDesktopManager {
+    /** Window bounds when the current resize gesture started, for detecting the resized edges. */
+    private Rectangle resizeStartBounds;
+    /** Snap state for the current move/resize gesture. */
+    private WindowSnap gestureSnap;
+
+    @Override
+    public void beginDraggingFrame(JComponent f) {
+      super.beginDraggingFrame(f);
+      gestureSnap = new WindowSnap();
+    }
+
+    @Override
+    public void dragFrame(JComponent f, int newX, int newY) {
+      if (f instanceof JInternalFrame) {
+        if (gestureSnap == null) {
+          gestureSnap = new WindowSnap();
+        }
+        // Snap the visible part of the window to other windows, but keep the
+        // full window bounds, including any transparent margin, inside the desktop.
+        var insets = visualInsets(f);
+        var visible = WindowSnap.shrink(new Rectangle(newX, newY, f.getWidth(), f.getHeight()), insets);
+        var p = gestureSnap.snapLocation(visible, WindowSnap.shrink(myDesktopPane.getVisibleRect(), insets),
+                snapTargets(f));
+        newX = p.x - insets.left;
+        newY = p.y - insets.top;
+      }
+      // Always keep the top of the window inside the desktop so that the title
+      // bar stays reachable, as Swing already does when resizing. Windows can
+      // still be moved partly outside the left, right, and bottom borders.
+      super.dragFrame(f, newX, Math.max(newY, 0));
+    }
+
+    @Override
+    public void beginResizingFrame(JComponent f, int direction) {
+      super.beginResizingFrame(f, direction);
+      resizeStartBounds = f.getBounds();
+      gestureSnap = new WindowSnap();
+    }
+
+    @Override
+    public void resizeFrame(JComponent f, int newX, int newY, int newWidth, int newHeight) {
+      if (f instanceof JInternalFrame && resizeStartBounds != null) {
+        if (gestureSnap == null) {
+          gestureSnap = new WindowSnap();
+        }
+        var insets = visualInsets(f);
+        var minSize = f.getMinimumSize();
+        minSize.width -= insets.left + insets.right;
+        minSize.height -= insets.top + insets.bottom;
+        var r = WindowSnap.grow(gestureSnap.snapBounds(
+                WindowSnap.shrink(new Rectangle(newX, newY, newWidth, newHeight), insets),
+                WindowSnap.shrink(resizeStartBounds, insets),
+                WindowSnap.shrink(myDesktopPane.getVisibleRect(), insets), snapTargets(f), minSize), insets);
+        newX = r.x;
+        newY = r.y;
+        newWidth = r.width;
+        newHeight = r.height;
+      }
+      super.resizeFrame(f, newX, newY, newWidth, newHeight);
+    }
+
+    @Override
+    public void endResizingFrame(JComponent f) {
+      super.endResizingFrame(f);
+      resizeStartBounds = null;
+      gestureSnap = null;
+      updateDesktopSize();
+    }
+
+    @Override
+    public void endDraggingFrame(JComponent f) {
+      super.endDraggingFrame(f);
+      gestureSnap = null;
+      updateDesktopSize();
+    }
+
+    /** Returns the visible bounds of the other windows on the desktop. */
+    private List<Rectangle> snapTargets(JComponent f) {
+      var targets = new ArrayList<Rectangle>();
+      for (var frame : myDesktopPane.getAllFrames()) {
+        if (frame != f && frame.isVisible() && !frame.isIcon()) {
+          targets.add(WindowSnap.shrink(frame.getBounds(), visualInsets(frame)));
+        }
+      }
+      return targets;
+    }
+
+    /**
+     * Returns the transparent margin around the visible border of a window.
+     * The FlatLaf internal frame border reserves a margin outside its border
+     * line for the drop shadow and the resize grip; other look-and-feels paint
+     * their border up to the window bounds.
+     */
+    private static Insets visualInsets(JComponent f) {
+      if (!(f.getBorder() instanceof FlatInternalFrameUI.FlatInternalFrameBorder)) {
+        return new Insets(0, 0, 0, 0);
+      }
+      var insets = f.getInsets();
+      int lineWidth = Math.round(UIScale.scale((float) FlatUIUtils.getUIInt("InternalFrame.borderLineWidth", 1)));
+      return new Insets(Math.max(0, insets.top - lineWidth), Math.max(0, insets.left - lineWidth),
+              Math.max(0, insets.bottom - lineWidth), Math.max(0, insets.right - lineWidth));
     }
   }
 
