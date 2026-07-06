@@ -36,6 +36,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -127,6 +128,8 @@ public class GUI {
 
   private static final Logger logger = LoggerFactory.getLogger(GUI.class);
   static final String WINDOW_TITLE = "Cooja: The Contiki Network Simulator";
+  /** User setting for snapping windows to the desktop borders and other windows. */
+  private static final String WINDOW_SNAPPING_SETTING = "WINDOW_SNAPPING";
 
   static JFrame frame;
   final JDesktopPane myDesktopPane;
@@ -1000,6 +1003,23 @@ public class GUI {
 
     settingsMenu.add(new JMenuItem(showBufferSettingsAction));
 
+    var snapWindowsMenuItem = new JCheckBoxMenuItem(new GUIAction("Snap windows") {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (e.getSource() instanceof JCheckBoxMenuItem item) {
+          Cooja.setExternalToolsSetting(WINDOW_SNAPPING_SETTING, Boolean.toString(item.isSelected()));
+        }
+      }
+
+      @Override
+      public boolean shouldBeEnabled() {
+        return true;
+      }
+    });
+    snapWindowsMenuItem.setToolTipText("Hold Ctrl or Alt while moving or resizing a window to disable snapping temporarily");
+    snapWindowsMenuItem.setSelected(isWindowSnappingEnabled());
+    settingsMenu.add(snapWindowsMenuItem);
+
     // Help.
     var quickHelpScroll = new JScrollPane(quickHelpTextPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     quickHelpScroll.setPreferredSize(new Dimension(200, 0));
@@ -1597,6 +1617,11 @@ public class GUI {
     updateProgress(false);
   }
 
+  /** Returns true unless the user has disabled window snapping in the settings. */
+  private static boolean isWindowSnappingEnabled() {
+    return Cooja.getExternalToolsSetting(WINDOW_SNAPPING_SETTING, "true").equalsIgnoreCase("true");
+  }
+
   private void updateDesktopSize() {
     if (!myDesktopPane.isVisible() || myDesktopPane.getParent() == null) {
       return;
@@ -1803,21 +1828,18 @@ public class GUI {
   private class SnapDesktopManager extends DefaultDesktopManager {
     /** Window bounds when the current resize gesture started, for detecting the resized edges. */
     private Rectangle resizeStartBounds;
-    /** Snap state for the current move/resize gesture. */
+    /** Snap state for the current move/resize gesture, or null if the gesture does not snap. */
     private WindowSnap gestureSnap;
 
     @Override
     public void beginDraggingFrame(JComponent f) {
       super.beginDraggingFrame(f);
-      gestureSnap = new WindowSnap();
+      gestureSnap = isWindowSnappingEnabled() ? new WindowSnap() : null;
     }
 
     @Override
     public void dragFrame(JComponent f, int newX, int newY) {
-      if (f instanceof JInternalFrame) {
-        if (gestureSnap == null) {
-          gestureSnap = new WindowSnap();
-        }
+      if (gestureSnap != null && f instanceof JInternalFrame && !snapDisabledByModifier()) {
         // Snap the visible part of the window to other windows, but keep the
         // full window bounds, including any transparent margin, inside the desktop.
         var insets = visualInsets(f);
@@ -1837,15 +1859,13 @@ public class GUI {
     public void beginResizingFrame(JComponent f, int direction) {
       super.beginResizingFrame(f, direction);
       resizeStartBounds = f.getBounds();
-      gestureSnap = new WindowSnap();
+      gestureSnap = isWindowSnappingEnabled() ? new WindowSnap() : null;
     }
 
     @Override
     public void resizeFrame(JComponent f, int newX, int newY, int newWidth, int newHeight) {
-      if (f instanceof JInternalFrame && resizeStartBounds != null) {
-        if (gestureSnap == null) {
-          gestureSnap = new WindowSnap();
-        }
+      if (gestureSnap != null && f instanceof JInternalFrame && resizeStartBounds != null
+              && !snapDisabledByModifier()) {
         var insets = visualInsets(f);
         var minSize = f.getMinimumSize();
         minSize.width -= insets.left + insets.right;
@@ -1875,6 +1895,16 @@ public class GUI {
       super.endDraggingFrame(f);
       gestureSnap = null;
       updateDesktopSize();
+    }
+
+    /**
+     * Returns true if the user holds a modifier key that temporarily disables
+     * snapping (Ctrl or Alt). Drag and resize gestures are dispatched from mouse
+     * drag events, which carry the current keyboard modifier state.
+     */
+    private static boolean snapDisabledByModifier() {
+      return EventQueue.getCurrentEvent() instanceof InputEvent event
+              && (event.getModifiersEx() & (InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK)) != 0;
     }
 
     /** Returns the visible bounds of the other windows on the desktop. */
