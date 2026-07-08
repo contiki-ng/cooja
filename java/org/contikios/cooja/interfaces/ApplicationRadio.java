@@ -266,6 +266,9 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
    */
   public void setChannel(int channel) {
     radioChannel = channel;
+    /* Deliberately not CHANNEL_HOP: interference is reference-counted in
+     * this radio and must stay in sync with the pending signalReceptionEnd()
+     * calls, so it cannot be cleared on channel changes. */
     lastEvent = RadioEvent.UNKNOWN;
     lastEventTime = simulation.getSimulationTime();
     radioEventTriggers.trigger(RadioEvent.UNKNOWN, this);

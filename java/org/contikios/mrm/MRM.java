@@ -154,7 +154,7 @@ public class MRM extends AbstractRadioMedium {
       /* Fail if radios are on different (but configured) channels */
       var srcChannel = sender.getChannel();
       var dstChannel = recv.getChannel();
-      if (srcChannel >= 0 && dstChannel >= 0 && srcChannel != dstChannel) {
+      if (channelsDiffer(srcChannel, dstChannel)) {
         newConnection.addInterfered(recv);
         continue;
       }
@@ -283,7 +283,7 @@ public class MRM extends AbstractRadioMedium {
       for (Radio dstRadio : conn.getDestinations()) {
         double signalStrength = ((MRMRadioConnection) conn).getDestinationSignalStrength(dstRadio);
         var dstChannel = dstRadio.getChannel();
-        if (srcChannel >= 0 && dstChannel >= 0 && srcChannel != dstChannel) {
+        if (channelsDiffer(srcChannel, dstChannel)) {
           continue;
         }
         if (dstRadio.getCurrentSignalStrength() < signalStrength) {
@@ -297,7 +297,7 @@ public class MRM extends AbstractRadioMedium {
       var srcChannel = conn.getSource().getChannel();
       for (Radio intfRadio : conn.getInterfered()) {
         var intfChannel = intfRadio.getChannel();
-        if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
+        if (channelsDiffer(srcChannel, intfChannel)) {
           continue;
         }
         double signalStrength = ((MRMRadioConnection) conn).getInterferenceSignalStrength(intfRadio);

@@ -231,7 +231,7 @@ public class LogisticLoss extends AbstractRadioMedium {
             /* Fail if radios are on different (but configured) channels */
             var srcChannel = sender.getChannel();
             var dstChannel = recv.getChannel();
-            if (srcChannel >= 0 && dstChannel >= 0 && srcChannel != dstChannel) {
+            if (channelsDiffer(srcChannel, dstChannel)) {
                 /* Add the connection in a dormant state;
                    it will be activated later when the radio will be
                    turned on and switched to the right channel. This behavior
@@ -402,7 +402,7 @@ public class LogisticLoss extends AbstractRadioMedium {
             var srcChannel = conn.getSource().getChannel();
             for (Radio dstRadio : conn.getDestinations()) {
                 var dstChannel = dstRadio.getChannel();
-                if (srcChannel >= 0 && dstChannel >= 0 && srcChannel != dstChannel) {
+                if (channelsDiffer(srcChannel, dstChannel)) {
                     continue;
                 }
 
@@ -418,7 +418,7 @@ public class LogisticLoss extends AbstractRadioMedium {
             var srcChannel = conn.getSource().getChannel();
             for (Radio intfRadio : conn.getInterfered()) {
                 var intfChannel = intfRadio.getChannel();
-                if (srcChannel >= 0 && intfChannel >= 0 && srcChannel != intfChannel) {
+                if (channelsDiffer(srcChannel, intfChannel)) {
                     continue;
                 }
 
