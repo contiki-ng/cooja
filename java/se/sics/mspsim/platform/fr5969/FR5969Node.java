@@ -43,7 +43,7 @@ import se.sics.mspsim.ui.SerialMon;
 
 public class FR5969Node extends GenericNode {
 
-    // LED pin masks (active high on the LaunchPad), consumed by MSP430FR5969LED.
+    // LED pin masks (active high on the LaunchPad), consumed by MspExp430Fr5969LED.
     public static final int LED1_RED = (1 << 0);    // P1.0
     public static final int LED2_GREEN = (1 << 6);  // P4.6
 

@@ -154,7 +154,7 @@ public class Main {
       case "tyndall" -> "se.sics.mspsim.platform.tyndall.TyndallNode";
       case "wismote" -> "se.sics.mspsim.platform.wismote.WismoteNode";
       case "z1" -> "se.sics.mspsim.platform.z1.Z1Node";
-      case "msp430fr5969", "fr5969" -> "se.sics.mspsim.platform.fr5969.FR5969Node";
+      case "msp-exp430fr5969", "fr5969" -> "se.sics.mspsim.platform.fr5969.FR5969Node";
       // Try to guess the node type.
       default -> "se.sics.mspsim.platform." + platform + '.'
               + Character.toUpperCase(platform.charAt(0))

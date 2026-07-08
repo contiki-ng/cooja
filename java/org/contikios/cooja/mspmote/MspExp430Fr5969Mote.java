@@ -35,9 +35,9 @@ import org.contikios.cooja.MoteType;
 import org.contikios.cooja.Simulation;
 import se.sics.mspsim.platform.fr5969.FR5969Node;
 
-public class MSP430FR5969Mote extends MspMote {
+public class MspExp430Fr5969Mote extends MspMote {
 
-    public MSP430FR5969Mote(MspMoteType moteType, Simulation sim, FR5969Node node)
+    public MspExp430Fr5969Mote(MspMoteType moteType, Simulation sim, FR5969Node node)
             throws MoteType.MoteTypeCreationException {
         super(moteType, sim, node);
     }
