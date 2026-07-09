@@ -94,9 +94,42 @@ public abstract class MSP430Config {
 
     public boolean MSP430XArch;
 
+    // FRAM configuration (for FR5xxx series)
+    public boolean hasFRAM = false;
+    public int framControllerOffset = 0x140;
+
     public int sfrOffset;
 
+    /*
+     * Absolute address of WDTCTL - i.e. the one watchdog register the
+     * emulator actually models, NOT the WDT_A module base. On F1xxx/F2xxx
+     * these coincide at 0x120; on F5xxx/FR5xxx WDTCTL sits at 0x15C while
+     * the module base is 0x150 (offset 0xC inside the module). Configs
+     * should set this to the WDTCTL address for their part.
+     */
     public int watchdogOffset = 0x120;
+
+    /*
+     * Watchdog WDTISx mapping. The 2-bit table matches the F1xxx/F2xxx/F4xxx
+     * WDT_A: WDTISx is bits 0..1 and selects one of 4 intervals counted in
+     * SMCLK/ACLK cycles. F5xxx/FR5xxx WDT_A widens WDTISx to bits 0..2 with
+     * a different mapping that goes up to 2^31 cycles, so those configs
+     * must override both the table and the mask.
+     */
+    public int[] wdtDelayTable = { 32768, 8192, 512, 64 };
+    public int wdtISxMask = 0x03;
+
+    /*
+     * Watchdog WDTSSEL field. F1xxx/F2xxx/F4xxx WDT_A has a single-bit SSEL at
+     * bit 2 (mask 0x04) that selects SMCLK (0) or ACLK (0x04). F5xxx/FR5xxx
+     * widens this to a 2-bit field at bits 5..6 with values SMCLK/ACLK/VLOCLK/
+     * X_CLK. Configs whose silicon supports VLOCLK as a watchdog source must
+     * set wdtSSEL_VLOCLK to the masked value that selects it; configs that do
+     * not (i.e. F1xxx-era) should leave it at -1.
+     */
+    public int wdtSSELMask = 0x04;
+    public int wdtSSEL_ACLK = 0x04;
+    public int wdtSSEL_VLOCLK = -1;
 
     public abstract int setup(MSP430Core cpu, ArrayList<IOUnit> ioUnits);
 

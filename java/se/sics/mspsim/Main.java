@@ -46,6 +46,7 @@ import se.sics.mspsim.chip.AT45DB;
 import se.sics.mspsim.chip.M25P80;
 import se.sics.mspsim.platform.GenericNode;
 import se.sics.mspsim.platform.esb.ESBNode;
+import se.sics.mspsim.platform.fr5969.FR5969Node;
 import se.sics.mspsim.platform.jcreate.JCreateNode;
 import se.sics.mspsim.platform.sentillausb.SentillaUSBNode;
 import se.sics.mspsim.platform.sky.SkyNode;
@@ -71,6 +72,10 @@ public class Main {
       case "se.sics.mspsim.platform.esb.ESBNode" -> {
         var cpu = ESBNode.makeCPU(ESBNode.makeChipConfig(), firmwareFile);
         yield new ESBNode(cpu);
+      }
+      case "se.sics.mspsim.platform.fr5969.FR5969Node" -> {
+        var cpu = FR5969Node.makeCPU(FR5969Node.makeChipConfig(), firmwareFile);
+        yield new FR5969Node(cpu);
       }
       case "se.sics.mspsim.platform.jcreate.JCreateNode" -> {
         var cpu = JCreateNode.makeCPU(JCreateNode.makeChipConfig(), firmwareFile);
@@ -154,6 +159,7 @@ public class Main {
       case "tyndall" -> "se.sics.mspsim.platform.tyndall.TyndallNode";
       case "wismote" -> "se.sics.mspsim.platform.wismote.WismoteNode";
       case "z1" -> "se.sics.mspsim.platform.z1.Z1Node";
+      case "msp-exp430fr5969", "fr5969" -> "se.sics.mspsim.platform.fr5969.FR5969Node";
       // Try to guess the node type.
       default -> "se.sics.mspsim.platform." + platform + '.'
               + Character.toUpperCase(platform.charAt(0))

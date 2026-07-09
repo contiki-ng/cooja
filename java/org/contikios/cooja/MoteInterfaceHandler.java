@@ -78,9 +78,11 @@ public class MoteInterfaceHandler {
    * @param mote Mote
    */
   public void init(Mote mote) throws MoteType.MoteTypeCreationException {
-    for (var interfaceClass : mote.getType().getMoteInterfaceClasses()) {
+    var classes = mote.getType().getMoteInterfaceClasses();
+    for (var interfaceClass : classes) {
       try {
-        moteInterfaces.add(interfaceClass.getConstructor(Mote.class).newInstance(mote));
+        var mi = interfaceClass.getConstructor(Mote.class).newInstance(mote);
+        moteInterfaces.add(mi);
       } catch (Exception e) {
         logger.error("Exception when calling constructor of " + interfaceClass, e);
         throw new MoteType.MoteTypeCreationException("Exception when calling constructor of " + interfaceClass, e);

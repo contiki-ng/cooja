@@ -75,6 +75,15 @@ public interface Button extends MoteInterface {
 
   abstract class AbstractButton implements Button {
 
+    /**
+     * How long a {@link #clickButton()} keeps the button pressed, in simulated
+     * time. Must comfortably exceed the debounce window of button drivers that
+     * sample the pin level after a debounce delay (e.g. Contiki-NG's button-hal,
+     * whose default debounce is CLOCK_SECOND >> 3 = 125 ms); otherwise a click
+     * that releases too soon is dismissed as contact bounce and never delivered.
+     */
+    private static final long CLICK_DURATION = 250 * Simulation.MILLISECOND;
+
     private final Simulation sim;
 
     private final MoteTimeEvent pressButtonEvent;
@@ -100,7 +109,7 @@ public interface Button extends MoteInterface {
     public void clickButton() {
       sim.invokeSimulationThread(() -> {
         sim.scheduleEvent(pressButtonEvent, sim.getSimulationTime());
-        sim.scheduleEvent(releaseButtonEvent, sim.getSimulationTime() + Simulation.MILLISECOND);
+        sim.scheduleEvent(releaseButtonEvent, sim.getSimulationTime() + CLICK_DURATION);
       });
     }
 

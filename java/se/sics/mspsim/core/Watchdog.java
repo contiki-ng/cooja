@@ -52,16 +52,21 @@ public class Watchdog extends IOUnit implements SFRModule {
   private static final int WDTHOLD = 0x80;
   private static final int WDTCNTCL = 0x08;
   private static final int WDTMSEL = 0x10;
-  private static final int WDTSSEL = 0x04;
-  private static final int WDTISx = 0x03;
 
   private static final int WATCHDOG_VECTOR = 10;
   private static final int WATCHDOG_INTERRUPT_BIT = 0;
   private static final int WATCHDOG_INTERRUPT_VALUE = 1 << WATCHDOG_INTERRUPT_BIT;
 
-  private static final int[] DELAY = {
-    32768, 8192, 512, 64
-  };
+  // Nominal internal very-low-power oscillator frequency. The CS modules in
+  // current devices document VLO at 9-10 kHz typ.; 10 kHz is used here so
+  // WDT timeouts driven by VLOCLK have plausible duration.
+  private static final int VLOCLK_FREQ_HZ = 10000;
+
+  private final int[] delayTable;
+  private final int wdtISxMask;
+  private final int wdtSSELMask;
+  private final int wdtSSEL_ACLK;
+  private final int wdtSSEL_VLOCLK;
 
   private final int resetVector;
 
@@ -73,8 +78,9 @@ public class Watchdog extends IOUnit implements SFRModule {
   private int delay;
   // The target time for this timer
   private long targetTime;
-  // Timer ACLK
-  private boolean sourceACLK;
+
+  private enum ClockSource { SMCLK, ACLK, VLOCLK }
+  private ClockSource clockSource = ClockSource.SMCLK;
 
   // Timer or WDT mode
   private boolean timerMode;
@@ -98,7 +104,22 @@ public class Watchdog extends IOUnit implements SFRModule {
   };
 
   public Watchdog(MSP430Core cpu, int address) {
+    this(cpu, address, null, 0x03, 0x04, 0x04, -1);
+  }
+
+  public Watchdog(MSP430Core cpu, int address, int[] delayTable, int wdtISxMask) {
+    this(cpu, address, delayTable, wdtISxMask, 0x04, 0x04, -1);
+  }
+
+  public Watchdog(MSP430Core cpu, int address, int[] delayTable, int wdtISxMask,
+                  int wdtSSELMask, int wdtSSEL_ACLK, int wdtSSEL_VLOCLK) {
     super("Watchdog", cpu, cpu.memory, address);
+
+    this.delayTable = delayTable != null ? delayTable : new int[] { 32768, 8192, 512, 64 };
+    this.wdtISxMask = wdtISxMask;
+    this.wdtSSELMask = wdtSSELMask;
+    this.wdtSSEL_ACLK = wdtSSEL_ACLK;
+    this.wdtSSEL_VLOCLK = wdtSSEL_VLOCLK;
 
     resetVector = cpu.MAX_INTERRUPT;
 
@@ -130,10 +151,19 @@ public class Watchdog extends IOUnit implements SFRModule {
 
         // Is it on?
         wdtOn = (value & 0x80) == 0;
-        sourceACLK = (value & WDTSSEL) != 0;
+        int ssel = value & wdtSSELMask;
+        if (ssel == wdtSSEL_ACLK) {
+          clockSource = ClockSource.ACLK;
+        } else if (wdtSSEL_VLOCLK >= 0 && ssel == wdtSSEL_VLOCLK) {
+          clockSource = ClockSource.VLOCLK;
+        } else {
+          // SMCLK selected, or an unsupported source (e.g. X_CLK) -> fall back
+          // to the cycle-counter path so behaviour stays defined.
+          clockSource = ClockSource.SMCLK;
+        }
         if ((value & WDTCNTCL) != 0) {
           // Clear timer => reset the delay
-          delay = DELAY[value & WDTISx];
+          delay = delayTable[value & wdtISxMask];
         }
         timerMode = (value & WDTMSEL) != 0;
         // Start it if it should be started!
@@ -154,13 +184,20 @@ public class Watchdog extends IOUnit implements SFRModule {
   }
 
   private void scheduleTimer() {
-      if (sourceACLK) {
+      switch (clockSource) {
+      case ACLK -> {
           if (DEBUG) log("setting delay in ms (ACLK): " + 1000.0 * delay / cpu.aclkFrq);
           targetTime = cpu.scheduleTimeEventMillis(wdtTrigger, 1000.0 * delay / cpu.aclkFrq);
-      } else {
+      }
+      case VLOCLK -> {
+          if (DEBUG) log("setting delay in ms (VLOCLK): " + 1000.0 * delay / VLOCLK_FREQ_HZ);
+          targetTime = cpu.scheduleTimeEventMillis(wdtTrigger, 1000.0 * delay / VLOCLK_FREQ_HZ);
+      }
+      case SMCLK -> {
           if (DEBUG) log("setting delay in cycles");
           targetTime = cpu.cycles + delay;
           cpu.scheduleCycleEvent(wdtTrigger, targetTime);
+      }
       }
   }
 
