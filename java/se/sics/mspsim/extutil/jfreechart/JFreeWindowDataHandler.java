@@ -40,7 +40,6 @@
  */
 package se.sics.mspsim.extutil.jfreechart;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import org.jfree.data.general.Series;
 import se.sics.mspsim.cli.AbstractWindowDataHandler;

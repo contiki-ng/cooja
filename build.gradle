@@ -18,8 +18,7 @@ java {
 spotless {
   java {
     toggleOffOn()
-    // FIXME: gives unclosed string literal in ScriptRunner.java with spotless 6.23.3.
-    // removeUnusedImports()
+    removeUnusedImports()
     importOrder()
     // trimTrailingWhitespace()
     // cleanthat()
@@ -104,31 +103,34 @@ application {
     '--enable-native-access', 'ALL-UNNAMED']
 }
 
+// Referenced from the junit-jupiter-api dependency so dependabot updates it.
+def junitVersion = '6.1.1'
+
 testing {
   suites {
     configureEach {
       dependencies {
         implementation project()
         // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-        implementation 'org.junit.jupiter:junit-jupiter-api:6.1.1'
-        runtimeOnly 'org.junit.platform:junit-platform-launcher'
+        implementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
       }
     }
     test(JvmTestSuite) {
-      useJUnitJupiter()
+      useJUnitJupiter(junitVersion)
+      targets.configureEach {
+        testTask.configure {
+          reports {
+            junitXml {
+              outputPerTestCase = true
+              mergeReruns = true
+            }
+          }
+          testLogging {
+            events "failed", "passed", "skipped"
+          }
+        }
+      }
     }
-  }
-}
-
-test {
-  reports {
-    junitXml {
-      outputPerTestCase = true
-      mergeReruns = true
-    }
-  }
-  testLogging {
-    events "failed", "passed", "skipped"
   }
 }
 
@@ -171,8 +173,7 @@ tasks.withType(JavaCompile).configureEach {
   options.errorprone.disable('ThreadPriorityCheck')
   options.errorprone.disable('UnusedMethod')
   options.errorprone.disable('UnusedVariable')
-  options.compilerArgs += ['-Werror', '--enable-preview',
-                           "-Aproject=${project.group}/${project.name}"]
+  options.compilerArgs += ['-Werror', "-Aproject=${project.group}/${project.name}"]
 
   String compilerArgs = project.findProperty('compilerArgs') as String
   if (compilerArgs) {
@@ -191,8 +192,13 @@ tasks.register('copyDependencies', Copy) {
   def dir = layout.buildDirectory.dir("libs/lib")
   description = "Copy jar dependencies into ${dir.get()}"
   group = "Build"
-  from configurations.runtimeClasspath.files
+  from configurations.runtimeClasspath
   into dir
+}
+
+// Class-Path for the jar manifests, resolved lazily at execution time.
+def manifestClassPath = configurations.runtimeClasspath.elements.map { files ->
+  '. ' + files.collect { 'lib/' + it.asFile.name }.join(' ')
 }
 
 // Run Cooja with: java <JVM parameters> -jar build/libs/cooja.jar <Cooja parameters>
@@ -200,7 +206,7 @@ jar {
   dependsOn copyDependencies
   manifest {
     attributes 'Main-Class': 'org.contikios.cooja.Main',
-      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' ')
+      'Class-Path': manifestClassPath
   }
 }
 
@@ -210,12 +216,16 @@ tasks.register('fullJar', Jar) {
   archiveClassifier.set('full')
   manifest {
     attributes 'Main-Class': 'org.contikios.cooja.Main',
-      'Class-Path': '. ' + configurations.runtimeClasspath.files.collect { "lib/" + it.getName() }.join(' ')
+      'Class-Path': manifestClassPath
   }
 
   from sourceSets.main.output
 
+  // Files with the same path in several jars are not merged, the first
+  // occurrence is kept. Affects among others META-INF/services files.
   duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  // Dependency module descriptors do not describe the merged jar.
+  exclude 'module-info.class', 'META-INF/versions/*/module-info.class'
   dependsOn configurations.runtimeClasspath
   from {
     configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
