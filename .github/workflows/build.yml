@@ -76,8 +76,17 @@ jobs:
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2.23
         with:
-          key: compilation-${{ matrix.os }}
+          # Key on runner.arch (ARM64/X64), not matrix.os: "macos-26" is a
+          # string prefix of "macos-26-intel", and the ccache action restores
+          # by key prefix, so the arm64 job would otherwise pull in the Intel
+          # job's cache of x86_64 objects and fail to link on arm64.
+          key: compilation-${{ runner.os }}-${{ runner.arch }}
           max-size: 160M
+        env:
+          # Hash the compiler contents rather than its mtime, so a cache that
+          # ever leaks across architectures misses instead of serving a
+          # wrong-arch object.
+          CCACHE_COMPILERCHECK: content
       - name: Run Contiki-NG simulation tests
         run: |
           [ "$(uname)" = "Linux" ] || source ~/.bashrc
