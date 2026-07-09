@@ -200,8 +200,14 @@ public class LogisticLossVisualizerSkin implements VisualizerSkin {
     if (selectedMotes.size() == 1) {
       Mote selectedMote = selectedMotes.toArray(new Mote[0])[0];
       Radio selectedRadio = selectedMote.getInterfaces().getRadio();
+      if (selectedRadio == null) {
+        return;
+      }
       for (Mote m : simulation.getMotes()) {
         if (m == selectedMote) {
+          continue;
+        }
+        if (m.getInterfaces().getRadio() == null) {
           continue;
         }
         double prob
