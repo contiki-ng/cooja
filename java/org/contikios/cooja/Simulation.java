@@ -96,6 +96,8 @@ public final class Simulation {
   private long lastStartSimulationTime;
   private long currentSimulationTime;
 
+  private final HashMap<LogScriptEngine, Long> timeouts = new HashMap<>();
+
   private String title;
 
   private final RadioMedium currentRadioMedium;
@@ -146,6 +148,34 @@ public final class Simulation {
   private final ArrayList<MoteRelation> moteRelations = new ArrayList<>();
   private final EventTriggers<AddRemove, MoteRelation> moteRelationsTriggers = new EventTriggers<>();
   private final SimConfig cfg;
+
+  private final TimeEvent progressEvent = new TimeEvent() {
+    @Override
+    public void execute(long t) {
+      long timeout = 0;
+      for (var tm : timeouts.values()) {
+        timeout = Math.max(tm, timeout);
+      }
+      if (timeout == 0) return;
+      scheduleEvent(this, t + Math.max(1000, timeout / 20));
+      double progress = 1.0 * (t - lastStartSimulationTime) / timeout;
+      long realDuration = System.currentTimeMillis() - lastStartRealTime;
+      double estimatedLeft = 1.0 * realDuration / progress - realDuration;
+      if (estimatedLeft == 0) estimatedLeft = 1;
+      // String.format is still slow(ish) in Java 17 and will show up in performance profiles,
+      // so compute+format the percentage completed and time remaining by hand.
+      int percentage = (int) (100 * progress);
+      double secondsRemaining = estimatedLeft / 1000;
+      long seconds = (long) secondsRemaining;
+      int tenthOfSeconds = (int) Math.round((10 * (secondsRemaining - (double)seconds)));
+      if (tenthOfSeconds == 10) {
+        seconds++;
+        tenthOfSeconds = 0;
+      }
+      logger.info("{}{}% completed, {}{}.{} sec remaining", (percentage < 10 ? " " : ""), percentage,
+              (seconds < 10 ? " " : ""), seconds, tenthOfSeconds);
+    }
+  };
 
   private final TimeEvent delayEvent = new TimeEvent() {
     @Override
@@ -218,6 +248,26 @@ public final class Simulation {
             } while (cmd != null && isAlive);
 
             if (isSimulationRunning) {
+              if (!timeouts.isEmpty()) {
+                Long nextTime = eventQueue.getFirstTime();
+                assert nextTime != null : "Ran out of events in eventQueue";
+                ArrayList<LogScriptEngine> deletes = null;
+                for (var tm : timeouts.entrySet()) {
+                  var timeout = tm.getValue();
+                  if (nextTime >= timeout) { // Check next event for timeout.
+                    tm.getKey().timeout(currentSimulationTime);
+                    // Reset timeout so simulation can continue if restarted.
+                    if (deletes == null) {
+                      deletes = new ArrayList<>();
+                    }
+                    deletes.add(tm.getKey());
+                  }
+                }
+                if (deletes != null) {
+                  final ArrayList<LogScriptEngine> finalDeletes = deletes;
+                  timeouts.entrySet().removeIf(e -> finalDeletes.contains(e.getKey()));
+                }
+              }
               // Handle one simulation event, and update simulation time.
               nextEvent = eventQueue.popFirst();
               assert nextEvent != null : "Ran out of events in eventQueue";
@@ -509,6 +559,25 @@ public final class Simulation {
   public void removeScriptEngine(LogScriptEngine engine) {
     engine.deactivateScript();
     scriptEngines.remove(engine);
+  }
+
+  /** Set the timeout for the script. There is no timeout by default. */
+  void setTimeout(LogScriptEngine engine, long timeout) {
+    invokeSimulationThread(() -> {
+      timeouts.put(engine, timeout);
+      logger.info("Script timeout in " + (timeout / MILLISECOND) + " ms");
+      if (progressEvent.isScheduled()) {
+        progressEvent.remove();
+      }
+      scheduleEvent(progressEvent, currentSimulationTime + Math.max(1000, timeout / 20));
+    });
+  }
+
+  /** Remove the timeout for the script. */
+  void removeTimeout(LogScriptEngine engine) {
+    invokeSimulationThread(() -> {
+      timeouts.remove(engine);
+    });
   }
 
   /**

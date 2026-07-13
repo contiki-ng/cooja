@@ -128,6 +128,19 @@ final class EventQueue {
     queue.clear();
   }
 
+  /** Returns the time of the first scheduled event in the queue, or null when queue is empty. */
+  public Long getFirstTime() {
+    while (!queue.isEmpty()) {
+      var tmp = queue.peek();
+      if (!tmp.event.isScheduled()) {
+        queue.remove(tmp);
+        continue;
+      }
+      return tmp.time;
+    }
+    return null;
+  }
+
   /**
    * Should only be called from simulation thread!
    *
