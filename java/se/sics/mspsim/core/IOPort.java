@@ -197,7 +197,12 @@ public class IOPort extends IOUnit {
             case IE -> ie;
             case IES -> ies;
             case IFG -> ifg;
-            case IN -> in;
+            /*
+             * PxIN reflects the level on the pad. A pin configured as an
+             * output is driven by PxOUT, so those bits read back what was
+             * written; input bits keep the externally driven level.
+             */
+            case IN -> (in & ~dir) | (out & dir);
             case IV_H -> (iv >> 8) & 0xff;
             case IV_L -> iv & 0xff;
             case OUT -> out;
@@ -217,7 +222,7 @@ public class IOPort extends IOUnit {
         case OUT:
             return out;
         case IN:
-            return in;
+            return (in & ~dir) | (out & dir);
         case DIR:
             return dir;
         case REN:
