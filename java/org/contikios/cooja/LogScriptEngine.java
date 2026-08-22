@@ -67,7 +67,6 @@ import org.slf4j.LoggerFactory;
 public class LogScriptEngine {
   private static final Logger logger = LoggerFactory.getLogger(LogScriptEngine.class);
   private static final long DEFAULT_TIMEOUT = 20*60*1000*Simulation.MILLISECOND; /* 1200s = 20 minutes */
-
   private final NashornScriptEngine engine;
 
   private final BufferedWriter logWriter; // For non-GUI tests.
@@ -105,9 +104,6 @@ public class LogScriptEngine {
   private Thread scriptThread; /* Script thread */
   private final Simulation simulation;
 
-  private long timeout;
-  private long startTime;
-  private long startRealTime;
   private final JTextArea textArea;
 
   LogScriptEngine(Simulation simulation, String nashornArgs, int logNumber, JTextArea logTextArea) {
@@ -153,6 +149,14 @@ public class LogScriptEngine {
     /* ... script is now again waiting for script semaphore ... */
   }
 
+  /** Called when the simulation exceeds its timeout. */
+  void timeout(long time) {
+    logger.info("Timeout event @ " + time);
+    engine.put("TIMEOUT", true);
+    stepScript();
+    deactivateScript();
+  }
+
   public void scriptLog(String msg) {
     if (Cooja.isVisualized()) {
       java.awt.EventQueue.invokeLater(() -> {
@@ -186,11 +190,8 @@ public class LogScriptEngine {
    * Deactivate script
    */
   public void deactivateScript() {
-    timeoutEvent.remove();
-    timeoutProgressEvent.remove();
-
+    simulation.removeTimeout(this);
     engine.put("SHUTDOWN", true);
-
     try {
       if (semaphoreScript != null) {
         semaphoreScript.release(100);
@@ -224,11 +225,11 @@ public class LogScriptEngine {
    *  Does not alter internal engine state that is difficult to undo. */
   public CompiledScript compileScript(String code) throws ScriptException {
     ScriptParser parser = new ScriptParser(code);
-    timeout = parser.getTimeoutTime();
+    var timeout = parser.getTimeoutTime();
     if (timeout < 0) {
       timeout = DEFAULT_TIMEOUT;
     }
-    logger.info("Script timeout in " + (timeout/Simulation.MILLISECOND) + " ms");
+    simulation.setTimeout(this, timeout);
     return engine.compile(parser.getJSCode());
   }
 
@@ -279,48 +280,8 @@ public class LogScriptEngine {
       deactivateScript();
       return false;
     }
-    startRealTime = System.currentTimeMillis();
-    startTime = simulation.getSimulationTime();
-    simulation.invokeSimulationThread(() -> {
-      simulation.scheduleEvent(timeoutProgressEvent, startTime + Math.max(1000, timeout / 20));
-      simulation.scheduleEvent(timeoutEvent, startTime + timeout);
-    });
     return true;
   }
-
-  private final TimeEvent timeoutEvent = new TimeEvent() {
-    @Override
-    public void execute(long t) {
-      logger.info("Timeout event @ " + t);
-      engine.put("TIMEOUT", true);
-      stepScript();
-      deactivateScript();
-      simulation.stopSimulation(); // stepScript will set return value.
-    }
-  };
-  private final TimeEvent timeoutProgressEvent = new TimeEvent() {
-    @Override
-    public void execute(long t) {
-      simulation.scheduleEvent(this, t + Math.max(1000, timeout / 20));
-
-      double progress = 1.0*(t - startTime)/timeout;
-      long realDuration = System.currentTimeMillis()-startRealTime;
-      double estimatedLeft = 1.0*realDuration/progress - realDuration;
-      if (estimatedLeft == 0) estimatedLeft = 1;
-      // String.format is still slow(ish) in Java 17 and will show up in performance profiles,
-      // so compute+format the percentage completed and time remaining by hand.
-      int percentage = (int) (100 * progress);
-      double secondsRemaining = estimatedLeft / 1000;
-      long seconds = (long) secondsRemaining;
-      int tenthOfSeconds = (int) Math.round((10 * (secondsRemaining - (double)seconds)));
-      if (tenthOfSeconds == 10) {
-        seconds++;
-        tenthOfSeconds = 0;
-      }
-      logger.info("{}{}% completed, {}{}.{} sec remaining", (percentage < 10 ? " " : ""), percentage,
-              (seconds < 10 ? " " : ""), seconds, tenthOfSeconds);
-    }
-  };
 
   private final ScriptLog scriptLog = new ScriptLog() {
     @Override
