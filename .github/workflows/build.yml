@@ -74,7 +74,7 @@ jobs:
         run: ./gradlew build jar -Perrorprone
 
       - name: ccache
-        uses: hendrikmuhs/ccache-action@v1.2.23
+        uses: hendrikmuhs/ccache-action@v1.2.24
         with:
           # Key on runner.arch (ARM64/X64), not matrix.os: "macos-26" is a
           # string prefix of "macos-26-intel", and the ccache action restores
