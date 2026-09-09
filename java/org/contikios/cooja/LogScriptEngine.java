@@ -75,7 +75,8 @@ public class LogScriptEngine {
   private final LogOutputListener logOutputListener = new LogOutputListener() {
     @Override
     public void newLogOutput(LogOutputEvent ev) {
-      if (scriptThread == null || !scriptThread.isAlive()) {
+      var thread = scriptThread;
+      if (thread == null || !thread.isAlive()) {
         return;
       }
 
@@ -100,9 +101,13 @@ public class LogScriptEngine {
     }
   };
 
-  private Semaphore semaphoreScript; /* Semaphores blocking script/simulation */
-  private Semaphore semaphoreSim;
-  private Thread scriptThread; /* Script thread */
+  /* Semaphores blocking script/simulation. Written under stateLock, read lock-free. */
+  private volatile Semaphore semaphoreScript;
+  private volatile Semaphore semaphoreSim;
+  private volatile Thread scriptThread; /* Script thread */
+  /* Guards the hand-over of the fields above between the script thread, the
+   * simulation thread, and the EDT. Never held while blocking. */
+  private final Object stateLock = new Object();
   private final Simulation simulation;
 
   private long timeout;
@@ -186,38 +191,48 @@ public class LogScriptEngine {
    * Deactivate script
    */
   public void deactivateScript() {
-    timeoutEvent.remove();
-    timeoutProgressEvent.remove();
+    // TimeEvents are owned by the simulation thread.
+    if (simulation.isSimulationThread()) {
+      timeoutEvent.remove();
+      timeoutProgressEvent.remove();
+    } else {
+      simulation.invokeSimulationThread(() -> {
+        timeoutEvent.remove();
+        timeoutProgressEvent.remove();
+      });
+    }
 
-    engine.put("SHUTDOWN", true);
-
-    try {
-      if (semaphoreScript != null) {
-        semaphoreScript.release(100);
-      }
-    } catch (Exception e) {
-    } finally {
+    // This method is called concurrently by the script thread when the script
+    // finishes and by the simulation thread (timeout) or the EDT (GUI), so the
+    // state hand-over must be atomic. Releasing the semaphores wakes the other
+    // thread, hence everything is nulled under the lock.
+    final Thread thread;
+    synchronized (stateLock) {
+      engine.put("SHUTDOWN", true);
+      var semScript = semaphoreScript;
       semaphoreScript = null;
-    }
-    try {
-      if (semaphoreSim != null) {
-        semaphoreSim.release(100);
+      if (semScript != null) {
+        semScript.release(100);
       }
-    } catch (Exception e) {
-    } finally {
+      var semSim = semaphoreSim;
       semaphoreSim = null;
+      if (semSim != null) {
+        semSim.release(100);
+      }
+      thread = scriptThread;
+      scriptThread = null;
     }
 
-    if (scriptThread != null &&
-        scriptThread != Thread.currentThread() /* XXX May deadlock */ ) {
+    // Join outside the lock: the script thread calls deactivateScript() itself
+    // before it exits, so it must be able to take the lock while being joined.
+    if (thread != null && thread != Thread.currentThread()) {
       try {
-        scriptThread.join();
+        thread.join();
       } catch (InterruptedException e) {
-        e.printStackTrace();
-        // FIXME: Something called interrupt() on this thread, computation needs to stop.
+        Thread.currentThread().interrupt();
+        logger.error("Interrupted while waiting for script thread to finish", e);
       }
     }
-    scriptThread = null;
   }
 
   /** Take a user script and return a compiled script that can be activated.
@@ -268,8 +283,11 @@ public class LogScriptEngine {
       if (rv != -1) {
         scriptLog(rv == 0 ? "TEST OK\n" : "TEST FAILED\n");
       }
-      deactivateScript();
+      // Record the return value before deactivateScript() wakes the simulation
+      // thread, which may itself stop the simulation (timeout) and would
+      // otherwise make stopSimulation(rv) a no-op because it is no longer running.
       simulation.stopSimulation(rv > 0 ? rv : null);
+      deactivateScript();
     }, "script");
     scriptThread.start();
     try {
@@ -349,7 +367,8 @@ public class LogScriptEngine {
       final TimeEvent generateEvent = new TimeEvent() {
         @Override
         public void execute(long t) {
-          if (scriptThread == null || !scriptThread.isAlive()) {
+          var thread = scriptThread;
+          if (thread == null || !thread.isAlive()) {
             logger.info("script thread not alive. try deactivating script.");
             return;
           }
