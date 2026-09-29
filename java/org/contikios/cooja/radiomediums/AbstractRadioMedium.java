@@ -38,6 +38,7 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import org.contikios.cooja.RadioConnection;
 import org.contikios.cooja.RadioMedium;
+import org.contikios.cooja.RadioPacket;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.TimeEvent;
 import org.contikios.cooja.interfaces.CustomDataRadio;
@@ -163,14 +164,22 @@ public abstract class AbstractRadioMedium implements RadioMedium {
           var newConnection = createConnections(radio);
           if (newConnection != null) {
             activeConnections.add(newConnection);
+            /* Radio packet */
+            RadioPacket packet = radio.getLastPacketTransmitted();
+            if (packet == null) {
+              /* we are not the sender */
+              return;
+            }
             for (var r : newConnection.getAllDestinations()) {
               if (newConnection.getDestinationDelay(r) == 0) {
+                r.setReceivedPacket(packet);
                 r.signalReceptionStart();
               } else {
                 /* EXPERIMENTAL: Simulating propagation delay */
                 simulation.scheduleEvent(new TimeEvent() {
                   @Override
                   public void execute(long t) {
+                    r.setReceivedPacket(packet);
                     r.signalReceptionStart();
                   }
                 }, simulation.getSimulationTime() + newConnection.getDestinationDelay(r));
@@ -192,20 +201,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
           lastConnection = connection;
           COUNTER_TX++;
           for (var dstRadio : connection.getAllDestinations()) {
-            if (connection.getDestinationDelay(dstRadio) == 0) {
-              dstRadio.signalReceptionEnd();
-            } else {
-              /* EXPERIMENTAL: Simulating propagation delay */
-              final var delayedRadio = dstRadio;
-              var delayedEvent = new TimeEvent() {
-                @Override
-                public void execute(long t) {
-                  delayedRadio.signalReceptionEnd();
-                }
-              };
-              simulation.scheduleEvent(delayedEvent,
-                      simulation.getSimulationTime() + connection.getDestinationDelay(dstRadio));
-            }
+          	dstRadio.signalReceptionEnd();
           }
           COUNTER_RX += connection.getDestinations().length;
           COUNTER_INTERFERED += connection.getInterfered().length;
@@ -258,40 +254,7 @@ public abstract class AbstractRadioMedium implements RadioMedium {
 
         }
         break;
-        case PACKET_TRANSMITTED: {
-          var connection = getActiveConnectionFrom(radio);
-          if (connection == null) {
-            return; // SilentRadioMedium will return here.
-          }
-          var packet = radio.getLastPacketTransmitted();
-          if (packet == null) {
-            logger.error("No radio packet to forward");
-            return;
-          }
-
-          for (var dstRadio : connection.getAllDestinations()) {
-            if (radio instanceof CustomDataRadio customDataRadio && dstRadio instanceof CustomDataRadio customDstRadio &&
-                    customDstRadio.canReceiveFrom(customDataRadio)) {
-              continue; // Radios instead communicate via custom data objects.
-            }
-            // Forward radio packet.
-            if (connection.getDestinationDelay(dstRadio) == 0) {
-              dstRadio.setReceivedPacket(packet);
-            } else {
-              /* EXPERIMENTAL: Simulating propagation delay */
-              final var delayedRadio = dstRadio;
-              final var delayedPacket = packet;
-              var delayedEvent = new TimeEvent() {
-                @Override
-                public void execute(long t) {
-                  delayedRadio.setReceivedPacket(delayedPacket);
-                }
-              };
-              simulation.scheduleEvent(delayedEvent,
-                      simulation.getSimulationTime() + connection.getDestinationDelay(dstRadio));
-            }
-          }
-        }
+        case PACKET_TRANSMITTED:
         break;
         default:
           logger.error("Unsupported radio event: " + event);

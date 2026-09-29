@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: contiki-ng/contiki-ng
+          ref: refs/pull/3274/head
           path: contiki-ng
       - uses: actions/checkout@v7
         with:
