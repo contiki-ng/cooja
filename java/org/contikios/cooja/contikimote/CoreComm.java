@@ -117,9 +117,19 @@ class CoreComm {
       }
     } else {
       dataStart = symbols.find("cooja_dataStart").get().address();
-      dataSize = (int)symbols.find("cooja_dataSize").get().address();
       bssStart = symbols.find("cooja_bssStart").get().address();
-      bssSize = (int)symbols.find("cooja_bssSize").get().address();
+      // Some runtime linkers, FreeBSD's among them, add the load address to absolute
+      // symbols such as the sizes, so take the sizes from the section ends where the
+      // firmware has them.
+      var dataEnd = symbols.find("cooja_dataEnd");
+      var bssEnd = symbols.find("cooja_bssEnd");
+      if (dataEnd.isPresent() && bssEnd.isPresent()) {
+        dataSize = (int)(dataEnd.get().address() - dataStart);
+        bssSize = (int)(bssEnd.get().address() - bssStart);
+      } else {
+        dataSize = (int)symbols.find("cooja_dataSize").get().address();
+        bssSize = (int)symbols.find("cooja_bssSize").get().address();
+      }
       commonStart = commonSize = 0;
     }
   }
