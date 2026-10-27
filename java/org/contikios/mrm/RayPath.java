@@ -81,18 +81,13 @@ class RayPath {
 
     var retVal = new StringBuilder();
     for (var currentType : types) {
-      if (currentType == RayData.RayType.DESTINATION)
-        retVal.append(" DEST ");
-      else if (currentType == RayData.RayType.DIFFRACTION)
-        retVal.append(" DIFF ");
-      else if (currentType == RayData.RayType.ORIGIN)
-        retVal.append(" ORIG ");
-      else if (currentType == RayData.RayType.REFLECTION)
-        retVal.append(" REFL ");
-      else if (currentType == RayData.RayType.REFRACTION)
-        retVal.append(" REFR ");
-      else
-        retVal.append(" ???? ");
+      retVal.append(switch (currentType) {
+        case DESTINATION -> " DEST ";
+        case DIFFRACTION -> " DIFF ";
+        case ORIGIN -> " ORIG ";
+        case REFLECTION -> " REFL ";
+        case REFRACTION -> " REFR ";
+      });
     }
     return retVal.toString();
     

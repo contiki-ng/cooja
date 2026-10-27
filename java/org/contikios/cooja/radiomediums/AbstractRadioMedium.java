@@ -242,12 +242,11 @@ public abstract class AbstractRadioMedium implements RadioMedium {
               customDstRadio.receiveCustomData(data);
             } else {
               /* EXPERIMENTAL: Simulating propagation delay */
-              final var delayedRadio = (CustomDataRadio) dstRadio;
               final var delayedData = data;
               var delayedEvent = new TimeEvent() {
                 @Override
                 public void execute(long t) {
-                  delayedRadio.receiveCustomData(delayedData);
+                  customDstRadio.receiveCustomData(delayedData);
                 }
               };
               simulation.scheduleEvent(delayedEvent,

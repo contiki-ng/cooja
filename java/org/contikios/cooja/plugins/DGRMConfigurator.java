@@ -107,21 +107,26 @@ public class DGRMConfigurator extends VisPlugin {
       @Override
       public TableCellEditor getCellEditor(int row, int column) {
 				combo.removeAllItems();
-        if (column == IDX_RATIO) {
-          for (double d=1.0; d >= 0.0; d -= 0.1) {
-            combo.addItem(d);
+        switch (column) {
+          case IDX_RATIO -> {
+            for (double d=1.0; d >= 0.0; d -= 0.1) {
+              combo.addItem(d);
+            }
           }
-        } else if (column == IDX_SIGNAL) {
-          for (double d=AbstractRadioMedium.SS_STRONG; d >= AbstractRadioMedium.SS_WEAK; d -= 1) {
-            combo.addItem((int) d);
+          case IDX_SIGNAL -> {
+            for (double d=AbstractRadioMedium.SS_STRONG; d >= AbstractRadioMedium.SS_WEAK; d -= 1) {
+              combo.addItem((int) d);
+            }
           }
-        } else if (column == IDX_LQI) {
+          case IDX_LQI -> {
             for (int d = 110; d > 50; d -= 5) {
               combo.addItem(d);
             }
-        } else if (column == IDX_DELAY) {
-          for (double d=0; d <= 5; d++) {
-            combo.addItem(d);
+          }
+          case IDX_DELAY -> {
+            for (double d=0; d <= 5; d++) {
+              combo.addItem(d);
+            }
           }
         }
         return super.getCellEditor(row, column);
@@ -411,19 +416,13 @@ public class DGRMConfigurator extends VisPlugin {
 
       DirectedGraphMedium.Edge edge = radioMedium.getEdges()[row];
       try {
-      	if (column == IDX_RATIO) {
-          edge.superDest.ratio = ((Number) value).doubleValue();
-      	} else if (column == IDX_SIGNAL) {
-          edge.superDest.signal = ((Number) value).doubleValue();
-      	} else if (column == IDX_DELAY) {
-          edge.superDest.delay =
-      			((Number)value).longValue() * Simulation.MILLISECOND;
-      	} else if (column == IDX_LQI) {
-          edge.superDest.lqi = ((Number) value).intValue();
-      	} 
-      	else {
-          super.setValueAt(value, row, column);
-      	}
+        switch (column) {
+          case IDX_RATIO -> edge.superDest.ratio = ((Number) value).doubleValue();
+          case IDX_SIGNAL -> edge.superDest.signal = ((Number) value).doubleValue();
+          case IDX_DELAY -> edge.superDest.delay = ((Number) value).longValue() * Simulation.MILLISECOND;
+          case IDX_LQI -> edge.superDest.lqi = ((Number) value).intValue();
+          default -> super.setValueAt(value, row, column);
+        }
       	radioMedium.requestEdgeAnalysis();
       } catch (ClassCastException e) {
       }

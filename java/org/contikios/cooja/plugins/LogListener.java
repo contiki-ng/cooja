@@ -417,16 +417,13 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       @Override
       public Object getValueAt(int row, int col) {
         LogData log = logs.get(row);
-        if (col == COLUMN_TIME) {
-          return log.getTime();
-        } else if (col == COLUMN_FROM) {
-          return log.getID();
-        } else if (col == COLUMN_DATA) {
-          return log.ev.getMessage();
-        } else if (col == COLUMN_CONCAT) {
-          return log.getID() + ' ' + log.ev.getMessage();
-        }
-        return null;
+        return switch (col) {
+          case COLUMN_TIME -> log.getTime();
+          case COLUMN_FROM -> log.getID();
+          case COLUMN_DATA -> log.ev.getMessage();
+          case COLUMN_CONCAT -> log.getID() + ' ' + log.ev.getMessage();
+          default -> null;
+        };
       }
     };
 
@@ -936,16 +933,13 @@ public class LogListener extends VisPlugin implements HasQuickHelp {
       }
       @Override
       public Object getValue(int index) {
-        if (index == COLUMN_TIME) {
-          return ld.getTime();
-        } else if (index == COLUMN_FROM) {
-          return ld.getID();
-        } else if (index == COLUMN_DATA) {
-          return ld.ev.getMessage();
-        } else if (index == COLUMN_CONCAT) {
-          return ld.getID() + ' ' + ld.ev.getMessage();
-        }
-        return null;
+        return switch (index) {
+          case COLUMN_TIME -> ld.getTime();
+          case COLUMN_FROM -> ld.getID();
+          case COLUMN_DATA -> ld.ev.getMessage();
+          case COLUMN_CONCAT -> ld.getID() + ' ' + ld.ev.getMessage();
+          default -> null;
+        };
       }
       @Override
       public Integer getIdentifier() {
