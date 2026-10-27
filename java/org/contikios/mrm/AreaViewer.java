@@ -753,32 +753,35 @@ public class AreaViewer extends VisPlugin {
           g.drawLine(i, 0, i, height);
         }
 
-        if (dataTypeToVisualize == ChannelModel.TransmissionData.PROB_OF_RECEPTION) {
-          NumberFormat formatter = DecimalFormat.getPercentInstance();
-          g.setColor(Color.BLACK);
-          g.drawString(formatter.format(coloringLowest), 3, textHeight);
-          String stringToDraw = formatter.format(coloringHighest);
-          g.drawString(stringToDraw, width - g.getFontMetrics().stringWidth(stringToDraw) - 3, textHeight);
-        } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH ||
-            dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH_VAR ) {
-          NumberFormat formatter = DecimalFormat.getNumberInstance();
-          g.setColor(Color.BLACK);
-          g.drawString(formatter.format(coloringLowest) + "dBm", 3, textHeight);
-          String stringToDraw = formatter.format(coloringHighest) + "dBm";
-          g.drawString(stringToDraw, width - g.getFontMetrics().stringWidth(stringToDraw) - 3, textHeight);
-        } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR ||
-            dataTypeToVisualize == ChannelModel.TransmissionData.SNR_VAR) {
-          NumberFormat formatter = DecimalFormat.getNumberInstance();
-          g.setColor(Color.BLACK);
-          g.drawString(formatter.format(coloringLowest) + "dB", 3, textHeight);
-          String stringToDraw = formatter.format(coloringHighest) + "dB";
-          g.drawString(stringToDraw, width - g.getFontMetrics().stringWidth(stringToDraw) - 3, textHeight);
-        } else if (dataTypeToVisualize == ChannelModel.TransmissionData.DELAY_SPREAD_RMS) {
-          NumberFormat formatter = DecimalFormat.getNumberInstance();
-          g.setColor(Color.BLACK);
-          g.drawString(formatter.format(coloringLowest) + "us", 3, textHeight);
-          String stringToDraw = formatter.format(coloringHighest) + "us";
-          g.drawString(stringToDraw, width - g.getFontMetrics().stringWidth(stringToDraw) - 3, textHeight);
+        switch (dataTypeToVisualize) {
+          case PROB_OF_RECEPTION -> {
+            NumberFormat formatter = DecimalFormat.getPercentInstance();
+            g.setColor(Color.BLACK);
+            g.drawString(formatter.format(coloringLowest), 3, textHeight);
+            String stringToDraw = formatter.format(coloringHighest);
+            g.drawString(stringToDraw, width - g.getFontMetrics().stringWidth(stringToDraw) - 3, textHeight);
+          }
+          case SIGNAL_STRENGTH, SIGNAL_STRENGTH_VAR -> {
+            NumberFormat formatter = DecimalFormat.getNumberInstance();
+            g.setColor(Color.BLACK);
+            g.drawString(formatter.format(coloringLowest) + "dBm", 3, textHeight);
+            String stringToDraw = formatter.format(coloringHighest) + "dBm";
+            g.drawString(stringToDraw, width - g.getFontMetrics().stringWidth(stringToDraw) - 3, textHeight);
+          }
+          case SNR, SNR_VAR -> {
+            NumberFormat formatter = DecimalFormat.getNumberInstance();
+            g.setColor(Color.BLACK);
+            g.drawString(formatter.format(coloringLowest) + "dB", 3, textHeight);
+            String stringToDraw = formatter.format(coloringHighest) + "dB";
+            g.drawString(stringToDraw, width - g.getFontMetrics().stringWidth(stringToDraw) - 3, textHeight);
+          }
+          case DELAY_SPREAD_RMS -> {
+            NumberFormat formatter = DecimalFormat.getNumberInstance();
+            g.setColor(Color.BLACK);
+            g.drawString(formatter.format(coloringLowest) + "us", 3, textHeight);
+            String stringToDraw = formatter.format(coloringHighest) + "us";
+            g.drawString(stringToDraw, width - g.getFontMetrics().stringWidth(stringToDraw) - 3, textHeight);
+          }
         }
 
       }
@@ -1523,72 +1526,79 @@ public class AreaViewer extends VisPlugin {
                 return 0;
               }
             };
-            if (dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH) {
-              // Attenuate
-              double[] signalStrength = currentChannelModel.getReceivedSignalStrength(txPair);
-              // Collecting signal strengths
-              if (signalStrength[0] < lowestImageValue) {
-                lowestImageValue = signalStrength[0];
+            switch (dataTypeToVisualize) {
+              case SIGNAL_STRENGTH -> {
+                // Attenuate
+                double[] signalStrength = currentChannelModel.getReceivedSignalStrength(txPair);
+                // Collecting signal strengths
+                if (signalStrength[0] < lowestImageValue) {
+                  lowestImageValue = signalStrength[0];
+                }
+                if (signalStrength[0] > highestImageValue) {
+                  highestImageValue = signalStrength[0];
+                }
+                imageValues[x][y] = signalStrength[0];
               }
-              if (signalStrength[0] > highestImageValue) {
-                highestImageValue = signalStrength[0];
+              case SIGNAL_STRENGTH_VAR -> {
+                // Attenuate
+                double[] signalStrength = currentChannelModel.getReceivedSignalStrength(txPair);
+                // Collecting variances
+                if (signalStrength[1] < lowestImageValue) {
+                  lowestImageValue = signalStrength[1];
+                }
+                if (signalStrength[1] > highestImageValue) {
+                  highestImageValue = signalStrength[1];
+                }
+                imageValues[x][y] = signalStrength[1];
               }
-              imageValues[x][y] = signalStrength[0];
-            } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SIGNAL_STRENGTH_VAR) {
-              // Attenuate
-              double[] signalStrength = currentChannelModel.getReceivedSignalStrength(txPair);
-              // Collecting variances
-              if (signalStrength[1] < lowestImageValue) {
-                lowestImageValue = signalStrength[1];
+              case SNR -> {
+                // Get signal-to-noise ratio
+                double[] snr = currentChannelModel.getSINR(txPair, -Double.MAX_VALUE);
+                // Collecting signal-to-noise ratio
+                if (snr[0] < lowestImageValue) {
+                  lowestImageValue = snr[0];
+                }
+                if (snr[0] > highestImageValue) {
+                  highestImageValue = snr[0];
+                }
+                imageValues[x][y] = snr[0];
               }
-              if (signalStrength[1] > highestImageValue) {
-                highestImageValue = signalStrength[1];
+              case SNR_VAR -> {
+                // Get signal-to-noise ratio
+                double[] snr = currentChannelModel.getSINR(txPair, -Double.MAX_VALUE);
+                // Collecting variances
+                if (snr[1] < lowestImageValue) {
+                  lowestImageValue = snr[1];
+                }
+                if (snr[1] > highestImageValue) {
+                  highestImageValue = snr[1];
+                }
+                imageValues[x][y] = snr[1];
               }
-              imageValues[x][y] = signalStrength[1];
-            } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR) {
-              // Get signal-to-noise ratio
-              double[] snr = currentChannelModel.getSINR(txPair, -Double.MAX_VALUE);
-              // Collecting signal-to-noise ratio
-              if (snr[0] < lowestImageValue) {
-                lowestImageValue = snr[0];
+              case PROB_OF_RECEPTION -> {
+                // Get probability of receiving a packet TODO What size? Does it matter?
+                double probability = currentChannelModel.getProbability(txPair, -Double.MAX_VALUE)[0];
+                // Collecting variances
+                if (probability < lowestImageValue) {
+                  lowestImageValue = probability;
+                }
+                if (probability > highestImageValue) {
+                  highestImageValue = probability;
+                }
+                imageValues[x][y] = probability;
               }
-              if (snr[0] > highestImageValue) {
-                highestImageValue = snr[0];
+              case DELAY_SPREAD_RMS -> {
+                // Get RMS delay spread of receiving a packet
+                double rmsDelaySpread = currentChannelModel.getRMSDelaySpread(txPair);
+                // Collecting variances
+                if (rmsDelaySpread < lowestImageValue) {
+                  lowestImageValue = rmsDelaySpread;
+                }
+                if (rmsDelaySpread > highestImageValue) {
+                  highestImageValue = rmsDelaySpread;
+                }
+                imageValues[x][y] = rmsDelaySpread;
               }
-              imageValues[x][y] = snr[0];
-            } else if (dataTypeToVisualize == ChannelModel.TransmissionData.SNR_VAR) {
-              // Get signal-to-noise ratio
-              double[] snr = currentChannelModel.getSINR(txPair, -Double.MAX_VALUE);
-              // Collecting variances
-              if (snr[1] < lowestImageValue) {
-                lowestImageValue = snr[1];
-              }
-              if (snr[1] > highestImageValue) {
-                highestImageValue = snr[1];
-              }
-              imageValues[x][y] = snr[1];
-            } else if (dataTypeToVisualize == ChannelModel.TransmissionData.PROB_OF_RECEPTION) {
-              // Get probability of receiving a packet TODO What size? Does it matter?
-              double probability = currentChannelModel.getProbability(txPair, -Double.MAX_VALUE)[0];
-              // Collecting variances
-              if (probability < lowestImageValue) {
-                lowestImageValue = probability;
-              }
-              if (probability > highestImageValue) {
-                highestImageValue = probability;
-              }
-              imageValues[x][y] = probability;
-            } else if (dataTypeToVisualize == ChannelModel.TransmissionData.DELAY_SPREAD_RMS) {
-              // Get RMS delay spread of receiving a packet
-              double rmsDelaySpread = currentChannelModel.getRMSDelaySpread(txPair);
-              // Collecting variances
-              if (rmsDelaySpread < lowestImageValue) {
-                lowestImageValue = rmsDelaySpread;
-              }
-              if (rmsDelaySpread > highestImageValue) {
-                highestImageValue = rmsDelaySpread;
-              }
-              imageValues[x][y] = rmsDelaySpread;
             }
 
             // Check if the dialog has been canceled.

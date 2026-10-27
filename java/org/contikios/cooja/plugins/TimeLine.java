@@ -1806,32 +1806,21 @@ public class TimeLine extends VisPlugin implements HasQuickHelp {
     }
     @Override
     public Color getEventColor(TimeLine timeLine) {
-      if (state == RXTXRadioEvent.IDLE) {
-        return null;
-      } else if (state == RXTXRadioEvent.TRANSMITTING) {
-        return Color.BLUE;
-      } else if (state == RXTXRadioEvent.RECEIVING) {
-        return Color.GREEN;
-      } else if (state == RXTXRadioEvent.INTERFERED) {
-        return Color.RED;
-      } else {
-        logger.error("Unknown RXTX event");
-        return null;
-      }
+      return switch (state) {
+        case IDLE -> null;
+        case TRANSMITTING -> Color.BLUE;
+        case RECEIVING -> Color.GREEN;
+        case INTERFERED -> Color.RED;
+      };
     }
     @Override
     public String toString() {
-      if (state == RXTXRadioEvent.IDLE) {
-        return "Radio idle from " + time + "<br>";
-      } else if (state == RXTXRadioEvent.TRANSMITTING) {
-      	return "Radio transmitting from " + time + "<br>";
-      } else if (state == RXTXRadioEvent.RECEIVING) {
-        return "Radio receiving from " + time + "<br>";
-      } else if (state == RXTXRadioEvent.INTERFERED) {
-        return "Radio interfered from " + time + "<br>";
-      } else {
-        return "Unknown event<br>";
-      }
+      return switch (state) {
+        case IDLE -> "Radio idle from " + time + "<br>";
+        case TRANSMITTING -> "Radio transmitting from " + time + "<br>";
+        case RECEIVING -> "Radio receiving from " + time + "<br>";
+        case INTERFERED -> "Radio interfered from " + time + "<br>";
+      };
     }
   }
 

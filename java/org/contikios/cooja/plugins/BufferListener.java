@@ -292,18 +292,14 @@ public class BufferListener extends VisPlugin {
       @Override
       public Object getValueAt(int row, int col) {
         BufferAccess log = logs.get(row);
-        if (col == COLUMN_TIME) {
-          return log.getTime(formatTimeString, hasHours);
-        } else if (col == COLUMN_FROM) {
-          return log.getID();
-        } else if (col == COLUMN_TYPE) {
-          return log.getType();
-        } else if (col == COLUMN_DATA) {
-          return parser.parse(log);
-        } else if (col == COLUMN_SOURCE) {
-          return log.getSource();
-        }
-        return null;
+        return switch (col) {
+          case COLUMN_TIME -> log.getTime(formatTimeString, hasHours);
+          case COLUMN_FROM -> log.getID();
+          case COLUMN_TYPE -> log.getType();
+          case COLUMN_DATA -> parser.parse(log);
+          case COLUMN_SOURCE -> log.getSource();
+          default -> null;
+        };
       }
     };
 

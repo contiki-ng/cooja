@@ -207,42 +207,48 @@ public class RadioLogger extends VisPlugin {
           return "";
         }
         RadioConnectionLog conn = connections.get(row);
-        if (col == COLUMN_NO) {
-          if (!showDuplicates && conn.hides > 0) {
-            return (row + 1) + "+" + conn.hides;
-          }
-          return String.valueOf(row + 1);
-        } else if (col == COLUMN_TIME) {
-          if (formatTimeString) {
-            return LogListener.getFormattedTime(conn.startTime);
-          }
-          return Long.toString(conn.startTime / Simulation.MILLISECOND);
-        } else if (col == COLUMN_FROM) {
-          return String.valueOf(conn.connection.getSource().getMote().getID());
-        } else if (col == COLUMN_TO) {
-          Radio[] dests = conn.connection.getDestinations();
-          if (dests.length == 0) {
-            return "-";
-          }
-          if (dests.length == 1) {
-            return String.valueOf(dests[0].getMote().getID());
-          }
-          if (dests.length == 2) {
-            return String.valueOf(dests[0].getMote().getID()) + ',' + dests[1].getMote().getID();
-          }
-          return "[" + dests.length + " d]";
-        } else if (col == COLUMN_DATA) {
-          if (conn.data == null) {
-            prepareDataString(connections.get(row));
-          }
-          if (aliases != null) {
-            /* Check if alias exists */
-            String alias = aliases.getProperty(conn.data);
-            if (alias != null) {
-              return alias;
+        switch (col) {
+          case COLUMN_NO -> {
+            if (!showDuplicates && conn.hides > 0) {
+              return (row + 1) + "+" + conn.hides;
             }
+            return String.valueOf(row + 1);
           }
-          return conn.data;
+          case COLUMN_TIME -> {
+            if (formatTimeString) {
+              return LogListener.getFormattedTime(conn.startTime);
+            }
+            return Long.toString(conn.startTime / Simulation.MILLISECOND);
+          }
+          case COLUMN_FROM -> {
+            return String.valueOf(conn.connection.getSource().getMote().getID());
+          }
+          case COLUMN_TO -> {
+            Radio[] dests = conn.connection.getDestinations();
+            if (dests.length == 0) {
+              return "-";
+            }
+            if (dests.length == 1) {
+              return String.valueOf(dests[0].getMote().getID());
+            }
+            if (dests.length == 2) {
+              return String.valueOf(dests[0].getMote().getID()) + ',' + dests[1].getMote().getID();
+            }
+            return "[" + dests.length + " d]";
+          }
+          case COLUMN_DATA -> {
+            if (conn.data == null) {
+              prepareDataString(connections.get(row));
+            }
+            if (aliases != null) {
+              /* Check if alias exists */
+              String alias = aliases.getProperty(conn.data);
+              if (alias != null) {
+                return alias;
+              }
+            }
+            return conn.data;
+          }
         }
         return null;
       }
@@ -289,38 +295,43 @@ public class RadioLogger extends VisPlugin {
 
         /* TODO This entry may represent several hidden connections */
         RadioConnectionLog conn = connections.get(modelRowIndex);
-        if (modelColumnIndex == COLUMN_TIME) {
-          return "<html>"
-                  + "Start time (us): " + conn.startTime
-                  + "<br>"
-                  + "End time (us): " + conn.endTime
-                  + "<br><br>"
-                  + "Duration (us): " + (conn.endTime - conn.startTime)
-                  + "</html>";
-        } else if (modelColumnIndex == COLUMN_FROM) {
-          return conn.connection.getSource().getMote().toString();
-        } else if (modelColumnIndex == COLUMN_TO) {
-          Radio[] dests = conn.connection.getDestinations();
-          if (dests.length == 0) {
-            return "No destinations";
+        switch (modelColumnIndex) {
+          case COLUMN_TIME -> {
+            return "<html>"
+                    + "Start time (us): " + conn.startTime
+                    + "<br>"
+                    + "End time (us): " + conn.endTime
+                    + "<br><br>"
+                    + "Duration (us): " + (conn.endTime - conn.startTime)
+                    + "</html>";
           }
-          StringBuilder tip = new StringBuilder();
-          tip.append("<html>");
-          if (dests.length == 1) {
-            tip.append("One destination:<br>");
-          } else {
-            tip.append(dests.length).append(" destinations:<br>");
+          case COLUMN_FROM -> {
+            return conn.connection.getSource().getMote().toString();
           }
-          for (Radio radio: dests) {
-            tip.append(radio.getMote()).append("<br>");
+          case COLUMN_TO -> {
+            Radio[] dests = conn.connection.getDestinations();
+            if (dests.length == 0) {
+              return "No destinations";
+            }
+            StringBuilder tip = new StringBuilder();
+            tip.append("<html>");
+            if (dests.length == 1) {
+              tip.append("One destination:<br>");
+            } else {
+              tip.append(dests.length).append(" destinations:<br>");
+            }
+            for (Radio radio: dests) {
+              tip.append(radio.getMote()).append("<br>");
+            }
+            tip.append("</html>");
+            return tip.toString();
           }
-          tip.append("</html>");
-          return tip.toString();
-        } else if (modelColumnIndex == COLUMN_DATA) {
-          if (conn.tooltip == null) {
-            prepareTooltipString(conn);
+          case COLUMN_DATA -> {
+            if (conn.tooltip == null) {
+              prepareTooltipString(conn);
+            }
+            return conn.tooltip;
           }
-          return conn.tooltip;
         }
         return super.getToolTipText(e);
       }
