@@ -30,6 +30,7 @@
 
 package org.contikios.cooja.radiomediums;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -65,16 +66,21 @@ import org.slf4j.LoggerFactory;
  * <p>
  * where:
  * - `rssi` is the transmit-power minus the path loss.
- * - `rssi_50%` is the signal level at which 50% packets are received;
+ * - `rssi_50%` is the signal level at which 50% packets are received. It is
+ *   `ln(99)` dB above the receiver's sensitivity
+ *   (`Radio.getRxSensitivity()`), which is how the datasheets define
+ *   sensitivity: the level at which 1% of the packets are lost.
  * <p>
- * To model the path loss PL_{dBm}(d) this plugin uses the log-distance path loss model:
+ * The received signal strength follows the log-distance path loss model:
  * <p>
- *  PL_{dBm}(d) = PL_0 + PL_t + 10 * \alpha * \log_10 (d / d_0) + NormalDistribution(0, \sigma),
+ *  RSSI_{dBm}(d) = P_tx - PL_1m - PL_t - 10 * \alpha * \log_10 (d) + NormalDistribution(0, \sigma),
  * <p>
  * where:
- * - `d_0` is the transmission range in meters;
- * - `PL_0` is the loss at `d_0` (i.e. the Rx sensitivity, by default equal
- *    to `-100` dBm as on the TI CC2650 System-on-Chip for IEEE 802.15.4 packets)
+ * - `P_tx` is read from the radio in dBm (`Radio.getCurrentOutputPower()`), so
+ *   this medium needs a radio that reports a real output power.
+ * - `PL_1m` is the free-space path loss at one meter, computed from the
+ *   transmitter's carrier frequency (`Radio.getFrequency()`) with the Friis
+ *   formula.
  * - `PL_t` is the time-varying component of the path loss (by default, zero)
  * - `\alpha` is the path loss exponent;
  * - `\sigma` is the standard deviation of the Additive White Gaussian Noise.
@@ -99,23 +105,10 @@ import org.slf4j.LoggerFactory;
 public class LogisticLoss extends AbstractRadioMedium {
     private static final Logger logger = LoggerFactory.getLogger(LogisticLoss.class);
 
-    /* Success ratio of TX. If this fails, no radios receive the packet */
-    public double SUCCESS_RATIO_TX = 1.0;
-
-    /* signal strength in dBm with close to 0% PRR */
-    public double RX_SENSITIVITY_DBM = -100.0;
-
     /*
-     * This is the point where the second-order derivative of the logistic loss function becomes negative.
-     *  It is also the point where 50% of packets with this signal strength are received.
+     * Effective slope over the distances of the scenario: 2 is free space,
+     * above that obstructed, below that guided (corridors, tunnels).
      */
-    public double RSSI_INFLECTION_POINT_DBM = -92.0;
-
-    /* At this distance (in meters), the RSSI is equal to the RX_SENSITIVITY_DBM */
-    public double TRANSMITTING_RANGE = 20.0;
-    public double INTERFERENCE_RANGE = TRANSMITTING_RANGE;
-
-    /* For the log-distance model, indoors, 2.4 GHz */
     public double PATH_LOSS_EXPONENT = 3.0;
 
     /* The standard deviation of the AWGN distribution */
@@ -127,11 +120,12 @@ public class LogisticLoss extends AbstractRadioMedium {
      */
     private static final double CO_CHANNEL_REJECTION = -3.0;
 
-    /*
-     * The transmission power.
-     * TODO: figure out how to getCurrentOutputPowerIndicator() to dBm use that.
-     */
-    public static final double DEFAULT_TX_POWER_DBM = 0.0;
+    /* Speed of light, m/s */
+    private static final double C = 299792458;
+
+    /* Signal in dB above the sensitivity at which the logistic reaches 50%,
+       given that it reaches 1% at the sensitivity */
+    private static final double PRR_1_PERCENT_MARGIN_DB = Math.log(99.0);
 
     /* Enable the time-varying component? */
     public boolean ENABLE_TIME_VARIATION;
@@ -145,8 +139,6 @@ public class LogisticLoss extends AbstractRadioMedium {
 
     private long lastTimeVariationUpdatePeriod;
 
-    private final DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
-
     private final Random random;
 
     private final HashMap<Index, TimeVaryingEdge> edgesTable = new HashMap<>();
@@ -154,79 +146,29 @@ public class LogisticLoss extends AbstractRadioMedium {
     public LogisticLoss(Simulation simulation) {
         super(simulation);
         random = simulation.getRandomGenerator();
-        dgrm = new DirectedGraphMedium(simulation) {
-                @Override
-                protected void analyzeEdges() {
-                    /* Create edges according to distances.
-                     * XXX May be slow for mobile networks */
-                    clearEdges();
-                    /* XXX: do not remove the time-varying edges to preserve their evolution */
-
-                    for (Radio source: LogisticLoss.this.getRegisteredRadios()) {
-                        Position sourcePos = source.getPosition();
-                        int sourceID = source.getMote().getID();
-                        for (Radio dest: LogisticLoss.this.getRegisteredRadios()) {
-                            Position destPos = dest.getPosition();
-                            /* Ignore ourselves */
-                            if (source == dest) {
-                                continue;
-                            }
-                            double distance = sourcePos.getDistanceTo(destPos);
-                            if (distance < TRANSMITTING_RANGE) {
-                                /* Add potential destination */
-                                addEdge(
-                                        new DirectedGraphMedium.Edge(source, 
-                                                new DGRMDestinationRadio(dest)));
-
-                                if (ENABLE_TIME_VARIATION) {
-                                    int destID = dest.getMote().getID();
-                                    if (sourceID < destID) {
-                                        Index key = new Index(sourceID, destID);
-                                        if (!edgesTable.containsKey(key)) {
-                                            edgesTable.put(key, new TimeVaryingEdge());
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    super.analyzeEdges();
-                }
-            };
-
-        /* Register as position observer.
-         * If any positions change, re-analyze potential receivers. */
-        simulation.getEventCentral().getPositionTriggers().addTrigger(this, (o, m) -> dgrm.requestEdgeAnalysis());
-        /* Re-analyze potential receivers if radios are added/removed. */
-        simulation.getMoteTriggers().addTrigger(this, (o, m) -> dgrm.requestEdgeAnalysis());
-
-        dgrm.requestEdgeAnalysis();
     }
 
     @Override
     public List<Radio> getNeighbors(Radio radio) {
-        return dgrm.getNeighbors(radio);
+        List<Radio> neighbors = new ArrayList<>();
+        for (Radio dest: getRegisteredRadios()) {
+            if (dest != radio
+                    && radio.getPosition().getDistanceTo(dest.getPosition()) <= getRange(radio, dest)) {
+                neighbors.add(dest);
+            }
+        }
+        return neighbors;
     }
 
     @Override
     protected RadioConnection createConnections(Radio sender) {
         RadioConnection newConnection = new RadioConnection(sender);
 
-        /* Fail radio transmission randomly - no radios will hear this transmission */
-        if (getTxSuccessProbability() < 1.0 && random.nextDouble() > getTxSuccessProbability()) {
-            return newConnection;
-        }
-
-        /* Get all potential destination radios */
-        DestinationRadio[] potentialDestinations = dgrm.getPotentialDestinations(sender);
-        if (potentialDestinations == null) {
-            return newConnection;
-        }
-
-        /* Loop through all potential destinations */
         Position senderPos = sender.getPosition();
-        for (DestinationRadio dest: potentialDestinations) {
-            Radio recv = dest.radio;
+        for (Radio recv: getRegisteredRadios()) {
+            if (recv == sender) {
+                continue;
+            }
 
             /* Fail if radios are on different (but configured) channels */
             var srcChannel = sender.getChannel();
@@ -243,8 +185,12 @@ public class LogisticLoss extends AbstractRadioMedium {
             Position recvPos = recv.getPosition();
 
             double distance = senderPos.getDistanceTo(recvPos);
-            if (distance <= TRANSMITTING_RANGE) {
+            if (distance <= getRange(sender, recv)) {
                 /* Within transmission range */
+                if (ENABLE_TIME_VARIATION) {
+                    Index key = new Index(sender.getMote().getID(), recv.getMote().getID());
+                    edgesTable.computeIfAbsent(key, k -> new TimeVaryingEdge());
+                }
 
                 if (!recv.isRadioOn()) {
                     newConnection.addInterfered(recv);
@@ -320,21 +266,66 @@ public class LogisticLoss extends AbstractRadioMedium {
     }
   
     public double getSuccessProbability(Radio source, Radio dest) {
-        return getTxSuccessProbability() * getRxSuccessProbability(source, dest);
-    }
-    public double getTxSuccessProbability() {
-        return SUCCESS_RATIO_TX;
+        return getRxSuccessProbability(source, dest);
     }
 
     public double getRxSuccessProbability(Radio source, Radio dest) {
-        double rssi = getRSSI(source, dest);
-        double x = rssi - RSSI_INFLECTION_POINT_DBM;
+        return receptionProbability(getRSSI(source, dest), dest.getRxSensitivity());
+    }
+
+    /*
+     * Reception probability at a signal level, for a given receiver
+     * sensitivity: 1% at the sensitivity and 50% `PRR_1_PERCENT_MARGIN_DB`
+     * above it.
+     */
+    static double receptionProbability(double rssiDbm, double sensitivityDbm) {
+        double x = rssiDbm - sensitivityDbm - PRR_1_PERCENT_MARGIN_DB;
         return 1.0 / (1.0 + Math.exp(-x));
     }
 
     /* Additive White Gaussian Noise, sampled from the distribution N(0.0, AWGN_SIGMA) */
     private double getAWGN() {
         return random.nextGaussian() * AWGN_SIGMA;
+    }
+
+    /*
+     * Distance at which the log-distance link budget reaches `sensitivityDbm`.
+     */
+    static double linkBudgetRange(double pTxDbm, double pathLoss1mDb,
+                                  double sensitivityDbm, double pathLossExponent) {
+        return Math.pow(10.0, (pTxDbm - pathLoss1mDb - sensitivityDbm)
+                              / (10.0 * pathLossExponent));
+    }
+
+    /* Free-space path loss at 1 m, from the Friis formula */
+    static double pathLoss1mDb(double frequencyMhz) {
+        return 20.0 * Math.log10(4.0 * Math.PI * frequencyMhz * 1e6 / C);
+    }
+
+    /** @return Reception range from source to dest, in meters */
+    private double getRange(Radio source, Radio dest) {
+        return getRange(source, dest.getRxSensitivity());
+    }
+
+    /** @return Distance a receiver at sensitivityDbm still receives source, in meters */
+    public double getRange(Radio source, double sensitivityDbm) {
+        double frequency = source.getFrequency();
+        if (frequency <= 0) {
+            return 0;
+        }
+        return linkBudgetRange(source.getCurrentOutputPower(), pathLoss1mDb(frequency),
+            sensitivityDbm, PATH_LOSS_EXPONENT);
+    }
+
+    /** @return Reception probability at a distance, for a receiver at sensitivityDbm */
+    public double getReceptionProbability(Radio source, double distance, double sensitivityDbm) {
+        double frequency = source.getFrequency();
+        if (frequency <= 0) {
+            return 0;
+        }
+        double pathLossDb = pathLoss1mDb(frequency)
+            + 10 * PATH_LOSS_EXPONENT * Math.log10(Math.max(distance, 0.01));
+        return receptionProbability(source.getCurrentOutputPower() - pathLossDb, sensitivityDbm);
     }
 
     private double getRSSI(Radio source, Radio dst) {
@@ -344,32 +335,28 @@ public class LogisticLoss extends AbstractRadioMedium {
             d = 0.01;
         }
 
-        double moteTransmissionRange = TRANSMITTING_RANGE
-            * ((double) source.getCurrentOutputPowerIndicator() / (double) source.getOutputPowerIndicatorMax());
+        double frequency = source.getFrequency();
+        if (frequency <= 0) {
+            return Double.NEGATIVE_INFINITY;
+        }
 
-        /* Using the log-distance formula */
-        double path_loss_dbm = -RX_SENSITIVITY_DBM + 10 * PATH_LOSS_EXPONENT * Math.log10(d / moteTransmissionRange);
+        double pathLossDb = pathLoss1mDb(frequency)
+            + 10 * PATH_LOSS_EXPONENT * Math.log10(d);
 
         /* Add the time-varying component if enabled */
         if (ENABLE_TIME_VARIATION) {
-            Index key = new Index(source.getMote().getID(), dst.getMote().getID());
-            TimeVaryingEdge e = edgesTable.get(key);
-            if (e != null) {
-                path_loss_dbm += e.getPL();
-            } else {
-                logger.warn("No edge between " + source.getMote().getID() + " and " + dst.getMote().getID());
+            TimeVaryingEdge edge = edgesTable.get(
+                new Index(source.getMote().getID(), dst.getMote().getID()));
+            if (edge != null) {
+                pathLossDb += edge.getPL();
             }
         }
 
-        return DEFAULT_TX_POWER_DBM - path_loss_dbm + getAWGN();
+        return source.getCurrentOutputPower() - pathLossDb + getAWGN();
     }
 
     private void updateTimeVariationComponent() {
         long period = (long)(simulation.getSimulationTimeMillis() / (1000.0 * TIME_VARIATION_STEP_SEC));
-
-        if (dgrm.needsEdgeAnalysis()) {
-            dgrm.analyzeEdges();
-        }
 
         while (period > lastTimeVariationUpdatePeriod) {
             for (Map.Entry<Index, TimeVaryingEdge> entry : edgesTable.entrySet()) {
@@ -448,26 +435,6 @@ public class LogisticLoss extends AbstractRadioMedium {
         Collection<Element> config = super.getConfigXML();
         Element element;
 
-        /* Transmitting range */
-        element = new Element("transmitting_range");
-        element.setText(Double.toString(TRANSMITTING_RANGE));
-        config.add(element);
-
-        /* Transmission success probability */
-        element = new Element("success_ratio_tx");
-        element.setText(String.valueOf(SUCCESS_RATIO_TX));
-        config.add(element);
-
-        /* Rx sensitivity */
-        element = new Element("rx_sensitivity");
-        element.setText(String.valueOf(RX_SENSITIVITY_DBM));
-        config.add(element);
-
-        /* RSSI inflection point */
-        element = new Element("rssi_inflection_point");
-        element.setText(String.valueOf(RSSI_INFLECTION_POINT_DBM));
-        config.add(element);
-
         /* Path loss exponent */
         element = new Element("path_loss_exponent");
         element.setText(String.valueOf(PATH_LOSS_EXPONENT));
@@ -500,21 +467,20 @@ public class LogisticLoss extends AbstractRadioMedium {
     public boolean setConfigXML(Collection<Element> configXML, boolean visAvailable) {
         super.setConfigXML(configXML, visAvailable);
         for (Element element : configXML) {
-            if (element.getName().equals("transmitting_range")) {
-                TRANSMITTING_RANGE = Double.parseDouble(element.getText());
-                INTERFERENCE_RANGE = TRANSMITTING_RANGE;
-            }
-
             if (element.getName().equals("success_ratio_tx")) {
-                SUCCESS_RATIO_TX = Double.parseDouble(element.getText());
+                logger.warn("LogisticLoss parameter \"success_ratio_tx\" was removed: "
+                        + "the link budget models the loss");
+                continue;
             }
 
-            if (element.getName().equals("rx_sensitivity")) {
-                RX_SENSITIVITY_DBM = Double.parseDouble(element.getText());
-            }
-
-            if (element.getName().equals("rssi_inflection_point")) {
-                RSSI_INFLECTION_POINT_DBM = Double.parseDouble(element.getText());
+            if (element.getName().equals("transmitting_range")
+                    || element.getName().equals("tx_power_reference_dbm")
+                    || element.getName().equals("rx_sensitivity")
+                    || element.getName().equals("rssi_inflection_point")
+                    || element.getName().equals("frequency_mhz")) {
+                logger.warn("LogisticLoss parameter \"" + element.getName()
+                        + "\" was removed: the range now follows from the link budget");
+                continue;
             }
 
             if (element.getName().equals("path_loss_exponent")) {

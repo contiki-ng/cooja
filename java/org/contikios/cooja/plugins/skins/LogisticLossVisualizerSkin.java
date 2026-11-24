@@ -35,8 +35,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.geom.Area;
+import java.awt.RadialGradientPaint;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.util.Set;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
@@ -69,7 +70,9 @@ public class LogisticLossVisualizerSkin implements VisualizerSkin {
   private static final Logger logger = LoggerFactory.getLogger(LogisticLossVisualizerSkin.class);
 
   private static final Color COLOR_TX = new Color(0, 255, 0, 100);
-  private static final Color COLOR_INT = new Color(50, 50, 50, 100);
+
+  /* Samples of the radial fade; enough for the steep part near the range edge */
+  private static final int FADE_STEPS = 16;
 
   private Simulation simulation;
   private Visualizer visualizer;
@@ -105,93 +108,58 @@ public class LogisticLossVisualizerSkin implements VisualizerSkin {
       return;
     }
 
-    Area intRangeArea = new Area();
-    Area intRangeMaxArea = new Area();
-    Area trxRangeArea = new Area();
-    Area trxRangeMaxArea = new Area();
+    /* The reach the medium allows: as far as the most sensitive receiver present */
+    double minSensitivity = Double.POSITIVE_INFINITY;
+    for (Radio radio : radioMedium.getRegisteredRadios()) {
+      minSensitivity = Math.min(minSensitivity, radio.getRxSensitivity());
+    }
+
+    Graphics2D g2d = (Graphics2D) g;
 
     for (Mote selectedMote : selectedMotes) {
       if (selectedMote.getInterfaces().getRadio() == null) {
         continue;
       }
 
-      /* Paint transmission and interference range for selected mote */
+      /* Paint the transmission range of the selected mote */
       Position motePos = selectedMote.getInterfaces().getPosition();
 
       Point pixelCoord = visualizer.transformPositionToPixel(motePos);
       int x = pixelCoord.x;
       int y = pixelCoord.y;
 
-      // Fetch current output power indicator (scale with as percent)
       Radio selectedRadio = selectedMote.getInterfaces().getRadio();
-      double moteInterferenceRange
-              = radioMedium.INTERFERENCE_RANGE
-              * ((double) selectedRadio.getCurrentOutputPowerIndicator()
-              / (double) selectedRadio.getOutputPowerIndicatorMax());
-      double moteTransmissionRange
-              = radioMedium.TRANSMITTING_RANGE
-              * ((double) selectedRadio.getCurrentOutputPowerIndicator()
-              / (double) selectedRadio.getOutputPowerIndicatorMax());
+      double moteTransmissionRange = radioMedium.getRange(selectedRadio, minSensitivity);
+      if (moteTransmissionRange <= 0) {
+        continue;
+      }
 
       Point translatedZero = visualizer.transformPositionToPixel(0.0, 0.0, 0.0);
-      Point translatedInterference
-              = visualizer.transformPositionToPixel(moteInterferenceRange, moteInterferenceRange, 0.0);
       Point translatedTransmission
               = visualizer.transformPositionToPixel(moteTransmissionRange, moteTransmissionRange, 0.0);
-      Point translatedInterferenceMax
-              = visualizer.transformPositionToPixel(radioMedium.INTERFERENCE_RANGE, radioMedium.INTERFERENCE_RANGE, 0.0);
-      Point translatedTransmissionMax
-              = visualizer.transformPositionToPixel(radioMedium.TRANSMITTING_RANGE, radioMedium.TRANSMITTING_RANGE, 0.0);
 
-      translatedInterference.x = Math.abs(translatedInterference.x - translatedZero.x);
-      translatedInterference.y = Math.abs(translatedInterference.y - translatedZero.y);
       translatedTransmission.x = Math.abs(translatedTransmission.x - translatedZero.x);
       translatedTransmission.y = Math.abs(translatedTransmission.y - translatedZero.y);
-      translatedInterferenceMax.x = Math.abs(translatedInterferenceMax.x - translatedZero.x);
-      translatedInterferenceMax.y = Math.abs(translatedInterferenceMax.y - translatedZero.y);
-      translatedTransmissionMax.x = Math.abs(translatedTransmissionMax.x - translatedZero.x);
-      translatedTransmissionMax.y = Math.abs(translatedTransmissionMax.y - translatedZero.y);
 
-      /* Interference range */
-      intRangeArea.add(new Area(new Ellipse2D.Double(
-              x - translatedInterference.x,
-              y - translatedInterference.y,
-              2 * translatedInterference.x,
-              2 * translatedInterference.y)));
-
-      /* Interference range (MAX) */
-      trxRangeArea.add(new Area(new Ellipse2D.Double(
+      /* Fade with the reception probability at each distance, not with the
+         distance itself: the link is solid until well past half the range. */
+      float[] fractions = new float[FADE_STEPS];
+      Color[] colors = new Color[FADE_STEPS];
+      for (int i = 0; i < FADE_STEPS; i++) {
+        fractions[i] = i / (float) (FADE_STEPS - 1);
+        double prr = radioMedium.getReceptionProbability(selectedRadio,
+                fractions[i] * moteTransmissionRange, minSensitivity);
+        colors[i] = new Color(COLOR_TX.getRed(), COLOR_TX.getGreen(), COLOR_TX.getBlue(),
+                (int) Math.round(COLOR_TX.getAlpha() * prr));
+      }
+      g2d.setPaint(new RadialGradientPaint(new Point2D.Float(x, y),
+              (translatedTransmission.x + translatedTransmission.y) / 2f, fractions, colors));
+      g2d.fill(new Ellipse2D.Double(
               x - translatedTransmission.x,
               y - translatedTransmission.y,
               2 * translatedTransmission.x,
-              2 * translatedTransmission.y)));
-
-      intRangeMaxArea.add(new Area(new Ellipse2D.Double(
-              x - translatedInterferenceMax.x,
-              y - translatedInterferenceMax.y,
-              2 * translatedInterferenceMax.x,
-              2 * translatedInterferenceMax.y)));
-
-      /* Transmission range (MAX) */
-      trxRangeMaxArea.add(new Area(new Ellipse2D.Double(
-              x - translatedTransmissionMax.x,
-              y - translatedTransmissionMax.y,
-              2 * translatedTransmissionMax.x,
-              2 * translatedTransmissionMax.y)));
-
+              2 * translatedTransmission.y));
     }
-
-    Graphics2D g2d = (Graphics2D) g;
-
-    g2d.setColor(COLOR_INT);
-    g2d.fill(intRangeArea);
-    g.setColor(Color.GRAY);
-    g2d.draw(intRangeMaxArea);
-
-    g.setColor(COLOR_TX);
-    g2d.fill(trxRangeArea);
-    g.setColor(Color.GRAY);
-    g2d.draw(trxRangeMaxArea);
 
     FontMetrics fm = g.getFontMetrics();
     g.setColor(Color.BLACK);
@@ -210,8 +178,12 @@ public class LogisticLossVisualizerSkin implements VisualizerSkin {
         if (m.getInterfaces().getRadio() == null) {
           continue;
         }
-        double prob
-                = ((LogisticLoss) simulation.getRadioMedium()).getSuccessProbability(selectedRadio, m.getInterfaces().getRadio());
+        Radio destRadio = m.getInterfaces().getRadio();
+        /* Mean probability: the decision path also samples the AWGN, which
+           would make the label change on every repaint. */
+        double prob = radioMedium.getReceptionProbability(selectedRadio,
+                selectedRadio.getPosition().getDistanceTo(destRadio.getPosition()),
+                destRadio.getRxSensitivity());
         if (prob == 0.0d) {
           continue;
         }
