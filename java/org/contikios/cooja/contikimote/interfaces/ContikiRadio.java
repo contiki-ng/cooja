@@ -243,9 +243,8 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
 
   @Override
   public double getCurrentOutputPower() {
-    /* TODO Implement method */
-    logger.warn("Not implemented, always returning 0 dBm");
-    return 0;
+    /* simPower is a percentage of 0 dBm, the maximum of this idealised radio. */
+    return 10 * Math.log10(myMoteMemory.getByteValueOf("simPower") / 100.0);
   }
 
   @Override

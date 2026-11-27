@@ -49,9 +49,7 @@ public class UDGMConstantLoss extends UDGM {
   @Override
   public double getRxSuccessProbability(Radio source, Radio dest) {
     double distance = source.getPosition().getDistanceTo(dest.getPosition());
-    double moteTransmissionRange = TRANSMITTING_RANGE
-    * ((double) source.getCurrentOutputPowerIndicator() / (double) source.getOutputPowerIndicatorMax());
-    if (distance > moteTransmissionRange) {
+    if (distance > getTransmissionRange(source)) {
     	return 0.0d;
     }
   	return SUCCESS_RATIO_RX;
