@@ -424,6 +424,17 @@ public class AreaViewer extends VisPlugin {
             public double getRxGain() {
               return 0;
             }
+
+            @Override
+            public double getRxSensitivity() {
+              /* Hypothetical receiver: assume another radio of the same model */
+              return selectedRadio.getRxSensitivity();
+            }
+
+            @Override
+            public double getFrequency() {
+              return selectedRadio.getFrequency();
+            }
           };
           trackedComponents = currentChannelModel.getRaysOfTransmission(txPair);
           canvas.repaint();
@@ -1524,6 +1535,17 @@ public class AreaViewer extends VisPlugin {
               @Override
               public double getRxGain() {
                 return 0;
+              }
+
+              @Override
+              public double getRxSensitivity() {
+                /* Hypothetical receiver: assume another radio of the same model */
+                return selectedRadio.getRxSensitivity();
+              }
+
+              @Override
+              public double getFrequency() {
+                return selectedRadio.getFrequency();
               }
             };
             switch (dataTypeToVisualize) {

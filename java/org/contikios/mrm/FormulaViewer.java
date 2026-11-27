@@ -116,13 +116,6 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     );
 
     addDoubleParameter(
-        Parameter.snr_threshold,
-        Parameter.getDescription(Parameter.snr_threshold),
-        collapsableArea,
-        channelModel.getParameterDoubleValue(Parameter.snr_threshold)
-    );
-
-    addDoubleParameter(
         Parameter.bg_noise_mean,
         Parameter.getDescription(Parameter.bg_noise_mean),
         collapsableArea,
@@ -148,13 +141,6 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
         Parameter.getDescription(Parameter.system_gain_var),
         collapsableArea,
         channelModel.getParameterDoubleValue(Parameter.system_gain_var)
-    );
-
-    addDoubleParameter(
-        Parameter.frequency,
-        Parameter.getDescription(Parameter.frequency),
-        collapsableArea,
-        channelModel.getParameterDoubleValue(Parameter.frequency)
     );
 
     addBooleanParameter(
@@ -199,13 +185,6 @@ public class FormulaViewer extends org.contikios.cooja.VisPlugin {
     // Receiver parameters
     collapsableArea = createCollapsableArea("Receiver parameters", allComponents);
     areaReceiver = collapsableArea;
-
-    addDoubleParameter(
-        Parameter.rx_sensitivity,
-        Parameter.getDescription(Parameter.rx_sensitivity),
-        collapsableArea,
-        channelModel.getParameterDoubleValue(Parameter.rx_sensitivity)
-    );
 
     addBooleanParameter(
         Parameter.rx_with_gain,
