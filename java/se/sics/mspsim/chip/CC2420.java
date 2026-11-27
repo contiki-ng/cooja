@@ -434,6 +434,8 @@ public class CC2420 extends Radio802154 implements USARTListener {
 
   private void reset() {
       setReg(REG_MDMCTRL0, 0x0ae2);
+      /* Datasheet reset state, which decodes to 2048 MHz below */
+      registers[REG_FSCTRL] = 0x4000;
       registers[REG_RSSI] =  0xE000 | (registers[REG_RSSI]  & 0xFF);
   }
 
@@ -1289,7 +1291,7 @@ public class CC2420 extends Radio802154 implements USARTListener {
   }
 
   @Override
-  public int getActiveFrequency() {
+  public double getActiveFrequency() {
     updateActiveFrequency();
     return activeFrequency;
   }
@@ -1379,6 +1381,12 @@ public class CC2420 extends Radio802154 implements USARTListener {
   @Override
   public int getOutputPowerMax() {
       return 0;
+  }
+
+  @Override
+  public double getRxSensitivity() {
+    /* From CC2420 datasheet, 1% PER */
+    return -95.0;
   }
 
   @Override

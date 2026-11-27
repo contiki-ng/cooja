@@ -180,6 +180,13 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
     return myMoteMemory.getIntValueOf("simRadioChannel");
   }
 
+  /* The contiki mote radio follows the 802.15.4 2.4 GHz channel plan */
+  @Override
+  public double getFrequency() {
+    int channel = getChannel();
+    return channel >= 11 && channel <= 26 ? 2405 + 5 * (channel - 11) : 0;
+  }
+
   @Override
   public void signalReceptionStart() {
     packetToMote = null;
@@ -236,9 +243,14 @@ public class ContikiRadio extends Radio implements PolledAfterActiveTicks {
 
   @Override
   public double getCurrentOutputPower() {
-    /* TODO Implement method */
-    logger.warn("Not implemented, always returning 0 dBm");
-    return 0;
+    /* simPower is a percentage of 0 dBm, the maximum of this idealised radio. */
+    return 10 * Math.log10(myMoteMemory.getByteValueOf("simPower") / 100.0);
+  }
+
+  @Override
+  public double getRxSensitivity() {
+    /* Idealized radio, no datasheet */
+    return -100.0;
   }
 
   @Override

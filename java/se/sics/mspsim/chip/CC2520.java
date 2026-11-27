@@ -1324,7 +1324,7 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     }
 
     @Override
-    public int getActiveFrequency() {
+    public double getActiveFrequency() {
         updateActiveFrequency();
         return activeFrequency;
     }
@@ -1466,6 +1466,12 @@ public class CC2520 extends Radio802154 implements USARTListener, SPIData {
     @Override
     public int getOutputPowerMax() {
         return 5;
+    }
+
+    @Override
+    public double getRxSensitivity() {
+      /* From CC2520 datasheet, 1% PER */
+      return -98.0;
     }
 
     @Override

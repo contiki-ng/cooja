@@ -44,7 +44,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.contikios.cooja.Simulation;
 import org.contikios.cooja.interfaces.DirectionalAntennaRadio;
 import org.contikios.cooja.interfaces.Radio;
-import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 import org.contikios.cooja.util.EventTriggers;
 import org.contikios.mrm.statistics.GaussianWrapper;
 import org.jdom2.Element;
@@ -72,10 +71,6 @@ public class ChannelModel {
   private final HashMap<Parameter,Object> parametersDefaults;
   private final HashMap<Parameter,Object> parameters = new HashMap<>();
 
-  // Parameters used for speeding up calculations
-  private boolean needToPrecalculateFSPL = true;
-  private double paramFSPL;
-
   private ObstacleWorld myObstacleWorld = new ObstacleWorld();
 
   /* Log mode: visualize signal components */
@@ -98,15 +93,12 @@ public class ChannelModel {
   private final EventTriggers<EventTriggers.Update, Parameter> settingsTriggers = new EventTriggers<>();
   public enum Parameter {
     apply_random,
-    snr_threshold,
     bg_noise_mean,
     bg_noise_var,
     system_gain_mean,
     system_gain_var,
-    frequency,
     tx_power,
     tx_with_gain,
-    rx_sensitivity,
     rx_with_gain,
     rt_disallow_direct_path,
     rt_ignore_non_direct,
@@ -128,15 +120,12 @@ public class ChannelModel {
     public static Object getDefaultValue(Parameter p) {
       return switch (p) {
         case apply_random -> false;
-        case snr_threshold -> 6.0;
-        case bg_noise_mean -> AbstractRadioMedium.SS_NOTHING;
+        case bg_noise_mean -> -100.0;
         case bg_noise_var -> 1.0;
         case system_gain_mean -> 0.0;
         case system_gain_var -> 4.0;
-        case frequency -> 2400.0; // MHz.
         case tx_power -> 1.5;
         case tx_with_gain -> true;
-        case rx_sensitivity -> -100.0;
         case rx_with_gain, rt_disallow_direct_path, rt_ignore_non_direct -> false;
         case rt_fspl_on_total_length -> true;
         case rt_max_rays, rt_max_refractions, rt_max_reflections -> 1;
@@ -157,13 +146,11 @@ public class ChannelModel {
       /* Backwards compatability */
       return switch (name) {
         case "apply_random" -> apply_random;
-        case "snr_threshold" -> snr_threshold;
         case "bg_noise_mean" -> bg_noise_mean;
         case "bg_noise_var" -> bg_noise_var;
         case "system_gain_mean" -> system_gain_mean;
         case "system_gain_var" -> system_gain_var;
         case "tx_power" -> tx_power;
-        case "rx_sensitivity" -> rx_sensitivity;
         case "rt_disallow_direct_path" -> rt_disallow_direct_path;
         case "rt_ignore_non_direct" -> rt_ignore_non_direct;
         case "rt_fspl_on_total_length" -> rt_fspl_on_total_length;
@@ -187,15 +174,12 @@ public class ChannelModel {
     public static String getDescription(Parameter p) {
       return switch (p) {
         case apply_random -> "(DEBUG) Apply random values";
-        case snr_threshold -> "SNR reception threshold (dB)";
         case bg_noise_mean -> "Background noise mean (dBm)";
         case bg_noise_var -> "Background noise variance (dB)";
         case system_gain_mean -> "Extra system gain mean (dB)";
         case system_gain_var -> "Extra system gain variance (dB)";
-        case frequency -> "Frequency (MHz)";
         case tx_power -> "Default transmitter output power (dBm)";
         case tx_with_gain -> "Directional antennas: with TX gain";
-        case rx_sensitivity -> "Receiver sensitivity (dBm)";
         case rx_with_gain -> "Directional antennas: with RX gain";
         case rt_disallow_direct_path -> "Disallow direct path";
         case rt_ignore_non_direct -> "If existing: return only use direct path";
@@ -354,9 +338,6 @@ public class ChannelModel {
       return;
     }
     parameters.put(id, newValue);
-
-    // Guessing we need to recalculate input to FSPL+Output power
-    needToPrecalculateFSPL = true;
     settingsTriggers.trigger(EventTriggers.Update.UPDATE, id);
   }
 
@@ -373,16 +354,15 @@ public class ChannelModel {
    * Uses frequency and distance only.
    *
    * @param distance Transmitter-receiver distance
+   * @param frequencyMhz Carrier frequency
    * @return Path loss (dB)
    */
-  protected double getFSPL(double distance) {
-    if (needToPrecalculateFSPL) {
-      double f = getParameterDoubleValue(Parameter.frequency);
-      paramFSPL = -32.44 -20*Math.log10(f /*mhz*/);
-      needToPrecalculateFSPL = false;
+  protected double getFSPL(double distance, double frequencyMhz) {
+    if (frequencyMhz <= 0) {
+      return Double.NEGATIVE_INFINITY;
     }
-
-    return Math.min(0.0, paramFSPL - 20*Math.log10(distance/1000.0 /*km*/));
+    return Math.min(0.0,
+        -32.44 -20*Math.log10(frequencyMhz /*mhz*/) - 20*Math.log10(distance/1000.0 /*km*/));
   }
 
 
@@ -1333,7 +1313,7 @@ public class ChannelModel {
 
           // Add FSPL from last subpaths (if FSPL on individual rays)
           if (!getParameterBooleanValue(Parameter.rt_fspl_on_total_length) && accumulatedStraightLength > 0) {
-            pathGain[i] += getFSPL(accumulatedStraightLength);
+            pathGain[i] += getFSPL(accumulatedStraightLength, txPair.getFrequency());
           }
           accumulatedStraightLength = 0; // Reset straight length
         } else if (subPathStartType == RayData.RayType.DIFFRACTION) {
@@ -1341,7 +1321,7 @@ public class ChannelModel {
 
           // Add FSPL from last subpaths (if FSPL on individual rays)
           if (!getParameterBooleanValue(Parameter.rt_fspl_on_total_length) && accumulatedStraightLength > 0) {
-            pathGain[i] += getFSPL(accumulatedStraightLength);
+            pathGain[i] += getFSPL(accumulatedStraightLength, txPair.getFrequency());
           }
           accumulatedStraightLength = 0; // Reset straight length
         }
@@ -1378,12 +1358,12 @@ public class ChannelModel {
 
       // Add FSPL from last rays (if FSPL on individual rays)
       if (!getParameterBooleanValue(Parameter.rt_fspl_on_total_length) && accumulatedStraightLength > 0) {
-        pathGain[i] += getFSPL(accumulatedStraightLength);
+        pathGain[i] += getFSPL(accumulatedStraightLength, txPair.getFrequency());
       }
 
       // Free space path loss on total path length?
       if (getParameterBooleanValue(Parameter.rt_fspl_on_total_length)) {
-        pathGain[i] += getFSPL(pathLengths[i]);
+        pathGain[i] += getFSPL(pathLengths[i], txPair.getFrequency());
       }
 
       if (bestSignalNr < 0 || pathGain[i] > bestSignalPathLoss) {
@@ -1395,8 +1375,7 @@ public class ChannelModel {
     // - Calculate total path loss (using simple Rician) -
     double delaySpread = 0;
     double delaySpreadRMS = 0;
-    double freq = getParameterDoubleValue(Parameter.frequency);
-    double wavelength = C/(freq*1000000d);
+    double wavelength = C/(txPair.getFrequency()*1000000d);
     double totalPathGain = 0;
     double delaySpreadTotalWeight = 0;
     double speedOfLight = 300; // Approximate value (m/us)
@@ -1579,19 +1558,13 @@ public class ChannelModel {
     double snrMean = snrData[0];
     double snrVariance = snrData[1];
     double signalStrength = snrData[2];
-    double threshold = getParameterDoubleValue(Parameter.snr_threshold);
-    double rxSensitivity = getParameterDoubleValue(Parameter.rx_sensitivity);
+    double rxSensitivity = txPair.getRxSensitivity();
 
-    // Check signal strength against receiver sensitivity and interference
-    if (rxSensitivity > signalStrength - snrMean && 
-                threshold < rxSensitivity + snrMean - signalStrength) {
-      if (logMode) {
-        logInfo.append("Weak signal: increasing threshold\n");
-      }
-
-      // Keeping snr variance but increasing theshold to sensitivity
-      threshold = rxSensitivity + snrMean - signalStrength;
-    }
+    /* Detect at the receiver sensitivity: the SNR a signal needs to reach it
+       is the sensitivity minus the noise the SNR was measured against. */
+    double rxGain = getParameterBooleanValue(Parameter.rx_with_gain) ? txPair.getRxGain() : 0;
+    double noiseMean = signalStrength + rxGain - snrMean;
+    double threshold = rxSensitivity - noiseMean;
 
     // If not random variable, probability is either 1 or 0
     if (snrVariance == 0) {
@@ -1676,21 +1649,20 @@ public class ChannelModel {
         String value;
         Parameter param;
     
-        if (name.equals("wavelength")) {
-          /* Backwards compatability: ignored parameters */
-          value = element.getAttributeValue("value");
-          if (value == null) {
-            value = element.getText();
-          }
-//          private static final double C = 299792458; /* m/s */
-          double frequency = C/Double.parseDouble(value);
-          frequency /= 1000000.0; /* mhz */
-          parameters.put(Parameter.frequency, frequency); /* mhz */
-
-          logger.warn("MRM parameter converted from wavelength to frequency: " + String.format("%1.1f MHz", frequency));
+        if (name.equals("wavelength") || name.equals("frequency")) {
+          logger.warn("MRM parameter \"" + name + "\" was removed: "
+                  + "the frequency is read from the transmitter radio");
           continue;
         } else if (name.equals("tx_antenna_gain") || name.equals("rx_antenna_gain")) {
           logger.warn("MRM parameter \"" + name + "\" was removed");
+          continue;
+        } else if (name.equals("rx_sensitivity")) {
+          logger.warn("MRM parameter \"" + name + "\" was removed: "
+                  + "the sensitivity is read from the receiver radio");
+          continue;
+        } else if (name.equals("snr_threshold")) {
+          logger.warn("MRM parameter \"" + name + "\" was removed: "
+                  + "the threshold follows from the sensitivity and the noise floor");
           continue;
         } else if (Parameter.fromString(name) != null) {
           /* Backwards compatability: renamed parameters */
@@ -1717,7 +1689,6 @@ public class ChannelModel {
         }
       }
     }
-    needToPrecalculateFSPL = true;
     settingsTriggers.trigger(EventTriggers.Update.UPDATE, null);
     return true;
   }
@@ -1757,10 +1728,30 @@ public class ChannelModel {
      * @return Relative receiver gain (zero for omnidirectional radios)
      */
     public abstract double getRxGain();
+
+    /**
+     * @return Receiver sensitivity (dBm)
+     */
+    public abstract double getRxSensitivity();
+
+    /**
+     * @return Carrier frequency of the transmitter (MHz)
+     */
+    public abstract double getFrequency();
   }
   public static abstract class RadioPair extends TxPair {
     public abstract Radio getFromRadio();
     public abstract Radio getToRadio();
+
+    @Override
+    public double getRxSensitivity() {
+      return getToRadio().getRxSensitivity();
+    }
+
+    @Override
+    public double getFrequency() {
+      return getFromRadio().getFrequency();
+    }
     
     @Override
     public double getDistance() {

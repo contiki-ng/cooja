@@ -50,11 +50,11 @@ import org.slf4j.LoggerFactory;
  * It uses two different range parameters: one for transmissions, and one for
  * interfering with other radios and transmissions.
  * <p>
- * Both radio ranges grow with the radio output power indicator.
- * The range parameters are multiplied with [output power]/[maximum output power].
- * For example, if the transmission range is 100m, the current power indicator 
- * is 50, and the maximum output power indicator is 100, then the resulting transmission 
- * range becomes 50m.
+ * Both radio ranges follow the free-space link budget: they are the configured
+ * range at TX_POWER_REFERENCE_DBM, and every 20 dB of output power scales a
+ * range by a factor of ten. For example, if the transmission range is 100 m and
+ * the radio transmits 20 dB below the reference, the transmission range becomes
+ * 10 m.
  * <p>
  * For radio transmissions within range, two different success ratios are used [0.0-1.0]:
  * one for successful transmissions, and one for successful receptions.
@@ -79,12 +79,16 @@ public class UDGM extends AbstractRadioMedium {
 
   public double SUCCESS_RATIO_TX = 1.0; /* Success ratio of TX. If this fails, no radios receive the packet */
   public double SUCCESS_RATIO_RX = 1.0; /* Success ratio of RX. If this fails, the single affected receiver does not receive the packet */
-  public double TRANSMITTING_RANGE = 50; /* Transmission range. */
-  public double INTERFERENCE_RANGE = 100; /* Interference range. Ignored if below transmission range. */
+  public double TRANSMITTING_RANGE = 50; /* Transmission range at the reference output power. */
+  public double INTERFERENCE_RANGE = 100; /* Interference range at the reference output power. Ignored if below transmission range. */
+  public double TX_POWER_REFERENCE_DBM = 0.0; /* Output power at which both ranges hold; must be at least the highest power simulated. */
 
   private final DirectedGraphMedium dgrm; /* Used only for efficient destination lookup */
 
   private final Random random;
+
+  /* UDGM has no obstacles, so the power spreads over free space. */
+  private static final double PATH_LOSS_EXPONENT = 2.0;
 
   public UDGM(Simulation simulation) {
     super(simulation);
@@ -125,12 +129,31 @@ public class UDGM extends AbstractRadioMedium {
     dgrm.requestEdgeAnalysis();
   }
 
+  static double rangeAt(double range, double referenceDbm, double outputPowerDbm) {
+    return range * Math.pow(10, (outputPowerDbm - referenceDbm) / (10 * PATH_LOSS_EXPONENT));
+  }
+
+  /**
+   * @param source Transmitting radio
+   * @return Transmission range for the current output power, in meters
+   */
+  public double getTransmissionRange(Radio source) {
+    return rangeAt(TRANSMITTING_RANGE, TX_POWER_REFERENCE_DBM, source.getCurrentOutputPower());
+  }
+
+  /**
+   * @param source Transmitting radio
+   * @return Interference range for the current output power, in meters
+   */
+  public double getInterferenceRange(Radio source) {
+    return rangeAt(INTERFERENCE_RANGE, TX_POWER_REFERENCE_DBM, source.getCurrentOutputPower());
+  }
+
   @Override
   public List<Radio> getNeighbors(Radio sourceRadio) {
     var list = new ArrayList<Radio>();
     var sourceRadioPosition = sourceRadio.getPosition();
-    double moteTransmissionRange = TRANSMITTING_RANGE
-            * ((double) sourceRadio.getCurrentOutputPowerIndicator() / (double) sourceRadio.getOutputPowerIndicatorMax());
+    double moteTransmissionRange = getTransmissionRange(sourceRadio);
     for (var radio : dgrm.getPotentialDestinations(sourceRadio)) {
       if (radio.radio == sourceRadio) {
         continue;
@@ -163,10 +186,8 @@ public class UDGM extends AbstractRadioMedium {
     }
 
     /* Calculate ranges: grows with radio output power */
-    double moteTransmissionRange = TRANSMITTING_RANGE
-    * ((double) sender.getCurrentOutputPowerIndicator() / (double) sender.getOutputPowerIndicatorMax());
-    double moteInterferenceRange = INTERFERENCE_RANGE
-    * ((double) sender.getCurrentOutputPowerIndicator() / (double) sender.getOutputPowerIndicatorMax());
+    double moteTransmissionRange = getTransmissionRange(sender);
+    double moteInterferenceRange = getInterferenceRange(sender);
 
     /* Get all potential destination radios */
     DestinationRadio[] potentialDestinations = dgrm.getPotentialDestinations(sender);
@@ -256,8 +277,7 @@ public class UDGM extends AbstractRadioMedium {
   public double getRxSuccessProbability(Radio source, Radio dest) {
   	double distance = source.getPosition().getDistanceTo(dest.getPosition());
     double distanceSquared = Math.pow(distance,2.0);
-    double distanceMax = TRANSMITTING_RANGE * 
-    ((double) source.getCurrentOutputPowerIndicator() / (double) source.getOutputPowerIndicatorMax());
+    double distanceMax = getTransmissionRange(source);
     if (distanceMax == 0.0) {
       return 0.0;
     }
@@ -293,8 +313,7 @@ public class UDGM extends AbstractRadioMedium {
 
         double dist = conn.getSource().getPosition().getDistanceTo(dstRadio.getPosition());
 
-        double maxTxDist = TRANSMITTING_RANGE
-        * ((double) conn.getSource().getCurrentOutputPowerIndicator() / (double) conn.getSource().getOutputPowerIndicatorMax());
+        double maxTxDist = getTransmissionRange(conn.getSource());
         double distFactor = dist/maxTxDist;
 
         double signalStrength = SS_STRONG + distFactor*(SS_WEAK - SS_STRONG);
@@ -315,8 +334,7 @@ public class UDGM extends AbstractRadioMedium {
 
         double dist = conn.getSource().getPosition().getDistanceTo(intfRadio.getPosition());
 
-        double maxTxDist = TRANSMITTING_RANGE
-        * ((double) conn.getSource().getCurrentOutputPowerIndicator() / (double) conn.getSource().getOutputPowerIndicatorMax());
+        double maxTxDist = getTransmissionRange(conn.getSource());
         double distFactor = dist/maxTxDist;
 
         if (distFactor < 1) {
@@ -354,6 +372,11 @@ public class UDGM extends AbstractRadioMedium {
     element.setText(Double.toString(INTERFERENCE_RANGE));
     config.add(element);
 
+    /* Output power at which both ranges hold */
+    element = new Element("tx_power_reference_dbm");
+    element.setText(Double.toString(TX_POWER_REFERENCE_DBM));
+    config.add(element);
+
     /* Transmission success probability */
     element = new Element("success_ratio_tx");
     element.setText(String.valueOf(SUCCESS_RATIO_TX));
@@ -377,6 +400,10 @@ public class UDGM extends AbstractRadioMedium {
 
       if (element.getName().equals("interference_range")) {
         INTERFERENCE_RANGE = Double.parseDouble(element.getText());
+      }
+
+      if (element.getName().equals("tx_power_reference_dbm")) {
+        TX_POWER_REFERENCE_DBM = Double.parseDouble(element.getText());
       }
 
       /* Backwards compatibility */

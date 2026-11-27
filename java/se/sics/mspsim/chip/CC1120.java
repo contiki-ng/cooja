@@ -312,9 +312,19 @@ public class CC1120 extends Radio802154 implements USARTListener {
   /* RSSI0: RSSI_3_0 TODO XXX Ignored */
         private static final int currentRssiReg0 = 0;
 
-        private double frequency = -1;
-        private int nextFreq0 = -1, nextFreq1 = -1, nextFreq2 = -1; /* regs */
+        /* Datasheet reset state: synthesizer unprogrammed */
+        private double frequency;
+        private int nextFreq0 = 0x00, nextFreq1 = 0x00, nextFreq2 = 0x00; /* regs */
         private boolean changeFrequencyNextState;
+
+        private double computeFrequency() {
+                double f = (0xff & nextFreq0) + ((0xff & nextFreq1) << 8)
+                                + ((0xff & nextFreq2) << 16);
+                f *= 32; /* frequency oscillator */
+                f /= 65536;
+                f /= 4; /* LO divider */
+                return f;
+        }
 
         private CC1120RadioState state;
 
@@ -579,6 +589,10 @@ public class CC1120 extends Radio802154 implements USARTListener {
                         return 0;
                 case CC1120_FREQ0:
                         nextFreq0 = data;
+                        frequency = computeFrequency();
+                        if (channelListener != null) {
+                                channelListener.channelChanged(getActiveChannel());
+                        }
                         return 0;
                 case CC1120_IOCFG0:
                         if (data == 65 || data == 1) {
@@ -867,12 +881,7 @@ public class CC1120 extends Radio802154 implements USARTListener {
                                 && newState == CC1120RadioState.CC1120_STATE_RX
                                 || newState == CC1120RadioState.CC1120_STATE_TX) {
                         changeFrequencyNextState = false;
-                        frequency = (0xff & nextFreq0) + ((0xff & nextFreq1) << 8)
-                                        + ((0xff & nextFreq2) << 16);
-
-                        frequency *= 32; /* frequency oscillator */
-                        frequency /= 65536;
-                        frequency /= 4; /* LO divider */
+                        frequency = computeFrequency();
 
                         /* System.out.println("Activating new frequency: " + frequency + " MHz"); */
                         if (channelListener != null) {
@@ -962,8 +971,8 @@ public class CC1120 extends Radio802154 implements USARTListener {
         }
 
         @Override
-        public int getActiveFrequency() {
-                return (int) (1000 * Math.round(frequency)); /* kHz */
+        public double getActiveFrequency() {
+                return frequency;
         }
 
         @Override
@@ -975,10 +984,6 @@ public class CC1120 extends Radio802154 implements USARTListener {
         @Override
         public int getOutputPowerIndicator() {
                 return 1;
-        }
-
-        public double getFrequency() {
-                return frequency;
         }
 
         @Override
@@ -995,6 +1000,12 @@ public class CC1120 extends Radio802154 implements USARTListener {
         @Override
         public int getOutputPowerMax() {
                 return 1;
+        }
+
+        @Override
+        public double getRxSensitivity() {
+                /* From CC1120 datasheet, 50 kbps 2-GFSK (the only rate supported) */
+                return -110.0;
         }
 
         @Override

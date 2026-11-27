@@ -34,7 +34,6 @@ import java.util.Random;
 import org.contikios.cooja.ClassDescription;
 import org.contikios.cooja.Mote;
 import org.contikios.cooja.mspmote.MspMoteTimeEvent;
-import org.contikios.cooja.radiomediums.AbstractRadioMedium;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +51,8 @@ import org.slf4j.LoggerFactory;
 public class Msp802154BitErrorRadio extends Msp802154Radio {
   private static final Logger logger = LoggerFactory.getLogger(Msp802154Radio.class);
 
-  private static final double NOISE_FLOOR = AbstractRadioMedium.SS_WEAK;
-  private static final double GOOD_SIGNAL = NOISE_FLOOR + 15.0;
+  /* The table spans this many dB above the sensitivity */
+  private static final double GOOD_SIGNAL_MARGIN_DB = 15.0;
 
   private final Random random;
 
@@ -125,7 +124,8 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
   }
 
   /* This is the probability that a bit will be received incorrectly, for
-   * -95.0, -94.9, -94.8, ..., -80.0 dBm signal levels.
+   * signal levels from the receiver sensitivity up to 15 dB above it,
+   * in 0.1 dB steps.
    * It is modelled as Additive White Gaussian Noise (AWGN) channel
    * with constellation size = 4, and log2(4) = 2 bits per over-the-air symbol.
    * (See "Digital Communications" by Proakis, page 311)
@@ -314,13 +314,14 @@ public class Msp802154BitErrorRadio extends Msp802154Radio {
     0.0022756787254125
   };
 
-  private static double getBitErrorRate(double signal) {
-    if (signal <= NOISE_FLOOR) {
+  private double getBitErrorRate(double signal) {
+    double sensitivity = getRxSensitivity();
+    if (signal <= sensitivity) {
       return 0.5;
-    } else if (signal >= GOOD_SIGNAL) {
+    } else if (signal >= sensitivity + GOOD_SIGNAL_MARGIN_DB) {
       return 0.0;
     } else {
-      long position = Math.round((signal - NOISE_FLOOR) * 10.0);
+      long position = Math.round((signal - sensitivity) * 10.0);
       return bitErrorRateTable[(int)position];
     }
   }

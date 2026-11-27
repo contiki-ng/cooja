@@ -49,11 +49,14 @@ public abstract class Radio802154 extends Chip implements RFListener, RFSource {
     public abstract void receivedByte(byte c);
 
     public abstract int getActiveChannel();
-    public abstract int getActiveFrequency();
+    /** @return Active carrier frequency (MHz) */
+    public abstract double getActiveFrequency();
     public abstract int getOutputPower();
     public abstract int getOutputPowerMax();
     public abstract int getOutputPowerIndicator();
     public abstract int getOutputPowerIndicatorMax();
+
+    public abstract double getRxSensitivity();
 
     public abstract int getRSSI();
     public abstract void setRSSI(int rssi);
