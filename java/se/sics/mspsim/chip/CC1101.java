@@ -40,6 +40,9 @@ import se.sics.mspsim.core.USARTSource;
 public class CC1101 extends Radio802154 implements USARTListener {
     protected static final boolean DEBUG = false;
 
+        /* Crystal of the CC1101EM reference design, MHz */
+        private static final double XOSC_MHZ = 26.0;
+
         /* cc1101-const.h: Configuration registers */
         public static final int CC1101_IOCFG1 = 0x01;
         public static final int CC1101_IOCFG0 = 0x02;
@@ -455,6 +458,12 @@ public class CC1101 extends Radio802154 implements USARTListener {
                 int oldValue = registers[address];
                 registers[address] = data;
                 configurationChanged(address, oldValue, data);
+                if (address == CC1101_FREQ2 || address == CC1101_FREQ1
+                        || address == CC1101_FREQ0) {
+                        if (channelListener != null) {
+                                channelListener.channelChanged(channel);
+                        }
+                }
                 return oldValue;
         }
         public int getReg(int address) {
@@ -772,8 +781,14 @@ public class CC1101 extends Radio802154 implements USARTListener {
         }
 
         @Override
-        public int getActiveFrequency() {
-                return 0; /* Not implemented */
+        public double getActiveFrequency() {
+                /* f = f_xosc / 2^16 * (FREQ + CHAN * (256 + CHANSPC_M) * 2^(CHANSPC_E - 2)) */
+                int freq = (registers[CC1101_FREQ2] << 16)
+                        | (registers[CC1101_FREQ1] << 8)
+                        | registers[CC1101_FREQ0];
+                int chanSpc = ((256 + registers[CC1101_MDMCFG0])
+                        << (registers[CC1101_MDMCFG1] & 0x3)) >> 2;
+                return XOSC_MHZ / 65536.0 * (freq + chanSpc * channel);
         }
 
         @Override
@@ -784,10 +799,6 @@ public class CC1101 extends Radio802154 implements USARTListener {
         @Override
         public int getOutputPowerIndicator() {
                 return 1;
-        }
-
-        public double getFrequency() {
-                return 0; /* Not implemented */
         }
 
         @Override
@@ -804,6 +815,12 @@ public class CC1101 extends Radio802154 implements USARTListener {
         @Override
         public int getOutputPowerMax() {
                 return 1;
+        }
+
+        @Override
+        public double getRxSensitivity() {
+                /* From CC1101 datasheet at 868 MHz GFSK; 50 kBaud interpolated */
+                return getBitRate() >= 250000 ? -95.0 : -104.0;
         }
 
         @Override
@@ -842,6 +859,13 @@ public class CC1101 extends Radio802154 implements USARTListener {
 
           registers[CC1101_PARTNUM] = 0;
           registers[CC1101_VERSION] = 6;
+
+          /* Datasheet reset state, which decodes to 800 MHz */
+          registers[CC1101_FREQ2] = 0x1e;
+          registers[CC1101_FREQ1] = 0xc4;
+          registers[CC1101_FREQ0] = 0xec;
+          registers[CC1101_MDMCFG1] = 0x22;
+          registers[CC1101_MDMCFG0] = 0xf8;
         }
 
         public int getMarcstate() {

@@ -215,7 +215,8 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
     return radio.getActiveChannel();
   }
 
-  public int getFrequency() {
+  @Override
+  public double getFrequency() {
     return radio.getActiveFrequency();
   }
 
@@ -255,6 +256,11 @@ public class CC2520Radio extends Radio implements CustomDataRadio {
   @Override
   public double getCurrentOutputPower() {
     return radio.getOutputPower();
+  }
+
+  @Override
+  public double getRxSensitivity() {
+    return radio.getRxSensitivity();
   }
 
   @Override

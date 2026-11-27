@@ -160,7 +160,8 @@ public abstract class Radio802154 extends Radio implements CustomDataRadio {
     @Override
     public abstract int getChannel();
 
-    public abstract int getFrequency();
+    @Override
+    public abstract double getFrequency();
 
     @Override
     public abstract boolean isRadioOn();

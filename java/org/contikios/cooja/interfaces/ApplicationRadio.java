@@ -77,6 +77,8 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
   private int radioChannel = -1;
   private double outputPower; /* typical cc2420 values: -25 <-> 0 dBm */
   private int outputPowerIndicator = 100;
+  private double rxSensitivity = -100.0; /* idealized radio, no datasheet */
+  private double frequency = 2400.0;
 
   private int interfered;
 
@@ -190,6 +192,16 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
   }
 
   @Override
+  public double getRxSensitivity() {
+    return rxSensitivity;
+  }
+
+  @Override
+  public double getFrequency() {
+    return frequency;
+  }
+
+  @Override
   public int getOutputPowerIndicatorMax() {
     return outputPowerIndicator;
   }
@@ -262,6 +274,20 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
   }
 
   /**
+   * @param s New receiver sensitivity (dBm)
+   */
+  public void setRxSensitivity(double s) {
+    rxSensitivity = s;
+  }
+
+  /**
+   * @param f New carrier frequency (MHz)
+   */
+  public void setFrequency(double f) {
+    frequency = f;
+  }
+
+  /**
    * @param channel New radio channel
    */
   public void setChannel(int channel) {
@@ -305,6 +331,12 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     channelMenu.setSelectedIndex(currentChannel == -1 ? 0 : currentChannel);
     final JFormattedTextField outputPower = new JFormattedTextField(getCurrentOutputPower());
     outputPower.addPropertyChangeListener("value", evt -> setOutputPower(((Number)outputPower.getValue()).doubleValue()));
+    final JLabel sensitivityLabel = new JLabel("Receiver sensitivity (dBm):");
+    final JFormattedTextField sensitivity = new JFormattedTextField(getRxSensitivity());
+    sensitivity.addPropertyChangeListener("value", evt -> setRxSensitivity(((Number)sensitivity.getValue()).doubleValue()));
+    final JLabel frequencyLabel = new JLabel("Carrier frequency (MHz):");
+    final JFormattedTextField frequency = new JFormattedTextField(getFrequency());
+    frequency.addPropertyChangeListener("value", evt -> setFrequency(((Number)frequency.getValue()).doubleValue()));
 
     box.add(statusLabel);
     box.add(lastEventLabel);
@@ -314,6 +346,10 @@ public class ApplicationRadio extends Radio implements NoiseSourceRadio, Directi
     box.add(channelMenu);
     box.add(powerLabel);
     box.add(outputPower);
+    box.add(sensitivityLabel);
+    box.add(sensitivity);
+    box.add(frequencyLabel);
+    box.add(frequency);
 
     updateButton.addActionListener(e -> ssLabel.setText("Signal strength (not auto-updated): "
         + String.format("%1.1f", getCurrentSignalStrength()) + " dBm"));

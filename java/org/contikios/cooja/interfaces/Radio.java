@@ -162,6 +162,18 @@ public abstract class Radio implements MoteInterface {
    * @return Maximum output power indicator
    */
   public abstract int getOutputPowerIndicatorMax();
+
+  /**
+   * @return Receiver sensitivity (dBm) at 1% PER, for the current configuration
+   */
+  public abstract double getRxSensitivity();
+
+  /**
+   * @return Carrier frequency (MHz) for the current configuration, or 0 if the
+   *         radio has no carrier programmed. Radios must fire
+   *         {@link RadioEvent#CHANNEL_HOP} when the carrier changes.
+   */
+  public abstract double getFrequency();
   
   /** 
    * Returns the current LQI-value. This might differ from platform to platform 
@@ -228,6 +240,8 @@ public abstract class Radio implements MoteInterface {
     final JLabel statusLabel = new JLabel("");
     final JLabel lastEventLabel = new JLabel("");
     final JLabel channelLabel = new JLabel("");
+    final JLabel frequencyLabel = new JLabel("");
+    final JLabel sensitivityLabel = new JLabel("");
     final JLabel ssLabel = new JLabel("");
     final JButton updateButton = new JButton("Update SS");
 
@@ -236,6 +250,8 @@ public abstract class Radio implements MoteInterface {
     box.add(ssLabel);
     box.add(updateButton);
     box.add(channelLabel);
+    box.add(frequencyLabel);
+    box.add(sensitivityLabel);
 
     updateButton.addActionListener(e -> ssLabel.setText("Signal strength (not auto-updated): "
         + String.format("%1.1f", getCurrentSignalStrength()) + " dBm"));
@@ -257,6 +273,11 @@ public abstract class Radio implements MoteInterface {
       } else {
         channelLabel.setText("Current channel: " + getChannel());
       }
+      frequencyLabel.setText(getFrequency() > 0
+          ? "Carrier: " + String.format("%1.1f", getFrequency()) + " MHz"
+          : "Carrier: not programmed");
+      sensitivityLabel.setText("Receiver sensitivity: "
+          + String.format("%1.1f", getRxSensitivity()) + " dBm");
     };
     radioEventTriggers.addTrigger(panel, observer);
     observer.accept(null, null);

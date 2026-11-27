@@ -277,7 +277,8 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 		return cc1101.getActiveChannel();
 	}
 
-	public int getFrequency() {
+	@Override
+	public double getFrequency() {
 		return cc1101.getActiveFrequency();
 	}
 
@@ -318,6 +319,11 @@ public class CC1101Radio extends Radio implements CustomDataRadio {
 	public double getCurrentOutputPower() {
 		/* TODO XXX Need support in CC1101.java */
 		return 1;
+	}
+
+	@Override
+	public double getRxSensitivity() {
+		return cc1101.getRxSensitivity();
 	}
 	@Override
 	public int getCurrentOutputPowerIndicator() {
